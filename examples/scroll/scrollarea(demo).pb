@@ -87,18 +87,18 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Debug "gadget"
-    Debug "x - "+GetGadgetAttribute(g, #PB_ScrollArea_X)
-    Debug "y - "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
-    Debug "iw - "+GetGadgetAttribute(g, #PB_ScrollArea_InnerWidth)
-    Debug "ih - "+GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)
-    Debug "step - "+GetGadgetAttribute(g, #PB_ScrollArea_ScrollStep)
+    Debug "x = "+GetGadgetAttribute(g, #PB_ScrollArea_X)
+    Debug "y = "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
+    Debug "iw = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerWidth)
+    Debug "ih = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)
+    Debug "step = "+GetGadgetAttribute(g, #PB_ScrollArea_ScrollStep)
     
     Debug "widget"
-    Debug "x - "+GetAttribute(*g, #PB_ScrollArea_X)
-    Debug "y - "+GetAttribute(*g, #PB_ScrollArea_Y)
-    Debug "iw - "+GetAttribute(*g, #PB_ScrollArea_InnerWidth)
-    Debug "ih - "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
-    Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
+    Debug "x = "+GetAttribute(*g, #PB_ScrollArea_X)
+    Debug "y = "+GetAttribute(*g, #PB_ScrollArea_Y)
+    Debug "iw = "+GetAttribute(*g, #PB_ScrollArea_InnerWidth)
+    Debug "ih = "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
+    Debug "step = "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())

@@ -4696,7 +4696,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If _is_integral_( widget( ) )
                           Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\parent\y[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), #PB_Ignore, (widget( )\y[#__c_container] + *this\bar\thumb\change) - *this\parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
@@ -4719,7 +4719,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If _is_integral_( widget( ) )
                           Resize( widget( ), widget( )\x[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( widget( ), widget( )\x[#__c_container] + *this\parent\x[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), (widget( )\x[#__c_container] + *this\bar\thumb\change) - *this\parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
@@ -5153,7 +5153,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         Bar_Update( *this )
         
         ; post event
-        If Not ( *this\type = #PB_GadgetType_ScrollBar And _is_scrollbars_( *this ) )
+        If *this\type = #PB_GadgetType_ScrollBar And _is_scrollbars_( *this )
+          Post( #PB_EventType_ScrollChange, *this\parent, *this, *this\bar\direction )
+        Else
           If *this\type <> #PB_GadgetType_tabBar
             If *this\root\canvas\gadget <> EventGadget( ) 
               ReDraw( *this\root ) ; сним у панель setstate хурмить
@@ -5161,8 +5163,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           Post( #PB_EventType_Change, *this, *this\bar\from, *this\bar\direction )
-        Else
-          Post( #PB_EventType_ScrollChange, *this\parent, *this, *this\bar\direction )
         EndIf
         
         result = #True
@@ -6116,7 +6116,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Else
           If *this\parent 
             If Not _is_integral_( *this )
-              x - *this\parent\x[#__c_required] 
+              x + *this\parent\x[#__c_required] 
             EndIf 
             *this\x[#__c_container] = x
           EndIf 
@@ -6127,7 +6127,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Else
           If *this\parent 
             If Not _is_integral_( *this )
-              y - *this\parent\y[#__c_required] 
+              y + *this\parent\y[#__c_required] 
             EndIf 
             *this\y[#__c_container] = y
           EndIf 
@@ -12149,10 +12149,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; _is_scrollbars_( *this )
       If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
-          Case #PB_ScrollArea_X               : result = *this\x[#__c_required]
-          Case #PB_ScrollArea_Y               : result = *this\y[#__c_required]
-          Case #PB_ScrollArea_InnerWidth      : result = *this\width[#__c_required]
-          Case #PB_ScrollArea_InnerHeight     : result = *this\height[#__c_required]
+          Case #PB_ScrollArea_X               : result = *this\scroll\h\bar\page\pos
+          Case #PB_ScrollArea_Y               : result = *this\scroll\v\bar\page\pos
+          Case #PB_ScrollArea_InnerWidth      : result = *this\scroll\h\bar\max
+          Case #PB_ScrollArea_InnerHeight     : result = *this\scroll\v\bar\max
           Case #PB_ScrollArea_ScrollStep      : result = *this\bar\increment
         EndSelect
       EndIf
@@ -12501,17 +12501,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ;  _is_scrollbars_( *this )
-      If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
+      If *this\type = #PB_GadgetType_ScrollArea Or 
+         *this\type = #PB_GadgetType_MDI
+        
         Select Attribute 
           Case #PB_ScrollArea_X 
             If Bar_SetState( *this\scroll\h, *value )
-              *this\x[#__c_required] = *this\scroll\h\bar\page\pos
+              ; *this\x[#__c_required] = *this\scroll\h\bar\page\pos
               result = 1
             EndIf
             
           Case #PB_ScrollArea_Y               
             If Bar_SetState( *this\scroll\v, *value )
-              *this\y[#__c_required] = *this\scroll\v\bar\page\pos
+              ; *this\y[#__c_required] = *this\scroll\v\bar\page\pos
               result = 1
             EndIf
             
@@ -13315,7 +13317,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;;Debug "reparent - "
-            Resize( *this, x + *parent\x[#__c_required], y + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+            Resize( *this, x - *parent\x[#__c_required], y - *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
             ;;EndIf
             
             ; re draw new parent root 
@@ -16863,7 +16865,6 @@ Macro Uselib( _name_ )
   UseModule structures
 EndMacro
 
-
 ;
 ; This code is automatically generated by the FormDesigner.
 ; Manual modification is possible to adjust existing commands, but anything else will be dropped when the code is compiled.
@@ -18027,5 +18028,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -v--F8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------x----v----v-------v---8L4-+-v-+-----------------------------------------------ed6----------v-0--------------------------------------------------------------------------0----------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------2------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

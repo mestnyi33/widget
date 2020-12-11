@@ -1,6 +1,7 @@
 ﻿DeclareModule func
-  
+  Declare.s InvertCase( Text.s )  
   Declare.i Cursor(ImageID.i, x.l=0, y.l=0)
+  
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Declare.i ResizeIcon(hIcon.i, Width.l, Height.l, Depth.l=32)
   CompilerEndIf
@@ -106,5 +107,5 @@ EndModule
 
 UseModule func
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 44--
+; Folding = 43--
 ; EnableXP
