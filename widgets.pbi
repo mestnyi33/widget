@@ -11852,51 +11852,28 @@ CompilerIf Not Defined( widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
-        ; if the item to be removed is selected, 
-        ; then we set the next item of its level as selected
-        If *this\row\selected = *this\row\_s( )
-          *this\row\selected\_state &~ #__s_selected
-          Debug " - "+*this\row\selected\text\string +" "+ *this\row\selected\last ; text\string
-          
+        Protected sublevel = *this\row\_s( )\sublevel
+        Protected *parent._s_rows = *this\row\_s( )\parent
+        
+        ; if is last parent item then change to the prev element of his level
+        If *parent And *parent\last = *this\row\_s( )
           PushListPosition( *this\row\_s( ) )
-          If *this\row\selected\childrens 
-            ;             ; if he is a parent then choose the last child
-            ;             ChangeCurrentElement( *this\row\_s( ), *this\row\selected\last )
-            
-            ; if he is a parent then we find the next item of his level
-            While NextElement( *this\row\_s( ) )
-              If *this\row\_s( )\sublevel = *this\row\selected\sublevel 
-                PreviousElement( *this\row\_s( ) )
-                Break
-              EndIf
-            Wend
-;           Else
-;             NextElement( *this\row\_s( ) )
-          EndIf
-          *this\row\selected = NextElement( *this\row\_s( ) ) ; *this\row\_s( )
-          ; в линуксе такое поведение
-; ;           If Not *this\row\selected
-; ;             *this\row\selected = PreviousElement( *this\row\_s( ) )
-; ;           EndIf
+          While PreviousElement( *this\row\_s( ) )
+            If *this\row\_s( )\parent = *parent And 
+               *this\row\_s( )\sublevel = sublevel 
+              *parent\last = *this\row\_s( )
+              Break
+            EndIf
+          Wend
           PopListPosition( *this\row\_s( ) )
-          ; ;           *this\row\selected = *this\row\selected\after
-          
-          If *this\row\selected
-            *this\row\selected\color\state = #__s_2 + Bool( GetActive( )\gadget<>*this )
-            *this\row\selected\_state | #__s_selected
-          EndIf
         EndIf
         
+        ; first delete the children's
         If *this\row\_s( )\childrens
-          *this\row\sublevel = *this\row\_s( )\sublevel
-          
           PushListPosition( *this\row\_s( ) )
           While NextElement( *this\row\_s( ) )
-            If *this\row\_s( )\sublevel > *this\row\sublevel 
-              ;Debug *this\row\_s( )\text\string
-              DeleteElement( *this\row\_s( ) )
-              *this\count\items - 1
-              *this\row\count - 1
+            If *this\row\_s( )\sublevel > sublevel 
+              DeleteElement( *this\row\_s( ) ) : *this\count\items - 1 : *this\row\count - 1
             Else
               Break
             EndIf
@@ -11904,17 +11881,40 @@ CompilerIf Not Defined( widget, #PB_Module )
           PopListPosition( *this\row\_s( ) )
         EndIf
         
-        ; if is last parent item
-        If *this\row\_s( )\parent And 
-           *this\row\_s( )\parent\last = *this\row\_s( )
+        ; if the item to be removed is selected, 
+        ; then we set the next item of its level as selected
+        If *this\row\selected = *this\row\_s( )
+          *this\row\selected\_state &~ #__s_selected
+           
+          ; if he is a parent then we find the next item of his level
           PushListPosition( *this\row\_s( ) )
-          *this\row\_s( )\parent\last = PreviousElement( *this\row\_s( ) )
+          While NextElement( *this\row\_s( ) )
+            If *this\row\_s( )\sublevel = sublevel 
+              Break
+            EndIf
+          Wend
+          
+          If *this\row\selected = *this\row\_s( ) 
+            ; if we remove the last selected item then selected previous item
+            *this\row\selected = PreviousElement( *this\row\_s( ) )
+          Else
+            *this\row\selected = *this\row\_s( ) 
+          EndIf
           PopListPosition( *this\row\_s( ) )
+          
+          If *this\row\selected
+            If *this\row\selected\parent And 
+               *this\row\selected\parent\box[0]\state
+              *this\row\selected = *this\row\selected\parent
+            EndIf 
+            
+            *this\row\selected\_state | #__s_selected
+            *this\row\selected\color\state = #__s_2 + Bool( GetActive( )\gadget<>*this )
+          EndIf
         EndIf
         
-        DeleteElement( *this\row\_s( ) )
+        DeleteElement( *this\row\_s( ) ) : *this\count\items - 1
         
-        *this\count\items - 1
         *this\change = 1
         _post_repaint_canvas_( *this\root\canvas )
         result = #True
@@ -12164,7 +12164,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #PB_GadgetType_Tree Or
          *this\type = #PB_GadgetType_ListView Or
          *this\type = #PB_GadgetType_ListIcon
-        
         If *this\row\selected And 
            *this\row\selected\color\state
           ProcedureReturn *this\row\selected\index
@@ -13675,19 +13674,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;- 
     Procedure.i SetItemData( *This._s_widget, item.l, *data )
-      Protected result.i
-      
-      If *this\count\items ; *this\type = #__type_tree
-                           ;Item = *this\row\i( Hex( Item ) )
-        
+      If *this\count\items 
         If _no_select_( *this\row\_s( ), item )
           ProcedureReturn #False
         EndIf
         
         *this\row\_s( )\data = *Data
       EndIf
-      
-      ProcedureReturn result
     EndProcedure
     
     Procedure.l SetItemText( *this._s_widget, Item.l, Text.s, Column.l = 0 )

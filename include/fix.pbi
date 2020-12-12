@@ -62,7 +62,7 @@ DeclareModule fix
     ;   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   CompilerElse
     Macro PB_(Function)
-      #Function
+      Function
     EndMacro
     
   CompilerEndIf

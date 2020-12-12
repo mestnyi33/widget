@@ -531,6 +531,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *address          ; widget list address
       *container        ; 
       *root._s_root     ; this root
+      
       *parent._s_widget ; this parent
       *window._s_widget ; this parent window       ; root( )\active\window
       
@@ -591,26 +592,25 @@ CompilerIf Not Defined(structures, #PB_Module)
       count._s_count
       combo_box._s_buttons
       caption._s_caption
-      scroll._s_scroll 
       color._s_color[4]
-      bar._s_bar
       
       row._s_row
       text._s_text 
       
+      bar._s_bar
+      scroll._s_scroll 
       button._s_buttons ; checkbox; optionbox
       
       *align._s_align
-      ;; *selector._s_transform[constants::#__a_count+1]
-      
       
       *time_click
       *time_down
       
       ; event_queue ; очередь событий
-      List *column._s_column( )
-      List *post._s_post( )
       List *bind._s_bind( )
+      List *post._s_post( )
+      
+      List *column._s_column( )
     EndStructure
     
     ;- - _s_mouse
