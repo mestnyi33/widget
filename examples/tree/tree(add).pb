@@ -41,34 +41,47 @@ CompilerIf #PB_Compiler_IsMainFile
     *g = Tree(10, 10, 210, 210, #__tree_CheckBoxes)                                         
     *g1 = Tree(230, 10, 210, 210, #__tree_CheckBoxes)                                         
     
-    ; 1_example
-    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 3", -1, 3)
-    AddItem (*g, -1, "Sub-Item 2", -1, 2)
-    AddItem (*g, -1, "Sub-Item 4", -1, 4)
+;     ; 1_example
+;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+;     AddItem (*g, -1, "Sub-Item 3", -1, 3)
+;     AddItem (*g, -1, "Sub-Item 2", -1, 2)
+;     AddItem (*g, -1, "Sub-Item 4", -1, 4)
+;     
+      
+    ; example 1 - 2
+    AddItem (*g, 0, "window_0", -1, 0) 
+    AddItem (*g, 1, "container_0", -1, 1) 
+    AddItem (*g, 2, "button_0", -1, 2) 
+    AddItem (*g, 3, "button_1", -1, 1) 
     
-    ; 2_example
-    AddItem (*g1, 0, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g1, 1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g1, 3, "Sub-Item 3", -1, 3)
-    AddItem (*g1, 2, "Sub-Item 2", -1, 2)
-    AddItem (*g1, 4, "Sub-Item 4", -1, 4)
+    AddItem (*g, 3, "container_1", -1, 2) 
+    AddItem (*g, 4, "button_2", -1, 3) 
+    
+    AddItem (*g, 6, "button_3", -1, 1) 
+    
+;     
+;   ; 2_example
+;     AddItem (*g1, 0, "Node "+Str(a), 0, 0)                                         
+;     AddItem (*g1, 1, "Sub-Item 1", -1, 1)                                           
+;     AddItem (*g1, 3, "Sub-Item 3", -1, 3)
+;     AddItem (*g1, 2, "Sub-Item 2", -1, 2)
+;     AddItem (*g1, 4, "Sub-Item 4", -1, 4)
   EndIf
   
   AddGadgetItem(g, item, "Add-Item "+Str(item), 0, sublevel)
-  AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
+  ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
   AddGadgetItem(g1, item, "Add-Item "+Str(item), 0, sublevel)
   AddItem (*g1, item, "Add-Item "+Str(item), -1, sublevel)
   
-  
-  item = 4
-  Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemText(g, item)
-  Debug "w - "+ GetItemData(*g, item) +" "+ GetItemText(*g, item)
-  
-  Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemText(g1, item)
-  Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemText(*g1, item)
+; ;   
+; ;   item = 4
+; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemText(g, item)
+; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemText(*g, item)
+; ;   
+; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemText(g1, item)
+; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemText(*g1, item)
   
   For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
   For i=0 To CountGadgetItems(g1) : SetGadgetItemState(g1, i, #PB_Tree_Expanded) : Next

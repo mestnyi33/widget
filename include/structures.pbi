@@ -219,12 +219,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       space.l
     EndStructure
     
-    ; multi group
-    Structure _s_group Extends _s_coordinate
-      *id._s_widget
-      *widget._s_widget
-    EndStructure
-    
     ;- - _s_grid
     Structure _s_grid
       *widget
@@ -233,16 +227,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       type.l
     EndStructure
     
-    ;- - _s_transform
+    ; multi group
+    Structure _s_group Extends _s_coordinate
+      ;*id._s_widget
+      *widget._s_widget
+    EndStructure
+    
+    ;- - _s_anchor
     Structure _s_anchor Extends _s_coordinate
       round.a
-      
       cursor.l
       color._s_color[4]
     EndStructure
     
-    ;- - _s_transforms
-    Structure _s_transform Extends _s_coordinate
+    ;- - _s_transform
+    Structure _s_transform
       color._s_color
       
       *main._s_widget
@@ -690,5 +689,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HACAEME1
+; Folding = HAC5EME1
 ; EnableXP

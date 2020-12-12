@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EnableGadgetDrop(tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     
-    For a = 0 To 1;0
+    For a = 0 To 10
       AddItem(*tree, -1, "Normal Item "+Str(a), img, 0) ; if you want to add an image, use
       AddItem(*tree, -1, "Node "+Str(a), img, 0)        ; ImageID(x) as 4th parameter
       AddItem(*tree, -1, Str(a)+" Sub-Item 1", img, 1)          ; These are on the 1st sublevel
@@ -181,7 +181,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

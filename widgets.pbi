@@ -246,11 +246,9 @@ CompilerIf Not Defined( widget, #PB_Module )
     Macro _is_selected_( _this_ ) : Bool( _this_\_state & constants::#__s_selected ) : EndMacro
     Macro _is_scrollbars_( _this_ ) : Bool( _this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_\parent\scroll\h = _this_ ) ) : EndMacro
     
-    Macro _no_select_( _list_, _item_ )
-      ;  Bool( _item_ >= 0 And _list_\index <> _item_ And Not SelectElement( _list_, _item_ ) )
-      Bool( _item_ >= 0 And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ) 
-      ;Bool( ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
-      ;  Bool( _item_ >= 0 And _item_ < ListSize( _list_ ) And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
+    Macro _no_select_item_( _list_, _item_ )
+     Bool( _item_ < 0 Or _item_ >= ListSize( _list_ ) Or (ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ) ) 
+     ; Bool( _item_ >= 0 And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ) 
     EndMacro
     
     Macro _no_select_scrollbars_( _this_ ) : Bool( Not (_is_selected_( _this_\scroll\v ) Or _is_selected_( _this_\scroll\h ))) : EndMacro
@@ -1668,7 +1666,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ;
-      If ( *this\transform =- 1 And Not transform( )\index ) Or
+      If *this And ( *this\transform =- 1 And Not transform( )\index ) Or
          ( *this\transform = 1 And transform( )\widget <> *this )
         
         ;*this\cursor = #PB_Cursor_Default
@@ -9602,6 +9600,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
           LastElement( *this\row\_s( ) )
           handle = AddElement( *this\row\_s( ) ) 
+          
           If position < 0 
             position = ListIndex( *this\row\_s( ) )
           EndIf
@@ -9613,7 +9612,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             PushListPosition( *this\row\_s( ) )
             If PreviousElement( *this\row\_s( ) )
               *this\row\last = *this\row\_s( )
-              ;; NextElement( *this\row\_s( ) )
+              ;;NextElement( *this\row\_s( ) )
             Else
               *last = *this\row\last
               sublevel = *this\row\_s( )\sublevel
@@ -9637,7 +9636,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If sublevel > *this\row\last\sublevel
               sublevel = *this\row\last\sublevel + 1
               *parent = *this\row\last
-              *parent\childrens = 1
               
             ElseIf *this\row\last\parent 
               If sublevel > *this\row\last\parent\sublevel 
@@ -9650,7 +9648,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   While *parent 
                     If sublevel >= *parent\sublevel 
                       If sublevel = *parent\sublevel 
-                        *parent = 0
+                        ;;Debug text +" "+ *this\row\last\text\string +" "+ *parent\text\string
+                        *parent = *parent\parent
                       EndIf
                       Break
                     Else
@@ -9678,8 +9677,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
           
-          *this\row\_s( )\parent = *parent
-          *this\row\_s( )\sublevel = sublevel
+          If *parent
+            *parent\childrens + 1
+            *this\row\_s( )\parent = *parent
+          EndIf
+          
+          If sublevel
+            *this\row\_s( )\sublevel = sublevel
+          EndIf
           
           If *last
             *this\row\last = *last
@@ -11848,7 +11853,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #__type_tree Or
          *this\type = #__type_listview
         
-        If _no_select_( *this\row\_s( ), Item )
+        If _no_select_item_( *this\row\_s( ), Item )
           ProcedureReturn #False
         EndIf
         
@@ -11856,16 +11861,26 @@ CompilerIf Not Defined( widget, #PB_Module )
         Protected *parent._s_rows = *this\row\_s( )\parent
         
         ; if is last parent item then change to the prev element of his level
-        If *parent And *parent\last = *this\row\_s( )
-          PushListPosition( *this\row\_s( ) )
-          While PreviousElement( *this\row\_s( ) )
-            If *this\row\_s( )\parent = *parent And 
-               *this\row\_s( )\sublevel = sublevel 
-              *parent\last = *this\row\_s( )
-              Break
+        If *parent 
+          *parent\childrens - 1
+            
+          If *parent\last = *this\row\_s( )
+            If *parent\childrens > 0
+              PushListPosition( *this\row\_s( ) )
+              While PreviousElement( *this\row\_s( ) )
+                If *this\row\_s( )\parent = *parent And 
+                   *this\row\_s( )\sublevel = sublevel 
+                  *parent\last = *this\row\_s( )
+                  Break
+                EndIf
+              Wend
+              PopListPosition( *this\row\_s( ) )
+            Else
+              *parent\last = 0
             EndIf
-          Wend
-          PopListPosition( *this\row\_s( ) )
+          EndIf
+          
+        ;;  Debug  *parent\childrens
         EndIf
         
         ; first delete the children's
@@ -11913,13 +11928,14 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        DeleteElement( *this\row\_s( ) ) : *this\count\items - 1
-        
-        *this\change = 1
+        *this\change = 1  
+        *this\count\items - 1
+        DeleteElement( *this\row\_s( ) )
         _post_repaint_canvas_( *this\root\canvas )
         result = #True
-        
-      ElseIf *this\type = #__type_Panel
+      EndIf
+      
+      If *this\type = #__type_Panel
         result = Tab_removeItem( *this\_tab, Item )
         
       ElseIf *this\type = #__type_tabBar
@@ -12393,7 +12409,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        If _no_select_( *this\row\_s( ), State )
+        If _no_select_item_( *this\row\_s( ), State )
           ProcedureReturn #False
         EndIf
         
@@ -13515,7 +13531,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;             Next
             ;             PopListPosition( *this\row\_s( ) )
             ; 
-            If _no_select_( *this\row\_s( ), item )
+            If _no_select_item_( *this\row\_s( ), item )
               ProcedureReturn #False
             EndIf
             
@@ -13536,7 +13552,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected result.s
       
       If *this\count\items ; row\count
-        If _no_select_( *this\row\_s( ), Item ) 
+        If _no_select_item_( *this\row\_s( ), Item ) 
           ProcedureReturn ""
         EndIf
         
@@ -13562,7 +13578,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\type = #__type_listview Or
          *this\type = #__type_tree
         
-        If _no_select_( *this\row\_s( ), Item ) 
+        If _no_select_item_( *this\row\_s( ), Item ) 
           ProcedureReturn #PB_Default
         EndIf
         
@@ -13580,7 +13596,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\type = #__type_listview Or
          *this\type = #__type_tree
         
-        If _no_select_( *this\row\_s( ), Item ) 
+        If _no_select_item_( *this\row\_s( ), Item ) 
           ProcedureReturn #False
         EndIf
         
@@ -13659,7 +13675,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected result
       
       If *this\type = #__type_tree
-        If _no_select_( *this\row\_s( ), Item )
+        If _no_select_item_( *this\row\_s( ), Item )
           ProcedureReturn #False
         EndIf
         
@@ -13675,7 +13691,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;- 
     Procedure.i SetItemData( *This._s_widget, item.l, *data )
       If *this\count\items 
-        If _no_select_( *this\row\_s( ), item )
+        If _no_select_item_( *this\row\_s( ), item )
           ProcedureReturn #False
         EndIf
         
@@ -13691,7 +13707,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ;Item = *this\row\i( Hex( Item ) )
         
-        If _no_select_( *this\row\_s( ), item )
+        If _no_select_item_( *this\row\_s( ), item )
           ProcedureReturn #False
         EndIf
         
@@ -17377,11 +17393,10 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         Class.s = GetClass( *new )+"_"+GetCount( *new )
-        ;;widget_add( id_inspector_tree, *new, Class.s )
+        SetText( *new, class )
         
-        Protected img =- 1
-        Protected i, sublevel, position = GetData( *parent ) 
         Protected countitems = CountItems( id_inspector_tree )
+        Protected i, sublevel, position = GetData( *parent ) 
         
         ; get childrens position and sublevel
         For i = 0 To countitems - 1
@@ -17395,24 +17410,20 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         Next 
         
-        ; Debug ""+position +" "+ countitems
         ; set new widget data
         SetData( *new, position )
-        SetText( *new, class )
         
         ; update new widget data item
         If countitems > position
           For i = position To countitems - 1
-            ; Debug ""+*new +" "+ GetItemData( id_inspector_tree, i )
             SetData( GetItemData( id_inspector_tree, i ), i + 1 )
           Next 
-          
-          ; position = GetData( *new )
         EndIf
         
         ; img = GetItemData( id_elements_tree, transform( )\type )
         countitems = CountItems( id_elements_tree )
         
+        Protected img =- 1
         For i = 0 To countitems - 1
           If LCase(StringField( Class, 1, "_" )) = LCase(GetItemText( id_elements_tree, i ))
             img = GetItemData( id_elements_tree, i )
@@ -17576,13 +17587,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Macro widget_delete( )
     If transform( )\widget\transform = 1
-      ;  transform = transform( )\widget\parent
-      
       RemoveItem( id_inspector_tree, GetData( transform( )\widget ) )
-      Free( transform( )\widget )
-    Else
-      ;  transform = transform( )\widget
       
+      Free( transform( )\widget )
+      
+      If a_Set( GetItemData( id_inspector_tree, GetState( id_inspector_tree ) ) )
+        a_reset( )
+      EndIf
+    Else
       ForEach transform( )\group( )
         RemoveItem( id_inspector_tree, GetData( transform( )\group( )\widget ) )
         Free( transform( )\group( )\widget )
@@ -17723,15 +17735,7 @@ CompilerIf #PB_Compiler_IsMainFile
               widget_paste( )
               
             Case #_tb_widget_delete
-              If transform( )\widget\transform = 1
-                transform = transform( )\widget\parent
-              Else
-                transform = transform( )\widget
-              EndIf
-              
               widget_delete( )
-              
-              a_set( transform )
               
             Case #_tb_group_left,
                  #_tb_group_right, 
@@ -17923,30 +17927,30 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
     
-    ;       ; example 1
-    ;       ;   ;OpenList( id_design_form )
-    ;       Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
-    ;       Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
-    ;       widget_add( *container, "button", 10, 20, 30, 30 )
-    ;       widget_add( *window, "button", 10, 20, 100, 30 )
-    ;       
-    ;       Define item = 1
-    ;       SetState( id_inspector_tree, item )
-    ;       If IsGadget( id_design_code )
-    ;         SetGadgetState( id_design_code, item )
-    ;       EndIf
-    ;       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-    ;       widget_add( *container2, "button", 10, 20, 30, 30 )
-    ;       
-    ;       SetState( id_inspector_tree, 0 )
-    ;       widget_add( *window, "button", 10, 130, 100, 30 )
-    ;       
-    ;       ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-    ;       ;   Define *container = widget_add( *window, "container", 80, 10 )
-    ;       ;   widget_add( *container, "button", -10, 20 )
-    ;       ;   widget_add( *window, "button", 10, 20 )
-    ;       ;   ;CloseList( )
-    
+; ;           ; example 1
+; ;           ;   ;OpenList( id_design_form )
+; ;           Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
+; ;           Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+; ;           widget_add( *container, "button", 10, 20, 30, 30 )
+; ;           widget_add( *window, "button", 10, 20, 100, 30 )
+; ;           
+; ;           Define item = 1
+; ;           SetState( id_inspector_tree, item )
+; ;           If IsGadget( id_design_code )
+; ;             SetGadgetState( id_design_code, item )
+; ;           EndIf
+; ;           Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+; ;           widget_add( *container2, "button", 10, 20, 30, 30 )
+; ;           
+; ;           SetState( id_inspector_tree, 0 )
+; ;           widget_add( *window, "button", 10, 130, 100, 30 )
+; ;           
+; ;           ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+; ;           ;   Define *container = widget_add( *window, "container", 80, 10 )
+; ;           ;   widget_add( *container, "button", -10, 20 )
+; ;           ;   widget_add( *window, "button", 10, 20 )
+; ;           ;   ;CloseList( )
+; ;     
     ; example 2
     ;   ;OpenList( id_design_form )
     SetState( group_select, 1 ) 
@@ -18021,5 +18025,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------2------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----4-4-
 ; EnableXP
