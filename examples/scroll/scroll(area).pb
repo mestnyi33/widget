@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     PopListPosition(Images())
     
-    widget::Updates(*this, x, y, width, height)
+    widget::bar_Updates(*this, x, y, width, height)
     
     ; SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
   EndMacro
@@ -240,7 +240,8 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  ;PostEvent( #PB_Event_Gadget, 0, MyCanvas, #PB_EventType_Resize )
   
   ; *this\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
   ; *this\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
@@ -250,7 +251,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(*this\scroll\v, @events_scrolls())
   Bind(*this\scroll\h, @events_scrolls())
   
-  
+  ;Redraw(root())
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow

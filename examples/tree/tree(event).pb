@@ -77,6 +77,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
   TreeGadget(0, 10, 10, 160, 160)                                         ; TreeGadget standard
   TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines); TreeGadget with Checkboxes + NoLines
   
+  Define ID, a, i
   For ID = 0 To 1
     For a = 0 To 10
       AddGadgetItem(ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use

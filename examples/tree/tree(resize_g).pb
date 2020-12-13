@@ -180,8 +180,10 @@ CompilerIf #PB_Compiler_IsMainFile
     #g_tree 
     #w_tree
     #g_splitter
+    #g_splitter2
   EndEnumeration
   
+  Global g_Canvas
   
   Procedure events_tree_gadget()
     ;Debug " gadget - "+EventGadget()+" "+EventType()
@@ -202,7 +204,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
     Protected EventGadget = *event\widget
-    Protected EventType = *event\type
+    Protected EventType = *event\event
     Protected EventData = *event\data
     Protected EventItem = GetState(EventGadget)
     
@@ -216,7 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ResizeCallBack()
-    ResizeGadget(#g_splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+    ResizeGadget(#g_splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
@@ -227,7 +229,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
   EndProcedure
   
-  If OpenWindow(0, 0, 0, 222, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define i,a,g
     
     TreeGadget(#g_tree, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
@@ -272,7 +274,12 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(g, 13, "Tree_6", -1 )
     
     
-    SplitterGadget(#g_splitter,8, 8, 306, 491-16, #w_tree, #g_tree)
+    ;SplitterGadget(#g_splitter,8, 8, 306, 491-16, #g_tree, #w_tree)
+    SplitterGadget(#g_splitter2, 0,0,0,0, #g_tree, #w_tree)
+    SplitterGadget(#g_splitter, 8, 8, 300-16, 491-16, TextGadget(#PB_Any,0,0,0,0,""),#g_splitter2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    SetGadgetState(#g_splitter, 0)
+    
+    
     CompilerIf #PB_Compiler_Version =< 546
       BindGadgetEvent(#g_splitter, @SplitterCallBack())
     CompilerEndIf
@@ -291,6 +298,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0f8--2-
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = 0f8--0-
 ; EnableXP

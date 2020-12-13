@@ -575,7 +575,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       class.s  
       change.l
       vertical.b
-      draw.b
+      __draw.b
       type.b
       hide.b[2] 
       cursor.l[2]

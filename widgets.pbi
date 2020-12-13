@@ -303,9 +303,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf  
     EndMacro
     
-    Macro _post_repaint_canvas_( _canvas_, _eventdata_ = #Null )
-      If _canvas_\repaint = #False : _canvas_\repaint = #True
-        PostEvent( #PB_Event_Gadget, _canvas_\window, _canvas_\gadget, #PB_EventType_Repaint, _eventdata_ )
+    Macro _post_repaint_canvas_( _canvas_address_, _eventdata_ = #Null )
+      If _canvas_address_\repaint = #False : _canvas_address_\repaint = #True
+        PostEvent( #PB_Event_Gadget, _canvas_address_\window, _canvas_address_\gadget, #PB_EventType_Repaint, _eventdata_ )
       EndIf
     EndMacro
     
@@ -338,7 +338,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           LastElement( widget( ) ) 
           Repeat                                 
             If _is_widget_( widget( ) ) And
-               Not widget( )\hide And widget( )\draw And 
+               Not widget( )\hide And widget( )\__draw And 
                widget( )\root\canvas\gadget = root( )\canvas\gadget And 
                Atpoint( mouse( )\x, mouse( )\y, widget( ), [#__c_clip] ) And 
                Atpoint( mouse( )\x, mouse( )\y, widget( ), [#__c_frame] )
@@ -389,7 +389,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;ChangeCurrentElement( widget( ), entered( )\address )
               SelectElement( widget( ), entered( )\index )
               Repeat                 
-                If widget( )\draw And Child( entered( ), widget( ) )
+                If widget( )\__draw And Child( entered( ), widget( ) )
                   If widget( )\_state & #__s_entered
                     widget( )\_state &~ #__s_entered
                     
@@ -413,7 +413,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Break
                 EndIf
                 
-                If widget( )\draw And Child( entered( ), widget( ) )
+                If widget( )\__draw And Child( entered( ), widget( ) )
                   If widget( )\_state & #__s_entered = #False
                     widget( )\_state | #__s_entered
                     
@@ -2016,9 +2016,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           Else
             If entered( )\transform =- 1
-              Debug 6666
+              Debug "entered( )\transform =- 1"
             Else
-              Debug 7777
+              Debug "entered( )\transform <>- 1"
               ; transform( )\group( )\widget = entered()
             EndIf
           EndIf
@@ -4586,9 +4586,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-      
-      ; update draw coordinate
-      If *this\draw
+    ;;  Debug *this\draw
+     ;;; update draw coordinate
+      ;;If Not ( *this\width[#__c_clip] <= 0 And *this\height[#__c_clip] <= 0 And *this\type <> #PB_GadgetType_Splitter ) ; \draw
+       ;; If *this\width[#__c_clip] > 0 And *this\height[#__c_clip] > 0  ; \draw
         If *this\type = #PB_GadgetType_ScrollBar 
           *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) ; Bool( *this\bar\min = *this\bar\page\end ) ; 
           
@@ -5090,7 +5091,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           result = Bool( *this\resize & #__resize_change )
         EndIf
-      EndIf
+      ;;EndIf
       
       
       If *this\bar\thumb\change <> 0
@@ -5157,6 +5158,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\type <> #PB_GadgetType_tabBar
             If *this\root\canvas\gadget <> EventGadget( ) 
               ReDraw( *this\root ) ; сним у панель setstate хурмить
+             ;  _post_repaint_canvas_( *this\root\canvas )
             EndIf
           EndIf
           
@@ -5498,8 +5500,31 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        \v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
-        \h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
+        ;;\v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
+        ;;\h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
+        
+        If ( \v\x[#__c_frame] <> width - \v\width ) 
+          Resize( \v, width - \v\width, y, #PB_Ignore, #PB_Ignore )
+        EndIf
+        
+        If ( \h\y[#__c_frame] <> height - \h\height ) 
+          Resize( \h, x, height - \h\height, #PB_Ignore, #PB_Ignore )
+        EndIf
+        
+        If ( \v\bar\max > \v\bar\page\len ) 
+          Resize( \v, #PB_Ignore, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
+          \v\hide = 0
+        Else
+          \v\hide = 1
+        EndIf
+        
+        If ( \h\bar\max > \h\bar\page\len ) 
+          Resize( \h, x, #PB_Ignore, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
+          \h\hide = 0
+        Else
+          \h\hide = 1
+        EndIf
+        
         
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
@@ -6026,9 +6051,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       If ( *this\width[#__c_clip] Or 
            *this\height[#__c_clip] )
-        *this\draw = #True
+        *this\__draw = #True
       Else
-        *this\draw = #False
+        *this\__draw = #False
       EndIf
       
       If childrens And *this\container
@@ -6182,60 +6207,66 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\width[#__c_frame] <> width 
           Change_width = width - *this\width[#__c_frame] 
-          *this\width[#__c_frame] = width 
-          *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
-          *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
-          If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
-          *this\width[#__c_inner2] = *this\width[#__c_container]
           
-          *this\resize | #__resize_width | #__resize_change
-          
-          If *this\type = #__type_image Or
-             *this\type = #__type_buttonimage
-            *this\image\change = 1
-          EndIf
-          
-          If *this\type = #__type_tabbar
-            If *this\vertical
-              ; to fix the width of the vertical tabbar items
-              *this\bar\change | #__resize_width
+          If Change_width
+            *this\resize | #__resize_width | #__resize_change
+            
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\image\change = 1
             EndIf
-          EndIf
-          
-          If *this\count\items
-            If *this\type <> #__type_tree
-              *this\change | #__resize_width
+            
+            If *this\type = #__type_tabbar
+              If *this\vertical
+                ; to fix the width of the vertical tabbar items
+                *this\bar\change | #__resize_width
+              EndIf
             EndIf
+            
+            If *this\count\items
+              If *this\type <> #__type_tree
+                *this\change | #__resize_width
+              EndIf
+            EndIf
+            
+            *this\width[#__c_frame] = width 
+            *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
+            *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
+            If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
+            *this\width[#__c_inner2] = *this\width[#__c_container]
           EndIf
         EndIf 
         
         If *this\height[#__c_frame] <> height 
           Change_height = height - *this\height[#__c_frame] 
-          *this\height[#__c_frame] = height 
-          *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
-          *this\height[#__c_container] = height - *this\fs*2 - *this\__height
-          If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
-          *this\height[#__c_inner2] = *this\height[#__c_container]
           
-          *this\resize | #__resize_height | #__resize_change
-          
-          If *this\type = #__type_image Or
-             *this\type = #__type_buttonimage
-            *this\image\change = 1
-          EndIf
-          
-          If *this\type = #__type_tabbar
-            If Not *this\vertical
-              ; to fix the height of the horizontal tabbar items
-              *this\bar\change | #__resize_height
+          If Change_height
+            *this\resize | #__resize_height | #__resize_change
+            
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\image\change = 1
             EndIf
-          EndIf
-          
-          If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
-            *this\change | #__resize_height
+            
+            If *this\type = #__type_tabbar
+              If Not *this\vertical
+                ; to fix the height of the horizontal tabbar items
+                *this\bar\change = 1
+              EndIf
+            EndIf
+            
+            If *this\count\items And 
+               *this\height[#__c_required] >= *this\height[#__c_inner] ; #__c_container
+              *this\change = 1
+            EndIf
+            
+            *this\height[#__c_frame] = height 
+            *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+            *this\height[#__c_container] = height - *this\fs*2 - *this\__height
+            If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
+            *this\height[#__c_inner2] = *this\height[#__c_container]
           EndIf
         EndIf 
-        
         
         ; mdi
         If *this\parent And 
@@ -6299,8 +6330,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; resize vertical&horizontal scrollbars
         If ( *this\scroll And *this\scroll\v And *this\scroll\h )
           If ( Change_x Or Change_y )
-            Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize, #PB_Ignore )
-            Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize )
+            If Not *this\scroll\v\hide
+              Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize, #PB_Ignore )
+            EndIf
+            If Not *this\scroll\h\hide
+              Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize )
+            EndIf
           EndIf
           
           If ( Change_width Or Change_height )
@@ -6376,7 +6411,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        If *this\draw
+        If *this\__draw
           result = Update( *this )
         Else
           result = #True
@@ -14342,7 +14377,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *parent
             SetParent( *this, *parent, #PB_Default )
           Else
-            *this\draw = 1
+            *this\__draw = 1
           EndIf
           
           ; splitter 
@@ -15473,7 +15508,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             PushListPosition( widget( ) )
             ForEach widget( )
-              If Not widget( )\hide And widget( )\draw And 
+              If Not widget( )\hide And widget( )\__draw And 
                  ( widget( )\root\canvas\gadget = *this\root\canvas\gadget ) And 
                  ( widget( )\width[#__c_clip] > 0 And widget( )\height[#__c_clip] > 0 )
                 
@@ -16581,6 +16616,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         CompilerEndIf
         
       EndIf
+      
+      ; post default event in canvas
+      _post_repaint_canvas_( root( )\canvas ) 
+      PostEvent( #PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize )
+      
       If Not *CallBack
         root( )\repaint = #True
       Else
@@ -16588,8 +16628,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       BindGadgetEvent( Canvas, @CallBack( ) )
       
-      PostEvent( #PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize )
-      _post_repaint_canvas_( root( )\canvas ) 
       ProcedureReturn root( )
     EndProcedure
     
@@ -17680,7 +17718,7 @@ CompilerIf #PB_Compiler_IsMainFile
             a_reset( )
           EndIf
           
-          ; SetActive( e_widget )
+          ;;SetActive( *this )
         EndIf
         
         
@@ -17927,52 +17965,52 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
     
-; ;           ; example 1
-; ;           ;   ;OpenList( id_design_form )
-; ;           Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
-; ;           Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
-; ;           widget_add( *container, "button", 10, 20, 30, 30 )
-; ;           widget_add( *window, "button", 10, 20, 100, 30 )
-; ;           
-; ;           Define item = 1
-; ;           SetState( id_inspector_tree, item )
-; ;           If IsGadget( id_design_code )
-; ;             SetGadgetState( id_design_code, item )
-; ;           EndIf
-; ;           Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-; ;           widget_add( *container2, "button", 10, 20, 30, 30 )
-; ;           
-; ;           SetState( id_inspector_tree, 0 )
-; ;           widget_add( *window, "button", 10, 130, 100, 30 )
-; ;           
-; ;           ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-; ;           ;   Define *container = widget_add( *window, "container", 80, 10 )
-; ;           ;   widget_add( *container, "button", -10, 20 )
-; ;           ;   widget_add( *window, "button", 10, 20 )
-; ;           ;   ;CloseList( )
-; ;     
-    ; example 2
-    ;   ;OpenList( id_design_form )
-    SetState( group_select, 1 ) 
+          ; example 1
+          ;   ;OpenList( id_design_form )
+          Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
+          Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+          widget_add( *container, "button", 10, 20, 30, 30 )
+          widget_add( *window, "button", 10, 20, 100, 30 )
+          
+          Define item = 1
+          SetState( id_inspector_tree, item )
+          If IsGadget( id_design_code )
+            SetGadgetState( id_design_code, item )
+          EndIf
+          Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+          widget_add( *container2, "button", 10, 20, 30, 30 )
+          
+          SetState( id_inspector_tree, 0 )
+          widget_add( *window, "button", 10, 130, 100, 30 )
+          
+          ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+          ;   Define *container = widget_add( *window, "container", 80, 10 )
+          ;   widget_add( *container, "button", -10, 20 )
+          ;   widget_add( *window, "button", 10, 20 )
+          ;   ;CloseList( )
     
-    Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
-    widget_add( *window, "button", 15, 25, 50, 30 )
-    widget_add( *window, "text", 25, 65, 50, 30 )
-    widget_add( *window, "button", 35, 65+40, 50, 30 )
-    widget_add( *window, "text", 45, 65+40*2, 50, 30 )
-    
-    ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-    Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
-    widget_add( *container, "progress", 15, 25, 30, 30 )
-    widget_add( *container, "text", 25, 65, 50, 30 )
-    widget_add( *container, "button", 35, 65+40, 80, 30 )
-    widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-    
-    Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-    widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-    widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-    widget_add( *container2, "string", 25, 65, 100, 30 )
-    widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
+;     ; example 2
+;     ;   ;OpenList( id_design_form )
+;     SetState( group_select, 1 ) 
+;     
+;     Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+;     widget_add( *window, "button", 15, 25, 50, 30 )
+;     widget_add( *window, "text", 25, 65, 50, 30 )
+;     widget_add( *window, "button", 35, 65+40, 50, 30 )
+;     widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+;     
+;     ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+;     Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+;     widget_add( *container, "progress", 15, 25, 30, 30 )
+;     widget_add( *container, "text", 25, 65, 50, 30 )
+;     widget_add( *container, "button", 35, 65+40, 80, 30 )
+;     widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+;     
+;     Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+;     widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+;     widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+;     widget_add( *container2, "string", 25, 65, 100, 30 )
+;     widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
     
     
     
@@ -18025,5 +18063,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----4-4-
+; Folding = -------------------------------------------------------------------------------+---+-d-+-f-----------------------------+---0-v-4-------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----v-v-
 ; EnableXP

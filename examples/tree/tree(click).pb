@@ -73,6 +73,8 @@ EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   TreeGadget(0, 10, 30, 250, 120)
+  
+  Define a
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Tree") ; define Tree content
     SetGadgetItemState(0, a, #PB_Tree_Selected) 
@@ -104,6 +106,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   TextGadget(#PB_Any, 10+270,10, 250,20, "flag = ClickSelect")
   TextGadget(#PB_Any, 10+270+270,10, 250,20, "flag = MultiSelect")
   
+  Define i
   For i = 0 To 2
     BindGadgetEvent(i, @events_gadgets())
   Next

@@ -1,5 +1,6 @@
 ﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
+DisableExplicit
 
 UseLib(widget)
 
