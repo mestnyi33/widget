@@ -55,7 +55,7 @@
 ; https://regex101.com/r/u60Wqt/1
 
 ;
-; ver. 0.0.2.0
+; ver. 0.0.2.2
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -2612,6 +2612,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
+    ; хочу внедрит
     Macro _drawing_mode_alpha_( _mode_ )
       If widget( )\_drawing_alpha <> _mode_
         widget( )\_drawing_alpha = _mode_
@@ -2644,21 +2645,26 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ; Получаем один раз после изменения текста  
       If _this_\text\change
-        If _this_\text\invert 
-          If _this_\vertical
-            _this_\text\rotate = 270 
-          Else
-            _this_\text\rotate = 180
-          EndIf
-        Else
-          _this_\text\rotate = Bool( _this_\vertical ) * 90
-        EndIf
-        
         If _this_\text\string 
           _this_\text\width = TextWidth( _this_\text\string ) 
         EndIf
         
         _this_\text\height = TextHeight( "A" ); - Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * 2
+        _this_\text\rotate = Bool( _this_\text\invert ) * 180 + Bool( _this_\vertical ) * 90
+        
+;         If _this_\text\invert 
+;           If _this_\vertical
+;             _this_\text\rotate = 270 
+;           Else
+;             _this_\text\rotate = 180
+;           EndIf
+;         Else
+;           If _this_\vertical
+;             _this_\text\rotate = 90 
+;           Else
+;             _this_\text\rotate = 0
+;           EndIf
+;         EndIf
         
         If #debug_draw_font_change
           Debug "change text size - " + #PB_Compiler_Procedure  + " " +  _this_
@@ -2689,7 +2695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ; Получаем один раз после изменения текста  
-      If  _item_\text\change; _change_
+      If _item_\text\change ; _change_
         If _item_\text\string
           _item_\text\width = TextWidth( _item_\text\string ) 
         EndIf
@@ -7470,12 +7476,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             While *end\c 
               If *end\c = #LF 
                 AddElement( row( ) )
-                ; drawing item font
-                _drawing_font_item_( *this, row( ), row( )\text\change )
-                
                 row( )\text\len = ( *end - *str )>>#PB_Compiler_Unicode
                 row( )\text\string = PeekS ( *str, row( )\text\len )
-                row( )\text\width = TextWidth( row( )\text\string )
+                ;;row( )\text\width = TextWidth( row( )\text\string )
+                
+                ; drawing item font
+                _drawing_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ) )
@@ -7834,12 +7840,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             While *end\c 
               If *end\c = #LF 
                 AddElement( row( ) )
-                ; drawing item font
-                _drawing_font_item_( *this, row( ), row( )\text\change )
-                
                 row( )\text\len = ( *end - *str )>>#PB_Compiler_Unicode
                 row( )\text\string = PeekS ( *str, row( )\text\len )
-                row( )\text\width = TextWidth( row( )\text\string )
+                ;;row( )\text\width = TextWidth( row( )\text\string )
+                
+                ; drawing item font
+                _drawing_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ) )
@@ -9810,265 +9816,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;EndWith
       
       ProcedureReturn *this\count\items - 1
-    EndProcedure
-    
-    Procedure   Tree_Update( *this._s_widget, List row._s_rows( ) )
-      Debugger( )
-      
-      If *this\change > 0
-        *this\x[#__c_required] = 0
-        *this\y[#__c_required] = 0
-        *this\width[#__c_required] = 0
-        *this\height[#__c_required] = 0
-      EndIf
-      
-      ; reset item z - order
-      PushListPosition( row( ) )
-      ForEach row( )
-        If row( )\parent
-          row( )\parent\first = 0
-          row( )\parent\last = 0
-        EndIf     
-      Next
-      ;       PopListPosition( row( ) )
-      Protected bp = 12; + Bool( *this\mode\check <> 4 ) * 8
-      
-      ;       
-      ;       PushListPosition( row( ) )
-      ForEach row( )
-        row( )\index = ListIndex( row( ) )
-        
-        If row( )\hide
-          row( )\draw = 0
-        Else
-          If *this\change > 0
-            ; check box position
-            If ( *this\mode\check = 1 Or 
-                 *this\mode\check = 4 )
-              row( )\box[1]\width = 11
-              row( )\box[1]\height = row( )\box[1]\width
-            EndIf
-            
-            If ( *this\mode\lines Or *this\mode\buttons ) And
-               Not ( row( )\sublevel And *this\mode\check = 4 )
-              row( )\box[0]\width = 9
-              row( )\box[0]\height = 9
-            EndIf
-            
-            ; drawing item font
-            _drawing_font_item_( *this, row( ), row( )\text\change )
-            
-            row( )\height = row( )\text\height + 2 ;
-            row( )\y = *this\y[#__c_inner] + *this\height[#__c_required]
-            
-            row( )\x = *this\x[#__c_inner]
-            row( )\width = *this\width[#__c_inner2] ; ???
-          EndIf
-          
-          ;           ; sublevel position
-          ;           If ( *this\mode\check = 4 )
-          ;             If *this\mode\buttons
-          ;               row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + row( )\box[1]\width + 6 ;+ 18
-          ;             Else
-          ;               row( )\sublevelsize = 18
-          ;             EndIf
-          ;           Else
-          ;             row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check = 1 ) * 18
-          ;           EndIf
-          
-          row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check ) * 18
-          
-          ; check & option box position
-          If ( *this\mode\check = 1 Or 
-               *this\mode\check = 4 )
-            
-            If row( )\parent And *this\mode\check = 4
-              row( )\box[1]\x = row( )\x + row( )\sublevelsize - row( )\box[1]\width - *this\scroll\h\bar\page\pos
-            Else
-              row( )\box[1]\x = row( )\x + ( 18 - row( )\box[1]\width ) - *this\scroll\h\bar\page\pos
-            EndIf
-            row( )\box[1]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[1]\height )/2 - *this\scroll\v\bar\page\pos
-          EndIf
-          
-          ; expanded & collapsed box position
-          If ( *this\mode\lines Or *this\mode\buttons ) And Not ( row( )\sublevel And *this\mode\check = 4 )
-            
-            If *this\mode\check = 4
-              row( )\box[0]\x = row( )\x + row( )\sublevelsize - 10 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
-            Else
-              row( )\box[0]\x = row( )\x + row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
-            EndIf
-            row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
-          EndIf
-          
-          ; image position
-          If row( )\image\id
-            row( )\image\x = row( )\x + row( )\sublevelsize + *this\image\padding\x + 3 - *this\scroll\h\bar\page\pos
-            row( )\image\y = row( )\y + ( row( )\height - row( )\image\height )/2 - *this\scroll\v\bar\page\pos
-          EndIf
-          
-          ; text position
-          If row( )\text\string
-            row( )\text\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos
-            row( )\text\y = row( )\y + ( row( )\height - row( )\text\height )/2 - *this\scroll\v\bar\page\pos
-          EndIf
-          
-          If row( )\text\edit\string
-            row( )\text\edit\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos  + *this\bar\page\pos; *this\bar\page\pos + row( )\x + row( )\sublevelsize + 5
-            row( )\text\edit\y = row( )\text\y
-          EndIf
-          
-          ; vertical & horizontal scroll max value
-          If *this\change > 0
-            *this\height[#__c_required] + row( )\height + Bool( row( )\index <> *this\count\items - 1 ) * *this\mode\GridLines
-            
-            If *this\width[#__c_required] < ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ) - *this\x[#__c_inner]
-              *this\width[#__c_required] = ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ) - *this\x[#__c_inner]
-            EndIf
-          EndIf
-        EndIf
-      Next
-      ;       PopListPosition( row( ) )
-      
-      ; if the item list has changed
-      If *this\change > 0
-        ; *this\height[#__c_required] - *this\mode\gridlines
-        
-        ; change vertical scrollbar max
-        If *this\scroll\v\bar\max <> *this\height[#__c_required] And
-           bar_SetAttribute( *this\scroll\v, #__bar_Maximum, *this\height[#__c_required] )
-          
-          Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
-          *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-        EndIf
-        
-        ; change horizontal scrollbar max
-        If *this\scroll\h\bar\max <> *this\width[#__c_required] And
-           bar_SetAttribute( *this\scroll\h, #__bar_Maximum, *this\width[#__c_required] )
-          
-          Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
-          *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-        EndIf
-        
-        ; 
-        If *this\row\selected And *this\row\selected\_state & #__s_scrolled
-          bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) )  
-          *this\row\selected\_state &~ #__s_scrolled
-          *this\scroll\v\change = 0 
-          
-          Tree_Draw( *this, *this\row\draws( ) )
-        EndIf
-      EndIf
-      
-      ; reset draw list
-      ClearList( *this\row\draws( ) )
-      
-      ;        PushListPosition( row( ) )
-      ForEach row( )
-        row( )\draw = Bool( Not row( )\hide And 
-                            ( ( row( )\y + row( )\height ) - *this\scroll\v\bar\page\pos > *this\y[#__c_inner] And 
-                              ( row( )\y - *this\y[#__c_inner] ) - *this\scroll\v\bar\page\pos < *this\height[#__c_inner2] ) )
-        
-        ; lines for tree widget
-        If *this\mode\lines And *this\row\sublevelsize
-          ; vertical lines for tree widget
-          If row( )\parent 
-            
-            If row( )\draw
-              If row( )\parent\last
-                row( )\parent\last\l\v\height = 0
-                
-                row( )\parent\last\first = 0
-              EndIf
-              
-              row( )\first = row( )\parent
-              row( )\parent\last = row( )
-            Else
-              
-              If row( )\parent\last
-                row( )\parent\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\parent\last\l\v\y 
-              EndIf
-              
-            EndIf
-            
-          Else
-            If row( )\draw
-              If *this\row\first\last And
-                 *this\row\first\sublevel = *this\row\first\last\sublevel
-                If *this\row\first\last\first
-                  *this\row\first\last\l\v\height = 0
-                  
-                  *this\row\first\last\first = 0
-                EndIf
-              EndIf
-              
-              row( )\first = *this\row\first
-              *this\row\first\last = row( )
-              
-            Else
-              If *this\row\first\last And
-                 *this\row\first\sublevel = *this\row\first\last\sublevel
-                
-                *this\row\first\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  *this\row\first\last\l\v\y
-                ;Debug row( )\text\string
-              EndIf
-            EndIf
-          EndIf
-          
-          
-          row( )\l\h\y = row( )\box[0]\y + row( )\box[0]\height/2
-          row( )\l\v\x = row( )\box[0]\x + row( )\box[0]\width/2
-          
-          If ( *this\x[#__c_inner] - row( )\l\v\x ) < *this\mode\lines
-            If row( )\l\v\x<*this\x[#__c_inner]
-              row( )\l\h\width = ( *this\mode\lines - ( *this\x[#__c_inner] - row( )\l\v\x ) )
-            Else
-              row( )\l\h\width = *this\mode\lines
-            EndIf
-            
-            If row( )\draw And row( )\l\h\y > *this\y[#__c_inner] And row( )\l\h\y < *this\y[#__c_inner] + *this\height[#__c_inner2]
-              row( )\l\h\x = row( )\l\v\x + ( *this\mode\lines - row( )\l\h\width )
-              row( )\l\h\height = 1
-            Else
-              row( )\l\h\height = 0
-            EndIf
-            
-            ; Vertical plot
-            If row( )\first And *this\x[#__c_inner]<row( )\l\v\x
-              row( )\l\v\y = ( row( )\first\y + row( )\first\height -  Bool( row( )\first\sublevel = row( )\sublevel ) * row( )\first\height/2 ) - *this\scroll\v\bar\page\pos
-              If row( )\l\v\y < *this\y[#__c_inner] : row( )\l\v\y = *this\y[#__c_inner] : EndIf
-              
-              row( )\l\v\height = ( row( )\y + row( )\height/2 ) - row( )\l\v\y - *this\scroll\v\bar\page\pos
-              If row( )\l\v\height < 0 : row( )\l\v\height = 0 : EndIf
-              If row( )\l\v\y + row( )\l\v\height > *this\y[#__c_inner] + *this\height[#__c_inner2] 
-                If row( )\l\v\y > *this\y[#__c_inner] + *this\height[#__c_inner2] 
-                  row( )\l\v\height = 0
-                Else
-                  row( )\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\l\v\y 
-                EndIf
-              EndIf
-              
-              If row( )\l\v\height
-                row( )\l\v\width = 1
-              Else
-                row( )\l\v\width = 0
-              EndIf
-            EndIf 
-            
-          EndIf
-        EndIf
-        
-        
-        ; add new draw list
-        If row( )\draw And 
-           AddElement( *this\row\draws( ) )
-          *this\row\draws( ) = row( )
-        EndIf
-      Next
-      PopListPosition( row( ) )
-      
     EndProcedure
     
     Procedure.l Tree_SetItemState( *this._s_widget, Item.l, State.b )
@@ -18063,5 +17810,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------+---+-d-+-f-----------------------------+---0-v-4-------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----v-v-
+; Folding = ------------------------------------------+------------------------------------+---+-d-+-f-----------------------------+---0-v-4----------------------------------------------------------------------f--8------------------------------------------------------------------------------------------------------------zf0---------------------------------------------------------------------0----0-0-
 ; EnableXP

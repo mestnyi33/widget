@@ -71,10 +71,12 @@ EndProcedure
 #PB_Tree_ClickSelect = #PB_ListView_ClickSelect
 #PB_Tree_MultiSelect = #PB_ListView_MultiSelect
 
-If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  TreeGadget(0, 10, 30, 250, 120)
-  
-  Define a
+If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  ;{
+  Define i,a
+  ;
+  TreeGadget(0, 10, 30, 250, 120) 
+  TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Tree") ; define Tree content
     SetGadgetItemState(0, a, #PB_Tree_Selected) 
@@ -83,7 +85,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   SetGadgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
   
-  TreeGadget(1, 10+270, 30, 250, 120, #PB_Tree_ClickSelect)
+  ;
+  TreeGadget(1, 10, 30+150, 250, 120, #PB_Tree_ClickSelect)
+  TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
   For a = 0 To 12
     AddGadgetItem (1, -1, "Item " + Str(a) + " of the Tree long long long long long") ; define Tree content
     SetGadgetItemState(1, a, #PB_Tree_Selected) 
@@ -93,7 +97,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
-  TreeGadget(2, 10+270+270, 30, 250, 120, #PB_Tree_MultiSelect)
+  ;
+  TreeGadget(2, 10, 30+150+150, 250, 120, #PB_Tree_MultiSelect)
+  TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
   For a = 0 To 12
     AddGadgetItem (2, -1, "Item " + Str(a) + " of the Tree") ; define Tree content
     SetGadgetItemState(2, a, #PB_Tree_Selected) 
@@ -102,18 +108,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   SetGadgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
   
-  TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
-  TextGadget(#PB_Any, 10+270,10, 250,20, "flag = ClickSelect")
-  TextGadget(#PB_Any, 10+270+270,10, 250,20, "flag = MultiSelect")
-  
-  Define i
   For i = 0 To 2
     BindGadgetEvent(i, @events_gadgets())
   Next
-  
+  ;}
   ;--------------
   
-  Tree(10, 190, 250, 120)
+  Tree(270, 30, 250, 120)
   For a = 0 To 12
     AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
     If a%2
@@ -134,7 +135,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
 ; ; ;   SetState(GetWidget(0), 9) 
   ;SetItemState(GetWidget(0), 5, 1) 
   
-  Tree(10+270, 190, 250, 120, #__Tree_clickselect)
+  Tree(270, 30+150, 250, 120, #__Tree_clickselect)
   For a = 0 To 12
     AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Tree long long long long long") ; define Tree content
     If a%2
@@ -145,7 +146,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   SetState(GetWidget(1), 7) 
   SetState(GetWidget(1), 9) 
   
-  Tree(10+270+270, 190, 250, 120, #__Tree_multiselect)
+  Tree(270, 30+150+150, 250, 120, #__Tree_multiselect)
   For a = 0 To 12
     AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
     If a%2
@@ -156,12 +157,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "TreeGadget", #PB_Window
   SetState(GetWidget(2), 7) 
   SetState(GetWidget(2), 9) 
   
-;   Text(10,170, 250,20, "flag = no")
-;   Text(10+270,170, 250,20, "flag = ClickSelect")
-;   Text(10+270+270,170, 250,20, "flag = MultiSelect")
-;   TextGadget(#PB_Any, 10,170, 250,20, "flag = no")
-;   TextGadget(#PB_Any, 10+270,170, 250,20, "flag = ClickSelect")
-;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
+  Text(270,10, 250,20, "flag = no")
+  Text(270,10+150, 250,20, "flag = ClickSelect")
+  Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
     Bind(GetWidget(i), @events_widgets())
