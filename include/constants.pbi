@@ -489,6 +489,9 @@
       #PB_EventType_MaximizeWindow
       #PB_EventType_MinimizeWindow
       #PB_EventType_RestoreWindow
+      
+      #PB_EventType_MouseWheelX
+      #PB_EventType_MouseWheelY
     EndEnumeration
     
     #__event_free             = #PB_EventType_Free    
@@ -534,6 +537,9 @@
     
     #__event_down             = #PB_EventType_Down
     #__event_up               = #PB_EventType_Up
+    
+    #__event_mousewheelX = #PB_EventType_MouseWheelX
+    #__event_mousewheelY = #PB_EventType_MouseWheelY
     
     ;-
     Enumeration event 1

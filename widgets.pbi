@@ -28,7 +28,7 @@
 ; ; (?:\".*\"|(\w+)\s*\(((?>(?R)|[^)(])*)\))
 ; ; 
 ; ; #После выполнения:
-; ; # - В группе \1 будет находиться название переменной
+; ; # - В группе \1 - будет находиться название переменной
 ; ; # - В группе \2 - название процедуры
 ; ; # - В группе \3 - перечень всех аргументов найденной процедуры
 ; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
@@ -55,7 +55,7 @@
 ; https://regex101.com/r/u60Wqt/1
 
 ;
-; ver. 0.0.2.2
+; ver. 0.0.2.3
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -385,7 +385,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              Not ( #__from_mouse_state And Child( _this_, entered( ) ) )
             entered( )\_state &~ #__s_entered
             
-            _result_ | Events( entered( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
+            _result_ | DoEvents( entered( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
             
             If #__from_mouse_state
               ;ChangeCurrentElement( widget( ), entered( )\address )
@@ -395,7 +395,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If widget( )\_state & #__s_entered
                     widget( )\_state &~ #__s_entered
                     
-                    _result_ | Events( widget( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
+                    _result_ | DoEvents( widget( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
                   EndIf
                 EndIf
               Until PreviousElement( widget( ) ) = #False 
@@ -419,13 +419,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If widget( )\_state & #__s_entered = #False
                     widget( )\_state | #__s_entered
                     
-                    _result_ | Events( widget( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
+                    _result_ | DoEvents( widget( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
                   EndIf
                 EndIf
               Next
             EndIf
             
-            _result_ | Events( entered( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
+            _result_ | DoEvents( entered( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
           EndIf
         EndIf  
       EndIf
@@ -930,7 +930,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;     Declare   Menus( *parent, flag.i )
     ;     Declare   PopupMenu( *parent, flag.i )
     
-    Declare   CallBack( )
+    Declare   EventHandler ( )
     Declare.i CloseList( )
     Declare.i OpenList( *this, item.l = 0 )
     
@@ -955,7 +955,7 @@ CompilerIf Not Defined( widget, #PB_Module )
   EndDeclareModule
   
   Module widget
-    Declare   Events( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
+    Declare   DoEvents( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
     ;-
     Procedure   CreateIcon( img.l, type.l )
       Protected x,y,Pixel, size = 8, index.i
@@ -10355,6 +10355,28 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
+      If eventtype = #__event_MouseWheelX
+        If mouse( )\wheel\x > 0
+          ;Post( #__event_Up, *this\scroll\h )
+          Repaint | Bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
+          
+        ElseIf mouse( )\wheel\x < 0
+          ;Post( #__event_Down, *this\scroll\h )
+          Repaint | Bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
+        EndIf
+      EndIf
+      
+      If eventtype = #__event_MouseWheelY
+        If mouse( )\wheel\y > 0
+          ;Post( #__event_Up, *this\scroll\v )
+          Repaint | Bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
+          
+        ElseIf mouse( )\wheel\y < 0
+          ;Post( #__event_Down, *this\scroll\v )
+          Repaint | Bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
+        EndIf
+      EndIf
+      
       ; key events
       If eventtype = #__event_Input Or
          eventtype = #__event_KeyDown Or
@@ -12700,17 +12722,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; ;             _address_\__state &~ #__s_focused
           ; ;           EndIf
           _address_\__state _state_ #__s_focused
-          Events( _address_, _eventtype_, mouse( )\x, mouse( )\y )
+          DoEvents( _address_, _eventtype_, mouse( )\x, mouse( )\y )
         EndIf
       EndMacro
       
       If Not *this And GetActive( )
         ; если фокус получил PB gadget
         ; то убираем фокус с виджета
-        result | Events( GetActive( ), #__event_lostFocus, mouse( )\x, mouse( )\y )
+        result | DoEvents( GetActive( ), #__event_lostFocus, mouse( )\x, mouse( )\y )
         
         If GetActive( )\gadget And GetActive( ) <> GetActive( )\gadget
-          result | Events( GetActive( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
+          result | DoEvents( GetActive( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
           GetActive( )\gadget = 0
         EndIf
         
@@ -12734,14 +12756,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             If widget()\__state & #__s_focused 
               widget()\__state &~ #__s_focused
               Debug  "__last lostfocus"+widget()\class
-              Events( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+              DoEvents( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
               _set_active_gadget_( widget( )\gadget, #__event_lostfocus, &~ )
             EndIf
             
             StopEnumerate( )
           EndIf
           
-          Events( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+          DoEvents( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
           _set_active_gadget_( widget( )\gadget, #__event_lostfocus, &~ )
           
           PushListPosition( widget( ) )
@@ -12758,7 +12780,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               widget( )\__state &~ #__s_focused
               
               Debug "__lostfocus - "+widget( )\class
-              Events( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+              DoEvents( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
               _set_active_gadget_( widget( )\gadget, #__event_lostfocus, &~ )
             EndIf
           Wend
@@ -12778,9 +12800,9 @@ CompilerIf Not Defined( widget, #PB_Module )
               If *this\__state & #__s_focused = #False
                 *this\__state | #__s_focused
                 Debug ""+#PB_Compiler_Procedure+" "+*this\class +" fffff "+ GetActive()\class
-                Events( *this, #__event_Focus, mouse( )\x, mouse( )\y )
+                DoEvents( *this, #__event_Focus, mouse( )\x, mouse( )\y )
                 
-                Events( GetActive( ), #__event_focus, mouse( )\x, mouse( )\y )
+                DoEvents( GetActive( ), #__event_focus, mouse( )\x, mouse( )\y )
                 _set_active_gadget_( GetActive( )\gadget, #__event_focus, | )
               EndIf
               
@@ -12811,14 +12833,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   widget()\__state &~ #__s_focused
                   Debug  ""+#PB_Compiler_Procedure+" last lostfocus "+widget()\class
                   
-                  Events( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+                  DoEvents( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
                   _set_active_gadget_( widget( )\gadget, #__event_lostfocus, &~ )
                 EndIf
                 
                 StopEnumerate( )
               EndIf
               
-              Events( GetActive( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+              DoEvents( GetActive( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
               _set_active_gadget_( GetActive( )\gadget, #__event_lostfocus, &~ )
               
               PushListPosition( widget( ) )
@@ -12836,7 +12858,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   Debug ""+#PB_Compiler_Procedure+" lostfocus - "+widget( )\class
                   
-                  Events( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
+                  DoEvents( widget( ), #__event_lostfocus, mouse( )\x, mouse( )\y )
                   _set_active_gadget_( widget( )\gadget, #__event_lostfocus, &~ )
                 EndIf
               Wend
@@ -12867,13 +12889,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                     widget( )\__state | #__s_focused
                     
                     Debug ""+#PB_Compiler_Procedure+" focus - "+widget( )\class
-                    Events( widget( ), #__event_Focus, mouse( )\x, mouse( )\y )
+                    DoEvents( widget( ), #__event_Focus, mouse( )\x, mouse( )\y )
                   EndIf
                 Wend
                 PopListPosition( widget( ) )
               EndIf
               
-              Events( GetActive( ), #__event_focus, mouse( )\x, mouse( )\y )
+              DoEvents( GetActive( ), #__event_focus, mouse( )\x, mouse( )\y )
             EndIf
             result = #True
           EndIf
@@ -12899,7 +12921,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\__state | #__s_focused
                   Debug  ""+#PB_Compiler_Procedure+" last focused "+*this\class
                   
-                  Events( *this, #__event_focus, mouse( )\x, mouse( )\y )
+                  DoEvents( *this, #__event_focus, mouse( )\x, mouse( )\y )
                   _set_active_gadget_( *this\gadget, #__event_focus, | )
                 EndIf
               EndIf
@@ -15672,34 +15694,6 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     
-    ;-  MAC OS
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      Procedure GetCurrentEvent( )
-        Protected app = CocoaMessage( 0,0,"NSApplication sharedApplication" )
-        If app
-          ProcedureReturn CocoaMessage( 0,app,"currentEvent" )
-        EndIf
-      EndProcedure
-      
-      Procedure.CGFloat GetWheelDeltax( )
-        Protected wheelDeltax.CGFloat = 0.0
-        Protected currentEvent = GetCurrentEvent( )
-        If currentEvent
-          CocoaMessage( @wheelDeltax,currentEvent,"scrollingDeltax" )
-        EndIf
-        ProcedureReturn wheelDeltax
-      EndProcedure
-      
-      Procedure.CGFloat GetWheelDeltaY( )
-        Protected wheelDeltaY.CGFloat = 0.0
-        Protected currentEvent = GetCurrentEvent( )
-        If currentEvent
-          CocoaMessage( @wheelDeltaY,currentEvent,"scrollingDeltaY" )
-        EndIf
-        ProcedureReturn wheelDeltaY
-      EndProcedure
-    CompilerEndIf
-    
     ;-
     Procedure message_events( )
       Protected result
@@ -15904,7 +15898,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure Events( *this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
+    Procedure DoEvents( *this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
       Protected Repaint
       
       If Not _is_widget_( *this )
@@ -16083,7 +16077,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn Repaint
     EndProcedure
     
-    Procedure CallBack( )
+    ;-
+    Procedure EventHandler( )
       Protected Canvas.i = EventGadget( )
       Protected eventtype.i = EventType( )
       Protected Repaint, Change, enter, leave
@@ -16093,7 +16088,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected mouse_y = GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
       ;      mouse_x = DesktopMousex( ) - Gadgetx( Canvas, #PB_Gadget_ScreenCoordinate )
       ;      mouse_y = DesktopMouseY( ) - GadgetY( Canvas, #PB_Gadget_ScreenCoordinate )
-      Protected WheelDelta = GetGadgetAttribute( EventGadget( ), #PB_Canvas_WheelDelta )
+      ;Protected WheelDelta = GetGadgetAttribute( EventGadget( ), #PB_Canvas_WheelDelta )
       Protected *this._s_widget
       
       If root( ) And root( )\container = Canvas
@@ -16132,6 +16127,28 @@ CompilerIf Not Defined( widget, #PB_Module )
         mouse( )\buttons | #PB_Canvas_MiddleButton
         
       ElseIf eventtype = #PB_EventType_MouseWheel
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+          Protected wheelX.CGFloat = 0.0
+          Protected wheelY.CGFloat = 0.0
+          Protected app = CocoaMessage(0,0,"NSApplication sharedApplication")
+          
+          If app
+            Protected currentEvent = CocoaMessage(0,app,"currentEvent")
+            If currentEvent
+              CocoaMessage(@wheelX,currentEvent,"scrollingDeltaX")
+              CocoaMessage(@wheelY,currentEvent,"scrollingDeltaY")
+              If wheelX And wheelY
+                ; do nothing
+              ElseIf wheelY
+                mouse( )\wheel\y = wheelY
+              ElseIf wheelX
+                mouse( )\wheel\x = wheelX
+              EndIf
+            EndIf
+          EndIf
+          
+        CompilerEndIf
+        
         mouse( )\wheel\y = GetGadgetAttribute( root( )\canvas\gadget, #PB_Canvas_WheelDelta )
         
       ElseIf eventtype = #PB_EventType_Input 
@@ -16196,7 +16213,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           entered( )\_state | #__s_entered
           ; Debug "enter " + entered( )\class
           
-          Repaint | Events( entered( ), #__event_MouseEnter, mouse_x, mouse_y )
+          Repaint | DoEvents( entered( ), #__event_MouseEnter, mouse_x, mouse_y )
         EndIf
         
       ElseIf eventtype = #PB_EventType_MouseLeave 
@@ -16205,7 +16222,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           entered( )\_state &~ #__s_entered
           ; Debug "leave " + entered( )\class
           
-          Repaint | Events( entered( ), #__event_MouseLeave, mouse_x, mouse_y )
+          Repaint | DoEvents( entered( ), #__event_MouseLeave, mouse_x, mouse_y )
         EndIf
         
       ElseIf eventtype = #PB_EventType_MouseMove 
@@ -16215,19 +16232,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; mouse drag start
             mouse( )\drag = #True
-            repaint | Events( entered( ), #__event_DragStart, mouse_x, mouse_y )
+            repaint | DoEvents( entered( ), #__event_DragStart, mouse_x, mouse_y )
             ;repaint = 1
           Else
             ; mouse move from entered widget
             If entered( ) 
-              Repaint | Events( entered( ), #__event_MouseMove, mouse_x, mouse_y )
+              Repaint | DoEvents( entered( ), #__event_MouseMove, mouse_x, mouse_y )
             EndIf
             
             ; mouse move from selected widget
             If focused( ) And
                focused( ) <> entered( ) And ; _is_selected_( focused( ) )
                focused( )\_state & #__s_selected
-              Repaint | Events( focused( ), #__event_MouseMove, mouse_x, mouse_y )
+              Repaint | DoEvents( focused( ), #__event_MouseMove, mouse_x, mouse_y )
             EndIf
           EndIf
         EndIf
@@ -16283,11 +16300,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; Down buttons events
           If eventtype = #PB_EventType_LeftButtonDown
-            Repaint | Events( focused( ), #__event_LeftButtonDown, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_LeftButtonDown, mouse_x, mouse_y )
           ElseIf eventtype = #PB_EventType_RightButtonDown
-            Repaint | Events( focused( ), #__event_RightButtonDown, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_RightButtonDown, mouse_x, mouse_y )
           ElseIf eventtype = #PB_EventType_MiddleButtonDown
-            Repaint | Events( focused( ), #__event_MiddleButtonDown, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_MiddleButtonDown, mouse_x, mouse_y )
           EndIf
         EndIf
         
@@ -16315,28 +16332,28 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               ; up buttons events
               If eventtype = #PB_EventType_LeftButtonUp
-                Repaint | Events( focused( ), #__event_LeftButtonUp, mouse_x, mouse_y )
+                Repaint | DoEvents( focused( ), #__event_LeftButtonUp, mouse_x, mouse_y )
               ElseIf eventtype = #PB_EventType_RightButtonUp
-                Repaint | Events( focused( ), #__event_RightButtonUp, mouse_x, mouse_y )
+                Repaint | DoEvents( focused( ), #__event_RightButtonUp, mouse_x, mouse_y )
               ElseIf eventtype = #PB_EventType_MiddleButtonUp
-                Repaint | Events( focused( ), #__event_MiddleButtonUp, mouse_x, mouse_y )
+                Repaint | DoEvents( focused( ), #__event_MiddleButtonUp, mouse_x, mouse_y )
               EndIf
               
               ; if released the mouse button inside the widget
               If focused( )\_state & #__s_entered
                 If eventtype = #PB_EventType_LeftButtonUp
-                  Repaint | Events( focused( ), #__event_LeftClick, mouse_x, mouse_y )
+                  Repaint | DoEvents( focused( ), #__event_LeftClick, mouse_x, mouse_y )
                 EndIf
                 If eventtype = #PB_EventType_RightButtonUp
-                  Repaint | Events( focused( ), #__event_RightClick, mouse_x, mouse_y )
+                  Repaint | DoEvents( focused( ), #__event_RightClick, mouse_x, mouse_y )
                 EndIf
                 
                 If ( focused( )\time_click And ( ElapsedMilliseconds( ) - focused( )\time_click ) < DoubleClickTime( ) )
                   If eventtype = #PB_EventType_LeftButtonUp
-                    Repaint | Events( focused( ), #__event_LeftDoubleClick, mouse_x, mouse_y )
+                    Repaint | DoEvents( focused( ), #__event_LeftDoubleClick, mouse_x, mouse_y )
                   EndIf
                   If eventtype = #PB_EventType_RightButtonUp
-                    Repaint | Events( focused( ), #__event_RightDoubleClick, mouse_x, mouse_y )
+                    Repaint | DoEvents( focused( ), #__event_RightDoubleClick, mouse_x, mouse_y )
                   EndIf
                   
                   focused( )\time_click = 0
@@ -16364,7 +16381,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 If _is_widget_( entered( ) ) 
                   If _DD_action_( entered( )  )
                     If entered( ) <> focused( )
-                      repaint | Events( entered( ), #__event_Drop, mouse_x, mouse_y )
+                      repaint | DoEvents( entered( ), #__event_Drop, mouse_x, mouse_y )
                       repaint = 1
                     EndIf
                   EndIf
@@ -16389,11 +16406,24 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; keyboard events
         If focused( )
           If eventtype = #PB_EventType_KeyDown
-            Repaint | Events( focused( ), #__event_KeyDown, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_KeyDown, mouse_x, mouse_y )
           ElseIf eventtype = #PB_EventType_KeyUp
-            Repaint | Events( focused( ), #__event_KeyUp, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_KeyUp, mouse_x, mouse_y )
           ElseIf eventtype = #PB_EventType_Input
-            Repaint | Events( focused( ), #__event_Input, mouse_x, mouse_y )
+            Repaint | DoEvents( focused( ), #__event_Input, mouse_x, mouse_y )
+          EndIf
+        EndIf
+        
+      ElseIf eventtype = #PB_EventType_MouseWheel
+        
+        If entered( )
+          If mouse( )\wheel\y
+            Repaint | DoEvents( entered( ), #__event_MouseWheelY, mouse_x, mouse_y )
+            mouse( )\wheel\y = 0
+            
+          ElseIf mouse( )\wheel\x
+            Repaint | DoEvents( entered( ), #__event_MouseWheelX, mouse_x, mouse_y )
+            mouse( )\wheel\x = 0
           EndIf
         EndIf
         
@@ -16414,10 +16444,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         Debug  "else eventtype - "+eventtype
         
         If entered( ) And change
-          Repaint | Events( entered( ), eventtype, mouse_x, mouse_y )
+          Repaint | DoEvents( entered( ), eventtype, mouse_x, mouse_y )
         EndIf
         If focused( ) And entered( ) <> focused( ) And _is_selected_( focused( ) ) And change 
-          Repaint | Events( focused( ), eventtype, mouse_x, mouse_y )
+          Repaint | DoEvents( focused( ), eventtype, mouse_x, mouse_y )
         EndIf
       EndIf
       
@@ -16427,7 +16457,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure CW_Deactive( )
+    Procedure EventDeactive( )
       Protected canvas = GetWindowData( EventWindow( ) )
       Protected *this._s_widget = GetGadgetData( Canvas )
       
@@ -16442,7 +16472,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf 
     EndProcedure
     
-    Procedure CW_Resize( )
+    Procedure EventResize( )
       Protected canvas = GetWindowData( EventWindow( ) )
       ; Protected *this._s_widget = GetGadgetData( Canvas )
       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( ) ) - GadgetX( canvas )*2, WindowHeight( EventWindow( ) ) - GadgetY( canvas )*2 )
@@ -16526,10 +16556,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             root( )\canvas\container = #__type_window
           EndIf
           
-          BindEvent( #PB_Event_SizeWindow, @CW_resize( ), Window );, Canvas )
+          BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window );, Canvas )
         EndIf
         
-        BindEvent( #PB_Event_DeactivateWindow, @CW_Deactive( ), Window );, Canvas )
+        BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window );, Canvas )
         
         ; z - order
         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -16555,7 +16585,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Else
         BindGadgetEvent( Canvas, *CallBack )
       EndIf
-      BindGadgetEvent( Canvas, @CallBack( ) )
+      BindGadgetEvent( Canvas, @EventHandler( ) )
       
       ProcedureReturn root( )
     EndProcedure
@@ -16797,7 +16827,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ForEver
           EndIf
           Debug  "   free - " + ListSize( widget( ) )  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
-          
           
           
           If entered( ) = *this
@@ -18010,5 +18039,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48--------------------------------------------------------------------------------------------------------------------------------------------------z-f--4----------------------------
+; Folding = ------------4v4-bXP-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------02z----------------------------------------------------------------------------------------------------------------------------------------4-0------8c4-7-v-----------------------------
 ; EnableXP

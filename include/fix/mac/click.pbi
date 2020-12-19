@@ -26,7 +26,7 @@ EndImport
 DeclareC eventTapFunction(proxy, type, event, refcon)
 
 Global psn.q, mask, eventTap, key.s
-CFRunLoopAddCommonMode(CFRunLoopGetCurrent(), CocoaMessage(0, 0, "NSString stringWithString:$", @"NSEventTrackingRunLoopMode"))
+ CFRunLoopAddCommonMode(CFRunLoopGetCurrent(), CocoaMessage(0, 0, "NSString stringWithString:$", @"NSEventTrackingRunLoopMode"))
 GetCurrentProcess(@psn.q)
 
 mask = #LeftMouseDownMask | #LeftMouseUpMask
@@ -82,6 +82,7 @@ ProcedureC eventTapFunction(proxy, type, event, refcon)
       
     EndIf
   EndIf
+  
 EndProcedure
 
 

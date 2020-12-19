@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  XIncludeFile "fix/mac/click.pbi"
+  XIncludeFile "fix/mac/events.pbi"
   XIncludeFile "fix/mac/draw.pbi"
   
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
