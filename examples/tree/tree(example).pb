@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  Global Canvas_0
+  Global Canvas_0, g_Canvas
   Define i, a, g = 1
   Global *g._S_widget
   Global *g0._S_widget

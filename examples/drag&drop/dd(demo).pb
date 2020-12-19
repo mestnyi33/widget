@@ -34,7 +34,7 @@ Procedure Events( )
   ;
   Select EventType
     Case #PB_EventType_DragStart
-      Debug  "Drag " + EventWidget
+      Debug  "Drag - " + EventWidget
       
       Select EventWidget
           
@@ -74,10 +74,12 @@ Procedure Events( )
       ;
     Case #PB_EventType_Drop
       Debug  "Drop - " + EventWidget
+      ; clearitems(EventWidget)
       
       Select EventWidget
           
         Case TargetText
+          Debug "DroppedText - "+ DroppedText( )
           AddItem( TargetText, -1, DroppedText( ) )
           
         Case TargetImage
@@ -165,11 +167,11 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   
   ; Now enable the dropping on the target s
   ;
-  EnableDrop( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-  EnableDrop( TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-  EnableDrop( TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-  EnableDrop( TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1 )
-  EnableDrop( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
+  DroppedEnable( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  DroppedEnable( TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+  DroppedEnable( TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+  DroppedEnable( TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1 )
+  DroppedEnable( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
   
   ; Bind( -1, @Events( ) )
   
@@ -192,5 +194,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---
+; Folding = 8+-
 ; EnableXP

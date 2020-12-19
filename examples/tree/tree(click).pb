@@ -1,169 +1,123 @@
-﻿; keyboard events
-; flag = none
-; up/down selected item 
-; up/down post event leftclick
+﻿; alt & up/down first/last visible scroll
+; control & alt & up/down top/bottom scroll 
+; up/down top/bottom scroll and selected and post event change
+; fn  & up/down first/last visible scroll and selected and post event change
+; left/right collapsed\expanded parent item
+; spake check/uncheck checkboxes
 
-; flag = multiselect
-; shift & up/down selected item 
-; up/down post event leftclick
-
-; flag = clickselect
-; spake & up/down selected item
-; spake post event leftclick
-
+; flag\multiselect 
+; flag\checkboxses
+; flag\check
 
 XIncludeFile "../../widgets.pbi" 
-;XIncludeFile "../empty.pb"
+; XIncludeFile "../empty.pb"
 Uselib(widget)
 
 Procedure events_gadgets()
-  Select EventType()
-    Case #PB_EventType_DragStart
-      Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+  Select Event()
+    Case #PB_Event_GadgetDrop
+      Debug "drop - "+EventDropText()
       
-    Case #PB_EventType_Change
-      Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
-      
-    Case #PB_EventType_LeftClick
-      Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
-      
-    Case #PB_EventType_LeftDoubleClick
-      Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
-      
-    Case #PB_EventType_RightClick
-      Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
-      
+    Case #PB_Event_Gadget
+      Select EventType()
+        Case #PB_EventType_DragStart
+          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+          
+          DragText(GetGadgetItemText(EventGadget(), GetGadgetState(EventGadget())))
+          
+        Case #PB_EventType_Change
+          Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+          
+        Case #PB_EventType_LeftClick
+          Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+          
+        Case #PB_EventType_LeftDoubleClick
+          Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+          
+        Case #PB_EventType_RightClick
+          Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+          
+      EndSelect
   EndSelect
 EndProcedure
 
 Procedure events_widgets()
   Select this()\event
-;     Case #PB_EventType_Up
-;       Debug  ""+GetIndex(this()\widget)+" - widget Up "+GetState(this()\widget)
-;       
-;     Case #PB_EventType_Down
-;       Debug  ""+GetIndex(this()\widget)+" - widget Down "+GetState(this()\widget)
-;       
-;     Case #PB_EventType_ScrollChange
-;       Debug  ""+GetIndex(this()\widget)+" - widget ScrollChange "+GetState(this()\widget) +" "+ this()\item
-;       
-;     Case #PB_EventType_StatusChange
-;       Debug  ""+GetIndex(this()\widget)+" - widget StatusChange "+GetState(this()\widget) +" "+ this()\item
-;       
     Case #PB_EventType_DragStart
       Debug  ""+GetIndex(this()\widget)+" - widget DragStart "+GetState(this()\widget) +" "+ this()\item
       
+    Case #PB_EventType_Up
+      Debug  ""+GetIndex(this()\widget)+" - widget Up "+GetState(this()\widget)
+      
+    Case #PB_EventType_Down
+      Debug  ""+GetIndex(this()\widget)+" - widget Down "+GetState(this()\widget)
+      
+      ;     Case #PB_EventType_ScrollChange
+      ;       Debug  ""+GetIndex(this()\widget)+" - widget ScrollChange "+GetState(this()\widget)
+      ;       
+      ;     Case #PB_EventType_StatusChange
+      ;       Debug  ""+GetIndex(this()\widget)+" - widget StatusChange "+GetState(this()\widget)
+      
     Case #PB_EventType_Change
-      Debug  ""+GetIndex(this()\widget)+" - widget Change "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(this()\widget)+" - widget Change "+GetState(this()\widget)
       
     Case #PB_EventType_LeftClick
-      Debug  ""+GetIndex(this()\widget)+" - widget LeftClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(this()\widget)+" - widget LeftClick "+GetState(this()\widget)
       
     Case #PB_EventType_LeftDoubleClick
-      Debug  ""+GetIndex(this()\widget)+" - widget LeftDoubleClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(this()\widget)+" - widget LeftDoubleClick "+GetState(this()\widget)
       
     Case #PB_EventType_RightClick
-      Debug  ""+GetIndex(this()\widget)+" - widget RightClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(this()\widget)+" - widget RightClick "+GetState(this()\widget)
       
   EndSelect
 EndProcedure
 
-#PB_Tree_ClickSelect = #PB_ListView_ClickSelect
-#PB_Tree_MultiSelect = #PB_ListView_MultiSelect
-
-If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  ;{
-  Define i,a
-  ;
-  TreeGadget(0, 10, 30, 250, 120) 
-  TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
-  For a = 0 To 12
-    AddGadgetItem (0, -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    SetGadgetItemState(0, a, #PB_Tree_Selected) 
-  Next
-  SetGadgetState(0, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
+If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  TreeGadget(0, 10, 10, 160, 160)                                         ; TreeGadget standard
+  TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines); TreeGadget with Checkboxes + NoLines
   
-  ;
-  TreeGadget(1, 10, 30+150, 250, 120, #PB_Tree_ClickSelect)
-  TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
-  For a = 0 To 12
-    AddGadgetItem (1, -1, "Item " + Str(a) + " of the Tree long long long long long") ; define Tree content
-    SetGadgetItemState(1, a, #PB_Tree_Selected) 
+  Define ID, a, i
+  For ID = 0 To 1
+    For a = 0 To 10
+      AddGadgetItem(ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddGadgetItem(ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(ID, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddGadgetItem(ID, -1, "Sub-Item 2", 0, 1)
+      AddGadgetItem(ID, -1, "Sub-Item 3", 0, 1)
+      AddGadgetItem(ID, -1, "Sub-Item 4", 0, 1)
+      AddGadgetItem(ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+    Next
+    
+    BindGadgetEvent(id, @events_gadgets())
+    EnableGadgetDrop(id, #PB_Drop_Text, #PB_Drag_Copy)
+    For i=0 To CountGadgetItems(ID) : SetGadgetItemState(ID, i, #PB_Tree_Expanded) : Next
   Next
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
-  ;
-  TreeGadget(2, 10, 30+150+150, 250, 120, #PB_Tree_MultiSelect)
-  TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
-  For a = 0 To 12
-    AddGadgetItem (2, -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    SetGadgetItemState(2, a, #PB_Tree_Selected) 
-  Next
-  SetGadgetState(2, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
+  BindEvent(#PB_Event_GadgetDrop, @events_gadgets())
   
-  For i = 0 To 2
-    BindGadgetEvent(i, @events_gadgets())
-  Next
-  ;}
+  SetGadgetState(1, 1)
+  
   ;--------------
   
-  Tree(270, 30, 250, 120)
-  For a = 0 To 12
-    AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    If a%2
-     ; Debug a
-    ;  SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
-    EndIf
+  Tree(10, 10+180, 160, 160, #__Tree_Collapsed)                                         ; TreeGadget standard
+  Tree(180, 10+180, 160, 160, #__Tree_CheckBoxes | #__Tree_NoLines | #__Tree_Collapsed) ; TreeGadget with Checkboxes + NoLines
+  
+  For ID = 0 To 1
+    For a = 0 To 10
+      AddItem(GetWidget(ID), -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddItem(GetWidget(ID), -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddItem(GetWidget(ID), -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddItem(GetWidget(ID), -1, "Sub-Item 2", 0, 1)
+      AddItem(GetWidget(ID), -1, "Sub-Item 3", 0, 1)
+      AddItem(GetWidget(ID), -1, "Sub-Item 4", 0, 1)
+      AddItem(GetWidget(ID), -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+    Next
+    
+    Bind(GetWidget(ID), @events_widgets())
   Next
   
-  For a = 0 To 12
-    ;AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    If a%2
-      Debug a
-      SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
-    EndIf
-  Next
-; ; ;   SetState(GetWidget(0), 5) 
-; ; ;   SetState(GetWidget(0), 7) 
-; ; ;   SetState(GetWidget(0), 9) 
-  ;SetItemState(GetWidget(0), 5, 1) 
-  
-  Tree(270, 30+150, 250, 120, #__Tree_clickselect)
-  For a = 0 To 12
-    AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Tree long long long long long") ; define Tree content
-    If a%2
-      SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
-    EndIf
-  Next
-  SetState(GetWidget(1), 5) 
-  SetState(GetWidget(1), 7) 
-  SetState(GetWidget(1), 9) 
-  
-  Tree(270, 30+150+150, 250, 120, #__Tree_multiselect)
-  For a = 0 To 12
-    AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    If a%2
-      SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
-    EndIf
-  Next
-  SetState(GetWidget(2), 5) 
-  SetState(GetWidget(2), 7) 
-  SetState(GetWidget(2), 9) 
-  
-  Text(270,10, 250,20, "flag = no")
-  Text(270,10+150, 250,20, "flag = ClickSelect")
-  Text(270,10+150+150, 250,20, "flag = MultiSelect")
-  
-  For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
-  Next
+  SetState(GetWidget(1), 1)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

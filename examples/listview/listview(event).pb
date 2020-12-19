@@ -72,7 +72,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ;{
   Define i,a
   ;
-  ListViewGadget(0, 10, 30, 250, 120) 
+  ListViewGadget(0, 10, 30, 250, 120);, #PB_ListView_ClickSelect|#PB_ListView_MultiSelect) 
   TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the listview") ; define listview content
@@ -151,6 +151,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = f-
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 70
+; Folding = --
 ; EnableXP
