@@ -11,6 +11,13 @@
 ; spake & up/down selected item
 ; spake post event leftclick
 
+; qt 
+; flag = none 
+; up/down selected item 
+; up/down post event leftclick
+; fn left/right first/last item and selected 
+; fn up/down first/last visible item and selected 
+
 
 XIncludeFile "../../widgets.pbi" 
 ;XIncludeFile "../empty.pb"
@@ -75,7 +82,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ListViewGadget(0, 10, 30, 250, 120);, #PB_ListView_ClickSelect|#PB_ListView_MultiSelect) 
   TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
   For a = 0 To 12
-    AddGadgetItem (0, -1, "Item " + Str(a) + " of the listview") ; define listview content
+    AddGadgetItem (0, -1, "listview item " + Str(a)) ; define listview content
     SetGadgetItemState(0, a, #PB_Tree_Selected) 
   Next
   SetGadgetState(0, 5) ; set (beginning with 0) the tenth item as the active one
@@ -86,7 +93,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ListViewGadget(1, 10, 30+150, 250, 120, #PB_ListView_ClickSelect)
   TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
   For a = 0 To 12
-    AddGadgetItem (1, -1, "Item " + Str(a) + " of the listview long long long long long") ; define listview content
+    AddGadgetItem (1, -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     SetGadgetItemState(1, a, #PB_Tree_Selected) 
   Next
   SetGadgetState(1, 5) ; set (beginning with 0) the tenth item as the active one
@@ -97,7 +104,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ListViewGadget(2, 10, 30+150+150, 250, 120, #PB_ListView_MultiSelect)
   TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
   For a = 0 To 12
-    AddGadgetItem (2, -1, "Item " + Str(a) + " of the listview") ; define listview content
+    AddGadgetItem (2, -1, "listview item " + Str(a)) ; define listview content
     SetGadgetItemState(2, a, #PB_Tree_Selected) 
   Next
   SetGadgetState(2, 5) ; set (beginning with 0) the tenth item as the active one
@@ -110,18 +117,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ;}
   ;--------------
   
-  listview(270, 30, 250, 120)
+  listview(270, 30, 250, 120,Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines)
   For a = 0 To 12
-    AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the listview") ; define listview content
+    AddItem (GetWidget(0), -1, "listview item " + Str(a)) ; define listview content
     SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
   Next
   SetState(GetWidget(0), 5) 
   SetState(GetWidget(0), 7) 
   SetState(GetWidget(0), 9) 
   
-  listview(270, 30+150, 250, 120, #__listview_clickselect)
+  listview(270, 30+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_clickselect)
   For a = 0 To 12
-    AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the listview long long long long long") ; define listview content
+    AddItem (GetWidget(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
       SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
     EndIf
@@ -130,9 +137,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   SetState(GetWidget(1), 7) 
   SetState(GetWidget(1), 9) 
   
-  listview(270, 30+150+150, 250, 120, #__listview_multiselect)
+  listview(270, 30+150+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_multiselect)
   For a = 0 To 12
-    AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the listview") ; define listview content
+    AddItem (GetWidget(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2
       SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
     EndIf
@@ -152,7 +159,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 70
+; CursorPosition = 95
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

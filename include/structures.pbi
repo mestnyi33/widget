@@ -612,7 +612,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_mouse Extends _s_point
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
-      *WIDGET._s_WIDGET    ; at point element
+      *row._s_rows         ; at point item
+      *widget._s_WIDGET    ; at point element
                     *selected._s_WIDGET  ; at point pushed element
       
       *grid

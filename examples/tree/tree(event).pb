@@ -57,8 +57,8 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-#PB_Tree_ClickSelect = #PB_ListView_ClickSelect
-#PB_Tree_MultiSelect = #PB_ListView_MultiSelect
+#PB_Tree_ClickSelect = 0;#PB_ListView_ClickSelect
+#PB_Tree_MultiSelect = 0;#PB_ListView_MultiSelect
 
 If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   ;{
@@ -164,13 +164,15 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-  ;  Bind(GetWidget(i), @events_widgets())
+    Bind(GetWidget(i), @events_widgets())
   Next
   
   Bind(*g, @events_widgets())
     
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; CursorPosition = 137
+; FirstLine = 132
 ; Folding = --
 ; EnableXP
