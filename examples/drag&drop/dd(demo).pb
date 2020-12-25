@@ -153,6 +153,13 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   AddItem( SourceText, -1, "The quick brown fox jumped over the lazy dog" )
   AddItem( SourceText, -1, "abcdefg" )
   AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
+  AddItem( SourceText, -1, "123456789" )
   
   AddItem( SourcePrivate, -1, "Private type 1" )
   AddItem( SourcePrivate, -1, "Private type 2" )
@@ -164,6 +171,18 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   TargetFiles = ListIcon( 310, 160, 140, 140, "Drop Files here", 130 )
   TargetPrivate1 = ListIcon( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
   TargetPrivate2 = ListIcon( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
+  
+  AddItem( TargetText, -1, "hello world" )
+  AddItem( TargetText, -1, "The quick brown fox jumped over the lazy dog" )
+  AddItem( TargetText, -1, "abcdefg" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
+  AddItem( TargetText, -1, "123456789" )
   
   ; Now enable the dropping on the target s
   ;

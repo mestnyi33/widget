@@ -6,8 +6,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     Prototype pFunc( )
     
     ;{ 
+    ;- - _s_value
+    Structure _s_VALUE
+      s.s
+      i.i
+    EndStructure
+    
     ;- - _s_point
-    Structure _s_point
+    Structure _s_POINT
       y.l[5] ; убрать 
       x.l[constants::#__c]
     EndStructure
@@ -465,8 +471,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
     EndStructure
     
-    ;- - _S_DD
-    Structure _S_DD
+    ;- - _s_dd
+    Structure _S_DD Extends _s_coordinate
       ;*widget._s_widget
       cursorimage.i
       
@@ -474,11 +480,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       format.i
       actions.i
       
-      text.s
-      imageID.i
-      
-      width.l
-      height.l
+      *value
+      string.s
+    EndStructure
+    
+    ;- - _s_drag
+    Structure _s_DRAG
+      start.b
+      *address._S_DD
     EndStructure
     
     ;- - _s_post
@@ -497,7 +506,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;-
-    ;- - _s_WIDGET
+    ;- - _s_*widget
     Structure _s_WIDGET
    ;       *_drawing ; drawing_mode
 ;       *_drawing_alpha
@@ -508,7 +517,8 @@ CompilerIf Not Defined(structures, #PB_Module)
                         ;       *v._s_WIDGET     ; vertical scrollbar
       
       ;       *h._s_WIDGET     ; horizontal scrollbar
-      *_dd._S_DD
+      ;*_DD._S_DD
+      *_drop._s_DD
       
       fs.a ; frame size
       bs.a ; border size
@@ -620,11 +630,11 @@ CompilerIf Not Defined(structures, #PB_Module)
                     *selected._s_WIDGET  ; at point pushed element
       
       *grid
-      drag.b[2]
       buttons.l 
       
-      wheel._s_point
-      delta._s_point
+      wheel._s_POINT
+      delta._s_POINT
+      drag._s_DRAG
       
       ;change.b
       ;move._s_point
@@ -632,7 +642,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_keyboard
     Structure _s_keyboard
-      *WIDGET._s_WIDGET   ; keyboard focused element
+      *widget._s_WIDGET   ; keyboard focused element
       change.b
       input.c
       key.i[2]
@@ -640,7 +650,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_canvas
     Structure _s_canvas
-      *WIDGET._s_WIDGET   ; opened list element
+      *widget._s_WIDGET   ; opened list element
       container.i
       window.i
       gadget.i
@@ -689,5 +699,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HAC9Us94
+; Folding = ---------
 ; EnableXP

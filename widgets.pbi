@@ -413,7 +413,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;             If mouse( )\buttons And 
             ;                e_widget( )\row\selected And 
-            ;                e_widget( )\_state & #__s_selected
+            ;                _is_selected_( e_widget( ) )
             ;               
             ;               If e_widget( )\row\entered And 
             ;                  e_widget( )\row\entered\_state &~ #__s_entered 
@@ -2441,16 +2441,42 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;-
+    ; ;                      ; windows ; macos      ; linux
+    ; Debug #PB_Drop_Text    ; = 1     ; 1413830740 ; -1
+    ; Debug #PB_Drop_Image   ; = 8     ; 1346978644 ; -2
+    ; Debug #PB_Drop_Files   ; = 15    ; 1751544608 ; -3
+    ; Debug #PB_Drop_Private ; = 512   ; 1885499492 ; -4
+    
+    ; Debug #PB_Drag_None    ; = 0     ; 0          ; 0
+    ; Debug #PB_Drag_Copy    ; = 1     ; 1          ; 2
+    ; Debug #PB_Drag_Move    ; = 2     ; 16         ; 4
+    ; Debug #PB_Drag_Link    ; = 4     ; 2          ; 8
+    
+    ; Debug #PB_Drag_Enter   ; = 1     ; 1          ; 1
+    ; Debug #PB_Drag_Leave   ; = 3     ; 3          ; 3
+    ; Debug #PB_Drag_Update  ; = 2     ; 2          ; 2
+    ; Debug #PB_Drag_Finish  ; = 4     ; 4          ; 4
+    
+    #PB_Drop_Item =- 5
+    
+    Macro Dropped( )
+      e_widget( )\_drop
+    EndMacro
+    
+    Macro Dragged( )
+      mouse()\drag\address
+    EndMacro
+    
     Procedure.i DD_cursor( type )
       Protected x = 1,y = 1
       UsePNGImageDecoder( )
       
-      If type And e_widget( )\_dd
-        e_widget( )\_dd\cursorimage = CatchImage( #PB_Any, ?add, 601 )
-        SetCursor( e_widget( ), ImageID( e_widget( )\_dd\cursorimage ))
+      If type And Dropped( )
+        Dropped( )\cursorimage = CatchImage( #PB_Any, ?add, 601 )
+        SetCursor( e_widget( ), ImageID( Dropped( )\cursorimage ))
       Else
-        e_widget( )\root\_dd\cursorimage = CatchImage( #PB_Any, ?copy, 530 )
-        SetCursor( e_widget( )\root, ImageID( e_widget( )\root\_dd\cursorimage ) )
+        Dragged( )\cursorimage = CatchImage( #PB_Any, ?copy, 530 )
+        SetCursor( e_widget( )\root, ImageID( Dragged( )\cursorimage ) )
       EndIf
       
       DataSection
@@ -2491,88 +2517,102 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Macro _DD_reset_( _this_ )
-      Bool( _this_\root\_dd )
+      Bool( Dragged( ) )
       SetCursor( _this_, _this_\cursor )
-      FreeStructure( _this_\root\_dd ) 
-      _this_\root\_dd = 0
+      FreeStructure( Dragged( ) ) 
+      Dragged( ) = 0
     EndMacro
     
-    Macro _DD_action_( _this_ )
-      Bool( _this_ And 
-            _this_\_dd And _this_\root\_dd And 
-            _this_\_dd\Format = _this_\root\_dd\Format And 
-            _this_\_dd\Type = _this_\root\_dd\Type And 
-            _this_\_dd\Actions ) ; = _this_\root\_dd\Actions)
+    Macro _DD_action_( )
+      Bool( Dropped( ) And Dragged( ) And 
+            Dropped( )\Format = Dragged( )\Format And 
+            Dropped( )\Type = Dragged( )\Type And 
+            Dropped( )\Actions ) ; = Dragged( )\Actions)
     EndMacro
     
-    Procedure.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
-      Protected *this._s_widget = e_widget( )\root
-      Debug "Dragged files - " + Files
-      With *this ; *event\mouse\widget\root ; entered( )\root
-        \_dd.allocate( DD )
-        \_dd\format = #PB_Drop_Files
-        \_dd\actions = Actions
-        \_dd\text = Files
-      EndWith
+    Procedure.i DraggedItem( *row, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged Item - " + *row
+      
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Item
+      Dragged( )\actions = Actions
+      Dragged( )\value = *row
+      
       DD_cursor( 0 )
     EndProcedure
     
     Procedure.i DraggedText( Text.s, Actions.i = #PB_Drag_Copy )
-      Protected *this._s_widget = e_widget( )\root
       Debug "Dragged text - " + Text
-      With *this ; *event\mouse\widget\root ; entered( )\root
-        \_dd.allocate( DD )
-        \_dd\format = #PB_Drop_Text
-        \_dd\actions = Actions
-        \_dd\text = Text
-      EndWith
+      
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Text
+      Dragged( )\actions = Actions
+      Dragged( )\string = Text
+      
       DD_cursor( 0 )
     EndProcedure
     
     Procedure.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
-      Protected *this._s_widget = e_widget( )\root
       Debug "Dragged image - " + Image
-      With *this ; *event\mouse\widget\root ; entered( )\root
-        \_dd.allocate( DD )
-        \_dd\format = #PB_Drop_Image
-        \_dd\actions = Actions
-        \_dd\imageID = ImageID( Image )
-        \_dd\width = ImageWidth( Image )
-        \_dd\height = ImageHeight( Image )
-      EndWith
+      
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Image
+      Dragged( )\actions = Actions
+      Dragged( )\value = ImageID( Image )
+      Dragged( )\width = ImageWidth( Image )
+      Dragged( )\height = ImageHeight( Image )
+      
+      DD_cursor( 0 )
+    EndProcedure
+    
+    Procedure.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged files - " + Files
+      
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Files
+      Dragged( )\actions = Actions
+      Dragged( )\string = Files
+      
       DD_cursor( 0 )
     EndProcedure
     
     Procedure.i DraggedPrivate( Type.i, Actions.i = #PB_Drag_Copy )
-      Protected *this._s_widget = e_widget( )\root
       Debug "Dragged private - " + Type
-      With *this ; *event\mouse\widget\root ; entered( )\root
-        \_dd.allocate( DD )
-        \_dd\format = #PB_Drop_Private
-        \_dd\actions = Actions
-        \_dd\type = Type
-      EndWith
+      
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Private
+      Dragged( )\actions = Actions
+      Dragged( )\type = Type
+      
       DD_cursor( 0 )
     EndProcedure
     
+    Procedure.l DroppedX( )
+      ProcedureReturn Dropped( )\x
+    EndProcedure
+    
+    Procedure.l DroppedY( )
+      ProcedureReturn Dropped( )\y
+    EndProcedure
+    
     Procedure.i DroppedType( )
-      If _DD_action_( e_widget( ) ) 
-        ProcedureReturn e_widget( )\_dd\Type 
+      If _DD_action_( ) 
+        ProcedureReturn Dropped( )\Type 
       EndIf
     EndProcedure
     
     Procedure.i DroppedAction( )
-      If _DD_action_( e_widget( ) ) 
-        ProcedureReturn e_widget( )\_dd\Actions 
+      If _DD_action_( ) 
+        ProcedureReturn Dropped( )\Actions 
       EndIf
     EndProcedure
     
     Procedure.s DroppedFiles( )
-      If _DD_action_( e_widget( ) )
+      If _DD_action_( )
         Protected result.s
         
-        Debug "  Dropped files - "+e_widget( )\root\_dd\text
-        result = e_widget( )\root\_dd\text
+        Debug "  Dropped files - "+Dragged( )\string
+        result = Dragged( )\string
         
         _DD_reset_( e_widget( ) )
         ProcedureReturn result
@@ -2580,11 +2620,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.s DroppedText( )
-      If _DD_action_( e_widget( ) )
+      If _DD_action_( )
         Protected result.s
         
-        Debug "  Dropped text - "+e_widget( )\root\_dd\text
-        result = e_widget( )\root\_dd\text
+        Debug "  Dropped text - "+Dragged( )\string
+        result = Dragged( )\string
         
         _DD_reset_( e_widget( ) )
         ProcedureReturn result
@@ -2594,9 +2634,9 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure.i DroppedPrivate( )
       Protected result.i
       
-      If _DD_action_( e_widget( ) )
-        Debug "  Dropped type - "+e_widget( )\root\_dd\Type
-        result = e_widget( )\root\_dd\Type
+      If _DD_action_( )
+        Debug "  Dropped type - "+Dragged( )\Type
+        result = Dragged( )\Type
         
         _DD_reset_( e_widget( ) )
         ProcedureReturn result
@@ -2606,20 +2646,20 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure.i DroppedImage( Image.i = -1, Depth.i = 24 )
       Protected result.i
       
-      If _DD_action_( e_widget( ) ) And e_widget( )\root\_dd\ImageID
-        Debug "  Dropped image - "+e_widget( )\root\_dd\ImageID
+      If _DD_action_( ) And Dragged( )\value
+        Debug "  Dropped image - "+Dragged( )\value
         
         If Image  = - 1
-          Result = CreateImage( #PB_Any, e_widget( )\root\_dd\Width, e_widget( )\root\_dd\Height ) : Image = Result
+          Result = CreateImage( #PB_Any, Dragged( )\Width, Dragged( )\Height ) : Image = Result
         Else
           Result = IsImage( Image )
         EndIf
         
         If Result And StartDrawing( ImageOutput( Image ) )
           If Depth = 32
-            DrawAlphaImage( e_widget( )\root\_dd\ImageID, 0, 0 )
+            DrawAlphaImage( Dragged( )\value, 0, 0 )
           Else
-            DrawImage( e_widget( )\root\_dd\ImageID, 0, 0 )
+            DrawImage( Dragged( )\value, 0, 0 )
           EndIf
           StopDrawing( )
         EndIf  
@@ -2644,12 +2684,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; #PB_Drag_Link    : The Data can be linked
       
       With *this
-        If Not \_dd
+        If Not \_drop
           Debug "Enable dropped - " + *this
-          \_dd.allocate( DD )
-          \_dd\format = Format
-          \_dd\actions = Actions
-          \_dd\type = PrivateType
+          \_drop.allocate( DD )
+          \_drop\format = Format
+          \_drop\actions = Actions
+          \_drop\type = PrivateType
         EndIf
       EndWith
     EndProcedure
@@ -9554,18 +9594,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                 EndIf
               EndIf
               
-              ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-              If mouse( )\buttons And 
-                 *row( )\_state & #__s_entered And 
-                 Not *this\_state & #__s_selected 
-                
-                DrawingMode( #PB_2DDrawing_Default )
-                If (y + *row( )\height/2) > mouse( )\y 
-                  Line( *row( )\x, y - *this\mode\gridlines, *row( )\width, 1, $ff000000 )
-                Else
-                  Line( *row( )\x, y + *row( )\height, *row( )\width, 1, $ff000000 )
-                EndIf
-              EndIf
+;               ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  *this\_dd And
+;                  
+;               If mouse( )\buttons And 
+;                  *row( )\_state & #__s_entered And 
+;                  Not _is_selected_( *this )
+;                 
+;                 DrawingMode( #PB_2DDrawing_Default )
+;                 If (y + *row( )\height/2) > mouse( )\y 
+;                   Line( *row( )\x, y - *this\mode\gridlines, *row( )\width, 1, $ff000000 )
+;                 Else
+;                   Line( *row( )\x, y + *row( )\height, *row( )\width, 1, $ff000000 )
+;                 EndIf
+;               EndIf
               
               ; Draw items image
               If *row( )\image\id
@@ -15244,6 +15285,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; init drawing font
         _drawing_font_( *this )
         
+        
+        
+        
+        
+        
         ; draw widgets
         Select \type
           Case #__type_Window         : Window_Draw( *this )
@@ -15278,6 +15324,25 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             Bar_Draw( *this )
         EndSelect
+        
+        
+        
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  *this\_dd And
+                 
+              If e_row( ) And mouse( )\buttons And 
+                 e_row( )\_state & #__s_entered And 
+                 Not _is_selected_( *this )
+                
+                DrawingMode( #PB_2DDrawing_Default )
+                If (e_row( )\y + e_row( )\height/2) > mouse( )\y 
+                  Line( e_row( )\x, e_row( )\y - *this\mode\gridlines, e_row( )\width, 1, $ff000000 )
+                Else
+                  Line( e_row( )\x, e_row( )\y + e_row( )\height, e_row( )\width, 1, $ff000000 )
+                EndIf
+              EndIf
+              
+              
+        
         
         ; TEST  
         If test_draw_box_clip_type = #PB_All Or 
@@ -15874,8 +15939,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          eventtype = #PB_EventType_MouseEnter
         
         ; get at point item address
-        If ListSize( e_widget( )\row\draws( ) ) And ;e_widget( )\count\items
-           Atpoint( mouse( )\x, mouse( )\y, e_widget( ), [#__c_inner] ) 
+        If ListSize( e_widget( )\row\draws( ) ) And Atpoint( mouse( )\x, mouse( )\y, e_widget( ), [#__c_inner] ) 
           
           Protected *row._S_rows
           LastElement( e_widget( )\row\draws( ) ) 
@@ -15897,7 +15961,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If e_row( ) And
              e_row( )\_state & #__s_entered
             
-            If *this\_state & #__s_selected 
+            If _is_selected_( *this ) 
               *this\row\entered = e_row( )
             Else  
               e_row( )\_state &~ #__s_entered
@@ -15920,7 +15984,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              e_row( )\_state & #__s_entered = #False
             e_row( )\_state | #__s_entered
             
-            If Not( mouse( )\buttons And *this\_state & #__s_selected = #False )
+            If Not( mouse( )\buttons And Not _is_selected_( *this ) )
               ; multi select items
               If mouse( )\buttons And
                  *this\mode\check = #__m_multiselect
@@ -15968,87 +16032,89 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf  
         
-        If *this\_state & #__s_selected 
-          If eventtype = #PB_EventType_MouseLeave
-            If *this\row\entered
-              *this\row\entered\_state &~ #__s_entered
+        If _is_selected_( *this ) 
+          If ListSize( *this\row\draws( ) ) 
+            If eventtype = #PB_EventType_MouseLeave
+              If *this\row\entered
+                *this\row\entered\_state &~ #__s_entered
+                
+                If *this\row\entered\color\state = #__s_1
+                  *this\row\entered\color\state = #__s_0
+                  repaint = #True
+                EndIf
+              EndIf
               
-              If *this\row\entered\color\state = #__s_1
-                *this\row\entered\color\state = #__s_0
+              If mouse( )\y < *this\y
+                *this\row\entered = *this\row\first_visible
+                Debug 77777777774
+              Else
+                *this\row\entered = *this\row\last_visible
+                Debug 99999999994
+              EndIf
+              
+              *this\row\entered\_state | #__s_entered
+              If *this\row\entered\color\state = #__s_0
+                *this\row\entered\color\state = #__s_1
                 repaint = #True
-              EndIf
-            EndIf
-            
-            If mouse( )\y < *this\y
-              *this\row\entered = *this\row\first_visible
-              Debug 77777777774
-            Else
-              *this\row\entered = *this\row\last_visible
-              Debug 99999999994
-            EndIf
-            
-            *this\row\entered\_state | #__s_entered
-            If *this\row\entered\color\state = #__s_0
-              *this\row\entered\color\state = #__s_1
-              repaint = #True
+              EndIf 
             EndIf 
-          EndIf 
-        
-          ; scroll to visible item  ok 
-          If eventtype = #PB_EventType_MouseMove
-            If Mouse()\y < *this\y
-              If *this\row\first_visible\index - 1 >= 0 And 
-                 _select_prev_item_( *this\row\_s( ), *this\row\first_visible\index )
-                
-                If *this\row\entered
-                  *this\row\entered\_state &~ #__s_entered
-                  If *this\row\entered\color\state = #__s_1
-                    *this\row\entered\color\state = #__s_0
-                    repaint = #True
-                  EndIf
-                EndIf
-                *this\row\entered = *this\row\_s( )
-                *this\row\entered\_state | #__s_entered
-                If *this\row\entered\color\state = #__s_0
-                  *this\row\entered\color\state = #__s_1
-                  repaint = #True
-                EndIf 
-                
-                If *this\mode\check = #__m_multiselect
-                  *this\row\_s( )\color\state = #__s_2
-                  *this\row\_s( )\_state | #__s_selected
-                EndIf
-                repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
-              EndIf
-              
-            ElseIf Mouse()\y > (*this\y + *this\height)
-              If *this\row\last_visible\index + 1 < *this\count\items And 
-                 _select_next_item_( *this\row\_s( ), *this\row\last_visible\index )
-                
-                If *this\row\entered
-                  *this\row\entered\_state &~ #__s_entered
-                  If *this\row\entered\color\state = #__s_1
-                    *this\row\entered\color\state = #__s_0
-                    repaint = #True
-                  EndIf
-                EndIf
-                *this\row\entered = *this\row\_s( )
-                *this\row\entered\_state | #__s_entered
-                If *this\row\entered\color\state = #__s_0
-                  *this\row\entered\color\state = #__s_1
-                  repaint = #True
-                EndIf 
             
-                If *this\mode\check = #__m_multiselect
-                  *this\row\_s( )\color\state = #__s_2
-                  *this\row\_s( )\_state | #__s_selected
+            ; scroll to visible item  ok 
+            If eventtype = #PB_EventType_MouseMove
+              If Mouse()\y < *this\y
+                If *this\row\first_visible\index - 1 >= 0 And 
+                   _select_prev_item_( *this\row\_s( ), *this\row\first_visible\index )
+                  
+                  If *this\row\entered
+                    *this\row\entered\_state &~ #__s_entered
+                    If *this\row\entered\color\state = #__s_1
+                      *this\row\entered\color\state = #__s_0
+                      repaint = #True
+                    EndIf
+                  EndIf
+                  *this\row\entered = *this\row\_s( )
+                  *this\row\entered\_state | #__s_entered
+                  If *this\row\entered\color\state = #__s_0
+                    *this\row\entered\color\state = #__s_1
+                    repaint = #True
+                  EndIf 
+                  
+                  If *this\mode\check = #__m_multiselect
+                    *this\row\_s( )\color\state = #__s_2
+                    *this\row\_s( )\_state | #__s_selected
+                  EndIf
+                  repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
                 EndIf
-                repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
+                
+              ElseIf Mouse()\y > (*this\y + *this\height)
+                If *this\row\last_visible\index + 1 < *this\count\items And 
+                   _select_next_item_( *this\row\_s( ), *this\row\last_visible\index )
+                  
+                  If *this\row\entered
+                    *this\row\entered\_state &~ #__s_entered
+                    If *this\row\entered\color\state = #__s_1
+                      *this\row\entered\color\state = #__s_0
+                      repaint = #True
+                    EndIf
+                  EndIf
+                  *this\row\entered = *this\row\_s( )
+                  *this\row\entered\_state | #__s_entered
+                  If *this\row\entered\color\state = #__s_0
+                    *this\row\entered\color\state = #__s_1
+                    repaint = #True
+                  EndIf 
+                  
+                  If *this\mode\check = #__m_multiselect
+                    *this\row\_s( )\color\state = #__s_2
+                    *this\row\_s( )\_state | #__s_selected
+                  EndIf
+                  repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
+                EndIf
               EndIf
             EndIf
-          EndIf
-        EndIf 
-        
+          EndIf 
+          
+        EndIf
       EndIf
       
       
@@ -16153,7 +16219,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               Repaint = 1
               
             Case #__event_MouseMove 
-              If *this\_state & #__s_selected = #False  
+              If Not _is_selected_( *this )
                 _set_cursor_( *this, *this\cursor )
                 *this\color\state = #__s_1 
                 Repaint = 1
@@ -16166,7 +16232,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               
           EndSelect
         Else
-          If *this\_state & #__s_selected = #False  
+          If Not _is_selected_( *this )  
             _set_cursor_( *this, #PB_Cursor_Default )
             *this\color\state = #__s_0
             Repaint = 1
@@ -16185,21 +16251,23 @@ CompilerIf Not Defined( widget, #PB_Module )
         Repaint = Bar_Events( *this, eventtype, mouse_x, mouse_y, _wheel_x_, _wheel_y_ )
       EndIf
       
-      ;- widget::events_Drop( )
-      If *this\_dd And *this\root\_dd 
-        Select eventtype
-          Case #__event_MouseEnter
-            If _DD_action_( *this )
-              DD_cursor( 1 )
-            Else 
+      ;- widget::events_Dropped( )
+      Select eventtype
+        Case #__event_MouseEnter
+          If _DD_action_( )
+            DD_cursor( 1 )
+          Else 
+            If Dropped( ) And Dragged( )
               DD_cursor( 0 )
             EndIf
-            
-          Case #__event_MouseLeave
+          EndIf
+          
+        Case #__event_MouseLeave
+          If Dropped( ) And Dragged( )
             DD_cursor( 0 )
-            
-        EndSelect
-      EndIf
+          EndIf
+          
+      EndSelect
       
       
       ; bind event do
@@ -16365,10 +16433,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       ElseIf eventtype = #PB_EventType_MouseMove 
         If change
           If mouse( )\buttons And
-             mouse( )\drag = #False ; And entered( ) And Atpoint( mouse( )\x, mouse( )\y, entered( ), [#__c_inner] )
+             mouse( )\drag\start = #False ; And entered( ) And Atpoint( mouse( )\x, mouse( )\y, entered( ), [#__c_inner] )
             
             ; mouse drag start
-            mouse( )\drag = #True
+            mouse( )\drag\start = #True
             repaint | DoEvents( e_widget( ), #__event_DragStart, mouse_x, mouse_y )
             ;repaint = 1
           Else
@@ -16379,8 +16447,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; mouse move from selected widget
             If focused( ) And
-               focused( ) <> e_widget( ) And ; _is_selected_( focused( ) )
-               focused( )\_state & #__s_selected
+               focused( ) <> e_widget( ) And _is_selected_( focused( ) )
               Repaint | DoEvents( focused( ), #__event_MouseMove, mouse_x, mouse_y )
             EndIf
           EndIf
@@ -16461,7 +16528,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; up mouse buttons
           If Not mouse( )\buttons 
-            If _is_widget_( focused( ) ) And
+            If _is_widget_( focused( ) ) And 
                _is_selected_( focused( ) ) 
               
               ; reset _is_selected_( )
@@ -16513,11 +16580,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; 
-            If mouse( )\drag
-              If focused( ) \root\_dd
+            If mouse( )\drag\start
+              mouse( )\drag\start = 0
+              
+              If Dragged( )
                 If _is_widget_( e_widget( ) ) 
-                  If _DD_action_( e_widget( )  )
-                    If e_widget( ) <> focused( )
+                  If e_widget( ) <> focused( )
+                    If _DD_action_( )
+                      Dropped( )\x = mouse_x
+                      Dropped( )\y = mouse_y
                       repaint | DoEvents( e_widget( ), #__event_Drop, mouse_x, mouse_y )
                       repaint = 1
                     EndIf
@@ -16532,7 +16603,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             mouse( )\delta\x = 0
             mouse( )\delta\y = 0
-            mouse( )\drag = 0
           EndIf
         EndIf
         
@@ -18170,5 +18240,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------
+; Folding = -------------------------------------v0z+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------
 ; EnableXP
