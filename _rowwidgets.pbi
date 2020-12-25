@@ -142,6 +142,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;;Macro buttons( ) : widget::mouse( )\buttons: EndMacro
     
     Macro GetActive( ) : this( )\active : EndMacro ; Returns activeed window
+    Macro e_row( ) : widget::mouse( )\row: EndMacro ; Returns mouse entered widget
     Macro e_widget( ) : widget::mouse( )\widget: EndMacro ; Returns mouse entered widget
     Macro Focused( ) : widget::keyboard( )\widget: EndMacro ; Returns keyboard focused widget
     Macro Opened( ) : widget::root( )\canvas\widget: EndMacro
@@ -262,6 +263,30 @@ CompilerIf Not Defined( widget, #PB_Module )
       Bool( _this_\parent And _this_\child > 0 )
       ; Bool( _this_\parent\scroll And _this_\parent\scroll\v And _this_\parent\scroll\h )
       ; _is_scrollbars_( _this_ )
+    EndMacro
+    
+    Macro _select_prev_item_( _address_, _index_ )
+      SelectElement( _address_, _index_ - 1 )
+      
+      If _address_\hide
+        While PreviousElement( _address_ )
+          If Not _address_\hide
+            Break
+          EndIf
+        Wend
+      EndIf
+    EndMacro
+    
+    Macro _select_next_item_( _address_, _index_ )
+      SelectElement( _address_, _index_ + 1 )
+      
+      If _address_\hide
+        While NextElement( _address_ )
+          If Not _address_\hide
+            Break
+          EndIf
+        Wend
+      EndIf
     EndMacro
     
     ;-
@@ -422,29 +447,31 @@ CompilerIf Not Defined( widget, #PB_Module )
         
        
          ; entered&leaved events 
-        If _this_\row\entered <> _row_
+        If e_row( ) <> _row_
           
-          If Not ( mouse( )\buttons And _row_ = 0 )
-            If _this_\row\entered And 
-             _this_\row\entered\_state & #__s_entered
-            _this_\row\entered\_state &~ #__s_entered
+          ;If Not ( mouse( )\buttons And _row_ = 0 )
+          If e_row( ) And 
+             e_row( )\_state & #__s_entered
+            e_row( )\_state &~ #__s_entered
             
             ;If Not ( mouse( )\buttons And Mouse()\y < e_widget( )\y )
-              If _this_\row\entered\color\state = #__s_1
-                _this_\row\entered\color\state = #__s_0
+              If e_row( )\color\state = #__s_1
+                e_row( )\color\state = #__s_0
                 _result_ = #True
               EndIf
             ;EndIf
             
-              _this_\row\entered = _row_
+            If Not mouse( )\buttons
+              e_row( ) = _row_
             EndIf
           EndIf
+          ;EndIf
           
           
           If _row_ And 
              _row_\_state & #__s_entered = #False
             _row_\_state | #__s_entered
-            _this_\row\entered = _row_
+            e_row( ) = _row_
             
             If Not( mouse( )\buttons And Not _is_selected_( _this_ ) )
               ; multi select items
@@ -452,8 +479,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                  _this_\mode\check = #__m_multiselect
                 
                 ForEach _this_\row\draws( ) 
-                  If Bool( ( _this_\row\selected\index >= _this_\row\draws( )\index And _this_\row\entered\index <= _this_\row\draws( )\index ) Or ; верх
-                           ( _this_\row\selected\index <= _this_\row\draws( )\index And _this_\row\entered\index >= _this_\row\draws( )\index ) )  ; вниз
+                  If Bool( ( _this_\row\selected\index >= _this_\row\draws( )\index And e_row( )\index <= _this_\row\draws( )\index ) Or ; верх
+                           ( _this_\row\selected\index <= _this_\row\draws( )\index And e_row( )\index >= _this_\row\draws( )\index ) )  ; вниз
                     
                     If _this_\row\draws( )\_state & #__s_selected = #False
                       _this_\row\draws( )\_state | #__s_selected
@@ -468,13 +495,13 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
               
               ; draw item color state entered
-              If _this_\row\entered\color\state = #__s_0
-                _this_\row\entered\color\state = #__s_1
+              If e_row( )\color\state = #__s_0
+                e_row( )\color\state = #__s_1
                 _result_ = #True
               EndIf
               
               ; Post event item status change
-              Post( #__event_StatusChange, _this_, _this_\row\entered\index )
+              Post( #__event_StatusChange, _this_, e_row( )\index )
             EndIf
           EndIf
        EndIf  
@@ -10285,88 +10312,88 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       If eventtype = #PB_EventType_LeftButtonDown
-        If *this\row\entered 
+        If e_row( ) 
           ; collapsed/expanded button
-          If *this\row\entered\childrens And 
-             Atpoint( mouse_x + *this\scroll\h\bar\page\pos - *this\row\entered\x,
-                      mouse_y + *this\scroll\v\bar\page\pos - *this\row\entered\y, *this\row\entered\box[0] )
+          If e_row( )\childrens And 
+             Atpoint( mouse_x + *this\scroll\h\bar\page\pos - e_row( )\x,
+                      mouse_y + *this\scroll\v\bar\page\pos - e_row( )\y, e_row( )\box[0] )
             
-            If SelectElement( *this\row\_s( ), *this\row\entered\index )
+            If SelectElement( *this\row\_s( ), e_row( )\index )
               ;*this\row\box\state = 2
-              Post( #PB_EventType_Down, *this, *this\row\entered\index )
+              Post( #PB_EventType_Down, *this, e_row( )\index )
               
               *this\row\_s( )\box[0]\state ! 1
               
-              _set_hide_state_items_( *this, *this\row\entered )
+              _set_hide_state_items_( *this, e_row( ) )
               
             EndIf
             
           Else
             ; change box ( option&check )
-            If Atpoint( mouse_x + *this\scroll\h\bar\page\pos - *this\row\entered\x,
-                        mouse_y + *this\scroll\v\bar\page\pos - *this\row\entered\y, *this\row\entered\box[1] )
+            If Atpoint( mouse_x + *this\scroll\h\bar\page\pos - e_row( )\x,
+                        mouse_y + *this\scroll\v\bar\page\pos - e_row( )\y, e_row( )\box[1] )
               ;*this\row\box\state = 1
               
               ; change box option
               If *this\mode\check = #__m_optionselect
-                If *this\row\entered\parent And *this\row\entered\option_group  
-                  If *this\row\entered\option_group\parent And 
-                     *this\row\entered\option_group\box[1]\state 
-                    *this\row\entered\option_group\box[1]\state = #PB_Checkbox_Unchecked
+                If e_row( )\parent And e_row( )\option_group  
+                  If e_row( )\option_group\parent And 
+                     e_row( )\option_group\box[1]\state 
+                    e_row( )\option_group\box[1]\state = #PB_Checkbox_Unchecked
                   EndIf
                   
-                  If *this\row\entered\option_group\option_group <> *this\row\entered
-                    If *this\row\entered\option_group\option_group
-                      *this\row\entered\option_group\option_group\box[1]\state = #PB_Checkbox_Unchecked
+                  If e_row( )\option_group\option_group <> e_row( )
+                    If e_row( )\option_group\option_group
+                      e_row( )\option_group\option_group\box[1]\state = #PB_Checkbox_Unchecked
                     EndIf
-                    *this\row\entered\option_group\option_group = *this\row\entered
+                    e_row( )\option_group\option_group = e_row( )
                   EndIf
                 EndIf
               EndIf
               
               ; change box check
-              _set_check_state_( *this\row\entered\box[1], *this\mode\threestate )
+              _set_check_state_( e_row( )\box[1], *this\mode\threestate )
               
               ;
-              If *this\row\entered\color\state = #__s_2 
-                Post( #__event_Change, *this, *this\row\entered\index )
+              If e_row( )\color\state = #__s_2 
+                Post( #__event_Change, *this, e_row( )\index )
               EndIf
             EndIf
             
                     
             If *this\mode\check = #__m_clickselect
-              If *this\row\entered\_state & #__s_selected
-                *this\row\entered\_state &~ #__s_selected
+              If e_row( )\_state & #__s_selected
+                e_row( )\_state &~ #__s_selected
               Else
-                *this\row\entered\_state | #__s_selected
+                e_row( )\_state | #__s_selected
               EndIf
-              *this\row\selected = *this\row\entered
+              *this\row\selected = e_row( )
               
             Else
               ; reset selected items
               ForEach *this\row\_s( )
-                If *this\row\_s( ) <> *this\row\entered And 
+                If *this\row\_s( ) <> e_row( ) And 
                    *this\row\_s( )\_state & #__s_selected
                   *this\row\_s( )\_state &~ #__s_selected
                   *this\row\_s( )\color\state = #__s_0
                 EndIf
               Next
               
-              If *this\row\selected <> *this\row\entered
-                *this\row\selected = *this\row\entered
-                *this\row\entered\_state | #__s_selected
+              If *this\row\selected <> e_row( )
+                *this\row\selected = e_row( )
+                e_row( )\_state | #__s_selected
               EndIf
             EndIf
             
             ; set draw color state
-            If *this\row\entered\_state & #__s_selected 
-              If *this\row\entered\color\state <> #__s_2
-                *this\row\entered\color\state = #__s_2
+            If e_row( )\_state & #__s_selected 
+              If e_row( )\color\state <> #__s_2
+                e_row( )\color\state = #__s_2
                 
-                Post( #__event_Change, *this, *this\row\entered\index )
+                Post( #__event_Change, *this, e_row( )\index )
               EndIf
             Else
-              *this\row\entered\color\state = #__s_1
+              e_row( )\color\state = #__s_1
             EndIf
           EndIf
           
@@ -10375,23 +10402,23 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       If eventtype = #PB_EventType_LeftButtonUp
-        If *this\row\entered And
-           *this\row\entered\_state & #__s_entered  
+        If e_row( ) And
+           e_row( )\_state & #__s_entered  
           
-          If *this\row\entered\color\state = #__s_0
-            *this\row\entered\color\state = #__s_1
+          If e_row( )\color\state = #__s_0
+            e_row( )\color\state = #__s_1
             
             ; Post event item status change
-            Post( #__event_StatusChange, *this, *this\row\entered\index )
+            Post( #__event_StatusChange, *this, e_row( )\index )
             ; Repaint = #True 
           Else
-           If *this\row\entered\childrens And 
-             Atpoint( mouse_x + *this\scroll\h\bar\page\pos - *this\row\entered\x,
-                      mouse_y + *this\scroll\v\bar\page\pos - *this\row\entered\y, *this\row\entered\box[0] )
+           If e_row( )\childrens And 
+             Atpoint( mouse_x + *this\scroll\h\bar\page\pos - e_row( )\x,
+                      mouse_y + *this\scroll\v\bar\page\pos - e_row( )\y, e_row( )\box[0] )
              
-             Post( #__event_up, *this, *this\row\entered\index )
+             Post( #__event_up, *this, e_row( )\index )
            Else
-             Post( #__event_LeftClick, *this, *this\row\entered\index )
+             Post( #__event_LeftClick, *this, e_row( )\index )
            EndIf
          EndIf
         EndIf
@@ -17143,5 +17170,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------PWx-------------f-+------vH4----------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

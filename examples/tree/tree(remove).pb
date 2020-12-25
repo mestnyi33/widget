@@ -2,8 +2,8 @@
 ;XIncludeFile "../empty.pb"
 UseLib(widget)
 
-Define gLN=500      ;0; количесвто итемов 
-Define LN=50000
+Define gLN=5000      ;0; количесвто итемов 
+Define LN=500000
 Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)

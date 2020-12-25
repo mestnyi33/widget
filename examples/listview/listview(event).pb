@@ -158,8 +158,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 81
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

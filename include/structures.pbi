@@ -440,6 +440,9 @@ CompilerIf Not Defined(structures, #PB_Module)
                        ; *last    - first sublevel last elemnt in the list 
       *last._s_rows[2] ; *last[1] - added last element
       
+      *first_visible._s_rows   
+      *last_visible._s_rows
+      
       List *draws._s_rows( )
       
       ; edit

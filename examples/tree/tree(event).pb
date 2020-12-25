@@ -69,7 +69,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   For a = 0 To 6
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Tree",0,0) ; define Tree content
     AddGadgetItem (0, -1, "Subtem " + Str(a) + " of the Tree",0,1) ; define Tree content
-    SetGadgetItemState(0, a, #PB_Tree_Selected) 
+    i = (CountGadgetItems( 0 )-1)
+    
+    If i%2
+      SetGadgetItemState(0, i, #PB_Tree_Selected) 
+    EndIf
   Next
   For i=0 To CountGadgetItems(0) : SetGadgetItemState(0, i, #PB_Tree_Expanded) : Next
   
@@ -82,8 +86,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
   For a = 0 To 6
     AddGadgetItem (1, -1, "Item " + Str(a) + " of the Tree long long long long long",0,0) ; define Tree content
-    AddGadgetItem (1, -1, "Subtem " + Str(a) + " of the Tree",0,1) ; define Tree content
-    SetGadgetItemState(1, a, #PB_Tree_Selected) 
+    AddGadgetItem (1, -1, "Subtem " + Str(a) + " of the Tree",0,1)                        ; define Tree content
+    i = (CountGadgetItems( 1 )-1)
+    
+    If i%2
+      SetGadgetItemState(1, i, #PB_Tree_Selected) 
+    EndIf
   Next
   For i=0 To CountGadgetItems(1) : SetGadgetItemState(1, i, #PB_Tree_Expanded) : Next
   
@@ -98,7 +106,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   For a = 0 To 6
     AddGadgetItem (2, -1, "Item " + Str(a) + " of the Tree",0,0) ; define Tree content
     AddGadgetItem (2, -1, "Subtem " + Str(a) + " of the Tree",0,1) ; define Tree content
-    SetGadgetItemState(2, a, #PB_Tree_Selected) 
+    
+    i = (CountGadgetItems( 2 )-1)
+    
+    If i%2
+      SetGadgetItemState(2, i, #PB_Tree_Selected) 
+    EndIf
   Next
   For i=0 To CountGadgetItems(2) : SetGadgetItemState(2, i, #PB_Tree_Expanded) : Next
   
@@ -114,45 +127,41 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   
   *g = Tree(270, 30, 250, 120, #__Flag_GridLines|#__Tree_CheckBoxes)
   For a = 0 To 6
-    AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
-    AddItem (GetWidget(0), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
-    If a%2
-     ; Debug a
-    ;  SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
+    AddItem (*g, -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
+    AddItem (*g, -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
+    
+    i = (CountItems( *g )-1)
+    If i%2
+      SetItemState(*g, i, #PB_Tree_Selected) 
     EndIf
   Next
   
-  For a = 0 To 6
-    ;AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Tree") ; define Tree content
-    ;AddItem (GetWidget(0), -1, "Subitem " + Str(a) + " of the Tree", 1) ; define Tree content
-    If a%2
-      Debug a
-      SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
-    EndIf
-  Next
-; ; ;   SetState(GetWidget(0), 5) 
-; ; ;   SetState(GetWidget(0), 7) 
-; ; ;   SetState(GetWidget(0), 9) 
-  ;SetItemState(GetWidget(0), 5, 1) 
   
   Tree(270, 30+150, 250, 120, #__Flag_GridLines|#__Tree_CheckBoxes|#__Tree_clickselect)
-  For a = 0 To 6
+  For a = 0 To 2
     AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
-    AddItem (GetWidget(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
-    If a%2
-      SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
+    AddItem (GetWidget(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
+    
+    i = (CountItems( GetWidget(1) )-1)
+    
+    If i%2
+      SetItemState(GetWidget(1), i, #PB_Tree_Selected) 
     EndIf
   Next
   SetState(GetWidget(1), 5) 
   SetState(GetWidget(1), 7) 
   SetState(GetWidget(1), 9) 
   
+  
   Tree(270, 30+150+150, 250, 120, #__Flag_GridLines|#__Tree_CheckBoxes|#__Tree_multiselect)
   For a = 0 To 6
     AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (GetWidget(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
-    If a%2
-      SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
+    
+    i = (CountItems( GetWidget(2) )-1)
+    
+    If i%2
+      SetItemState(GetWidget(2), i, #PB_Tree_Selected) 
     EndIf
   Next
   SetState(GetWidget(2), 5) 
@@ -164,15 +173,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
+    ;  Bind(GetWidget(i), @events_widgets())
   Next
   
   Bind(*g, @events_widgets())
-    
+  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 132
-; Folding = --
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = ---
 ; EnableXP
