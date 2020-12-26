@@ -149,8 +149,11 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_buttons
     Structure _s_buttons Extends _s_coordinate 
+      ;;index.l
+      
       size.l ; len >> size.l
-      state.l ; normal; entered; selected; disabled
+      _state.l ; normal; entered; selected; disabled
+      state.l ; temp
       
       ; [3]fixed = thumb delta pos 
       ; [1..2]fixed = splitter\bar\fixed
@@ -164,12 +167,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;- - _s_button
-    Structure _s_button 
-      pushed.l
-      entered.l
-      id._s_buttons[3]
-    EndStructure
+;     ;- - _s_button
+;     Structure _s_button 
+;       pushed.l
+;       entered.l
+;       id._s_buttons[3]
+;     EndStructure
     
     ;- - _s_tabs
     Structure _s_tabs Extends _s_coordinate
@@ -192,6 +195,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l ; current added index 
       from.l  ; entered button index
       
+      *selected._s_buttons
+      button._s_buttons[4]
+      
       max.l
       min.l
       hide.b
@@ -206,7 +212,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       page._s_page
       area._s_page
       thumb._s_page  
-      button._s_buttons[4]
       
       List *_s._s_tabs( )
     EndStructure
@@ -436,18 +441,19 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_row
     Structure _s_row
       ; list view
-      drag.b
+      ; drag.b
       sublevel.w
       sublevelsize.a
       
       *_tt._s_tt
       
-      *first._s_rows   ; *first   - first elemnt in the list 
-                       ; *last    - first sublevel last elemnt in the list 
-      *last._s_rows[2] ; *last[1] - added last element
-      
-      *first_visible._s_rows   
-      *last_visible._s_rows
+      *first._s_rows           ; first elemnt in the list 
+      *first_visible._s_rows   ; first draw elemnt in the list 
+      *last._s_rows            ; last elemnt in the list 
+      *last_visible._s_rows    ; last draw elemnt in the list 
+      *last_add._s_rows        ; last added last element
+      *selected._s_rows        ; at point pushed item
+      *entered._s_rows         ; pushed last entered item
       
       List *draws._s_rows( )
       
@@ -461,8 +467,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l
       box._s_buttons           ; editor - edit rectangle
       
-      *entered._s_rows    ; at point item
-      *selected._s_rows   ; pushed at point item
       List _s._s_rows( )
     EndStructure
     
@@ -506,7 +510,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;-
-    ;- - _s_*widget
+    ;- - _s_widget
     Structure _s_WIDGET
    ;       *_drawing ; drawing_mode
 ;       *_drawing_alpha
@@ -514,16 +518,14 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       Map *_last._s_widget( )
    
       ; side.l[4] ; sidebar сторона 
-                        ;       *v._s_WIDGET     ; vertical scrollbar
-      
+      ;       *v._s_WIDGET     ; vertical scrollbar
       ;       *h._s_WIDGET     ; horizontal scrollbar
-      ;*_DD._S_DD
-      *_drop._s_DD
+      *drop._s_DD
       
       fs.a ; frame size
       bs.a ; border size
-      __width.a ; v bar size
-      __height.a ; h bar size
+      __width.a ; bar v size
+      __height.a ; bar h size
       
       y.l[constants::#__c]
       x.l[constants::#__c]
@@ -536,7 +538,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_WIDGET
       *before._s_WIDGET
       
-      *address          ; widget list address
+      *address          ; widgets list address
       *container        ; 
       *root._s_root     ; this root
       
@@ -572,8 +574,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *flag
       *data
       
-      __state.l
-      _state.l
+      _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
+      __state.w ; #__ss_ (font; back; frame; fore; line)
       _tabindex.l ; parent panel tab index
       
       
@@ -625,9 +627,10 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_mouse Extends _s_point
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
-      *row._s_rows         ; at point item
-      *widget._s_WIDGET    ; at point element
-                    *selected._s_WIDGET  ; at point pushed element
+      *row._s_rows[2]         ; at point element item
+      *button._s_buttons[2]   ; at point element button
+      *widget._s_WIDGET[2]    ; at point element
+                  ;  *selected._s_WIDGET  ; at point pushed element
       
       *grid
       buttons.l 
@@ -650,7 +653,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_canvas
     Structure _s_canvas
+      *address            ; roots list address
       *widget._s_WIDGET   ; opened list element
+      
       container.i
       window.i
       gadget.i
@@ -667,7 +672,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_root Extends _s_WIDGET
       canvas._s_canvas
       *_transform._s_transform
-      *address2          ; widget list address
     EndStructure
     
     ;- - _s_events
@@ -699,5 +703,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; Folding = --------
 ; EnableXP

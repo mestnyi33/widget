@@ -117,7 +117,7 @@
     ;     #__ci_container = #__c_draw
     #__c_inner_b = #__c_inner
     
-    ;state
+    ; \_state
     EnumerationBinary
       #__s_normal
       #__s_entered  ; 1<<1
@@ -126,14 +126,15 @@
       #__s_focused
       #__s_toggled
       #__s_scrolled
-      
-      #__s_front
-      #__s_back
-      #__s_frame
-      #__s_fore
-      #__s_line
-      
-      ;;#__s_gadget
+    EndEnumeration
+    
+    ; \__state
+    EnumerationBinary 1
+      #__ss_front
+      #__ss_back
+      #__ss_frame
+      #__ss_fore
+      #__ss_line
     EndEnumeration
     
     ;color state

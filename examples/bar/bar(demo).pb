@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     ForEach *List()
-      Repaint | widget::Events(*List(), EventType, MouseX, MouseY)
+      Repaint | widget::DoEvents(*List(), EventType, MouseX, MouseY)
     Next
     
     If Repaint 
