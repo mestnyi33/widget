@@ -113,3 +113,4 @@ CompilerEndIf
 ; FirstLine = 53
 ; Folding = --
 ; EnableXP
+; SubSystem = qt

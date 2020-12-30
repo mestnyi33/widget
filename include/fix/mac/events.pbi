@@ -54,6 +54,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           event_window = EventWindow( )
         EndIf
         event_gadget = EventGadget( )
+;         
+;         Debug ""+EventType() +" "+ GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons )
       EndProcedure 
       BindEvent( #PB_Event_Gadget, @events_gadgets( ) )
       

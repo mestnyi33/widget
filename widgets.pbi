@@ -5790,7 +5790,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\count\items
             ForEach *this\bar\_s( )
               ; If *this\bar\_s( )\draw
-              If Atpoint( ( mouse_x - *this\x[#__c_frame] ) + Bool( Not *this\vertical ) * *this\bar\page\pos, mouse_y - *this\y[#__c_frame] + Bool( *this\vertical ) * *this\bar\page\pos, *this\bar\_s( ) ) And *this\bar\from = #__b_3
+              If Atpoint( ( mouse_x - *this\x[#__c_inner] ) + Bool( Not *this\vertical ) * *this\bar\page\pos, mouse_y - *this\y[#__c_inner] + Bool( *this\vertical ) * *this\bar\page\pos, *this\bar\_s( ) ) And *this\bar\from = #__b_3
                 ;If Atpoint( mouse_x, mouse_y, *this\bar\_s( ) ) And *this\bar\from = #__b_3
                 If *this\index[#__tab_1] <> *this\bar\_s( )\index
                   If *this\index[#__tab_1] >= 0
@@ -18218,5 +18218,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------P8---------------------------------------------------------------4--ff-v48--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------
+; Folding = ---------------------------------------P8---------------------------------------------------------------4--ff--48--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------
 ; EnableXP

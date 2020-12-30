@@ -110,6 +110,7 @@ EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Linux - x64)
 ; CursorPosition = 61
-; FirstLine = 53
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
+; SubSystem = gtk2

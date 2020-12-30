@@ -174,8 +174,19 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       id._s_buttons[3]
 ;     EndStructure
     
+    ;- - _s_margin
+    Structure _s_margin Extends _s_coordinate
+      color._s_color
+      hide.b
+    EndStructure
+    
     ;- - _s_tabs
-    Structure _s_tabs Extends _s_coordinate
+    Structure _s_tabs ;Extends _s_coordinate
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      
       index.l  ; Index of new list element
       hide.b
       draw.b
@@ -183,6 +194,74 @@ CompilerIf Not Defined(structures, #PB_Module)
       text._s_text
       image._s_image
       color._s_color
+    EndStructure
+    
+    ;- - _s_rows
+    Structure _s_rows Extends _s_tabs
+      ; list view
+      _state.l
+      sublevel.w
+      sublevelsize.a
+      childrens.b
+      
+               ;;len.l ; ?????? ?????? ??????? ?????
+      
+;       verticallines._s_coordinate  ; temp
+;       horizontallines._s_coordinate ; temp
+      
+      box._s_buttons[2]
+      *option_group._s_rows
+      
+      *parent._s_rows
+      *last._s_rows
+;                *first._s_rows ; temp
+;                *after._s_rows ; temp
+;                *before._s_rows ; temp
+               
+      ; edit
+      margin._s_edit
+      
+      *data  ; set/get item data
+    EndStructure
+    
+    ;- - _s_row
+    Structure _s_row
+      ; list view
+      ; drag.b
+      sublevel.w
+      sublevelsize.a
+      
+      *_tt._s_tt
+      
+      *first._s_rows           ; first elemnt in the list 
+      *first_visible._s_rows   ; first draw elemnt in the list 
+      
+      *last._s_rows            ; last elemnt in the list 
+      *last_visible._s_rows    ; last draw elemnt in the list 
+      *last_add._s_rows        ; last added last element
+      
+      *selected._s_rows        ; at point pushed item
+         *leaved._s_rows         ; pushed last entered item
+       *entered._s_rows         ; pushed last entered item
+      
+      List *draws._s_rows( )
+      
+      ; edit
+      ;caret._s_caret
+      ;color._s_color
+      margin._s_margin
+      
+      ;
+      count.l
+      index.l
+      box._s_buttons           ; editor - edit rectangle
+      
+      List _s._s_rows( )
+    EndStructure
+    
+    ;- - _s_column
+    Structure _s_column Extends _s_coordinate
+      
     EndStructure
     
     ;- - _s_bar
@@ -197,7 +276,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *selected._s_buttons
       button._s_buttons[4]
-      
+      ;;  *leaved._s_buttons         ; pushed last entered item
+       
       max.l
       min.l
       hide.b
@@ -368,11 +448,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       childrens.l
     EndStructure
     
-    ;- - _s_margin
-    Structure _s_margin Extends _s_coordinate
-      color._s_color
-      hide.b
-    EndStructure
     
 ;     ;- - _s_items
 ;     Structure _s_items Extends _s_coordinate
@@ -396,85 +471,6 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       *data      ; set/get item data
 ;     EndStructure
 ;     
-    ;- - _s_rows
-    Structure _s_rows ;Extends _s_coordinate 
-      y.l[constants::#__c]
-      x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
-      
-      ; list view
-      _state.l
-      sublevel.w
-      sublevelsize.a
-      childrens.b
-      
-               ;;len.l ; ?????? ?????? ??????? ?????
-      
-      verticallines._s_coordinate
-      horizontallines._s_coordinate
-      
-      box._s_buttons[2]
-      *option_group._s_rows
-      
-      *parent._s_rows
-      *last._s_rows
-;                *first._s_rows ; temp
-;                *after._s_rows ; temp
-;                *before._s_rows ; temp
-               
-      ; edit
-      margin._s_edit
-      
-      ;
-      index.l  ; Index of new list element
-      hide.b
-      draw.b
-      round.a
-      
-      text._s_text
-      image._s_image
-      color._s_color
-      *data  ; set/get item data
-    EndStructure
-    
-    ;- - _s_row
-    Structure _s_row
-      ; list view
-      ; drag.b
-      sublevel.w
-      sublevelsize.a
-      
-      *_tt._s_tt
-      
-      *first._s_rows           ; first elemnt in the list 
-      *first_visible._s_rows   ; first draw elemnt in the list 
-      *last._s_rows            ; last elemnt in the list 
-      *last_visible._s_rows    ; last draw elemnt in the list 
-      *last_add._s_rows        ; last added last element
-      *selected._s_rows        ; at point pushed item
-      *entered._s_rows         ; pushed last entered item
-      
-      List *draws._s_rows( )
-      
-      ; edit
-      ;caret._s_caret
-      ;color._s_color
-      margin._s_margin
-      
-      ;
-      count.l
-      index.l
-      box._s_buttons           ; editor - edit rectangle
-      
-      List _s._s_rows( )
-    EndStructure
-    
-    ;- - _s_column
-    Structure _s_column Extends _s_coordinate
-      
-    EndStructure
-    
     ;- - _s_dd
     Structure _S_DD Extends _s_coordinate
       ;*widget._s_widget
