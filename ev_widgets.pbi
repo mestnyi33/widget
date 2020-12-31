@@ -995,16 +995,15 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro _cursor_set_( _this_ )
-      If _this_\cursor And 
-         Not _is_selected_( _this_ ) 
+      If Not mouse( )\buttons And
+         _this_\cursor And Not _is_selected_( _this_ ) 
         
         _set_cursor_( _this_, _this_\cursor )
       EndIf
     EndMacro
     
     Macro _cursor_remove_( _this_ )
-      If _this_\cursor And 
-         Not _is_selected_( _this_ )  
+      If Not mouse( )\buttons
         ; Debug "remove cursor "+_this_ +" "+ EnterWidget( )
         
         If EnterWidget( ) And Not _is_root_( EnterWidget( ) ) And EnterWidget( )\cursor 
@@ -2472,7 +2471,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro Dragged( )
-      mouse()\drag\address
+      mouse()\_drag
     EndMacro
     
     Procedure.i DD_cursor( type )
@@ -2524,9 +2523,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndDataSection
     EndProcedure
     
-    Macro _DD_reset_( _this_ )
+    Macro _DD_reset_( )
       Bool( Dragged( ) )
-      SetCursor( _this_, _this_\cursor )
+      SetCursor( EnterWidget( ), EnterWidget( )\cursor )
       FreeStructure( Dragged( ) ) 
       Dragged( ) = 0
     EndMacro
@@ -2622,7 +2621,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Debug "  Dropped files - "+Dragged( )\string
         result = Dragged( )\string
         
-        _DD_reset_( EnterWidget( ) )
+        _DD_reset_( )
         ProcedureReturn result
       EndIf
     EndProcedure
@@ -2634,7 +2633,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Debug "  Dropped text - "+Dragged( )\string
         result = Dragged( )\string
         
-        _DD_reset_( EnterWidget( ) )
+        _DD_reset_( )
         ProcedureReturn result
       EndIf
     EndProcedure
@@ -2646,7 +2645,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Debug "  Dropped type - "+Dragged( )\Type
         result = Dragged( )\Type
         
-        _DD_reset_( EnterWidget( ) )
+        _DD_reset_( )
         ProcedureReturn result
       EndIf
     EndProcedure
@@ -2672,7 +2671,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           StopDrawing( )
         EndIf  
         
-        _DD_reset_( EnterWidget( ) )
+        _DD_reset_( )
         ProcedureReturn Result
       EndIf
       
@@ -16088,16 +16087,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       If eventtype = #PB_EventType_MouseEnter
         ; entered item draw color state
         If EnterRow( ) And 
-           EnterRow( )\_state & #__s_entered
-          EnterRow( )\color\state = #__s_0
+           EnterRow( )\_state & #__s_entered And
+           EnterRow( )\color\state = #__s_0
           EnterRow( )\color\state = #__s_1
           repaint = #True
         EndIf
         
         ; entered button draw color state
         If EnterButton( ) And 
-           EnterButton( )\_state & #__s_entered
-          EnterButton( )\color\state = #__s_0
+           EnterButton( )\_state & #__s_entered And
+           EnterButton( )\color\state = #__s_0
           EnterButton( )\color\state = #__s_1
           
           ; for the splitter thumb
@@ -16143,6 +16142,45 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn 0
       EndIf
       
+      
+      Repaint | Mouse_Events( *this, eventtype, mouse_x, mouse_y )
+      
+      ;- widget::events_Dropped( )
+      If Dragged( )
+        Select eventtype
+          Case #__event_LeftButtonUp
+            If EnterWidget( )\_state & #__s_dragged 
+              _DD_reset_( )
+            EndIf
+            
+          Case #__event_MouseEnter
+            If _DD_action_( )
+              Dropped( )\x = mouse_x
+              Dropped( )\y = mouse_y
+              DoEvents( EnterWidget( ), #__event_Drop, mouse_x, mouse_y )
+              Repaint = #True
+            EndIf
+            
+            ; if dropped not on drag widget
+            If EnterWidget( )\_state & #__s_dragged = #False
+              _DD_reset_( )
+            EndIf
+            
+            If Repaint
+              ProcedureReturn Repaint
+            EndIf
+            
+          Case #__event_MouseMove
+            If _DD_action_( )
+              DD_cursor( 1 )
+            Else 
+              DD_cursor( 0 )
+            EndIf
+            
+        EndSelect
+      EndIf
+      
+      
       If *this\transform
         ProcedureReturn a_events( *this, eventtype, mouse_x, mouse_y )
       EndIf    
@@ -16159,7 +16197,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;         Debug "     "+ eventtype +" "+ *this\class
       ;       EndIf
       
-      Repaint | Mouse_Events( *this, eventtype, mouse_x, mouse_y )
       
       If *this\type = #__type_window
         Repaint = Window_Events( *this, eventtype, mouse_x, mouse_y )
@@ -16284,25 +16321,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         Repaint | Bar_Events( *this, eventtype, mouse_x, mouse_y, _wheel_x_, _wheel_y_ )
       EndIf
-      
-      ;- widget::events_Dropped( )
-      Select eventtype
-        Case #__event_MouseEnter
-          If _DD_action_( )
-            DD_cursor( 1 )
-          Else 
-            If Dropped( ) And Dragged( )
-              DD_cursor( 0 )
-            EndIf
-          EndIf
-          
-        Case #__event_MouseLeave
-          If Dropped( ) And Dragged( )
-            DD_cursor( 0 )
-          EndIf
-          
-      EndSelect
-      
       
       ; bind event do
       If this( )\event <> eventtype 
@@ -16526,8 +16544,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         If change 
           ; mouse drag start
           If mouse( )\buttons 
-            If mouse( )\drag\start = #False 
-              mouse( )\drag\start = #True
+            If FocusWidget( )\_state & #__s_dragged = #False
+              FocusWidget( )\_state | #__s_dragged
               repaint | DoEvents( EnterWidget( ), #__event_DragStart, mouse_x, mouse_y )
             EndIf
             
@@ -16562,9 +16580,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If _is_widget_( FocusWidget( ) ) And 
                _is_selected_( FocusWidget( ) ) 
               
-              ; reset _is_selected_( )
-              FocusWidget( )\_state &~ #__s_selected 
-              
               ; up buttons events
               If eventtype = #PB_EventType_LeftButtonUp
                 Repaint | DoEvents( FocusWidget( ), #__event_LeftButtonUp, mouse_x, mouse_y )
@@ -16597,47 +16612,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                 EndIf
               EndIf
               
-              ;             ; if released the mouse button inside 
-              ;             ; the parent of the composite widget 
-              ;             If FocusWidget( )\child > 0 And 
-              ;                Atpoint( mouse_x, mouse_y, FocusWidget( )\parent, [#__c_clip] ) And 
-              ;                Atpoint( mouse_x, mouse_y, FocusWidget( )\parent, [#__c_inner] )
-              ;               entered() = FocusWidget( )\parent
-              ;               
-              ;               Repaint | Events( FocusWidget( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
-              ;             EndIf
-              
+              ;;Debug ""+FocusWidget( ) +" "+ EnterWidget( ) +" "+ FocusWidget( )\class +" "+ EnterWidget( )\class
               If FocusWidget( ) <> EnterWidget( )
                 Repaint | DoEvents( EnterWidget( ), #__event_MouseEnter, mouse_x, mouse_y )
               EndIf
+              
+              ; reset state
+              FocusWidget( )\_state &~ #__s_selected 
+              FocusWidget( )\_state &~ #__s_dragged
             Else
               If EnterWidget( ) And Not _is_selected_( EnterWidget( ) )
                 Repaint | DoEvents( EnterWidget( ), #__event_MouseEnter, mouse_x, mouse_y )
               EndIf
             EndIf
             
-            ; 
-            If mouse( )\drag\start
-              mouse( )\drag\start = 0
-              
-              If Dragged( )
-                If _is_widget_( EnterWidget( ) ) 
-                  If EnterWidget( ) <> FocusWidget( )
-                    If _DD_action_( )
-                      Dropped( )\x = mouse_x
-                      Dropped( )\y = mouse_y
-                      repaint | DoEvents( EnterWidget( ), #__event_Drop, mouse_x, mouse_y )
-                      repaint = 1
-                    EndIf
-                  EndIf
-                  
-                  _DD_reset_( EnterWidget( ) )
-                Else
-                  _DD_reset_( FocusWidget( ) )
-                EndIf  
-              EndIf
-            EndIf
-            
+            ;
             mouse( )\delta\x = 0
             mouse( )\delta\y = 0
           EndIf
@@ -17341,5 +17330,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f9fvv----------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

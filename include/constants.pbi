@@ -122,6 +122,7 @@
       #__s_normal
       #__s_entered  ; 1<<1
       #__s_selected
+      #__s_dragged
       #__s_disabled
       #__s_focused
       #__s_toggled

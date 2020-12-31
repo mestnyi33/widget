@@ -633,8 +633,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       wheel._s_POINT
       delta._s_POINT
-      drag._s_DRAG
       
+      drag._s_DRAG
+      *_drag._S_DD
+    
       ;change.b
       ;move._s_point
     EndStructure
