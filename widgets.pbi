@@ -55,7 +55,7 @@
 ; https://regex101.com/r/u60Wqt/1
 
 ;
-; ver. 0.0.2.3
+; ver. 0.0.2.4
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -259,6 +259,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; _is_scrollbars_( _this_ )
     EndMacro
     
+    Macro _is_current_( _address_ )
+      Bool( Not mouse( )\buttons Or _is_selected_( _address_ ) )
+      ; Bool( Not ( mouse( )\buttons And Not _is_selected_( _address_ ) ) )
+    EndMacro
+    
     Macro _select_prev_item_( _address_, _index_ )
       SelectElement( _address_, _index_ - 1 )
       
@@ -431,7 +436,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              EnterWidget( )\_state & #__s_entered = #False
             EnterWidget( )\_state | #__s_entered
             
-            If Not ( mouse( )\buttons And Not _is_selected_( EnterWidget( ) ) )
+            If _is_current_( EnterWidget( ) )
               If #__from_mouse_state
                 ForEach widget( )
                   If widget( ) = EnterWidget( )
@@ -976,7 +981,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i Post( eventtype.l, *this, *button = #PB_All, *data = #Null )
     
     ;
-    ;;Declare   Events( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
+    Declare   DoEvents( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
     Declare   Open( window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
     Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  window = -1, *CallBack = #Null )
     ;}
@@ -2538,6 +2543,51 @@ CompilerIf Not Defined( widget, #PB_Module )
             Dropped( )\Type = Dragged( )\Type And 
             Dropped( )\Actions ) ; = Dragged( )\Actions)
     EndMacro
+    
+    Procedure DD_Draw( *this._s_widget )
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  *this\_dd And
+      If *this\_state & #__s_entered And 
+         *this\scroll\v And mouse( )\buttons And 
+         Not _is_selected_( *this )
+        
+        DrawingMode( #PB_2DDrawing_Outlined )
+        
+        ;           If (EnterRow( )\y + (EnterRow( )\height - EnterRow( )\text\height)) > mouse( )\y And 
+        ;              (EnterRow( )\y + EnterRow( )\height - (EnterRow( )\height - EnterRow( )\text\height)) < mouse( )\y 
+        ;             Line( EnterRow( )\x, EnterRow( )\y + EnterRow( )\height/2 - *this\scroll\v\bar\page\pos - *this\mode\gridlines, EnterRow( )\width, 1, $ffff0000 )
+        ;           Else
+        ;             If (EnterRow( )\y + EnterRow( )\height/2) > mouse( )\y 
+        ;               Line( EnterRow( )\x, EnterRow( )\y - *this\scroll\v\bar\page\pos - *this\mode\gridlines, EnterRow( )\width, 1, $ffff0000 )
+        ;             Else
+        ;               Line( EnterRow( )\x, EnterRow( )\y + EnterRow( )\height - *this\scroll\v\bar\page\pos, EnterRow( )\width, 1, $ffff0000 )
+        ;             EndIf
+        ;           EndIf
+        
+        If EnterRow( ) And EnterRow( )\_state & #__s_entered
+          Box( EnterRow( )\x, EnterRow( )\y, EnterRow( )\width, EnterRow( )\height, $ff00ff00 )
+        Else
+          Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff00ff00 )
+        EndIf
+      EndIf
+      
+      
+      ; if you drag to the widget-dropped
+      If Dragged( ) And
+         *this\_state & #__s_entered
+        DrawingMode( #PB_2DDrawing_Outlined )
+        
+        If *this\drop 
+          If Dragged( )\actions = #PB_Drag_Enter  
+            Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff00ff00 )
+          Else
+            Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ffff0000 )
+          EndIf
+        Else
+          Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff0000ff )
+        EndIf
+      EndIf
+      
+    EndProcedure
     
     Procedure.i DraggedItem( *row, Actions.i = #PB_Drag_Copy )
       Debug "Dragged Item - " + *row
@@ -15148,41 +15198,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndSelect
         
         
-           ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  *this\_dd And
-        If *this\_state & #__s_entered And 
-          *this\scroll\v And EnterRow( ) And mouse( )\buttons And 
-             EnterRow( )\_state & #__s_entered And 
-             Not _is_selected_( *this )
-            
-          DrawingMode( #PB_2DDrawing_Outlined )
-          
-;           If (EnterRow( )\y + (EnterRow( )\height - EnterRow( )\text\height)) > mouse( )\y And 
-;              (EnterRow( )\y + EnterRow( )\height - (EnterRow( )\height - EnterRow( )\text\height)) < mouse( )\y 
-;             Line( EnterRow( )\x, EnterRow( )\y + EnterRow( )\height/2 - *this\scroll\v\bar\page\pos - *this\mode\gridlines, EnterRow( )\width, 1, $ffff0000 )
-;           Else
-;             If (EnterRow( )\y + EnterRow( )\height/2) > mouse( )\y 
-;               Line( EnterRow( )\x, EnterRow( )\y - *this\scroll\v\bar\page\pos - *this\mode\gridlines, EnterRow( )\width, 1, $ffff0000 )
-;             Else
-;               Line( EnterRow( )\x, EnterRow( )\y + EnterRow( )\height - *this\scroll\v\bar\page\pos, EnterRow( )\width, 1, $ffff0000 )
-;             EndIf
-;           EndIf
-          
-          Box( EnterRow( )\x, EnterRow( )\y, EnterRow( )\width, EnterRow( )\height, $ff00ff00 )
-        
-        EndIf
-        
-      
-        ; if you drag to the widget-dropped
-        If Dragged( ) And 
-           Dragged( )\actions = #PB_Drag_Enter And 
-           *this\drop And *this\_state & #__s_entered
-          
-           DrawingMode( #PB_2DDrawing_Outlined )
-          Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff00ff00 )
-        EndIf
-        
-        
-        
         ; TEST  
         If test_draw_box_clip_type = #PB_All Or 
            test_draw_box_clip_type = *this\type
@@ -15233,6 +15248,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         ; ENDTEST
         
+        
+        DD_Draw( *this )
         
         ; reset values
         If *this\change <> 0
@@ -15807,16 +15824,20 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\type = #PB_GadgetType_TabBar
             *this\index[#__tab_1] = - 1
           EndIf
+          
         Else
-          ; get at_point_widget at_point_item address
+          ; get at_point_item address
           If ListSize( EnterWidget( )\row\draws( ) ) And 
-             ;Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_clip] ) And 
-            Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) 
+             Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) 
             
             If ListSize( EnterWidget( )\row\_s( ) )
               If Not ( EnterRow( ) And Atpoint( mouse( )\x + EnterWidget( )\scroll\h\bar\page\pos,
                                                 mouse( )\y + EnterWidget( )\scroll\v\bar\page\pos, EnterRow( ) ) )
                 
+                ; reset entered item
+                EnterRow( ) = #Null
+                
+                ; search entered item
                 LastElement( EnterWidget( )\row\draws( ) ) 
                 Repeat                                 
                   If EnterWidget( )\row\draws( )\draw And 
@@ -15879,11 +15900,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
           
-          ; get at_point_widget at_point_button address
+          ; get at_point_button address
           If Not ( EnterButton( ) And 
                    Atpoint( mouse( )\x, mouse( )\y, EnterButton( ) ) And 
                    Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) )
             
+            ; reset entered button
+            EnterButton( ) = #Null
+            
+            ; search entered button
             If EnterWidget( )\bar\button[#__b_1]\interact And 
                Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\button[#__b_1] )
               
@@ -15903,10 +15928,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               If EnterButton( ) <> EnterWidget( )\bar\button[#__b_3]
                 EnterButton( ) = EnterWidget( )\bar\button[#__b_3]
               EndIf
-            Else
-              If EnterButton( ) <> #Null
-                EnterButton( ) = #Null
-              EndIf
             EndIf
           EndIf
         EndIf
@@ -15916,12 +15937,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; do items events entered & leaved 
         If LeaveRow( ) <> EnterRow( ) And 
            Not ( EnterRow( ) = #Null And FocusWidget( ) And _is_selected_( FocusWidget( ) ) )  
+          ; Not ( EnterRow( ) = #Null And _is_selected_( *this ) )  
           
           If LeaveRow( ) And
              LeaveRow( )\_state & #__s_entered
             LeaveRow( )\_state &~ #__s_entered
             
-            If Not ( mouse( )\buttons And FocusWidget( ) And Not _is_selected_( FocusWidget( ) ) )
+            If _is_current_( EnterWidget( ) )
               If LeaveRow( )\color\state = #__s_1
                 LeaveRow( )\color\state = #__s_0
                 repaint = #True
@@ -15932,7 +15954,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If EnterRow( ) And 
              EnterRow( )\_state & #__s_entered = #False
             
-            If _is_selected_( EnterWidget( ) ) And
+            If _is_selected_( EnterWidget( ) ) And 
                EnterWidget( )\row\leaved And 
                EnterWidget( )\row\leaved\_state & #__s_entered
               EnterWidget( )\row\leaved\_state &~ #__s_entered
@@ -15946,7 +15968,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             EnterRow( )\_state | #__s_entered
             
-            If Not( mouse( )\buttons And Not _is_selected_( EnterWidget( ) ) )
+            If _is_current_( EnterWidget( ) )
               ; multi select items
               If mouse( )\buttons And
                  EnterWidget( )\mode\check = #__m_multiselect
@@ -15979,15 +16001,23 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           LeaveRow( ) = EnterRow( )
+        Else
+          If Not EnterRow( ) And LeaveRow( ) And Not _is_selected_( EnterWidget( ) ) 
+            Debug 7777
+            
+            LeaveRow( ) = #Null
+            repaint = #True
+          EndIf
         EndIf  
         
         ; do buttons events entered & leaved 
         If LeaveButton( ) <> EnterButton( ) 
+          
           If LeaveButton( ) And
              LeaveButton( )\_state & #__s_entered
             LeaveButton( )\_state &~ #__s_entered
             
-            If Not ( mouse( )\buttons And FocusWidget( ) And Not _is_selected_( FocusWidget( ) ) )
+            If _is_current_( EnterWidget( ) ) 
               If LeaveButton( )\color\state = #__s_1
                 LeaveButton( )\color\state = #__s_0
                 
@@ -16008,7 +16038,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              EnterButton( )\_state & #__s_entered = #False
             EnterButton( )\_state | #__s_entered
             
-            If Not ( mouse( )\buttons And Not _is_selected_( EnterWidget( ) ) )
+            If _is_current_( EnterWidget( ) )
               ; draw item color state entered
               If EnterButton( )\color\state = #__s_0
                 If Not ( EnterWidget( )\type = #PB_GadgetType_TrackBar Or 
@@ -16191,9 +16221,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
           Case #__event_MouseMove
-            Static *leaved
-            
             If EnterWidget( )\_state & #__s_entered
+              Static *leaved
               If *leaved <> EnterWidget( )
                 If _DD_action_( )
                   Dragged( )\actions = #PB_Drag_Enter
@@ -18297,5 +18326,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
