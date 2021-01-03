@@ -475,6 +475,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _S_DD Extends _s_coordinate
       ;*widget._s_widget
       cursorimage.i
+      _state.l
       
       type.i
       format.i
@@ -634,7 +635,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       wheel._s_POINT
       delta._s_POINT
       
-      drag._s_DRAG
+      ;drag._s_DRAG
+      *_drop._s_widget
       *_drag._S_DD
     
       ;change.b
