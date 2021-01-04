@@ -474,8 +474,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_dd
     Structure _S_DD Extends _s_coordinate
       ;*widget._s_widget
-      cursorimage.i
-      _state.l
+      ;cursorimage.i
+      ;_state.l
       
       type.i
       format.i

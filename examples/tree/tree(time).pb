@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Uselib(Widget)
   EnableExplicit
-  Define *w,a, Event, LN=350;000; количесвто итемов 
+  Define *w,a, Event, LN=1350;000; количесвто итемов 
   
   If Open(OpenWindow(#PB_Any, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu))
     *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
@@ -45,7 +45,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP
