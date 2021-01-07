@@ -126,9 +126,9 @@
       #__s_toggled
       
       #__s_focused
-      #__s_dragged
       #__s_scrolled
-      #__s_changed ; drop enter state
+      #__s_dragged
+      #__s_dropped ; drop enter state
     EndEnumeration
     
     ; \__state
@@ -345,7 +345,12 @@
     #__spin_numeric = #__text_numeric
     #__spin_vertical = #__bar_vertical
     
-    
+;     ;- 
+; Debug #PB_Checkbox_Unchecked ; 0
+; Debug #PB_Checkbox_Checked   ; 1
+; Debug #PB_Checkbox_Inbetween ; -1
+; Debug #PB_CheckBox_ThreeState ; 4
+
     ;- _c_tree
     #PB_Tree_Collapse = 32
     
@@ -368,9 +373,9 @@
     #__tree_sublevel  = #PB_Tree_SubLevel   ; 1
     
     ; tree state
-    #__tree_selected  = #PB_Tree_Selected   ; 1
-    #__tree_expanded  = #PB_Tree_Expanded   ; 2
     #__tree_checked   = #PB_Tree_Checked    ; 4
+    #__tree_selected  = #PB_Tree_Selected   ; 1 
+    #__tree_expanded  = #PB_Tree_Expanded   ; 2
     #__tree_collapsed = #PB_Tree_Collapsed  ; 8
     #__tree_inbetween = #PB_Tree_Inbetween  ; 16
                                             ;     

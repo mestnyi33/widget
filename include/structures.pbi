@@ -198,25 +198,19 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_rows
     Structure _s_rows Extends _s_tabs
-      ; list view
       _state.l
-      sublevel.w
-      sublevelsize.a
       childrens.b
       
-               ;;len.l ; ?????? ?????? ??????? ?????
+      sublevel.w
+      sublevelsize.a
+            
+      button._s_buttons ; \box[0]\ -> \button\
+      checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
-;       verticallines._s_coordinate  ; temp
-;       horizontallines._s_coordinate ; temp
-      
-      box._s_buttons[2]
-      *option_group._s_rows
-      
+      *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       *parent._s_rows
-      *last._s_rows
-;                *first._s_rows ; temp
-;                *after._s_rows ; temp
-;                *before._s_rows ; temp
+      
+      *option_group._s_rows
                
       ; edit
       margin._s_edit
@@ -473,14 +467,11 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     
     ;- - _s_dd
     Structure _S_DD Extends _s_coordinate
-      ;*widget._s_widget
-      ;cursorimage.i
-      ;_state.l
-      
-      type.i
+      privatetype.i
       format.i
       actions.i
       
+      ; dragged
       *value
       string.s
     EndStructure
@@ -635,9 +626,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       wheel._s_POINT
       delta._s_POINT
       
-      ;drag._s_DRAG
-      *_drop._s_widget
+                                   drag._s_DRAG  ;;;;;;;;;;;;;;;;;;;;;
       *_drag._S_DD
+      *_transform._s_transform
     
       ;change.b
       ;move._s_point
@@ -653,7 +644,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_canvas
     Structure _s_canvas
-      *address            ; roots list address
+      *address            ; root list address
       *widget._s_WIDGET   ; opened list element
       
       container.i
@@ -669,27 +660,25 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_root
-    Structure _s_root Extends _s_WIDGET
+    Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
-      *_transform._s_transform
     EndStructure
     
     ;- - _s_events
     Structure _s_events
-      mouse._s_mouse               ; mouse( )\
-      keyboard._s_keyboard         ; keyboard( )\
+      mouse._s_mouse                ; mouse( )\
+      keyboard._s_keyboard          ; keyboard( )\
+      sticky._s_sticky              ; top level
       
-      List *_root._s_root( )        ; 
-      *active._s_WIDGET          ; GetActiveWindow( )\
-      sticky._s_sticky            ; top level
+      *active._s_WIDGET             ; GetActiveWindow( )\
+      *widget._s_WIDGET             ; EventWidget( )\
       
-      *WIDGET._s_WIDGET          ; EventWidget( )\
-      ;;*type                        ; EventType( )
-      *event                       ; EventType( )
-      *item                        ; EventItem( )
-      *data                        ; EventData( )
+      ;;*type                       ; EventType( )
+      *event                        ; EventType( )
+      *item                         ; EventItem( )
+      *data                         ; EventData( )
       
-      ;;List *_post._s_post( )        ; posted( )\
+      List *_root._s_ROOT( )        ; 
       List *_childrens._s_WIDGET( ) ; widget( )\
     EndStructure
     

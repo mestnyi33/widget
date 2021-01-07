@@ -40,10 +40,10 @@ Procedure Events( )
           
         Case SourceText
           Text$ = GetItemText( SourceText, GetState( SourceText ) )
-          DraggedText( Text$ )
+          DragText( Text$ )
           
         Case SourceImage
-          DraggedImage( ( #ImageSource ) )
+          DragImage( #ImageSource )
           
         Case SourceFiles
           Files$ = ""       
@@ -63,14 +63,14 @@ Procedure Events( )
           ;
         Case SourcePrivate
           If GetState( SourcePrivate ) = 0
-            DraggedPrivate( 1 )
+            DragPrivate( 1 )
           Else
-            DraggedPrivate( 2 )
+            DragPrivate( 2 )
           EndIf
           
       EndSelect
       
-      ; Drop event on the target gadgets, receive the dropped data
+      ; Drop event on the target gadgets, receive the EventDrop data
       ;
     Case #PB_EventType_Drop
       Debug  "Drop - " + EventWidget
@@ -79,20 +79,20 @@ Procedure Events( )
       Select EventWidget
           
         Case TargetText
-          ;;Debug "DroppedText - "+ DroppedText( )
+          ;;Debug "EventDropText - "+ EventDropText( )
           If EnterRow( )
-            AddItem( TargetText, EnterRow( )\index, DroppedText( ) )
+            AddItem( TargetText, EnterRow( )\index, EventDropText( ) )
           Else
-            AddItem( TargetText, - 1, DroppedText( ) )
+            AddItem( TargetText, - 1, EventDropText( ) )
           EndIf
           
         Case TargetImage
-          If DroppedImage( #ImageTarget )
+          If EventDropImage( #ImageTarget )
             If StartDrawing( ImageOutput( #ImageTarget ) )
               DrawingFont( font )
               
               Box( 5,5,OutputWidth(),30, $FFFFFF)
-              DrawText( 5, 5, "Dropped image", $000000, $FFFFFF )        
+              DrawText( 5, 5, "EventDrop image", $000000, $FFFFFF )        
               
               StopDrawing( )
             EndIf  
@@ -101,7 +101,7 @@ Procedure Events( )
           EndIf
           
         Case TargetFiles
-          Files$ = DroppedFiles( )
+          Files$ = EventDropFiles( )
           Count  = CountString( Files$, Chr( 10 ) ) + 1
           
           For i = 1 To Count
@@ -109,10 +109,10 @@ Procedure Events( )
           Next i
           
         Case TargetPrivate1
-          AddItem( TargetPrivate1, -1, "Private type 1 dropped" )
+          AddItem( TargetPrivate1, -1, "Private type 1 EventDrop" )
           
         Case TargetPrivate2
-          AddItem( TargetPrivate2, -1, "Private type 2 dropped" )
+          AddItem( TargetPrivate2, -1, "Private type 2 EventDrop" )
           
       EndSelect
       
@@ -190,11 +190,11 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   
   ; Now enable the dropping on the target s
   ;
-  DroppedEnable( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-  DroppedEnable( TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-  DroppedEnable( TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-  DroppedEnable( TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1 )
-  DroppedEnable( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
+  EnableDrop( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  EnableDrop( TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+  EnableDrop( TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+  EnableDrop( TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1 )
+  EnableDrop( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
   
   ; Bind( -1, @Events( ) )
   
@@ -217,5 +217,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 8f+
+; Folding = -f+
 ; EnableXP

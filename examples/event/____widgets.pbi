@@ -128,29 +128,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Debug ""
     EndMacro
     
-    
-    ;- Replacement >> PB( )
-    Macro DragItem( Row, Actions = #PB_Drag_Copy ): _DragItem( Row, Actions ): EndMacro
-    Macro DragText( Text, Actions = #PB_Drag_Copy ): _DragText( Text, Actions ): EndMacro
-    Macro DragImage( Image, Actions = #PB_Drag_Copy ): _DragImage( Image, Actions ): EndMacro
-    Macro DragFiles( Files, Actions = #PB_Drag_Copy ): _DragFiles( Files, Actions ): EndMacro
-    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): _DragPrivate( PrivateType, Actions ): EndMacro
-    
-    Macro EventDropX( ): _EventDropX( ): EndMacro
-    Macro EventDropY( ): _EventDropY( ): EndMacro
-    Macro EventDropType( ): _EventDropType( ): EndMacro
-    Macro EventDropAction( ): _EventDropAction( ): EndMacro
-    Macro EventDropPrivate( ): _EventDropPrivate( ): EndMacro
-    Macro EventDropFiles( ): _EventDropFiles( ): EndMacro
-    Macro EventDropText( ): _EventDropText( ): EndMacro
-    
-    Macro EventDropImage( Image = -1, Depth = 24 ): _EventDropImage( Image, Depth ): EndMacro
-    
     ;-
     Macro allocate( _struct_name_, _struct_type_= )
       _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
     EndMacro
-    
     Macro PB( Function ) : Function: EndMacro
     Macro This( ) : widget::*event: EndMacro
     Macro Root( ) : widget::this( )\_root( ): EndMacro
@@ -765,7 +746,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               EnterWidget( ) = widget( )
               
-              If Not _DD_drag_( )
+              If Not Dragged( )
                 ; scrollbars events
                 If widget( ) And widget( )\scroll
                   If widget( )\scroll\v And Not widget( )\scroll\v\hide And widget( )\scroll\v\type And 
@@ -830,7 +811,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
             
-            If _DD_drag_( ) 
+            If Dragged( ) 
               If LeaveWidget( )\_state & #__s_dropped
                 LeaveWidget( )\_state &~ #__s_dropped
                 
@@ -864,7 +845,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               _result_ | DoEvents( EnterWidget( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
             EndIf
             
-            If _DD_drag_( ) 
+            If Dragged( ) 
               If EnterWidget( )\_state & #__s_dropped = #False
                 EnterWidget( )\_state | #__s_dropped
                 
@@ -1204,16 +1185,16 @@ CompilerIf Not Defined( widget, #PB_Module )
     Global resize_one
     
     ;  Drag and Drop
-    Declare.s _EventDropFiles( )
-    Declare.s _EventDropText( )
-    Declare.i _EventDropType( )
-    Declare.i _EventDropAction( )
-    Declare.i _EventDropImage( Image.i = -1, Depth.i = 24 )
-    Declare.i _DragText( Text.S, Actions.i = #PB_Drag_Copy )
-    Declare.i _DragImage( Image.i, Actions.i = #PB_Drag_Copy )
-    Declare.i _DragPrivate( Type.i, Actions.i = #PB_Drag_Copy )
-    Declare.i _DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
-    Declare.i EnableDrop( *this, Format.i, Actions.i, PrivateType.i = 0 )
+    Declare.s DroppedFiles( )
+    Declare.s DroppedText( )
+    Declare.i DroppedType( )
+    Declare.i DroppedAction( )
+    Declare.i DroppedImage( Image.i = -1, Depth.i = 24 )
+    Declare.i DraggedText( Text.S, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
+    Declare.i DroppedEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
     
     Declare Message( Title.s, Text.s, Flag.i = #Null )
     
@@ -2878,32 +2859,42 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;-
     #PB_Drop_Item =- 5
-    
-    Macro _DD_drop_( )
+    Macro Dropped( )
       EnterWidget( )\drop
     EndMacro
     
-    Macro _DD_drag_( )
+    Macro Dragged( )
       mouse()\_drag
     EndMacro
     
+    Macro _DD_reset_( )
+      Bool( Dragged( ) )
+      If _is_root_( EnterWidget( ) ) 
+        SetCursor( EnterWidget( ), #PB_Cursor_Default )
+      Else
+        SetCursor( EnterWidget( ), EnterWidget( )\cursor )
+      EndIf
+      FreeStructure( Dragged( ) ) 
+      Dragged( ) = #Null
+    EndMacro
+    
     Macro _DD_action_( )
-      Bool( _DD_drop_( ) And _DD_drag_( ) And 
-            _DD_drop_( )\PrivateType = _DD_drag_( )\PrivateType And 
-            _DD_drop_( )\format = _DD_drag_( )\format And 
-            _DD_drop_( )\actions & _DD_drag_( )\actions )
+      Bool( Dropped( ) And Dragged( ) And 
+            Dropped( )\PrivateType = Dragged( )\PrivateType And 
+            Dropped( )\Format = Dragged( )\Format And 
+            Dropped( )\Actions & Dragged( )\Actions )
     EndMacro
     
     Procedure.i DD_cursor( type )
       Protected x = 2, y = 2, cursor
       UsePNGImageDecoder( )
       
-;       If type And _DD_drop_( )
-;         _DD_drop_( )\cursorimage = CatchImage( #PB_Any, ?add, 601 )
-;         SetCursor( EnterWidget( ), ImageID( _DD_drop_( )\cursorimage ))
+;       If type And Dropped( )
+;         Dropped( )\cursorimage = CatchImage( #PB_Any, ?add, 601 )
+;         SetCursor( EnterWidget( ), ImageID( Dropped( )\cursorimage ))
 ;       Else
-;         _DD_drag_( )\cursorimage = CatchImage( #PB_Any, ?copy, 530 )
-;         SetCursor( EnterWidget( )\root, ImageID( _DD_drag_( )\cursorimage ) )
+;         Dragged( )\cursorimage = CatchImage( #PB_Any, ?copy, 530 )
+;         SetCursor( EnterWidget( )\root, ImageID( Dragged( )\cursorimage ) )
 ;       EndIf
       
       If type
@@ -2957,8 +2948,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure   DD_Draw( *this._s_widget )
       ; if you drag to the widget-dropped
-      If _DD_drag_( ) And 
-         *this\_state & #__s_entered And *this\_state & #__s_dropped
+      If Dragged( ) And ;*this\_state & #__s_entered And 
+         *this\_state & #__s_dropped
         
         DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
         
@@ -3001,131 +2992,122 @@ CompilerIf Not Defined( widget, #PB_Module )
       
     EndProcedure
     
-    Procedure.i _DragItem( *row, Actions.i = #PB_Drag_Copy )
-      Debug "_Drag Item - " + *row
+    Procedure.i DraggedItem( *row, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged Item - " + *row
       
-      If *row
-        _DD_drag_( ).allocate( DD )
-        _DD_drag_( )\format = #PB_Drop_Item
-        _DD_drag_( )\actions = Actions
-        _DD_drag_( )\value = *row
-      EndIf
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Item
+      Dragged( )\actions = Actions
+      Dragged( )\value = *row
     EndProcedure
     
-    Procedure.i _DragText( Text.s, Actions.i = #PB_Drag_Copy )
-      Debug "_Drag text - " + Text
+    Procedure.i DraggedText( Text.s, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged text - " + Text
       
-      If Text
-        _DD_drag_( ).allocate( DD )
-        _DD_drag_( )\format = #PB_Drop_Text
-        _DD_drag_( )\actions = Actions
-        _DD_drag_( )\string = Text
-      EndIf
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Text
+      Dragged( )\actions = Actions
+      Dragged( )\string = Text
     EndProcedure
     
-    Procedure.i _DragImage( Image.i, Actions.i = #PB_Drag_Copy )
-      Debug "_Drag image - " + Image
+    Procedure.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged image - " + Image
       
-      If IsImage( Image )
-        _DD_drag_( ).allocate( DD )
-        _DD_drag_( )\format = #PB_Drop_Image
-        _DD_drag_( )\actions = Actions
-        _DD_drag_( )\value = ImageID( Image )
-        _DD_drag_( )\width = ImageWidth( Image )
-        _DD_drag_( )\height = ImageHeight( Image )
-      EndIf
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Image
+      Dragged( )\actions = Actions
+      Dragged( )\value = ImageID( Image )
+      Dragged( )\width = ImageWidth( Image )
+      Dragged( )\height = ImageHeight( Image )
     EndProcedure
     
-    Procedure.i _DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
-      Debug "_Drag files - " + Files
+    Procedure.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged files - " + Files
       
-      If Files
-        _DD_drag_( ).allocate( DD )
-        _DD_drag_( )\format = #PB_Drop_Files
-        _DD_drag_( )\actions = Actions
-        _DD_drag_( )\string = Files
-      EndIf
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Files
+      Dragged( )\actions = Actions
+      Dragged( )\string = Files
     EndProcedure
     
-    Procedure.i _DragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
-      Debug "_Drag private - " + PrivateType
+    Procedure.i DraggedPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
+      Debug "Dragged private - " + PrivateType
       
-      If PrivateType
-        _DD_drag_( ).allocate( DD )
-        _DD_drag_( )\format = #PB_Drop_Private
-        _DD_drag_( )\actions = Actions
-        _DD_drag_( )\PrivateType = PrivateType
-      EndIf
+      Dragged( ).allocate( DD )
+      Dragged( )\format = #PB_Drop_Private
+      Dragged( )\actions = Actions
+      Dragged( )\PrivateType = PrivateType
     EndProcedure
     
     
-    Procedure.l _EventDropX( )
-      ProcedureReturn _DD_drop_( )\x
+    Procedure.l DroppedX( )
+      ProcedureReturn Dropped( )\x
     EndProcedure
     
-    Procedure.l _EventDropY( )
-      ProcedureReturn _DD_drop_( )\y
+    Procedure.l DroppedY( )
+      ProcedureReturn Dropped( )\y
     EndProcedure
     
-    Procedure.i _EventDropType( )
+    Procedure.i DroppedType( )
       If _DD_action_( ) 
-        ProcedureReturn _DD_drop_( )\Format 
+        ProcedureReturn Dropped( )\Format 
       EndIf
     EndProcedure
     
-    Procedure.i _EventDropAction( )
+    Procedure.i DroppedAction( )
       If _DD_action_( ) 
-        ProcedureReturn _DD_drop_( )\Actions 
+        ProcedureReturn Dropped( )\Actions 
       EndIf
     EndProcedure
     
-    Procedure.s _EventDropFiles( )
+    Procedure.s DroppedFiles( )
       If _DD_action_( )
-        Debug "  _EventDrop files - "+_DD_drag_( )\string
-        ProcedureReturn _DD_drag_( )\string
+        Debug "  Dropped files - "+Dragged( )\string
+        ProcedureReturn Dragged( )\string
       EndIf
     EndProcedure
     
-    Procedure.s _EventDropText( )
+    Procedure.s DroppedText( )
       If _DD_action_( )
-        Debug "  _EventDrop text - "+_DD_drag_( )\string
-        ProcedureReturn _DD_drag_( )\string
+        Debug "  Dropped text - "+Dragged( )\string
+        ProcedureReturn Dragged( )\string
       EndIf
     EndProcedure
     
-    Procedure.i _EventDropPrivate( )
+    Procedure.i DroppedPrivate( )
       If _DD_action_( )
-        Debug "  _EventDrop type - "+_DD_drag_( )\PrivateType
-        ProcedureReturn _DD_drag_( )\PrivateType
+        Debug "  Dropped type - "+Dragged( )\PrivateType
+        ProcedureReturn Dragged( )\PrivateType
       EndIf
     EndProcedure
     
-    Procedure.i _EventDropImage( Image.i = -1, Depth.i = 24 )
+    Procedure.i DroppedImage( Image.i = -1, Depth.i = 24 )
       Protected result.i
       
-      If _DD_action_( ) And _DD_drag_( )\value
-        Debug "  _EventDrop image - "+_DD_drag_( )\value
+      If _DD_action_( ) And Dragged( )\value
+        Debug "  Dropped image - "+Dragged( )\value
         
         If Image  = - 1
-          Result = CreateImage( #PB_Any, _DD_drag_( )\Width, _DD_drag_( )\Height ) : Image = Result
+          Result = CreateImage( #PB_Any, Dragged( )\Width, Dragged( )\Height ) : Image = Result
         Else
           Result = IsImage( Image )
         EndIf
         
         If Result And StartDrawing( ImageOutput( Image ) )
           If Depth = 32
-            DrawAlphaImage( _DD_drag_( )\value, 0, 0 )
+            DrawAlphaImage( Dragged( )\value, 0, 0 )
           Else
-            DrawImage( _DD_drag_( )\value, 0, 0 )
+            DrawImage( Dragged( )\value, 0, 0 )
           EndIf
           StopDrawing( )
         EndIf  
         
         ProcedureReturn Result
       EndIf
+      
     EndProcedure
     
-    Procedure.i EnableDrop( *this._s_widget, Format.i, Actions.i, PrivateType.i = 0 )
+    Procedure.i DroppedEnable( *this._s_widget, Format.i, Actions.i, PrivateType.i = 0 )
       ;                  ; windows ;    macos   ; linux ;
       ; = Format
       ; #PB_Drop_Text    ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
@@ -3620,6 +3602,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       _this_\hide = Bool( _this_\hide[1] Or _this_\parent\hide Or 
                           ( _this_\parent\type = #PB_GadgetType_Panel And 
                             _this_\parent\_tab\index[#__tab_2] <> _this_\_tabindex ) )
+    EndMacro
+    
+    Macro _set_hide_state_items_( _this_, _current_row_address_ )
+      PushListPosition( _this_\row\_s( ) )
+      While NextElement( _this_\row\_s( ) )
+        If _this_\row\_s( )\parent 
+          _this_\row\_s( )\hide = Bool( _this_\row\_s( )\parent\box[0]\state | _this_\row\_s( )\parent\hide )
+        EndIf
+        
+        If _this_\row\_s( )\sublevel = _current_row_address_\sublevel 
+          _post_repaint_canvas_( _this_\root\canvas )
+          _this_\change = #True
+          Break
+        EndIf
+      Wend
+      PopListPosition( _this_\row\_s( ) )
     EndMacro
     
     Macro _set_check_state_( _address_, _three_state_ )
@@ -9651,15 +9649,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; check box size
                   If ( *this\mode\check = #__m_checkselect Or 
                        *this\mode\check = #__m_optionselect )
-                    *this\row\_s( )\checkbox\width = boxsize
-                    *this\row\_s( )\checkbox\height = boxsize
+                    *this\row\_s( )\box[1]\width = boxsize
+                    *this\row\_s( )\box[1]\height = boxsize
                   EndIf
                   
                   ; collapse box size
                   If ( *this\mode\lines Or *this\mode\buttons ) And
                      Not ( *this\row\_s( )\sublevel And *this\mode\check = #__m_optionselect )
-                    *this\row\_s( )\button\width = buttonsize
-                    *this\row\_s( )\button\height = buttonsize
+                    *this\row\_s( )\box[0]\width = buttonsize
+                    *this\row\_s( )\box[0]\height = buttonsize
                   EndIf
                   
                   ; drawing item font
@@ -9694,23 +9692,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\mode\check = #__m_optionselect )
                   
                   If *this\row\_s( )\parent And *this\mode\check = #__m_optionselect
-                    *this\row\_s( )\checkbox\x = *this\row\_s( )\sublevelsize - *this\row\_s( )\checkbox\width
+                    *this\row\_s( )\box[1]\x = *this\row\_s( )\sublevelsize - *this\row\_s( )\box[1]\width
                   Else
-                    *this\row\_s( )\checkbox\x = boxpos
+                    *this\row\_s( )\box[1]\x = boxpos
                   EndIf
-                  *this\row\_s( )\checkbox\y = ( *this\row\_s( )\height ) - ( *this\row\_s( )\height + *this\row\_s( )\checkbox\height )/2
+                  *this\row\_s( )\box[1]\y = ( *this\row\_s( )\height ) - ( *this\row\_s( )\height + *this\row\_s( )\box[1]\height )/2
                 EndIf
                 
                 ; expanded & collapsed box position
                 If ( *this\mode\lines Or *this\mode\buttons ) And Not ( *this\row\_s( )\sublevel And *this\mode\check = #__m_optionselect )
                   
                   If *this\mode\check = #__m_optionselect
-                    *this\row\_s( )\button\x = *this\row\_s( )\sublevelsize - 10
+                    *this\row\_s( )\box[0]\x = *this\row\_s( )\sublevelsize - 10
                   Else
-                    *this\row\_s( )\button\x = *this\row\_s( )\sublevelsize - (( buttonpos + buttonsize ) - 4)
+                    *this\row\_s( )\box[0]\x = *this\row\_s( )\sublevelsize - (( buttonpos + buttonsize ) - 4)
                   EndIf
                   
-                  *this\row\_s( )\button\y = ( *this\row\_s( )\height ) - ( *this\row\_s( )\height + *this\row\_s( )\button\height )/2
+                  *this\row\_s( )\box[0]\y = ( *this\row\_s( )\height ) - ( *this\row\_s( )\height + *this\row\_s( )\box[0]\height )/2
                 EndIf
                 
                 ; image position
@@ -9910,7 +9908,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           
           ; Draw plots
-          If *this\mode\lines ;= 1
+          If *this\mode\lines = 1
             DrawingMode( #PB_2DDrawing_Default )
             ; DrawingMode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ) )
             
@@ -9921,22 +9919,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; for the tree vertical line
                 If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
-                  Line( (x + *row( )\last\button\x+*row( )\last\button\width/2), (y+*row( )\height), 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
+                  Line( (x + *row( )\last\box[0]\x+*row( )\last\box[0]\width/2), (y+*row( )\height), 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
                 EndIf
                 If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last = *row( ) And *row( )\sublevel
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (*row( )\parent\y+*row( )\parent\height) - scroll_y, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\parent\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (*row( )\parent\y+*row( )\parent\height) - scroll_y, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\parent\color\line )
                 EndIf
                 
                 ; for the tree horizontal line
                 If Not (*this\mode\buttons And *row( )\childrens)
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
                 EndIf
               EndIf    
             Next
             
             ; for the tree item first vertical line
             If *this\row\first And *this\row\last
-              Line( (*this\x[#__c_inner] + *this\row\first\button\x+*this\row\first\button\width/2) - scroll_x, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
+              Line( (*this\x[#__c_inner] + *this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - scroll_x, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
             EndIf
             
           ElseIf *this\mode\lines = 2
@@ -9949,19 +9947,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                 y = *row( )\y - scroll_y
                 
                 If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
-                  Line( (x + *row( )\last\button\x+*row( )\button\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
+                  Line( (x + *row( )\last\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
                 EndIf
                 If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last = *row( ) And *row( )\sublevel
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
                 EndIf
                 
                 ; for the tree horizontal line
                 If *row()\parent
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
                 EndIf
                 
                 If (Not *this\mode\buttons And *row( )\childrens)
-                  Line( (x + *row( )\button\x+*row( )\button\width/2) + *this\row\sublevelsize-3, (y+*row( )\height/2), 3, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2) + *this\row\sublevelsize-3, (y+*row( )\height/2), 3, 1, *row( )\color\line )
                 EndIf
               EndIf    
             Next
@@ -9972,7 +9970,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected minus = 7
             ; for the tree item first vertical line
             If *this\row\first And *this\row\last
-              Line( (*this\x[#__c_inner] + *this\row\first\button\x+*this\row\first\button\width/2) - scroll_x - minus, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
+              Line( (*this\x[#__c_inner] + *this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - scroll_x - minus, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
             EndIf
             
             
@@ -9983,24 +9981,24 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; for the tree vertical line
                 If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
-                  Line( (x + *row( )\last\button\x+*row( )\button\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
+                  Line( (x + *row( )\last\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
                 EndIf
                 If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last = *row( ) And *row( )\sublevel
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
                 EndIf
                 
                 ; for the tree horizontal line
                 If (Not *this\mode\buttons And *row( )\childrens) 
                   If *row( )\last\sublevel > 1 Or minus
-                    Line( (x + *row( )\button\x+*row( )\button\width/2) + *this\row\sublevelsize-4-Bool(minus And *row( )\last\sublevel < 2)*3, (y+*row( )\height/2), 4+Bool(minus And *row( )\last\sublevel < 2)*3, 1, *row( )\color\line )
+                    Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2) + *this\row\sublevelsize-4-Bool(minus And *row( )\last\sublevel < 2)*3, (y+*row( )\height/2), 4+Bool(minus And *row( )\last\sublevel < 2)*3, 1, *row( )\color\line )
                   EndIf
                 ElseIf *row( )\parent
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 5, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 5, 1, *row( )\color\line )
                 ElseIf Not (*this\mode\buttons And *row( )\childrens) Or *row( ) = *this\row\first Or *row( ) = *this\row\last
                   If *row( ) = *this\row\first Or *row( ) = *this\row\last
                     x + Bool(*row()\parent Or *row( )\childrens) * *this\row\sublevelsize
                   EndIf
-                  Line( (x + *row( )\button\x+*row( )\button\width/2) - minus, (y+*row( )\height/2), 7, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2) - minus, (y+*row( )\height/2), 7, 1, *row( )\color\line )
                 EndIf
               EndIf    
             Next
@@ -10010,7 +10008,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; for the tree item first vertical line
             If *this\row\first And *this\row\last
-              Line( (*this\x[#__c_inner] + *this\row\first\button\x+*this\row\first\button\width/2) - scroll_x, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
+              Line( (*this\x[#__c_inner] + *this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - scroll_x, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\last\y-*this\row\first\y), *this\row\first\color\line )
             EndIf
             
             ForEach *row( )
@@ -10020,15 +10018,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; for the tree vertical line
                 If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
-                  Line( (x + *row( )\last\button\x+*row( )\button\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
+                  Line( (x + *row( )\last\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
                 EndIf
                 If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last = *row( ) And *row( )\sublevel
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (*row( )\parent\y+*row( )\parent\height/2) - scroll_y, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
                 EndIf
                 
                 ; for the tree horizontal line
                 If (Not *this\mode\buttons And *row( )\childrens) And *row( )\sublevel
-                  Line( (x + *row( )\button\x+*row( )\button\width/2) + *this\row\sublevelsize, (y+*row( )\height/2), 5, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2) + *this\row\sublevelsize, (y+*row( )\height/2), 5, 1, *row( )\color\line )
                 EndIf
                 
                 If *row( ) = *this\row\first Or *row( ) = *this\row\last Or (*row( )\childrens And *row( )\sublevel = 0)
@@ -10036,7 +10034,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 EndIf
                 
                 If Not ( *this\mode\buttons And *row( )\childrens And *row( )\sublevel = 0 )
-                  Line( (x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 5, 1, *row( )\color\line )
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 5, 1, *row( )\color\line )
                 EndIf
               EndIf    
             Next
@@ -10050,15 +10048,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected _box_x_, _box_y_
             ForEach *row( )
               If *row( )\draw And *this\mode\check
-                x = *row( )\x + *row( )\checkbox\x - scroll_x
-                y = *row( )\y + *row( )\checkbox\y - scroll_y
+                x = *row( )\x + *row( )\box[1]\x - scroll_x
+                y = *row( )\y + *row( )\box[1]\y - scroll_y
                 
                 If *row( )\parent And *this\mode\check = #__m_optionselect
                   ; option
-                  _draw_button_( 1, x, y, *row( )\checkbox\width, *row( )\checkbox\height, *row( )\checkbox\state, 4 );, \color )
+                  _draw_button_( 1, x, y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
                 Else                                                                                            ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = #__m_optionselect )
                                                                                                                 ; check
-                  _draw_button_( 3, x, y, *row( )\checkbox\width, *row( )\checkbox\height, *row( )\checkbox\state, 2 );, \color )
+                  _draw_button_( 3, x, y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
                 EndIf
               EndIf    
             Next
@@ -10068,8 +10066,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; Draw buttons ( expanded&collapsed )
             ForEach *row( )
               If *row( )\draw And Not *row( )\hide 
-                x = *row( )\x + *row( )\button\x - scroll_x
-                y = *row( )\y + *row( )\button\y - scroll_y
+                x = *row( )\x + *row( )\box[0]\x - scroll_x
+                y = *row( )\y + *row( )\box[0]\y - scroll_y
                 
                 If *this\mode\buttons And *row( )\childrens And
                    Not ( *row( )\sublevel And *this\mode\check = #__m_optionselect )
@@ -10077,19 +10075,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If #PB_Compiler_OS = #PB_OS_Windows Or 
                      (*row( )\parent And *row( )\parent\last And *row( )\parent\sublevel = *row( )\parent\last\sublevel)
                     
-                    _draw_button_( 0, x, y, *row( )\button\width, *row( )\button\height, 0,2)
-                    _draw_box_( *row( )\button, color\frame )
+                    _draw_button_( 0, x, y, *row( )\box[0]\width, *row( )\box[0]\height, 0,2)
+                    _draw_box_( *row( )\box[0], color\frame )
                     
-                    Line(x + 2, y + *row( )\button\height/2, *row( )\button\width - 4, 1, $ff000000)
-                    If *row( )\button\state
-                      Line(x + *row( )\button\width/2, y + 2, 1, *row( )\button\height - 4, $ff000000)
+                    Line(x + 2, y + *row( )\box[0]\height/2, *row( )\box[0]\width - 4, 1, $ff000000)
+                    If *row( )\box[0]\state
+                      Line(x + *row( )\box[0]\width/2, y + 2, 1, *row( )\box[0]\height - 4, $ff000000)
                     EndIf
                     
                   Else
                     
-                    Arrow( x + ( *row( )\button\width - 4 )/2,
-                           y + ( *row( )\button\height - 4 )/2, 4, 
-                           Bool( Not *row( )\button\state ) + 2, *row( )\color\front[0] ,0,0 ) 
+                    Arrow( x + ( *row( )\box[0]\width - 4 )/2,
+                           y + ( *row( )\box[0]\height - 4 )/2, 4, 
+                           Bool( Not *row( )\box[0]\state ) + 2, *row( )\color\front[0] ,0,0 ) 
                     
                   EndIf
                   
@@ -10232,7 +10230,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\mode\collapse And *this\row\_s( )\parent And 
              *this\row\_s( )\sublevel > *this\row\_s( )\parent\sublevel
-            *this\row\_s( )\parent\button\state = 1 
+            *this\row\_s( )\parent\box[0]\state = 1 
             *this\row\_s( )\hide = 1
           EndIf
           
@@ -10279,8 +10277,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             *this\row\selected = *this\row\_s( ) 
-            *this\row\selected\_state | #__s_scrolled | #__s_selected
-            *this\row\selected\color\state = #__s_2 + Bool( *this\_state & #__s_focused = #False )
+            *this\row\selected\_state | #__s_scrolled
+            *this\row\selected\color\state = #__s_2 + Bool( GetActive( )\gadget <> *this )
             
             _post_repaint_canvas_( *this\root\canvas )
           Else
@@ -10294,6 +10292,44 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;EndWith
       
       ProcedureReturn *this\count\items - 1
+    EndProcedure
+    
+    Procedure.l Tree_SetItemState( *this._s_widget, Item.l, State.b )
+      Protected result.l, collapsed.b, sublevel.l, *row._s_rows
+      
+      If *this\count\items
+        If _no_select_item_( *this\row\_s( ), Item )
+          ProcedureReturn #False
+        EndIf
+        
+        If State & #__tree_Selected = #__tree_Selected
+          *this\row\_s( )\_state | #__tree_Selected
+          *this\row\_s( )\color\state = #__s_3
+        EndIf
+        
+        If State & #__tree_collapsed
+          *this\row\_s( )\box[0]\state = 1
+        ElseIf State & #__tree_Expanded
+          *this\row\_s( )\box[0]\state = 0
+        EndIf
+        
+        If State & #__tree_inbetween = #__tree_inbetween
+          *this\row\_s( )\box[1]\state = #PB_Checkbox_Inbetween
+        ElseIf State & #__tree_checked = #__tree_checked
+          *this\row\_s( )\box[1]\state = #PB_Checkbox_Checked
+        EndIf
+        
+        If State & #__tree_Expanded Or 
+           State & #__tree_collapsed
+          
+          *row = *this\row\_s( )
+          _set_hide_state_items_( *this, *row ) 
+        EndIf
+        
+        result = *row
+        
+        ProcedureReturn result
+      EndIf
     EndProcedure
     
     Procedure.l Tree_Events_Key( *this._s_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
@@ -10421,30 +10457,35 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; collapsed/expanded button
           If EnterRow( )\childrens And 
              Atpoint( mouse_x + *this\scroll\h\bar\page\pos - EnterRow( )\x,
-                      mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\button )
+                      mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\box[0] )
             
-            If EnterRow( )\button\state
-              Repaint | SetItemState( *this, EnterRow( )\index, #__tree_expanded )
-            Else
-              Repaint | SetItemState( *this, EnterRow( )\index, #__tree_collapsed )
+            If SelectElement( *this\row\_s( ), EnterRow( )\index )
+              ;*this\row\box\state = 2
+              Post( #PB_EventType_Down, *this, EnterRow( )\index )
+              
+              *this\row\_s( )\box[0]\state ! 1
+              
+              _set_hide_state_items_( *this, EnterRow( ) )
+              
             EndIf
+            
           Else
             ; change box ( option&check )
             If Atpoint( mouse_x + *this\scroll\h\bar\page\pos - EnterRow( )\x,
-                        mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\checkbox )
+                        mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\box[1] )
               ;*this\row\box\state = 1
               
               ; change box option
               If *this\mode\check = #__m_optionselect
                 If EnterRow( )\parent And EnterRow( )\option_group  
                   If EnterRow( )\option_group\parent And 
-                     EnterRow( )\option_group\checkbox\state 
-                    EnterRow( )\option_group\checkbox\state = #PB_Checkbox_Unchecked
+                     EnterRow( )\option_group\box[1]\state 
+                    EnterRow( )\option_group\box[1]\state = #PB_Checkbox_Unchecked
                   EndIf
                   
                   If EnterRow( )\option_group\option_group <> EnterRow( )
                     If EnterRow( )\option_group\option_group
-                      EnterRow( )\option_group\option_group\checkbox\state = #PB_Checkbox_Unchecked
+                      EnterRow( )\option_group\option_group\box[1]\state = #PB_Checkbox_Unchecked
                     EndIf
                     EnterRow( )\option_group\option_group = EnterRow( )
                   EndIf
@@ -10452,7 +10493,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
               
               ; change box check
-              _set_check_state_( EnterRow( )\checkbox, *this\mode\threestate )
+              _set_check_state_( EnterRow( )\box[1], *this\mode\threestate )
               
               ;
               If EnterRow( )\color\state = #__s_2 
@@ -10514,7 +10555,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             If EnterRow( )\childrens And 
                Atpoint( mouse_x + *this\scroll\h\bar\page\pos - EnterRow( )\x,
-                        mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\button )
+                        mouse_y + *this\scroll\v\bar\page\pos - EnterRow( )\y, EnterRow( )\box[0] )
               
               Post( #__event_up, *this, EnterRow( )\index )
             Else
@@ -11738,7 +11779,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 PushListPosition( *this\row\_s( ) )
                 ForEach *this\row\_s( )
                   If *this\row\_s( )\parent
-                    *this\row\_s( )\checkbox\state = #PB_Checkbox_Unchecked
+                    *this\row\_s( )\box[1]\state = #PB_Checkbox_Unchecked
                     *this\row\_s( )\option_group = Bool( state ) * GetItem( *this\row\_s( ), 0 ) 
                   EndIf
                 Next
@@ -11755,7 +11796,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 PushListPosition( *this\row\_s( ) )
                 ForEach *this\row\_s( )
                   If *this\row\_s( )\parent 
-                    *this\row\_s( )\parent\button\state = state
+                    *this\row\_s( )\parent\box[0]\state = state
                     *this\row\_s( )\hide = state
                   EndIf
                 Next
@@ -12014,7 +12055,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         result = #True
       EndIf
       
-      ;- widget::tree_remove_item( )
+      ; - Tree_ClearItems( )
       If *this\type = #__type_tree Or
          *this\type = #__type_listview
         
@@ -12026,33 +12067,34 @@ CompilerIf Not Defined( widget, #PB_Module )
         Protected *parent._s_rows = *this\row\_s( )\parent
         
         ; if is last parent item then change to the prev element of his level
-        If *parent And *parent\last = *this\row\_s( )
-          PushListPosition( *this\row\_s( ) )
-          While PreviousElement( *this\row\_s( ) )
-            If *parent = *this\row\_s( )\parent
-              *parent\last = *this\row\_s( )
-              Break
-            EndIf
-          Wend
-          PopListPosition( *this\row\_s( ) )
+        If *parent 
+          *parent\childrens - 1
           
-          ; if the remove last parent childrens
           If *parent\last = *this\row\_s( )
-            *parent\childrens = #False
-            *parent\last = #Null
-          Else
-            *parent\childrens = #True
+            If *parent\childrens > 0
+              PushListPosition( *this\row\_s( ) )
+              While PreviousElement( *this\row\_s( ) )
+                If *this\row\_s( )\parent = *parent And 
+                   *this\row\_s( )\sublevel = sublevel 
+                  *parent\last = *this\row\_s( )
+                  Break
+                EndIf
+              Wend
+              PopListPosition( *this\row\_s( ) )
+            Else
+              *parent\last = 0
+            EndIf
           EndIf
+          
+          ;;  Debug  *parent\childrens
         EndIf
         
-        ; before deleting a parent, we delete its children
+        ; first delete the children's
         If *this\row\_s( )\childrens
           PushListPosition( *this\row\_s( ) )
           While NextElement( *this\row\_s( ) )
             If *this\row\_s( )\sublevel > sublevel 
-              DeleteElement( *this\row\_s( ) ) 
-              *this\count\items - 1 
-              *this\row\count - 1
+              DeleteElement( *this\row\_s( ) ) : *this\count\items - 1 : *this\row\count - 1
             Else
               Break
             EndIf
@@ -12068,13 +12110,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; if he is a parent then we find the next item of his level
           PushListPosition( *this\row\_s( ) )
           While NextElement( *this\row\_s( ) )
-            If *this\row\_s( )\sublevel = *this\row\selected\sublevel 
+            If *this\row\_s( )\sublevel = sublevel 
               Break
             EndIf
           Wend
           
-          ; if we remove the last selected then 
           If *this\row\selected = *this\row\_s( ) 
+            ; if we remove the last selected item then selected previous item
             *this\row\selected = PreviousElement( *this\row\_s( ) )
           Else
             *this\row\selected = *this\row\_s( ) 
@@ -12083,12 +12125,12 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\row\selected
             If *this\row\selected\parent And 
-               *this\row\selected\parent\button\state
+               *this\row\selected\parent\box[0]\state
               *this\row\selected = *this\row\selected\parent
             EndIf 
             
             *this\row\selected\_state | #__s_selected
-            *this\row\selected\color\state = #__s_2 + Bool( *this\_state & #__s_focused = #False )
+            *this\row\selected\color\state = #__s_2 + Bool( GetActive( )\gadget<>*this )
           EndIf
         EndIf
         
@@ -12117,7 +12159,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure.l ClearItems( *this._s_widget )
       Protected result
       
-      ; - widget::editor_clear_items( )
+      ; - Editor_ClearItems( )
       If *this\type = #__type_Editor
         *this\text\change = 1 
         *this\count\items = 0
@@ -12130,7 +12172,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn #True
       EndIf
       
-      ; - widget::tree_clear_items( )
+      ; - Tree_ClearItems( )
       If *this\type = #__type_tree Or
          *this\type = #__type_listview
         
@@ -12344,8 +12386,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #PB_GadgetType_Tree Or
          *this\type = #PB_GadgetType_ListView Or
          *this\type = #PB_GadgetType_ListIcon
-        
-        If *this\row\selected
+        If *this\row\selected And 
+           *this\row\selected\color\state
           ProcedureReturn *this\row\selected\index
         Else
           ProcedureReturn - 1
@@ -12544,7 +12586,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-      ;- widget::tree_setState
+      ;- widget::Tree_SetState
       If *this\type = #__type_tree Or 
          *this\type = #__type_listView
         ; Debug *this\mode\check 
@@ -12572,7 +12614,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        ; 
         If _no_select_item_( *this\row\_s( ), State )
           ProcedureReturn #False
         EndIf
@@ -13783,12 +13824,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ElseIf *this\type = #PB_GadgetType_Tree
         If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item ) 
           If *this\row\_s( )\color\state
-            result | #__tree_selected
+            result | #__tree_Selected
           EndIf
           
-          If *this\row\_s( )\checkbox\state
+          If *this\row\_s( )\box[1]\state
             If *this\mode\threestate And 
-               *this\row\_s( )\checkbox\state = #PB_Checkbox_Inbetween
+               *this\row\_s( )\box[1]\state = #PB_Checkbox_Inbetween
               result | #__tree_Inbetween
             Else
               result | #__tree_checked
@@ -13796,7 +13837,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\row\_s( )\childrens And
-             *this\row\_s( )\button\state = 0
+             *this\row\_s( )\box[0]\state = #PB_Checkbox_Unchecked
             result | #__tree_Expanded
           Else
             result | #__tree_collapsed
@@ -13967,53 +14008,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ElseIf *this\type = #__type_Editor
         result = Editor_SetItemState( *this, Item, state )
         
-        ;- widget::tree_setItemState( )
       ElseIf *this\type = #__type_tree
-        If *this\count\items
-          If _no_select_item_( *this\row\_s( ), Item )
-            ProcedureReturn #False
-          EndIf
-          
-          Protected *this_current_row._s_rows = *this\row\_s( )
-              
-          If State & #__tree_selected = #__tree_selected
-            If *this\row\selected <> *this\row\_s( )
-              *this\row\selected = *this\row\_s( )
-              *this\row\selected\_state | #__s_selected
-              *this\row\selected\color\state = #__s_2 + Bool( *this\_state & #__s_focused = #False )
-            EndIf
-          EndIf
-          
-          If State & #__tree_inbetween = #__tree_inbetween
-            *this\row\_s( )\checkbox\state = #PB_Checkbox_Inbetween
-          ElseIf State & #__tree_checked = #__tree_checked
-            *this\row\_s( )\checkbox\state = #PB_Checkbox_Checked
-          EndIf
-          
-          If *this\row\_s( )\childrens
-            If State & #__tree_expanded = #__tree_expanded Or 
-               State & #__tree_collapsed = #__tree_collapsed
-              
-              *this\change = #True
-              *this\row\_s( )\button\state = Bool( State & #__tree_collapsed )
-              
-              PushListPosition( *this\row\_s( ) )
-              While NextElement( *this\row\_s( ) )
-                If *this\row\_s( )\parent 
-                  *this\row\_s( )\hide = Bool( *this\row\_s( )\parent\button\state | *this\row\_s( )\parent\hide )
-                EndIf
-                
-                If *this\row\_s( )\sublevel = *this_current_row\sublevel 
-                  _post_repaint_canvas_( *this\root\canvas )
-                  Break
-                EndIf
-              Wend
-              PopListPosition( *this\row\_s( ) )
-            EndIf
-          EndIf
-          
-          result = *this_current_row\button\state
-        EndIf
+        result = Tree_SetItemState( *this, Item, state )
         
       ElseIf *this\type = #__type_Panel
         ; result = Panel_SetItemState( *this, state )
@@ -15651,7 +15647,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         
         ; draw drag & drop
-        If _DD_drag_( )
+        If Dragged( )
           DD_Draw( *this )
         EndIf
         
@@ -17016,11 +17012,11 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               DoEvents( FocusWidget( ), #__event_DragStart, mouse_x, mouse_y )
               
-              ; 
-              If _DD_drag_( )
+              If Dragged( )
                 DD_cursor( 0 )
-                repaint = #True
               EndIf
+              
+              repaint = #True
             EndIf
             
             ; mouse selected widget move event
@@ -17099,30 +17095,21 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             
-            If _DD_drag_( )
+            If Dragged( )
               If _DD_action_( )
-                _DD_drop_( )\x = mouse_x
-                _DD_drop_( )\y = mouse_y
-                ;                 _DD_drop_( )\value = _DD_drag_( )\value
-                ;                 _DD_drop_( )\string = _DD_drag_( )\string
+                Dropped( )\x = mouse_x
+                Dropped( )\y = mouse_y
+                Dropped( )\value = Dragged( )\value
+                Dropped( )\string = Dragged( )\string
                 DoEvents( EnterWidget( ), #__event_Drop, mouse_x, mouse_y )
-              EndIf
-              
-              If _is_root_( EnterWidget( ) ) 
-                SetCursor( EnterWidget( ), #PB_Cursor_Default )
-              Else
-                SetCursor( EnterWidget( ), EnterWidget( )\cursor )
-              EndIf
-              
-              FreeStructure( _DD_drag_( ) ) 
-              _DD_drag_( ) = #Null
-              
-              If EnterWidget( )\_state & #__s_dropped
-                EnterWidget( )\_state &~ #__s_dropped
-                _get_entered_( Repaint )
+                _DD_reset_( )
                 ;EventHandler( )
-                repaint = #True
+                _get_entered_( Repaint )
+              Else
+                _DD_reset_( )
               EndIf
+              
+              repaint = #True
             EndIf
             
             ;
@@ -18112,7 +18099,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
-          EnableDrop( *new, #PB_Drop_Text, #PB_Drag_Copy )
+          DroppedEnable( *new, #PB_Drop_Text, #PB_Drag_Copy )
         EndIf
         
         Class.s = GetClass( *new )+"_"+GetCount( *new )
@@ -18157,13 +18144,13 @@ CompilerIf #PB_Compiler_IsMainFile
         ; add to inspector
         AddItem( id_inspector_tree, position, class.s, img, sublevel )
         SetItemData( id_inspector_tree, position, *new )
-        ; SetItemState( id_inspector_tree, position, #PB_tree_selected )
+        ; SetItemState( id_inspector_tree, position, #PB_Tree_Selected )
         SetState( id_inspector_tree, position )
         
         If IsGadget( id_design_code )
           AddGadgetItem( id_design_code, position, Class.s, 0, SubLevel )
           SetGadgetItemData( id_design_code, position, *new )
-          ; SetGadgetItemState( id_design_code, position, #PB_tree_selected )
+          ; SetGadgetItemState( id_design_code, position, #PB_Tree_Selected )
           SetGadgetState( id_design_code, position ) ; Bug
         EndIf
         
@@ -18187,7 +18174,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Case #__event_Drop
           ; Debug "drop - " + DroppedText( )
           widget_add( EnterWidget, 
-                      _EventDropText( ),
+                      DroppedText( ),
                       mouse()\x - this( )\widget\x[#__c_inner],
                       mouse()\y - this( )\widget\y[#__c_inner], 
                       100, 
@@ -18404,7 +18391,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select e_type
       Case #__event_DragStart
         Debug "drag - "
-        _DragText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        DraggedText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
         
       Case #__event_StatusChange
         SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
@@ -18579,7 +18566,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; gadgets
     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
-    EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
+    DroppedEnable( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     
     listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
     
@@ -18770,5 +18757,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------d-XXRV0+------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------f8-------------n----------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
