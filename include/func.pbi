@@ -8,6 +8,8 @@
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     Declare.CGFloat GetFontSize( FontID.i )
+  CompilerElse
+    Declare.i GetFontSize( FontID.i )
   CompilerEndIf
 EndDeclareModule 
 
@@ -58,6 +60,16 @@ Module func
     ProcedureReturn Text
   EndProcedure
   
+  Procedure.s TrimRight(*a, n)
+    Protected *p.string = @*a
+    *p\s = Left(*p\s, Len(*p\s) - n)
+  EndProcedure
+  
+  Procedure.s TrimLeft(*a, n)
+    Protected *p.string = @*a
+    *p\s = Right(*p\s, Len(*p\s) - n)
+  EndProcedure
+
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure.i ResizeIcon(hIcon.i, Width.l, Height.l, Depth.l=32)
       Protected IInfo.ICONINFO, ColorImg.i, MaskImg.i, DC.i, RethIcon.i, ICONINFO.ICONINFO
@@ -120,10 +132,20 @@ Module func
       ProcedureReturn pointSize
     EndProcedure
     
+  CompilerElse
+    Procedure.i GetFontSize( FontID.i )
+      
+    EndProcedure
   CompilerEndIf
 EndModule 
 
 UseModule func
+
+CompilerIf #PB_Compiler_IsMainFile
+  Define x.s = "Привет"
+  TrimRight(@x, 2)
+  Debug x
+CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -t--
+; Folding = v0+--
 ; EnableXP

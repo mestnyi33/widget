@@ -1,4 +1,4 @@
-﻿XIncludeFile "widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
@@ -40,11 +40,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Global x,y,i,NewMap Widgets.i()
   
-  Procedure scrolled( )
-    ; If EventGadget() = #PB_GadgetType_ScrollBar
-      SetState( Widgets(Hex(#PB_GadgetType_ProgressBar)), GetState( Widgets(Hex(#PB_GadgetType_ScrollBar))))
-    ; EndIf 
-  EndProcedure
   
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(GetActiveWindow())
@@ -70,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
     Widgets(Hex(#PB_GadgetType_ProgressBar)) = Progress(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
-    Widgets(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
+    Widgets(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,100,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 40)
     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : Widgets(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
     Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #__Bar_Ticks) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
@@ -112,6 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0")
     Resize(*g, 7, 40, 120, 60)
     
+    
+    
 ;     CloseList()
 ; ;     OpenList(Root())
 ;      Button(10,5,50,35, "butt_1") 
@@ -124,9 +121,42 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     CloseList()
     
-    ReDraw(Root())
     
-    Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
+    Disable(Widgets(Hex(#PB_GadgetType_Button)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_ButtonImage)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Calendar)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Canvas)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_CheckBox)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_ComboBox)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Container)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Date)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Editor)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_ExplorerCombo)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_ExplorerList)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_ExplorerTree)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Frame)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_HyperLink)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Image)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_IPAddress)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_ListIcon)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_ListView)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_MDI)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Option)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Panel)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_ProgressBar)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Scintilla)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_ScrollBar)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_ScrollArea)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Shortcut)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Spin)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Splitter)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_String)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Text)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_TrackBar)), 1)
+    Disable(Widgets(Hex(#PB_GadgetType_Tree)), 1)
+    ;Disable(Widgets(Hex(#PB_GadgetType_Web)), 1)
+    
+    ReDraw(Root())
     
     Repeat
       Define  Event = WaitWindowEvent()

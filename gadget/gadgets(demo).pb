@@ -96,6 +96,40 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
  ;; CloseGadgetList()
   
   
+    DisableGadget(#PB_GadgetType_Button, 1)
+    DisableGadget(#PB_GadgetType_ButtonImage, 1)
+    DisableGadget(#PB_GadgetType_Calendar, 1)
+    DisableGadget(#PB_GadgetType_Canvas, 1)
+    DisableGadget(#PB_GadgetType_CheckBox, 1)
+    DisableGadget(#PB_GadgetType_ComboBox, 1)
+    DisableGadget(#PB_GadgetType_Container, 1)
+    DisableGadget(#PB_GadgetType_Date, 1)
+    DisableGadget(#PB_GadgetType_Editor, 1)
+    DisableGadget(#PB_GadgetType_ExplorerCombo, 1)
+    DisableGadget(#PB_GadgetType_ExplorerList, 1)
+    DisableGadget(#PB_GadgetType_ExplorerTree, 1)
+    DisableGadget(#PB_GadgetType_Frame, 1)
+    DisableGadget(#PB_GadgetType_HyperLink, 1)
+    DisableGadget(#PB_GadgetType_Image, 1)
+    DisableGadget(#PB_GadgetType_IPAddress, 1)
+    DisableGadget(#PB_GadgetType_ListIcon, 1)
+    DisableGadget(#PB_GadgetType_ListView, 1)
+    ;DisableGadget(#PB_GadgetType_MDI, 1)
+    DisableGadget(#PB_GadgetType_Option, 1)
+    DisableGadget(#PB_GadgetType_Panel, 1)
+    DisableGadget(#PB_GadgetType_ProgressBar, 1)
+    DisableGadget(#PB_GadgetType_Scintilla, 1)
+    DisableGadget(#PB_GadgetType_ScrollArea, 1)
+    DisableGadget(#PB_GadgetType_Shortcut, 1)
+    DisableGadget(#PB_GadgetType_Spin, 1)
+    DisableGadget(#PB_GadgetType_Splitter, 1)
+    DisableGadget(#PB_GadgetType_String, 1)
+    DisableGadget(#PB_GadgetType_Text, 1)
+    DisableGadget(#PB_GadgetType_TrackBar, 1)
+    DisableGadget(#PB_GadgetType_Tree, 1)
+    ;;DisableGadget(#PB_GadgetType_Web, 1)
+    
+  
   Repeat
     Define  Event = WaitWindowEvent()
     Select event 
@@ -108,8 +142,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
-; CursorPosition = 61
-; FirstLine = 53
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

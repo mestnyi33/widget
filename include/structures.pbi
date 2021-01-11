@@ -104,7 +104,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_text
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
-      fontID.i[2]
+      *fontID ; .i[2]
       
       StructureUnion
         pass.b
@@ -647,6 +647,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *address            ; root list address
       *widget._s_WIDGET   ; opened list element
       
+      *fontID
       container.i
       window.i
       gadget.i
