@@ -221,7 +221,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   AddItem (GetWidget(0), -1,"Panel 3")
   Button(10, 15, 100, 24,"Button 3_1")
-  *b = Button(10, 15+30, 100, 24,"Auto resize button then change font", #__Button_MultiLine)
+  *b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__Button_MultiLine)
   SetFont(*b, FontID(5))
   
   ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
