@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If StartEnumerate(*w1);Root())
           If Not hide(widget()) ;And GetParent(widget()) = *w1
-            Debug " class - " + widget()\Class +" ("+ widget()\_tabindex +" - parent_item)"
+            Debug " class - " + widget()\Class +" ("+ widget()\item +" - parent_item)"
           EndIf
           StopEnumerate()
         EndIf
@@ -113,6 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList()
       SetState(*w2, 4)
       
+      AddItem(*w1, -1, "Под-Панель 5")
       
       CloseList()
       
@@ -126,6 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Bind(@_Events(), *w)
       ;       Bind(@_Events(), *w1)
       ;       Bind(@_Events(), *w2)
+      SetState(*w1, 3)
       
       ReDraw(Root())
     

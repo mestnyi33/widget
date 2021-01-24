@@ -32,18 +32,19 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     Protected String.s
+    Protected eventtype = WidgetEventType( )
     
-    Select this()\event
+    Select eventtype
       Case #PB_EventType_Focus
-        String.s = "focus "+Str(this()\widget\index-1)+" "+this()\event
+        String.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
       Case #PB_EventType_LostFocus
-        String.s = "lostfocus "+Str(this()\widget\index-1)+" "+this()\event
+        String.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
       Case #PB_EventType_Change
-        String.s = "change "+Str(this()\widget\index-1)+" "+this()\event
+        String.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
     EndSelect
     
-    If this()\event = #PB_EventType_Focus
-      Debug String.s +" - widget" +" get text - "+ GetText(this()\widget)
+    If eventtype = #PB_EventType_Focus
+      Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
       Debug String.s +" - widget"
     EndIf

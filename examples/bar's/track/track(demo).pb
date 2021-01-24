@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ClearDebugOutput()
@@ -6,7 +6,7 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     ;SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -15,17 +15,18 @@ Procedure events_widgets()
   ClearDebugOutput()
   ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
   
-  Select *event\type
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
+      ;SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
       Debug  ""+GetIndex(*event\widget)+" - widget change " + GetState(*event\widget)
   EndSelect
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
 If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  TrackBarGadget(0, 10,  40, 250, 20, 0, 10000)
-  SetGadgetState(0, 5000)
+  ;;TrackBarGadget(0, 10,  40, 250, 20, 0, 10000)
+  ;;SetGadgetState(0, 5000)
+  TrackBarGadget(0, 10,  40, 250, 20, -10000, 10000)
   
   TrackBarGadget(1, 10, 120, 250, 20, 0, 30, #PB_TrackBar_Ticks)
   SetGadgetState(1, 3000)
@@ -41,8 +42,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_Sys
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  Track(10+320,  40, 250, 20, 0, 10000)
-  SetState(GetWidget(0), 5000)
+  ;;Track(10+320,  40, 250, 20, 0, 10000)
+  ;;SetState(GetWidget(0), 5000)
+  Track(10+320,  40, 250, 20, -10000, 10000)
   
   Track(10+320, 120, 250, 20, 0, 30, #PB_TrackBar_Ticks)
   SetState(GetWidget(1), 3000)
@@ -62,6 +64,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_Sys
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = q
 ; EnableXP

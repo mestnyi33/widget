@@ -2,126 +2,231 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-XIncludeFile "../../widgets.pbi"
+XIncludeFile "../../widgets+.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
+  #__round = 7
   
-  Global g_Canvas, NewList *List._S_widget()
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    LoadFont(0, "Arial", 16)
+  CompilerElse
+    LoadFont(0, "Arial", 11)
+  CompilerEndIf 
   
-  
-  Procedure _ReDraw(Canvas)
-    If StartDrawing(CanvasOutput(Canvas))
-      FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
-      
-      ForEach *List()
-        If Not *List()\hide
-          Draw(*List())
+  Define m.s=#LF$
+  Global Text.s = "This is a long line." + m.s +
+           "Who should show." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "I have to write the text in the box or not." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "The string must be very long." + m.s +
+           "Otherwise it will not work." ;+ m.s +
+ 
+  Procedure _Events()
+    Select this()\event
+      Case #PB_EventType_MouseEnter
+        Debug "post enter - "+this()\widget\index
+        If GetButtons(this()\widget)
+          this()\widget\color\back = $00FF00
+        Else
+          this()\widget\color\back = $0000FF
         EndIf
-      Next
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
-  Procedure.i Canvas_Events()
-    Protected Canvas.i = EventGadget()
-    Protected EventType.i = EventType()
-    Protected Repaint
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    ;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
-    ;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected *callback = GetGadgetData(Canvas)
-    ;     Protected *this._S_bar = GetGadgetData(Canvas)
-    
-    Select EventType
-      Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                                ;          ForEach *List()
-                                ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
-                                ;          Next
-        Repaint = 1
         
-      Case #PB_EventType_LeftButtonDown
-        SetActiveGadget(Canvas)
+      Case #PB_EventType_MouseLeave
+        Debug "post leave - "+this()\widget\index
+        this()\widget\color\back = $FF0000
+        
+      Case #PB_EventType_Repaint
+        DrawingMode(#PB_2DDrawing_Transparent)
+        DrawText(2,0, Str(this()\widget\index), 0)
         
     EndSelect
-    
-    ForEach *List()
-      Repaint | widget::DoEvents(*List(), EventType, MouseX, MouseY)
-    Next
-    
-    If Repaint 
-      _ReDraw(Canvas)
-    EndIf
   EndProcedure
   
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
-
-If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-    Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    ;     ;SetGadgetState(Splitter_1, 20)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
-
-;     g_Canvas = CanvasGadget(-1, 420, 0, 430, 280);, #PB_Canvas_Container)
-;     BindGadgetEvent(g_Canvas, @Canvas_Events())
-;     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
-    
-    g_Canvas = GetGadget(Open(0, 420, 0, 430, 280));GetGadget(GetRoot(canvas(0, 420, 0, 430, 280)))
-        
-    Button_0 = Progress(0, 0, 0, 0, 0, 100) ; No need to specify size or coordinates
-    Button_1 = Progress(0, 0, 0, 0, 10,100) ; No need to specify size or coordinates
-    Button_2 = Progress(0, 0, 0, 0, 20,100) ; as they will be sized automatically
-    Button_3 = Progress(0, 0, 0, 0, 30,100) ; as they will be sized automatically
-    Button_4 = Progress(0, 0, 0, 0, 40,100) ; as they will be sized automatically
-    Button_5 = Progress(0, 0, 0, 0, 50,100) ; as they will be sized automatically
-    
-    Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    ;SetState(Splitter_1, 20)
-    Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = Splitter(10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-;     AddElement(*List()) : *List() = Button_0
-;     AddElement(*List()) : *List() = Button_1
-;     AddElement(*List()) : *List() = Button_2
-;     AddElement(*List()) : *List() = Button_3
-;     AddElement(*List()) : *List() = Button_4
-;     AddElement(*List()) : *List() = Button_5
-;     
-;     AddElement(*List()) : *List() = Splitter_0
-;     AddElement(*List()) : *List() = Splitter_1
-;     AddElement(*List()) : *List() = Splitter_2
-;     AddElement(*List()) : *List() = Splitter_3
-;     AddElement(*List()) : *List() = Splitter_4
-    redraw(root())
-    TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
-    
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
+  ;     SetData(Container(20, 20, 180, 180), 1)
+  ;     SetData(Container(70, 10, 70, 180, #__flag_NoGadget), 9) 
+  ;     SetData(Container(20, 20, 180, 180), 2)
+  ;     SetData(Container(20, 20, 180, 180), 3)
+  ;     
+  ;     SetData(Container(0, 20, 180, 30, #__flag_NoGadget), 4) 
+  ;     SetData(Container(0, 35, 180, 30, #__flag_NoGadget), 5) 
+  ;     SetData(Container(0, 50, 180, 30, #__flag_NoGadget), 6) 
+  ;     SetData(Splitter(20, 70, 180, 50, Container(0,0,0,0, #__flag_NoGadget), Container(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
+  ;     
+  ;     CloseList()
+  ;     CloseList()
+  ;     SetData(Container(10, 70, 70, 180), 8) 
+  ;     SetData(Container(10, 10, 70, 30, #__flag_NoGadget), 10) 
+  ;     SetData(Container(10, 20, 70, 30, #__flag_NoGadget), 11) 
+  ;     SetData(Container(10, 30, 70, 30, #__flag_NoGadget), 12) 
+  ;     CloseList()
+  ;     
+  ;     Bind(@Events(), root())
+  ;     Redraw(Root())
+  ;   EndIf
+  ;   
+  
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
   EndIf
-
+  
+  If Open(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
+    Define i, *w,*w1,*w2
+    
+    Image(5, 5, 150, 100, 0, #__flag_Checkboxes)
+    
+;     ListIcon(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
+;     AddColumn(widget(), -1, "column_1", 100)
+;     For i=0 To 10;20
+;       If i=3 Or i=8 Or i=14
+;         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+;       Else
+;         AddItem(Widget(), i, "0_item_"+ Str(i)+Chr(10)+"1_item_"+ Str(i))
+;       EndIf
+;     Next
+    
+    Tree_Properties(5, 215, 150, 150, #__flag_Checkboxes)
+    For i=0 To 10;20
+      If i=3 Or i=8 Or i=14
+        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+      Else
+        AddItem(Widget(), i, "item_"+ Str(i))
+      EndIf
+    Next
+    
+    Panel     (160, 5, 150, 100)
+    For i=0 To 10
+      AddItem (Widget(), -1, "item_"+Str(i))
+    Next
+    CloseList()
+    SetState(Widget(), 5)
+    
+    ; demo editor
+    Editor(320, 5, 150, 100)
+    SetText(Widget(), Text.s) 
+    ;redraw(*g)
+    Define a
+    For a = 0 To 2
+      AddItem(Widget(), a, "Line "+Str(a))
+    Next
+    AddItem(Widget(), a, "")
+    For a = 4 To 6
+      AddItem(Widget(), a, "Line "+Str(a))
+    Next
+    ;SetFont(*g, FontID(0))
+    
+    Tree(160, 110, 150, 100, #__flag_Checkboxes)
+    For i=0 To 20
+      If i=3
+        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
+      Else
+        AddItem(Widget(), i, "item_"+ Str(i))
+      EndIf
+    Next
+    
+    ScrollArea(320,110,150,100, 200,200)
+    Button(10, 15, 80, 24,"Кнопка 1")
+    ;     Combobox(10, 15, 80, 24)
+    ;     AddItem(Widget(), -1, "Combobox")
+    ;     SetState(Widget(), 0)
+    
+    Button(95, 15, 80, 24,"Кнопка 2")
+    CloseList()
+    
+    Container(160,215,150,150, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Button(10,5,50,35, "butt") 
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    Container(10,75,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Button(10,5,50,35, "butt1") 
+    CloseList()
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    ; demo bar type
+    Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1")), Button(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
+    ;Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), Button(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
+    
+    Spin(5, 365+5, 150, 30, 0, 20)
+    SetState(Widget(), 5)
+    Spin(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
+    SetState(Widget(), 5)
+    Spin(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
+    SetState(Widget(), 5)
+    
+    Scroll(160, 370, 150, 20, 0, 50, 30)
+    SetState(Widget(), 5)
+    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__bar_Inverted)
+    SetState(Widget(), 5)
+    
+    Track(160, 370+53, 150, 20, 0, 20, #__bar_Ticks,0)
+    SetState(Widget(), 5)
+    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Inverted,0)
+    SetState(Widget(), 5)
+    
+    Progress(160, 370+105, 150, 20, 0, 20)
+    SetState(Widget(), 5)
+    Progress(160, 370+105+25, 150, 10, 0, 20, #__bar_Inverted)
+    SetState(Widget(), 5)
+    
+    Scroll(320, 370, 20, 150, 0, 50, 30, #__bar_Vertical, #__round+2)
+    SetState(Widget(), 5)
+    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Inverted, #__round/2+2)
+    SetState(Widget(), 5)
+    
+    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Inverted)
+    SetState(Widget(), 5)
+    Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetState(Widget(), 5)
+    
+    Progress(320+105, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetState(Widget(), 5)
+    Progress(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Inverted, #__round/2)
+    SetState(Widget(), 5)
+    
+    
+    ;         Scroll(160, 370, 150, 40, 0, 50, 30)
+    ;         SetState(Widget(), 5)
+    ;         Track(160, 370+55, 150, 40, 0, 20)
+    ;         SetState(Widget(), 5)
+    ;         Progress(160, 370+110, 150, 40, 0, 20)
+    ;         SetState(Widget(), 5)
+    ;         
+    ;         Scroll(320, 370, 40, 150, 0, 50, 30, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;         Track(320+55, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;         Progress(320+110, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;     
+    ReDraw(Root())
+  EndIf
+  
+  Repeat
+    Define Event = WaitWindowEvent()
+    ; repaint()
+  Until Event= #PB_Event_CloseWindow
+  
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --

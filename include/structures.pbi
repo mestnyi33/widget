@@ -191,6 +191,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       hide.b
       draw.b
       round.a
+      
       text._s_text
       image._s_image
       color._s_color
@@ -234,8 +235,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *last_visible._s_rows    ; last draw elemnt in the list 
       *last_add._s_rows        ; last added last element
       
-      *selected._s_rows        ; at point pushed item
-         *leaved._s_rows         ; pushed last entered item
+       *selected._s_rows        ; at point pushed item
+       *leaved._s_rows         ; pushed last entered item
        *entered._s_rows         ; pushed last entered item
       
       List *draws._s_rows( )
@@ -260,26 +261,23 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      ; splitter - fixed button index 
-      ; tab - setstate( ) button index 
-      fixed.l  
+      item.l  ; tab opened item index  
+      fixed.l ; splitter fixed button index  
       mode.i
-      
-      index.l ; current added index 
-      from.l  ; entered button index
       
       *selected._s_buttons
       button._s_buttons[4]
-      ;;  *leaved._s_buttons         ; pushed last entered item
        
       max.l
-      min.l
+      min.l[3]
+      minsize.l[3]
+      minsizefix.l[3]
       hide.b
       
       change.b ; tab items to redraw
       percent.f
       increment.f
-      vertical.b
+      ; vertical.b
       inverted.b
       direction.l
       
@@ -483,18 +481,25 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_post
-    Structure _s_post
+    Structure _s_EVENTDATA
       *type ; EventType( )
       *item ; EventItem( )
       *data ; EventData( )
     EndStructure
     
   ;- - _s_bind 
+    Structure _s_func
+      *func.pFunc
+    EndStructure
+    
     Structure _s_bind 
-      *type
-      *call.pFunc
-      
-      List *callback( )
+      *eventtype
+      List *callback._s_func( )
+    EndStructure
+    
+    Structure _s_EVENT
+      List *bind._s_bind( )
+      List *queue._s_EVENTDATA( )
     EndStructure
     
     ;-
@@ -535,10 +540,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       StructureUnion
         *_owner._s_WIDGET; this window owner parent
-        *_tab._s_WIDGET; = panel( ) tabbar gadget
         *_group._s_WIDGET; = option( ) groupbar gadget  
         *_tt._s_tt
+        
       EndStructureUnion
+      
+      *_tab._s_WIDGET; = panel( ) tabbar gadget
+      scroll._s_scroll  ; vertical & horizontal scrollbars
       
       *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
@@ -564,7 +572,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
       __state.w ; #__ss_ (font; back; frame; fore; line)
-      _tabindex.l ; parent panel tab index
+      item.l ; parent-panel tab item index
       
       
       child.b ; is the widget composite?
@@ -596,7 +604,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       text._s_text 
       
       bar._s_bar
-      scroll._s_scroll 
+      
       button._s_buttons ; checkbox; optionbox
       
       *align._s_align
@@ -604,9 +612,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *time_click
       *time_down
       
-      ; event_queue ; очередь событий
-      List *bind._s_bind( )
-      List *post._s_post( )
+      *event._s_EVENT
       
       List *column._s_column( )
     EndStructure
@@ -666,18 +672,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_events
-    Structure _s_events
+    Structure _s_events 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; top level
       
       *active._s_WIDGET             ; GetActiveWindow( )\
       *widget._s_WIDGET             ; EventWidget( )\
-      
-      ;;*type                       ; EventType( )
-      *event                        ; EventType( )
-      *item                         ; EventItem( )
-      *data                         ; EventData( )
+      *event._s_EVENTDATA
       
       List *_root._s_ROOT( )        ; 
       List *_childrens._s_WIDGET( ) ; widget( )\
@@ -693,5 +695,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------
+; Folding = -------9-
 ; EnableXP

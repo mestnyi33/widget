@@ -41,15 +41,17 @@ CompilerIf #PB_Compiler_IsMainFile
   ; first splitter
   ButtonGadget(11, 0, 0, 0, 0, "BTN1")
   SplitterGadget(12, 125, 10, 250, 70, 10, 9, #PB_Splitter_Separator ) 
-  SetGadgetState(12, 43)
   SplitterGadget(13, 0, 0, 250, 150, 11, 12, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  ;SetGadgetState(12, 43)
   ;SetGadgetState(13, 30)
   
   ; second splitter
   ButtonGadget(14, 0, 0, 0, 0, "BTN14")
   SplitterGadget(15, 125, 10, 250, 150, 13, 14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+;   SplitterGadget(30,125, 10, 250, 150, 15, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator | #PB_Splitter_Vertical)
+;   SetGadgetState(30, 250)
   
-  SetGadgetState(15, 250-30-9)
+  SetGadgetState(15, 250-30-#__splitter_buttonsize)
   SetGadgetState(13, 30)
   
  
@@ -71,15 +73,17 @@ CompilerIf #PB_Compiler_IsMainFile
   ; first splitter
   w_11 = widget::Button(0, 0, 0, 0, "BTN11")
   w_12 = widget::Splitter(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
-  widget::SetState(w_12, 43)
   w_13 = widget::Splitter(0, 0, 250, 150, w_11, w_12, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-  Define *this._s_widget = w_13
-  ; widget::SetState(w_13, 30)
+  ;SetState(w_9, 43)
   
   ; second splitter
   w_14 = widget::Button(0, 0, 0, 0, "BTN14")
   w_15 = widget::Splitter(125, 170, 250, 150, w_13, w_14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   
+;   widget::Splitter(125, 170, 250, 150, w_15, 0, #PB_Splitter_Separator | #PB_Splitter_Vertical)
+;   widget::SetState(widget(), 250)
+;   
+  Define *this._s_widget = w_13
   ;*this\bar\max = 0
   Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
 ;   *this\resize &~ #__resize_change
@@ -88,20 +92,23 @@ CompilerIf #PB_Compiler_IsMainFile
                     
   widget::SetState(w_13, 30)
   Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
+  ;widget::SetState(w_15, 250-30-#__splitter_buttonsize)
   widget::SetState(w_15, 250-30-#__splitter_buttonsize)
   
-  Debug GetGadgetState(13)
-  Debug GetGadgetState(15)
   
-  Debug GadgetWidth(11)
-  Debug GadgetWidth(14)
+  
+  Debug "get 13 state - "+GetGadgetState(13)
+  Debug "get 15 state - "+GetGadgetState(15)
+  
+  Debug "get 11 width - "+GadgetWidth(11)
+  Debug "get 14 width - "+GadgetWidth(14)
   
   Debug ""
-  Debug widget::GetState(w_13)
-  Debug widget::GetState(w_15)
+  Debug "get 13 state - "+widget::GetState(w_13)
+  Debug "get 15 state - "+widget::GetState(w_15)
   
-  Debug widget::Width(w_11)
-  Debug widget::Width(w_14)
+  Debug "get 11 width - "+widget::Width(w_11)
+  Debug "get 14 width - "+widget::Width(w_14)
   
   Define event
   Repeat

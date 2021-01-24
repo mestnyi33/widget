@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected result
     Static _2click
     
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_LeftButtonDown : result = 1
         If _2click = 2
           _2click = 0

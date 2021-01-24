@@ -30,7 +30,16 @@
     #__spin_padding_text = 1
     #__spin_buttonsize2 = 15
     #__spin_buttonsize = 18
-    #__splitter_buttonsize = 9
+    ;#__splitter_buttonsize = 9
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      #__splitter_buttonsize = 9
+    CompilerEndIf
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      #__splitter_buttonsize = 7;4
+    CompilerEndIf
+    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      #__splitter_buttonsize = 4
+    CompilerEndIf
     #__scroll_buttonsize = 16
     
     #__arrow_type = 1 ;
@@ -40,6 +49,8 @@
     
     #__a_count = 9+4
     #__a_moved = 9
+    
+    #__bar_minus = 1
     
     ; splitter 
     #__split_1 = 1
@@ -129,6 +140,7 @@
       #__s_scrolled
       #__s_dragged
       #__s_dropped ; drop enter state
+      #__s_drawing
     EndEnumeration
     
     ; \__state
