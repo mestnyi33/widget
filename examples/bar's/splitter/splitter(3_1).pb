@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_3, 50)
   SetState(s_4, -50)
   
-  SetState(s_6, len/2);- #__splitter_buttonsize)
+  SetState(s_6, len/2- #__splitter_buttonsize)
   SetState(s_7, len/2- #__splitter_buttonsize)
   
   Debug GetState(s_0)

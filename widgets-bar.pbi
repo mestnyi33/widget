@@ -4798,7 +4798,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        ;If *this\bar\thumb\change = 0
+        If *this\bar\thumb\change = 0
           ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
           ; ThumbPos = Round( ( ScrollPos - *this\bar\min ) * *this\bar\percent, #PB_Round_Nearest ) 
           ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
@@ -4810,7 +4810,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
             *this\bar\thumb\pos = ThumbPos
           EndIf
-        ;EndIf
+        EndIf
       EndIf
       
       ; 
@@ -5121,22 +5121,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
          *this\bar\page\change = *this\bar\page\pos - ScrollPos
-          *this\bar\page\pos = ScrollPos
-           If *this\bar\thumb\change = 0
-          ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
-          ; ThumbPos = Round( ( ScrollPos - *this\bar\min ) * *this\bar\percent, #PB_Round_Nearest ) 
-          Protected ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
-        
-          If ThumbPos < *this\bar\area\pos + *this\bar\min[1] : ThumbPos = *this\bar\area\pos + *this\bar\min[1] : EndIf
-          If ThumbPos > *this\bar\area\end - *this\bar\min[2] : ThumbPos = *this\bar\area\end - *this\bar\min[2] : EndIf
-          
-          If *this\bar\thumb\pos <> ThumbPos
-            *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
-            *this\bar\thumb\pos = ThumbPos
-          EndIf
-        EndIf
-        
-          ProcedureReturn #True
+         *this\bar\page\pos = ScrollPos
+         ProcedureReturn #True
         EndIf
       EndWith
     EndProcedure
@@ -5165,7 +5151,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure.b Bar_SetState( *this._s_widget, state.f )
       If Bar_Change( *this, state ) 
-         ProcedureReturn Bar_Update( *this ) 
+        ProcedureReturn Bar_Update( *this ) 
       EndIf
     EndProcedure
     
@@ -17589,5 +17575,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------v+-v--0-f-8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------+-f--8--+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
