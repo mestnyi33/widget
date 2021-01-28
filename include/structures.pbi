@@ -261,6 +261,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
+      index.l[3] ;;;;;
+      gadget.i[3]
+      
       item.l  ; tab opened item index  
       fixed.l ; splitter fixed button index  
       mode.i

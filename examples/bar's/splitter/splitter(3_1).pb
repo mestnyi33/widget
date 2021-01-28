@@ -2,7 +2,10 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../widgets-splitter.pbi"
+XIncludeFile "../../../widgets-bar.pbi"
+
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -70,10 +73,12 @@ CompilerIf #PB_Compiler_IsMainFile
   SetGadgetState(88, len)
   
   
-  SetGadgetState(3, -10)
-  SetGadgetState(6, len-10-#__splitter_buttonsize)
-  SetGadgetState(31, len/2)
-  SetGadgetState(61, len/2)
+  SetGadgetState(3, -50)
+  SetGadgetState(6, len-50-#__splitter_buttonsize)
+  SetGadgetState(31, 50)
+  SetGadgetState(61, -50)
+  SetGadgetState(311, len/2- #__splitter_buttonsize)
+  SetGadgetState(611, len/2- #__splitter_buttonsize)
   
   
   ; first splitter
@@ -107,24 +112,24 @@ CompilerIf #PB_Compiler_IsMainFile
   s_8 = widget::Splitter(125, 400, len, 70, s_6, s_7, #PB_Splitter_Separator)
   
   s_9 = widget::Splitter(125, 240, len, 70, s_2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  s_10 = widget::Splitter(125, 320, len, 70, 0, s_5, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  s_10 = widget::Splitter(125, 320, len, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   s_11 = widget::Splitter(125, 400, len, 70, s_8, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
   widget::SetAttribute( s_3, #PB_Splitter_FirstMinimumSize, len/2 )
   widget::SetAttribute( s_4, #PB_Splitter_SecondMinimumSize, len/2 )
     
   SetState(s_9, len)
-  SetState(s_10, len-30)
+  SetState(s_10, len); -30)
   SetState(s_11, len)
   
   SetState(s_0, -50)
-  SetState(s_1, len-50)
+  SetState(s_1, len-50- #__splitter_buttonsize)
   
   SetState(s_3, 50)
   SetState(s_4, -50)
   
-  SetState(s_6, len/2)
-  SetState(s_7, len/2)
+  SetState(s_6, len/2);- #__splitter_buttonsize)
+  SetState(s_7, len/2- #__splitter_buttonsize)
   
   Debug GetState(s_0)
   Debug GetState(s_1)

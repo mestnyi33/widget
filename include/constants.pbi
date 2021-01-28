@@ -52,7 +52,9 @@
     
     #__bar_minus = 1
     
+    #__tab_0 = 0
     ; splitter 
+    #__split_0 = 0
     #__split_1 = 1
     #__split_2 = 2
     
