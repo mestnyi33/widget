@@ -5042,7 +5042,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf  
     EndProcedure
     
-    Procedure  _bar_update_( *this._s_widget )
+    Procedure.b Bar_Update( *this._s_widget )
       Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
       
       *this\bar\area\pos = 0
@@ -5088,31 +5088,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       _bar_resize_( *this )  
     EndProcedure
     
-    
-    Procedure.b Bar_Update( *this._s_widget )
-      ProcedureReturn _bar_update_( *this ) 
-      
-      
-      Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
-      
-      *this\bar\area\pos = 0
-      
-      ; get area size
-      If *this\vertical
-        *this\bar\area\len = *this\height[#__c_frame] 
-      Else
-        *this\bar\area\len = *this\width[#__c_frame] 
-      EndIf
-      
-      *this\bar\thumb\len = *this\bar\button[#__b_3]\size
-      *this\bar\max = *this\bar\area\len - *this\bar\thumb\len
-      *this\bar\page\end = *this\bar\max - *this\bar\page\len
-      *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len
-      *this\bar\percent = *this\bar\area\end / *this\bar\page\end
-      
-      ProcedureReturn  _bar_resize_( *this )
-      ProcedureReturn _bar_update_( *this )
-    EndProcedure
     
     Procedure.b Bar_SetPos( *this._s_widget, ThumbPos.i )
       Protected result, ScrollPos.f
@@ -6238,7 +6213,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              *this\type = #PB_GadgetType_ProgressBar Or
              *this\type = #PB_GadgetType_Splitter
             
-            _bar_update_( *this )
+            Bar_Update( *this )
           EndIf
           
         Else
@@ -17591,5 +17566,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------f--4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

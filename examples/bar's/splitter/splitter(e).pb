@@ -5,7 +5,8 @@
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
 ; 
 
-XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widgets-bar.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
