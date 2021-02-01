@@ -1,15 +1,16 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widgets-bar.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
+  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
   
   Procedure events_gadgets()
-    Debug ""+EventGadget()+ " - gadget event - " +EventType()
+    ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+    ;Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -84,6 +85,19 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, sh)
       SetAttribute(*g, #PB_ScrollArea_Y, sh)
+      
+      Debug ""
+      Debug *g\scroll\v\bar\page\pos
+      Debug *g\scroll\v\bar\page\len
+      Debug *g\scroll\v\bar\page\end
+      Debug *g\scroll\v\bar\page\change
+      Debug *g\scroll\v\bar\percent
+      Debug *g\scroll\v\bar\area\end
+      Debug *g\scroll\v\bar\thumb\pos
+      Debug *g\scroll\v\bar\thumb\len
+      Debug *g\scroll\v\bar\thumb\end
+      Debug *g\scroll\v\bar\thumb\change
+      Debug ""
     EndIf
     
     Debug "gadget"

@@ -4317,11 +4317,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If \bar\mode & #PB_TrackBar_Ticks
               For i = *this\bar\min To *this\bar\max
-                Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\Frame )
+               Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\Frame )
               Next
-              ;               For i = 0 To \bar\page\end
-              ;                 Line( x + ( Round( i * *this\bar\percent, #PB_Round_Nearest ) ), y,1,6-Bool(i>0 And i<\bar\page\end And i<>\bar\page\end/2)*3,\bar\button[#__b_3]\color\Frame )
-              ;               Next
+;               For i = 0 To \bar\page\end
+;                 Line( x + ( Round( i * *this\bar\percent, #PB_Round_Nearest ) ), y,1,6-Bool(i>0 And i<\bar\page\end And i<>\bar\page\end/2)*3,\bar\button[#__b_3]\color\Frame )
+;               Next
             EndIf
             
             Line( x, y-3,1,3,*this\bar\button[#__b_3]\color\Frame )
@@ -4749,156 +4749,82 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure Bar_GetPos( *this._s_widget )
-      Protected fixed.i, ScrollPos.f, ThumbPos.i
-      
-      ;       If *this\bar\fixed 
-      ;         ; поведение при изменении размера 
-      ;         ; чтобы вернуть fix сплиттер на свое место
-      ;         If *this\bar\button[*this\bar\fixed]\fixed > ( *this\bar\area\len - *this\bar\thumb\len )
-      ;           If ( *this\bar\area\len - *this\bar\thumb\len ) > ( *this\bar\area\pos + *this\bar\min[2] ) 
-      ;             fixed = ( *this\bar\area\len - *this\bar\thumb\len )
-      ;           ElseIf ( *this\bar\area\len - *this\bar\thumb\len ) > *this\bar\area\pos
-      ;             fixed = *this\bar\area\pos  
-      ;           Else
-      ;             fixed = ( *this\bar\area\len - *this\bar\thumb\len )
-      ;           EndIf
-      ;           Debug "bar "+fixed +" "+ *this\bar\fixed +" "+ fixed
-      ;         Else
-      ;           fixed = *this\bar\button[*this\bar\fixed]\fixed
-      ;         EndIf
-      ;         
-      ;         If fixed < 0 
-      ;           fixed = 0 
-      ;         EndIf
-      ;         
-      ;         If *this\bar\fixed = #__split_1
-      ;           *this\bar\thumb\change = *this\bar\thumb\pos - ( *this\bar\area\pos + fixed )
-      ;           *this\bar\thumb\pos = *this\bar\area\pos + fixed 
-      ;         Else
-      ;           If *this\bar\min[1] < *this\bar\area\end - fixed 
-      ;             *this\bar\thumb\change = *this\bar\thumb\pos - ( *this\bar\area\end - fixed ) 
-      ;             *this\bar\thumb\pos = *this\bar\area\end - fixed 
-      ;           EndIf
-      ;         EndIf
-      ;         
-      ;         
-      ;         ; чтобы сделать паведение
-      ;         ; стандартное как в OS (мне не нравится)
-      ;         ; *this\bar\button[*this\bar\fixed]\fixed = fixed
-      ;       Else
-      ; get thumb pos
-      ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
-      ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
-      
-      ;         If ( *this\bar\fixed And Not *this\bar\thumb\change ); And *this\type = #PB_GadgetType_Splitter )
-      ;           If ThumbPos < *this\bar\area\pos + *this\bar\button[#__b_1]\fixed : ThumbPos = *this\bar\area\pos + *this\bar\button[#__b_1]\fixed : EndIf
-      ;           If ThumbPos > *this\bar\area\end - *this\bar\button[#__b_2]\fixed  : ThumbPos = *this\bar\area\end - *this\bar\button[#__b_2]\fixed  : EndIf
-      ;         Else
-      ;           If ThumbPos < *this\bar\area\pos + *this\bar\min[1] : ThumbPos = *this\bar\area\pos + *this\bar\min[1] : EndIf
-      ;           If ThumbPos > *this\bar\area\end - *this\bar\min[2] : ThumbPos = *this\bar\area\end - *this\bar\min[2] : EndIf
-      ;         EndIf
-      ;       If ThumbPos < *this\bar\area\pos : ThumbPos = *this\bar\area\pos : EndIf
-      ;       If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
-      If ThumbPos < *this\bar\area\pos + *this\bar\min[1] : ThumbPos = *this\bar\area\pos + *this\bar\min[1] : EndIf
-      If ThumbPos > *this\bar\area\end - *this\bar\min[2] : ThumbPos = *this\bar\area\end - *this\bar\min[2] : EndIf
-      
-      If *this\bar\thumb\pos <> ThumbPos
-        *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
-        *this\bar\thumb\pos = ThumbPos
-        ProcedureReturn #True
-      EndIf
-      ;       EndIf
-    EndProcedure
-    
-    Procedure.b Bar_Change( *this._s_widget, ScrollPos.f )
-      With *this
-        If *this\bar\page\pos <> ScrollPos 
-          If *this\bar\page\pos > ScrollPos
-            *this\bar\direction =- ScrollPos
-          Else
-            *this\bar\direction = ScrollPos
-          EndIf
-          
-          *this\bar\page\change = *this\bar\page\pos - ScrollPos
-          *this\bar\page\pos = ScrollPos
-          
-          ; get thumb pos
-          Bar_GetPos( *this )
-          
-          ProcedureReturn #True
-        EndIf
-      EndWith
-    EndProcedure
-    
-    
-    Procedure  _bar_resize_( *this._s_widget )
+    Procedure  Bar_Resize( *this._s_widget )
       Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
       
-      If *this\bar\fixed 
-        If *this\bar\thumb\change
-          If *this\bar\fixed = #__split_1
-            *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
-          Else
-            If *this\vertical
-              *this\bar\button[#__split_2]\fixed = ( *this\height[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size )
+      ; get thumb pos
+      If *this\bar\fixed And Not *this\bar\page\change
+        If *this\bar\fixed = #__split_1
+          ThumbPos = *this\bar\button[*this\bar\fixed]\fixed
+          
+          If ThumbPos > *this\bar\area\end - *this\bar\min[2]
+            If *this\bar\min[1] < *this\bar\area\end - *this\bar\min[2]
+              ThumbPos = *this\bar\area\end - *this\bar\min[2]
             Else
-              *this\bar\button[#__split_2]\fixed = ( *this\width[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size ) 
+              If *this\bar\min[1] > *this\bar\area\end
+                ThumbPos = *this\bar\area\end
+              Else
+                ThumbPos = *this\bar\min[1]
+              EndIf
             EndIf
           EndIf
           
-        Else
-          If *this\bar\fixed = #__split_1
-            *this\bar\thumb\pos = *this\bar\button[*this\bar\fixed]\fixed
-            
-            If *this\bar\thumb\pos > *this\bar\area\end - *this\bar\min[2]
-              If *this\bar\min[1] < *this\bar\area\end - *this\bar\min[2]
-                *this\bar\thumb\pos = *this\bar\area\end - *this\bar\min[2]
-              Else
-                If *this\bar\min[1] > *this\bar\area\end
-                  *this\bar\thumb\pos = *this\bar\area\end
-                Else
-                  *this\bar\thumb\pos = *this\bar\min[1]
-                EndIf
-              EndIf
-            EndIf
-            
-          Else 
-            *this\bar\thumb\pos = *this\bar\area\end - *this\bar\button[*this\bar\fixed]\fixed
-            
-            If *this\bar\thumb\pos < *this\bar\min[1]
-              If *this\bar\min[1] > *this\bar\area\end
-                *this\bar\thumb\pos = *this\bar\area\end
-              Else
-                *this\bar\thumb\pos = *this\bar\min[1]
-              EndIf
+        Else 
+          ThumbPos = *this\bar\area\end - *this\bar\button[*this\bar\fixed]\fixed
+          
+          If ThumbPos < *this\bar\min[1]
+            If *this\bar\min[1] > *this\bar\area\end
+              ThumbPos = *this\bar\area\end
+            Else
+              ThumbPos = *this\bar\min[1]
             EndIf
           EndIf
         EndIf
-        ;Debug *this\bar\button[*this\bar\fixed]\fixed
         
-      Else
-        
-        ; fixed splitter mac OS
-        If *this\bar\page\pos < *this\bar\min
-          If *this\bar\page\end 
-            *this\bar\page\pos = *this\bar\page\end + *this\bar\page\pos
-          Else
-            Debug "error page\end - "+*this\bar\page\end
-          EndIf
-        EndIf
-        
-        ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
-        ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
-        
-        If ThumbPos < *this\bar\area\pos + *this\bar\min[1] : ThumbPos = *this\bar\area\pos + *this\bar\min[1] : EndIf
-        If ThumbPos > *this\bar\area\end - *this\bar\min[2] : ThumbPos = *this\bar\area\end - *this\bar\min[2] : EndIf
         If *this\bar\thumb\pos <> ThumbPos
           *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
           *this\bar\thumb\pos = ThumbPos
         EndIf
+        
+      Else
+        If Not *this\bar\fixed 
+          ; fixed mac-OS splitterGadget
+          If *this\bar\page\pos < *this\bar\min
+            If *this\bar\page\end 
+              *this\bar\page\pos = *this\bar\page\end + *this\bar\page\pos
+            Else
+              Debug "error page\end - "+*this\bar\page\end
+            EndIf
+          EndIf
+        EndIf
+        
+        If *this\bar\thumb\change = 0
+          ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
+          ; ThumbPos = Round( ( ScrollPos - *this\bar\min ) * *this\bar\percent, #PB_Round_Nearest ) 
+          ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
+        
+          If ThumbPos < *this\bar\area\pos + *this\bar\min[1] : ThumbPos = *this\bar\area\pos + *this\bar\min[1] : EndIf
+          If ThumbPos > *this\bar\area\end - *this\bar\min[2] : ThumbPos = *this\bar\area\end - *this\bar\min[2] : EndIf
+          
+          If *this\bar\thumb\pos <> ThumbPos
+            *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
+            *this\bar\thumb\pos = ThumbPos
+          EndIf
+        EndIf
       EndIf
       
+      ; 
+      If *this\bar\fixed And *this\bar\page\change
+        If *this\bar\fixed = #__split_1
+          *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
+        Else
+          If *this\vertical
+            *this\bar\button[#__split_2]\fixed = ( *this\height[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size )
+          Else
+            *this\bar\button[#__split_2]\fixed = ( *this\width[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size ) 
+          EndIf
+        EndIf
+      EndIf
       
       ;
       If *this\type = #PB_GadgetType_Splitter 
@@ -5027,25 +4953,28 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *this\bar\thumb\change <> 0
         *this\bar\thumb\change = 0
-        
         ; 
         If *this\bar\page\change <> 0
-          Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
           *this\bar\page\change = 0
-        EndIf
+          ;
+          If *this\root\canvas\gadget <> PB(EventGadget)( ) 
+            ReDraw( *this\root ) 
+          EndIf
+          
+          Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
+        EndIf 
         
-        If *this\root\canvas\gadget <> PB(EventGadget)( ) 
-          ReDraw( *this\root ) 
-        Else
-          ProcedureReturn 1
+        If *this\root\canvas\gadget = PB(EventGadget)( ) 
+          ProcedureReturn #True
         EndIf
       EndIf  
+      
     EndProcedure
     
     Procedure.b Bar_Update( *this._s_widget )
       Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
       
-      *this\bar\area\pos = 0
+     *this\bar\area\pos = 0
       
       ; get area size
       If *this\vertical
@@ -5057,37 +4986,52 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; get thumb size
       *this\bar\thumb\len = *this\bar\button[#__b_3]\size
       
+      ; get page end
       ; one ( set max )
-      If Not *this\bar\page\end And *this\bar\area\len 
-        *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len
-        
-        If Not *this\bar\page\pos
-          *this\bar\page\pos = *this\bar\page\end/2 
-        EndIf
-        
-        ; if splitter fixed 
-        ; set splitter pos to center
-        If *this\bar\fixed
-          If *this\bar\fixed = #__split_1
-            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
-          Else
-            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\end - *this\bar\page\pos
+        If Not *this\bar\page\end And *this\bar\area\len 
+          *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len
+          
+          If Not *this\bar\page\pos
+            *this\bar\page\pos = *this\bar\page\end/2 
+          EndIf
+          
+          ; if splitter fixed 
+          ; set splitter pos to center
+          If *this\bar\fixed
+            If *this\bar\fixed = #__split_1
+              *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
+            Else
+              *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\end - *this\bar\page\pos
+            EndIf
           EndIf
         EndIf
-      EndIf
-      
-      If *this\bar\page\change Or *this\bar\fixed = 1
-        *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len 
-      EndIf
+        
+        If *this\bar\page\change Or *this\bar\fixed = 1
+          *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len 
+        EndIf
       
       
       *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len
       *this\bar\percent = *this\bar\area\end / *this\bar\page\end
       
-      
-      _bar_resize_( *this )  
+      ProcedureReturn Bar_Resize( *this )  
     EndProcedure
     
+    Procedure.b Bar_Change( *this._s_widget, ScrollPos.f )
+      With *this
+        If *this\bar\page\pos <> ScrollPos 
+          If *this\bar\page\pos > ScrollPos
+            *this\bar\direction =- ScrollPos
+          Else
+            *this\bar\direction = ScrollPos
+          EndIf
+          
+         *this\bar\page\change = *this\bar\page\pos - ScrollPos
+         *this\bar\page\pos = ScrollPos
+         ProcedureReturn #True
+        EndIf
+      EndWith
+    EndProcedure
     
     Procedure.b Bar_SetPos( *this._s_widget, ThumbPos.i )
       Protected result, ScrollPos.f
@@ -5098,36 +5042,17 @@ CompilerIf Not Defined( widget, #PB_Module )
         ScrollPos = _bar_page_pos_( *this\bar, ThumbPos )
         ScrollPos = _bar_invert_( *this\bar, ScrollPos, *this\bar\inverted )
         
-        If *this\bar\page\pos <> ScrollPos
-          If *this\bar\mode & #PB_TrackBar_Ticks
-            ThumbPos = Round( ( ScrollPos - *this\bar\min ) * *this\bar\percent, #PB_Round_Nearest ) 
-          EndIf
-          
-          If *this\bar\page\pos > ScrollPos
-            *this\bar\direction =- ScrollPos
-          Else
-            *this\bar\direction = ScrollPos
-          EndIf
-          *this\bar\page\change = *this\bar\page\pos - ScrollPos
-          *this\bar\page\pos = ScrollPos
-          
-          result = #True
-        Else
-          If Not *this\bar\mode & #PB_TrackBar_Ticks
-            ; *this\bar\page\change = *this\bar\thumb\pos - ThumbPos
-            result = #True
-          EndIf
+        If *this\bar\mode & #PB_TrackBar_Ticks
+          ; ThumbPos = Round( ( ScrollPos - *this\bar\min ) * *this\bar\percent, #PB_Round_Nearest ) 
+          ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
         EndIf
-        
-        *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
+        *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos 
         *this\bar\thumb\pos = ThumbPos
         
-        If result
-          _bar_resize_( *this )
-          ProcedureReturn result
-        EndIf
+        Bar_Change( *this, ScrollPos )
+        Bar_Resize( *this ) 
+        ProcedureReturn #True
       EndIf
-      
     EndProcedure
     
     Procedure.b Bar_SetState( *this._s_widget, state.f )
@@ -6013,9 +5938,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
             
-            ; splitter
-            ;*this\bar\thumb\change = 1
-            
             
             *this\width[#__c_frame] = width 
             *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
@@ -6042,10 +5964,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                 *this\bar\change = 1
               EndIf
             EndIf
-            
-            
-            ; splitter
-            ;*this\bar\thumb\change = 1
             
             
             If *this\count\items And 
@@ -14343,7 +14261,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ElseIf Flag & #PB_Splitter_SecondFixed = #PB_Splitter_SecondFixed
               *this\bar\fixed = #__split_2 
             EndIf
-            
+;             
             *this\bar\button[#__b_3]\size = #__splitter_buttonsize
             *this\bar\button[#__b_3]\interact = #True
             *this\bar\button[#__b_3]\round = 2
@@ -14414,16 +14332,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           Resize( *this, x,y,width,height )
-          
-          If *this\type = #PB_GadgetType_ScrollBar Or 
-             *this\type = #PB_GadgetType_ProgressBar Or
-             *this\type = #PB_GadgetType_TrackBar Or
-             *this\type = #PB_GadgetType_TabBar Or
-             *this\type = #PB_GadgetType_Spin Or
-             *this\type = #PB_GadgetType_Splitter
-            
-            BAr_Update( *this )
-          EndIf
           
           If ScrollBars And 
              flag & #__flag_noscrollbars = #False
@@ -17566,5 +17474,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------P--b---7----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

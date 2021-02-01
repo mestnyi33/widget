@@ -59,6 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 
   If state
     ; set splitters dafault positions
+    ;SetState(Splitter_ide, -130)
     SetState(Splitter_ide, width(Splitter_ide)-220)
     SetState(splitter_help, height(splitter_help)-80)
     SetState(splitter_debug, height(splitter_debug)-150)

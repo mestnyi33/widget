@@ -5018,9 +5018,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;Debug ""+*this\bar\page\pos +" "+ *this\bar\page\end 
          ; for the scrollarea childrens
           If *this\bar\page\end And *this\bar\page\pos > *this\bar\page\end 
+            Debug " bar end change - " + *this\bar\page\pos +" "+ *this\bar\page\end 
             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
             *this\bar\page\pos = *this\bar\page\end
-            Debug "bar end change"
           EndIf
           
           _scroll_pos_ = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
@@ -5106,15 +5106,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #PB_GadgetType_ScrollBar 
         *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
         
-        ; не уверен что нужно пока оставлю
-        If *this\bar\hide
-          If *this\bar\page\pos > *this\bar\min
-            *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
-          EndIf
-          
-          *this\bar\page\pos = *this\bar\min
-          *this\bar\thumb\pos = _bar_thumb_pos_( *this, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
-        EndIf
+;         ; не уверен что нужно пока оставлю
+;         If *this\bar\hide
+;           If *this\bar\page\pos > *this\bar\min
+;             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
+;           EndIf
+;           
+;           *this\bar\page\pos = *this\bar\min
+;           *this\bar\thumb\pos = _bar_thumb_pos_( *this, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
+;         EndIf
         
         If *this\bar\button[#__b_1]\size 
           If *this\vertical 
@@ -5607,61 +5607,41 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Bar_Change( *this._s_widget, ScrollPos.f )
-      Protected pos_min = *this\bar\min + *this\bar\min[1]
-      Protected pos_max 
-      
-;       If *this\bar\page\end
-;         pos_max = *this\bar\page\end
-;       Else
-;         Debug "Bar_Change(????)"
-;         pos_max = pos_min ;+ *this\bar\min[2]
-;       EndIf
-;       
-;       
-;         If ScrollPos < pos_min 
-;           ;; Debug ""+9999999 +" page\end "+ *this\bar\page\end +" area\len "+ *this\bar\area\len ;If *this\type <> #PB_GadgetType_TabBar
+      With *this
+;         If ScrollPos < \bar\min 
+;           ;If *this\type <> #PB_GadgetType_TabBar
+;           ; if SetState( height - value or width - value )
+;           \bar\button[#__b_3]\fixed = ScrollPos
+;           ;EndIf
+;           ScrollPos = \bar\min 
 ;           
-;           If ScrollPos < 0
-;             If pos_max
-;               ScrollPos = pos_max + ScrollPos
-;             Else
-;               *this\bar\button[#__b_3]\fixed = ScrollPos
-;               ;ScrollPos = \bar\min 
-;             EndIf
+;         ElseIf \bar\max And ScrollPos > \bar\page\end ; = ( \bar\max - \bar\page\len )
+;           If \bar\max >= \bar\page\len 
+;             ScrollPos = \bar\page\end
 ;           Else
-;             ScrollPos = pos_min 
-;           EndIf
-;           
-;         ElseIf *this\bar\max And pos_max < ScrollPos 
-;           If *this\bar\max >= *this\bar\page\len 
-;             ScrollPos = pos_max
-;           Else
-;             ScrollPos = pos_min
+;             ScrollPos = \bar\min 
 ;           EndIf
 ;         EndIf
-;         
-;         ;Debug  "  " + ScrollPos  + " " +  \bar\page\pos  + " " +  \bar\page\end
-;        ;;ScrollPos - *this\bar\min[1] + *this\bar\min[2]
-    ;;  Debug ""+*this\bar\thumb\pos +" "+ *this\bar\area\pos +" "+ *this\bar\area\end
-      
-;       If Not *this\bar\max Or ScrollPos < 0
-;         *this\bar\button[#__b_3]\fixed = ScrollPos
-;         ProcedureReturn #True
-;       EndIf
-      
-       With *this
-       If \bar\page\pos <> ScrollPos 
-          \bar\thumb\change = \bar\page\pos - ScrollPos
-          
-          If \bar\page\pos > ScrollPos
-            \bar\direction =- ScrollPos
+       ; Debug ""+ScrollPos +" "+ \bar\page\end
+        
+        If ScrollPos < *this\bar\min
+        ;  ScrollPos = *this\bar\min
+        EndIf
+        If ScrollPos > *this\bar\page\end
+          ScrollPos = *this\bar\page\end
+        EndIf
+        
+        If *this\bar\page\pos <> ScrollPos 
+          If *this\bar\page\pos > ScrollPos
+            *this\bar\direction =- ScrollPos
           Else
-            \bar\direction = ScrollPos
+            *this\bar\direction = ScrollPos
           EndIf
           
-          \bar\page\change = \bar\thumb\change
-          \bar\page\pos = ScrollPos
-          ProcedureReturn #True
+         \bar\thumb\change = \bar\page\pos - ScrollPos
+          *this\bar\page\change = *this\bar\page\pos - ScrollPos
+         *this\bar\page\pos = ScrollPos
+         ProcedureReturn #True
         EndIf
       EndWith
     EndProcedure
@@ -5798,7 +5778,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         If result ; And \width And \height ; есть проблемы с imagegadget и scrollareagadget
                   ;\bar\thumb\change = #True
                   ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
-          If *this\root And *this\root\canvas\repaint = #False
+          
+          If *this\root ;;And *this\root\canvas\repaint = #False
             Bar_Update( *this ) ; \hide = 
           EndIf
         
@@ -19185,5 +19166,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------0---8-ff--+4---8-40z-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------4+----+-d----+4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

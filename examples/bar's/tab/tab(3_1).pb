@@ -1,10 +1,5 @@
-﻿;
-; example demo resize draw splitter - OS gadgets
-; 
+﻿XIncludeFile "../../../widgets-bar.pbi"
 
-XIncludeFile "../../../widgets-bar.pbi"
-
-;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
@@ -29,51 +24,29 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0);, 0, 0, 510, 340)
   
   ; first splitter
-  ScrollBarGadget(3, 0, 0, 0, 0, 0, 250, 0)
+  s_0 = widget::Tab(70, 10, 250, 40, 0,250,0)
+  For i=0 To 3
+    AddItem(widget( ), -1, "tab_"+Str(i))
+  Next
   
-  ScrollBarGadget(6, 0, 0, 0, 0, 0, 250, 0)
-  SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
+  s_1 = widget::Tab(70, 10+50, 250, 40, 0,250,0)
+  For i=0 To 10
+    AddItem(widget( ), -1, "tab_"+Str(i))
+  Next
   
   ; first splitter
-  ScrollBarGadget(31, 0, 0, 0, 0, 0, 250, 0)
-  
-  ScrollBarGadget(61, 0, 0, 0, 0, 0, 250, 0)
-  SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
-  
-  SetGadgetState(3, -10)
-  SetGadgetState(6, 250-10)
-  SetGadgetState(31, 250/2)
-  SetGadgetState(61, 10)
-  
-  
-  ; first splitter
-  s_0 = widget::Tab(0, 0, 0, 0, 0,250,0)
+  s_3 = widget::Tab(70, 10+100, 250, 40, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  s_1 = widget::Tab(0, 0, 0, 0, 0,250,0)
+  s_4 = widget::Tab(70, 10+150, 250, 40, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
-  
-  s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
-  
-  ; first splitter
-  s_3 = widget::Tab(0, 0, 0, 0, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
-  
-  s_4 = widget::Tab(0, 0, 0, 0, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
-  
-  s_5 = widget::Splitter(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
   
   SetState(s_0, -10)
-  SetState(s_1, 250-10)
+  SetState(s_1, 250)
   SetState(s_3, 250/2)
   SetState(s_4, 0)
   

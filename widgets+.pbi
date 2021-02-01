@@ -1,4 +1,64 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+﻿;  ^^
+; (oo)\__________
+; (__)\          )\/\
+;      ||------w||
+;      ||       ||
+; 43025500559246
+; Regex Trim(Arguments)
+; https://regex101.com/r/zxBLgG/2
+; ~"((?:(?:\".*?\")|(?:\\(.*?\\))|[^,])+)"
+; ~"(?:\"(?:.*?)\"|(?:\\w*)\\s*\\((?:(?>[^()]+|(?R))*)\\)|[\\^\\;\\/\\|\\!\\*\\w\\s\\.\\-\\+\\~\\#\\&\\$\\\\])+"
+; #Button_0, ReadPreferenceLong("x", WindowWidth(#Window_0)/WindowWidth(#Window_0)+20), 20, WindowWidth(#Window_0)-(390-155), WindowHeight(#Window_0) - 180 * 2, GetWindowTitle(#Window_0) + Space( 1 ) +"("+ "Button" + "_" + Str(1)+")"
+
+; Regex Trim(Captions)
+; https://regex101.com/r/3TwOgS/1
+; ~"((?:\"(.*?)\"|\\((.*?)\\)|[^+\\s])+)"
+; ~"(?:(\\w*)\\s*\\(((?>[^()\"]+|(?R))+)\\))|\"(.*?)\"|[^+\\s]+"
+; ~"(?:\"(.*?)\"|(\\w*)\\s*\\(((?>[^()\"]+|(?R))+)\\))|([\\d]+)|(\b[\\w]+)|([\\#\\w]+)|([\\/])|([\\*])|([\\-])|([\\+])"
+; ~"(?:(?:\"(.*?)\"|(\\w*)\\s*\\(((?>[^()\"]+|(?R))*)\\))|([\\d]+)|(\b[\\w]+)|([\\#\\w]+)|([\\*\\w]+)|[\\.]([\\w]+)|([\\\\w]+)|([\\/])|([\\*])|([\\-])|([\\+]))"
+; Str(ListIndex(List( )))+"Число между"+Chr(10)+"это 2!"+
+; ListIndex(List()) ; вот так не работает
+
+; ; https://regex101.com/r/RFubVd/14
+; ; #Эта часть нужна для поиска переменных
+; ; #Например, "Window" в выражении "Window=OpenWindow(#PB_Any...)"
+; ; (?:(\b[^:\n\s]+)\s*=\s*)?
+; ; 
+; ; #Эта часть для поиска процедур
+; ; (?:\".*\"|(\w+)\s*\(((?>(?R)|[^)(])*)\))
+; ; 
+; ; #После выполнения:
+; ; # - В группе \1 - будет находиться название переменной
+; ; # - В группе \2 - название процедуры
+; ; # - В группе \3 - перечень всех аргументов найденной процедуры
+; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
+#RegEx_Pattern_FindFunction = ~"(?P<Comments>;).*|(?:(?P<Handle>\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(?P<Function>\\w+)\\s*\\((?P<Arguments>(?>(?R)|[^)(])*)\\))" ; "(;).*|\b(?:.*(=)\s*\w*\(.*\)|([A-Za-z0-9_.]*)\b[^:\n\(]*\s*\((?>[^)(]|(?R))*\))"
+
+; Procedure DrawCircularText(px.f, py,f, r.f, a.f, t$, color.l=$FFFFFF, convexo.b=1)
+;   https://www.purebasic.fr/english/viewtopic.php?f=12&t=76361&sid=c9c67972f2d69bd3ed382e6e42143712
+;   Protected t.u,th.u=TextHeight(Mid(t$,1,1)),v.f
+
+;   If convexo<0:convexo=-1
+;   Else:convexo=1
+;     R-th*1.333333
+;   EndIf
+
+;   Protected len = Len(t$)
+;   For t=1 To Len
+;     DrawRotatedText(px+R*Cos(a), py+R*Sin(a), Mid(t$,t,1), convexo*90-Degree(a),color)
+;     a-convexo*th/R
+;   Next
+; EndProcedure
+
+
+; Найти Enumeration 
+; https://regex101.com/r/u60Wqt/1
+
+;
+; ver. 0.0.2.6
+;
+
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   #path = "/Users/as/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   #path = "/media/sf_as/Documents/GitHub/widget"
@@ -1026,13 +1086,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;- BAR
     Macro _bar_in_start_( _bar_ ) 
-      Bool( _bar_\area\end <=_bar_\thumb\pos  )
-    ;  Bool( _bar_\page\pos <= _bar_\min ) 
+      Bool( _bar_\page\pos <= _bar_\min ) 
     EndMacro
     
     Macro _bar_in_stop_( _bar_ ) 
-      Bool( _bar_\area\pos >= _bar_\thumb\pos )
-     ;  Bool( _bar_\page\pos >= _bar_\page\end And _bar_\area\end > _bar_\page\end ) : Debug ""+_bar_\area\end +" "+ _bar_\page\end 
+      Bool( _bar_\page\pos >= _bar_\page\end ) 
     EndMacro
     
     Macro _bar_invert_( _bar_, _scroll_pos_, _inverted_ = #True )
@@ -1043,8 +1101,43 @@ CompilerIf Not Defined( widget, #PB_Module )
       ( _bar_\min + Round( ( ( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ) )
     EndMacro
     
-    Macro _bar_thumb_pos_( _bar_, _scroll_pos_ )
-      _bar_\area\pos + Round( ( ( _scroll_pos_ ) - _bar_\min - _bar_\min[1] ) * _bar_\percent, #PB_Round_Nearest ) 
+    Macro _bar_thumb_pos_( _this_, _scroll_pos_ )
+      ( _this_\bar\area\pos + Round( ( ( _scroll_pos_ ) - _this_\bar\min ) * _this_\bar\percent, #PB_Round_Nearest ) ) 
+      
+      If ( _this_\bar\fixed And Not _this_\bar\thumb\change ); And _this_\type = #PB_GadgetType_Splitter )
+        If _this_\bar\thumb\pos < _this_\bar\area\pos + _this_\bar\button[#__b_1]\fixed  
+          _this_\bar\thumb\pos = _this_\bar\area\pos + _this_\bar\button[#__b_1]\fixed 
+        EndIf
+        
+        If _this_\bar\thumb\pos > _this_\bar\area\end - _this_\bar\button[#__b_2]\fixed 
+          _this_\bar\thumb\pos = _this_\bar\area\end - _this_\bar\button[#__b_2]\fixed 
+        EndIf
+      Else
+        If _this_\bar\thumb\pos < _this_\bar\area\pos + _this_\bar\min[1]
+          _this_\bar\thumb\pos = _this_\bar\area\pos + _this_\bar\min[1]
+        EndIf
+        
+        If _this_\bar\thumb\pos > _this_\bar\area\end - _this_\bar\min[2]
+          _this_\bar\thumb\pos = _this_\bar\area\end - _this_\bar\min[2]
+        EndIf
+      EndIf
+      
+      ; 
+      If _this_\bar\thumb\change
+        If Not _this_\bar\direction > 0 
+          If _this_\bar\page\pos = _this_\bar\min Or _this_\bar\mode & #PB_TrackBar_Ticks 
+            _this_\bar\button[#__b_3]\arrow\direction = Bool( Not _this_\vertical ) + Bool( _this_\vertical = _this_\bar\inverted ) * 2
+          Else
+            _this_\bar\button[#__b_3]\arrow\direction = Bool( _this_\vertical ) + Bool( _this_\bar\inverted ) * 2
+          EndIf
+        Else
+          If _this_\bar\page\pos = _this_\bar\page\end Or _this_\bar\mode & #PB_TrackBar_Ticks
+            _this_\bar\button[#__b_3]\arrow\direction = Bool( Not _this_\vertical ) + Bool( _this_\vertical = _this_\bar\inverted ) * 2
+          Else
+            _this_\bar\button[#__b_3]\arrow\direction = Bool( _this_\vertical ) + Bool( Not _this_\bar\inverted ) * 2
+          EndIf
+        EndIf
+      EndIf
     EndMacro
     
     Macro _bar_scroll_pos_( _this_, _pos_, _len_ )
@@ -4293,43 +4386,50 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Track_Draw( *this._s_widget )
+      ;       *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
+      ;        *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
+      ;       *this\bar\button[#__b_3]\color\state = #__s_2
+      
       Scroll_Draw( *this )
       
       With *this
         If \type = #PB_GadgetType_TrackBar And \bar\thumb\len
-          Protected i, x,y
+          Protected i, _thumb_ = ( \bar\button[#__b_3]\size/2 )
           DrawingMode( #PB_2DDrawing_XOr )
           
           If \vertical
-            x = \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 + 4 ) - 1
-            y = *this\y + \bar\area\pos + \bar\button[#__b_3]\size/2  
-            
             If \bar\mode & #PB_TrackBar_Ticks
-              For i = 0 To \bar\page\end
-                Line( x, y + ( i * *this\bar\percent ),5-Bool(i>0 And i<\bar\page\end)*3,1,\bar\button[#__b_3]\color\Frame )
-              Next
+              If \bar\percent > 1
+                For i = 0 To \bar\page\end
+                  Line( \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 + 4 ) - 1, 
+                        *this\y + ( \bar\area\pos + _thumb_ + ( i - \bar\min ) * \bar\percent ),3, 1,\bar\button[#__b_1]\color\frame )
+                Next
+              Else
+                Box( \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 + 4 ) - 1,*this\y + \bar\area\pos + _thumb_, 3, *this\bar\area\len - *this\bar\thumb\len + 1, \bar\button[#__b_1]\color\frame )
+              EndIf
             EndIf
             
-            Line( x-3, y,3,1,\bar\button[#__b_3]\color\Frame )
-            Line( x-3, y + *this\bar\area\len - *this\bar\thumb\len,3,1,\bar\button[#__b_3]\color\Frame )
+            Line( \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 ), *this\y + \bar\area\pos + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame )
+            Line( \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 ), *this\y + \bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame )
             
           Else
-            x = *this\x + \bar\area\pos + \bar\button[#__b_3]\size/2 
-            y = \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 + 4 ) - 2
-            
             If \bar\mode & #PB_TrackBar_Ticks
-              For i = *this\bar\min To *this\bar\max
-               Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\Frame )
-              Next
-;               For i = 0 To \bar\page\end
-;                 Line( x + ( Round( i * *this\bar\percent, #PB_Round_Nearest ) ), y,1,6-Bool(i>0 And i<\bar\page\end And i<>\bar\page\end/2)*3,\bar\button[#__b_3]\color\Frame )
-;               Next
+              If \bar\percent > 1
+                For i = 0 To \bar\page\end - \bar\min
+                  Line( *this\x + ( \bar\area\pos + _thumb_ + i * \bar\percent ), 
+                        \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 + 4 ) - 1,1,3,\bar\button[#__b_3]\color\Frame )
+                Next
+              Else
+                Box( *this\x + \bar\area\pos + _thumb_, \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 + 4 ) - 1,*this\bar\area\len - *this\bar\thumb\len + 1, 3, \bar\button[#__b_1]\color\frame )
+              EndIf
             EndIf
             
-            Line( x, y-3,1,3,*this\bar\button[#__b_3]\color\Frame )
-            Line( x + *this\bar\area\len - *this\bar\thumb\len, y-3,1,3, *this\bar\button[#__b_3]\color\Frame )
+            Line( *this\x + \bar\area\pos + _thumb_, \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 ),1,3,\bar\button[#__b_3]\color\Frame )
+            Line( *this\x + \bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_, \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 ),1,3,\bar\button[#__b_3]\color\Frame )
           EndIf
         EndIf
+        
+          
       EndWith    
       
     EndProcedure
@@ -4751,190 +4851,200 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure  Bar_Resize( *this._s_widget )
-      Protected result.b, fixed.l, ScrollPos.f, ThumbPos.i
-      
-      ; get thumb pos
-      If *this\bar\fixed And Not *this\bar\page\change
-        If *this\bar\fixed = #__split_1
-          ThumbPos = *this\bar\button[*this\bar\fixed]\fixed
-          
-          If ThumbPos > *this\bar\area\end
-            If *this\bar\min[1] < *this\bar\area\end
-              ThumbPos = *this\bar\area\end
-            Else
-              If *this\bar\min[1] > ( *this\bar\area\end + *this\bar\min[2] )
-                ThumbPos = ( *this\bar\area\end + *this\bar\min[2] )
+    Procedure.b Bar_Update( *this._s_widget )
+      Protected fixed.l, result.b, _scroll_pos_.f
+       
+      If Not *this\bar\thumb\change And Bool( *this\resize & #__resize_change )
+        If *this\type = #PB_GadgetType_ScrollBar 
+          If *this\bar\max 
+            If *this\bar\button[#__b_1]\size =- 1 And *this\bar\button[#__b_2]\size =- 1
+              If *this\vertical And *this\width[#__c_inner] > 7 And *this\width[#__c_inner] < 21
+                *this\bar\button[#__b_1]\size = *this\width[#__c_inner] - 1
+                *this\bar\button[#__b_2]\size = *this\width[#__c_inner] - 1
+                
+              ElseIf Not *this\vertical And *this\height[#__c_inner] > 7 And *this\height[#__c_inner] < 21
+                *this\bar\button[#__b_1]\size = *this\height[#__c_inner] - 1
+                *this\bar\button[#__b_2]\size = *this\height[#__c_inner] - 1
+                
               Else
-                ThumbPos = *this\bar\min[1]
+                *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
+                *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
+              EndIf
+            EndIf
+            
+            If *this\bar\button[#__b_3]\size
+              If *this\vertical
+                If *this\width = 0
+                  *this\width = *this\bar\button[#__b_3]\size
+                EndIf
+              Else
+                If *this\height = 0
+                  *this\height = *this\bar\button[#__b_3]\size
+                EndIf
               EndIf
             EndIf
           EndIf
+        EndIf
+        
+        If *this\vertical
+          *this\bar\area\pos = *this\bs + Bool( *this\type <> #PB_GadgetType_TabBar ) * *this\bar\button[#__b_1]\size
+          *this\bar\area\len = *this\height[#__c_frame] - *this\bs*2 - Bool( *this\type <> #PB_GadgetType_TabBar ) * ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
+        Else
+          *this\bar\area\pos = *this\bs + Bool( *this\type <> #PB_GadgetType_TabBar ) * *this\bar\button[#__b_1]\size
+          *this\bar\area\len = *this\width[#__c_frame] - *this\bs*2 - Bool( *this\type <> #PB_GadgetType_TabBar ) * ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
+        EndIf
+        
+        If *this\bar\area\len < *this\bar\button[#__b_3]\size 
+          *this\bar\area\len = *this\bar\button[#__b_3]\size 
+        EndIf
+        
+        ; one ( set max )
+        If Not *this\bar\max And *this\bar\area\len ;And *this\type = #PB_GadgetType_Splitter
+          *this\bar\thumb\len = *this\bar\button[#__b_3]\size
+          *this\bar\max = *this\bar\area\len - Bool( *this\bar\fixed ) * *this\bar\thumb\len
+         *this\bar\max = *this\bar\area\len - *this\bar\thumb\len
+         
+          If Not *this\bar\page\pos
+            *this\bar\page\pos = *this\bar\max/2 
+          EndIf
+            
+          ; if splitter fixed 
+          ; set splitter pos to center
+          If *this\bar\fixed = #__split_1
+            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
+          Else
+            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\max - *this\bar\page\pos
+          EndIf
+        EndIf
+        
+       ; Debug *this\bar\max
+        ; get page end
+        If *this\type = #PB_GadgetType_TabBar
+          *this\bar\page\end = *this\bar\max - *this\bar\area\len
+        Else
+          *this\bar\page\end = *this\bar\max - *this\bar\page\len
+        EndIf
+        If *this\bar\page\end < 0 : *this\bar\page\end = 0 : EndIf
+        
+        
+;           If *this\bar\max > *this\bar\page\len
+;           If *this\bar\max > *this\bar\min
+;           *this\bar\page\end = *this\bar\max - *this\bar\page\len - *this\bar\min
+;           Else
+;            *this\bar\page\end = *this\bar\min - *this\bar\page\len - *this\bar\max
+;           EndIf
+;           ;*this\bar\page\end = *this\bar\max - *this\bar\page\len
+;           Else
+;            *this\bar\page\end = *this\bar\page\len - *this\bar\max
+;           EndIf
+        
+        ; get thumb len
+        If *this\type = #PB_GadgetType_TabBar
+          *this\bar\thumb\len = *this\bar\area\len - *this\bar\page\end
           
-        Else 
-          ThumbPos = ( *this\bar\area\end + *this\bar\min[2] ) - *this\bar\button[*this\bar\fixed]\fixed
+        ElseIf *this\type = #PB_GadgetType_ScrollBar
+          *this\bar\thumb\len = Round( ( *this\bar\area\len / ( *this\bar\max - *this\bar\min ) ) * ( *this\bar\page\len ), #PB_Round_Nearest )
           
-          If ThumbPos < *this\bar\min[1]
-            If *this\bar\min[1] > ( *this\bar\area\end + *this\bar\min[2] )
-              ThumbPos = ( *this\bar\area\end + *this\bar\min[2] )
+          If *this\bar\thumb\len > *this\bar\area\len
+            *this\bar\thumb\len = *this\bar\area\len
+          EndIf
+          
+          If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
+            If *this\bar\area\len > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
+              *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
+            ElseIf *this\bar\button[#__b_3]\size > 7
+              *this\bar\thumb\len = 0
+            EndIf
+          EndIf
+          
+        Else
+          *this\bar\thumb\len = *this\bar\button[#__b_3]\size
+        EndIf
+        
+        ; get area end
+        ; *this\bar\thumb\end = ( *this\bar\area\len - *this\bar\thumb\len )
+        *this\bar\area\end = *this\bar\area\pos + ( *this\bar\area\len - *this\bar\thumb\len )
+      EndIf
+      
+      ; get increment size
+      If Not *this\bar\page\len And *this\type = #PB_GadgetType_Splitter And 
+         *this\bar\thumb\change
+        *this\bar\percent = 1.0
+        *this\bar\max = *this\bar\area\len - *this\bar\thumb\len
+        *this\bar\page\end = *this\bar\max - *this\bar\page\len
+      ElseIf *this\bar\area\len > *this\bar\thumb\len
+        *this\bar\percent = ( ( *this\bar\area\len - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min) ) 
+      EndIf
+      
+      ;If Not *this\bar\area\len < 0
+        ; thumb pos
+        If *this\bar\fixed And Not *this\bar\thumb\change
+          ; поведение при изменении размера 
+          ; чтобы вернуть fix сплиттер на свое место
+          If *this\bar\button[*this\bar\fixed]\fixed > ( *this\bar\area\len - *this\bar\thumb\len - *this\bar\min[2] )
+            If ( *this\bar\area\len - *this\bar\thumb\len ) > ( *this\bar\area\pos + *this\bar\min[1] + *this\bar\min[2] ) 
+              fixed = ( *this\bar\area\len - *this\bar\thumb\len - *this\bar\min[2] )
+            ElseIf ( *this\bar\area\len - *this\bar\thumb\len ) > ( *this\bar\area\pos + *this\bar\min[1] ) 
+              fixed = ( *this\bar\area\pos + *this\bar\min[1] ) 
             Else
-              ThumbPos = *this\bar\min[1]
+              fixed = ( *this\bar\area\len - *this\bar\thumb\len )
             EndIf
-          EndIf
-        EndIf
-        
-        If *this\bar\thumb\pos <> ThumbPos
-          *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
-          *this\bar\thumb\pos = ThumbPos
-        EndIf
-        
-      Else
-        ; fixed mac-OS splitterGadget
-        If *this\bar\page\pos < *this\bar\min
-          If *this\bar\page\end 
-            *this\bar\page\pos = *this\bar\page\end + *this\bar\page\pos
+            Debug "bar "+fixed +" "+ *this\bar\fixed +" "+ fixed
           Else
-            Debug "error page\end - "+*this\bar\page\end
+            fixed = *this\bar\button[*this\bar\fixed]\fixed
           EndIf
-        EndIf
-      
-        ; for the scrollarea childrens
-        If *this\bar\page\end And *this\bar\page\pos > *this\bar\page\end 
-         ; Debug " bar end change - " + *this\bar\page\pos +" "+ *this\bar\page\end 
-          *this\bar\page\change = *this\bar\page\pos - *this\bar\page\end
-          *this\bar\page\pos = *this\bar\page\end
-        EndIf
-        
-        If *this\bar\thumb\change = 0
-          ScrollPos = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
-          ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
           
-          If ThumbPos < *this\bar\area\pos : ThumbPos = *this\bar\area\pos : EndIf
-          If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
+          If fixed < 0 
+            fixed = 0 
+          EndIf
           
-          If *this\bar\thumb\pos <> ThumbPos
-            *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos
-            *this\bar\thumb\pos = ThumbPos
-          EndIf
-        EndIf
-      EndIf
-      
-      
-      ; get fixed size
-      If *this\bar\fixed And *this\bar\page\change
-        If *this\bar\fixed = #__split_1
-          *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos
-        Else
-          *this\bar\button[#__split_2]\fixed = *this\bar\area\len - *this\bar\thumb\len - *this\bar\thumb\pos
-        EndIf
-      EndIf
-      
-      ; disable/enable button-scroll(left&top)-tab(right&bottom)
-      If *this\bar\button[#__b_1]\size 
-        If _bar_in_stop_( *this\bar )
-          If *this\bar\button[#__b_1]\color\state <> #__s_3
-            *this\bar\button[#__b_1]\color\state = #__s_3
-            *this\bar\button[#__b_1]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
-          EndIf
-        Else
-          If *this\bar\button[#__b_1]\color\state <> #__s_2
-            *this\bar\button[#__b_1]\color\state = #__s_0
-            If *this\bar\button[#__b_1]\hide <> #False
-              *this\bar\button[#__b_1]\hide = #False
-            EndIf
-          EndIf
-        EndIf 
-      EndIf
-      
-      ; disable/enable button-scroll(right&bottom)-tab(left&top)
-      If *this\bar\button[#__b_2]\size
-        If _bar_in_start_( *this\bar ) 
-          If *this\bar\button[#__b_2]\color\state <> #__s_3
-            *this\bar\button[#__b_2]\color\state = #__s_3
-             *this\bar\button[#__b_2]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
-          EndIf
-        Else
-          If *this\bar\button[#__b_2]\color\state <> #__s_2
-            *this\bar\button[#__b_2]\color\state = #__s_0
-            If *this\bar\button[#__b_2]\hide <> #False
-              *this\bar\button[#__b_2]\hide = #False
-            EndIf
-          EndIf
-        EndIf 
-      EndIf
-          
-      ; 
-      If *this\type = #PB_GadgetType_TabBar 
-        If *this\vertical
-          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs
-          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs + Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
-          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs*2 - ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
-          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs - 1
-        Else
-          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs
-          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs ;+ Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
-          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs*2 ;- ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
-          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs - 1
-        EndIf
-        
-        If *this\bar\button[#__b_2]\size 
-          If *this\vertical 
-            ; Top button coordinate on vertical scroll bar
-            *this\bar\button[#__b_2]\x = *this\x[#__c_inner] + ( *this\width[#__c_inner] - *this\bar\button[#__b_2]\size )/2            
-            *this\bar\button[#__b_2]\y = *this\y[#__c_inner]
-          Else 
-            ; Left button coordinate on horizontal scroll bar
-            *this\bar\button[#__b_2]\x = *this\x[#__c_inner]
-            *this\bar\button[#__b_2]\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\bar\button[#__b_2]\size )/2           
-          EndIf
-          *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\size
-          *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size                   
-        EndIf
-        
-        If *this\bar\button[#__b_1]\size 
-          If *this\vertical 
-            ; Botom button coordinate on vertical scroll bar
-            *this\bar\button[#__b_1]\x = *this\x[#__c_inner] + ( *this\width[#__c_inner] - *this\bar\button[#__b_1]\size )/2             
-            *this\bar\button[#__b_1]\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\bar\button[#__b_1]\height )
-          Else 
-            ; Right button coordinate on horizontal scroll bar
-            *this\bar\button[#__b_1]\x = *this\x[#__c_inner] + ( *this\width[#__c_inner] - *this\bar\button[#__b_1]\width )
-            *this\bar\button[#__b_1]\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\bar\button[#__b_1]\size )/2            
-          EndIf
-          *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\size
-          *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size 
-        EndIf
-        
-        ;If *this\bar\thumb\len
-        If *this\vertical
-          *this\bar\button[#__b_3]\x = *this\x[#__c_inner]          
-          *this\bar\button[#__b_3]\width = *this\width[#__c_inner]
-          *this\bar\button[#__b_3]\height = *this\bar\max                             
-          *this\bar\button[#__b_3]\y = *this\y[#__c_frame] - ( *this\bar\area\end - *this\bar\thumb\pos )
-        Else
-          *this\bar\button[#__b_3]\y = *this\y[#__c_inner]         
-          *this\bar\button[#__b_3]\height = *this\height[#__c_inner]
-          *this\bar\button[#__b_3]\width = *this\bar\max
-          *this\bar\button[#__b_3]\x = *this\x[#__c_frame] - ( *this\bar\area\end - *this\bar\thumb\pos )
-        EndIf
-        ;EndIf
-        
-        result = Bool( *this\resize & #__resize_change )
-      EndIf
-      
-      If *this\type = #PB_GadgetType_ScrollBar
-        ; disable/enable button-thumb
-        If *this\bar\thumb\len 
-          If *this\bar\thumb\len >= *this\bar\area\end
-            If *this\bar\button[#__b_3]\color\state <> #__s_3
-              *this\bar\button[#__b_3]\color\state = #__s_3
-            EndIf
+          If *this\bar\fixed = #__split_1
+            *this\bar\thumb\pos = *this\bar\area\pos + fixed 
           Else
-            If *this\bar\button[#__b_3]\color\state <> #__s_2
-              *this\bar\button[#__b_3]\color\state = #__s_0
+            If *this\bar\min[1] < *this\bar\area\end - fixed 
+              *this\bar\thumb\pos = *this\bar\area\end - fixed 
             EndIf
           EndIf
+          
+          
+          ; чтобы сделать паведение
+          ; стандартное как в OS (мне не нравится)
+          ; *this\bar\button[*this\bar\fixed]\fixed = fixed
+       Else
+         If *this\bar\page\end And 0 > *this\bar\page\pos
+           *this\bar\page\pos = *this\bar\page\end + *this\bar\page\pos
+         EndIf
+         
+         ;Debug ""+*this\bar\page\pos +" "+ *this\bar\page\end 
+         ; for the scrollarea childrens
+          If *this\bar\page\end And *this\bar\page\pos > *this\bar\page\end 
+            Debug " bar end change - " + *this\bar\page\pos +" "+ *this\bar\page\end 
+            *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
+            *this\bar\page\pos = *this\bar\page\end
+          EndIf
+          
+          _scroll_pos_ = _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted )
+          *this\bar\thumb\pos = _bar_thumb_pos_( *this, _scroll_pos_ )
         EndIf
+        
+        If *this\bar\fixed And *this\bar\thumb\change
+          If *this\bar\fixed = #__split_1
+            *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
+          Else
+            If *this\vertical
+              *this\bar\button[#__split_2]\fixed = ( *this\height[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size )
+            Else
+              *this\bar\button[#__split_2]\fixed = ( *this\width[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size ) 
+            EndIf
+          EndIf
+        EndIf     
+        
+      ;EndIf
+      
+      
+      ; Thumb coordinate on scroll bar
+      If *this\type = #PB_GadgetType_ScrollBar Or
+         *this\type = #PB_GadgetType_Splitter
         
         If *this\bar\thumb\len 
           If *this\vertical
@@ -4949,18 +5059,62 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
           EndIf
         EndIf
+      EndIf
+      
+      If *this\type = #PB_GadgetType_ScrollBar
+          ; _in_start_
+          If *this\bar\button[#__b_1]\size 
+            If *this\bar\min >= _scroll_pos_
+              *this\bar\button[#__b_1]\color\state = #__s_3
+              ; *this\bar\button[#__b_1]\interact = #False
+              ; *this\bar\button[#__b_1]\hide = #True
+            Else
+              If *this\bar\button[#__b_1]\color\state <> #__s_2
+                *this\bar\button[#__b_1]\color\state = #__s_0
+              EndIf
+              ; *this\bar\button[#__b_1]\interact = #True
+              ; *this\bar\button[#__b_1]\hide = #False
+            EndIf 
+          EndIf
           
+          ; _in_stop_
+          If *this\bar\button[#__b_2]\size
+            If _scroll_pos_ >= *this\bar\page\end
+              *this\bar\button[#__b_2]\color\state = #__s_3
+              ; *this\bar\button[#__b_2]\interact = #False
+              ; *this\bar\button[#__b_2]\hide = #True
+            Else
+              If *this\bar\button[#__b_2]\color\state <> #__s_2
+                *this\bar\button[#__b_2]\color\state = #__s_0
+              EndIf
+              ; *this\bar\button[#__b_2]\interact = #True
+              ; *this\bar\button[#__b_2]\hide = #False
+            EndIf 
+          EndIf
+          
+          ; disable thumb button
+          If *this\bar\thumb\len
+            ; Debug   "" +  *this\bar\min  + " " +  *this\bar\page\end
+            If *this\bar\min >= *this\bar\page\end
+              *this\bar\button[#__b_3]\color\state = #__s_3
+            ElseIf *this\bar\button[#__b_3]\color\state <> #__s_2
+              *this\bar\button[#__b_3]\color\state = #__s_0
+            EndIf
+          EndIf
+        EndIf
+      
+      If *this\type = #PB_GadgetType_ScrollBar 
         *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
         
-;         ; не уверен что нужно пока оставлю
-;         If *this\bar\hide
-;           If *this\bar\page\pos > *this\bar\min
-;             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
-;           EndIf
-;           
-;           *this\bar\page\pos = *this\bar\min
-;           *this\bar\thumb\pos = _bar_thumb_pos_( *this\bar, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
-;         EndIf
+        ; не уверен что нужно пока оставлю
+        If *this\bar\hide
+          If *this\bar\page\pos > *this\bar\min
+            *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
+          EndIf
+          
+          *this\bar\page\pos = *this\bar\min
+          *this\bar\thumb\pos = _bar_thumb_pos_( *this, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
+        EndIf
         
         If *this\bar\button[#__b_1]\size 
           If *this\vertical 
@@ -5021,8 +5175,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        ;- widget::Area_Update( )
-        If *this\bar\page\change 
+        If *this\bar\thumb\change 
+          ;- Area_Update
           If *this\parent And 
              *this\parent\scroll
             
@@ -5039,9 +5193,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                        *this\parent\scroll\h <> widget( ) And Not widget( )\align
                       
                       If _is_integral_( widget( ) )
-                        Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\bar\page\change, #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                       Else
-                        Resize( widget( ), #PB_Ignore, (widget( )\y[#__c_container] + *this\bar\page\change) - *this\parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), #PB_Ignore, (widget( )\y[#__c_container] + *this\bar\thumb\change) - *this\parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
                       EndIf
                     EndIf
                     
@@ -5062,9 +5216,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                        *this\parent\scroll\h <> widget( ) And Not widget( )\align
                       
                       If _is_integral_( widget( ) )
-                        Resize( widget( ), widget( )\x[#__c_container] + *this\bar\page\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), widget( )\x[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                       Else
-                        Resize( widget( ), (widget( )\x[#__c_container] + *this\bar\page\change) - *this\parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), (widget( )\x[#__c_container] + *this\bar\thumb\change) - *this\parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
                       EndIf
                     EndIf
                     
@@ -5077,25 +5231,199 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-       ; result = *this\bar\hide
+        result = *this\bar\hide
       EndIf
       
-      ;
-      If *this\type = #PB_GadgetType_Splitter 
-        If *this\bar\thumb\len 
-          If *this\vertical
-            *this\bar\button[#__b_3]\x = *this\x[#__c_frame]           + 1 ; white line size 
-            *this\bar\button[#__b_3]\width = *this\width[#__c_frame]   - 1 ; white line size 
-            *this\bar\button[#__b_3]\y = *this\y[#__c_inner_b] + *this\bar\thumb\pos
-            *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
+      If *this\type = #PB_GadgetType_TabBar 
+        ; _in_start_
+        If *this\bar\button[#__b_1]\size 
+          If *this\bar\min >= _scroll_pos_
+            *this\bar\button[#__b_1]\color\state = #__s_3
+            ; *this\bar\button[#__b_1]\interact = #False
+            *this\bar\button[#__b_1]\hide = #True
           Else
-            *this\bar\button[#__b_3]\y = *this\y[#__c_frame]           + 1 ; white line size
-            *this\bar\button[#__b_3]\height = *this\height[#__c_frame] - 1 ; white line size
-            *this\bar\button[#__b_3]\x = *this\x[#__c_inner_b] + *this\bar\thumb\pos 
-            *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
+            If *this\bar\button[#__b_1]\color\state <> #__s_2
+              *this\bar\button[#__b_1]\color\state = #__s_0
+            EndIf
+            ; *this\bar\button[#__b_1]\interact = #True
+            *this\bar\button[#__b_1]\hide = #False
+          EndIf 
+        EndIf
+        
+        ; _in_stop_
+        If *this\bar\button[#__b_2]\size
+          If _scroll_pos_ >= *this\bar\page\end
+            *this\bar\button[#__b_2]\color\state = #__s_3
+            ; *this\bar\button[#__b_2]\interact = #False
+            *this\bar\button[#__b_2]\hide = #True
+          Else
+            If *this\bar\button[#__b_2]\color\state <> #__s_2
+              *this\bar\button[#__b_2]\color\state = #__s_0
+            EndIf
+            ; *this\bar\button[#__b_2]\interact = #True
+            *this\bar\button[#__b_2]\hide = #False
+          EndIf 
+        EndIf
+        
+        If *this\vertical
+          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs
+          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs + Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
+          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs*2 - ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
+          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs - 1
+        Else
+          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs
+          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs + Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
+          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs*2 - ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
+          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs - 1
+        EndIf
+        
+        If *this\bar\button[#__b_2]\size 
+          If *this\vertical 
+            ; Top button coordinate on vertical scroll bar
+            *this\bar\button[#__b_2]\x = *this\x[#__c_inner]  + ( *this\width[#__c_inner] - *this\bar\button[#__b_2]\size )/2            
+            *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\size
+            *this\bar\button[#__b_2]\y = *this\y[#__c_frame] + *this\bs
+            *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size                   
+          Else 
+            ; Left button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_2]\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\bar\button[#__b_2]\size )/2           
+            *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size
+            *this\bar\button[#__b_2]\x = *this\x[#__c_frame] + *this\bs
+            *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\size 
           EndIf
         EndIf
         
+        If *this\bar\button[#__b_1]\size 
+          If *this\vertical 
+            ; Botom button coordinate on vertical scroll bar
+            *this\bar\button[#__b_1]\x = *this\x[#__c_inner] + ( *this\width[#__c_inner] - *this\bar\button[#__b_1]\size )/2             
+            *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\size
+            *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size 
+            *this\bar\button[#__b_1]\y = *this\y + *this\height - *this\bar\button[#__b_1]\height - *this\bs
+          Else 
+            ; Right button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_1]\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\bar\button[#__b_1]\size )/2            
+            *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size
+            *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\size 
+            *this\bar\button[#__b_1]\x = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\bar\button[#__b_1]\width - *this\bs
+          EndIf
+        EndIf
+        
+        ;If *this\bar\thumb\len
+        If *this\vertical
+          *this\bar\button[#__b_3]\x = *this\x[#__c_inner]           
+          *this\bar\button[#__b_3]\width = *this\width[#__c_inner]
+          *this\bar\button[#__b_3]\height = *this\bar\max                             
+          *this\bar\button[#__b_3]\y = *this\y[#__c_inner_b] + ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
+        Else
+          *this\bar\button[#__b_3]\y = *this\y[#__c_inner]           
+          *this\bar\button[#__b_3]\height = *this\height[#__c_inner]
+          *this\bar\button[#__b_3]\width = *this\bar\max
+          *this\bar\button[#__b_3]\x = *this\x[#__c_inner_b] + ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
+        EndIf
+        ;EndIf
+        
+        result = Bool( *this\resize & #__resize_change )
+      EndIf
+      
+      If *this\type = #PB_GadgetType_ProgressBar
+        *this\bar\button[#__b_1]\x        = *this\x[#__c_frame]
+        *this\bar\button[#__b_1]\y        = *this\y[#__c_frame]
+        
+        If *this\vertical
+          *this\bar\button[#__b_1]\width  = *this\width[#__c_frame]
+          *this\bar\button[#__b_1]\height = *this\bar\thumb\pos;  - *this\y 
+        Else
+          *this\bar\button[#__b_1]\width  = *this\bar\thumb\pos;  - *this\x 
+          *this\bar\button[#__b_1]\height = *this\height[#__c_frame]
+        EndIf
+        
+        If *this\vertical
+          *this\bar\button[#__b_2]\x      = *this\x[#__c_frame]
+          *this\bar\button[#__b_2]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len
+          *this\bar\button[#__b_2]\width  = *this\width[#__c_frame]
+          *this\bar\button[#__b_2]\height = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len )
+        Else
+          *this\bar\button[#__b_2]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len
+          *this\bar\button[#__b_2]\y      = *this\y[#__c_frame]
+          *this\bar\button[#__b_2]\width  = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len )
+          *this\bar\button[#__b_2]\height = *this\height[#__c_frame]
+        EndIf
+        
+        If *this\text
+          *this\text\change = 1
+          *this\text\string = "%" + Str( *this\bar\page\pos )   + " " +  Str( *this\width[#__c_frame] )
+        EndIf
+        
+        result = Bool( *this\resize & #__resize_change )
+      EndIf
+      
+      If *this\type = #PB_GadgetType_TrackBar 
+        If *this\bar\button[#__b_1]\color\state <> Bool( Not *this\bar\inverted ) * #__s_2 Or 
+           *this\bar\button[#__b_2]\color\state <> Bool( *this\bar\inverted ) * #__s_2
+          *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
+          *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
+          *this\bar\button[#__b_3]\color\state = #__s_2
+        EndIf
+        
+        ; Thumb coordinate on scroll bar
+        If *this\bar\thumb\len
+          If *this\vertical
+            *this\bar\button[#__b_3]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos
+            *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
+          Else
+            *this\bar\button[#__b_3]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos 
+            *this\bar\button[#__b_3]\width  = *this\bar\thumb\len                                  
+          EndIf
+        EndIf
+        
+        ; draw track bar coordinate
+        If *this\vertical
+          *this\bar\button[#__b_1]\width    = 4
+          *this\bar\button[#__b_2]\width    = 4
+          *this\bar\button[#__b_3]\width    = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
+          
+          *this\bar\button[#__b_1]\y        = *this\y
+          *this\bar\button[#__b_1]\height   = *this\bar\thumb\pos + *this\bar\thumb\len/2 
+          
+          *this\bar\button[#__b_2]\y        = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
+          *this\bar\button[#__b_2]\height   = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
+          
+          If *this\bar\inverted
+            *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + 6
+            *this\bar\button[#__b_2]\x      = *this\x[#__c_frame] + 6
+            *this\bar\button[#__b_3]\x      = *this\bar\button[#__b_1]\x - *this\bar\button[#__b_3]\width/4 - 1 -  Bool( *this\bar\button[#__b_3]\size>10 )
+          Else
+            *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\bar\button[#__b_1]\width - 6
+            *this\bar\button[#__b_2]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\bar\button[#__b_2]\width - 6 
+            *this\bar\button[#__b_3]\x      = *this\bar\button[#__b_1]\x - *this\bar\button[#__b_3]\width/2 + Bool( *this\bar\button[#__b_3]\size>10 )
+          EndIf
+        Else
+          *this\bar\button[#__b_1]\height   = 4
+          *this\bar\button[#__b_2]\height   = 4
+          *this\bar\button[#__b_3]\height   = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
+          
+          *this\bar\button[#__b_1]\x        = *this\x[#__c_frame]
+          *this\bar\button[#__b_1]\width    = *this\bar\thumb\pos + *this\bar\thumb\len/2
+          
+          *this\bar\button[#__b_2]\x        = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
+          *this\bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
+          
+          If *this\bar\inverted
+            *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_1]\height - 6
+            *this\bar\button[#__b_2]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_2]\height - 6 
+            *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y - *this\bar\button[#__b_3]\height/2 + Bool( *this\bar\button[#__b_3]\size>10 )
+          Else
+            *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + 6
+            *this\bar\button[#__b_2]\y      = *this\y[#__c_frame] + 6
+            *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y - *this\bar\button[#__b_3]\height/4 - 1 -  Bool( *this\bar\button[#__b_3]\size>10 )
+          EndIf
+        EndIf
+        
+        result = Bool( *this\resize & #__resize_change )
+      EndIf
+      
+      If *this\type = #PB_GadgetType_Splitter 
         If *this\vertical
           *this\bar\button[#__split_b1]\width    = *this\width[#__c_frame]
           *this\bar\button[#__split_b1]\height   = *this\bar\thumb\pos
@@ -5126,6 +5454,16 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\bar\button[#__split_b2]\height   = *this\height[#__c_frame]
           
         EndIf
+        
+        ;         ; 
+        ;         If *this\bar\fixed And *this\bar\thumb\change ; And *this\type = #PB_GadgetType_Splitter
+        ;           If *this\vertical
+        ;             *this\bar\button[*this\bar\fixed]\fixed = *this\bar\button[*this\bar\fixed]\height - *this\bar\button[*this\bar\fixed]\size
+        ;           Else
+        ;             *this\bar\button[*this\bar\fixed]\fixed = *this\bar\button[*this\bar\fixed]\width - *this\bar\button[*this\bar\fixed]\size
+        ;           EndIf
+        ;         EndIf
+        ;         
         
         
         ; Splitter childrens auto resize       
@@ -5160,7 +5498,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\bar\button[#__split_b1]\y - *this\y[#__c_frame], 
                         *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
               EndIf
-              
             EndIf
           EndIf
         EndIf
@@ -5196,7 +5533,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], 
                         *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
               EndIf
-              
             EndIf
           EndIf   
         EndIf      
@@ -5204,272 +5540,86 @@ CompilerIf Not Defined( widget, #PB_Module )
         result = Bool( *this\resize & #__resize_change )
       EndIf
       
-      ;
-      If *this\type = #PB_GadgetType_TrackBar
-        If *this\bar\direction > 0 
-          If *this\bar\thumb\pos = *this\bar\area\end Or *this\bar\mode & #PB_TrackBar_Ticks
-            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\inverted ) * 2
-          Else
-            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( Not *this\bar\inverted ) * 2
-          EndIf
-        Else
-          If *this\bar\thumb\pos = *this\bar\area\pos Or *this\bar\mode & #PB_TrackBar_Ticks 
-            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\inverted ) * 2
-          Else
-            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( *this\bar\inverted ) * 2
-          EndIf
-        EndIf
-        
-        If *this\type = #PB_GadgetType_TrackBar 
-          *this\bar\button[#__b_3]\color\state = #__s_2
-          If Not *this\bar\mode & #PB_TrackBar_Ticks
-            If *this\bar\inverted
-              *this\bar\button[#__b_2]\color\state = #__s_2
-             ; *this\bar\button[#__b_1]\color\state = #__s_3
-            Else
-             ; *this\bar\button[#__b_2]\color\state = #__s_3
-              *this\bar\button[#__b_1]\color\state = #__s_2
-            EndIf
-          EndIf
-            
-          ; Thumb coordinate on scroll bar
-          If *this\bar\thumb\len
-            If *this\vertical
-              *this\bar\button[#__b_3]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos
-              *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
-            Else
-              *this\bar\button[#__b_3]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos 
-              *this\bar\button[#__b_3]\width  = *this\bar\thumb\len                                  
-            EndIf
-          EndIf
+      If *this\type = #PB_GadgetType_Spin
+        If *this\vertical      
+          ; Top button coordinate
+          *this\bar\button[#__b_2]\y      = *this\y[#__c_inner] + *this\height[#__c_inner]/2 + Bool( *this\height%2 )
+          *this\bar\button[#__b_2]\height = *this\height[#__c_inner]/2 - 1 
+          *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\size 
+          *this\bar\button[#__b_2]\x      = ( *this\x[#__c_inner] + *this\width[#__c_container] ) - *this\bar\button[#__b_2]\size - 1
           
-          ; draw track bar coordinate
-          If *this\vertical
-            *this\bar\button[#__b_1]\width    = 4
-            *this\bar\button[#__b_2]\width    = 4
-            *this\bar\button[#__b_3]\width    = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
-            
-            *this\bar\button[#__b_1]\y        = *this\y
-            *this\bar\button[#__b_1]\height   = *this\bar\thumb\pos + *this\bar\thumb\len/2 
-            
-            *this\bar\button[#__b_2]\y        = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
-            *this\bar\button[#__b_2]\height   = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
-            
-            If *this\bar\inverted
-              *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + 6
-              *this\bar\button[#__b_2]\x      = *this\x[#__c_frame] + 6
-              *this\bar\button[#__b_3]\x      = *this\bar\button[#__b_1]\x - *this\bar\button[#__b_3]\width/4 - 1 -  Bool( *this\bar\button[#__b_3]\size>10 )
-            Else
-              *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\bar\button[#__b_1]\width - 6
-              *this\bar\button[#__b_2]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\bar\button[#__b_2]\width - 6 
-              *this\bar\button[#__b_3]\x      = *this\bar\button[#__b_1]\x - *this\bar\button[#__b_3]\width/2 + Bool( *this\bar\button[#__b_3]\size>10 )
-            EndIf
-          Else
-            *this\bar\button[#__b_1]\height   = 4
-            *this\bar\button[#__b_2]\height   = 4
-            *this\bar\button[#__b_3]\height   = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
-            
-            *this\bar\button[#__b_1]\x        = *this\x[#__c_frame]
-            *this\bar\button[#__b_1]\width    = *this\bar\thumb\pos + *this\bar\thumb\len/2
-            
-            *this\bar\button[#__b_2]\x        = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
-            *this\bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
-            
-            If *this\bar\inverted
-              *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_1]\height - 6
-              *this\bar\button[#__b_2]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_2]\height - 6 
-              *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y - *this\bar\button[#__b_3]\height/2 + Bool( *this\bar\button[#__b_3]\size>10 )
-            Else
-              *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + 6
-              *this\bar\button[#__b_2]\y      = *this\y[#__c_frame] + 6
-              *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y - *this\bar\button[#__b_3]\height/4 - 1 -  Bool( *this\bar\button[#__b_3]\size>10 )
-            EndIf
-          EndIf
+          ; Bottom button coordinate
+          *this\bar\button[#__b_1]\y      = *this\y[#__c_inner] + 1 
+          *this\bar\button[#__b_1]\height = *this\height[#__c_inner]/2 - Bool( Not *this\height%2 ) - 1
+          *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\size 
+          *this\bar\button[#__b_1]\x      = ( *this\x[#__c_inner] + *this\width[#__c_container] ) - *this\bar\button[#__b_1]\size - 1                               
+        Else    
+          ; Left button coordinate
+          *this\bar\button[#__b_1]\y      = *this\y[#__c_inner] + 1
+          *this\bar\button[#__b_1]\height = *this\height[#__c_inner] - 2
+          *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\size/2 - 1
+          *this\bar\button[#__b_1]\x      = *this\x + *this\width - *this\bar\button[#__b_1]\size - 1   
+          
+          ; Right button coordinate
+          *this\bar\button[#__b_2]\y      = *this\y[#__c_inner] + 1 
+          *this\bar\button[#__b_2]\height = *this\height[#__c_inner] - 2
+          *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\size/2 - 1
+          *this\bar\button[#__b_2]\x      = *this\x[#__c_inner] + *this\width[#__c_container] - *this\bar\button[#__b_2]\size/2                             
         EndIf
         
+        ; 
+        If *this\text And 
+           ( *this\bar\thumb\change Or *this\text\string = "" )
+          Protected i : For i = 0 To 3
+            If *this\bar\increment = ValF( StrF( *this\bar\increment, i ) )
+              *this\text\string = StrF( *this\bar\page\pos, i )
+              *this\text\change = 1
+              Break
+            EndIf
+          Next
+        EndIf
+        
+        result = Bool( *this\resize & #__resize_change )
       EndIf
+      ;;EndIf
       
       
-      
-      ; 
       If *this\bar\thumb\change <> 0
         *this\bar\thumb\change = 0
-        
-        If *this\root\canvas\gadget = PB(EventGadget)( ) 
-          result = #True
-        EndIf
       EndIf  
-      
-      ;
-      If *this\bar\page\change <> 0
-        *this\bar\page\change = 0
-        ;
-        If *this\root\canvas\gadget <> PB(EventGadget)( ) 
-          ReDraw( *this\root ) 
-        EndIf
-        
-        If *this\child
-          If *this\parent 
-            If *this\parent\_tab = *this 
-;               If StartEnumerate( *this\parent )
-;                 _set_hide_state_( widget( ) )
-;                 StopEnumerate( )
-;               EndIf
-;               
-;               Post( #__event_Change, *this\parent, EnterButton(), *this\bar\direction )
-            EndIf
-          EndIf
-        Else
-          Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
-        EndIf
-      EndIf 
       
       ProcedureReturn result
     EndProcedure
     
-    Procedure.b Bar_Update( *this._s_widget )
-      Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
-      
-      If *this\type = #PB_GadgetType_ScrollBar 
-        If *this\bar\max 
-          If *this\bar\button[#__b_1]\size =- 1 And *this\bar\button[#__b_2]\size =- 1
-            If *this\vertical And *this\width[#__c_inner] > 7 And *this\width[#__c_inner] < 21
-              *this\bar\button[#__b_1]\size = *this\width[#__c_inner] - 1
-              *this\bar\button[#__b_2]\size = *this\width[#__c_inner] - 1
-              
-            ElseIf Not *this\vertical And *this\height[#__c_inner] > 7 And *this\height[#__c_inner] < 21
-              *this\bar\button[#__b_1]\size = *this\height[#__c_inner] - 1
-              *this\bar\button[#__b_2]\size = *this\height[#__c_inner] - 1
-              
-            Else
-              *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
-              *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
-            EndIf
-          EndIf
-          
-          If *this\bar\button[#__b_3]\size
-            If *this\vertical
-              If *this\width = 0
-                *this\width = *this\bar\button[#__b_3]\size
-              EndIf
-            Else
-              If *this\height = 0
-                *this\height = *this\bar\button[#__b_3]\size
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-;       *this\bar\min[1] = *this\bar\button[#__b_1]\size
-;       *this\bar\min[2] = *this\bar\button[#__b_2]\size
-             
-      ; get area size
-      If *this\vertical
-        *this\bar\area\len = *this\height[#__c_frame] 
-      Else
-        *this\bar\area\len = *this\width[#__c_frame] 
-      EndIf
-      
-      *this\bar\area\pos = *this\bar\button[#__b_1]\size + *this\bar\min[1] + *this\bs
-      *this\bar\area\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - *this\bs*2
-      
-      If *this\bar\page\len
-        ; get thumb size
-        *this\bar\thumb\len = Round( ( *this\bar\area\end / ( *this\bar\max - *this\bar\min ) ) * ( *this\bar\page\len ), #PB_Round_Nearest )
-        If *this\bar\thumb\len > *this\bar\area\end 
-          *this\bar\thumb\len = *this\bar\area\end 
-        EndIf
-        If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
-          If *this\bar\area\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
-            *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
-          ElseIf *this\bar\button[#__b_3]\size > 7
-            *this\bar\thumb\len = 0
-          EndIf
-        EndIf
-        
-        ; for the scroll-bar
-        If *this\bar\page\Len > ( *this\bar\max ) 
-          *this\bar\page\end = *this\bar\page\Len - ( *this\bar\max ) 
-        Else
-          *this\bar\page\end = ( *this\bar\max ) - *this\bar\page\len
-        EndIf
-        
-      Else
-         ; get thumb size
-        If *this\type = #PB_GadgetType_TabBar
-          *this\bar\thumb\len = *this\bar\area\end - *this\bar\page\end
-        Else
-          *this\bar\thumb\len = *this\bar\button[#__b_3]\size
-        EndIf
-        
-        ; get page end
-        If *this\bar\max
-          *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * *this\bar\area\len
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs ))
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\page\end - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs ))
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * ( *this\bs + *this\bar\button[#__b_2]\size ) 
-          
-          
-            *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\area\len - *this\bar\button[#__b_2]\size - *this\bar\thumb\len )
-        
-        Else
-          ; one set end
-          If Not *this\bar\page\end And *this\bar\area\len 
-            *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len
-            
-            If Not *this\bar\page\pos
-              *this\bar\page\pos = *this\bar\page\end/2 
-            EndIf
-            
-            ; if splitter fixed 
-            ; set splitter pos to center
-            If *this\bar\fixed
-              If *this\bar\fixed = #__split_1
-                *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
-              Else
-                *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\end - *this\bar\page\pos
-              EndIf
-            EndIf
-          Else
-            If *this\bar\page\change Or *this\bar\fixed = 1
-              *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len 
-            EndIf
-          EndIf
-        EndIf
-        
-      EndIf
-      
-      If *this\bar\page\end
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
-      Else
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\min )
-      EndIf
-      
-      *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs )
-      
-;       If *this\type = #PB_GadgetType_TabBar
-;       ;  *this\bar\page\end = *this\bar\max - *this\bar\area\end
-;        ;  *this\bar\page\end = *this\bar\max -  *this\bs - *this\bar\button[#__b_2]\size 
-;        ; *this\bar\area\end = *this\bar\area\len
-;         ; *this\bar\percent = 1.0
+    Procedure.b Bar_SetPos( *this._s_widget, ThumbPos.i )
+      If ThumbPos < *this\bar\area\pos : ThumbPos = *this\bar\area\pos : EndIf
+      If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
+;      
+;       If *this\bar\thumb\end <> ThumbPos : *this\bar\thumb\end = ThumbPos
+;         ProcedureReturn Bar_SetState( *this, _bar_invert_( *this\bar, _bar_page_pos_( *this\bar, ThumbPos ), *this\bar\inverted ) )
 ;       EndIf
-        
-      ProcedureReturn Bar_Resize( *this )  
+      
+      If *this\bar\thumb\pos <> ThumbPos 
+       ; Debug ""+ThumbPos +" "+ *this\bar\thumb\pos
+        ProcedureReturn Bar_SetState( *this, _bar_invert_( *this\bar, _bar_page_pos_( *this\bar, ThumbPos ), *this\bar\inverted ) )
+      EndIf
+      
     EndProcedure
     
     Procedure.b Bar_Change( *this._s_widget, ScrollPos.f )
       With *this
-        ;Debug ""+ScrollPos +" "+ \bar\page\end
-        
-        ;If ScrollPos < *this\bar\min : ScrollPos = *this\bar\min : EndIf
-        
-        ;If ScrollPos < *this\bar\min : ScrollPos = *this\bar\min : EndIf
-        If ScrollPos > *this\bar\page\end 
-          If *this\bar\page\end
-            ScrollPos = *this\bar\page\end 
+        If ScrollPos < \bar\min 
+          ;If *this\type <> #PB_GadgetType_TabBar
+          ; if SetState( height - value or width - value )
+          \bar\button[#__b_3]\fixed = ScrollPos
+          ;EndIf
+          ScrollPos = \bar\min 
+          
+        ElseIf \bar\max And ScrollPos > \bar\page\end ; = ( \bar\max - \bar\page\len )
+          If \bar\max >= \bar\page\len 
+            ScrollPos = \bar\page\end
           Else
-            ScrollPos = _bar_invert_( *this\bar, _bar_page_pos_( *this\bar, *this\bar\area\end ), *this\bar\inverted ) - ScrollPos
+            ScrollPos = \bar\min 
           EndIf
         EndIf
         
@@ -5480,41 +5630,38 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\direction = ScrollPos
           EndIf
           
-         *this\bar\page\change = *this\bar\page\pos - ScrollPos
+         \bar\thumb\change = \bar\page\pos - ScrollPos
+          *this\bar\page\change = *this\bar\page\pos - ScrollPos
          *this\bar\page\pos = ScrollPos
          ProcedureReturn #True
         EndIf
       EndWith
     EndProcedure
     
-    Procedure.b Bar_SetPos( *this._s_widget, ThumbPos.i )
-      Protected result, ScrollPos.f
-      If ThumbPos < *this\bar\area\pos : ThumbPos = *this\bar\area\pos : EndIf
-      If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
-          
-      If *this\bar\thumb\pos <> ThumbPos 
-        ScrollPos = _bar_page_pos_( *this\bar, ThumbPos )
-        ScrollPos = _bar_invert_( *this\bar, ScrollPos, *this\bar\inverted )
-        
-        If *this\bar\mode & #PB_TrackBar_Ticks
-          ThumbPos = _bar_thumb_pos_( *this\bar, ScrollPos )
-        EndIf
-        *this\bar\thumb\change = *this\bar\thumb\pos - ThumbPos 
-        *this\bar\thumb\pos = ThumbPos
-        Bar_Change( *this, ScrollPos )
-        Bar_Resize( *this ) 
-        ProcedureReturn #True
-      EndIf
-    EndProcedure
-    
     Procedure.b Bar_SetState( *this._s_widget, state.f )
-;       If *this\type = #PB_GadgetType_TabBar
-;         Tab_SetState( *this, state )
-;       Else
-        If Bar_Change( *this, state ) 
-          ProcedureReturn Bar_Update( *this ) 
+      Protected result
+      
+      If Bar_Change( *this, state ) 
+        Bar_Update( *this )
+        
+        ; post event
+        If *this\type = #PB_GadgetType_ScrollBar And _is_scrollbars_( *this )
+          Post( #__event_ScrollChange, *this\parent, *this, *this\bar\direction )
+        Else
+          If *this\type <> #PB_GadgetType_TabBar
+            If *this\root\canvas\gadget <> PB(EventGadget)( ) 
+              ReDraw( *this\root ) ; сним у панель setstate хурмить
+                                   ;  _post_repaint_canvas_( *this\root\canvas )
+            EndIf
+          EndIf
+          
+          Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
         EndIf
-;       EndIf
+        
+        result = #True
+      EndIf
+      
+      ProcedureReturn result
     EndProcedure
     
     Procedure.l Bar_SetAttribute( *this._s_widget, Attribute.l, *value )
@@ -5554,35 +5701,34 @@ CompilerIf Not Defined( widget, #PB_Module )
                   \bar\page\pos = *value
                 EndIf
                 \bar\min = *value
-                Debug  " min " + \bar\min + " max " + \bar\max
+                ;Debug  " min " + \bar\min + " max " + \bar\max
                 result = #True
               EndIf
               
             Case #__bar_maximum
-              If \bar\max <> *value And Not ( *value < 0 And Not #__bar_minus)
+              If \bar\max <> *value And Not *value < 0
                 \bar\area\change = \bar\max - *value
-                
-                If \bar\min > *value And Not #__bar_minus
+                If \bar\min > *value
                   \bar\max = \bar\min + 1
                 Else
                   \bar\max = *value
                 EndIf
-                ;                 
-                If Not \bar\max And Not #__bar_minus
+                
+                If Not \bar\max
                   \bar\page\pos = \bar\max
                 EndIf
-                Debug  "   min " + \bar\min + " max " + \bar\max
+                ;Debug  "   min " + \bar\min + " max " + \bar\max
                 
-                ;\bar\page\change = #True
+                ;\bar\thumb\change = #True
                 result = #True
               EndIf
               
             Case #__bar_pagelength
-              If \bar\page\len <> *value And Not ( *value < 0 And Not #__bar_minus )
+              If \bar\page\len <> *value And Not *value < 0
                 \bar\area\change = \bar\page\len - *value
                 \bar\page\len = *value
                 
-                If Not \bar\max And Not #__bar_minus
+                If Not \bar\max
                   If \bar\min > *value
                     \bar\max = \bar\min + 1
                   Else
@@ -5622,13 +5768,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If result ; And \width And \height ; есть проблемы с imagegadget и scrollareagadget
-                  ;\bar\page\change = #True
+                  ;\bar\thumb\change = #True
                   ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
           
-          If *this\root ;And *this\root\canvas\repaint = #False
+          ;If *this\root And *this\root\canvas\repaint = #False
             Bar_Update( *this ) ; \hide = 
-          EndIf
-          
+          ;EndIf
+        
           If *this\type = #PB_GadgetType_Splitter
             If result =- 1
               SetParent(*value, *this)
@@ -5907,19 +6053,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                  ( *this\bar\selected = *this\bar\button[#__b_2] And Not *this\bar\inverted )
             
             Post( #__event_Down, *this )
-            ;;Repaint | Bar_SetState( *this, *this\bar\page\pos + *this\bar\increment )
-            If Bar_Change( *this, *this\bar\page\pos + *this\bar\increment ) 
-              Repaint = Bar_Update( *this ) 
-            EndIf
-      
+            Repaint | Bar_SetState( *this, *this\bar\page\pos + *this\bar\increment )
+            
           ElseIf ( *this\bar\selected = *this\bar\button[#__b_2] And *this\bar\inverted ) Or 
                  ( *this\bar\selected = *this\bar\button[#__b_1] And Not *this\bar\inverted )
             
             Post( #__event_Up, *this )
-            ;; Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\bar\increment )
-            If Bar_Change( *this, *this\bar\page\pos - *this\bar\increment ) 
-              Repaint = Bar_Update( *this ) 
-            EndIf
+            Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\bar\increment )
           EndIf
         EndIf
       EndIf
@@ -5952,7 +6092,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\type = #PB_GadgetType_TabBar
             ; that is, if you did not move the items
-            If Not *this\bar\thumb\change And 
+            If Not *this\bar\page\change And 
                *this\bar\selected = *this\bar\button[#__b_3]
               
               If *this\index[#__tab_1] >= 0 And 
@@ -5961,7 +6101,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
             
-            *this\bar\thumb\change = 0
+            *this\bar\page\change = 0
           EndIf
           
           *this\bar\selected = #Null
@@ -6401,7 +6541,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
             
-            
             *this\width[#__c_frame] = width 
             *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
             *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
@@ -6428,7 +6567,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
             
-            
             If *this\count\items And 
                *this\height[#__c_required] >= *this\height[#__c_inner] ; #__c_container
               *this\change = 1
@@ -6449,8 +6587,8 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\parent\scroll And
            *this\parent\scroll\v <> *this And 
            *this\parent\scroll\h <> *this And
-           *this\parent\scroll\v\bar\page\change = 0 And
-           *this\parent\scroll\h\bar\page\change = 0
+           *this\parent\scroll\v\bar\thumb\change = 0 And
+           *this\parent\scroll\h\bar\thumb\change = 0
           
           _mdi_update_( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
         EndIf
@@ -6586,17 +6724,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If *this\__draw
-          ; result = Update( *this )
-          If *this\type = #PB_GadgetType_Spin Or
-             *this\type = #PB_GadgetType_TabBar Or
-             *this\type = #PB_GadgetType_TrackBar Or
-             *this\type = #PB_GadgetType_ScrollBar Or
-             *this\type = #PB_GadgetType_ProgressBar Or
-             *this\type = #PB_GadgetType_Splitter
-            
-            Bar_Update( *this )
-          EndIf
-          
+          result = Update( *this )
         Else
           result = #True
         EndIf
@@ -7842,7 +7970,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; If *this\text\change = #__text_update 
           
           ; vertical bar one before displaying
-          If *this\scroll\v And Not *this\scroll\v\bar\thumb\change 
+          If *this\scroll\v And Not *this\scroll\v\bar\page\change 
             If *this\text\align\bottom
               If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end ) 
                 Bar_Update( *this\scroll\v )
@@ -7856,7 +7984,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ; horizontal bar one before displaying
-          If *this\scroll\h And Not *this\scroll\h\bar\thumb\change   
+          If *this\scroll\h And Not *this\scroll\h\bar\page\change   
             If *this\text\align\right
               If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end ) 
                 Bar_Update( *this\scroll\h )
@@ -8567,7 +8695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           _text_scroll_y_( *this )
           
           ; fist show 
-          If Not *this\scroll\v\bar\thumb\change
+          If Not *this\scroll\v\bar\page\change
             If *this\text\align\bottom
               If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end ) 
                 Bar_Update( *this\scroll\v )
@@ -8587,7 +8715,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           _text_scroll_x_( *this )
           
           ; first show
-          If Not *this\scroll\h\bar\thumb\change
+          If Not *this\scroll\h\bar\page\change
             If *this\text\align\right
               If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end ) 
                 Bar_Update( *this\scroll\h )
@@ -14724,7 +14852,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ElseIf Flag & #PB_Splitter_SecondFixed = #PB_Splitter_SecondFixed
               *this\bar\fixed = #__split_2 
             EndIf
-;             
+            
             *this\bar\button[#__b_3]\size = #__splitter_buttonsize
             *this\bar\button[#__b_3]\interact = #True
             *this\bar\button[#__b_3]\round = 2
@@ -15900,7 +16028,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\bar\button[#__b_3]\fixed = 0
           Debug ""+*this\class+" fixed_3"
           
-          If *this\bar\fixed And *this\bar\page\change
+          If *this\bar\fixed And *this\bar\thumb\change
             If *this\bar\fixed = #__split_1
               *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
             Else
@@ -17227,10 +17355,10 @@ CompilerIf Not Defined( widget, #PB_Module )
               If EnterButton() > 0
                 ;; Debug "   bar delta pos >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
                 ; bar mouse delta pos
-                ;If EnterButton() = EnterWidget( )\bar\button[#__b_3] ; EnterButton()\index = #__b_3
-                mouse( )\delta\x = mouse_x - EnterWidget( )\bar\thumb\pos
-                mouse( )\delta\y = mouse_y - EnterWidget( )\bar\thumb\pos
-                ;EndIf
+                If EnterButton() = EnterWidget( )\bar\button[#__b_3] ; EnterButton()\index = #__b_3
+                  mouse( )\delta\x = mouse_x - EnterWidget( )\bar\thumb\pos
+                  mouse( )\delta\y = mouse_y - EnterWidget( )\bar\thumb\pos
+                EndIf
               Else
                 ;; Debug "  widget delta pos >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
                 If _is_integral_( EnterWidget( ) )
@@ -17241,8 +17369,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   mouse( )\delta\y = mouse_y - EnterWidget( )\y[#__c_container] - EnterWidget( )\parent\y[#__c_required]
                 EndIf
               EndIf
-              
-              ;Debug EnterButton()\index
               
               ; set active widget
               If eventtype = #__event_leftButtonDown
@@ -17856,94 +17982,1181 @@ Macro Uselib( _name_ )
   UseModule structures
 EndMacro
 
+;
+; This code is automatically generated by the FormDesigner.
+; Manual modification is possible to adjust existing commands, but anything else will be dropped when the code is compiled.
+; Event procedures needs to be put in another source file.
+;
 
+;- 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
-  Global i, w_0,w_1,w_2
-    
   
-  Procedure events_gadgets()
-    ;;ClearDebugOutput()
-    ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+  Uselib( WIDGET )
+  UsePNGImageDecoder( )
+  
+  ;- ENUMs
+  ; properties items
+  Enumeration 
+    #_pi_group_0 
+    #_pi_id
+    #_pi_class
+    #_pi_text
     
-    Select EventType()
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
-        Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+    #_pi_group_1 
+    #_pi_x
+    #_pi_y
+    #_pi_width
+    #_pi_height
+    
+    #_pi_group_2 
+    #_pi_disable
+    #_pi_hide
+  EndEnumeration
+  
+  ; events items
+  Enumeration 
+    #_ei_leftclick
+    #_ei_change
+    #_ei_enter
+    #_ei_leave
+  EndEnumeration
+  
+  ; toolbar buttons
+  Enumeration 
+    #_tb_group_left = 3
+    #_tb_group_right
+    #_tb_group_top
+    #_tb_group_bottom
+    #_tb_group_width
+    #_tb_group_height
+    
+    #_tb_align_left
+    #_tb_align_right
+    #_tb_align_top
+    #_tb_align_bottom
+    #_tb_align_center
+    
+    #_tb_widget_paste
+    #_tb_widget_delete
+    #_tb_widget_copy
+    #_tb_widget_cut
+  EndEnumeration
+  
+  ;- GLOBALs
+  Global window_ide, 
+         canvas_ide
+  
+  Global Splitter_ide, 
+         Splitter_design, 
+         splitter_debug, 
+         Splitter_inspector, 
+         splitter_help
+  
+  Global toolbar_design, 
+         listview_debug, 
+         id_help_text
+  
+  Global id_design_panel, 
+         id_design_form,
+         id_design_code
+  
+  Global id_inspector_panel,
+         id_inspector_tree, 
+         id_elements_tree,
+         id_properties_tree, 
+         id_events_tree
+  
+  Global group_select,
+         group_drag
+  
+  UsePNGImageDecoder( )
+  
+  Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
+  
+  ;-
+  ;- PUBLICs
+  ;-
+  Procedure Points( Steps = 5, line=0, Color = 0 )
+    Static ID
+    Protected hDC, x,y
+    
+    If Not ID
+      ;Steps - 1
+      
+      ExamineDesktops( )
+      Protected width = DesktopWidth( 0 )   
+      Protected height = DesktopHeight( 0 )
+      ID = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
+      
+      If Color = 0 : Color = $ff808080 : EndIf
+      
+      If StartDrawing( ImageOutput( ID ) )
+        DrawingMode( #PB_2DDrawing_AllChannels )
+        ;Box( 0, 0, width, height, BoxColor )
         
-        Select EventGadget()
-         Case 0 : SetState(w_0, GetGadgetState(EventGadget()))
-         Case 1 : SetState(w_1, GetGadgetState(EventGadget()))
-         Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
-        EndSelect
-    EndSelect
+        For x = 0 To width - 1
+          
+          For y = 0 To height - 1
+            
+            If line
+              Line( x, 0, 1,height, Color )
+              Line( 0, y, width,1, Color )
+            Else
+              Line( x, y, 1,1, Color )
+            EndIf
+            
+            y + Steps
+          Next
+          
+          
+          x + Steps
+        Next
+        
+        StopDrawing( )
+      EndIf
+    EndIf
+    
+    ProcedureReturn ID
   EndProcedure
   
-  Procedure events_widgets()
-    ;;;ClearDebugOutput()
-    ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
+  
+  ;-
+  Macro properties_update_id( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_id,      GetItemText( _gadget_, #_pi_id )      +Chr( 10 )+Str( _value_ ) )
+  EndMacro
+  
+  Macro properties_update_text( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_text,    GetItemText( _gadget_, #_pi_text )    +Chr( 10 )+GetText( _value_ ) )
+  EndMacro
+  
+  Macro properties_update_class( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_class,   GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+GetCount( _value_ ) )
+  EndMacro
+  
+  Macro properties_update_hide( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_hide,    GetItemText( _gadget_, #_pi_hide )    +Chr( 10 )+Str( Hide( _value_ ) ) )
+  EndMacro
+  
+  Macro properties_update_disable( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_disable, GetItemText( _gadget_, #_pi_disable ) +Chr( 10 )+Str( Disable( _value_ ) ) )
+  EndMacro
+  
+  Macro properties_update_coordinate( _gadget_, _value_ )
+    SetItemText( _gadget_, #_pi_x,       GetItemText( _gadget_, #_pi_x )       +Chr( 10 )+Str( x( _value_, #__c_container ) ) )
+    SetItemText( _gadget_, #_pi_y,       GetItemText( _gadget_, #_pi_y )       +Chr( 10 )+Str( Y( _value_, #__c_container ) ) )
+    SetItemText( _gadget_, #_pi_width,   GetItemText( _gadget_, #_pi_width )   +Chr( 10 )+Str( Width( _value_ ) ) )
+    SetItemText( _gadget_, #_pi_height,  GetItemText( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
+  EndMacro
+  
+  Macro properties_update( _gadget_, _value_ )
+    properties_update_id( _gadget_, _value_ )
+    properties_update_class( _gadget_, _value_ )
     
-    Select WidgetEventType( )
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
-        Debug  ""+GetIndex(*event\widget)+" - widget change " + GetState(*event\widget)
+    properties_update_text( _gadget_, _value_ )
+    properties_update_coordinate( _gadget_, _value_ )
+    
+    properties_update_disable( _gadget_, _value_ )
+    properties_update_hide( _gadget_, _value_ )
+  EndMacro
+  
+  
+  ;-
+  Procedure.s FlagFromFlag( Type, flag.i ) ; 
+    Protected flags.S
+    
+    Select type
+      Case #PB_GadgetType_Text
+        If flag & #__text_center
+          flags + "#PB_Text_Center | "
+        EndIf
+        If flag & #__text_right
+          flags + "#PB_Button_Right | "
+        EndIf
+        If flag & #__text_border
+          flags + "#PB_Text_Border | "
+        EndIf
         
-        Select *event\widget
-         Case w_0 : SetGadgetState(0, GetState(*event\widget))
-         Case w_1 : SetGadgetState(1, GetState(*event\widget))
-         Case w_2 : SetGadgetState(2, GetState(*event\widget))
-        EndSelect
+      Case #PB_GadgetType_Button
+        If flag & #__button_left
+          flags + "#PB_Button_Left | "
+        EndIf
+        If flag & #__button_right
+          flags + "#PB_Button_Right | "
+        EndIf
+        If flag & #__button_multiline
+          flags + "#PB_Button_MultiLine | "
+        EndIf
+        If flag & #__button_toggle
+          flags + "#PB_Button_Toggle | "
+        EndIf
+        If flag & #__button_default
+          flags + "#PB_Button_Default | "
+        EndIf
+        
+      Case #PB_GadgetType_Container
+        If flag & #__flag_borderless
+          flags + "#PB_Container_BorderLess | "
+        EndIf
+        ;         If flag & #__flag_flat
+        ;           flags + "#PB_Container_Border | "
+        ;         EndIf
+        
     EndSelect
+    
+    ProcedureReturn Trim( flags, "|" )
   EndProcedure
   
-  ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    TrackBarGadget(0, 10,  40, 250, 20, 0, 30)
-    SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(100, 250)
-    SetGadgetState(0, 25)
+  Procedure$ add_line( *new._s_widget, Handle$ ) ; Ok
+    Protected ID$, Result$, param1$, param2$, param3$, Text$, flag$
     
-    TrackBarGadget(1, 10, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-    SplitterGadget(101, 10,  120, 250, 20, 1,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(101, 250)
-    ;SetGadgetState(1, 30)
+    flag$ = FlagFromFlag( *new\type, *new\flag )
     
-    TrackBarGadget(2, 270, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SplitterGadget(102, 270, 10, 20, 170, 2,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadgetState(102, 250)
-    SetGadgetState(2, 8000)
+    Select Asc( Handle$ )
+      Case '#'        : ID$ = Handle$           : Handle$ = ""
+      Case '0' To '9' : ID$ = Chr( Asc( Handle$ ) ) : Handle$ = ""
+      Default         : ID$ = "#PB_Any"         : Handle$ + " = "
+    EndSelect
     
-    TextGadget    (#PB_Any, 10,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TextGadget    (#PB_Any, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    TextGadget    (#PB_Any,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
+    Text$ = Chr( 34 )+*new\text\string+Chr( 34 )
     
-    For i = 0 To 2
-      BindGadgetEvent(i, @events_gadgets())
+    If *new\class = "Window"
+      Result$ = Handle$ +"Window( "+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
+    Else
+      ; type_$ = "Gadget( "+ID$+", "
+      Result$ = Handle$ + *new\class +"( "+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
+    EndIf
+    
+    Select *new\class
+      Case "Window" : Result$ +", "+ Text$                                                                          
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        
+      Case "ScrollArea"    : Result$ +", "+ param1$ +", "+ param2$    
+        If param3$ : Result$ +", "+ param3$ : EndIf 
+        
+      Case "Calendar"      
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        
+      Case "Button"        : Result$ +", "+ Text$                                                                               
+      Case "String"        : Result$ +", "+ Text$                                                                               
+      Case "Text"          : Result$ +", "+ Text$                                                                                 
+      Case "CheckBox"      : Result$ +", "+ Text$                                                                             
+      Case "Option"        : Result$ +", "+ Text$
+      Case "Frame"         : Result$ +", "+ Text$                                                                                
+      Case "Web"           : Result$ +", "+ Text$
+      Case "Date"          : Result$ +", "+ Text$              
+      Case "ExplorerList"  : Result$ +", "+ Text$                                                                         
+      Case "ExplorerTree"  : Result$ +", "+ Text$                                                                         
+      Case "ExplorerCombo" : Result$ +", "+ Text$                                                                        
+        
+      Case "HyperLink"     : Result$ +", "+ Text$ +", "+ param1$                                                       
+      Case "ListIcon"      : Result$ +", "+ Text$ +", "+ param1$                                                        
+        
+      Case "Image"         : Result$ +", "+ param1$   
+      Case "Scintilla"     : Result$ +", "+ param1$
+      Case "Shortcut"      : Result$ +", "+ param1$
+      Case "ButtonImage"   : Result$ +", "+ param1$                                                                                             
+        
+      Case "TrackBar"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+      Case "Spin"          : Result$ +", "+ param1$ +", "+ param2$                                                                             
+      Case "Splitter"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+      Case "MDI"           : Result$ +", "+ param1$ +", "+ param2$                                                                              
+      Case "ProgressBar"   : Result$ +", "+ param1$ +", "+ param2$                                                                      
+      Case "ScrollBar"     : Result$ +", "+ param1$ +", "+ param2$ +", "+ param3$                                                 
+    EndSelect
+    
+    If flag$ : Result$ +", "+ flag$ : EndIf 
+    
+    Result$+" )" 
+    
+    ProcedureReturn Result$
+  EndProcedure
+  
+  Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
+    Protected code.s 
+    
+    ;   code = Space( ( *new\level-2 )*4 ) +
+    ;          Class +" = "+ 
+    ;          *new\class +"( " + 
+    ;          *new\x +", "+
+    ;          *new\y +", "+ 
+    ;          *new\width +", "+ 
+    ;          *new\height +", "+ 
+    ;          *new\text\string +", "+ 
+    ;          FlagFromFlag( *new\type, *new\flag )+
+    ;          " )"
+    
+    code = Space( ( *new\level-2 )*4 ) + add_line( *new._s_widget, Class.s )
+    
+    ;   ForEach widget( )
+    ;     If Child( widget( ), id_design_form )
+    ;       Debug widget( )\class
+    ;     EndIf
+    ;   Next
+    
+    If IsGadget( listview_debug )
+      AddGadgetItem( listview_debug, Position, code )
+    Else
+      AddItem( listview_debug, Position, code )
+    EndIf
+  EndProcedure
+  
+  
+  ;-
+  Declare widget_events( )
+  
+  Procedure.i widget_images( *id, Directory$ )
+    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+    
+    If FileSize( ZipFile$ ) < 1
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+      CompilerElse
+        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+      CompilerEndIf
+      If FileSize( ZipFile$ ) < 1
+        MessageRequester( "Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error | #PB_MessageRequester_Ok )
+        End
+      EndIf
+    EndIf
+    ;   Directory$ = GetCurrentDirectory( )+"images/" ; "";
+    ;   Protected ZipFile$ = Directory$ + "images.zip"
+    
+    
+    If FileSize( ZipFile$ ) > 0
+      ; UsePNGImageDecoder( )
+      
+      CompilerIf #PB_Compiler_Version > 522
+        UseZipPacker( )
+      CompilerEndIf
+      
+      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+      ZipFile = OpenPack( #PB_Any, ZipFile$, #PB_PackerPlugin_Zip )
+      
+      If ZipFile  
+        If ExaminePack( ZipFile )
+          While NextPackEntry( ZipFile )
+            
+            PackEntryName.S = PackEntryName( ZipFile )
+            ImageSize = PackEntrySize( ZipFile )
+            If ImageSize
+              *Image = AllocateMemory( ImageSize )
+              UncompressPackMemory( ZipFile, *Image, ImageSize )
+              Image = CatchImage( #PB_Any, *Image, ImageSize )
+              PackEntryName.S = ReplaceString( PackEntryName.S,".png","" )
+              If PackEntryName.S="application_form" 
+                PackEntryName.S="vd_windowgadget"
+              EndIf
+              
+              PackEntryName.S = ReplaceString( PackEntryName.S,"page_white_edit","vd_scintillagadget" )   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+              
+              Select PackEntryType( ZipFile )
+                Case #PB_Packer_File
+                  If Image
+                    If FindString( Left( PackEntryName.S, 3 ), "vd_" )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"vd_"," " )
+                      PackEntryName.S = Trim( ReplaceString( PackEntryName.S,"gadget","" ) )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"area","Area" )
+                      ;;PackEntryName.S = ReplaceString( PackEntryName.S,"bar","Bar" )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"image","Image" )
+                      
+                      Protected Left.S = UCase( Left( PackEntryName.S, 1 ) )
+                      Protected Right.S = Right( PackEntryName.S,Len( PackEntryName.S )-1 )
+                      PackEntryName.S = Left.S+Right.S
+                      
+                      If FindString( LCase( PackEntryName.S ), "cursor" )
+                        
+                        ;Debug "add cursor"
+                        AddItem( *id, 0, PackEntryName.S, Image )
+                        SetItemData( *id, 0, Image )
+                        
+                        ;                   ElseIf FindString( LCase( PackEntryName.S ), "window" )
+                        ;                     
+                        ;                     Debug "add window"
+                        ;                     AddItem( *id, 1, PackEntryName.S, Image )
+                        ;                     SetItemData( *id, 1, Image )
+                        
+                        ;ElseIf FindString( LCase( PackEntryName.S ), "buttonimage" )
+                      ElseIf FindString( LCase( PackEntryName.S ), "window" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "image" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "button" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "string" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "text" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "progress" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                        
+                      ElseIf FindString( LCase( PackEntryName.S ), "container" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "scrollarea" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "splitter" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "panel" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                      EndIf
+                    EndIf
+                  EndIf    
+              EndSelect
+              
+              FreeMemory( *Image )
+            EndIf
+          Wend  
+        EndIf
+        
+        ; select cursor
+        SetState( *id, 0 )
+        ClosePack( ZipFile )
+      EndIf
+    EndIf
+  EndProcedure
+  
+  Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=0, height.l=0 )
+    Protected *new._s_widget, *param1, *param2, *param3
+    Protected flag.i
+    
+    If *parent 
+      If transform( ) And transform( )\grid\size
+        x = ( x/transform( )\grid\size ) * transform( )\grid\size
+        y = ( y/transform( )\grid\size ) * transform( )\grid\size
+        width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
+        height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
+        
+        ;Debug ( transform( )\pos + #__border_size )
+        
+        If class = "window"
+          width + ( #__border_size * 2 )%transform( )\grid\size
+          height + ( #__border_size * 2 + #__caption_height )%transform( )\grid\size
+        EndIf
+      EndIf
+      
+      class.s = LCase( Trim( class ) )
+      OpenList( *parent, GetState( *parent ) ) 
+      
+      If class = "scrollarea"
+        *param1 = width
+        *param2 = height
+        *param3 = 5
+      EndIf
+      
+      ; create elements
+      Select class
+        Case "window"    
+          If GetType( *parent ) = #PB_GadgetType_MDI
+            *new = AddItem( *parent, #PB_Any, "", - 1, flag )
+            Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
+          Else
+            flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
+            a_init(*parent)
+            ;;a_set(*parent)
+            *new = Window( x,y,width,height, "", flag, *parent )
+          EndIf
+          
+          SetColor( *new, #__color_back, $FFECECEC )
+          Bind( *new, @widget_events( ) )
+          
+        Case "container"   : *new = Container( x,y,width,height, flag )                             : CloseList( )
+          SetColor( *new, #__color_back, $FFF1F1F1 )
+        Case "panel"       : *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
+        Case "scrollarea"  : *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
+        Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
+          
+        Case "image"       : *new = Image( x,y,width,height, img, flag )
+        Case "buttonimage" : *new = ButtonImage( x,y,width,height, img, flag )
+          
+        Case "progress"      : *new = Progress( x,y,width,height, 0,100, flag ) 
+          
+        Case "button"      : *new = Button( x,y,width,height, "", flag ) 
+        Case "string"      : *new = String( x,y,width,height, "", flag )
+        Case "text"        : *new = Text( x,y,width,height, "", flag )
+      EndSelect
+      
+      If *new
+        If *new\container ;> 0
+          If *new\container = #__type_window
+            SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
+            If transform( ) And transform( )\grid\size > 1 
+              ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, 0, $FFFF0000 ) )
+              SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+            EndIf
+          EndIf
+          
+          ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+          EnableDrop( *new, #PB_Drop_Text, #PB_Drag_Copy )
+        EndIf
+        
+        Class.s = GetClass( *new )+"_"+GetCount( *new )
+        SetText( *new, class )
+        
+        Protected countitems = CountItems( id_inspector_tree )
+        Protected i, sublevel, position = GetData( *parent ) 
+        
+        ; get childrens position and sublevel
+        For i = 0 To countitems - 1
+          If *parent = GetItemData( id_inspector_tree, i )
+            sublevel = GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel ) + 1
+            position = ( i+1 )
+          EndIf
+          
+          If sublevel <= GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel )
+            position = ( i+1 )
+          EndIf
+        Next 
+        
+        ; set new widget data
+        SetData( *new, position )
+        
+        ; update new widget data item
+        If countitems > position
+          For i = position To countitems - 1
+            SetData( GetItemData( id_inspector_tree, i ), i + 1 )
+          Next 
+        EndIf
+        
+        ; img = GetItemData( id_elements_tree, transform( )\type )
+        countitems = CountItems( id_elements_tree )
+        
+        Protected img =- 1
+        For i = 0 To countitems - 1
+          If LCase(StringField( Class, 1, "_" )) = LCase(GetItemText( id_elements_tree, i ))
+            img = GetItemData( id_elements_tree, i )
+            Break
+          EndIf
+        Next  
+        
+        ; add to inspector
+        AddItem( id_inspector_tree, position, class.s, img, sublevel )
+        SetItemData( id_inspector_tree, position, *new )
+        ; SetItemState( id_inspector_tree, position, #PB_tree_selected )
+        SetState( id_inspector_tree, position )
+        
+        If IsGadget( id_design_code )
+          AddGadgetItem( id_design_code, position, Class.s, 0, SubLevel )
+          SetGadgetItemData( id_design_code, position, *new )
+          ; SetGadgetItemState( id_design_code, position, #PB_tree_selected )
+          SetGadgetState( id_design_code, position ) ; Bug
+        EndIf
+        
+        ; Debug  " pos "+position + "   ( debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
+        add_code( *new, class, position, sublevel )
+        
+      EndIf
+      
+      CloseList( ) 
+    EndIf
+    
+    ProcedureReturn *new
+  EndProcedure
+  
+  Procedure widget_events( )
+    Protected e_type = WidgetEventType( )
+    Protected EnterWidget = EventWidget( )
+    
+    If EventWidget( )\container
+      Select e_type 
+        Case #__event_Drop
+          ; Debug "drop - " + DroppedText( )
+          widget_add( EnterWidget, 
+                      _EventDropText( ),
+                      mouse()\x - EventWidget( )\x[#__c_inner],
+                      mouse()\y - EventWidget( )\y[#__c_inner], 
+                      100, 
+                      30 )
+          
+          ; no create new 
+          SetState( id_elements_tree, 0 )
+          Debug "drop widget"
+          
+        Case #__event_LeftButtonUp
+          
+          If transform( )\widget\transform <> 1
+            SetState( id_inspector_tree, -1 )
+            If IsGadget( id_design_code )
+              SetGadgetState( id_design_code, -1 )
+            EndIf
+            
+            ForEach transform( )\group( )
+              SetItemState( id_inspector_tree, GetData( transform( )\group( )\widget ), #PB_Tree_Selected )
+              If IsGadget( id_design_code )
+                SetGadgetItemState( id_design_code, GetData( transform( )\group( )\widget ), #PB_Tree_Selected )
+              EndIf
+            Next
+          EndIf
+          
+        Case #__event_LeftButtonDown
+          If transform( )\type > 0 Or group_select
+            ;transform( )\grab = 1
+            If group_select 
+              group_drag = EnterWidget
+            EndIf
+          EndIf
+          
+          ;           If transform( )\widget\transform <> 1
+          ;             ForEach transform( )\group( )
+          ;               SetItemState( id_inspector_tree, GetData( transform( )\group( )\widget ), 0 )
+          ;             Next
+          ;           EndIf
+          
+          
+        Case #__event_MouseEnter
+          Debug "enter widget " + transform( )\type
+          If transform( )\type > 0
+            SetCursor( EnterWidget, #PB_Cursor_Cross )
+          EndIf
+          
+        Case #__event_MouseLeave
+          If transform( )\type > 0 
+            If Not mouse( )\buttons
+              SetCursor( EnterWidget, #PB_Cursor_Default )
+            EndIf
+          EndIf
+          
+          
+      EndSelect
+    EndIf
+    
+    Select e_type 
+      Case #__event_MouseMove
+      Case #__event_LeftButtonUp
+        If transform( )\grab
+          If transform( )\type
+            
+            ; default width 
+            If Not transform( )\id[0]\width
+              transform( )\id[0]\width = 50
+              transform( )\id[0]\x = mouse( )\delta\x + FocusWidget( )\x
+            EndIf
+            
+            ; default height
+            If Not transform( )\id[0]\height
+              transform( )\id[0]\height = 50
+              transform( )\id[0]\y = mouse( )\delta\y + FocusWidget( )\y
+            EndIf
+            
+            ;
+            transform( )\id[0]\x - FocusWidget( )\x[#__c_inner]
+            transform( )\id[0]\y - FocusWidget( )\y[#__c_inner]
+            
+            widget_add( EnterWidget, 
+                        GetText( id_elements_tree ),
+                        transform( )\id[0]\x,
+                        transform( )\id[0]\y, 
+                        transform( )\id[0]\width, 
+                        transform( )\id[0]\height )
+            
+            ; no create new 
+            SetState( id_elements_tree, 0 )
+            transform( )\type = 0
+          EndIf
+          
+          transform( )\grab = 0
+        EndIf
+        
+        
+      Case #__event_StatusChange
+        ;If GetState( id_inspector_tree ) <> GetData( EnterWidget )
+        SetState( id_inspector_tree, GetData( EnterWidget ) )
+        ;EndIf
+        If IsGadget( id_design_code )
+          SetGadgetState( id_design_code, GetData( EnterWidget ) )
+        EndIf
+        properties_update( id_properties_tree, EnterWidget )
+        
+      Case #__event_Resize
+        properties_update_coordinate( id_properties_tree, EnterWidget )
+        
+    EndSelect
+    
+  EndProcedure
+  
+  ;-
+  Macro widget_copy( )
+    ClearList( *copy( ) )
+    
+    If transform( )\widget\transform = 1
+      AddElement( *copy( ) ) 
+      *copy.allocate( GROUP, ( ) )
+      *copy( )\widget = transform( )\widget
+    Else
+      ;       ForEach transform( )\group( )
+      ;         AddElement( *copy( ) ) 
+      ;         *copy.allocate( GROUP, ( ) )
+      ;         *copy( )\widget = transform( )\group( )\widget
+      ;       Next
+      
+      CopyList( transform( )\group( ), *copy( ) )
+      
+    EndIf
+    
+    transform( )\id[0]\x = transform( )\grid\size
+    transform( )\id[0]\y = transform( )\grid\size
+  EndMacro
+  
+  Macro widget_delete( )
+    If transform( )\widget\transform = 1
+      RemoveItem( id_inspector_tree, GetData( transform( )\widget ) )
+      
+      Free( transform( )\widget )
+      
+      If a_Set( GetItemData( id_inspector_tree, GetState( id_inspector_tree ) ) )
+        a_reset( )
+      EndIf
+    Else
+      ForEach transform( )\group( )
+        RemoveItem( id_inspector_tree, GetData( transform( )\group( )\widget ) )
+        Free( transform( )\group( )\widget )
+        DeleteElement( transform( )\group( ) )
+      Next
+      
+      ClearList( transform( )\group( ) )
+    EndIf
+    
+    ; a_set( transform )
+  EndMacro
+  
+  Macro widget_paste( )
+    If ListSize( *copy( ) )
+      ForEach *copy( )
+        widget_add( *copy( )\widget\parent, 
+                    *copy( )\widget\class, 
+                    *copy( )\widget\x[#__c_container] + ( transform( )\id[0]\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+                    *copy( )\widget\y[#__c_container] + ( transform( )\id[0]\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+                    *copy( )\widget\width[#__c_frame],
+                    *copy( )\widget\height[#__c_frame] )
+      Next
+      
+      transform( )\id[0]\x + transform( )\grid\size
+      transform( )\id[0]\y + transform( )\grid\size
+      
+      ClearList( transform( )\group( ) )
+      CopyList( *copy( ), transform( )\group( ) )
+    EndIf
+    
+    ForEach transform( )\group( )
+      Debug " ggg "+transform( )\group( )\widget
     Next
     
-    w_0 = Track(10+320,  40, 250, 20, 0, 30)
-    Splitter(10 + 320,  40, 250, 20, widget( ),  #Null, #PB_Splitter_Vertical ) : SetState(widget( ), 250)
-    SetState(w_0, 25)
+    ;a_update( transform( )\widget )
+  EndMacro
+  
+  
+  
+  ;-
+  Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+    ; #PB_ToolBar_Normal: the button will act as standard button ( Default )
+    ; #PB_ToolBar_Toggle: the button will act as toggle button
     
-    w_1 = Track(10+320, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-    Splitter(10 + 320,  120, 250, 20, widget( ),  #Null, #PB_Splitter_Vertical ) : SetState(widget( ), 250)
-    ;SetState(w_1, 30)
+    ;ButtonImage( 2 + ( ( Bool( MacroExpandedCount>1 ) * 32 ) * ( MacroExpandedCount-1 ) ), 2,30,30,_image_ )
+    ButtonImage( 2+( ( widget( )\x+widget( )\width ) * Bool( MacroExpandedCount - 1 ) ), 2,30,30,_image_, _mode_ )
+    ;widget( )\color = widget( )\parent\color
+    ;widget( )\text\padding\x = 0
+    widget( )\class = "ToolBar"
+    widget( )\data = _button_
+    ;SetData( widget( ), _button_ )
+    Bind( widget( ), @ide_events( ) )
+  EndMacro
+  
+  Macro Separator( )
+    Text( 2+widget( )\x+widget( )\width, 2,1,30,"" )
+    Button( widget( )\x+widget( )\width, 2+4,1,24,"" )
+    SetData( widget( ), - MacroExpandedCount )
+    Text( widget( )\x+widget( )\width, 2,1,30,"" )
+  EndMacro
+  
+  
+  ;-
+  Procedure ide_events( )
+    Protected *this._s_widget
+    Protected e_type = WidgetEvent( )\type
+    Protected e_item = WidgetEvent( )\item
+    Protected EnterWidget = EventWidget( )
     
-    w_2 = Track(270+320, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-    Splitter(270+320, 10, 20, 170, widget( ),  #Null ) : SetState(widget( ), 170)
-    SetState(w_2, 8000)
+    Select e_type
+      Case #__event_DragStart
+        Debug "drag - "
+        _DragText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        
+      Case #__event_StatusChange
+        SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
+        
+      Case #__event_Change
+        If EnterWidget = id_elements_tree
+          transform( )\type = GetState( EnterWidget )
+        EndIf
+        
+        If EnterWidget = id_inspector_tree
+          *this = GetItemData( EnterWidget, GetState( EnterWidget ) )
+          
+          If a_set( *this )
+            a_reset( )
+          EndIf
+          
+          ;;SetActive( *this )
+        EndIf
+        
+        
+      Case #__event_MouseEnter
+        ; Debug "id_elements - enter"
+        ;       If transform( )\type > 0 
+        ;         SetCursor( EventWidget( ), #PB_Cursor_Default )
+        ;       EndIf
+        
+      Case #__event_MouseLeave
+        ; Debug "id_elements - leave"
+        ;       If transform( )\type > 0 
+        ;         SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, transform( )\type ) ) )
+        ;       EndIf
+        
+      Case #__event_LeftClick
+        If EnterWidget = id_elements_tree
+          Debug "click"
+          ; SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, transform( )\type ) ) )
+        EndIf
+        
+        If getclass( EnterWidget ) = "ToolBar"
+          Protected transform, move_x, move_y, toolbarbutton = GetData( EnterWidget )
+          Static NewList *copy._s_group( )
+          
+          
+          Select toolbarbutton
+            Case 1
+              If Getstate( EnterWidget )  
+                ; group
+                group_select = EnterWidget
+                ; SetAtributte( EnterWidget, #PB_Button_PressedImage )
+              Else
+                ; un group
+                group_select = 0
+              EndIf
+              
+              ForEach transform( )\group( )
+                Debug transform( )\group( )\widget\x
+                
+              Next
+              
+              
+            Case #_tb_widget_copy
+              widget_copy( )
+              
+            Case #_tb_widget_cut
+              widget_copy( )
+              widget_delete( )
+              
+            Case #_tb_widget_paste
+              widget_paste( )
+              
+            Case #_tb_widget_delete
+              widget_delete( )
+              
+            Case #_tb_group_left,
+                 #_tb_group_right, 
+                 #_tb_group_top, 
+                 #_tb_group_bottom, 
+                 #_tb_group_width, 
+                 #_tb_group_height
+              
+              move_x = transform( )\id[0]\x - transform( )\widget\x[#__c_inner]
+              move_y = transform( )\id[0]\y - transform( )\widget\y[#__c_inner]
+              
+              ForEach transform( )\group( )
+                Select toolbarbutton
+                  Case #_tb_group_left ; left
+                                       ;transform( )\id[0]\x = 0
+                    transform( )\id[0]\width = 0
+                    Resize( transform( )\group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                    
+                  Case #_tb_group_right ; right
+                    transform( )\id[0]\x = 0
+                    transform( )\id[0]\width = 0
+                    Resize( transform( )\group( )\widget, move_x + transform( )\group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                    
+                  Case #_tb_group_top ; top
+                                      ;transform( )\id[0]\y = 0
+                    transform( )\id[0]\height = 0
+                    Resize( transform( )\group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
+                    
+                  Case #_tb_group_bottom ; bottom
+                    transform( )\id[0]\y = 0
+                    transform( )\id[0]\height = 0
+                    Resize( transform( )\group( )\widget, #PB_Ignore, move_y + transform( )\group( )\height, #PB_Ignore, #PB_Ignore )
+                    
+                  Case #_tb_group_width ; stretch horizontal
+                    Resize( transform( )\group( )\widget, #PB_Ignore, #PB_Ignore, transform( )\id[0]\width, #PB_Ignore )
+                    
+                  Case #_tb_group_height ; stretch vertical
+                    Resize( transform( )\group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, transform( )\id[0]\height )
+                    
+                EndSelect
+              Next
+              
+              a_update( transform( )\widget )
+              
+              ;Redraw( root( ) )
+          EndSelect
+        EndIf
+        
+    EndSelect
+  EndProcedure
+  
+  Procedure ide_open( x=100,y=100,width=800,height=600 )
+    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
+    ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
-    Text(10+320,  20, 250, 20,"TrackBar Standard", #__Text_Center)
-    Text(10+320, 100, 250, 20, "TrackBar Ticks", #__Text_Center)
-    Text(90+320, 180, 200, 20, "TrackBar Vertical", #__Text_Right)
+    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
+    Define root = widget::Open( OpenWindow( #PB_Any, x,y,width,height, "ide", flag ) )
+    window_ide = widget::GetWindow( root )
+    canvas_ide = widget::GetGadget( root )
     
-    ;Bind(#PB_All, @events_widgets())
     
-    ;For i = 0 To 2
-        Bind(w_0, @events_widgets())
-        Bind(w_1, @events_widgets())
-        Bind(w_2, @events_widgets())
-    ;Next
+    toolbar_design = Container( 0,0,0,0 ) 
+    ;ToolBar( toolbar, window, flags )
     
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
+    group_select = ToolBarButton( 1, - 1, #__button_Toggle )
+    SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+    SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+    
+    ;ToolBarButton( 2, CatchImage( #PB_Any,?group_un ) )
+    Separator( )
+    ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+    ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+    Separator( )
+    ToolBarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+    ToolBarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    Separator( )
+    ToolBarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+    ToolBarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+    
+    Separator( )
+    ToolBarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+    ToolBarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+    ToolBarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+    ToolBarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+    Separator( )
+    ToolBarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+    ToolBarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+    ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+    ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+    CloseList( )
+    
+    ;   id_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( id_design_panel )
+    ;   AddItem( id_design_panel, -1, "Form" )
+    ;   id_design_form = MDI( 0,0,0,0, #__flag_autosize ) 
+    ;   
+    ;   AddItem( id_design_panel, -1, "Code" )
+    ;id_design_code = Editor( 0,0,0,0 ) 
+    ;   CloseList( )
+    
+    ; gadgets
+    id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
+    EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
+    
+    listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
+    
+    ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
+    id_design_form = MDI( 0,0,0,0, #__mdi_editable ) 
+    ;id_design_form = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
+    id_design_panel = id_design_form
+    ;id_design_code = listview_debug
+    
+    id_inspector_panel = Panel( 0,0,0,0 )
+    
+    ; panel 1 item
+    AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
+    id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines ) ; | #__flag_borderless )
+    
+    ; panel 2 item
+    AddItem( id_inspector_panel, -1, "properties", 0, 0 )  
+    id_properties_tree = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless )
+    If id_properties_tree
+      AddItem( id_properties_tree, #_pi_group_0,  "Common" )
+      AddItem( id_properties_tree, #_pi_id,       "ID"      , #PB_GadgetType_String, 1 )
+      AddItem( id_properties_tree, #_pi_class,    "Class"   , #PB_GadgetType_String, 1 )
+      AddItem( id_properties_tree, #_pi_text,     "Text"    , #PB_GadgetType_String, 1 )
+      
+      AddItem( id_properties_tree, #_pi_group_1,  "Layout" )
+      AddItem( id_properties_tree, #_pi_x,        "x"       , #PB_GadgetType_Spin, 1 )
+      AddItem( id_properties_tree, #_pi_y,        "Y"       , #PB_GadgetType_Spin, 1 )
+      AddItem( id_properties_tree, #_pi_width,    "Width"   , #PB_GadgetType_Spin, 1 )
+      AddItem( id_properties_tree, #_pi_height,   "Height"  , #PB_GadgetType_Spin, 1 )
+      
+      AddItem( id_properties_tree, #_pi_group_2,  "State" )
+      AddItem( id_properties_tree, #_pi_disable,  "Disable" , #PB_GadgetType_ComboBox, 1 )
+      AddItem( id_properties_tree, #_pi_hide,     "Hide"    , #PB_GadgetType_ComboBox, 1 )
+    EndIf
+    
+    ; panel 3 item
+    AddItem( id_inspector_panel, -1, "events", 0, 0 )  
+    id_events_tree = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_borderless ) 
+    AddItem( id_events_tree, #_ei_leftclick,  "LeftClick" )
+    AddItem( id_events_tree, #_ei_change,  "Change" )
+    AddItem( id_events_tree, #_ei_enter,  "Enter" )
+    AddItem( id_events_tree, #_ei_leave,  "Leave" )
+    
+    ; panel closes
+    CloseList( )
+    
+    id_help_text  = Text( 0,0,0,0, "help for the inspector", #__text_border )
+    
+    
+    Splitter_design = widget::Splitter( 0,0,0,0, toolbar_design,id_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator )
+    Splitter_inspector = widget::Splitter( 0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed )
+    splitter_debug = widget::Splitter( 0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_SecondFixed )
+    splitter_help = widget::Splitter( 0,0,0,0, Splitter_inspector,id_help_text, #PB_Splitter_SecondFixed )
+    Splitter_ide = widget::Splitter( 0,0,0,0, splitter_debug,splitter_help, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
+    
+    ; set splitters default minimum size
+    widget::SetAttribute( Splitter_ide, #PB_Splitter_FirstMinimumSize, 500 )
+    widget::SetAttribute( Splitter_ide, #PB_Splitter_SecondMinimumSize, 120 )
+    widget::SetAttribute( splitter_help, #PB_Splitter_SecondMinimumSize, 30 )
+    widget::SetAttribute( splitter_debug, #PB_Splitter_FirstMinimumSize, 300 )
+    widget::SetAttribute( splitter_debug, #PB_Splitter_SecondMinimumSize, 100 )
+    widget::SetAttribute( Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100 )
+    widget::SetAttribute( Splitter_design, #PB_Splitter_FirstMinimumSize, 20 )
+    widget::SetAttribute( Splitter_design, #PB_Splitter_SecondMinimumSize, 200 )
+    ; widget::SetAttribute( Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff )
+    
+    ; set splitters dafault positions
+    widget::SetState( Splitter_ide, widget::width( Splitter_ide )-220 )
+    widget::SetState( splitter_help, widget::height( splitter_help )-80 )
+    widget::SetState( splitter_debug, widget::height( splitter_debug )-150 )
+    widget::SetState( Splitter_inspector, 150 )
+    widget::SetState( Splitter_design, 42 )
+    
+    
+    Bind( id_inspector_tree, @ide_events( ) )
+    
+    ;Bind( id_elements_tree, @ide_events( ) )
+    Bind( id_elements_tree, @ide_events( ), #__event_LeftClick )
+    Bind( id_elements_tree, @ide_events( ), #__event_Change )
+    Bind( id_elements_tree, @ide_events( ), #__event_StatusChange )
+    Bind( id_elements_tree, @ide_events( ), #__event_DragStart )
+    
+    Bind( id_elements_tree, @ide_events( ), #__event_MouseEnter )
+    Bind( id_elements_tree, @ide_events( ), #__event_MouseLeave )
+    ProcedureReturn window_ide
+  EndProcedure
+  
+  ;-
+  CompilerIf #PB_Compiler_IsMainFile 
+    Define event
+    ide_open( )
+    
+    widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
+    
+    ; example 1
+    ;   ;OpenList( id_design_form )
+    Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
+    Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+    widget_add( *container, "button", 10, 20, 30, 30 )
+    widget_add( *window, "button", 10, 20, 100, 30 )
+    
+    Define item = 1
+    SetState( id_inspector_tree, item )
+    If IsGadget( id_design_code )
+      SetGadgetState( id_design_code, item )
+    EndIf
+    Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+    widget_add( *container2, "button", 10, 20, 30, 30 )
+    
+    SetState( id_inspector_tree, 0 )
+    widget_add( *window, "button", 10, 130, 100, 30 )
+    
+    ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+    ;   Define *container = widget_add( *window, "container", 80, 10 )
+    ;   widget_add( *container, "button", -10, 20 )
+    ;   widget_add( *window, "button", 10, 20 )
+    ;   ;CloseList( )
+    
+    ;     ; example 2
+    ;     ;   ;OpenList( id_design_form )
+    ;     SetState( group_select, 1 ) 
+    ;     
+    ;     Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+    ;     widget_add( *window, "button", 15, 25, 50, 30 )
+    ;     widget_add( *window, "text", 25, 65, 50, 30 )
+    ;     widget_add( *window, "button", 35, 65+40, 50, 30 )
+    ;     widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+    ;     
+    ;     ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+    ;     Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+    ;     widget_add( *container, "progress", 15, 25, 30, 30 )
+    ;     widget_add( *container, "text", 25, 65, 50, 30 )
+    ;     widget_add( *container, "button", 35, 65+40, 80, 30 )
+    ;     widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+    ;     
+    ;     Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+    ;     widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+    ;     widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+    ;     widget_add( *container2, "string", 25, 65, 100, 30 )
+    ;     widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
+    
+    
+    
+    
+    
+    ; ; ; ;   Open( OpenWindow( #PB_Any, 150, 150, 200, 200, "PB ( window_1 )", #PB_Window_SizeGadget | #PB_Window_SystemMenu ) )
+    ; ; ; ;   ButtonGadget( #PB_Any, 0,0,80,20,"button" )
+    ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
+    ; ; ; ;   
+    ; ; ; ;   
+    ; ; ; ;   
+    ; ; ; ;   Open( Window( 200, 200, 200, 200, "window_2", #__Window_SizeGadget | #__Window_SystemMenu ) )
+    ; ; ; ;   Debug widget( )\height[#__c_inner2]
+    ; ; ; ;   ContainerGadget( #PB_Any, widget( )\x[#__c_inner], widget( )\y[#__c_inner], widget( )\width[#__c_inner2],widget( )\height[#__c_inner2] )
+    ; ; ; ;   ButtonGadget( #PB_Any, 0,0,80,20,"button" )
+    ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
+    ; ; ; ;   CloseGadgetList( )
+    
+    
+    
+    Repeat 
+      event = WaitWindowEvent( ) 
+      
+      ;     Select EventWindow( )
+      ;       Case window_ide 
+      ;         ide_window_events( event )
+      ;     EndSelect
+      
+    Until event = #PB_Event_CloseWindow
+  CompilerEndIf
+  
+  
+  DataSection   
+    ; include images
+    IncludePath #path + "/ide/include/images"
+    
+    widget_delete:    : IncludeBinary "delete1.png"
+    widget_paste:     : IncludeBinary "paste.png"
+    widget_copy:      : IncludeBinary "copy.png"
+    widget_cut:       : IncludeBinary "cut.png"
+    
+    group:            : IncludeBinary "group/group.png"
+    group_un:         : IncludeBinary "group/group_un.png"
+    group_top:        : IncludeBinary "group/group_top.png"
+    group_left:       : IncludeBinary "group/group_left.png"
+    group_right:      : IncludeBinary "group/group_right.png"
+    group_bottom:     : IncludeBinary "group/group_bottom.png"
+    group_width:      : IncludeBinary "group/group_width.png"
+    group_height:     : IncludeBinary "group/group_height.png"
+  EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------4va--+-4--f-n+48----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------8fv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

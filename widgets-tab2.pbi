@@ -1026,13 +1026,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;- BAR
     Macro _bar_in_start_( _bar_ ) 
-      Bool( _bar_\area\end <=_bar_\thumb\pos  )
-    ;  Bool( _bar_\page\pos <= _bar_\min ) 
+      Bool( _bar_\page\pos <= _bar_\min ) 
     EndMacro
     
     Macro _bar_in_stop_( _bar_ ) 
-      Bool( _bar_\area\pos >= _bar_\thumb\pos )
-     ;  Bool( _bar_\page\pos >= _bar_\page\end And _bar_\area\end > _bar_\page\end ) : Debug ""+_bar_\area\end +" "+ _bar_\page\end 
+      Bool( _bar_\page\pos >= _bar_\page\end ) 
     EndMacro
     
     Macro _bar_invert_( _bar_, _scroll_pos_, _inverted_ = #True )
@@ -4829,9 +4827,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-      ; disable/enable button-scroll(left&top)-tab(right&bottom)
+      ; disable/enable button-(left&top)
       If *this\bar\button[#__b_1]\size 
-        If _bar_in_stop_( *this\bar )
+        If *this\bar\area\pos >= *this\bar\thumb\pos ;  _bar_in_start_( *this\bar ) ;  _bar_in_stop_( *this\bar ) ; 
           If *this\bar\button[#__b_1]\color\state <> #__s_3
             *this\bar\button[#__b_1]\color\state = #__s_3
             *this\bar\button[#__b_1]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
@@ -4846,9 +4844,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf 
       EndIf
       
-      ; disable/enable button-scroll(right&bottom)-tab(left&top)
+      ; disable/enable button-(right&bottom)
       If *this\bar\button[#__b_2]\size
-        If _bar_in_start_( *this\bar ) 
+        If *this\bar\thumb\pos >= *this\bar\area\end ;  _bar_in_stop_( *this\bar ) ;  _bar_in_start_( *this\bar ) ; 
           If *this\bar\button[#__b_2]\color\state <> #__s_3
             *this\bar\button[#__b_2]\color\state = #__s_3
              *this\bar\button[#__b_2]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
@@ -4862,21 +4860,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf 
       EndIf
+      
+      
           
       ; 
       If *this\type = #PB_GadgetType_TabBar 
-        If *this\vertical
-          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs
-          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs + Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
-          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs*2 - ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
-          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs - 1
-        Else
-          *this\y[#__c_inner] = *this\y[#__c_frame] + *this\bs
-          *this\x[#__c_inner] = *this\x[#__c_frame] + *this\bs ;+ Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + 1
-          *this\width[#__c_inner] = *this\width[#__c_frame] - *this\bs*2 ;- ( Bool( *this\bar\button[#__b_2]\color\state <> #__s_3 ) * *this\bar\button[#__b_1]\size + Bool( *this\bar\button[#__b_1]\color\state <> #__s_3 ) * *this\bar\button[#__b_2]\size ) - 2
-          *this\height[#__c_inner] = *this\height[#__c_frame] - *this\bs - 1
-        EndIf
-        
         If *this\bar\button[#__b_2]\size 
           If *this\vertical 
             ; Top button coordinate on vertical scroll bar
@@ -4910,12 +4898,12 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\bar\button[#__b_3]\x = *this\x[#__c_inner]          
           *this\bar\button[#__b_3]\width = *this\width[#__c_inner]
           *this\bar\button[#__b_3]\height = *this\bar\max                             
-          *this\bar\button[#__b_3]\y = *this\y[#__c_frame] - ( *this\bar\area\end - *this\bar\thumb\pos )
+          *this\bar\button[#__b_3]\y = *this\y[#__c_frame] + ( *this\bar\thumb\pos - *this\bar\area\end )
         Else
           *this\bar\button[#__b_3]\y = *this\y[#__c_inner]         
           *this\bar\button[#__b_3]\height = *this\height[#__c_inner]
           *this\bar\button[#__b_3]\width = *this\bar\max
-          *this\bar\button[#__b_3]\x = *this\x[#__c_frame] - ( *this\bar\area\end - *this\bar\thumb\pos )
+          *this\bar\button[#__b_3]\x = *this\x[#__c_frame] + ( *this\bar\thumb\pos - *this\bar\area\end )
         EndIf
         ;EndIf
         
@@ -5405,14 +5393,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; get page end
         If *this\bar\max
-          *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * *this\bar\area\len
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs ))
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\page\end - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs ))
-         ; *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * ( *this\bs + *this\bar\button[#__b_2]\size ) 
-          
-          
-            *this\bar\page\end = *this\bar\max - Bool( *this\type = #PB_GadgetType_TabBar ) * (*this\bar\area\len - *this\bar\button[#__b_2]\size - *this\bar\thumb\len )
-        
+          If *this\type = #PB_GadgetType_TabBar
+            *this\bar\page\end = *this\bar\max - *this\bar\area\len
+          Else
+            *this\bar\page\end = *this\bar\max
+          EndIf
+       
         Else
           ; one set end
           If Not *this\bar\page\end And *this\bar\area\len 
@@ -5448,12 +5434,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs )
       
-;       If *this\type = #PB_GadgetType_TabBar
-;       ;  *this\bar\page\end = *this\bar\max - *this\bar\area\end
-;        ;  *this\bar\page\end = *this\bar\max -  *this\bs - *this\bar\button[#__b_2]\size 
-;        ; *this\bar\area\end = *this\bar\area\len
-;         ; *this\bar\percent = 1.0
-;       EndIf
+      
         
       ProcedureReturn Bar_Resize( *this )  
     EndProcedure
@@ -5508,13 +5489,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Bar_SetState( *this._s_widget, state.f )
-;       If *this\type = #PB_GadgetType_TabBar
-;         Tab_SetState( *this, state )
-;       Else
+      If *this\type = #PB_GadgetType_TabBar
+        Tab_SetState( *this, state )
+      Else
         If Bar_Change( *this, state ) 
           ProcedureReturn Bar_Update( *this ) 
         EndIf
-;       EndIf
+      EndIf
     EndProcedure
     
     Procedure.l Bar_SetAttribute( *this._s_widget, Attribute.l, *value )
@@ -5922,6 +5903,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
         EndIf
+        
+        Debug " -- "
+        Debug *this\bar\page\pos
+        Debug *this\bar\page\len
+        Debug *this\bar\page\end
+       ; Debug *this\bar\page\change
+        Debug *this\bar\percent
+        Debug *this\bar\area\end
+        Debug *this\bar\thumb\pos
+        Debug *this\bar\thumb\len
+       ; Debug *this\bar\thumb\end
+       ; Debug *this\bar\thumb\change
+        Debug ""
+        
       EndIf
       
       If eventtype = #PB_EventType_LeftButtonUp
@@ -17860,90 +17855,106 @@ EndMacro
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
-  Global i, w_0,w_1,w_2
-    
   
-  Procedure events_gadgets()
-    ;;ClearDebugOutput()
-    ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+  Global i, s_0, s_1, s_2, s_3, s_4, s_5
+  
+  Procedure resize_window_0()
+    Protected width = WindowWidth(EventWindow())
+    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     
-    Select EventType()
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
-        Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
-        
-        Select EventGadget()
-         Case 0 : SetState(w_0, GetGadgetState(EventGadget()))
-         Case 1 : SetState(w_1, GetGadgetState(EventGadget()))
-         Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
-        EndSelect
-    EndSelect
+;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    Resize(s_2, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
   EndProcedure
   
-  Procedure events_widgets()
-    ;;;ClearDebugOutput()
-    ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
-    
-    Select WidgetEventType( )
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
-        Debug  ""+GetIndex(*event\widget)+" - widget change " + GetState(*event\widget)
-        
-        Select *event\widget
-         Case w_0 : SetGadgetState(0, GetState(*event\widget))
-         Case w_1 : SetGadgetState(1, GetState(*event\widget))
-         Case w_2 : SetGadgetState(2, GetState(*event\widget))
-        EndSelect
-    EndSelect
-  EndProcedure
+  OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    TrackBarGadget(0, 10,  40, 250, 20, 0, 30)
-    SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(100, 250)
-    SetGadgetState(0, 25)
-    
-    TrackBarGadget(1, 10, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-    SplitterGadget(101, 10,  120, 250, 20, 1,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(101, 250)
-    ;SetGadgetState(1, 30)
-    
-    TrackBarGadget(2, 270, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SplitterGadget(102, 270, 10, 20, 170, 2,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadgetState(102, 250)
-    SetGadgetState(2, 8000)
-    
-    TextGadget    (#PB_Any, 10,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TextGadget    (#PB_Any, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    TextGadget    (#PB_Any,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    
-    For i = 0 To 2
-      BindGadgetEvent(i, @events_gadgets())
-    Next
-    
-    w_0 = Track(10+320,  40, 250, 20, 0, 30)
-    Splitter(10 + 320,  40, 250, 20, widget( ),  #Null, #PB_Splitter_Vertical ) : SetState(widget( ), 250)
-    SetState(w_0, 25)
-    
-    w_1 = Track(10+320, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-    Splitter(10 + 320,  120, 250, 20, widget( ),  #Null, #PB_Splitter_Vertical ) : SetState(widget( ), 250)
-    ;SetState(w_1, 30)
-    
-    w_2 = Track(270+320, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-    Splitter(270+320, 10, 20, 170, widget( ),  #Null ) : SetState(widget( ), 170)
-    SetState(w_2, 8000)
-    
-    Text(10+320,  20, 250, 20,"TrackBar Standard", #__Text_Center)
-    Text(10+320, 100, 250, 20, "TrackBar Ticks", #__Text_Center)
-    Text(90+320, 180, 200, 20, "TrackBar Vertical", #__Text_Right)
-    
-    ;Bind(#PB_All, @events_widgets())
-    
-    ;For i = 0 To 2
-        Bind(w_0, @events_widgets())
-        Bind(w_1, @events_widgets())
-        Bind(w_2, @events_widgets())
-    ;Next
-    
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
+  widget::Open(0);, 0, 0, 510, 340)
+  
+  ; first splitter
+  ScrollBarGadget(3, 0, 0, 0, 0, 0, 250, 0)
+  
+  ScrollBarGadget(6, 0, 0, 0, 0, 0, 250, 0)
+  SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
+  
+  ; first splitter
+  ScrollBarGadget(31, 0, 0, 0, 0, 0, 250, 0)
+  
+  ScrollBarGadget(61, 0, 0, 0, 0, 0, 250, 0)
+  SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
+  
+  SetGadgetState(3, -10)
+  SetGadgetState(6, 250-10)
+  SetGadgetState(31, 250/2)
+  SetGadgetState(61, 10)
+  
+  
+  ; first splitter
+  s_0 = widget::Tab(0, 0, 0, 0, 0,250,0)
+  For i=0 To 10
+    AddItem(widget( ), -1, "tab_"+Str(i))
+  Next
+;   
+;   s_1 = widget::Tab(0, 0, 0, 0, 0,250,0)
+;   For i=0 To 10
+;     AddItem(widget( ), -1, "tab_"+Str(i))
+;   Next
+    Debug " -- "
+      Debug widget( )\bar\page\pos
+      Debug widget( )\bar\page\len
+      Debug widget( )\bar\page\end
+;       Debug widget( )\bar\page\change
+      Debug widget( )\bar\percent
+      Debug widget( )\bar\area\end
+      Debug widget( )\bar\thumb\pos
+      Debug widget( )\bar\thumb\len
+;       Debug widget( )\bar\thumb\end
+;       Debug widget( )\bar\thumb\change
+      Debug ""
+  
+  s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
+  widget( ) = s_0
+    Debug " -- "
+      Debug widget( )\bar\page\pos
+      Debug widget( )\bar\page\len
+      Debug widget( )\bar\page\end
+;       Debug widget( )\bar\page\change
+      Debug widget( )\bar\percent
+      Debug widget( )\bar\area\end
+      Debug widget( )\bar\thumb\pos
+      Debug widget( )\bar\thumb\len
+;       Debug widget( )\bar\thumb\end
+;       Debug widget( )\bar\thumb\change
+      Debug ""
+  
+;   ; first splitter
+;   s_3 = widget::Tab(0, 0, 0, 0, 0,250,0)
+;   For i=0 To 10
+;     AddItem(widget( ), -1, "tab_"+Str(i))
+;   Next
+;   
+;   s_4 = widget::Tab(0, 0, 0, 0, 0,250,0)
+;   For i=0 To 10
+;     AddItem(widget( ), -1, "tab_"+Str(i))
+;   Next
+;   
+;   s_5 = widget::Splitter(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
+  
+;   SetState(s_0, -10)
+;   SetState(s_1, 250-10)
+;   SetState(s_3, 250/2)
+;   SetState(s_4, 0)
+  
+  Define event
+  Repeat
+    event = WaitWindowEvent()
+  Until event = #PB_Event_CloseWindow
+  End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------4va--+-4--f-n+48----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------v----88---f--8-----4------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
