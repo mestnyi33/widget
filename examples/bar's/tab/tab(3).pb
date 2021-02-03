@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global i, s_0, s_1, s_2, s_3, s_4, s_5
+  Global i, s_0, s_1, s_2, s_3, s_4, s_5, s_6,s_7
   
   Procedure resize_window_0()
     Protected width = WindowWidth(EventWindow())
@@ -23,30 +23,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Resize(s_2, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
   EndProcedure
   
-  OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  OpenWindow(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
   widget::Open(0);, 0, 0, 510, 340)
   
-  ; first splitter
-  ScrollBarGadget(3, 0, 0, 0, 0, 0, 250, 0)
-  
-  ScrollBarGadget(6, 0, 0, 0, 0, 0, 250, 0)
-  SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
-  
-  ; first splitter
-  ScrollBarGadget(31, 0, 0, 0, 0, 0, 250, 0)
-  
-  ScrollBarGadget(61, 0, 0, 0, 0, 0, 250, 0)
-  SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
-  
-  SetGadgetState(3, -10)
-  SetGadgetState(6, 250-10)
-  SetGadgetState(31, 250/2)
-  SetGadgetState(61, 10)
-  
-  
-  ; first splitter
+ ; first splitter
   s_0 = widget::Tab(0, 0, 0, 0, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
@@ -57,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
+  s_2 = widget::Splitter(300, 30, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
   ; first splitter
   s_3 = widget::Tab(0, 0, 0, 0, 0,250,0)
@@ -70,12 +52,17 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  s_5 = widget::Splitter(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
+  s_5 = widget::Splitter(300, 110, 250, 70, s_3, s_4, #PB_Splitter_Separator)
+  
+  s_6 = widget::Splitter(300, 30, 250, 70, s_2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  s_7 = widget::Splitter(300, 110, 250, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  SetState(s_6, 250)
+  SetState(s_7, 250)
   
   SetState(s_0, -10)
   SetState(s_1, 250-10)
-  SetState(s_3, 250/2)
-  SetState(s_4, 0)
+  SetState(s_3, 250/2 - #__splitter_buttonsize)
+  SetState(s_4, 10)
   
   Define event
   Repeat
