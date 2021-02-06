@@ -102,6 +102,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Macro GetActive( ) : this( )\active : EndMacro ; Returns activeed window
     
+    Macro EnterBarRow( ) : widget::mouse( )\bar_row: EndMacro; Returns mouse entered widget
+    Macro LeaveBarRow( ) : widget::mouse( )\bar_row[1]: EndMacro; Returns mouse entered widget
     Macro EnterRow( ) : widget::mouse( )\row: EndMacro; Returns mouse entered widget
     Macro LeaveRow( ) : widget::mouse( )\row[1]: EndMacro; Returns mouse entered widget
     Macro EnterButton( ) : widget::mouse( )\button : EndMacro
@@ -1027,12 +1029,12 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;- BAR
     Macro _bar_in_start_( _bar_ ) 
       Bool( _bar_\area\end <=_bar_\thumb\pos  )
-    ;  Bool( _bar_\page\pos <= _bar_\min ) 
+      ;  Bool( _bar_\page\pos <= _bar_\min ) 
     EndMacro
     
     Macro _bar_in_stop_( _bar_ ) 
       Bool( _bar_\area\pos >= _bar_\thumb\pos )
-     ;  Bool( _bar_\page\pos >= _bar_\page\end And _bar_\area\end > _bar_\page\end ) : Debug ""+_bar_\area\end +" "+ _bar_\page\end 
+      ;  Bool( _bar_\page\pos >= _bar_\page\end And _bar_\area\end > _bar_\page\end ) : Debug ""+_bar_\area\end +" "+ _bar_\page\end 
     EndMacro
     
     Macro _bar_invert_( _bar_, _scroll_pos_, _inverted_ = #True )
@@ -3871,11 +3873,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
           RoundBox( \bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\round,\round,$ff00ff00 )
         EndIf
-      
+        
         DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
         RoundBox( \bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,\round,\round,$ff0000ff )
         
-     EndWith
+      EndWith
     EndProcedure
     
     Procedure.b Tab_Draw( *this._s_widget )
@@ -3918,7 +3920,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; then set tab state
                 If *this\bar\_s( )\index = \index[#__tab_2] And *this\_state & #__s_scrolled
-                ;  *this\bar\page\pos = *this\bar\_s( )\y - ( ( *this\height[#__c_inner2] - *this\bar\button[#__b_2]\size ) - *this\bar\_s( )\height ) 
+                  ;  *this\bar\page\pos = *this\bar\_s( )\y - ( ( *this\height[#__c_inner2] - *this\bar\button[#__b_2]\size ) - *this\bar\_s( )\height ) 
                 EndIf
                 
                 *this\bar\max + *this\bar\_s( )\height + Bool( *this\bar\_s( )\index <> *this\count\items - 1 ) ; +  Bool( *this\bar\_s( )\index = *this\count\items - 1 ) 
@@ -3933,7 +3935,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; then set tab state
                 If *this\bar\_s( )\index = \index[#__tab_2] And *this\_state & #__s_scrolled
-                ;  *this\bar\page\pos = *this\bar\_s( )\x - ( ( *this\width[#__c_inner2] - *this\bar\button[#__b_2]\size ) - *this\bar\_s( )\width )
+                  ;  *this\bar\page\pos = *this\bar\_s( )\x - ( ( *this\width[#__c_inner2] - *this\bar\button[#__b_2]\size ) - *this\bar\_s( )\width )
                 EndIf
                 
                 *this\bar\max + *this\bar\_s( )\width + Bool( *this\bar\_s( )\index <> *this\count\items - 1 ) ; +  Bool( *this\bar\_s( )\index = *this\count\items - 1 ) 
@@ -3975,18 +3977,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ForEach \bar\_s( )
             _drawing_font_item_( *this, *this\bar\_s( ), 0 )
-            ; Debug ""+\index[#__tab_1] +" "+ pushed_bar_button
-            If \index[#__tab_1] = \bar\_s( )\index
-              State_3 = Bool( \index[#__tab_1] = \bar\_s( )\index );  + Bool( \index[#__tab_1] = \bar\_s( )\index And pushed_bar_button = #__b_3 )
-            Else
-              State_3 = 0
-            EndIf
-            
-            If \index[#__tab_2] = \bar\_s( )\index
-              State_3 = 2
-            EndIf
-            
-            ;State_3 = \bar\_s( )\color\state
+            ;           
+            State_3 = \bar\_s( )\color\state
             
             If *this\vertical
               \bar\_s( )\draw = Bool( Not \bar\_s( )\hide And \y[#__c_inner] + \bar\_s( )\y + \bar\_s( )\height > \y[#__c_inner] ); And \x[#__c_inner] + \bar\_s( )\x < \x[#__c_inner] + \width[#__c_inner2] )
@@ -4185,7 +4177,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-       _Tab_Draw( *this )
+        _Tab_Draw( *this )
       EndWith 
     EndProcedure
     
@@ -4197,7 +4189,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;         DrawImage( ImageID( DownImage ),\bar\button[#__b_2]\x,\bar\button[#__b_2]\y )
         ;         ProcedureReturn 
         
-        If Not \hide And \color\alpha
+        If \color\alpha
           ; Draw scroll bar background
           If \color\back <>- 1
             DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
@@ -4346,11 +4338,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If \bar\mode & #PB_TrackBar_Ticks
               For i = *this\bar\min To *this\bar\max
-               Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\Frame )
+                Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\Frame )
               Next
-;               For i = 0 To \bar\page\end
-;                 Line( x + ( Round( i * *this\bar\percent, #PB_Round_Nearest ) ), y,1,6-Bool(i>0 And i<\bar\page\end And i<>\bar\page\end/2)*3,\bar\button[#__b_3]\color\Frame )
-;               Next
+              ;               For i = 0 To \bar\page\end
+              ;                 Line( x + ( Round( i * *this\bar\percent, #PB_Round_Nearest ) ), y,1,6-Bool(i>0 And i<\bar\page\end And i<>\bar\page\end/2)*3,\bar\button[#__b_3]\color\Frame )
+              ;               Next
             EndIf
             
             Line( x, y-3,1,3,*this\bar\button[#__b_3]\color\Frame )
@@ -4817,10 +4809,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         
       Else
         If *this\type = #PB_GadgetType_TabBar
-         If *this\bar\page\pos < *this\bar\min
-           *this\bar\page\pos = *this\bar\min
-         EndIf
-       Else
+          If *this\bar\page\pos < *this\bar\min
+            *this\bar\page\pos = *this\bar\min
+          EndIf
+        Else
           ; fixed mac-OS splitterGadget
           If *this\bar\page\pos < *this\bar\min
             If *this\bar\page\end 
@@ -4884,7 +4876,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If _bar_in_start_( *this\bar ) 
           If *this\bar\button[#__b_2]\color\state <> #__s_3
             *this\bar\button[#__b_2]\color\state = #__s_3
-             *this\bar\button[#__b_2]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
+            *this\bar\button[#__b_2]\hide = Bool( *this\type = #PB_GadgetType_TabBar )
           EndIf
         Else
           If *this\bar\button[#__b_2]\color\state <> #__s_2
@@ -4895,7 +4887,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf 
       EndIf
-          
+      
       ; 
       If *this\type = #PB_GadgetType_TabBar 
         If *this\vertical
@@ -4958,15 +4950,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #PB_GadgetType_ScrollBar
         ; disable/enable button-thumb
         If *this\bar\thumb\len 
-          If *this\bar\thumb\len >= *this\bar\area\end
-            If *this\bar\button[#__b_3]\color\state <> #__s_3
-              *this\bar\button[#__b_3]\color\state = #__s_3
-            EndIf
-          Else
-            If *this\bar\button[#__b_3]\color\state <> #__s_2
-              *this\bar\button[#__b_3]\color\state = #__s_0
-            EndIf
-          EndIf
+          ; Debug ""+*this\bar\thumb\len +" "+ *this\bar\area\end
+          ;           If *this\bar\thumb\len >= *this\bar\area\end
+          ;             If *this\bar\button[#__b_3]\color\state <> #__s_3
+          ;               *this\bar\button[#__b_3]\color\state = #__s_3
+          ;             EndIf
+          ;           Else
+          ;             If *this\bar\button[#__b_3]\color\state <> #__s_2
+          ;               *this\bar\button[#__b_3]\color\state = #__s_0
+          ;             EndIf
+          ;           EndIf
         EndIf
         
         If *this\bar\thumb\len 
@@ -4982,18 +4975,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
           EndIf
         EndIf
-          
-        *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
         
-;         ; не уверен что нужно пока оставлю
-;         If *this\bar\hide
-;           If *this\bar\page\pos > *this\bar\min
-;             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
-;           EndIf
-;           
-;           *this\bar\page\pos = *this\bar\min
-;           *this\bar\thumb\pos = _bar_thumb_pos_( *this\bar, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
-;         EndIf
+        ; *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
+        
+        ;         ; не уверен что нужно пока оставлю
+        ;         If *this\bar\hide
+        ;           If *this\bar\page\pos > *this\bar\min
+        ;             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
+        ;           EndIf
+        ;           
+        ;           *this\bar\page\pos = *this\bar\min
+        ;           *this\bar\thumb\pos = _bar_thumb_pos_( *this\bar, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
+        ;         EndIf
         
         If *this\bar\button[#__b_1]\size 
           If *this\vertical 
@@ -5110,7 +5103,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-       ; result = *this\bar\hide
       EndIf
       
       ;
@@ -5258,13 +5250,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           If Not *this\bar\mode & #PB_TrackBar_Ticks
             If *this\bar\inverted
               *this\bar\button[#__b_2]\color\state = #__s_2
-             ; *this\bar\button[#__b_1]\color\state = #__s_3
+              ; *this\bar\button[#__b_1]\color\state = #__s_3
             Else
-             ; *this\bar\button[#__b_2]\color\state = #__s_3
+              ; *this\bar\button[#__b_2]\color\state = #__s_3
               *this\bar\button[#__b_1]\color\state = #__s_2
             EndIf
           EndIf
-            
+          
           ; Thumb coordinate on scroll bar
           If *this\bar\thumb\len
             If *this\vertical
@@ -5335,28 +5327,29 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;
       If *this\bar\page\change <> 0
-        *this\bar\page\change = 0
         ;
         If *this\root\canvas\gadget <> PB(EventGadget)( ) And IsGadget( PB(EventGadget)( ) ) 
           Debug ""+*this\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
           ReDraw( *this\root ) 
         EndIf
         
-
+        
         If *this\child
           If *this\parent 
             If *this\parent\_tab = *this 
-;               If StartEnumerate( *this\parent )
-;                 _set_hide_state_( widget( ) )
-;                 StopEnumerate( )
-;               EndIf
-;               
-;               Post( #__event_Change, *this\parent, EnterButton(), *this\bar\direction )
+              ;               If StartEnumerate( *this\parent )
+              ;                 _set_hide_state_( widget( ) )
+              ;                 StopEnumerate( )
+              ;               EndIf
+              ;               
+              ;               Post( #__event_Change, *this\parent, EnterButton(), *this\bar\direction )
             EndIf
           EndIf
         Else
           Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
         EndIf
+        
+        *this\bar\page\change = 0
       EndIf 
       
       ProcedureReturn result
@@ -5396,9 +5389,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-;       *this\bar\min[1] = *this\bar\button[#__b_1]\size
-;       *this\bar\min[2] = *this\bar\button[#__b_2]\size
-             
+      ;       *this\bar\min[1] = *this\bar\button[#__b_1]\size
+      ;       *this\bar\min[2] = *this\bar\button[#__b_2]\size
+      
       ; get area size
       If *this\vertical
         *this\bar\area\len = *this\height[#__c_frame] 
@@ -5434,8 +5427,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; get page end
         If *this\bar\max
           If *this\type = #PB_GadgetType_TabBar
-;             *this\bar\page\end = *this\bar\max - *this\bar\area\len
-;             *this\bar\thumb\len = *this\bar\area\end - *this\bar\page\end
+            ;             *this\bar\page\end = *this\bar\max - *this\bar\area\len
+            ;             *this\bar\thumb\len = *this\bar\area\end - *this\bar\page\end
             *this\bar\thumb\len = *this\bar\area\end - ( *this\bar\max - *this\bar\area\len )
             *this\bar\page\end = *this\bar\max - ( *this\bar\area\len - *this\bar\thumb\len )
           Else
@@ -5483,13 +5476,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs )
       
-;       If *this\type = #PB_GadgetType_TabBar
-;       ;  *this\bar\page\end = *this\bar\max - *this\bar\area\end
-;        ;  *this\bar\page\end = *this\bar\max -  *this\bs - *this\bar\button[#__b_2]\size 
-;        ; *this\bar\area\end = *this\bar\area\len
-;         ; *this\bar\percent = 1.0
-;       EndIf
-        
+      ;       If *this\type = #PB_GadgetType_TabBar
+      ;       ;  *this\bar\page\end = *this\bar\max - *this\bar\area\end
+      ;        ;  *this\bar\page\end = *this\bar\max -  *this\bs - *this\bar\button[#__b_2]\size 
+      ;        ; *this\bar\area\end = *this\bar\area\len
+      ;         ; *this\bar\percent = 1.0
+      ;       EndIf
+      
       ProcedureReturn Bar_Resize( *this )  
     EndProcedure
     
@@ -5515,9 +5508,37 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\direction = ScrollPos
           EndIf
           
-         *this\bar\page\change = *this\bar\page\pos - ScrollPos
-         *this\bar\page\pos = ScrollPos
-         ProcedureReturn #True
+          *this\bar\page\change = *this\bar\page\pos - ScrollPos
+          *this\bar\page\pos = ScrollPos
+          
+          
+          ; ;          If *this\bar\page\change <> 0
+          ; ;            ;
+          ; ;            If *this\root\canvas\gadget <> PB(EventGadget)( ) And IsGadget( PB(EventGadget)( ) ) 
+          ; ;              Debug ""+*this\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
+          ; ;              ReDraw( *this\root ) 
+          ; ;            EndIf
+          ; ;            
+          ; ;            
+          ; ;            If *this\child
+          ; ;              If *this\parent 
+          ; ;                If *this\parent\_tab = *this 
+          ; ;                  ;               If StartEnumerate( *this\parent )
+          ; ;                  ;                 _set_hide_state_( widget( ) )
+          ; ;                  ;                 StopEnumerate( )
+          ; ;                  ;               EndIf
+          ; ;                  ;               
+          ; ;                  ;               Post( #__event_Change, *this\parent, EnterButton(), *this\bar\direction )
+          ; ;                EndIf
+          ; ;              EndIf
+          ; ;            Else
+          ; ;              Post( #__event_Change, *this, EnterButton(), *this\bar\direction )
+          ; ;            EndIf
+          ; ;            
+          ; ;            *this\bar\page\change = 0
+          ; ;          EndIf 
+          
+          ProcedureReturn #True
         EndIf
       EndWith
     EndProcedure
@@ -5526,7 +5547,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected result, ScrollPos.f
       If ThumbPos < *this\bar\area\pos : ThumbPos = *this\bar\area\pos : EndIf
       If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
-          
+      
       If *this\bar\thumb\pos <> ThumbPos 
         ScrollPos = _bar_page_pos_( *this\bar, ThumbPos )
         ScrollPos = _bar_invert_( *this\bar, ScrollPos, *this\bar\inverted )
@@ -5543,13 +5564,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Bar_SetState( *this._s_widget, state.f )
-;       If *this\type = #PB_GadgetType_TabBar
-;         Tab_SetState( *this, state )
-;       Else
-        If Bar_Change( *this, state ) 
-          ProcedureReturn Bar_Update( *this ) 
-        EndIf
-;       EndIf
+      ;       If *this\type = #PB_GadgetType_TabBar
+      ;         Tab_SetState( *this, state )
+      ;       Else
+      If Bar_Change( *this, state ) 
+        ProcedureReturn Bar_Update( *this ) 
+      EndIf
+      ;       EndIf
     EndProcedure
     
     Procedure.l Bar_SetAttribute( *this._s_widget, Attribute.l, *value )
@@ -5589,7 +5610,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   \bar\page\pos = *value
                 EndIf
                 \bar\min = *value
-               ; Debug  " min " + \bar\min + " max " + \bar\max
+                ; Debug  " min " + \bar\min + " max " + \bar\max
                 result = #True
               EndIf
               
@@ -5606,7 +5627,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 If Not \bar\max And Not #__bar_minus
                   \bar\page\pos = \bar\max
                 EndIf
-               ; Debug  "   min " + \bar\min + " max " + \bar\max
+                ; Debug  "   min " + \bar\min + " max " + \bar\max
                 
                 ;\bar\page\change = #True
                 result = #True
@@ -5767,7 +5788,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\scroll\h\width <> *this\scroll\h\bar\page\len + round
           ; Debug  "h " + *this\scroll\h\bar\page\len
-          *this\scroll\h\hide = Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, *this\scroll\h\bar\page\len + round, #PB_Ignore )
+          Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, *this\scroll\h\bar\page\len + round, #PB_Ignore )
+          *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) 
           ;           *this\scroll\h\width = *this\scroll\h\bar\page\len + round
           ;           *this\scroll\h\hide = Bar_Update( *this\scroll\h )
           result = 1
@@ -5790,7 +5812,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\scroll\v\height <> *this\scroll\v\bar\page\len + round
           ; Debug  "v " + *this\scroll\v\bar\page\len
-          *this\scroll\v\hide = Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\scroll\v\bar\page\len + round )
+          Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\scroll\v\bar\page\len + round )
+          *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) 
           ;           *this\scroll\v\height = *this\scroll\v\bar\page\len + round
           ;           *this\scroll\v\hide = Bar_Update( *this\scroll\v )
           result = 1
@@ -5822,13 +5845,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       If v_max <> *this\scroll\v\bar\Max
         v_max = *this\scroll\v\bar\Max
         *this\scroll\v\resize | #__resize_change
-        *this\scroll\v\hide = Bar_Update( *this\scroll\v ) 
+        Bar_Update( *this\scroll\v ) 
+        *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) 
       EndIf
       
       If h_max <> *this\scroll\h\bar\Max
         h_max = *this\scroll\h\bar\Max
         *this\scroll\h\resize | #__resize_change
-        *this\scroll\h\hide = Bar_Update( *this\scroll\h ) 
+        Bar_Update( *this\scroll\h ) 
+        *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) 
       EndIf
       
       ProcedureReturn result
@@ -5919,6 +5944,261 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure   Bar_Events( *this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
       Protected Repaint
+      mouse_x = mouse( )\x - EnterWidget( )\bar\button[#__b_3]\x
+      mouse_y = mouse( )\y - EnterWidget( )\bar\button[#__b_3]\y 
+      
+      ; at point row
+      If eventtype = #PB_EventType_MouseEnter Or
+         eventtype = #PB_EventType_MouseLeave Or 
+         eventtype = #PB_EventType_MouseMove
+        
+        ; get at point (item; button;)
+        If eventtype = #PB_EventType_MouseLeave 
+          ; reset at point element
+          EnterBarRow( ) = #Null
+          EnterButton( ) = #Null
+          
+          If *this\type = #PB_GadgetType_TabBar
+            *this\index[#__tab_1] = - 1
+          EndIf
+          
+        Else
+          ; get at_point_item address
+          If ListSize( EnterWidget( )\bar\_s( ) ) And 
+             Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) 
+            ;;Debug ""+ EnterWidget( )\bar\thumb\pos +" "+ EnterWidget( )\bar\page\pos
+            
+            If ListSize( EnterWidget( )\bar\_s( ) )
+              If Not ( EnterBarRow( ) And
+                       Atpoint( mouse_x, mouse_y, EnterBarRow( ) ) )
+                
+                ; reset entered item
+                EnterBarRow( ) = #Null
+                
+                ; search entered item
+                LastElement( EnterWidget( )\bar\_s( ) ) 
+                Repeat  
+                  
+                  If EnterWidget( )\bar\_s( )\draw And 
+                     Not EnterWidget( )\bar\_s( )\hide And 
+                     Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\_s( ) )
+                    
+                    EnterBarRow( ) = EnterWidget( )\bar\_s( ) 
+                    repaint = #True       
+                    Break
+                  EndIf
+                Until PreviousElement( EnterWidget( )\bar\_s( ) ) = #False 
+              EndIf
+              
+            EndIf
+            
+          Else
+            If EnterBarRow( ) <> #Null
+              EnterBarRow( ) = #Null
+            EndIf
+          EndIf
+          
+          
+;           ; get at_point_button address
+;           If Not ( EnterButton( ) And 
+;                    Atpoint( mouse( )\x, mouse( )\y, EnterButton( ) ) And 
+;                    Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) )
+;             
+            ; reset entered button
+            EnterButton( ) = #Null
+            
+            ; search entered button
+            If EnterWidget( )\bar\button[#__b_1]\interact And 
+               Atpoint( mouse( )\x, mouse( )\y, EnterWidget( )\bar\button[#__b_1] )
+              
+              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_1]
+                EnterButton( ) = EnterWidget( )\bar\button[#__b_1]
+                EnterBarRow( ) = #Null
+              EndIf
+            ElseIf EnterWidget( )\bar\button[#__b_2]\interact And
+                   Atpoint( mouse( )\x, mouse( )\y, EnterWidget( )\bar\button[#__b_2] )
+              
+              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_2]
+                EnterButton( ) = EnterWidget( )\bar\button[#__b_2]
+                EnterBarRow( ) = #Null
+              EndIf
+            ElseIf EnterWidget( )\bar\button[#__b_3]\interact And
+                   Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) And
+                   Atpoint( mouse( )\x, mouse( )\y, EnterWidget( )\bar\button[#__b_3] )
+              
+              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_3]
+                EnterButton( ) = EnterWidget( )\bar\button[#__b_3]
+              EndIf
+            EndIf
+;           EndIf
+        EndIf
+        
+        ;Debug ""+EnterWidget( )\bar\button[#__b_1]\x +" "+ EnterWidget( )\bar\button[#__b_2]\x +" "+ EnterWidget( )\bar\button[#__b_3]\x +" "+ EnterWidget( )\bar\thumb\pos ;EnterButton( )
+        
+        ; do items events entered & leaved 
+        If LeaveBarRow( ) <> EnterBarRow( ) And 
+           Not ( EnterBarRow( ) = #Null And FocusWidget( ) And _is_selected_( FocusWidget( ) ) )  
+          ; Not ( EnterBarRow( ) = #Null And _is_selected_( *this ) )  
+          
+          If EnterBarRow( )
+            Debug EnterBarRow( )\index 
+          EndIf
+  
+          If LeaveBarRow( ) And
+             LeaveBarRow( )\_state & #__s_entered
+            LeaveBarRow( )\_state &~ #__s_entered
+            
+            If _is_current_( EnterWidget( ) )
+              If LeaveBarRow( )\color\state = #__s_1
+                LeaveBarRow( )\color\state = #__s_0
+                repaint = #True
+              EndIf
+            EndIf
+          EndIf
+          
+          If EnterBarRow( ) And 
+             EnterBarRow( )\_state & #__s_entered = #False
+            
+            If _is_selected_( EnterWidget( ) ) And 
+               EnterWidget( )\bar\leaved And 
+               EnterWidget( )\bar\leaved\_state & #__s_entered
+              EnterWidget( )\bar\leaved\_state &~ #__s_entered
+              
+              If EnterWidget( )\bar\leaved\color\state = #__s_1
+                EnterWidget( )\bar\leaved\color\state = #__s_0
+                EnterWidget( )\bar\leaved = #Null
+                repaint = #True
+              EndIf
+            EndIf
+            
+            EnterBarRow( )\_state | #__s_entered
+            
+            If _is_current_( EnterWidget( ) )
+              ; multi select items
+              If mouse( )\buttons And
+                 EnterWidget( )\mode\check = #__m_multiselect
+                
+                ForEach EnterWidget( )\bar\_s( ) 
+                  If Bool( ( EnterWidget( )\bar\selected\index >= EnterWidget( )\bar\_s( )\index And EnterBarRow( )\index <= EnterWidget( )\bar\_s( )\index ) Or ; верх
+                           ( EnterWidget( )\bar\selected\index <= EnterWidget( )\bar\_s( )\index And EnterBarRow( )\index >= EnterWidget( )\bar\_s( )\index ) )  ; вниз
+                    
+                    If EnterWidget( )\bar\_s( )\_state & #__s_selected = #False
+                      EnterWidget( )\bar\_s( )\_state | #__s_selected
+                      EnterWidget( )\bar\_s( )\color\state = #__s_2
+                    EndIf
+                    
+                  ElseIf EnterWidget( )\bar\_s( )\_state & #__s_selected
+                    EnterWidget( )\bar\_s( )\_state &~ #__s_selected
+                    EnterWidget( )\bar\_s( )\color\state = #__s_0
+                  EndIf
+                Next
+              EndIf
+              
+              ; draw item color state entered
+              If EnterBarRow( )\color\state = #__s_0
+                EnterBarRow( )\color\state = #__s_1
+                repaint = #True
+              EndIf
+              
+              ; Post event item status change
+              Post( #__event_StatusChange, EnterWidget( ), EnterBarRow( )\index )
+            EndIf
+          EndIf
+          
+          LeaveBarRow( ) = EnterBarRow( )
+        Else
+          If Not EnterBarRow( ) And LeaveBarRow( ) And 
+             Not _is_selected_( EnterWidget( ) )
+            
+            LeaveBarRow( ) = #Null
+            
+            If EnterWidget( )\drop
+              repaint = #True
+            EndIf
+          EndIf
+        EndIf  
+        
+        ; do buttons events entered & leaved 
+        If LeaveButton( ) <> EnterButton( ) 
+          ;Debug EnterButton()
+          
+          If LeaveButton( ) And
+             LeaveButton( )\_state & #__s_entered
+            LeaveButton( )\_state &~ #__s_entered
+            
+            If _is_current_( EnterWidget( ) ) 
+              If LeaveButton( )\color\state = #__s_1
+                LeaveButton( )\color\state = #__s_0
+                
+                ; for the splitter thumb
+                If LeaveWidget( )\type = #PB_GadgetType_Splitter And 
+                   LeaveWidget( )\bar\button[#__b_3] = LeaveButton( ) And 
+                   LeaveWidget( )\bar\button[#__b_2]\size <> $ffffff
+                  
+                  _cursor_remove_( LeaveWidget( ) )
+                EndIf
+                
+                repaint = #True
+              EndIf
+            EndIf
+          EndIf
+          
+          If EnterButton( ) And 
+             EnterButton( )\_state & #__s_entered = #False
+            EnterButton( )\_state | #__s_entered
+            
+            If _is_current_( EnterWidget( ) )
+              ; draw item color state entered
+              If EnterButton( )\color\state = #__s_0
+                If Not ( EnterWidget( )\type = #PB_GadgetType_TrackBar Or 
+                         ( EnterWidget( )\type = #PB_GadgetType_Splitter And 
+                           EnterWidget( )\bar\button[#__b_3] <> EnterButton( ) ) )
+                  
+                  EnterButton( )\color\state = #__s_1
+                  
+                  ; for the splitter thumb
+                  If EnterWidget( )\type = #PB_GadgetType_Splitter And 
+                     EnterWidget( )\bar\button[#__b_3] = EnterButton( ) And 
+                     EnterWidget( )\bar\button[#__b_2]\size <> $ffffff
+                    
+                    _cursor_set_( EnterWidget( ) )
+                  EndIf
+                  
+                  repaint = #True
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
+          LeaveButton( ) = EnterButton( )
+        EndIf  
+        
+      EndIf
+      
+      
+      If eventtype = #PB_EventType_MouseEnter
+        ; entered button draw color state
+        If EnterButton( ) And 
+           EnterButton( )\_state & #__s_entered And
+           EnterButton( )\color\state = #__s_0
+          EnterButton( )\color\state = #__s_1
+          
+          ; for the splitter thumb
+          If EnterWidget( )\type = #PB_GadgetType_Splitter And 
+             EnterWidget( )\bar\button[#__b_3] = EnterButton( ) And 
+             EnterWidget( )\bar\button[#__b_2]\size <> $ffffff
+            
+            _cursor_set_( EnterWidget( ) )
+          EndIf
+          
+          repaint = #True
+        EndIf
+      EndIf 
+      
+      
+      
+      
+      
       
       If eventtype = #PB_EventType_LeftButtonDown
         ; change the color state of non-disabled buttons
@@ -5946,7 +6226,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Bar_Change( *this, *this\bar\page\pos + *this\bar\increment ) 
               Repaint = Bar_Update( *this ) 
             EndIf
-      
+            
           ElseIf ( *this\bar\selected = *this\bar\button[#__b_2] And *this\bar\inverted ) Or 
                  ( *this\bar\selected = *this\bar\button[#__b_1] And Not *this\bar\inverted )
             
@@ -14759,7 +15039,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ElseIf Flag & #PB_Splitter_SecondFixed = #PB_Splitter_SecondFixed
               *this\bar\fixed = #__split_2 
             EndIf
-;             
+            ;             
             *this\bar\button[#__b_3]\size = #__splitter_buttonsize
             *this\bar\button[#__b_3]\interact = #True
             *this\bar\button[#__b_3]\round = 2
@@ -15931,24 +16211,24 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-;         If *this\bar\button[#__b_3]\fixed > 0
-;           *this\bar\button[#__b_3]\fixed = 0
-;           Debug ""+*this\class+" fixed_3"
-;           
-;           If *this\bar\fixed And *this\bar\page\change
-;             If *this\bar\fixed = #__split_1
-;               *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
-;             Else
-;               If *this\vertical
-;                 *this\bar\button[#__split_2]\fixed = ( *this\height[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size )
-;               Else
-;                 *this\bar\button[#__split_2]\fixed = ( *this\width[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size ) 
-;               EndIf
-;             EndIf
-;             
-;             Bar_Update( *this )
-;           EndIf     
-;         EndIf
+        ;         If *this\bar\button[#__b_3]\fixed > 0
+        ;           *this\bar\button[#__b_3]\fixed = 0
+        ;           Debug ""+*this\class+" fixed_3"
+        ;           
+        ;           If *this\bar\fixed And *this\bar\page\change
+        ;             If *this\bar\fixed = #__split_1
+        ;               *this\bar\button[#__split_1]\fixed = *this\bar\thumb\pos - *this\bar\button[#__split_1]\size
+        ;             Else
+        ;               If *this\vertical
+        ;                 *this\bar\button[#__split_2]\fixed = ( *this\height[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size )
+        ;               Else
+        ;                 *this\bar\button[#__split_2]\fixed = ( *this\width[#__c_frame] - *this\bar\thumb\len - *this\bar\thumb\pos - *this\bar\button[#__split_2]\size ) 
+        ;               EndIf
+        ;             EndIf
+        ;             
+        ;             Bar_Update( *this )
+        ;           EndIf     
+        ;         EndIf
         
         ; reset values
         If *this\change <> 0
@@ -16511,12 +16791,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; reset at point element
           EnterRow( ) = #Null
-          EnterButton( ) = #Null
-          
-          If *this\type = #PB_GadgetType_TabBar
-            *this\index[#__tab_1] = - 1
-          EndIf
-          
+           
         Else
           ; get at_point_item address
           If ListSize( EnterWidget( )\row\draws( ) ) And 
@@ -16552,76 +16827,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
           
-          
-          If EnterWidget( )\count\items And ; EnterButton( ) = EnterWidget( )\bar\button[#__b_3]
-                                            ; Atpoint( mouse_x, mouse_y, EnterWidget( ), [#__c_clip] ) And 
-            Atpoint( mouse_x, mouse_y, EnterWidget( ), [#__c_inner] )
-            
-            ; splitter хурмит
-            If ListSize( EnterWidget( )\bar\_s( ) ) And EnterWidget( )\type = #PB_GadgetType_TabBar
-              ForEach EnterWidget( )\bar\_s( )
-                ; If EnterWidget( )\bar\_s( )\draw
-                If Atpoint( ( mouse_x - EnterWidget( )\x[#__c_inner] ) + Bool( Not EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos,
-                            mouse_y - EnterWidget( )\y[#__c_inner] + Bool( EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos, EnterWidget( )\bar\_s( ) )
-                  
-                  ;If Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\_s( ) ) And EnterWidget( )\bar\from = #__b_3
-                  If EnterWidget( )\index[#__tab_1] <> EnterWidget( )\bar\_s( )\index
-                    If EnterWidget( )\index[#__tab_1] >= 0
-                      ; Debug " leave tab - " + EnterWidget( )\index[#__tab_1]
-                      Repaint | #True
-                    EndIf
-                    
-                    EnterWidget( )\index[#__tab_1] = EnterWidget( )\bar\_s( )\index
-                    ; Debug " enter tab - " + EnterWidget( )\index[#__tab_1]
-                    Repaint | #True
-                  EndIf
-                  Break
-                  
-                ElseIf EnterWidget( )\index[#__tab_1] = EnterWidget( )\bar\_s( )\index
-                  ; Debug " leave tab - " + EnterWidget( )\index[#__tab_1]
-                  EnterWidget( )\index[#__tab_1] =- 1
-                  Repaint | #True
-                  Break
-                EndIf
-                ; EndIf
-              Next
-            EndIf
-          ElseIf EnterWidget( )\type = #PB_GadgetType_TabBar
-            If EnterWidget( )\index[#__tab_1] <> - 1
-              EnterWidget( )\index[#__tab_1] = - 1
-            EndIf
-          EndIf
-          
-          ; get at_point_button address
-          If Not ( EnterButton( ) And 
-                   Atpoint( mouse( )\x, mouse( )\y, EnterButton( ) ) And 
-                   Atpoint( mouse( )\x, mouse( )\y, EnterWidget( ), [#__c_inner] ) )
-            
-            ; reset entered button
-            EnterButton( ) = #Null
-            
-            ; search entered button
-            If EnterWidget( )\bar\button[#__b_1]\interact And 
-               Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\button[#__b_1] )
-              
-              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_1]
-                EnterButton( ) = EnterWidget( )\bar\button[#__b_1]
-              EndIf
-            ElseIf EnterWidget( )\bar\button[#__b_2]\interact And
-                   Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\button[#__b_2] )
-              
-              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_2]
-                EnterButton( ) = EnterWidget( )\bar\button[#__b_2]
-              EndIf
-            ElseIf EnterWidget( )\bar\button[#__b_3]\interact And
-                   Atpoint( mouse_x, mouse_y, EnterWidget( ), [#__c_inner] ) And
-                   Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\button[#__b_3] )
-              
-              If EnterButton( ) <> EnterWidget( )\bar\button[#__b_3]
-                EnterButton( ) = EnterWidget( )\bar\button[#__b_3]
-              EndIf
-            EndIf
-          EndIf
         EndIf
         
         
@@ -16705,62 +16910,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf  
         
-        ; do buttons events entered & leaved 
-        If LeaveButton( ) <> EnterButton( ) 
-          
-          If LeaveButton( ) And
-             LeaveButton( )\_state & #__s_entered
-            LeaveButton( )\_state &~ #__s_entered
-            
-            If _is_current_( EnterWidget( ) ) 
-              If LeaveButton( )\color\state = #__s_1
-                LeaveButton( )\color\state = #__s_0
-                
-                ; for the splitter thumb
-                If LeaveWidget( )\type = #PB_GadgetType_Splitter And 
-                   LeaveWidget( )\bar\button[#__b_3] = LeaveButton( ) And 
-                   LeaveWidget( )\bar\button[#__b_2]\size <> $ffffff
-                  
-                  _cursor_remove_( LeaveWidget( ) )
-                EndIf
-                
-                repaint = #True
-              EndIf
-            EndIf
-          EndIf
-          
-          If EnterButton( ) And 
-             EnterButton( )\_state & #__s_entered = #False
-            EnterButton( )\_state | #__s_entered
-            
-            If _is_current_( EnterWidget( ) )
-              ; draw item color state entered
-              If EnterButton( )\color\state = #__s_0
-                If Not ( EnterWidget( )\type = #PB_GadgetType_TrackBar Or 
-                         ( EnterWidget( )\type = #PB_GadgetType_Splitter And 
-                           EnterWidget( )\bar\button[#__b_3] <> EnterButton( ) ) )
-                  
-                  EnterButton( )\color\state = #__s_1
-                  
-                  ; for the splitter thumb
-                  If EnterWidget( )\type = #PB_GadgetType_Splitter And 
-                     EnterWidget( )\bar\button[#__b_3] = EnterButton( ) And 
-                     EnterWidget( )\bar\button[#__b_2]\size <> $ffffff
-                    
-                    _cursor_set_( EnterWidget( ) )
-                  EndIf
-                  
-                  repaint = #True
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
-          LeaveButton( ) = EnterButton( )
-        EndIf  
-        
-        
-        
+        ;
         If _is_selected_( *this ) 
           If ListSize( *this\row\draws( ) ) 
             If eventtype = #PB_EventType_MouseLeave
@@ -16836,23 +16986,6 @@ CompilerIf Not Defined( widget, #PB_Module )
            EnterRow( )\_state & #__s_entered And
            EnterRow( )\color\state = #__s_0
           EnterRow( )\color\state = #__s_1
-          repaint = #True
-        EndIf
-        
-        ; entered button draw color state
-        If EnterButton( ) And 
-           EnterButton( )\_state & #__s_entered And
-           EnterButton( )\color\state = #__s_0
-          EnterButton( )\color\state = #__s_1
-          
-          ; for the splitter thumb
-          If EnterWidget( )\type = #PB_GadgetType_Splitter And 
-             EnterWidget( )\bar\button[#__b_3] = EnterButton( ) And 
-             EnterWidget( )\bar\button[#__b_2]\size <> $ffffff
-            
-            _cursor_set_( EnterWidget( ) )
-          EndIf
-          
           repaint = #True
         EndIf
       EndIf 
@@ -17602,10 +17735,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *CallBack
         BindGadgetEvent( Canvas, *CallBack )
+        ; BindGadgetEvent( Canvas, @EventHandler( ) )
       Else
         root( )\repaint = #True
+        BindGadgetEvent( Canvas, @EventHandler( ) )
       EndIf
-      BindGadgetEvent( Canvas, @EventHandler( ) )
       
       ProcedureReturn root( )
     EndProcedure
@@ -17883,6 +18017,7 @@ CompilerIf Not Defined( widget, #PB_Module )
   ;- <<< 
 CompilerEndIf
 
+
 ;- 
 Macro Uselib( _name_ )
   UseModule _name_
@@ -17894,69 +18029,226 @@ EndMacro
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
+  #__round = 7
   
-  Global i, s_0, s_1, s_2, s_3, s_4, s_5
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    LoadFont(0, "Arial", 16)
+  CompilerElse
+    LoadFont(0, "Arial", 11)
+  CompilerEndIf 
   
-  Procedure resize_window_0()
-    Protected width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
-;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    
-;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    Resize(s_2, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+  Define m.s=#LF$
+  Global Text.s = "This is a long line." + m.s +
+           "Who should show." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "I have to write the text in the box or not." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "The string must be very long." + m.s +
+           "Otherwise it will not work." ;+ m.s +
+ 
+  Procedure _Events()
+    Select this()\event
+      Case #PB_EventType_MouseEnter
+        Debug "post enter - "+this()\widget\index
+        If GetButtons(this()\widget)
+          this()\widget\color\back = $00FF00
+        Else
+          this()\widget\color\back = $0000FF
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        Debug "post leave - "+this()\widget\index
+        this()\widget\color\back = $FF0000
+        
+      Case #PB_EventType_Repaint
+        DrawingMode(#PB_2DDrawing_Transparent)
+        DrawText(2,0, Str(this()\widget\index), 0)
+        
+    EndSelect
   EndProcedure
   
-  OpenWindow(0, 10, 10, 850, 250, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
-  BindEvent(#PB_Event_SizeWindow, @resize_window_0())
+  ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
+  ;     SetData(Container(20, 20, 180, 180), 1)
+  ;     SetData(Container(70, 10, 70, 180, #__flag_NoGadget), 9) 
+  ;     SetData(Container(20, 20, 180, 180), 2)
+  ;     SetData(Container(20, 20, 180, 180), 3)
+  ;     
+  ;     SetData(Container(0, 20, 180, 30, #__flag_NoGadget), 4) 
+  ;     SetData(Container(0, 35, 180, 30, #__flag_NoGadget), 5) 
+  ;     SetData(Container(0, 50, 180, 30, #__flag_NoGadget), 6) 
+  ;     SetData(Splitter(20, 70, 180, 50, Container(0,0,0,0, #__flag_NoGadget), Container(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
+  ;     
+  ;     CloseList()
+  ;     CloseList()
+  ;     SetData(Container(10, 70, 70, 180), 8) 
+  ;     SetData(Container(10, 10, 70, 30, #__flag_NoGadget), 10) 
+  ;     SetData(Container(10, 20, 70, 30, #__flag_NoGadget), 11) 
+  ;     SetData(Container(10, 30, 70, 30, #__flag_NoGadget), 12) 
+  ;     CloseList()
+  ;     
+  ;     Bind(@Events(), root())
+  ;     Redraw(Root())
+  ;   EndIf
+  ;   
   
-  widget::Open(0);, 0, 0, 510, 340)
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
+  EndIf
   
-  ; first splitter
-  s_0 = widget::Tab(300, 30, 250, 40, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
+  If Open(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
+    Define i, *w,*w1,*w2
+    
+    Image(5, 5, 150, 100, 0, #__flag_Checkboxes)
+    
+;     ListIcon(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
+;     AddColumn(widget(), -1, "column_1", 100)
+;     For i=0 To 10;20
+;       If i=3 Or i=8 Or i=14
+;         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+;       Else
+;         AddItem(Widget(), i, "0_item_"+ Str(i)+Chr(10)+"1_item_"+ Str(i))
+;       EndIf
+;     Next
+    
+    Tree_Properties(5, 215, 150, 150, #__flag_Checkboxes)
+    For i=0 To 10;20
+      If i=3 Or i=8 Or i=14
+        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+      Else
+        AddItem(Widget(), i, "item_"+ Str(i))
+      EndIf
+    Next
+    
+    Panel     (160, 5, 150, 100)
+    For i=0 To 10
+      AddItem (Widget(), -1, "item_"+Str(i))
+    Next
+    CloseList()
+    SetState(Widget(), 5)
+    
+    ; demo editor
+    Editor(320, 5, 150, 100)
+    SetText(Widget(), Text.s) 
+    ;redraw(*g)
+    Define a
+    For a = 0 To 2
+      AddItem(Widget(), a, "Line "+Str(a))
+    Next
+    AddItem(Widget(), a, "")
+    For a = 4 To 6
+      AddItem(Widget(), a, "Line "+Str(a))
+    Next
+    ;SetFont(*g, FontID(0))
+    
+    Tree(160, 110, 150, 100, #__flag_Checkboxes)
+    For i=0 To 20
+      If i=3
+        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
+      Else
+        AddItem(Widget(), i, "item_"+ Str(i))
+      EndIf
+    Next
+    
+    ScrollArea(320,110,150,100, 200,200)
+    Button(10, 15, 80, 24,"Кнопка 1")
+    ;     Combobox(10, 15, 80, 24)
+    ;     AddItem(Widget(), -1, "Combobox")
+    ;     SetState(Widget(), 0)
+    
+    Button(95, 15, 80, 24,"Кнопка 2")
+    CloseList()
+    
+    Container(160,215,150,150, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Button(10,5,50,35, "butt") 
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    Container(10,75,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Container(10,5,150,55, #PB_Container_Flat) 
+    Button(10,5,50,35, "butt1") 
+    CloseList()
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    ; demo bar type
+    Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1")), Button(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
+    ;Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), Button(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
+    
+    Spin(5, 365+5, 150, 30, 0, 20)
+    SetState(Widget(), 5)
+    Spin(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
+    SetState(Widget(), 5)
+    Spin(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
+    SetState(Widget(), 5)
+    
+    Scroll(160, 370, 150, 20, 0, 50, 30)
+    SetState(Widget(), 5)
+    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__bar_Inverted)
+    SetState(Widget(), 5)
+    
+    Track(160, 370+53, 150, 20, 0, 20, #__bar_Ticks,0)
+    SetState(Widget(), 5)
+    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Inverted,0)
+    SetState(Widget(), 5)
+    
+    Progress(160, 370+105, 150, 20, 0, 20)
+    SetState(Widget(), 5)
+    Progress(160, 370+105+25, 150, 10, 0, 20, #__bar_Inverted)
+    SetState(Widget(), 5)
+    
+    Scroll(320, 370, 20, 150, 0, 50, 30, #__bar_Vertical, #__round+2)
+    SetState(Widget(), 5)
+    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Inverted, #__round/2+2)
+    SetState(Widget(), 5)
+    
+    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Inverted)
+    SetState(Widget(), 5)
+    Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetState(Widget(), 5)
+    
+    Progress(320+105, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetState(Widget(), 5)
+    Progress(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Inverted, #__round/2)
+    SetState(Widget(), 5)
+    
+    
+    ;         Scroll(160, 370, 150, 40, 0, 50, 30)
+    ;         SetState(Widget(), 5)
+    ;         Track(160, 370+55, 150, 40, 0, 20)
+    ;         SetState(Widget(), 5)
+    ;         Progress(160, 370+110, 150, 40, 0, 20)
+    ;         SetState(Widget(), 5)
+    ;         
+    ;         Scroll(320, 370, 40, 150, 0, 50, 30, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;         Track(320+55, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;         Progress(320+110, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         SetState(Widget(), 5)
+    ;     
+    ReDraw(Root())
+  EndIf
   
-;   Debug " -- "
-;   Debug widget( )\bar\page\pos
-;   Debug widget( )\bar\page\end
-;   Debug widget( )\bar\percent
-;   Debug widget( )\bar\area\end
-;   Debug widget( )\bar\thumb\pos
-;   Debug widget( )\bar\thumb\len
-;   Debug ""
-;   
-  s_1 = widget::Tab(300, 30+50, 250, 40, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
-  
-  ; first splitter
-  s_3 = widget::Tab(300, 30+100, 250, 40, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
-  
-  s_4 = widget::Tab(300, 30+150, 250, 40, 0,250,0)
-  For i=0 To 10
-    AddItem(widget( ), -1, "tab_"+Str(i))
-  Next
-  
-  SetState(s_0, -10)
-  SetState(s_1, 250)
-  SetState(s_3, 250/2 - #__splitter_buttonsize)
-  SetState(s_4, 10)
-  
-     
-  Define event
   Repeat
-    event = WaitWindowEvent()
-  Until event = #PB_Event_CloseWindow
-  End
+    Define Event = WaitWindowEvent()
+    ; repaint()
+  Until Event= #PB_Event_CloseWindow
+  
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   SetState(s_0, -10)
   SetState(s_1, 250)
-  SetState(s_3, 250/2 - #__splitter_buttonsize)
+  SetState(s_3, 250/2)
   SetState(s_4, 10)
   
      

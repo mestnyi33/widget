@@ -1149,8 +1149,10 @@ CompilerIf Not Defined( widget, #PB_Module )
     Macro _mdi_update_( _this_,  _x_,_y_, _width_, _height_ )
       _this_\x[#__c_required] = _x_
       _this_\y[#__c_required] = _y_
-      _this_\width[#__c_required] = _width_
-      _this_\height[#__c_required] = _height_
+;       _this_\width[#__c_required] = _width_
+;       _this_\height[#__c_required] = _height_
+      _this_\width[#__c_required] = _x_+_width_
+      _this_\height[#__c_required] = _y_+_height_
       
       If StartEnumerate( _this_ )
         If widget( )\parent = _this_
@@ -1171,6 +1173,53 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           If _this_\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _this_\y[#__c_required] 
             _this_\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _this_\y[#__c_required] 
+          EndIf
+        EndIf
+        StopEnumerate( )
+      EndIf
+      
+      If Bar_Updates( _this_, 0, 0, _this_\width[#__c_container], _this_\height[#__c_container] )
+        
+        _this_\width[#__c_inner2] = _this_\scroll\h\bar\page\len
+        _this_\height[#__c_inner2] = _this_\scroll\v\bar\page\len
+        
+        If _this_\container 
+          If StartEnumerate( _this_ )
+            ; If widget( )\parent = _this_
+            Reclip( widget( ), 0 ); #True )
+                                  ; EndIf
+            StopEnumerate( )
+          EndIf
+        EndIf
+      EndIf
+      
+    EndMacro
+    
+    Macro _mdi_update_ok( _this_,  _x_,_y_, _width_, _height_ )
+      _this_\x[#__c_required] = _x_
+      _this_\y[#__c_required] = _y_
+      _this_\width[#__c_required] = _x_+_width_
+      _this_\height[#__c_required] = _y_+_height_
+      
+      If StartEnumerate( _this_ )
+        If widget( )\parent = _this_
+          If _this_\x[#__c_required] > widget( )\x[#__c_container] 
+            _this_\x[#__c_required] = widget( )\x[#__c_container] 
+          EndIf
+          If _this_\y[#__c_required] > widget( )\y[#__c_container] 
+            _this_\y[#__c_required] = widget( )\y[#__c_container] 
+          EndIf
+;         EndIf
+;         StopEnumerate( )
+;       EndIf
+;       
+;       If StartEnumerate( _this_ )
+;         If widget( )\parent = _this_
+          If _this_\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] ; - _this_\x[#__c_required] 
+            _this_\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] ; - _this_\x[#__c_required] 
+          EndIf
+          If _this_\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] ; - _this_\y[#__c_required] 
+            _this_\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] ; - _this_\y[#__c_required] 
           EndIf
         EndIf
         StopEnumerate( )
@@ -5104,7 +5153,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       
       If *this\type = #PB_GadgetType_ScrollBar 
-        *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
+       ; *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
         
 ;         ; не уверен что нужно пока оставлю
 ;         If *this\bar\hide
@@ -5231,7 +5280,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        result = *this\bar\hide
+        result = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) ;*this\bar\hide
       EndIf
       
       If *this\type = #PB_GadgetType_TabBar 
@@ -11079,7 +11128,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       If eventtype = #__event_leftClick
-        Post( #__event_LeftClick, *this, EnterRow( )\index )
+        If EnterRow( )
+          Post( #__event_LeftClick, *this, EnterRow( )\index )
+        Else
+          Post( #__event_LeftClick, *this )
+        EndIf
         Repaint | #True
       EndIf
       
@@ -16662,9 +16715,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             If ListSize( EnterWidget( )\bar\_s( ) ) And EnterWidget( )\type = #PB_GadgetType_TabBar
               ForEach EnterWidget( )\bar\_s( )
                 ; If EnterWidget( )\bar\_s( )\draw
-                If Atpoint( ( mouse_x - EnterWidget( )\x[#__c_inner] ) + Bool( Not EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos,
-                            mouse_y - EnterWidget( )\y[#__c_inner] + Bool( EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos, EnterWidget( )\bar\_s( ) )
-                  
+;                 If Atpoint( ( mouse_x - EnterWidget( )\x[#__c_inner] ) + Bool( Not EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos,
+;                             mouse_y - EnterWidget( )\y[#__c_inner] + Bool( EnterWidget( )\vertical ) * EnterWidget( )\bar\page\pos, EnterWidget( )\bar\_s( ) )
+                  If Atpoint( mouse_x - EnterWidget( )\bar\button[#__b_3]\x,
+                            mouse_y - EnterWidget( )\bar\button[#__b_3]\y, EnterWidget( )\bar\_s( ) )
+                 
                   ;If Atpoint( mouse_x, mouse_y, EnterWidget( )\bar\_s( ) ) And EnterWidget( )\bar\from = #__b_3
                   If EnterWidget( )\index[#__tab_1] <> EnterWidget( )\bar\_s( )\index
                     If EnterWidget( )\index[#__tab_1] >= 0
@@ -17604,6 +17659,10 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;-
+;     Procedure Use( canvas.i, *callback )
+;       
+;     EndProcedure
+;     
     Procedure   Open( window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       If width = #PB_Ignore And
          height = #PB_Ignore
@@ -19166,5 +19225,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------4+----+-d----+4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -n-----fwfBwz-4v0----------------------------------------0-----+-f-----------------v0----0-8+--------v------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d-+---------------------------------------
 ; EnableXP

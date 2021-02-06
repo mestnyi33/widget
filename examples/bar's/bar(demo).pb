@@ -1,8 +1,8 @@
 ﻿;
-; example demo resize draw splitter - OS gadgets
+; example demo resize draw splitter - OS gadgets   -bar
 ; 
 
-XIncludeFile "../../widgets-bar.pbi"
+XIncludeFile "../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -229,5 +229,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = +-
 ; EnableXP

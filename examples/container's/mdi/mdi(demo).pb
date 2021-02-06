@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 ; надо исправить перемещение детей с помощью скроллбара
 
 CompilerIf #PB_Compiler_IsMainFile

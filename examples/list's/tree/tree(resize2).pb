@@ -9,13 +9,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Tree(     30, 30, 200, h)
+    *g1 = Tree(     30, 30, 200, h, #__tree_nolines|#__tree_nobuttons)
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
-    *g2 = Tree( 30+210, 30, 200, h, #__text_center|#__text_top)
+    *g2 = Tree( 30+210, 30, 200, h, #__tree_nolines|#__tree_nobuttons | #__text_center|#__text_top)
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     
-    *g3 = Tree( 30+420, 30, 200, h, #__text_right|#__text_top)
+    *g3 = Tree( 30+420, 30, 200, h, #__tree_nolines|#__tree_nobuttons | #__text_right|#__text_top)
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     
     *g4 = Splitter( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)

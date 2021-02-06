@@ -709,7 +709,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList()
       
 ;       Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
-      Open(0, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container, @Canvas_CallBack())
+      Open(0, 200,10, 600, Height,"", #PB_Canvas_Keyboard|#PB_Canvas_Container, @Canvas_CallBack())
       g_Canvas = GetGadget(Root())
       ;OpenGadgetList(g_Canvas)
       
@@ -761,6 +761,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Repeat 
         Event = WaitWindowEvent()
+        
         Select Event
           Case #PB_Event_Gadget
             
@@ -913,5 +914,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------
+; Folding = --------v---
 ; EnableXP

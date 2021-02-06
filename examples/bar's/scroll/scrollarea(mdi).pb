@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+   ; Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))

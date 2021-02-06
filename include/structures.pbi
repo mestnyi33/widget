@@ -195,11 +195,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       text._s_text
       image._s_image
       color._s_color
-    EndStructure
+      
+      _state.l
+      EndStructure
     
     ;- - _s_rows
     Structure _s_rows Extends _s_tabs
-      _state.l
       childrens.b
       
       sublevel.w
@@ -268,14 +269,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       fixed.l ; splitter fixed button index  
       mode.i
       
-      *selected._s_buttons
+      ;;*selected._s_buttons
       button._s_buttons[4]
        
       max.l
       min.l[3]
-      minsize.l[3]
-      minsizefix.l[3]
-      hide.b
+      ;hide.b
       
       change.b ; tab items to redraw
       percent.f
@@ -289,6 +288,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       thumb._s_page  
       
       List *_s._s_tabs( )
+      
+      *selected._s_tabs        ; at point pushed item
+      *leaved._s_tabs         ; pushed last entered item
+     ; *entered._s_tabs         ; pushed last entered item
+      List *draws._s_tabs( )
+      
     EndStructure
     
     ;     ;- - _s_tab
@@ -624,6 +629,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_mouse Extends _s_point
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
+      *bar_row._s_tabs[2]         ; at point element item
       *row._s_rows[2]         ; at point element item
       *button._s_buttons[2]   ; at point element button
       *widget._s_WIDGET[2]    ; at point element
@@ -698,5 +704,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------9-
+; Folding = -------0-
 ; EnableXP

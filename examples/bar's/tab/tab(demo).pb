@@ -1,7 +1,8 @@
-﻿XIncludeFile "../../../widgets-bar.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets-bar.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
+  Uselib(widget)
   
   Procedure events_gadgets()
     ClearDebugOutput()
@@ -109,5 +110,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = +-
 ; EnableXP

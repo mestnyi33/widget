@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 Uselib( Widget )
@@ -23,10 +23,10 @@ Global SourceText,
 Global i, Event, font = LoadFont( 0, "Aria", 13 )
 
 Procedure Events( )
-  Protected EventWidget.i = this( )\widget,
-            EventType.i = this( )\event,
-            EventItem.i = this( )\item, 
-            EventData.i = this( )\data
+  Protected EventWidget.i = EventWidget( ),
+            EventType.i = WidgetEventType( );,
+            ;EventItem.i = this( )\item, 
+            ;EventData.i = this( )\data
   
   Protected i, Text$, Files$, Count
   
