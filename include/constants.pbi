@@ -284,21 +284,24 @@
     
     
     ;- _c_bar
+      #__bar_minimum = 1
+      #__bar_maximum = 2
+      #__bar_pagelength = 3
+      #__bar_scrollstep = 5
+      
     EnumerationBinary 8
-      ; set/get attribute
-      #__bar_direction
-       
+      #__bar_buttonsize 
+      #__bar_direction 
+      
       ;#__bar_arrowSize 
       ;#__bar_reverse
       
-      #__bar_buttonsize 
-       
       #__bar_ticks
       #__bar_vertical
       #__bar_child
     EndEnumeration
     
-    ;;#__bar_nobuttons = #__flag_nogadgets
+    ;#__bar_nobuttons = #__flag_nogadgets
     #__bar_inverted = #__flag_inverted
     
     ;- _c_text

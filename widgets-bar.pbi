@@ -5643,70 +5643,52 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndSelect
           
         Else
-          If *this\type = #PB_GadgetType_ScrollBar Or
-             *this\type = #PB_GadgetType_ProgressBar Or
-             *this\type = #PB_GadgetType_TrackBar
-            
-            Select Attribute
-              Case #PB_ScrollBar_Minimum, ; 1
-                   #PB_ProgressBar_Minimum,
-                   #PB_TrackBar_Minimum           
-                
-                If \bar\min <> *value ;And Not *value < 0
-                  \bar\area\change = \bar\min - *value
-                  If \bar\page\pos < *value
-                    \bar\page\pos = *value
-                  EndIf
-                  \bar\min = *value
-                  ; Debug  " min " + \bar\min + " max " + \bar\max
-                  result = #True
+          Select Attribute
+            Case #__bar_minimum
+              If \bar\min <> *value ;And Not *value < 0
+                \bar\area\change = \bar\min - *value
+                If \bar\page\pos < *value
+                  \bar\page\pos = *value
                 EndIf
+                \bar\min = *value
+                ; Debug  " min " + \bar\min + " max " + \bar\max
+                result = #True
+              EndIf
+              
+            Case #__bar_maximum
+              If \bar\max <> *value And Not ( *value < 0 And Not #__bar_minus)
+                \bar\area\change = \bar\max - *value
                 
-              Case #PB_ScrollBar_Maximum, ; 2 
-                   #PB_ProgressBar_Maximum,
-                   #PB_TrackBar_Maximum          
+                If \bar\min > *value And Not #__bar_minus
+                  \bar\max = \bar\min + 1
+                Else
+                  \bar\max = *value
+                EndIf
+                ;                 
+                If Not \bar\max And Not #__bar_minus
+                  \bar\page\pos = \bar\max
+                EndIf
+                ; Debug  "   min " + \bar\min + " max " + \bar\max
                 
-                If \bar\max <> *value And Not ( *value < 0 And Not #__bar_minus)
-                  \bar\area\change = \bar\max - *value
-                  
-                  If \bar\min > *value And Not #__bar_minus
+                ;\bar\page\change = #True
+                result = #True
+              EndIf
+              
+            Case #__bar_pagelength
+              If \bar\page\len <> *value And Not ( *value < 0 And Not #__bar_minus )
+                \bar\area\change = \bar\page\len - *value
+                \bar\page\len = *value
+                
+                If Not \bar\max And Not #__bar_minus
+                  If \bar\min > *value
                     \bar\max = \bar\min + 1
                   Else
                     \bar\max = *value
                   EndIf
-                  ;                 
-                  If Not \bar\max And Not #__bar_minus
-                    \bar\page\pos = \bar\max
-                  EndIf
-                  ; Debug  "   min " + \bar\min + " max " + \bar\max
-                  
-                  ;\bar\page\change = #True
-                  result = #True
                 EndIf
                 
-              Case #PB_ScrollBar_PageLength ; 3
-                
-                If \bar\page\len <> *value And Not ( *value < 0 And Not #__bar_minus )
-                  \bar\area\change = \bar\page\len - *value
-                  \bar\page\len = *value
-                  
-                  If Not \bar\max And Not #__bar_minus
-                    If \bar\min > *value
-                      \bar\max = \bar\min + 1
-                    Else
-                      \bar\max = *value
-                    EndIf
-                  EndIf
-                  
-                  result = #True
-                EndIf
-                
-            EndSelect
-          EndIf
-          
-          Select Attribute
-            Case #PB_ScrollArea_ScrollStep ; 5
-              \scroll\increment = *value
+                result = #True
+              EndIf
               
             Case #__bar_buttonsize
               If \bar\button[#__b_3]\size <> *value
@@ -5729,6 +5711,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__bar_inverted
               \bar\inverted = Bool( *value )
               ProcedureReturn Bar_Update( *this )
+              
+            Case #__bar_ScrollStep 
+              \scroll\increment = *value
               
           EndSelect
         EndIf
@@ -7943,13 +7928,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\scroll\v And
              *this\scroll\v\bar\max <> *this\height[#__c_required] And
-             Bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\height[#__c_required] )
+             Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *this\height[#__c_required] )
             update_scroll_area = 1
           EndIf
           
           If *this\scroll\h And 
              *this\scroll\h\bar\max <> *this\width[#__c_required] And  
-             Bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\width[#__c_required] )
+             Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *this\width[#__c_required] )
             update_scroll_area = 1
           EndIf
           
@@ -8317,13 +8302,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\scroll\v And
              *this\scroll\v\bar\max <> *this\height[#__c_required] And
-             Bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\height[#__c_required] )
+             Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *this\height[#__c_required] )
             update_scroll_area = 1
           EndIf
           
           If *this\scroll\h And 
              *this\scroll\h\bar\max <> *this\width[#__c_required] And  
-             Bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\width[#__c_required] )
+             Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *this\width[#__c_required] )
             update_scroll_area = 1
           EndIf
           
@@ -8676,13 +8661,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\scroll\v And
            *this\scroll\v\bar\max <> *this\height[#__c_required] And
-           Bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\height[#__c_required] )
+           Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *this\height[#__c_required] )
           update_scroll_area = 1
         EndIf
         
         If *this\scroll\h And 
            *this\scroll\h\bar\max <> *this\width[#__c_required] And  
-           Bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\width[#__c_required] )
+           Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *this\width[#__c_required] )
           update_scroll_area = 1
         EndIf
         
@@ -10085,7 +10070,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; change vertical scrollbar max
             If *this\scroll\v\bar\max <> *this\height[#__c_required] And
-               bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\height[#__c_required] )
+               bar_SetAttribute( *this\scroll\v, #__bar_Maximum, *this\height[#__c_required] )
               
               Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
@@ -10094,7 +10079,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; change horizontal scrollbar max
             If *this\scroll\h\bar\max <> *this\width[#__c_required] And
-               bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\width[#__c_required] )
+               bar_SetAttribute( *this\scroll\h, #__bar_Maximum, *this\width[#__c_required] )
               
               Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
@@ -12659,55 +12644,42 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *this\type = #PB_GadgetType_Splitter
         Select Attribute 
-          Case #PB_Splitter_FirstMinimumSize  : result = *this\bar\min[#__b_1]       ; 1
-          Case #PB_Splitter_SecondMinimumSize : result = *this\bar\min[#__b_2]       ; 2
-          Case #PB_Splitter_FirstGadget       : result = *this\gadget[#__split_1]    ; 3
-          Case #PB_Splitter_SecondGadget      : result = *this\gadget[#__split_2]    ; 4
+          Case #PB_Splitter_FirstGadget       : result = *this\gadget[#__split_1]
+          Case #PB_Splitter_SecondGadget      : result = *this\gadget[#__split_2]
+          Case #PB_Splitter_FirstMinimumSize  : result = *this\bar\button[#__b_1]\size
+          Case #PB_Splitter_SecondMinimumSize : result = *this\bar\button[#__b_2]\size
         EndSelect
       EndIf
       
       ; _is_scrollbars_( *this )
       If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
-          Case #PB_ScrollArea_InnerWidth      : result = *this\scroll\h\bar\max       ; 1
-          Case #PB_ScrollArea_InnerHeight     : result = *this\scroll\v\bar\max       ; 2
-          Case #PB_ScrollArea_X               : result = *this\scroll\h\bar\page\pos  ; 3
-          Case #PB_ScrollArea_Y               : result = *this\scroll\v\bar\page\pos  ; 4
+          Case #PB_ScrollArea_X               : result = *this\scroll\h\bar\page\pos
+          Case #PB_ScrollArea_Y               : result = *this\scroll\v\bar\page\pos
+          Case #PB_ScrollArea_InnerWidth      : result = *this\scroll\h\bar\max
+          Case #PB_ScrollArea_InnerHeight     : result = *this\scroll\v\bar\max
+          Case #PB_ScrollArea_ScrollStep      : result = *this\scroll\increment
         EndSelect
       EndIf
       
-      If *this\type = #PB_GadgetType_ScrollBar Or
-         *this\type = #PB_GadgetType_ProgressBar Or
-         *this\type = #PB_GadgetType_TrackBar
-        
-        Select Attribute
-          Case #PB_ScrollBar_Minimum, 
-               #PB_ProgressBar_Minimum,
-               #PB_TrackBar_Minimum           : result = *this\bar\min               ; 1
-            
-          Case #PB_ScrollBar_Maximum, 
-               #PB_ProgressBar_Maximum,
-               #PB_TrackBar_Maximum           : result = *this\bar\max               ; 2
-            
-          Case #PB_ScrollBar_PageLength       : result = *this\bar\page\len          ; 3
-        EndSelect
-      EndIf
-    
       If *this\type = #PB_GadgetType_Spin Or
          *this\type = #PB_GadgetType_TabBar Or
          *this\type = #PB_GadgetType_TrackBar Or
          *this\type = #PB_GadgetType_ScrollBar Or
-         *this\type = #PB_GadgetType_ProgressBar Or
-         *this\type = #PB_GadgetType_Splitter
+         *this\type = #PB_GadgetType_ProgressBar ; Or *this\type = #PB_GadgetType_Splitter
         
         Select Attribute
-          Case #__bar_buttonsize : result = *this\bar\button[#__b_3]\size   ; 4
-          Case #__bar_inverted   : result = *this\bar\inverted
+          Case #__bar_minimum    : result = *this\bar\min          ; 1
+          Case #__bar_maximum    : result = *this\bar\max          ; 2
+          Case #__bar_pagelength : result = *this\bar\page\len     ; 3
+          Case #__bar_scrollstep : result = *this\scroll\increment ; 5
+              
+          Case #__bar_buttonsize : result = *this\bar\button[#__b_3]\size   
           Case #__bar_direction  : result = *this\bar\direction
-          Case #PB_ScrollArea_ScrollStep      : result = *this\scroll\increment       ; 5
+          Case #__bar_inverted   : result = *this\bar\inverted
         EndSelect
       EndIf
-    
+      
       ProcedureReturn result
     EndProcedure
     
@@ -13068,13 +13040,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
           Case #PB_ScrollArea_InnerWidth      
-            If Bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *value )
+            If Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *value )
               *this\width[#__c_required] = *this\scroll\h\bar\max
               result = 1
             EndIf
             
           Case #PB_ScrollArea_InnerHeight     
-            If Bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *value )
+            If Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *value )
               *this\height[#__c_required] = *this\scroll\v\bar\max
               result = 1
             EndIf
@@ -14894,13 +14866,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             
           Else
             If *param_1 
-              SetAttribute( *this, #PB_ScrollBar_Minimum, *param_1 ) 
+              SetAttribute( *this, #__bar_minimum, *param_1 ) 
             EndIf
             If *param_2 
-              SetAttribute( *this, #PB_ScrollBar_Maximum, *param_2 ) 
+              SetAttribute( *this, #__bar_maximum, *param_2 ) 
             EndIf
             If *param_3 
-              SetAttribute( *this, #PB_ScrollBar_PageLength, *param_3 ) 
+              SetAttribute( *this, #__bar_pageLength, *param_3 ) 
             EndIf
           EndIf
         EndIf
@@ -18087,5 +18059,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------z4-2vf4-8-0-0-v--X+-fu48X8-----h-48---------7f316--Zf-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------v+nNd+-f34------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------
 ; EnableXP
