@@ -1251,7 +1251,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   CanvasGadget(#MyCanvas, 10, 110, 400, 400)
   
- *this\scroll._S_scroll = AllocateStructure(_S_scroll)
+  *this\scroll._S_scroll = AllocateStructure(_S_scroll)
   *this\scroll\v = Gadget(380, 0,  20, 380, 0, 0, 0, #PB_ScrollBar_Vertical|#PB_Bar_Inverted, 9)
   *this\scroll\h = Gadget(0, 380, 380,  20, 0, 0, 0, 0, 9)
  

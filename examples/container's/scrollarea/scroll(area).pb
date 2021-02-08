@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -210,7 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure events_scrolls()
-    Select this()\event 
+    Select this()\event ; WidgetEventType( ) 
       Case #PB_EventType_Change
         If this()\widget\vertical
           PushListPosition(Images())
@@ -257,5 +257,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -4----
+; Folding = 84----
 ; EnableXP

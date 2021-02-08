@@ -5363,19 +5363,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       
-      ; 
-      If *this\bar\thumb\change <> 0
-        *this\bar\thumb\change = 0
-        
-        If *this\root\canvas\gadget = PB(EventGadget)( ) 
-          result = #True
-        EndIf
-      EndIf  
-      
       ;
       If *this\bar\page\change <> 0
         ;
-        If *this\root\canvas\gadget <> PB(EventGadget)( ) And IsGadget( PB(EventGadget)( ) ) 
+        If *this\root\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( ) ) 
           Debug ""+*this\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
           ReDraw( *this\root ) 
         EndIf
@@ -5399,11 +5390,21 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\bar\page\change = 0
       EndIf 
       
+      ; 
+      If *this\bar\thumb\change <> 0
+        If *this\root\canvas\gadget = PB(EventGadget)( ) 
+          result = #True
+        EndIf
+        
+        *this\bar\thumb\change = 0
+      EndIf  
+      
       ProcedureReturn result
     EndProcedure
     
     Procedure.b Bar_Update( *this._s_widget )
       Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
+      Protected bordersize = 0;*this\bs
       
       If *this\type = #PB_GadgetType_ScrollBar 
         If *this\bar\max 
@@ -5436,9 +5437,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-      ;       *this\bar\min[1] = *this\bar\button[#__b_1]\size
-      ;       *this\bar\min[2] = *this\bar\button[#__b_2]\size
-      
+;             *this\bar\min[1] = *this\bar\button[#__b_1]\size
+;             *this\bar\min[2] = *this\bar\button[#__b_2]\size
+;       
       ; get area size
       If *this\vertical
         *this\bar\area\len = *this\height[#__c_frame] 
@@ -5446,19 +5447,18 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\bar\area\len = *this\width[#__c_frame] 
       EndIf
       
-      *this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] ) + *this\bs
-      *this\bar\area\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - *this\bs*2
+      *this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] ) + bordersize
+      *this\bar\thumb\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - bordersize*2
       
       If *this\bar\page\len
         ; get thumb size
-        *this\bar\thumb\len = Round( ( *this\bar\area\end / ( *this\bar\max - *this\bar\min ) ) * ( *this\bar\page\len ), #PB_Round_Nearest )
-        If *this\bar\thumb\len > *this\bar\area\end 
-          *this\bar\thumb\len = *this\bar\area\end 
-        EndIf
+        *this\bar\thumb\len = Round( ( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min ) ) * *this\bar\page\len, #PB_Round_Nearest )
+        If *this\bar\thumb\len > *this\bar\thumb\end : *this\bar\thumb\len = *this\bar\thumb\end : EndIf
         If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
-          If *this\bar\area\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
+          If *this\bar\thumb\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
             *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
           ElseIf *this\bar\button[#__b_3]\size > 7
+            Debug "?????"
             *this\bar\thumb\len = 0
           EndIf
         EndIf
@@ -5474,8 +5474,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; get page end
         If *this\bar\max
           If *this\type = #PB_GadgetType_TabBar
-            *this\bar\thumb\len = *this\bar\area\end - ( *this\bar\max - *this\bar\area\len )
-            *this\bar\page\end = *this\bar\max - ( *this\bar\area\end - *this\bar\thumb\len )
+            *this\bar\thumb\len = *this\bar\thumb\end - ( *this\bar\max - *this\bar\area\len )
+            *this\bar\page\end = *this\bar\max - ( *this\bar\thumb\end - *this\bar\thumb\len )
           Else
             *this\bar\thumb\len = *this\bar\button[#__b_3]\size
             *this\bar\page\end = *this\bar\max
@@ -5512,19 +5512,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       If *this\bar\page\end
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
       Else
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\min )
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\min )
       EndIf
       
-      *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs )
-      
-      ;       If *this\type = #PB_GadgetType_TabBar
-      ;       ;  *this\bar\page\end = *this\bar\max - *this\bar\area\end
-      ;        ;  *this\bar\page\end = *this\bar\max -  *this\bs - *this\bar\button[#__b_2]\size 
-      ;        ; *this\bar\area\end = *this\bar\area\len
-      ;         ; *this\bar\percent = 1.0
-      ;       EndIf
+      *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + bordersize )
       
       ProcedureReturn Bar_Resize( *this )  
     EndProcedure
@@ -5557,7 +5550,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; ;          If *this\bar\page\change <> 0
           ; ;            ;
-          ; ;            If *this\root\canvas\gadget <> PB(EventGadget)( ) And IsGadget( PB(EventGadget)( ) ) 
+          ; ;            If *this\root\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( ) ) 
           ; ;              Debug ""+*this\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
           ; ;              ReDraw( *this\root ) 
           ; ;            EndIf
@@ -5634,12 +5627,12 @@ CompilerIf Not Defined( widget, #PB_Module )
               
             Case #PB_Splitter_FirstGadget
               *this\gadget[#__split_1] = *value
-              *this\index[#__split_1] = Bool( IsGadget( *value ) )
+              *this\index[#__split_1] = Bool( PB(IsGadget)( *value ) )
               result =- 1
               
             Case #PB_Splitter_SecondGadget
               *this\gadget[#__split_2] = *value
-              *this\index[#__split_2] = Bool( IsGadget( *value ) )
+              *this\index[#__split_2] = Bool( PB(IsGadget)( *value ) )
               result =- 1
               
           EndSelect
@@ -5957,8 +5950,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;;\v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
         ;;\h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
         
+        width + x
+        height + y
+        
         If ( \v\x[#__c_frame] <> width - \v\width ) 
-          Resize( \v, width - \v\width, y, #PB_Ignore, #PB_Ignore )
+          Resize( \v, width - \v\width , y, #PB_Ignore, #PB_Ignore )
         EndIf
         
         If ( \h\y[#__c_frame] <> height - \h\height ) 
@@ -5978,7 +5974,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         Else
           \h\hide = 1
         EndIf
-        
         
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
@@ -9827,7 +9822,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure tt_tree_Draw( *this._s_tt, *color._s_color = 0 )
       With *this
-        If *this And IsGadget( \gadget ) And StartDrawing( CanvasOutput( \gadget ) )
+        If *this And PB(IsGadget)( \gadget ) And StartDrawing( CanvasOutput( \gadget ) )
           If Not *color
             *color = \color
           EndIf
@@ -13625,14 +13620,14 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *parent\type = #PB_GadgetType_Splitter
             If tabindex%2
               *parent\gadget[#__split_1] = *this
-              *parent\index[#__split_1] = Bool( IsGadget( *this ) )
+              *parent\index[#__split_1] = Bool( PB(IsGadget)( *this ) )
               Update( *parent )
               If *parent\index[#__split_1]
                 ProcedureReturn 0
               EndIf
             Else
               *parent\gadget[#__split_2] = *this
-              *parent\index[#__split_2] = Bool( IsGadget( *this ) )
+              *parent\index[#__split_2] = Bool( PB(IsGadget)( *this ) )
               Update( *parent )
               If *parent\index[#__split_2]
                 ProcedureReturn 0
@@ -14800,13 +14795,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;         *this\bar\button[#__b_2]\color = _get_colors_( )
             ;         *this\bar\button[#__b_3]\color = _get_colors_( )
             
-            ;;Debug ""+*param_1 +" "+ IsGadget( *param_1 )
+            ;;Debug ""+*param_1 +" "+ PB(IsGadget)( *param_1 )
             
             ;*this\container =- *this\type 
             *this\gadget[#__split_1] = *param_1
             *this\gadget[#__split_2] = *param_2
-            *this\index[#__split_1] = Bool( IsGadget( *this\gadget[#__split_1] ) )
-            *this\index[#__split_2] = Bool( IsGadget( *this\gadget[#__split_2] ) )
+            *this\index[#__split_1] = Bool( PB(IsGadget)( *this\gadget[#__split_1] ) )
+            *this\index[#__split_2] = Bool( PB(IsGadget)( *this\gadget[#__split_2] ) )
             
             *this\bar\inverted = Bool( Flag & #__bar_Inverted = #__bar_Inverted )
             
@@ -17622,7 +17617,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       mouse( )\interact = #True
       
       Protected g
-      If IsGadget(Canvas)
+      If PB(IsGadget)(Canvas)
         ;g = GadgetID( Canvas )
         root( )\container = Canvas;#__type_root
                                   ;;SetGadgetData( Canvas, root( ) )
@@ -18027,5 +18022,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------8--2v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------8--2v----n-v--0-v4--z----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

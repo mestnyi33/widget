@@ -626,7 +626,9 @@ Module Scroll
  
   Procedure.b Updates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = X(\v), iHeight = Y(\h)
+      Protected iWidth = \v\x-\h\x
+      Protected iHeight = \h\y-\v\y 
+      ;Protected iWidth = X(\v), iHeight = Y(\h)
       Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
      
       ; Вправо работает как надо
@@ -935,12 +937,29 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
  
   Global *scroll._S_scroll=AllocateStructure(_S_scroll)
- 
+ Global  ScrollX, ScrollY, ScrollWidth, ScrollHeight
+    
   Global isCurrentItem=#False
   Global currentItemXOffset.i, currentItemYOffset.i
-  Global Event.i, x.i, y.i, drag.i, hole.i, Width, Height
+  Global Event.i, x.i = 100, y.i = 100, drag.i, hole.i, Width=420, Height=420
   Global NewList Images.canvasitem()
- 
+  
+  Macro DrawArea( _scroll_, _x_, _y_, _width_, _height_ )
+    If Not _scroll_\v\hide
+      Draw( _scroll_\v )
+    EndIf
+    If Not _scroll_\h\hide
+      Draw( _scroll_\h )
+    EndIf
+    
+    UnclipOutput( )
+    DrawingMode( #PB_2DDrawing_Outlined )
+    Box( x, y, width, height, RGB( 0,255,255 ) )
+    Box( _x_, _y_, _width_, _height_, RGB( 0,0,0 ) )
+    Box( _scroll_\h\x - _scroll_\h\page\pos, _scroll_\v\y - _scroll_\v\page\pos, _scroll_\h\max, _scroll_\v\max, RGB( 255,0,0 ) )
+    Box( _scroll_\h\x, _scroll_\v\y, _scroll_\h\page\len, _scroll_\v\page\len, RGB( 255,255,0 ) )
+  EndMacro
+  
   Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
     If AddElement(Images())
       Images()\img    = img
@@ -949,33 +968,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Images()\width  = ImageWidth(img)
       Images()\height = ImageHeight(img)
       Images()\alphatest = alphatest
-    EndIf
-  EndProcedure
- 
-  Procedure _Draw (canvas.i)
-    Protected iWidth = X(*scroll\v), iHeight = Y(*scroll\h)
-   
-    If StartDrawing(CanvasOutput(canvas))
-     
-      ClipOutput(0,0, iWidth, iHeight)
-     
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-     
-      DrawingMode(#PB_2DDrawing_AlphaBlend)
-      ForEach Images()
-        DrawImage(ImageID(Images()\img),Images()\x - *scroll\h\page\pos,Images()\y - *scroll\v\page\pos) ; draw all images with z-order
-      Next
-     
-      UnclipOutput()
-     
-      If Not *scroll\v\hide
-        Draw(*scroll\v)
-      EndIf
-      If Not *scroll\h\hide
-        Draw(*scroll\h)
-      EndIf
-     
-      StopDrawing()
     EndIf
   EndProcedure
  
@@ -1012,10 +1004,16 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn isCurrentItem
   EndProcedure
  
-  AddImage(Images(),  10, 10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
-  AddImage(Images(), 100,100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
-  AddImage(Images(),  250,350, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
- 
+;   AddImage(Images(),  10, 10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
+;   AddImage(Images(), 100,100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
+;   AddImage(Images(),  250,350, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+ AddImage( Images( ),  x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
+  AddImage( Images( ), x+100,y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
+  ;AddImage( Images( ),  x+221,y+200, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  ;AddImage( Images( ),  x+210,y+321, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  ;AddImage( Images( ),  x,y-1, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  AddImage( Images( ),  x+310,y+350, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  
   hole = CreateImage(#PB_Any,100,100,32)
   If StartDrawing(ImageOutput(hole))
     DrawingMode(#PB_2DDrawing_AllChannels)
@@ -1026,26 +1024,51 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   AddImage(Images(),170,70,hole,1)
  
+  Procedure Canvas_Draw (canvas.i)
+    Protected iWidth = X(*scroll\v), iHeight = Y(*scroll\h)
+   
+    If StartDrawing(CanvasOutput(canvas))
+     
+      ;ClipOutput(0,0, iWidth, iHeight)
+     
+      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+     
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
+      ForEach Images()
+        DrawImage(ImageID(Images()\img),Images()\x - *scroll\h\page\pos,Images()\y - *scroll\v\page\pos) ; draw all images with z-order
+      Next
+     
+      UnclipOutput()
+     
+      DrawArea( *scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight )
+     
+      StopDrawing()
+    EndIf
+  EndProcedure
  
   Macro GetScrollCoordinate()
     ScrollX = Images()\x
     ScrollY = Images()\Y
-    ScrollWidth = Images()\x+Images()\width
-    ScrollHeight = Images()\Y+Images()\height
+    ScrollWidth = Images()\x+Images()\width - ScrollX
+    ScrollHeight = Images()\Y+Images()\height - ScrollY
    
     PushListPosition(Images())
     ForEach Images()
       If ScrollX > Images()\x : ScrollX = Images()\x : EndIf
       If ScrollY > Images()\Y : ScrollY = Images()\Y : EndIf
-      If ScrollWidth < Images()\x+Images()\width : ScrollWidth = Images()\x+Images()\width : EndIf
-      If ScrollHeight < Images()\Y+Images()\height : ScrollHeight = Images()\Y+Images()\height : EndIf
+    Next
+    ForEach Images()
+      If ScrollWidth < Images()\x+Images()\width : ScrollWidth = Images()\x+Images()\width - Scrollx: EndIf
+      If ScrollHeight < Images()\Y+Images()\height : ScrollHeight = Images()\Y+Images()\height - Scrolly: EndIf
     Next
     PopListPosition(Images())
   EndMacro
  
   Procedure ScrollUpdates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = X(*scroll\v), iHeight = Y(*scroll\h)
+      Protected iWidth = \v\x-\h\x
+      Protected iHeight = \h\y-\v\y 
+      ;Protected iWidth = X(*scroll\v), iHeight = Y(*scroll\h)
       Static hPos, vPos : vPos = *scroll\v\page\pos : hPos = *scroll\h\page\pos
      
       ; Вправо работает как надо
@@ -1102,10 +1125,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected Buttons = GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
-   
+    ;Protected  ScrollX, ScrollY, ScrollWidth, ScrollHeight
+    
+    Width = GadgetWidth( Canvas ) - x*2
+    Height = GadgetHeight( Canvas ) - y*2
+    
     If CallBack(*scroll\v, EventType, MouseX, MouseY, WheelDelta)
       Repaint = #True
     EndIf
@@ -1187,14 +1211,14 @@ CompilerIf #PB_Compiler_IsMainFile
           If *scroll\h\max<>ScrollWidth : SetAttribute(*scroll\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
           If *scroll\v\max<>ScrollHeight : SetAttribute(*scroll\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
          
-          Resizes(*scroll, 0, 0, Width, Height)
+          Resizes(*scroll, x, y, Width, Height)
           Repaint = #True
          
       EndSelect
     EndIf
    
     If Repaint
-      _Draw(#MyCanvas)
+      Canvas_Draw(#MyCanvas)
     EndIf
   EndProcedure
  
@@ -1203,21 +1227,32 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
  
  
-  If Not OpenWindow(0, 0, 0, 420, 420+100, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    MessageRequester("Fatal error", "Program terminated.")
+  If Not OpenWindow( 0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
+    MessageRequester( "Fatal error", "Program terminated." )
     End
   EndIf
- 
+  
+  Macro CreateArea( _parent_, _x_, _y_, _width_, _height_, _size_, _callback_, _flag_=#Null)
+;     _parent_\scroll\v = widget::scroll( _x_+_width_-_size_, _y_, _size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
+;     _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_size_, 0,  _size_, 0, 0, 0, _flag_, 11 )
+    _parent_\v = Gadget(_x_+_width_-_size_, _y_, _size_, 0, 0, 0, 0, #PB_ScrollBar_Vertical, 9)
+    _parent_\h = Gadget(_x_, _y_+_height_-_size_, 0,  _size_, 0, 0, 0, 0, 9)
+    
+;     If _callback_
+;       Bind( _parent_\scroll\v, _callback_ )
+;       Bind( _parent_\scroll\h, _callback_ )
+;     EndIf
+  EndMacro                                                  
+  
   ;
   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
   CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
  
-  CanvasGadget(#MyCanvas, 10, 110, 400, 400)
+  CanvasGadget(#MyCanvas, 10, 100, Width+x*2, Height+y*2-100)
  
-  *Scroll\v = Gadget(380, 0,  20, 380, 0, 0, 0, #PB_ScrollBar_Vertical|#PB_Bar_Inverted, 9)
-  *Scroll\h = Gadget(0, 380, 380,  20, 0, 0, 0, 0, 9)
- 
+  CreateArea( *Scroll, x,y,width,height, 20, @Scroll_Events( ) )
+  
   If GetGadgetState(2)
     SetGadgetState(3, GetAttribute(*Scroll\v, #PB_Bar_Inverted))
   Else
@@ -1251,7 +1286,7 @@ CompilerIf #PB_Compiler_IsMainFile
               SetAttribute(*Scroll\h, #PB_Bar_Inverted, Bool(GetGadgetState(3)))
               SetWindowTitle(0, Str(GetState(*Scroll\h)))
             EndIf
-            _Draw(#MyCanvas)
+            Canvas_Draw(#MyCanvas)
            
           Case 4
             If GetGadgetState(2)
@@ -1261,11 +1296,11 @@ CompilerIf #PB_Compiler_IsMainFile
               SetAttribute(*Scroll\h, #PB_Bar_NoButtons, Bool( Not GetGadgetState(4)) * hButton)
               SetWindowTitle(0, Str(GetState(*Scroll\h)))
             EndIf
-            _Draw(#MyCanvas)
+            Canvas_Draw(#MyCanvas)
         EndSelect
     EndSelect
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------8---f--------X-P+-------
+; Folding = ----------------------------------
 ; EnableXP

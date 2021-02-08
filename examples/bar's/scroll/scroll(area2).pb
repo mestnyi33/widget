@@ -14,12 +14,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *current=#False
   Global currentItemXOffset.i, currentItemYOffset.i
   Global Event.i, drag.i, hole.i
-  Global x=100,y=100, Width=420, Height=420
+  Global x=100,y=100, Width=420, Height=420 , focus
   
-  Global *this.allocate( widget )
   Global NewList Images.IMAGES( )
+  Global *this.allocate( widget )
   
-  Macro Area_Draw( _this_ )
+  Macro DrawArea( _this_ )
     If Not _this_\scroll\v\hide
       Draw( _this_\scroll\v )
     EndIf
@@ -29,16 +29,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     UnclipOutput( )
     DrawingMode( #PB_2DDrawing_Outlined )
-     Box( x, y, Width, Height, RGB( 0,255,255 ) )
-;     Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], RGB( 255,0,255 ) )
-;     Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-     Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 255,255,0 ) )
-    
-   ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-    Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y-_this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 0,255,0 ) )
+    Box( x, y, Width, Height, RGB( 0,255,255 ) )
+    ;;Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], RGB( 255,0,255 ) )
+    ;;Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+    Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y-_this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+    Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 255,255,0 ) )
   EndMacro
   
-  Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _size_, _callback_, _flag_=#Null)
+  Macro CreateArea( _parent_, _x_, _y_, _width_, _height_, _size_, _callback_, _flag_=#Null)
     _parent_\scroll\v = widget::scroll( _x_+_width_-_size_, _y_, _size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
     _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_size_, 0,  _size_, 0, 0, 0, _flag_, 11 )
     
@@ -48,36 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndMacro                                                  
   
-  Procedure Area_Events( )
-    
-    Select WidgetEventType( )
-      Case #PB_EventType_Change
-        
-        PushListPosition(  Images( )  )
-        If EventWidget( )\vertical
-          ForEach Images( ) : Images( )\Y + EventWidget( )\bar\page\change : Next
-          *this\y[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\y
-          
-        Else
-          ForEach Images( ) : Images( )\X + EventWidget( )\bar\page\change : Next
-          *this\x[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\x
-          
-        EndIf
-        PopListPosition( Images( ) )
-        
-        ; Debug EventWidget( )\bar\page\change
-        ; StopDrawing()
-        ; Canvas_Draw( MyCanvas, Images( ) ) 
-        
-        PostEvent( #PB_Event_Repaint, EventWindow( ), EventGadget( ), #PB_EventType_Repaint ); , EventWidget( )\bar\page\change )
-    EndSelect
-    
-  EndProcedure
-  
-  
-  
   ;-
-  Macro Canvas_ChangeImage( _this_, _x_, _y_, _width_, _height_ )
+  Macro Canvas_Change( _this_, _x_, _y_, _width_, _height_ )
     _this_\x[#__c_required] = Images( )\x 
     _this_\y[#__c_required] = Images( )\Y
     _this_\width[#__c_required] = Images( )\x+Images( )\width - _this_\x[#__c_required]
@@ -95,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PopListPosition( Images( ) )
     
     widget::bar_Updates( *this, _x_, _y_, _width_, _height_ )
-  
+              
     ; SetWindowTitle( EventWindow( ), Str( Images( )\x )+" "+Str( Images( )\width )+" "+Str( Images( )\x+Images( )\width ) )
   EndMacro
   
@@ -111,13 +81,13 @@ CompilerIf #PB_Compiler_IsMainFile
         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
       Next
       
-      Area_Draw( *this )
+      DrawArea( *this )
       
       StopDrawing( )
     EndIf
   EndProcedure
   
-  Procedure.i Canvas_HitTest( List Images.IMAGES( ), x, y )
+  Procedure.i Canvas_AtPoint( List Images.IMAGES( ), x, y )
     Shared currentItemXOffset.i, currentItemYOffset.i
     Protected alpha.i, *current = #False
     Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
@@ -152,11 +122,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn *current
   EndProcedure
   
-  Procedure Canvas_AddImage( List Images.IMAGES( ), x, y, img, alphatest=0 )
+  Procedure Canvas_AddImage ( List Images.IMAGES( ), x, y, img, alphatest=0 )
     If AddElement( Images( ) )
       Images( )\img    = img
-      Images( )\x          = x
-      Images( )\y          = y
+      Images( )\x      = x
+      Images( )\y      = y
       Images( )\width  = ImageWidth( img )
       Images( )\height = ImageHeight( img )
       Images( )\alphatest = alphatest
@@ -185,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LeftButtonDown
         If Not _is_selected_( EventWidget( ) )
-          Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
+          Drag = Bool( Canvas_AtPoint( Images( ), Mousex, Mousey ) )
           If Drag 
             SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows )
             Repaint = #True 
@@ -207,13 +177,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If Repaint
               
-              Canvas_ChangeImage( *this, x, y, width, height )
+              Canvas_Change( *this, x, y, width, height )
               
             EndIf
           EndIf
           
         ElseIf Not _is_selected_( EventWidget( ) )
-          If Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) ) 
+          If Bool( Canvas_AtPoint( Images( ), Mousex, Mousey ) ) 
             ;If widget::_from_point_( Mousex, Mousey, Images( ), [3] )
             cursor = #PB_Cursor_Hand
             ;EndIf
@@ -242,11 +212,20 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;-
+  Procedure Scroll_Events( )
+    
+    Select WidgetEventType( )
+      Case #PB_EventType_Change
+        PostEvent( #PB_Event_Repaint, EventWindow( ), EventGadget( ), #PB_EventType_Repaint, EventWidget( )\bar\page\change )
+    EndSelect
+    
+  EndProcedure
+  
+  
   
   Define yy = 90
   Define xx = 0
-  
-  Procedure Window_Resize()
+  Procedure ResizeCallBack()
     ResizeGadget(MyCanvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-10-100)
   EndProcedure
  
@@ -255,7 +234,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
+  BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
  ;
   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
@@ -280,13 +259,11 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawText(40, 65, "page - (coordinate color)",0,0)
     
     StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
-    
+    ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
   EndIf
-  ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
   
   MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_CallBack( ) ) )
   
-  ; add new images
   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
   Canvas_AddImage( Images( ), x+100,y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
   Canvas_AddImage( Images( ), x+310,y+350, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
@@ -294,40 +271,34 @@ CompilerIf #PB_Compiler_IsMainFile
   hole = CreateImage( #PB_Any,100,100,32 )
   If StartDrawing( ImageOutput( hole ) )
     DrawingMode( #PB_2DDrawing_AllChannels )
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
+    Box( 0,0,100,100,RGBA( $00,$00,$00,$00 ) )
     Circle( 50,50,48,RGBA( $00,$FF,$FF,$FF ) )
     Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
     StopDrawing( )
   EndIf
-  Canvas_AddImage( Images( ),x+170,y+70,hole,#True )
-  
-  Define butt = CreateImage( #PB_Any,100,30,32 )
-  If StartDrawing( ImageOutput( butt ) )
-    DrawingMode( #PB_2DDrawing_Default)
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,230,230,230 ) )
-    
-    DrawingMode( #PB_2DDrawing_Outlined)
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,0,255,0 ) )
-    
-    StopDrawing( )
-  EndIf
-  Canvas_AddImage( Images( ),x+70,y+40,butt,#True )
+  Canvas_AddImage( Images( ),x+170,y+70,hole,1 )
   
   
-  ;
-  Area_Create( *this, x,y,width,height, 20, @Area_Events( ) )
-  Canvas_ChangeImage( *this, x,y,width,height )
-  
+  CreateArea( *this, x,y,width,height, 20, @Scroll_Events( ) )
+  Canvas_Change( *this, x, y, width-x*2, height-y*2  )
   
   Define vButton = GetAttribute(*this\Scroll\v, #__Bar_NoButtons)
   Define hButton = GetAttribute(*this\Scroll\h, #__Bar_NoButtons)
-  
+ 
   Repeat
     Event = WaitWindowEvent( )
     
     If event = #PB_Event_Repaint
       Select EventType( )
         Case #PB_EventType_Repaint
+          PushListPosition(  Images( )  )
+          If EventWidget( )\vertical
+            ForEach Images( ) : Images( )\Y + EventData( ) : Next
+          Else
+            ForEach Images( ) : Images( )\X + EventData( ) : Next
+          EndIf
+          PopListPosition( Images( ) )
+          
           Canvas_Draw( MyCanvas, Images( ) ) 
           
       EndSelect

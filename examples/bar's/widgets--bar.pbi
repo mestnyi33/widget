@@ -5446,16 +5446,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       *this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] ) + *this\bs
-      *this\bar\area\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - *this\bs*2
+      *this\bar\thumb\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - *this\bs*2
       
       If *this\bar\page\len
         ; get thumb size
-        *this\bar\thumb\len = Round( ( *this\bar\area\end / ( *this\bar\max - *this\bar\min ) ) * ( *this\bar\page\len ), #PB_Round_Nearest )
-        If *this\bar\thumb\len > *this\bar\area\end 
-          *this\bar\thumb\len = *this\bar\area\end 
+        *this\bar\thumb\len = Round( ( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min ) ) * ( *this\bar\page\len ), #PB_Round_Nearest )
+        If *this\bar\thumb\len > *this\bar\thumb\end 
+          *this\bar\thumb\len = *this\bar\thumb\end 
         EndIf
         If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
-          If *this\bar\area\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
+          If *this\bar\thumb\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
             *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
           ElseIf *this\bar\button[#__b_3]\size > 7
             *this\bar\thumb\len = 0
@@ -5473,8 +5473,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; get page end
         If *this\bar\max
           If *this\type = #PB_GadgetType_TabBar
-            *this\bar\thumb\len = *this\bar\area\end - ( *this\bar\max - *this\bar\area\len )
-            *this\bar\page\end = *this\bar\max - ( *this\bar\area\end - *this\bar\thumb\len )
+            *this\bar\thumb\len = *this\bar\thumb\end - ( *this\bar\max - *this\bar\area\len )
+            *this\bar\page\end = *this\bar\max - ( *this\bar\thumb\end - *this\bar\thumb\len )
           Else
             *this\bar\thumb\len = *this\bar\button[#__b_3]\size
             *this\bar\page\end = *this\bar\max
@@ -5511,9 +5511,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       If *this\bar\page\end
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
       Else
-        *this\bar\percent = ( *this\bar\area\end - *this\bar\thumb\len ) / ( *this\bar\min )
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\min )
       EndIf
       
       *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + *this\bs )
@@ -18026,5 +18026,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------P-x--b84+28------8-8-8--4v-d---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+--------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------P-x--b84+28------8-8-8--4v-d----------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+--------------------------------------------------------------------------
 ; EnableXP
