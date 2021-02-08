@@ -4784,6 +4784,18 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure  Bar_Resize( *this._s_widget )
       Protected result.b, fixed.l, ScrollPos.f, ThumbPos.i
       
+;       ; не уверен что нужно пока оставлю
+;       If *this\hide
+;         Debug 888998
+;         If *this\bar\page\pos > *this\bar\min
+;           *this\bar\page\change = *this\bar\page\pos - *this\bar\page\end
+;         EndIf
+;         
+;         *this\bar\page\pos = *this\bar\min
+;        ; *this\bar\thumb\pos = _bar_thumb_pos_( *this\bar, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
+;       EndIf
+        
+        
       ; get thumb pos
       If *this\bar\fixed And Not *this\bar\page\change
         If *this\bar\fixed = #__split_1
@@ -4865,6 +4877,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
+      
       ; disable/enable button-scroll(left&top)-tab(right&bottom)
       If *this\bar\button[#__b_1]\size 
         If *this\bar\button[#__b_1]\hide <> Bool( _bar_in_stop_( *this\bar ) And *this\type = #PB_GadgetType_TabBar )
@@ -4913,6 +4926,22 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
+      ; disable/enable button-thumb
+      If *this\bar\thumb\len 
+        If _bar_in_stop_( *this\bar ) And
+           _bar_in_start_( *this\bar ) 
+          
+          If *this\bar\button[#__b_3]\color\state <> #__s_3
+            *this\bar\button[#__b_3]\color\state = #__s_3
+          EndIf
+        Else
+          If *this\bar\button[#__b_3]\color\state <> #__s_2
+            *this\bar\button[#__b_3]\color\state = #__s_0
+          EndIf
+        EndIf
+      EndIf
+      
+        
       ; 
       If *this\type = #PB_GadgetType_TabBar 
         If *this\vertical
@@ -4994,21 +5023,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         result = Bool( *this\resize & #__resize_change )
       EndIf
       
+      ;
       If *this\type = #PB_GadgetType_ScrollBar
-        ; disable/enable button-thumb
-        If *this\bar\thumb\len 
-          ; Debug ""+*this\bar\thumb\len +" "+ *this\bar\area\end
-          ;           If *this\bar\thumb\len >= *this\bar\area\end
-          ;             If *this\bar\button[#__b_3]\color\state <> #__s_3
-          ;               *this\bar\button[#__b_3]\color\state = #__s_3
-          ;             EndIf
-          ;           Else
-          ;             If *this\bar\button[#__b_3]\color\state <> #__s_2
-          ;               *this\bar\button[#__b_3]\color\state = #__s_0
-          ;             EndIf
-          ;           EndIf
-        EndIf
-        
         If *this\bar\thumb\len 
           If *this\vertical
             *this\bar\button[#__b_3]\x = *this\x[#__c_frame]           + 1 ; white line size 
@@ -5022,18 +5038,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
           EndIf
         EndIf
-        
-        ; *this\bar\hide = Bool( Not ( *this\bar\max > *this\bar\page\len ) ) 
-        
-        ;         ; не уверен что нужно пока оставлю
-        ;         If *this\bar\hide
-        ;           If *this\bar\page\pos > *this\bar\min
-        ;             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
-        ;           EndIf
-        ;           
-        ;           *this\bar\page\pos = *this\bar\min
-        ;           *this\bar\thumb\pos = _bar_thumb_pos_( *this\bar, _bar_invert_( *this\bar, *this\bar\page\pos, *this\bar\inverted ) )
-        ;         EndIf
         
         If *this\bar\button[#__b_1]\size 
           If *this\vertical 
@@ -5371,7 +5375,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           ReDraw( *this\root ) 
         EndIf
         
-        
         If *this\child
           If *this\parent 
             If *this\parent\_tab = *this 
@@ -5519,6 +5522,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + bordersize )
       
+      
+      ;Debug ""+*this\bar\thumb\len +" "+ *this\bar\thumb\end +" "+ *this\class
       ProcedureReturn Bar_Resize( *this )  
     EndProcedure
     
@@ -5963,16 +5968,32 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If ( \v\bar\max > \v\bar\page\len ) 
           Resize( \v, #PB_Ignore, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
-          \v\hide = 0
+          \v\hide = #False
         Else
-          \v\hide = 1
+          If \v\hide <> #True
+            \v\hide = #True
+            ; reset page pos then hide scrollbar
+            If \v\bar\page\pos > \v\bar\min
+              If Bar_Change( \v, \v\bar\min )
+                Bar_Resize( \v )
+              EndIf
+            EndIf
+          EndIf
         EndIf
         
         If ( \h\bar\max > \h\bar\page\len ) 
           Resize( \h, x, #PB_Ignore, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
-          \h\hide = 0
+          \h\hide = #False
         Else
-          \h\hide = 1
+          If \h\hide <> #True
+            \h\hide = #True
+            ; reset page pos then hide scrollbar
+            If \h\bar\page\pos > \h\bar\min
+              If Bar_Change( \h, \h\bar\min )
+                Bar_Resize( \h )
+              EndIf
+            EndIf
+          EndIf
         EndIf
         
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
@@ -6540,7 +6561,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf 
         
-        ; mdi
+        ; parent mdi
         If *this\parent And 
            *this\child > 0 And 
            *this\parent\type = #__type_mdi And 
@@ -14600,6 +14621,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Flag & #PB_ScrollBar_Vertical = #PB_ScrollBar_Vertical Or
                Flag & #__bar_vertical = #__bar_vertical
               *this\vertical = #True
+              *this\class = class+"-v"
+            Else
+              *this\class = class+"-h"
             EndIf
             
             *this\bar\button[#__b_3]\size = size
@@ -15865,13 +15889,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         _drawing_font_( *this )
         
         ; we call the event dispatched before the binding 
-        If *this\event And Not *this\count\events And ListSize( *this\event\queue( ) ) ;;And ListSize( *this\event\bind( ) )
-          *this\count\events = 1
+        If *this\event And 
+            *this\count\events = 0 ;And ListSize( *this\event\queue( ) )
+           *this\count\events = 1
           
-          ForEach *this\event\queue( )
-            Post( *this\event\queue( )\type, *this, *this\event\queue( )\item, *this\event\queue( )\data ) 
-          Next
-          
+           ForEach *this\event\queue( )
+              Post( *this\event\queue( )\type, *this, *this\event\queue( )\item, *this\event\queue( )\data ) 
+            Next
           ; ClearList( *this\event\queue( ) )
         EndIf
         
@@ -18022,5 +18046,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------8--2v----n-v--0-v4--z----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------z4-2vf4-8-0-0-v--X+-fu4r--f---f5-----------r-ZTn--n00----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0---------------------------------------------------------------------------
 ; EnableXP

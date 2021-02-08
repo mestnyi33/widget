@@ -30,12 +30,12 @@ CompilerIf #PB_Compiler_IsMainFile
     UnclipOutput( )
     DrawingMode( #PB_2DDrawing_Outlined )
      Box( x, y, Width, Height, RGB( 0,255,255 ) )
-;     Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], RGB( 255,0,255 ) )
+    ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], RGB( 255,0,255 ) )
 ;     Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
      Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 255,255,0 ) )
     
    ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-    Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y-_this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 0,255,0 ) )
+    Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
   EndMacro
   
   Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _size_, _callback_, _flag_=#Null)
@@ -52,6 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select WidgetEventType( )
       Case #PB_EventType_Change
+        Debug EventWidget( )\bar\page\change
         
         PushListPosition(  Images( )  )
         If EventWidget( )\vertical
@@ -108,8 +109,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       DrawingMode( #PB_2DDrawing_AlphaBlend )
       ForEach Images( )
+        
         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
       Next
+      
+;       FirstElement(Images( ))
+;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
       
       Area_Draw( *this )
       
@@ -369,5 +374,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------
+; Folding = ---0----
 ; EnableXP

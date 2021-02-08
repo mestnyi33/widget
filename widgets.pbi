@@ -5843,7 +5843,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   Bar_Updates( *this._s_widget, x.l,y.l,width.l,height.l )
+    Procedure   _Bar_Updates( *this._s_widget, x.l,y.l,width.l,height.l )
       Static v_max, h_max
       Protected sx, sy, round
       Protected result
@@ -5997,6 +5997,169 @@ CompilerIf Not Defined( widget, #PB_Module )
         h_max = *this\scroll\h\bar\Max
         *this\scroll\h\resize | #__resize_change
         *this\scroll\h\hide = Bar_Update( *this\scroll\h ) 
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure   Bar_Updates( *this._s_widget, x.l,y.l,width.l,height.l )
+      Static v_max, h_max
+      Protected sx, sy, round
+      Protected result
+      
+      If *this\scroll\v\bar\page\len <> height - Bool( *this\width[#__c_required] > width ) * *this\scroll\h\height
+        *this\scroll\v\bar\page\len = height - Bool( *this\width[#__c_required] > width ) * *this\scroll\h\height
+      EndIf
+      
+      If *this\scroll\h\bar\page\len <> width - Bool( *this\height[#__c_required] > height ) * *this\scroll\v\width
+        *this\scroll\h\bar\page\len = width - Bool( *this\height[#__c_required] > height ) * *this\scroll\v\width
+      EndIf
+      
+      If *this\x[#__c_required] < x
+        ; left set state
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+      Else
+        sx = ( *this\x[#__c_required] - x ) 
+        *this\width[#__c_required] + sx
+        *this\x[#__c_required] = x
+      EndIf
+      
+      If *this\y[#__c_required] < y
+        ; top set state
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        sy = ( *this\y[#__c_required] - y )
+        *this\height[#__c_required] + sy
+        *this\y[#__c_required] = y
+      EndIf
+      
+      If *this\width[#__c_required] > *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+        If *this\width[#__c_required] - sx <= width And *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+          ;Debug "w - " + Str( *this\height[#__c_required] - sx )
+          
+          ; if on the h - scroll
+          If *this\scroll\v\bar\max > height - *this\scroll\h\height
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width 
+            *this\height[#__c_required] = *this\scroll\v\bar\max
+            ;  Debug "w - " + *this\scroll\v\bar\max  + " " +  *this\scroll\v\height  + " " +  *this\scroll\v\bar\page\len
+          Else
+            *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\x[#__c_required] - x ) - *this\scroll\h\height
+          EndIf
+        EndIf
+        
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+      Else
+        *this\scroll\h\bar\max = *this\width[#__c_required]
+        *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+      EndIf
+      
+      If *this\height[#__c_required] > *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+        If *this\height[#__c_required] - sy <= Height And *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+          ;Debug " h - " + Str( *this\height[#__c_required] - sy )
+          
+          ; if on the v - scroll
+          If *this\scroll\h\bar\max > width - *this\scroll\v\width
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+            *this\width[#__c_required] = *this\scroll\h\bar\max
+            ;  Debug "h - " + *this\scroll\h\bar\max  + " " +  *this\scroll\h\width  + " " +  *this\scroll\h\bar\page\len
+          Else
+            *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x ) - *this\scroll\v\width
+          EndIf
+        EndIf
+        
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        *this\scroll\v\bar\max = *this\height[#__c_required]
+        *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+      EndIf
+      
+      If *this\scroll\h\round And
+         *this\scroll\v\round And
+         *this\scroll\h\bar\page\len < width And 
+         *this\scroll\v\bar\page\len < height
+        round = ( *this\scroll\h\height/4 )
+      EndIf
+      
+      If *this\width[#__c_required] >= *this\scroll\h\bar\page\len  
+        If *this\scroll\h\bar\Max <> *this\width[#__c_required] 
+          *this\scroll\h\bar\Max = *this\width[#__c_required]
+          
+          If *this\x[#__c_required] <= x 
+            *this\scroll\h\bar\page\pos =- ( *this\x[#__c_required] - x )
+            *this\scroll\h\bar\change = 0
+          EndIf
+        EndIf
+        
+        If *this\scroll\h\width <> *this\scroll\h\bar\page\len + round
+          ; Debug  "h " + *this\scroll\h\bar\page\len
+          Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, *this\scroll\h\bar\page\len + round, #PB_Ignore )
+          *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) 
+          ;           *this\scroll\h\width = *this\scroll\h\bar\page\len + round
+          ;           *this\scroll\h\hide = Bar_Update( *this\scroll\h )
+          result = 1
+        EndIf
+      EndIf
+      
+      If *this\height[#__c_required] >= *this\scroll\v\bar\page\len  
+        If *this\scroll\v\bar\Max <> *this\height[#__c_required]  
+          *this\scroll\v\bar\Max = *this\height[#__c_required]
+          
+          If *this\y[#__c_required] <= y 
+            ;If *this\scroll\v\bar\page\pos <>- ( *this\y[#__c_required] - y )
+            *this\scroll\v\bar\page\pos =- ( *this\y[#__c_required] - y )
+            
+            *this\scroll\v\bar\change = 0
+            ; Post( #PB_EventType_change, *this\scroll\v )
+            ;EndIf
+          EndIf
+        EndIf
+        
+        If *this\scroll\v\height <> *this\scroll\v\bar\page\len + round
+          ; Debug  "v " + *this\scroll\v\bar\page\len
+          Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\scroll\v\bar\page\len + round )
+          *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) 
+          ;           *this\scroll\v\height = *this\scroll\v\bar\page\len + round
+          ;           *this\scroll\v\hide = Bar_Update( *this\scroll\v )
+          result = 1
+        EndIf
+      EndIf
+      
+      ;       If Not *this\scroll\h\hide 
+      ;         If *this\scroll\h\y[#__c_container] <> y + height - *this\scroll\h\height
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize( *this\scroll\h, #PB_Ignore, y + height - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;         If *this\scroll\h\x[#__c_container] <> x
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize( *this\scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;       EndIf
+      ;       
+      ;       If Not *this\scroll\v\hide 
+      ;         If *this\scroll\v\x[#__c_container] <> x + width - *this\scroll\v\width
+      ;           ; Debug "x"
+      ;           *this\scroll\v\hide = Resize( *this\scroll\v, x + width - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;         If *this\scroll\v\y[#__c_container] <> y
+      ;           ; Debug "y"
+      ;           *this\scroll\v\hide = Resize( *this\scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;       EndIf
+      
+      If v_max <> *this\scroll\v\bar\Max
+        v_max = *this\scroll\v\bar\Max
+        *this\scroll\v\resize | #__resize_change
+        Bar_Update( *this\scroll\v ) 
+        *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) 
+      EndIf
+      
+      If h_max <> *this\scroll\h\bar\Max
+        h_max = *this\scroll\h\bar\Max
+        *this\scroll\h\resize | #__resize_change
+        Bar_Update( *this\scroll\h ) 
+        *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) 
       EndIf
       
       ProcedureReturn result
@@ -19383,5 +19546,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -n-----fwfBwz-4-0----------------------------------------0-----+-f-----------------v0----0-8+--------v---8----Hsf----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uf----------------------------------------
+; Folding = -n-----fwfBwz-4-0----------------------------------------0-----+-f-----------------v0----0-8+---dv---v---------0--B84---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v84---------------------------------------
 ; EnableXP
