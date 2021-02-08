@@ -278,7 +278,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       change.b ; tab items to redraw
       percent.f
-      increment.f
+      ;;increment.f
       ; vertical.b
       inverted.b
       direction.l
@@ -427,6 +427,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       align._s_align
       ;padding.b
       
+      increment.f      ; scrollarea
       *v._s_WIDGET     ; vertical scrollbar
       *h._s_WIDGET     ; horizontal scrollbar
     EndStructure

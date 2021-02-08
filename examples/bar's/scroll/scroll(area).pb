@@ -304,28 +304,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
     StopDrawing( )
   EndIf
-  Canvas_AddImage( Images( ),x+170,y+70,hole,#True )
-  
-  Define butt = CreateImage( #PB_Any,100,30,32 )
-  If StartDrawing( ImageOutput( butt ) )
-    DrawingMode( #PB_2DDrawing_Default)
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,230,230,230 ) )
-    
-    DrawingMode( #PB_2DDrawing_Outlined)
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,0,255,0 ) )
-    
-    StopDrawing( )
-  EndIf
-  Canvas_AddImage( Images( ),x+70,y+40,butt,#True )
-  
+  Canvas_AddImage( Images( ),x+180,y+180,hole,#True )
   
   ;
   Area_Create( *this, x,y,width,height, 20, @Area_Events( ) )
   Canvas_ChangeImage( *this, x,y,width,height )
   
   
-  Define vButton = GetAttribute(*this\Scroll\v, #__Bar_NoButtons)
-  Define hButton = GetAttribute(*this\Scroll\h, #__Bar_NoButtons)
+  Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
+  Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
   
   Repeat
     Event = WaitWindowEvent( )
@@ -360,10 +347,10 @@ CompilerIf #PB_Compiler_IsMainFile
            
           Case 4
             If GetGadgetState(2)
-              SetAttribute(*this\scroll\v, #__Bar_NoButtons, Bool( Not GetGadgetState(4)) * vButton)
+              SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
               SetWindowTitle(0, Str(GetState(*this\scroll\v)))
             Else
-              SetAttribute(*this\scroll\h, #__Bar_NoButtons, Bool( Not GetGadgetState(4)) * hButton)
+              SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
               SetWindowTitle(0, Str(GetState(*this\scroll\h)))
             EndIf
             Canvas_Draw(MyCanvas, Images( ))
