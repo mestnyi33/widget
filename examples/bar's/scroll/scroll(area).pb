@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select WidgetEventType( )
       Case #PB_EventType_Change
-        Debug EventWidget( )\bar\page\change
+        Debug "changing scroller values - "+EventWidget( )\bar\page\change +" "+ WidgetEventData( )
         
         PushListPosition(  Images( )  )
         If EventWidget( )\vertical
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure.i Canvas_HitTest( List Images.IMAGES( ), x, y )
+  Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
     Shared currentItemXOffset.i, currentItemYOffset.i
     Protected alpha.i, *current = #False
     Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
@@ -130,14 +130,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If LastElement( Images( ) ) ; search for hit, starting from end ( z-order )
       Repeat
-        If x >= Images( )\x - scroll_x And x < Images( )\x+ Images( )\width - scroll_x 
-          If y >= Images( )\y - scroll_y And y < Images( )\y + Images( )\height - scroll_y
+        If mouse_x >= Images( )\x - scroll_x And mouse_x < Images( )\x+ Images( )\width - scroll_x 
+          If mouse_y >= Images( )\y - scroll_y And mouse_y < Images( )\y + Images( )\height - scroll_y
             alpha = 255
             
-            If Images( )\alphatest And ImageDepth( Images( )\img )>31
+            If Images( )\alphatest And ImageDepth( Images( )\img ) > 31
               If StartDrawing( ImageOutput( Images( )\img ) )
                 DrawingMode( #PB_2DDrawing_AlphaChannel )
-                alpha = Alpha( Point( x-Images( )\x - scroll_x, y-Images( )\y - scroll_y ) ) ; get alpha
+                alpha = Alpha( Point( mouse_x - Images( )\x - scroll_x, mouse_y - Images( )\y - scroll_y ) ) ; get alpha
                 StopDrawing( )
               EndIf
             EndIf
@@ -145,8 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile
             If alpha
               MoveElement( Images( ), #PB_List_Last )
               *current = @Images( )
-              currentItemXOffset = x - Images( )\x - scroll_x
-              currentItemYOffset = y - Images( )\y - scroll_y
+              currentItemXOffset = mouse_x - Images( )\x - scroll_x
+              currentItemYOffset = mouse_y - Images( )\y - scroll_y
               Break
             EndIf
           EndIf
@@ -361,5 +361,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---0----
+; Folding = --f-----
 ; EnableXP

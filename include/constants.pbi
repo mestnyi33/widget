@@ -239,7 +239,8 @@
       ;#__flag_sizegadget
       ;#__flag_systemmenu
       #__flag_noscrollbars
-      
+      #__flag_child
+    
       #__flag_borderless
       ;       #__flag_flat
       ;       #__flag_double
@@ -298,7 +299,6 @@
       
       #__bar_ticks
       #__bar_vertical
-      #__bar_child
     EndEnumeration
     
     ;#__bar_nobuttons = #__flag_nogadgets
@@ -331,7 +331,7 @@
     ;     #__window_sizegadget = #__flag_sizegadget
     ;     #__window_screencentered = #__align_center
     
-    #__window_child          = #__bar_child
+    #__window_child          = #__flag_child
     #__Window_Normal         = #PB_Window_Normal
     #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
     #__Window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.

@@ -3822,8 +3822,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.b Bar_SetState( *this, state.f )
     
     Macro Area( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True )
-      _parent_\scroll\v = Create( _parent_, _parent_\class+"_vertical", #__type_ScrollBar, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child | #__bar_vertical, 7, _scroll_step_ )
-      _parent_\scroll\h = Create( _parent_, _parent_\class+"_horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool( _mode_ )*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_ )
+      _parent_\scroll\v = Create( _parent_, _parent_\class+"_vertical", #__type_ScrollBar, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__flag_child | #__bar_vertical, 7, _scroll_step_ )
+      _parent_\scroll\h = Create( _parent_, _parent_\class+"_horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool( _mode_ )*#__scroll_buttonsize, #__flag_child, 7, _scroll_step_ )
     EndMacro                                                  
     
     Macro Area_Draw( _this_ )
@@ -5620,7 +5620,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If *this\text And 
            ( *this\bar\thumb\change Or *this\text\string = "" )
           Protected i : For i = 0 To 3
-            If *this\bar\increment = ValF( StrF( *this\bar\increment, i ) )
+            If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
               *this\text\string = StrF( *this\bar\page\pos, i )
               *this\text\change = 1
               Break
@@ -5819,7 +5819,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ProcedureReturn Bar_Update( *this )
               
             Case #__bar_ScrollStep 
-              \bar\increment = *value
+              \scroll\increment = *value
               
           EndSelect
         EndIf
@@ -6431,13 +6431,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                  ( *this\bar\selected = *this\bar\button[#__b_2] And Not *this\bar\inverted )
             
             Post( #__event_Down, *this )
-            Repaint | Bar_SetState( *this, *this\bar\page\pos + *this\bar\increment )
+            Repaint | Bar_SetState( *this, *this\bar\page\pos + *this\scroll\increment )
             
           ElseIf ( *this\bar\selected = *this\bar\button[#__b_2] And *this\bar\inverted ) Or 
                  ( *this\bar\selected = *this\bar\button[#__b_1] And Not *this\bar\inverted )
             
             Post( #__event_Up, *this )
-            Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\bar\increment )
+            Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\scroll\increment )
           EndIf
         EndIf
       EndIf
@@ -13027,7 +13027,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Case #__bar_minimum    : result = *this\bar\min          ; 1
         Case #__bar_maximum    : result = *this\bar\max          ; 2
         Case #__bar_pagelength : result = *this\bar\page\len     ; 3
-        Case #__bar_nobuttons  : result = *this\bar\button[#__b_3]\size   ; 4
+        Case #__bar_buttonsize  : result = *this\bar\button[#__b_3]\size   ; 4
         Case #__bar_inverted   : result = *this\bar\inverted
         Case #__bar_direction  : result = *this\bar\direction
       EndSelect
@@ -13054,7 +13054,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Case #PB_ScrollArea_Y               : result = *this\scroll\v\bar\page\pos
           Case #PB_ScrollArea_InnerWidth      : result = *this\scroll\h\bar\max
           Case #PB_ScrollArea_InnerHeight     : result = *this\scroll\v\bar\max
-          Case #PB_ScrollArea_ScrollStep      : result = *this\bar\increment
+          Case #PB_ScrollArea_ScrollStep      : result = *this\scroll\increment
         EndSelect
       EndIf
       
@@ -13430,7 +13430,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
           Case #PB_ScrollArea_ScrollStep      
-            *this\bar\increment = *value
+            *this\scroll\increment = *value
             
         EndSelect
       EndIf
@@ -14940,7 +14940,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\type = #PB_GadgetType_ScrollArea
             ScrollBars = 1
-            *this\bar\increment = ScrollStep
+            *this\scroll\increment = ScrollStep
           EndIf
           
           If *this\type = #PB_GadgetType_Container 
@@ -14997,7 +14997,7 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\type = #PB_GadgetType_Spin Or
            *this\type = #PB_GadgetType_Splitter
           
-          *this\bar\increment = ScrollStep
+          *this\scroll\increment = ScrollStep
           
           ; - Create Scroll
           If *this\type = #PB_GadgetType_ScrollBar
@@ -15016,7 +15016,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\bar\button[#__b_3]\size = size
             
-            If Not Flag & #__bar_nobuttons = #__bar_nobuttons
+            If Not Flag & #__bar_buttonsize = #__bar_buttonsize
               *this\bar\button[#__b_1]\size =- 1
               *this\bar\button[#__b_2]\size =- 1
             EndIf
@@ -15106,14 +15106,14 @@ CompilerIf Not Defined( widget, #PB_Module )
               *this\vertical = #True
             EndIf
             
-            If Not Flag & #__bar_nobuttons = #__bar_nobuttons
+            If Not Flag & #__bar_buttonsize = #__bar_buttonsize
               *this\bar\button[#__b_3]\size = size
               *this\bar\button[#__b_1]\size = 15
               *this\bar\button[#__b_2]\size = 15
             EndIf
             
             ;*this\__height = size
-            *this\bs = 1 + Bool( Flag & #__bar_child = #False )
+            *this\bs = 1 + Bool( Flag & #__flag_child = #False )
             
             *this\bar\button[#__b_1]\interact = #True
             *this\bar\button[#__b_2]\interact = #True
@@ -15253,7 +15253,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         ;
-        If Flag & #__bar_child = #__bar_child
+        If Flag & #__flag_child = #__flag_child
           *this\parent = *parent
           *this\root = *parent\root
           *this\window = *parent\window
@@ -15283,7 +15283,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\type = #PB_GadgetType_Panel 
-            *this\_tab = Create( *this, "PanelTabBar", #__type_TabBar, 0,0,0,0, 0,0,0, 0, Flag | #__bar_child, 0, 30 )
+            *this\_tab = Create( *this, "PanelTabBar", #__type_TabBar, 0,0,0,0, 0,0,0, 0, Flag | #__flag_child, 0, 30 )
           EndIf
           
           If *this\container And flag & #__flag_nogadgets = #False And *this\type <> #PB_GadgetType_Splitter 
@@ -19546,5 +19546,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -n-----fwfBwz-4-0----------------------------------------0-----+-f-----------------v0----0-8+---dv---v---------0--B84---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v84---------------------------------------
+; Folding = -n-----fwfBwz-4-0----------------------------------------0-----+-f-----------------v0----0-8+---dv---v---------0--B8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v84---------------------v-----------------
 ; EnableXP

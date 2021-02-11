@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets-bar.pbi" : Uselib(widget)
 
 ; - AddItem(): Add a panel. 
 ; - RemoveItem(): Remove a panel. 
@@ -116,6 +116,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   AddItem(GetWidget(1), -1, "Sub 2")
   AddItem(GetWidget(1), -1, "Sub 3")
   AddItem(GetWidget(1), -1, "Sub 4")
+  AddItem(GetWidget(1), -1, "Sub 5")
+  AddItem(GetWidget(1), -1, "Sub 6")
+  AddItem(GetWidget(1), -1, "Sub 7")
+  AddItem(GetWidget(1), -1, "Sub 8")
+  AddItem(GetWidget(1), -1, "Sub 9")
   SetState(GetWidget(1), 2)
   CloseList()
   
@@ -134,6 +139,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   For i = 2 To 4
     Bind(GetWidget(i), @events_wbuttons())
   Next
+  
+  
+  SetState(GetWidget(1), 6)
   
   Debug ""+CountItems(GetWidget(1)) +" - count widget items"
   

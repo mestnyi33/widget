@@ -276,7 +276,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       min.l[3]
       ;hide.b
       
-      change.b ; tab items to redraw
+      change.b ;????
+      change_tab_items.b ; tab items to redraw
       percent.f
       ;;increment.f
       ; vertical.b
@@ -289,7 +290,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       List *_s._s_tabs( )
       
-      *selected._s_tabs        ; at point pushed item
+      ;;*selected._s_tabs        ; at point pushed item
       *leaved._s_tabs         ; pushed last entered item
      ; *entered._s_tabs         ; pushed last entered item
       List *draws._s_tabs( )
@@ -630,9 +631,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_mouse Extends _s_point
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
-      *bar_row._s_tabs[2]         ; at point element item
-      *row._s_rows[2]         ; at point element item
-      *button._s_buttons[2]   ; at point element button
+      *bar_row._s_tabs[3]         ; at point element item
+      *row._s_rows[3]         ; at point element item
+      *button._s_buttons[3]   ; at point element button
       *widget._s_WIDGET[2]    ; at point element
                   ;  *selected._s_WIDGET  ; at point pushed element
       
