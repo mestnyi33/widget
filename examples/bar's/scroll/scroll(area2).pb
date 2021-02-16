@@ -282,8 +282,8 @@ CompilerIf #PB_Compiler_IsMainFile
   CreateArea( *this, x,y,width,height, 20, @Scroll_Events( ) )
   Canvas_Change( *this, x, y, width-x*2, height-y*2  )
   
-  Define vButton = GetAttribute(*this\Scroll\v, #__Bar_NoButtons)
-  Define hButton = GetAttribute(*this\Scroll\h, #__Bar_NoButtons)
+  Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
+  Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
  
   Repeat
     Event = WaitWindowEvent( )
@@ -326,10 +326,10 @@ CompilerIf #PB_Compiler_IsMainFile
            
           Case 4
             If GetGadgetState(2)
-              SetAttribute(*this\scroll\v, #__Bar_NoButtons, Bool( Not GetGadgetState(4)) * vButton)
+              SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
               SetWindowTitle(0, Str(GetState(*this\scroll\v)))
             Else
-              SetAttribute(*this\scroll\h, #__Bar_NoButtons, Bool( Not GetGadgetState(4)) * hButton)
+              SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
               SetWindowTitle(0, Str(GetState(*this\scroll\h)))
             EndIf
             Canvas_Draw(MyCanvas, Images( ))

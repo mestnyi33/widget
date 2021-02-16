@@ -210,7 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure events_scrolls()
-    Select this()\event ; WidgetEventType( ) 
+    Select WidgetEventType( ) ;   this()\event ; 
       Case #PB_EventType_Change
         If this()\widget\vertical
           PushListPosition(Images())

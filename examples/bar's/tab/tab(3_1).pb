@@ -55,9 +55,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   
   SetState(s_0, -10)
-  SetState(s_1, 250)
-  SetState(s_3, 250/2)
-  SetState(s_4, 10)
+  SetState(s_1, 9);250)
+  SetState(s_3, 5);250/2)
+  SetState(s_4, 1);10)
   
      
   Define event

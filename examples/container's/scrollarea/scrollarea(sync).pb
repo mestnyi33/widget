@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets-bar.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -26,20 +26,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(OpenWindow(-1, 0, 0, 500, 430,"Sync 2 ScrollArea", #PB_Window_SystemMenu|#PB_Window_ScreenCentered |#PB_Window_SizeGadget))
   *scroll1 = ScrollArea(10, 10, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
   *scroll1\class = "area_1"
-  Button(50,50,imgw,imgh, "", 0,0)
-;   *g = Canvas(10,10,imgw,imgh)
-;   StartDrawing(Output(*g))
-;   DrawImage(ImageID(0),0,0)
-;   StopDrawing()
+  Button(0,0,imgw,imgh, "", 0,0)
+  Button(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
+  Button(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
   CloseList()
+  
   *scroll2 = ScrollArea(10, 220, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
   *scroll2\class = "area_2"
-  Button(50,50,imgw,imgh, "", 0,0)
-;   *g = Canvas(10,10,imgw,imgh)
-;   StartDrawing(Output(*g))
-;   DrawImage(ImageID(0),0,0)
-;   StopDrawing()
+  Button(0,0,imgw,imgh, "", 0,0)
+  Button(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
+  Button(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
   CloseList()
+  
+  Splitter( 10, 10, 480, 410, *scroll1,*scroll2 )
   Bind(*scroll1,@syncCB())
   Bind(*scroll2,@syncCB())
   
@@ -52,7 +51,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

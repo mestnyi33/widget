@@ -290,7 +290,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       List *_s._s_tabs( )
       
-      ;;*selected._s_tabs        ; at point pushed item
+      *active._s_rows         ; at point element item
+      
+               *selected._s_tabs     ;???????????????   ; at point pushed item
       *leaved._s_tabs         ; pushed last entered item
      ; *entered._s_tabs         ; pushed last entered item
       List *draws._s_tabs( )
@@ -632,7 +634,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
       *bar_row._s_tabs[3]         ; at point element item
-      *row._s_rows[3]         ; at point element item
+      *row._s_rows[2]         ; at point element item
       *button._s_buttons[3]   ; at point element button
       *widget._s_WIDGET[2]    ; at point element
                   ;  *selected._s_WIDGET  ; at point pushed element

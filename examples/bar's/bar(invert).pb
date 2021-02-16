@@ -1,5 +1,5 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets-bar.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -24,6 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
      If Open(0,10,10, 380, 50)
         g_Canvas = GetGadget(root())
         *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #__Bar_Inverted)
+        ;;SetState(widget(), 22)
         
         SetGadgetState(0, GetAttribute(widget(), #__Bar_Inverted))
         SetWindowTitle(0, Str(GetState(widget())))

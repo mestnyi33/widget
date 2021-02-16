@@ -14,12 +14,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *current=#False
   Global currentItemXOffset.i, currentItemYOffset.i
   Global Event.i, drag.i, hole.i
-  Global x=100,y=100, Width=420, Height=420
+  Global x=200,y=150, Width=320, Height=320
   
   Global *this.allocate( widget )
   Global NewList Images.IMAGES( )
+  Declare  Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+  
   
   Macro Area_Draw( _this_ )
+    widget::bar_updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
+   
     If Not _this_\scroll\v\hide
       Draw( _this_\scroll\v )
     EndIf
@@ -67,40 +71,34 @@ CompilerIf #PB_Compiler_IsMainFile
         PopListPosition( Images( ) )
         
         ; Debug EventWidget( )\bar\page\change
-        ; StopDrawing()
-        ; Canvas_Draw( MyCanvas, Images( ) ) 
         
-        PostEvent( #PB_Event_Repaint, EventWindow( ), EventGadget( ), #PB_EventType_Repaint ); , EventWidget( )\bar\page\change )
+        Canvas_Draw( MyCanvas, Images( ) ) 
+        ;PostEvent( #PB_Event_Repaint, EventWindow( ), EventGadget( ), #PB_EventType_Repaint ); , EventWidget( )\bar\page\change )
     EndSelect
     
   EndProcedure
   
   
-  
+;   Procedure bUpdate( )
+;     Debug "  "+*this\scroll\h\x +" "+ *this\scroll\v\y +" "+ Str((*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x) +" "+ Str((*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y)
+;     ;widget::bar_Updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
+;   
+;   EndProcedure
+;   
   ;-
-  Macro Canvas_ChangeImage( _this_, _x_, _y_, _width_, _height_ )
-    _this_\x[#__c_required] = Images( )\x 
-    _this_\y[#__c_required] = Images( )\Y
-    _this_\width[#__c_required] = Images( )\x+Images( )\width - _this_\x[#__c_required]
-    _this_\height[#__c_required] = Images( )\Y+Images( )\height - _this_\y[#__c_required]
+  Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+    *this\x[#__c_required] = Images( )\x 
+    *this\y[#__c_required] = Images( )\Y
+    *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required]
+    *this\height[#__c_required] = Images( )\Y+Images( )\height - *this\y[#__c_required]
     
     PushListPosition( Images( ) )
     ForEach Images( )
-      If _this_\x[#__c_required] > Images( )\x : _this_\x[#__c_required] = Images( )\x : EndIf
-      If _this_\y[#__c_required] > Images( )\y : _this_\y[#__c_required] = Images( )\y : EndIf
-    Next
-    ForEach Images( )
-      If _this_\width[#__c_required] < Images( )\x+Images( )\width - _this_\x[#__c_required] : _this_\width[#__c_required] = Images( )\x+Images( )\width - _this_\x[#__c_required] : EndIf
-      If _this_\height[#__c_required] < Images( )\Y+Images( )\height - _this_\y[#__c_required] : _this_\height[#__c_required] = Images( )\Y+Images( )\height - _this_\y[#__c_required] : EndIf
+      If *this\x[#__c_required] > Images( )\x : *this\x[#__c_required] = Images( )\x : EndIf
+      If *this\y[#__c_required] > Images( )\y : *this\y[#__c_required] = Images( )\y : EndIf
     Next
     PopListPosition( Images( ) )
     
-    widget::bar_Updates( *this, _x_, _y_, _width_, _height_ )
-  
-    ; SetWindowTitle( EventWindow( ), Str( Images( )\x )+" "+Str( Images( )\width )+" "+Str( Images( )\x+Images( )\width ) )
-  EndMacro
-  
-  Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
     If StartDrawing( CanvasOutput( canvas ) )
       DrawingMode( #PB_2DDrawing_Default )
       Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
@@ -111,6 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEach Images( )
         
         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
+        If *this\width[#__c_required] < Images( )\x+Images( )\width - *this\x[#__c_required] : *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required] : EndIf
+        If *this\height[#__c_required] < Images( )\Y+Images( )\height - *this\y[#__c_required] : *this\height[#__c_required] = Images( )\Y+Images( )\height - *this\y[#__c_required] : EndIf
       Next
       
 ;       FirstElement(Images( ))
@@ -209,12 +209,6 @@ CompilerIf #PB_Compiler_IsMainFile
               Images( )\y = Mousey - currentItemYOffset
               Repaint = #True
             EndIf
-            
-            If Repaint
-              
-              Canvas_ChangeImage( *this, x, y, width, height )
-              
-            EndIf
           EndIf
           
         ElseIf Not _is_selected_( EventWidget( ) )
@@ -294,7 +288,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; add new images
   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
   Canvas_AddImage( Images( ), x+100,y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
-  Canvas_AddImage( Images( ), x+310,y+350, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  Canvas_AddImage( Images( ), x+210,y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
   
   hole = CreateImage( #PB_Any,100,100,32 )
   If StartDrawing( ImageOutput( hole ) )
@@ -308,7 +302,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Area_Create( *this, x,y,width,height, 20, @Area_Events( ) )
-  Canvas_ChangeImage( *this, x,y,width,height )
   
   
   Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
@@ -361,5 +354,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --f-----
+; Folding = 4-------
 ; EnableXP

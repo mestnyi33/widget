@@ -10,11 +10,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global ._s_widget *w,*w1,*w2 ;
   
   Procedure _Events()
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_LeftClick
-        ;Debug GetText(this()\widget)
         
-        Select GetText(this()\widget)
+        Select GetText( EventWidget( ) )
           Case "hide_2"
             hide(*c, 1)
             ; Disable(*c, 1)
@@ -31,13 +30,13 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         ;Case #PB_EventType_LeftButtonUp
-        ClearDebugOutput()
+        ClearDebugOutput( )
         
         If StartEnumerate(*w1);Root())
-          If Not hide(widget()) ;And GetParent(widget()) = *w1
-            Debug " class - " + widget()\Class +" ("+ widget()\item +" - parent_item)"
+          If Not hide(widget( )) ;And GetParent(widget()) = *w1
+            Debug " class - " + widget( )\Class +" ("+ widget( )\item +" - parent_item)"
           EndIf
-          StopEnumerate()
+          StopEnumerate( )
         EndIf
         
      Case #PB_EventType_Change
