@@ -118,6 +118,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       invert.b
       
+      ; short._s_edit ; ".."
       edit._s_edit[4]
       caret._s_caret
       syntax._s_syntax
@@ -196,6 +197,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       image._s_image
       color._s_color
       
+      checkbox._s_buttons ; \box[1]\ -> \checkbox\
+      
       _state.l
       EndStructure
     
@@ -207,7 +210,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       sublevelsize.a
             
       button._s_buttons ; \box[0]\ -> \button\
-      checkbox._s_buttons ; \box[1]\ -> \checkbox\
+      ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       *parent._s_rows
@@ -290,7 +293,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       List *_s._s_tabs( )
       
+      ; tab
       *active._s_rows         ; at point element item
+      *hover._s_rows
       
                *selected._s_tabs     ;???????????????   ; at point pushed item
       *leaved._s_tabs         ; pushed last entered item
@@ -425,8 +430,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;- - _s_scroll
-    Structure _s_scroll Extends _s_coordinate
+    ;- - _s_SCROLL
+    Structure _s_SCROLL Extends _s_coordinate
       align._s_align
       ;padding.b
       
@@ -514,11 +519,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       List *queue._s_EVENTDATA( )
     EndStructure
     
+;     ;- - _s_parent
+;     Structure _s_parent
+;       *window._s_WIDGET
+;       *widget._s_WIDGET
+;       *tab._s_tabs
+;     EndStructure
+    
     ;-
     ;- - _s_widget
     Structure _s_WIDGET
+      ;temp
+      __draw.b
    ;       *_drawing ; drawing_mode
-;       *_drawing_alpha
+;       *_draw_alpha
    ;       Map *_first._s_widget( )
 ;       Map *_last._s_widget( )
    
@@ -543,9 +557,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_WIDGET
       *before._s_WIDGET
       
+      *index[3]  
+      ; \index[0] - widget index 
+      ; \index[1] - panel opened tab index
+      ; \index[2] - panel selected item index
+      ; \index[1] - tab entered item index
+      ; \index[2] - tab selected item index
+      
       *address          ; widgets list address
       *container        ; 
-      *root._s_root     ; this root
+      *root._s_ROOT     ; this root
       
       *parent._s_WIDGET; this parent
       *window._s_WIDGET; this parent window       ; root( )\active\window
@@ -558,20 +579,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       EndStructureUnion
       
       *_tab._s_WIDGET; = panel( ) tabbar gadget
-      scroll._s_scroll  ; vertical & horizontal scrollbars
+      scroll._s_SCROLL  ; vertical & horizontal scrollbars
       
       *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
-      ; \gadget[0] - active child gadget 
+      ; \gadget[0] - window active child gadget 
       ; \gadget[1] - splitter( ) first gadget
       ; \gadget[2] - splitter( ) second gadget
-      
-      *index[3]  
-      ; \index[0] - widget index 
-      ; \index[1] - panel opened item index
-      ; \index[2] - panel selected item index
-      ; \index[1] - tab entered item index
-      ; \index[2] - tab selected item index
       
       image._s_image[4]       
       ; \image[0] - draw image
@@ -581,6 +595,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *flag
       *data
+      
+      draw_widget.b
       
       _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
       __state.w ; #__ss_ (font; back; frame; fore; line)
@@ -594,11 +610,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       class.s  
       change.l
       vertical.b
-      __draw.b
       type.b
       hide.b[2] 
       cursor.l[2]
       round.a
+      
       repaint.i
       resize.b
       
@@ -608,15 +624,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       mode._s_mode
       count._s_count
-      combo_box._s_buttons
       caption._s_caption
       color._s_color[4]
       
       row._s_row
       text._s_text 
       
-      bar._s_bar
+      *bar._s_bar
       
+      ;combo_box._s_buttons
       button._s_buttons ; checkbox; optionbox
       
       *align._s_align
@@ -679,7 +695,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *message._s_WIDGET
     EndStructure
     
-    ;- - _s_root
+    ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
     EndStructure

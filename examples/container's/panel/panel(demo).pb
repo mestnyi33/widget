@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 ; - AddItem(): Add a panel. 
 ; - RemoveItem(): Remove a panel. 
@@ -55,23 +55,23 @@ Procedure events_wbuttons()
     Case #PB_EventType_LeftClick
       Select GetIndex( EventWidget( ) )
         Case 2 
-          If CountItems(GetWidget(1)) > 1
-            RemoveItem(GetWidget(1), 1)
-            Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+          If CountItems( GetWidget(1)) > 1
+            RemoveItem( GetWidget(1), 1)
+            Debug ""+CountItems( GetWidget(1)) +" - count widget items"
           EndIf
           
-        Case 4 : ClearItems(GetWidget(1))
-          Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+        Case 4 : ClearItems( GetWidget(1))
+          Debug ""+CountItems( GetWidget(1)) +" - count widget items"
           
         Case 3 
-          ;OpenList(GetWidget(1))
-          AddItem(GetWidget(1), 1, "Sub 2 (add)")
-          If CountItems(GetWidget(1)) > 1
-            SetItemText(GetWidget(1), 1, "Sub 2 (add&set)")
-            Debug GetItemText(GetWidget(1), 1) + " - get item text"
+          ;OpenList( GetWidget(1))
+          AddItem( GetWidget(1), 1, "Sub 2 (add)")
+          If CountItems( GetWidget(1)) > 1
+            SetItemText( GetWidget(1), 1, "Sub 2 (add&set)")
+            Debug GetItemText( GetWidget(1), 1) + " - get item text"
           Else
-            SetItemText(GetWidget(1), 0, "Sub 1 (add&set)")
-            Debug GetItemText(GetWidget(1), 0) + " - get item text"
+            SetItemText( GetWidget(1), 0, "Sub 1 (add&set)")
+            Debug GetItemText( GetWidget(1), 0) + " - get item text"
           EndIf
           ;CloseList()
       EndSelect
@@ -81,19 +81,27 @@ EndProcedure
 
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322, 0, 322, 220)
-  PanelGadget     (0, 8, 8, 306, 203)
-  AddGadgetItem (0, -1, "Panel 1")
-  PanelGadget (1, 5, 5, 290, 166-30)
+  PanelGadget (0, 8, 8, 300, 200)
+  Define h = GetGadgetAttribute(0, #PB_Panel_ItemHeight )
+  Define w = GetGadgetAttribute(0, #PB_Panel_ItemWidth )
+  
+  AddGadgetItem(0, -1, "Panel 1")
+  PanelGadget (1, 10, 10, w-20, h-20-34*3)
   AddGadgetItem(1, -1, "Sub 1")
   AddGadgetItem(1, -1, "Sub 2")
   AddGadgetItem(1, -1, "Sub 3")
   AddGadgetItem(1, -1, "Sub 4")
-  SetGadgetState(1, 2)
+  AddGadgetItem(1, -1, "Sub 5")
+  AddGadgetItem(1, -1, "Sub 6")
+  AddGadgetItem(1, -1, "Sub 7")
+  AddGadgetItem(1, -1, "Sub 8")
+  AddGadgetItem(1, -1, "Sub 9")
+  SetGadgetState(1, 5)
   CloseGadgetList()
   
-  ButtonGadget(2, 10, 145, 80, 24,"remove")
-  ButtonGadget(3, 95, 145, 80, 24,"add")
-  ButtonGadget(4, 95+85, 145, 80, 24,"clear")
+  ButtonGadget(2, 10, h-34*2, 80, 24,"remove")
+  ButtonGadget(3, 10, h-34*3, 80, 24,"add")
+  ButtonGadget(4, 10, h-34*1, 80, 24,"clear")
   
   AddGadgetItem (0, -1,"Panel 2")
   ButtonGadget(5, 10, 15, 80, 24,"Button 3")
@@ -109,41 +117,44 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
-  Panel(8, 8, 306, 203)
-  AddItem (GetWidget(0), -1, "Panel 1")
-  Panel(5, 5, 290, 166-30)
-  AddItem(GetWidget(1), -1, "Sub 1")
-  AddItem(GetWidget(1), -1, "Sub 2")
-  AddItem(GetWidget(1), -1, "Sub 3")
-  AddItem(GetWidget(1), -1, "Sub 4")
-  AddItem(GetWidget(1), -1, "Sub 5")
-  AddItem(GetWidget(1), -1, "Sub 6")
-  AddItem(GetWidget(1), -1, "Sub 7")
-  AddItem(GetWidget(1), -1, "Sub 8")
-  AddItem(GetWidget(1), -1, "Sub 9")
-  SetState(GetWidget(1), 2)
+  Panel(8, 8, 300, 200)
+  Define h = height( GetWidget(0), #__c_inner )
+  Define w = width( GetWidget(0), #__c_inner )
+  
+  AddItem( GetWidget(0), -1, "Panel 1")
+  Panel(10, 10, w-20, h-20-34*3)
+  AddItem( GetWidget(1), -1, "Sub 1")
+  AddItem( GetWidget(1), -1, "Sub 2")
+  AddItem( GetWidget(1), -1, "Sub 3")
+  AddItem( GetWidget(1), -1, "Sub 4")
+  AddItem( GetWidget(1), -1, "Sub 5")
+  AddItem( GetWidget(1), -1, "Sub 6")
+  AddItem( GetWidget(1), -1, "Sub 7")
+  AddItem( GetWidget(1), -1, "Sub 8")
+  AddItem( GetWidget(1), -1, "Sub 9")
+  SetState( GetWidget(1), 5)
   CloseList()
   
-  Button(10, 145, 80, 24,"remove")
-  Button(95, 145, 80, 24,"add")
-  Button(95+85, 145, 80, 24,"clear")
+  Button(10, h-34*2, 80, 24,"remove")
+  Button(10, h-34*3, 80, 24,"add")
+  Button(10, h-34*1, 80, 24,"clear")
   
-  AddItem (GetWidget(0), -1,"Panel 2")
-  Button(10, 15, 80, 24,"Button 3")
-  Button(95, 15, 80, 24,"Button 4")
+  AddItem ( GetWidget(0), -1,"Panel 2")
+  Button(10, 10, 80, 24,"Button 3")
+  Button(95, 10, 80, 24,"Button 4")
   CloseList()
   
   For i = 0 To 1
-    Bind(GetWidget(i), @events_widgets())
+    Bind( GetWidget(i), @events_widgets())
   Next
   For i = 2 To 4
-    Bind(GetWidget(i), @events_wbuttons())
+    Bind( GetWidget(i), @events_wbuttons())
   Next
   
   
-  SetState(GetWidget(1), 6)
+  ;SetState( GetWidget(1), 6)
   
-  Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+  Debug ""+CountItems( GetWidget(1)) +" - count widget items"
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

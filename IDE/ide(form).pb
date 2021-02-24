@@ -1,6 +1,5 @@
 ﻿
-;XIncludeFile "../widgets.pbi"
-XIncludeFile "../widgets-bar.pbi"
+XIncludeFile "../widgets.pbi"
 ; XIncludeFile "../examples/empty5.pb"
 
 ;
@@ -1000,7 +999,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; panel 1 item
     AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
-    id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines ) ; | #__flag_borderless )
+    id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
     
     ; panel 2 item
     AddItem( id_inspector_panel, -1, "properties", 0, 0 )  

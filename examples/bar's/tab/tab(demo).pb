@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
     
-    Button_0 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
+    Button_0 = widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
     widget::AddItem(Button_0, -1, "Tab_0")
     widget::AddItem(Button_0, -1, "Tab_1 (long)")
     widget::AddItem(Button_0, -1, "Tab_2")
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget::SetState(Button_0, 5)
     
-    Button_1 = widget::Tab(0, 0, 0, 0, 0, 0, 0, #__bar_vertical)                  ; No need to specify size or coordinates
+    Button_1 = widget::Tab(0, 0, 0, 0, #__bar_vertical)                  ; No need to specify size or coordinates
     widget::AddItem(Button_1, -1, "Tab_0")
     widget::AddItem(Button_1, -1, "Tab_1 (long)")
     widget::AddItem(Button_1, -1, "Tab_2")
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget::SetState(Button_1, 3)
     
-    Button_5 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
+    Button_5 = widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
     widget::AddItem(Button_5, -1, "Tab_0")
     widget::AddItem(Button_5, -1, "Tab_1 (long)")
     widget::AddItem(Button_5, -1, "Tab_2")
@@ -110,5 +110,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-
+; Folding = --
 ; EnableXP

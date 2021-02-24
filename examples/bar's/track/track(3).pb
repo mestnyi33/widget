@@ -2,8 +2,7 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widgets-bar.pbi"
+XIncludeFile "../../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -25,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetGadgetState(4, 10)
   
   
-  s_1 = widget::Track(125, 150+40, 250, 20,0,max, #PB_TrackBar_Ticks|#__bar_inverted)
+  s_1 = widget::Track(125, 150+40, 250, 20,0,max, #PB_TrackBar_Ticks|#__bar_invert)
   s_2 = widget::Track(125, 150+10+60, 250, 20,0,max/2, #PB_TrackBar_Ticks)
   s_3 = widget::Track(125, 150+10+90, 250, 20,0,max, #PB_TrackBar_Ticks)
   s_4 = widget::Track(125, 150+10+120, 250, 20,0,max*2, #PB_TrackBar_Ticks)

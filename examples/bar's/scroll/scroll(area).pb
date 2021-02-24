@@ -1,5 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi"
-;XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -87,6 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
   ;-
   Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+    Debug Images( )\x
     *this\x[#__c_required] = Images( )\x 
     *this\y[#__c_required] = Images( )\Y
     *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required]
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If *this\width[#__c_required] < Images( )\x+Images( )\width - *this\x[#__c_required] : *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required] : EndIf
         If *this\height[#__c_required] < Images( )\Y+Images( )\height - *this\y[#__c_required] : *this\height[#__c_required] = Images( )\Y+Images( )\height - *this\y[#__c_required] : EndIf
       Next
-      
+      Debug *this\y[#__c_required]
 ;       FirstElement(Images( ))
 ;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
       
@@ -354,5 +354,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 4-------
+; Folding = 4-0r----
 ; EnableXP

@@ -42,7 +42,7 @@
     CompilerEndIf
     #__scroll_buttonsize = 16
     
-    #__arrow_type = 1 ;
+    #__arrow_type = -1 ; ;-1 ;0 ;1
     #__arrow_size = 4 ;
     
     #__sOC = SizeOf(Character)
@@ -131,19 +131,29 @@
     #__c_inner_b = #__c_inner
     
     ; \_state
-    EnumerationBinary
-      #__s_normal
-      #__s_entered  ; 1<<1
-      #__s_selected
-      #__s_disabled
-      #__s_toggled
+    Enumeration
+      #__s_normal      = 0<<0  ; 0
+      #__s_selected    = 1<<0  ; 1
+      #__s_expanded    = 1<<1  ; 2
+      #__s_checked     = 1<<2  ; 4
+      #__s_collapsed   = 1<<3  ; 8
+      #__s_inbetween   = 1<<4  ; 16
       
-      #__s_focused
-      #__s_scrolled
-      #__s_dragged
-      #__s_dropped ; drop enter state
-      #__s_drawing
+      #__s_entered     = 1<<5  ; 32
+      #__s_disabled    = 1<<6  ; 64
+      #__s_focused     = 1<<7  ; 128 ; keyboard focus
+      #__s_scrolled    = 1<<8  ; 256
+      
+      #__s_dragged     = 1<<9  ; 512
+      #__s_dropped     = 1<<10 ; 1024 ; drop enter state
     EndEnumeration
+    
+    
+;     Macro _get_state_index_( _adress_ )
+;       ( Bool( _adress_\_state & #__s_entered ) * 1 | 
+;         Bool( _adress_\_state & #__s_selected ) * 2 | 
+;         Bool( _adress_\_state & #__s_disabled ) * 3 )
+;     EndMacro
     
     ; \__state
     EnumerationBinary 1
@@ -197,7 +207,7 @@
     EndEnumeration
     
     ;- _c_flag
-    EnumerationBinary _c_align 2
+    EnumerationBinary _c_align 8 ; 2
       #__flag_vertical ;= 1
       
       #__flag_left
@@ -232,7 +242,7 @@
       ;#__flag_multiselect 
       
       
-      #__flag_inverted
+      #__flag_invert
       #__flag_noactivate
       #__flag_autosize
       ;#__flag_invisible
@@ -296,13 +306,13 @@
       
       ;#__bar_arrowSize 
       ;#__bar_reverse
+      ;#__bar_ticks
       
-      #__bar_ticks
-      #__bar_vertical
+      #__bar_vertical ;= #__flag_vertical
+      #__bar_invert = #__flag_invert
+     ; #__bar_nobuttons = #__flag_nogadgets
     EndEnumeration
     
-    ;#__bar_nobuttons = #__flag_nogadgets
-    #__bar_inverted = #__flag_inverted
     
     ;- _c_text
     #__text_border = #__flag_borderless;#PB_text_border
@@ -322,7 +332,7 @@
     #__text_readonly = #__flag_readonly
     #__text_lowercase = #__flag_lowercase
     #__text_uppercase = #__flag_uppercase
-    #__text_invert = #__flag_inverted
+    #__text_invert = #__flag_invert
     
     ;- _c_window
     ;     #__window_nogadgets = #__flag_nobuttons
@@ -388,9 +398,9 @@
     #__tree_sublevel  = #PB_Tree_SubLevel   ; 1
     
     ; tree state
-    #__tree_checked   = #PB_Tree_Checked    ; 4
     #__tree_selected  = #PB_Tree_Selected   ; 1 
     #__tree_expanded  = #PB_Tree_Expanded   ; 2
+    #__tree_checked   = #PB_Tree_Checked    ; 4
     #__tree_collapsed = #PB_Tree_Collapsed  ; 8
     #__tree_inbetween = #PB_Tree_Inbetween  ; 16
                                             ;     
@@ -446,7 +456,7 @@
     #__button_toggle = #__flag_threeState ; #__flag_collapsed
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
-    #__button_inverted = #__flag_inverted
+    ;#__button_invert = #__flag_invert
     #__button_multiline = #__text_wordwrap
     
     

@@ -1,5 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi"
-; надо исправить перемещение детей с помощью скроллбара
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)

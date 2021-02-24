@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

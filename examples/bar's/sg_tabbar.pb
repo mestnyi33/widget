@@ -40,7 +40,7 @@ EnableExplicit
 ; Attribute für das TabBar
 Enumeration
   #__tab_None                 = 0<<0
-  #__tab_CloseButton          = 1<<0
+  #__tab_CloseButton          = 1<<0 ; 1
   #__tab_NewTab               = 1<<1
   #__tab_TextCutting          = 1<<2
   #__tab_MirroredTabs         = 1<<3
@@ -52,7 +52,7 @@ Enumeration
   #__tab_Editable             = 1<<9
   #__tab_MultiSelect          = 1<<10
   #__tab_CheckBox             = 1<<11
-  #__tab_SelectedCloseButton  = 1<<12
+  #__s_SelectedCloseButton    = 1<<12
   #__tab_ReverseOrdering      = 1<<13
   #__tab_ImageSize            = 1<<23
   #__tab_TabTextAlignment     = 1<<24
@@ -61,8 +61,10 @@ Enumeration
   #__tab_MaxTabLength         = 1<<27
   #__tab_MinTabLength         = 1<<28
   #__tab_TabRounding          = 1<<29
+  #__tab_PreviousArrow        = 1<<30
+  #__tab_NextArrow            = 1<<31
 EndEnumeration
-
+;Debug #__tab_CloseButton
 ; Ereignisse von TabBarEvent
 Enumeration #PB_EventType_FirstCustomValue
   #__event_Pushed 
@@ -80,20 +82,32 @@ EndEnumeration
 
 
 
-; Positionskonstanten für "Item"-Befehle
+; Positions-Konstanten für "Item"-Befehle
 Enumeration
-  #__tab_item_None        = -1
+  #__tab_item_None        = -1 
   #__tab_item_NewTab      = -2
   #__tab_item_Selected    = -3
   #__tab_item_Event       = -4
 EndEnumeration
 
+; Interne Konstanten
+#__tab_color_state_Normal    = 0
+#__tab_color_state_Hover     = 1
+#__tab_color_state_Selected  = 2
+#__tab_color_state_Disable   = 3
+#__tab_color_state_Move      = 4
+
+
 ; Status-Konstanten
 Enumeration
-  #__tab_Disabled        = 1<<0
-  #__tab_Selected        = 1<<1
-  #__tab_Checked         = 1<<2
+  #__s_Normal          = 0<<0
+  #__s_Entered         = 1<<1
+  #__s_Selected        = 1<<2
+  #__s_Disabled        = 1<<3
+  #__s_Checked         = 1<<4
 EndEnumeration
+
+
 
 ; Status-Konstanten
 Enumeration
@@ -104,15 +118,6 @@ EndEnumeration
 #__tab_DefaultHeight     = 1
 
 
-
-; Interne Konstanten
-#__tab_PreviousArrow   = 1<<30
-#__tab_NextArrow       = 1<<31
-#__tab_item_DisableFace = -1
-#__tab_item_NormalFace  = 0
-#__tab_item_HoverFace   = 1
-#__tab_item_ActiveFace  = 2
-#__tab_item_MoveFace    = 3
 
 
 
@@ -140,10 +145,21 @@ Structure _s_row
 EndStructure
 
 ; Farben für einen Eintrag
-Structure _s_Color
-  front.i        ; Textfarbe
-  back.i  ; Hintergrundfarbe
-EndStructure
+; Structure _s_Color
+;   front.i        ; Textfarbe
+;   back.i  ; Hintergrundfarbe
+; EndStructure
+;- - _s_color
+    Structure _s_color
+      state.b ; entered; selected; disabled;
+      front.i[4]
+      line.i[4]
+      fore.i[4]
+      back.i[4]
+      frame.i[4]
+      alpha.a[2]
+    EndStructure
+    
 
 ; Lage und Größe einer Registerkarte 
 Structure _s_itemLayout
@@ -270,11 +286,13 @@ EndStructure
 ; Include für das Registerkartenleisten-Gadget
 Structure _s_include
   TabBarColor.i                   ; Hintergrundfarbe des Gadgets
-  FaceColor.i                     ; Hintergrundfarbe einer Karte
+  ;color\fore.i                     ; Hintergrundfarbe einer Karte
   HoverColorPlus.i                ; Farbänderung für den Hover-Effekt
   ActivColorPlus.i                ; Farbänderung für aktuell ausgewählte Karten
-  BorderColor.i                   ; Rahmenfarbe
-  TextColor.i                     ; Textfarbe
+  ;color\frame.i                   ; Rahmenfarbe
+  ;color\front.i                     ; Textfarbe
+  color._s_color
+  
   PaddingX.i                      ; Innenabstand (Text zu Rahmen)
   PaddingY.i                      ; Innenabstand (Text zu Rahmen)
   Margin.i                        ; Außenabstand (Rahmen zu Gadget-Rand)
@@ -317,17 +335,18 @@ With includes
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Windows
       \TabBarColor   = $FF<<24 | GetSysColor_(#COLOR_BTNFACE)
-      \BorderColor   = $FF<<24 | GetSysColor_(#COLOR_3DSHADOW)
-      \FaceColor     = $FF<<24 | GetSysColor_(#COLOR_BTNFACE)
-      \TextColor     = $FF<<24 | GetSysColor_(#COLOR_BTNTEXT)
+      \color\frame   = $FF<<24 | GetSysColor_(#COLOR_3DSHADOW)
+      \color\fore     = $FF<<24 | GetSysColor_(#COLOR_BTNFACE)
+      \color\front     = $FF<<24 | GetSysColor_(#COLOR_BTNTEXT)
     CompilerDefault
       \TabBarColor   = $FFD0D0D0
-      \BorderColor   = $FF808080
-      \FaceColor     = $FFD0D0D0
-      \TextColor     = $FF000000
+      \color\frame   = $FF808080
+      \color\fore     = $FFD0D0D0
+      \color\front     = $FF000000
   CompilerEndSelect
   \HoverColorPlus               = $FF101010
   \ActivColorPlus               = $FF101010
+  
   \PaddingX                     = 6  ; Space from tab border to text
   \PaddingY                     = 5  ; Space from tab border to text
   \Margin                       = 4  ; Space from tab to border
@@ -536,11 +555,13 @@ Procedure.i ColorPlus(Color.i, Plus.i) ; Code OK
   Else
     Color | $FF
   EndIf 
+  
   If Color&$FF00 + Plus&$FF00 < $FF00
     Color + Plus&$FF00
   Else
     Color | $FF00
   EndIf 
+  
   If Color&$FF0000 + Plus&$FF0000 < $FF0000
     Color + Plus&$FF0000
   Else
@@ -561,11 +582,13 @@ Procedure.i ColorMinus(Color.i, Minus.i) ; Code OK
   Else
     Color & $FFFFFF00
   EndIf 
+  
   If Color&$FF00 - Minus&$FF00 > 0
     Color - Minus&$FF00
   Else
     Color & $FFFF00FF
   EndIf 
+  
   If Color&$FF0000 - Minus&$FF0000 > 0
     Color - Minus&$FF0000
   Else
@@ -613,12 +636,12 @@ Procedure DrawButton(X.i, Y.i, Width.i, Height.i, Type.i, Color, Vertical.i=#Fal
       LinearGradient(X, Y, X+Width-1, Y)
       RoundBox(X, Y, Width, Height, 3, 3)
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(X, Y, Width, Height, 3, 3, includes\BorderColor&$FFFFFF|$80<<24)
+      RoundBox(X, Y, Width, Height, 3, 3, includes\color\frame&$FFFFFF|$80<<24)
     Else
       LinearGradient(X, Y, X, Y+Height-1)
       RoundBox(X, Y, Width, Height, 3, 3)
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(X, Y, Width, Height, 3, 3, includes\BorderColor&$FFFFFF|$80<<24)
+      RoundBox(X, Y, Width, Height, 3, 3, includes\color\frame&$FFFFFF|$80<<24)
     EndIf
     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
   EndIf
@@ -753,7 +776,7 @@ Procedure.i ItemLength(*this._s_widget, *Item._s_rows) ; Code OK
     TextLength * includes\VerticalTextBugFix ; 5% länger, wegen Ungenaugikeit von TextWidth bei Rotation
     VerticalTextBugFix = includes\VerticalTextBugFix
   EndIf
-  If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__tab_SelectedCloseButton And *Item\Selected)
+  If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__s_SelectedCloseButton And *Item\Selected)
     Length + includes\CloseButtonSize-4 + includes\ImageSpace
   EndIf
   If *Item\Attributes & #__tab_CheckBox
@@ -981,7 +1004,7 @@ Procedure ItemLayout(*this._s_widget, *Item._s_rows)
   
   With includes
     
-    If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__tab_SelectedCloseButton And *Item\Selected)
+    If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__s_SelectedCloseButton And *Item\Selected)
       TextAreaLength - (includes\CloseButtonSize-4 + includes\ImageSpace)
     EndIf
     If *Item\Attributes & #__tab_CheckBox
@@ -1289,29 +1312,34 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
         LinearGradient(0, *Item\Layout\Y, 0, *Item\Layout\Y+*Item\Layout\Height-1)
       EndIf
     EndIf
-    Select *Item\Face
-      Case #__tab_item_MoveFace
+    
+    Select *Item\color\state
+      Case #__tab_color_state_Move
         Color = ColorPlus(*Item\color\back, \ActivColorPlus)
         GradientColor(0.0, ColorPlus(Color, $FF101010)&$FFFFFF|$C0<<24)
         GradientColor(0.5, Color&$FFFFFF|$C0<<24)
         GradientColor(1.0, ColorMinus(Color, $FF101010)&$FFFFFF|$C0<<24)
-      Case #__tab_item_DisableFace
+        
+      Case #__tab_color_state_Disable
         GradientColor(0.0, ColorPlus(*Item\color\back, $FF202020)&$FFFFFF|$80<<24)
         GradientColor(0.5, *Item\color\back&$FFFFFF|$80<<24)
         GradientColor(0.6, ColorMinus(*Item\color\back, $FF101010)&$FFFFFF|$80<<24)
         GradientColor(1.0, ColorMinus(*Item\color\back, $FF303030)&$FFFFFF|$80<<24)
-      Case #__tab_item_NormalFace
+        
+      Case #__tab_color_state_Normal
         GradientColor(0.0, ColorPlus(*Item\color\back, $FF202020))
         GradientColor(0.5, *Item\color\back)
         GradientColor(0.6, ColorMinus(*Item\color\back, $FF101010))
         GradientColor(1.0, ColorMinus(*Item\color\back, $FF303030))
-      Case #__tab_item_HoverFace
+        
+      Case #__tab_color_state_Hover
         Color = ColorPlus(*Item\color\back, \HoverColorPlus)
         GradientColor(0.0, ColorPlus(Color, $FF202020))
         GradientColor(0.5, Color)
         GradientColor(0.6, ColorMinus(Color, $FF101010))
         GradientColor(1.0, ColorMinus(Color, $FF303030))
-      Case #__tab_item_ActiveFace
+        
+      Case #__tab_color_state_Selected
         Color = ColorPlus(*Item\color\back, \ActivColorPlus)
         GradientColor(0.0, ColorPlus(Color, $FF101010))
         GradientColor(0.5, Color)
@@ -1338,9 +1366,9 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
     RoundBox(*Item\Layout\X+LayoutX, *Item\Layout\Y+LayoutY, *Item\Layout\Width+LayoutWidth, *Item\Layout\Height+LayoutHeight, *this\Radius, *this\Radius)
     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Outlined)
     If *Item\Disabled
-      RoundBox(*Item\Layout\X+LayoutX, *Item\Layout\Y+LayoutY, *Item\Layout\Width+LayoutWidth, *Item\Layout\Height+LayoutHeight, *this\Radius, *this\Radius, \BorderColor&$FFFFFF|$80<<24)
+      RoundBox(*Item\Layout\X+LayoutX, *Item\Layout\Y+LayoutY, *Item\Layout\Width+LayoutWidth, *Item\Layout\Height+LayoutHeight, *this\Radius, *this\Radius, \color\frame&$FFFFFF|$80<<24)
     Else
-      RoundBox(*Item\Layout\X+LayoutX, *Item\Layout\Y+LayoutY, *Item\Layout\Width+LayoutWidth, *Item\Layout\Height+LayoutHeight, *this\Radius, *this\Radius, \BorderColor)
+      RoundBox(*Item\Layout\X+LayoutX, *Item\Layout\Y+LayoutY, *Item\Layout\Width+LayoutWidth, *Item\Layout\Height+LayoutHeight, *this\Radius, *this\Radius, \color\frame)
     EndIf
     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
     
@@ -1395,9 +1423,9 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
       If *this\HoverItem = *Item And *this\HoverCheck
         RoundBox(*Item\Layout\CheckX, *Item\Layout\CheckY, \CheckBoxSize, \CheckBoxSize, 2, 2, *Item\color\front)
       ElseIf *Item\Disabled
-        RoundBox(*Item\Layout\CheckX, *Item\Layout\CheckY, \CheckBoxSize, \CheckBoxSize, 2, 2, \BorderColor&$FFFFFF|$40<<24)
+        RoundBox(*Item\Layout\CheckX, *Item\Layout\CheckY, \CheckBoxSize, \CheckBoxSize, 2, 2, \color\frame&$FFFFFF|$40<<24)
       Else
-        RoundBox(*Item\Layout\CheckX, *Item\Layout\CheckY, \CheckBoxSize, \CheckBoxSize, 2, 2, \BorderColor)
+        RoundBox(*Item\Layout\CheckX, *Item\Layout\CheckY, \CheckBoxSize, \CheckBoxSize, 2, 2, \color\frame)
       EndIf
       If *Item\Checked
         DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Gradient)
@@ -1418,7 +1446,7 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
     EndIf
     
     ; Schließen-Schaltfläche
-    If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__tab_SelectedCloseButton And *Item\Selected)
+    If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__s_SelectedCloseButton And *Item\Selected)
       If *this\HoverItem = *Item And *this\HoverClose
         If *this\LockedClose And *this\LockedItem = *Item
           DrawButton(*Item\Layout\CrossX, *Item\Layout\CrossY, \CloseButtonSize, \CloseButtonSize, -1, *Item\color\back, *this\Attributes & #__tab_Vertical)
@@ -1724,7 +1752,7 @@ Procedure Examine(*this._s_widget)
       Else
         \ToolTip\Current = @\HoverItem\Text
       EndIf
-      If ( \HoverItem\Attributes & #__tab_CloseButton Or (\HoverItem\Attributes & #__tab_SelectedCloseButton And \HoverItem\Selected) ) And \Editor\Item <> \HoverItem
+      If ( \HoverItem\Attributes & #__tab_CloseButton Or (\HoverItem\Attributes & #__s_SelectedCloseButton And \HoverItem\Selected) ) And \Editor\Item <> \HoverItem
         If MouseIn(*this, \HoverItem\Layout\CrossX, \HoverItem\Layout\CrossY, includes\CloseButtonSize, includes\CloseButtonSize)
           \HoverClose = \HoverItem
           \ToolTip\Current = @\ToolTip\CloseText
@@ -2252,24 +2280,26 @@ Procedure Update(*this._s_widget)
     ; Aussehen
     ForEach \Item()
       If \Item()\Disabled
-        \Item()\Face = #__tab_item_DisableFace
+        \Item()\color\state = #__tab_color_state_Disable
       ElseIf \Item() = \MoveItem
-        \Item()\Face = #__tab_item_MoveFace
+        \Item()\color\state = #__tab_color_state_Move
       ElseIf \Item() = \SelectedItem Or \Item()\Selected
-        \Item()\Face = #__tab_item_ActiveFace
+        \Item()\color\state = #__tab_color_state_Selected
       ElseIf \Item() = \HoverItem
-        \Item()\Face = #__tab_item_HoverFace
+        \Item()\color\state = #__tab_color_state_Hover
       Else
-        \Item()\Face = #__tab_item_NormalFace
+        \Item()\color\state = #__tab_color_state_Normal
       EndIf
       ItemLayout(*this, \Item())
     Next
+    
     If \NewTabItem = \HoverItem
-      \NewTabItem\Face = #__tab_item_HoverFace
+      \NewTabItem\color\state = #__tab_color_state_Hover
     Else
-      \NewTabItem\Face = #__tab_item_NormalFace
+      \NewTabItem\color\state = #__tab_color_state_Normal
     EndIf
     ItemLayout(*this, \NewTabItem)
+    
     Layout(*this)
     
     *this\UpdatePosted = #False
@@ -2315,15 +2345,15 @@ Procedure Draw(*this._s_widget)
       If Row = 0 And \Attributes & #__tab_BottomLine
         If \Attributes & #__tab_Vertical
           If \Attributes & #__tab_MirroredTabs
-            Line(0, 0, 1, OutputHeight(), includes\BorderColor)
+            Line(0, 0, 1, OutputHeight(), includes\color\frame)
           Else
-            Line(OutputWidth()-1, 0, 1, OutputHeight(), includes\BorderColor)
+            Line(OutputWidth()-1, 0, 1, OutputHeight(), includes\color\frame)
           EndIf
         Else
           If \Attributes & #__tab_MirroredTabs
-            Line(0, 0, OutputWidth(), 1, includes\BorderColor)
+            Line(0, 0, OutputWidth(), 1, includes\color\frame)
           Else
-            Line(0, OutputHeight()-1, OutputWidth(), 1, includes\BorderColor)
+            Line(0, OutputHeight()-1, OutputWidth(), 1, includes\color\frame)
           EndIf
         EndIf
       EndIf
@@ -2351,6 +2381,7 @@ Procedure Draw(*this._s_widget)
     GradientColor(0.0, includes\TabBarColor&$FFFFFF)
     GradientColor(0.5, includes\TabBarColor&$FFFFFF|$A0<<24)
     GradientColor(1.0, includes\TabBarColor&$FFFFFF|$FF<<24)
+    
     Size = includes\Margin + includes\ArrowWidth + includes\FadeOut
     If \Attributes & #__tab_PreviousArrow And \Shift
       If \Attributes & #__tab_Vertical
@@ -2402,29 +2433,29 @@ Procedure Draw(*this._s_widget)
     If \Attributes & #__tab_PreviousArrow
       If \HoverArrow = #__tab_PreviousArrow
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
-        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\TextColor, *this\Attributes)
+        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\color\front, *this\Attributes)
       ElseIf \Shift > 0
-        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\TextColor&$FFFFFF|$80<<24, *this\Attributes)
+        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\color\front&$FFFFFF|$80<<24, *this\Attributes)
       Else
-        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\TextColor&$FFFFFF|$20<<24, *this\Attributes)
+        DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\color\front&$FFFFFF|$20<<24, *this\Attributes)
       EndIf
     EndIf
     If \Attributes & #__tab_NextArrow
       If \HoverArrow = #__tab_NextArrow
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
-        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\TextColor, *this\Attributes)
+        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\color\front, *this\Attributes)
       ElseIf \Shift < \LastShift
-        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\TextColor&$FFFFFF|$80<<24, *this\Attributes)
+        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\color\front&$FFFFFF|$80<<24, *this\Attributes)
       Else
-        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\TextColor&$FFFFFF|$20<<24, *this\Attributes)
+        DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\color\front&$FFFFFF|$20<<24, *this\Attributes)
       EndIf
     EndIf
     
@@ -2437,13 +2468,13 @@ Procedure Draw(*this._s_widget)
     If \Attributes & #__tab_PopupButton
       If \HoverArrow = #__tab_PopupButton
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, -1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, 1, includes\FaceColor, *this\Attributes & #__tab_Vertical)
+          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
-        DrawArrow(\Layout\PopupButtonX, \Layout\PopupButtonY, #__tab_PopupButton, includes\TextColor, *this\Attributes)
+        DrawArrow(\Layout\PopupButtonX, \Layout\PopupButtonY, #__tab_PopupButton, includes\color\front, *this\Attributes)
       Else
-        DrawArrow(\Layout\PopupButtonX, \Layout\PopupButtonY, #__tab_PopupButton, includes\TextColor&$FFFFFF|$80<<24, *this\Attributes)
+        DrawArrow(\Layout\PopupButtonX, \Layout\PopupButtonY, #__tab_PopupButton, includes\color\front&$FFFFFF|$80<<24, *this\Attributes)
       EndIf
     EndIf
     
@@ -2594,8 +2625,8 @@ Procedure.i TabBar(Gadget, X.i, Y.i, Width.i, Height.i, Attributes.i, Window.i) 
     \Attributes                  = Attributes
     \canvas\gadget                      = Gadget
     \canvas\window                      = Window
-    \NewTabItem\color\front       = includes\TextColor
-    \NewTabItem\color\back = includes\FaceColor
+    \NewTabItem\color\front      = includes\color\front
+    \NewTabItem\color\back       = includes\color\fore
     \Radius                      = includes\Radius
     \MinTabLength                = includes\MinTabLength
     \MaxTabLength                = includes\MaxTabLength
@@ -2642,8 +2673,8 @@ Procedure.i AddItem(*this._s_widget, Position.i, Text.s, ImageID.i=#Null, DataVa
     \ShortText        = Text
     ReplaceImage(*this, *Item, ImageID)
     \DataValue        = DataValue
-    \color\front       = includes\TextColor
-    \color\back = includes\FaceColor
+    \color\front       = includes\color\front
+    \color\back = includes\color\fore
     If *Item <> @*this\NewTabItem
       \Attributes       = *this\Attributes
     EndIf
@@ -2731,54 +2762,53 @@ EndProcedure
 ; Ändert den Wert eines Attributs der Registerkartenleiste.
 Procedure SetAttribute(*this._s_widget, Attribute.i, Value.i, Overwrite.i=#True) ; Code OK, Hilfe OK
   
+  Select Attribute
+    Case #__tab_CloseButton, #__s_SelectedCloseButton, #__tab_NewTab, #__tab_NoTabMoving, #__tab_BottomLine,
+         #__tab_MultiLine, #__tab_PopupButton, #__tab_Editable, #__tab_CheckBox, #__tab_ReverseOrdering,
+         #__tab_MultiSelect, #__tab_TextCutting, #__tab_MirroredTabs, #__tab_Vertical
+      
+      If Value
+        *this\Attributes | Attribute
+      Else
+        *this\Attributes & ~Attribute
+        
+        If Attribute = #__tab_MultiSelect
+          ForEach *this\Item()
+            *this\Item()\Selected = #False
+          Next
+          If *this\SelectedItem
+            *this\SelectedItem\Selected = #True
+          EndIf
+          
+        ElseIf Attribute = #__tab_TextCutting
+          ForEach *this\Item()
+            *this\Item()\ShortText = *this\Item()\Text
+          Next
+        EndIf 
+        
+      EndIf
+      
+  EndSelect
   
   
   Select Attribute
-    Case #__tab_CloseButton, #__tab_SelectedCloseButton, #__tab_NewTab, #__tab_NoTabMoving, #__tab_BottomLine,
+    Case #__tab_CloseButton, #__s_SelectedCloseButton, #__tab_NewTab, #__tab_NoTabMoving, #__tab_BottomLine,
          #__tab_MultiLine, #__tab_PopupButton, #__tab_Editable, #__tab_CheckBox, #__tab_ReverseOrdering
-      If Value
-        *this\Attributes | Attribute
-        If Overwrite
+         
+      If Overwrite
+        If Value
           ForEach *this\Item()
             *this\Item()\Attributes | Attribute
           Next
-        EndIf
-      Else
-        *this\Attributes & ~Attribute
-        If Overwrite
+        Else
           ForEach *this\Item()
             *this\Item()\Attributes & ~Attribute
           Next
         EndIf
       EndIf
-    Case #__tab_MultiSelect
-      If Value
-        *this\Attributes | Attribute
-      Else
-        *this\Attributes & ~Attribute
-        ForEach *this\Item()
-          *this\Item()\Selected = #False
-        Next
-        If *this\SelectedItem
-          *this\SelectedItem\Selected = #True
-        EndIf
-      EndIf
-    Case #__tab_TextCutting
-      If Value
-        *this\Attributes | Attribute
-      Else
-        ForEach *this\Item()
-          *this\Item()\ShortText = *this\Item()\Text
-        Next
-        *this\Attributes & ~Attribute
-      EndIf
+      
     Case #__tab_MirroredTabs, #__tab_Vertical
       *this\Rows = 0
-      If Value
-        *this\Attributes | Attribute
-      Else
-        *this\Attributes & ~Attribute
-      EndIf
       ForEach *this\Item()
         If *this\Item()\Image
           RotateImage(*this, *this\Item())
@@ -2787,6 +2817,7 @@ Procedure SetAttribute(*this._s_widget, Attribute.i, Value.i, Overwrite.i=#True)
       If *this\NewTabItem\Image
         RotateImage(*this, *this\NewTabItem)
       EndIf
+      
     Case #__tab_TabRounding
       *this\Radius = Value
     Case #__tab_MinTabLength
@@ -2798,6 +2829,7 @@ Procedure SetAttribute(*this._s_widget, Attribute.i, Value.i, Overwrite.i=#True)
         *this\Item()\ShortText = *this\Item()\Text
       Next
       *this\MaxTabLength = Value
+      
     Case #__tab_ScrollPosition
       If Value < 0
         *this\Shift = 0
@@ -2820,7 +2852,7 @@ Procedure.i GetAttribute(*this._s_widget, Attribute.i) ; Code OK, Hilfe OK
   
   
   Select Attribute
-    Case #__tab_CloseButton, #__tab_SelectedCloseButton, #__tab_NewTab, #__tab_MirroredTabs, #__tab_TextCutting,
+    Case #__tab_CloseButton, #__s_SelectedCloseButton, #__tab_NewTab, #__tab_MirroredTabs, #__tab_TextCutting,
          #__tab_NoTabMoving, #__tab_BottomLine, #__tab_MultiLine, #__tab_PopupButton, #__tab_Editable,
          #__tab_MultiSelect, #__tab_Vertical, #__tab_CheckBox, #__tab_ReverseOrdering
       If *this\Attributes & Attribute
@@ -2963,7 +2995,7 @@ Procedure SetItemAttribute(*this._s_widget, Tab.i, Attribute.i, Value.i)
   
   If *Item And *Item <> *this\NewTabItem
     Select Attribute
-      Case #__tab_CloseButton, #__tab_SelectedCloseButton, #__tab_CheckBox
+      Case #__tab_CloseButton, #__s_SelectedCloseButton, #__tab_CheckBox
         If Value
           *Item\Attributes | Attribute
         Else
@@ -2985,7 +3017,7 @@ Procedure.i GetItemAttribute(*this._s_widget, Tab.i, Attribute.i)
   
   If *Item
     Select Attribute
-      Case #__tab_CloseButton, #__tab_SelectedCloseButton, #__tab_CheckBox
+      Case #__tab_CloseButton, #__s_SelectedCloseButton, #__tab_CheckBox
         If *Item\Attributes & Attribute
           ProcedureReturn #True
         Else
@@ -3033,12 +3065,12 @@ Procedure SetItemColor(*this._s_widget, Tab.i, Type.i, Color.i) ; Code OK, Hilfe
     Select Type
       Case #PB_Gadget_FrontColor
         If Color = #PB_Default
-          Color = includes\TextColor
+          Color = includes\color\front
         EndIf
         *Item\color\front = Color | $FF<<24
       Case #PB_Gadget_BackColor
         If Color = #PB_Default
-          Color = includes\FaceColor
+          Color = includes\color\fore
         EndIf
         *Item\color\back = Color | $FF<<24
     EndSelect
@@ -3116,6 +3148,7 @@ Procedure GetItemPosition(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
     Select Tab
       Case #__tab_item_Event
         ProcedureReturn \EventTab
+        
       Case #__tab_item_Selected
         If \SelectedItem
           ChangeCurrentElement(\Item(), \SelectedItem)
@@ -3125,6 +3158,7 @@ Procedure GetItemPosition(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
         EndIf
       Case #__tab_item_NewTab, #__tab_item_None
         ProcedureReturn Tab
+        
       Default 
         If Tab >= 0 And Tab < ListSize(\Item())
           ProcedureReturn Tab
@@ -3145,20 +3179,20 @@ EndProcedure
 
 
 ; Ändert den Status der angegebenen Registerkarte.
-Procedure SetItemState(*this._s_widget, Tab.i, State.i, Mask.i=#__tab_Disabled|#__tab_Selected|#__tab_Checked) ; Code OK, Hilfe OK
+Procedure SetItemState(*this._s_widget, Tab.i, State.i, Mask.i=#__s_Disabled|#__s_Selected|#__s_Checked) ; Code OK, Hilfe OK
   
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
   If *Item And *Item <> *this\NewTabItem
-    If Mask & #__tab_Disabled
-      *Item\Disabled = Bool(State&#__tab_Disabled)
+    If Mask & #__s_Disabled
+      *Item\Disabled = Bool(State&#__s_Disabled)
     EndIf
-    If Mask & #__tab_Checked
-      *Item\Checked = Bool(State&#__tab_Checked)
+    If Mask & #__s_Checked
+      *Item\Checked = Bool(State&#__s_Checked)
     EndIf
-    If Mask & #__tab_Selected
-      If State & #__tab_Selected
+    If Mask & #__s_Selected
+      If State & #__s_Selected
         SelectItem(*this, *Item)
       Else
         UnselectItem(*this, *Item)
@@ -3177,7 +3211,7 @@ Procedure.i GetItemState(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   Protected *Item._s_rows = ItemID(*this, Tab)
   
   If *Item
-    ProcedureReturn (*Item\Disabled*#__tab_Disabled) | (*Item\Selected*#__tab_Selected) | (*Item\Checked*#__tab_Checked)
+    ProcedureReturn (*Item\Disabled*#__s_Disabled) | (*Item\Selected*#__s_Selected) | (*Item\Checked*#__s_Checked)
   EndIf
   
 EndProcedure
@@ -3288,9 +3322,9 @@ Procedure UpdateItemAttributes(Position)
   If GetGadgetText(#Gadget_ItemText) <> GetItemText(*tab1, Position)
     SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, Position))
   EndIf
-  SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__tab_Disabled))
-  SetGadgetState(#Gadget_ItemSelected, (GetItemState(*tab1, Position)&#__tab_Selected))
-  SetGadgetState(#Gadget_ItemChecked, (GetItemState(*tab1, Position)&#__tab_Checked))
+  SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__s_Disabled))
+  SetGadgetState(#Gadget_ItemSelected, (GetItemState(*tab1, Position)&#__s_Selected))
+  SetGadgetState(#Gadget_ItemChecked, (GetItemState(*tab1, Position)&#__s_Checked))
   SetGadgetState(#Gadget_ItemCloseButton, GetItemAttribute(*tab1, Position, #__tab_CloseButton))
   SetGadgetState(#Gadget_ItemCheckBox, GetItemAttribute(*tab1, Position, #__tab_CheckBox))
 EndProcedure
@@ -3325,7 +3359,7 @@ AddItem(*tab1, #PB_Default, "Pure Basic")
 AddItem(*tab1, #PB_Default, "and the")
 AddItem(*tab1, #PB_Default, "TabBar")
 AddItem(*tab1, #PB_Default, "include")
-Tab_ToolTip(*tab1, "%ITEM", "new", "close")
+;Tab_ToolTip(*tab1, "%ITEM", "new", "close")
 
 If ContainerGadget(#Gadget_Container, 0, GadgetHeight(#Gadget_TabBar), WindowWidth(#Window), WindowHeight(#Window)-GadgetHeight(#Gadget_TabBar), #PB_Container_Flat)
   
@@ -3439,7 +3473,7 @@ Repeat
         Case #Gadget_CloseButton
           SetAttribute(*tab1, #__tab_CloseButton, GetGadgetState(#Gadget_CloseButton))
         Case #Gadget_SelectedCloseButton
-          SetAttribute(*tab1, #__tab_SelectedCloseButton, GetGadgetState(#Gadget_SelectedCloseButton))
+          SetAttribute(*tab1, #__s_SelectedCloseButton, GetGadgetState(#Gadget_SelectedCloseButton))
         Case #Gadget_EmptyButton
           SetAttribute(*tab1, #__tab_NewTab, GetGadgetState(#Gadget_EmptyButton))
         Case #Gadget_Vertical
@@ -3489,11 +3523,11 @@ Repeat
         Case #Gadget_ItemText
           SetItemText(*tab1, GetItemGadgetState(), GetGadgetText(#Gadget_ItemText))
         Case #Gadget_ItemDisabled
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled)*#__tab_Disabled, #__tab_Disabled)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled)*#__s_Disabled, #__s_Disabled)
         Case #Gadget_ItemSelected
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemSelected)*#__tab_Selected, #__tab_Selected)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemSelected)*#__s_Selected, #__s_Selected)
         Case #Gadget_ItemChecked
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemChecked)*#__tab_Checked, #__tab_Checked)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemChecked)*#__s_Checked, #__s_Checked)
         Case #Gadget_ItemCloseButton
           SetItemAttribute(*tab1, GetItemGadgetState(), #__tab_CloseButton, GetGadgetState(#Gadget_ItemCloseButton))
         Case #Gadget_ItemCheckBox
@@ -3513,5 +3547,5 @@ Repeat
   
 ForEver
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----0--------f------------------------------------------------------------------
+; Folding = Pg--0-------------------------------------------------------------------f4------
 ; EnableXP
