@@ -1,36 +1,29 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure active()
-  If This()\widget\container =- 1
-    Debug ""+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
-  Else
-    Debug "  "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+  If EventWidget( )\type > 0
+    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure deactive()
-  If This()\widget\container =- 1
-    Debug ""+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
-  Else
-    Debug "  "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+  If EventWidget( )\type > 0
+    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure active_0()
-  If This()\widget\container =- 1
-    Debug " - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
-  Else
-    Debug "   - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+  If EventWidget( )\type > 0
+    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure deactive_0()
-  If This()\widget\container =- 1
-    Debug " - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
-  Else
-    Debug "   - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+  If EventWidget( )\type > 0
+    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
   EndIf
 EndProcedure
+
 
 Define width=500, height=400
 

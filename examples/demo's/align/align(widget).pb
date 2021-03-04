@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 UseLib(widget)
 
@@ -85,9 +85,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
     
     
-    SetAlignment(Widgets(Hex(2)), #__align_vertical |#__align_center|#__align_top|#__align_proportional)    
+    SetAlignment(Widgets(Hex(2)), #__align_center|#__align_top |#__align_proportional_vertical)    
     SetAlignment(Widgets(Hex(3)), #__align_center|#__align_right)
-    SetAlignment(Widgets(Hex(4)), #__align_vertical |#__align_full|#__align_proportional) ; stretch proportional
+    SetAlignment(Widgets(Hex(4)), #__align_full |#__align_proportional_vertical) ; stretch proportional
     SetAlignment(Widgets(Hex(44)), #__align_center|#__align_top)
     
     SetAlignment(Widgets(Hex(5)), #__align_bottom |#__align_left|#__align_right|#__align_proportional)

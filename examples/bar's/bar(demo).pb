@@ -2,8 +2,7 @@
 ; example demo resize draw splitter - OS gadgets   -bar
 ; 
 
-;XIncludeFile "../../widgets.pbi"
-XIncludeFile "../../widgets-bar.pbi"
+XIncludeFile "../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -175,34 +174,34 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Scroll(160, 370, 150, 20, 0, 50, 30)
     SetState(Widget(), 5)
-    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__bar_Inverted)
+    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__bar_Invert)
     SetState(Widget(), 5)
     
-    Track(160, 370+53, 150, 20, 0, 20, #__bar_Ticks,0)
+    Track(160, 370+53, 150, 20, 0, 20, #PB_TrackBar_Ticks,0)
     SetState(Widget(), 5)
-    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Inverted,0)
+    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Invert,0)
     SetState(Widget(), 5)
     
     Progress(160, 370+105, 150, 20, 0, 20)
     SetState(Widget(), 5)
-    Progress(160, 370+105+25, 150, 10, 0, 20, #__bar_Inverted)
+    Progress(160, 370+105+25, 150, 10, 0, 20, #__bar_Invert)
     SetState(Widget(), 5)
     
     Scroll(320, 370, 20, 150, 0, 50, 30, #__bar_Vertical, #__round+2)
     SetState(Widget(), 5)
-    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Inverted, #__round/2+2)
+    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Invert, #__round/2+2)
     SetState(Widget(), 5)
     
-    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Inverted)
+    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Invert)
     SetState(Widget(), 5)
     Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetAttribute(Widget(), #__bar_Invert, 0)
     SetState(Widget(), 5)
     
     Progress(320+105, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(Widget(), #__bar_Inverted, 0)
+    SetAttribute(Widget(), #__bar_Invert, 0)
     SetState(Widget(), 5)
-    Progress(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Inverted, #__round/2)
+    Progress(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Invert, #__round/2)
     SetState(Widget(), 5)
     
     

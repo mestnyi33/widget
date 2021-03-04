@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug " widget - "+*event\widget+" "+*event\type
     Protected EventGadget = *event\widget
     Protected EventType = *event\event
-    Protected EventData = *event\data
+    Protected EventData ;= *event\data
     Protected EventItem = GetState(EventGadget)
     
     Select EventType

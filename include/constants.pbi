@@ -6,6 +6,7 @@
     
     ;- - CONSTANTs
     ;{
+    
     ; list mode
     #__m_checkselect = 1
     #__m_clickselect = 2
@@ -16,13 +17,14 @@
     #__grid_type = 0
     #__grid_size = 8 
     #__a_size = 7;13 
-    #__caption_height = 24
-    #__border_size = 4 
+    #__window_caption_height = 21
+    #__window_frame_size = 4 
     #__border_scroll = 2
     
     #__panel_height = 25
     #__panel_width = 85
     
+    #__menu_height = 25
     
     #__from_mouse_state = 0
     #__focus_state = 1
@@ -42,7 +44,7 @@
     CompilerEndIf
     #__scroll_buttonsize = 16
     
-    #__arrow_type = -1 ; ;-1 ;0 ;1
+    #__arrow_type = 1 ; ;-1 ;0 ;1
     #__arrow_size = 4 ;
     
     #__sOC = SizeOf(Character)
@@ -105,25 +107,25 @@
     EndEnumeration
     
     ;- coordinate 
-    ;;Enumeration
-    ; pos & size
-    #__c_screen    = 0 ; screen
-    #__c_frame     = 1 ; frame screen
-    #__c_inner     = 2 ; inner screen
-    #__c_container = 3 ; container
-    #__c_required  = 4 ; required
+    Enumeration _c_coordinate
+      ; pos & size
+      #__c_screen    = 0 ; screen
+      #__c_frame     = 1 ; frame screen
+      #__c_inner     = 2 ; inner screen
+      #__c_container = 3 ; container
+      #__c_required  = 4 ; required
+      
+      #__c_clip      = 5 ; clip screen
+      #__c_clip1     = 6 ; clip frame 
+      #__c_clip2     = 7 ; clip inner 
+      
+      #__c_window    = 8 ; window ; pos
+      
+      
+      #__c
+    EndEnumeration
     
-    #__c_clip      = 5 ; clip screen
-    #__c_clip1     = 6 ; clip frame 
-    #__c_clip2     = 10; clip inner 
     
-    ; pos
-    #__c_window    = 7 ; window
-    
-    #__c_delta     = 9
-    
-    #__c           = 11
-    ;;EndEnumeration
     #__c_inner2 = #__c_inner
     #__c_rootrestore = 7
     ;     #__ci_frame = #__c_draw
@@ -149,11 +151,11 @@
     EndEnumeration
     
     
-;     Macro _get_state_index_( _adress_ )
-;       ( Bool( _adress_\_state & #__s_entered ) * 1 | 
-;         Bool( _adress_\_state & #__s_selected ) * 2 | 
-;         Bool( _adress_\_state & #__s_disabled ) * 3 )
-;     EndMacro
+    ;     Macro _get_state_index_( _adress_ )
+    ;       ( Bool( _adress_\_state & #__s_entered ) * 1 | 
+    ;         Bool( _adress_\_state & #__s_selected ) * 2 | 
+    ;         Bool( _adress_\_state & #__s_disabled ) * 3 )
+    ;     EndMacro
     
     ; \__state
     EnumerationBinary 1
@@ -208,7 +210,7 @@
     
     ;- _c_flag
     EnumerationBinary _c_align 8 ; 2
-      #__flag_vertical ;= 1
+      #__flag_vertical           ;= 1
       
       #__flag_left
       #__flag_top
@@ -236,10 +238,10 @@
       #__flag_gridlines
       
       
-      ; #__flag_inline
+      ;#__flag_inline
       #__flag_threeState
       #__flag_clickselect 
-      ;#__flag_multiselect 
+      
       
       
       #__flag_invert
@@ -250,23 +252,22 @@
       ;#__flag_systemmenu
       #__flag_noscrollbars
       #__flag_child
-    
+      
       #__flag_borderless
-      ;       #__flag_flat
-      ;       #__flag_double
-      ;       #__flag_raised
-      ;       #__flag_single
+      ;#__flag_flat
+      ;#__flag_double
+      ;#__flag_raised
+      ;#__flag_single
       
       
       #__flag_transparent
-      #__mdi_editable
-      #__flag_anchorsGadget
+      #__flag_anchorsgadget
       #__flag_limit
     EndEnumeration
     
     ;#__flag_checkboxes = #__flag_clickselect
     #__flag_nogadgets = #__flag_nobuttons
-    #__flag_multiselect = #__flag_multiline
+    ;#__flag_multiselect = #__flag_multiline
     
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
@@ -277,29 +278,29 @@
     
     ;- _c_align
     ; align type
-    #__align_widget        = 1
-    #__align_text          = 2
-    #__align_image         = 3
+    #__align_widget                = 1
+    #__align_text                  = 2
+    #__align_image                 = 3
     
-    #__align_none          = #False
-    #__align_vertical      = #__flag_vertical
-    #__align_left          = #__flag_left
-    #__align_top           = #__flag_top  
-    #__align_right         = #__flag_right
-    #__align_bottom        = #__flag_bottom
+    #__align_none                  = #False
+    #__align_left                  = #__flag_left
+    #__align_top                   = #__flag_top  
+    #__align_right                 = #__flag_right
+    #__align_bottom                = #__flag_bottom
     
-    #__align_full          = #__flag_full
-    #__align_auto          = #__flag_autosize
-    #__align_center        = #__flag_center
-    #__align_proportional  = #__flag_proportional
+    #__align_full                  = #__flag_full
+    #__align_auto                  = #__flag_autosize
+    #__align_center                = #__flag_center
+    #__align_proportional          = #__flag_proportional
+    #__align_proportional_vertical = #__flag_vertical
     
-    
+    ;-
     ;- _c_bar
-      #__bar_minimum = 1
-      #__bar_maximum = 2
-      #__bar_pagelength = 3
-      #__bar_scrollstep = 5
-      
+    #__bar_minimum = 1
+    #__bar_maximum = 2
+    #__bar_pagelength = 3
+    #__bar_scrollstep = 5
+    
     EnumerationBinary 8
       #__bar_buttonsize 
       #__bar_direction 
@@ -310,29 +311,117 @@
       
       #__bar_vertical ;= #__flag_vertical
       #__bar_invert = #__flag_invert
-     ; #__bar_nobuttons = #__flag_nogadgets
+      ; #__bar_nobuttons = #__flag_nogadgets
     EndEnumeration
     
     
+    EnumerationBinary 64
+      #__align_text_left 
+      #__align_text_top
+      #__align_text_center
+      #__align_text_right 
+      #__align_text_bottom 
+      
+      #__align_image_left 
+      #__align_image_top
+      #__align_image_center
+      #__align_image_right 
+      #__align_image_bottom 
+      #__align_image_full
+      
+      #__align_image_proportional
+      #__align_image_proportional_vertical
+      
+      #__align_widget_left 
+      #__align_widget_top
+      #__align_widget_center
+      #__align_widget_right 
+      #__align_widget_bottom 
+      #__align_widget_full
+      
+      #__align_widget_proportional
+      #__align_widget_proportional_vertical
+    EndEnumeration
+    
+;     #__ImageFlagCount = 2
+;     #__imageFlagValue = 2147483648 >> ( #__imageFlagCount - 1 )
+;     
+;     EnumerationBinary #__imageFlagValue
+;       #__image_vertical 
+;       #__image_invert 
+;     EndEnumeration
+    
+    
     ;- _c_text
+    #__textFlagCount = 10
+    #__textFlagValue = 2147483648 >> ( #__textFlagCount - 1 )
+    
+    EnumerationBinary #__textFlagValue
+      #__text_vertical 
+      #__text_invert 
+      
+      #__text_InLine 
+      
+      #__text_multiline 
+      #__text_wordwrap 
+      #__text_numeric 
+      #__text_password 
+      #__text_readonly 
+      #__text_lowercase 
+      #__text_uppercase 
+    EndEnumeration
+    
+;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;       Debug #PB_Text_Right  ; 1
+;       Debug #PB_Text_Center ; 2
+;       Debug #PB_Text_Border ; 4
+;       
+;       Debug #PB_Button_Right     ; 1
+;       Debug #PB_Button_Left      ; 2
+;       Debug #PB_Button_Toggle    ; 4
+;       Debug #PB_Button_Default   ; 8
+;       Debug #PB_Button_MultiLine ; 16
+;       
+;       Debug #PB_String_Password    ; 1
+;       Debug #PB_String_ReadOnly    ; 2
+;       Debug #PB_String_UpperCase   ; 4
+;       Debug #PB_String_LowerCase   ; 8
+;       Debug #PB_String_Numeric     ; 16
+;                                    ; Debug #PB_String_BorderLess  ; 32
+;       
+;       Debug #PB_Editor_ReadOnly    ; 1
+;       Debug #PB_Editor_WordWrap    ; 2
+;     CompilerEndIf
+
     #__text_border = #__flag_borderless;#PB_text_border
     
-    #__text_left = #__align_left
-    #__text_top = #__align_top
-    #__text_center = #__align_center
-    #__text_right = #__align_right
-    #__text_bottom = #__align_bottom
+    #__text_left = #__align_text_left
+    #__text_top = #__align_text_top
+    #__text_center = #__align_text_center
+    #__text_right = #__align_text_right
+    #__text_bottom = #__align_text_bottom
     #__text_middle = #__text_center
     
-    #__text_vertical = #__flag_vertical
-    #__text_multiline = #__flag_multiline
-    #__text_wordwrap = #__flag_wordwrap
-    #__text_numeric = #__flag_numeric
-    #__text_password = #__flag_password
-    #__text_readonly = #__flag_readonly
-    #__text_lowercase = #__flag_lowercase
-    #__text_uppercase = #__flag_uppercase
-    #__text_invert = #__flag_invert
+;     #__text_invert = #__flag_invert
+;     #__text_vertical = #__flag_vertical
+;     
+;     #__text_multiline = #__flag_multiline
+;     #__text_wordwrap = #__flag_wordwrap
+;     #__text_numeric = #__flag_numeric
+;     #__text_password = #__flag_password
+;     #__text_readonly = #__flag_readonly
+;     #__text_lowercase = #__flag_lowercase
+;     #__text_uppercase = #__flag_uppercase
+    
+    #__image_left = #__text_left
+    #__image_top = #__text_top
+    #__image_center = #__text_center
+    #__image_right = #__text_right
+    #__image_bottom = #__text_bottom
+    
+    ;- _c_mdi
+    #__mdi_editable = #__flag_anchorsgadget
+    
     
     ;- _c_window
     ;     #__window_nogadgets = #__flag_nobuttons
@@ -370,14 +459,59 @@
     #__spin_numeric = #__text_numeric
     #__spin_vertical = #__bar_vertical
     
-;     ;- 
-; Debug #PB_Checkbox_Unchecked ; 0
-; Debug #PB_Checkbox_Checked   ; 1
-; Debug #PB_Checkbox_Inbetween ; -1
-; Debug #PB_CheckBox_ThreeState ; 4
-
+    ;     ;- 
+    ; Debug #PB_Checkbox_Unchecked ; 0
+    ; Debug #PB_Checkbox_Checked   ; 1
+    ; Debug #PB_Checkbox_Inbetween ; -1
+    ; Debug #PB_CheckBox_ThreeState ; 4
+    
+    
+    ;- LIST_ELEMENT
+    ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ;       Debug #PB_ListView_MultiSelect  ; 1
+    ;       Debug #PB_ListView_ClickSelect  ; 2
+    
+    ;       Debug #PB_Tree_AlwaysShowSelection ; 0
+    ;       Debug #PB_Tree_NoLines    ; 1
+    ;       Debug #PB_Tree_Selected   ; 1
+    ;       Debug #PB_Tree_SubLevel   ; 1
+    ;       Debug #PB_Tree_NoButtons  ; 2
+    ;       Debug #PB_Tree_Expanded   ; 2
+    ;       Debug #PB_Tree_CheckBoxes ; 4
+    ;       Debug #PB_Tree_Checked    ; 4
+    ;       Debug #PB_Tree_ThreeState ; 8
+    ;       Debug #PB_Tree_Collapsed  ; 8
+    ;       Debug #PB_Tree_Inbetween  ; 16
+    
+    ;       Debug #PB_ListIcon_AlwaysShowSelection ; 0
+    ;       Debug #PB_ListIcon_Selected   ; 1
+    ;       Debug #PB_ListIcon_CheckBoxes ; 2
+    ;       Debug #PB_ListIcon_Checked    ; 2
+    ;       Debug #PB_ListIcon_Inbetween  ; 4
+    ;       Debug #PB_ListIcon_ThreeState ; 8
+    ;     CompilerEndIf
+    
+    #__ListFlagCount = 10
+    #__ListFlagValue = 2147483648 >> ( #__ListFlagCount - 1 )
+    
+    EnumerationBinary #__ListFlagValue
+      #__list_NoLines    
+      #__list_SubLevel   
+      #__list_NoButtons  
+      #__list_CheckBoxes 
+      #__list_ThreeState 
+      #__list_Collapsed  
+      
+      #__list_ClickSelect
+      #__list_MultiSelect
+                                            
+      #__list_Checked    
+      #__list_Expanded   
+      #__list_Selected   
+      #__list_Inbetween 
+    EndEnumeration
+    
     ;- _c_tree
-    #PB_Tree_Collapse = 32
     
     #__tree_alwaysselection = #__flag_alwaysselection
     #__tree_nolines = #__flag_nolines
@@ -386,9 +520,8 @@
     #__tree_threestate = #__flag_threeState
     #__tree_optionboxes = #__flag_optionboxes
     #__tree_gridlines = #__flag_gridLines
-    #__tree_multiselect = #__flag_multiselect
+    #__tree_multiselect = #__flag_multiline
     #__tree_clickselect = #__flag_clickselect
-    #__tree_collapse = #PB_Tree_Collapse
     
     #__tree_property = #__flag_numeric
     #__tree_listview = #__flag_readonly

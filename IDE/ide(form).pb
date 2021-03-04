@@ -458,11 +458,11 @@ CompilerIf #PB_Compiler_IsMainFile
         width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
         height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
         
-        ;Debug ( transform( )\pos + #__border_size )
+        ;Debug ( transform( )\pos + #__window_frame_size )
         
         If class = "window"
-          width + ( #__border_size * 2 )%transform( )\grid\size
-          height + ( #__border_size * 2 + #__caption_height )%transform( )\grid\size
+          width + ( #__window_frame_size * 2 )%transform( )\grid\size
+          height + ( #__window_frame_size * 2 + #__window_caption_height )%transform( )\grid\size
         EndIf
       EndIf
       

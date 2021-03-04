@@ -323,17 +323,17 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 2
             If GetGadgetState(2)
-              SetGadgetState(3, GetAttribute(*this\scroll\v, #__Bar_Inverted))
+              SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
             Else
-              SetGadgetState(3, GetAttribute(*this\scroll\h, #__Bar_Inverted))
+              SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
             EndIf
            
           Case 3
             If GetGadgetState(2)
-              SetAttribute(*this\scroll\v, #__Bar_Inverted, Bool(GetGadgetState(3)))
+              SetAttribute(*this\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
               SetWindowTitle(0, Str(GetState(*this\scroll\v)))
             Else
-              SetAttribute(*this\scroll\h, #__Bar_Inverted, Bool(GetGadgetState(3)))
+              SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
               SetWindowTitle(0, Str(GetState(*this\scroll\h)))
             EndIf
             Canvas_Draw(MyCanvas, Images( ))

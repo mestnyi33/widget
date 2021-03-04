@@ -1,34 +1,34 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure active()
-  If This()\widget\container =- 1
-    Debug ""+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
+  If EventWidget( )\container =- 1
+    Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
   Else
-    Debug "  "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
   EndIf
 EndProcedure
 
 Procedure deactive()
-  If This()\widget\container =- 1
-    Debug ""+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
+  If EventWidget( )\container =- 1
+    Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
   Else
-    Debug "  "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
   EndIf
 EndProcedure
 
 Procedure active_0()
-  If This()\widget\container =- 1
-    Debug " - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
+  If EventWidget( )\container =- 1
+    Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
   Else
-    Debug " -   "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
   EndIf
 EndProcedure
 
 Procedure deactive_0()
-  If This()\widget\container =- 1
-    Debug " - "+This()\widget\index +" "+ #PB_Compiler_Procedure + " window"
+  If EventWidget( )\container =- 1
+    Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
   Else
-    Debug " -   "+This()\widget\index +" "+ #PB_Compiler_Procedure + " gadget"
+    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
   EndIf
 EndProcedure
 
@@ -93,5 +93,5 @@ EndIf
 
 End  
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 7-
+; Folding = --
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -66,6 +66,43 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Splitter_2, height-pos-#__splitter_buttonsize)
     
     Bind(*this, @events_widgets())
+    ;Redraw(root())
+    
+    Debug " --v-- "
+    Debug *this\scroll\v\bar\percent
+    Debug *this\scroll\v\bar\page\pos
+    Debug *this\scroll\v\bar\page\len
+    Debug *this\scroll\v\bar\page\end
+    Debug *this\scroll\v\bar\page\change
+    Debug ""
+    Debug *this\scroll\v\bar\thumb\pos
+    Debug *this\scroll\v\bar\thumb\len
+    Debug *this\scroll\v\bar\thumb\end
+    Debug *this\scroll\v\bar\thumb\change
+    Debug ""
+    Debug *this\scroll\v\bar\area\pos
+    Debug *this\scroll\v\bar\area\len
+    Debug *this\scroll\v\bar\area\end
+    Debug *this\scroll\v\bar\area\change
+    Debug ""
+    
+    Debug " --h-- "
+    Debug *this\scroll\h\bar\percent
+    Debug *this\scroll\h\bar\page\pos
+    Debug *this\scroll\h\bar\page\len
+    Debug *this\scroll\h\bar\page\end
+    Debug *this\scroll\h\bar\page\change
+    Debug ""
+    Debug *this\scroll\h\bar\thumb\pos
+    Debug *this\scroll\h\bar\thumb\len
+    Debug *this\scroll\h\bar\thumb\end
+    Debug *this\scroll\h\bar\thumb\change
+    Debug ""
+    Debug *this\scroll\h\bar\area\pos
+    Debug *this\scroll\h\bar\area\len
+    Debug *this\scroll\h\bar\area\end
+    Debug *this\scroll\h\bar\area\change
+    Debug ""
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

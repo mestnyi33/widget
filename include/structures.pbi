@@ -530,7 +530,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_widget
     Structure _s_WIDGET
       ;temp
-      __draw.b
+   
    ;       *_drawing ; drawing_mode
 ;       *_draw_alpha
    ;       Map *_first._s_widget( )
@@ -541,10 +541,18 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;       *h._s_WIDGET     ; horizontal scrollbar
       *drop._s_DD
       
-      fs.a ; frame size
+      fs.a[5] ; frame size
       bs.a ; border size
+      _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
+      __state.w ; #__ss_ (font; back; frame; fore; line)
       __width.a ; bar v size
-      __height.a ; bar h size
+      __height.a[2] ; bar h size
+      __draw.b 
+      
+      BarHeight_Caption.w
+      BarHeight_Menu.w
+      BarHeight_Tab.w
+      BarHeight_Status.w
       
       y.l[constants::#__c]
       x.l[constants::#__c]
@@ -578,6 +586,7 @@ CompilerIf Not Defined(structures, #PB_Module)
         
       EndStructureUnion
       
+      *_popup._s_WIDGET; combobox( ) list-view gadget
       *_tab._s_WIDGET; = panel( ) tabbar gadget
       scroll._s_SCROLL  ; vertical & horizontal scrollbars
       
@@ -598,8 +607,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       draw_widget.b
       
-      _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
-      __state.w ; #__ss_ (font; back; frame; fore; line)
       item.l ; parent-panel tab item index
       
       
@@ -616,7 +623,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       round.a
       
       repaint.i
-      resize.b
+      resize.l
       
       *errors
       notify.l ; оповестить об изменении
@@ -698,6 +705,28 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
+      
+; ;       
+; ;       *widget._s_WIDGET
+; ;       transform.b
+; ;       cursor.b
+; ;       y.l[constants::#__c]
+; ;       x.l[constants::#__c]
+; ;       height.l[constants::#__c]
+; ;       width.l[constants::#__c]
+; ;       *address
+; ;       count._s_count
+; ;       repaint.b
+; ;       *event._s_EVENT
+; ;       *container
+; ;       class.s
+; ;       *root._s_ROOT     ; this root
+; ;       
+; ;       *parent._s_WIDGET; this parent
+; ;       *window._s_WIDGET; this parent window       ; root( )\active\window
+; ;       color._s_color[4]
+; ;       
+; ;       text._s_text
     EndStructure
     
     ;- - _s_events
@@ -724,5 +753,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------0-
+; Folding = -------5-
 ; EnableXP

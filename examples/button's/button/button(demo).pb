@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -124,8 +124,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
-; CursorPosition = 116
-; FirstLine = 99
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP
