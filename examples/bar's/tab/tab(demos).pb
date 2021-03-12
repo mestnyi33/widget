@@ -15,7 +15,7 @@ Enumeration
   #__tab_Editable             = 1<<9
   #__tab_MultiSelect          = 1<<10
   #__tab_CheckBox             = 1<<11
-  #__s_SelectedCloseButton  = 1<<12
+  #__tab_SelectedCloseButton    = 1<<12
   #__tab_ReverseOrdering      = 1<<13
   #__tab_ImageSize            = 1<<23
   #__tab_TabTextAlignment     = 1<<24
@@ -354,7 +354,7 @@ Repeat
         Case #Gadget_CloseButton
           SetAttribute(*tab1, #__tab_CloseButton, GetGadgetState(#Gadget_CloseButton))
         Case #Gadget_SelectedCloseButton
-          SetAttribute(*tab1, #__s_SelectedCloseButton, GetGadgetState(#Gadget_SelectedCloseButton))
+          SetAttribute(*tab1, #__tab_SelectedCloseButton, GetGadgetState(#Gadget_SelectedCloseButton))
         Case #Gadget_EmptyButton
           SetAttribute(*tab1, #__tab_NewTab, GetGadgetState(#Gadget_EmptyButton))
         Case #Gadget_Vertical

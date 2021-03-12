@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Global enumerate_count
 
@@ -48,7 +48,7 @@ Procedure StartGadget( )
   ProcedureReturn 1
 EndProcedure
 
-Procedure NextGadget( *this.Integer, parent =- 1 ) 
+Procedure NextGadget( *this.Integer, parent =- 1) 
   Protected *element
   
   If Not enumerate_count
@@ -92,8 +92,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322, 600, "PanelGadget", #PB_Window_SystemMenu
   
   Define y = 5
   For i = 1 To 4
-    Window(5, y, 150, 95+#__window_frame, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-    Container(5, 5, 120,85, #PB_Container_Flat)                                                                         ; Gadget(i, 
+    Window(5, y, 150, 95, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
+    Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                                         ; Gadget(i, 
     Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                                    ; Gadget(i+10,
     Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                                    ; Gadget(i+20,
     CloseList()                                                                                                         ; Gadget

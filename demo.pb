@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_ProgressBar)) = Progress(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
     Widgets(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : Widgets(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
-    Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #__Bar_Ticks) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
+    Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
     
     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, 1)

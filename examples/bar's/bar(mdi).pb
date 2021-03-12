@@ -711,7 +711,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
       Open(0, 200,10, 600, Height,"", #PB_Canvas_Keyboard|#PB_Canvas_Container, @Canvas_CallBack())
       g_Canvas = GetGadget(Root())
-      ;OpenGadgetList(g_Canvas)
+      BindGadgetEvent(g_Canvas, @Canvas_CallBack())
+      Bind(root(), 0)
+  ;OpenGadgetList(g_Canvas)
       
 ;       g_Canvas = CanvasGadget(#PB_Any, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
 ;       SetGadgetAttribute(g_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
@@ -914,5 +916,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------v---
+; Folding = ------------
 ; EnableXP

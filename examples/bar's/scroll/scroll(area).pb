@@ -19,35 +19,43 @@ CompilerIf #PB_Compiler_IsMainFile
   Global NewList Images.IMAGES( )
   Declare  Canvas_Draw( canvas.i, List Images.IMAGES( ) )
   
-  
   Macro Area_Draw( _this_ )
-    widget::bar_updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
-   
+    widget::bar_updates( _this_,
+                         _this_\scroll\h\x, 
+                         _this_\scroll\v\y, 
+                         (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
+                         (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+    
     If Not _this_\scroll\v\hide
-      Draw( _this_\scroll\v )
+      widget::Draw( _this_\scroll\v )
     EndIf
     If Not _this_\scroll\h\hide
-      Draw( _this_\scroll\h )
+      widget::Draw( _this_\scroll\h )
     EndIf
     
     UnclipOutput( )
     DrawingMode( #PB_2DDrawing_Outlined )
-     Box( x, y, Width, Height, RGB( 0,255,255 ) )
-    ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], RGB( 255,0,255 ) )
-;     Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-     Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 255,255,0 ) )
+    Box( x, y, Width, Height, RGB( 0,255,0 ) )
+    Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
     
-   ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+    ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
     Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
   EndMacro
   
-  Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _size_, _callback_, _flag_=#Null)
+  Macro Area_Use( _canvas_window_, _canvas_gadget_ = #PB_Any )
+    Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, 0, _canvas_gadget_ )
+  EndMacro
+  
+  Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _size_, _flag_=#Null)
     _parent_\scroll\v = widget::scroll( _x_+_width_-_size_, _y_, _size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
     _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_size_, 0,  _size_, 0, 0, 0, _flag_, 11 )
-    
+  EndMacro                                                  
+  
+  Macro Area_Bind( _parent_, _callback_)
     If _callback_
       Bind( _parent_\scroll\v, _callback_ )
       Bind( _parent_\scroll\h, _callback_ )
+      Bind( root( ), 0 ) 
     EndIf
   EndMacro                                                  
   
@@ -78,15 +86,17 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-;   Procedure bUpdate( )
-;     Debug "  "+*this\scroll\h\x +" "+ *this\scroll\v\y +" "+ Str((*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x) +" "+ Str((*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y)
-;     ;widget::bar_Updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
-;   
-;   EndProcedure
-;   
+  ;   Procedure bUpdate( )
+  ;     Debug "  "+*this\scroll\h\x +" "+ *this\scroll\v\y +" "+ Str((*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x) +" "+ Str((*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y)
+  ;     ;widget::bar_Updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
+  ;   
+  ;   EndProcedure
+  ;   
   ;-
   Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
-    Debug Images( )\x
+    Protected round
+    
+    ;Debug Images( )\x
     *this\x[#__c_required] = Images( )\x 
     *this\y[#__c_required] = Images( )\Y
     *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required]
@@ -97,24 +107,34 @@ CompilerIf #PB_Compiler_IsMainFile
       If *this\x[#__c_required] > Images( )\x : *this\x[#__c_required] = Images( )\x : EndIf
       If *this\y[#__c_required] > Images( )\y : *this\y[#__c_required] = Images( )\y : EndIf
     Next
+    ForEach Images( )
+      If *this\width[#__c_required] < Images( )\x+Images( )\width - *this\x[#__c_required] : *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required] : EndIf
+      If *this\height[#__c_required] < Images( )\Y+Images( )\height - *this\y[#__c_required] : *this\height[#__c_required] = Images( )\Y+Images( )\height - *this\y[#__c_required] : EndIf
+    Next
     PopListPosition( Images( ) )
     
     If StartDrawing( CanvasOutput( canvas ) )
       DrawingMode( #PB_2DDrawing_Default )
       Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
       
-      ;ClipOutput( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
+      If GetGadgetState(5)
+        UnclipOutput()
+        DrawingMode( #PB_2DDrawing_Outlined )
+        ForEach Images( )
+          round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
+          RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
+        Next
+        ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
+      EndIf
       
       DrawingMode( #PB_2DDrawing_AlphaBlend )
       ForEach Images( )
-        
         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
-        If *this\width[#__c_required] < Images( )\x+Images( )\width - *this\x[#__c_required] : *this\width[#__c_required] = Images( )\x+Images( )\width - *this\x[#__c_required] : EndIf
-        If *this\height[#__c_required] < Images( )\Y+Images( )\height - *this\y[#__c_required] : *this\height[#__c_required] = Images( )\Y+Images( )\height - *this\y[#__c_required] : EndIf
       Next
-      Debug *this\y[#__c_required]
-;       FirstElement(Images( ))
-;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
+      
+      ;;Debug *this\y[#__c_required]
+      ;       FirstElement(Images( ))
+      ;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
       
       Area_Draw( *this )
       
@@ -185,6 +205,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Height = GadgetHeight( Canvas ) - y*2
     
     Select Event
+      Case #PB_EventType_Repaint
+        Repaint = #True
+        
       Case #PB_EventType_LeftButtonUp : Drag = #False
         SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default )
         
@@ -230,7 +253,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Resize 
         ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
         
-        widget::bar_Resizes( *this, x, y, width, height )
+        widget::bar_Resizes( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
         
         Repaint = #True
     EndSelect
@@ -248,42 +271,45 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_Resize()
     ResizeGadget(MyCanvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-10-100)
   EndProcedure
- 
+  
   If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
     MessageRequester( "Fatal error", "Program terminated." )
     End
   EndIf
   
   BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
- ;
+  ;
   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
   CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
- 
+  CheckBoxGadget(5, 10, 70, 80,20, "clipoutput") : SetGadgetState(5, 1)
+  
   If CreateImage(0, 200, 80)
     
     StartDrawing(ImageOutput(0))
     
     FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
     
-    Box(5, 10, 30, 2, RGB( 0,255,255 ))
-    Box(5, 10+20, 30, 2, RGB( 255,0,255 ))
-    Box(5, 10+40, 30, 2, RGB( 255,0,0 ))
-    Box(5, 10+60, 30, 2, RGB( 255,255,0 ))
+    DrawingMode(#PB_2DDrawing_Default)
+    Box(5, 10, 30, 2, RGB( 0,255,0 ))
+    Box(5, 10+25, 30, 2, RGB( 0,0,255 ))
+    Box(5, 10+50, 30, 2, RGB( 255,0,0 ))
     
     DrawingMode(#PB_2DDrawing_Transparent)
-    ;FrontColor(RGB(0,0,0)) ; print the text to white !
     DrawText(40, 5, "frame - (coordinate color)",0,0)
-    DrawText(40, 25, "scroll - (coordinate color)",0,0)
-    DrawText(40, 45, "max - (coordinate color)",0,0)
-    DrawText(40, 65, "page - (coordinate color)",0,0)
+    DrawText(40, 30, "page - (coordinate color)",0,0)
+    DrawText(40, 55, "max - (coordinate color)",0,0)
     
     StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
     
   EndIf
   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
   
-  MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_CallBack( ) ) )
+  ;
+  MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) 
+  BindGadgetEvent(MyCanvas, @Canvas_CallBack())
+  Area_Use( 0, MyCanvas)
+  ;MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_CallBack( ) ) )
   
   ; add new images
   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
@@ -300,12 +326,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   Canvas_AddImage( Images( ),x+180,y+180,hole,#True )
   
+  *this\fs = 2
+  *this\bs = 0
   ;
-  Area_Create( *this, x,y,width,height, 20, @Area_Events( ) )
+  Area_Create( *this, x,y,width,height, 20 )
+  Area_Bind( *this, @Area_Events( ) ) 
   
   
   Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
   Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
+  
   
   Repeat
     Event = WaitWindowEvent( )
@@ -327,7 +357,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Else
               SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
             EndIf
-           
+            
           Case 3
             If GetGadgetState(2)
               SetAttribute(*this\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
@@ -337,7 +367,7 @@ CompilerIf #PB_Compiler_IsMainFile
               SetWindowTitle(0, Str(GetState(*this\scroll\h)))
             EndIf
             Canvas_Draw(MyCanvas, Images( ))
-           
+            
           Case 4
             If GetGadgetState(2)
               SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -348,11 +378,14 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             Canvas_Draw(MyCanvas, Images( ))
             
+          Case 5
+            Canvas_Draw(MyCanvas, Images( ))
+            
         EndSelect
     EndSelect
-  
+    
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 4-0r----
+; Folding = 83vf0-r+
 ; EnableXP

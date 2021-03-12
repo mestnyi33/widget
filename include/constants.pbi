@@ -287,10 +287,10 @@
     #__align_top                   = #__flag_top  
     #__align_right                 = #__flag_right
     #__align_bottom                = #__flag_bottom
+    #__align_center                = #__flag_center
     
     #__align_full                  = #__flag_full
     #__align_auto                  = #__flag_autosize
-    #__align_center                = #__flag_center
     #__align_proportional          = #__flag_proportional
     #__align_proportional_vertical = #__flag_vertical
     
@@ -315,7 +315,11 @@
     EndEnumeration
     
     
-    EnumerationBinary 64
+    #__alignFlagCount = 22
+    #__alignFlagValue = 2147483648 >> ( #__alignFlagCount - 1 )
+    
+    EnumerationBinary #__alignFlagValue
+    ;EnumerationBinary 64
       #__align_text_left 
       #__align_text_top
       #__align_text_center
@@ -337,6 +341,7 @@
       #__align_widget_center
       #__align_widget_right 
       #__align_widget_bottom 
+      #__align_widget_auto
       #__align_widget_full
       
       #__align_widget_proportional
@@ -361,36 +366,36 @@
       #__text_invert 
       
       #__text_InLine 
-      
       #__text_multiline 
       #__text_wordwrap 
-      #__text_numeric 
+      
       #__text_password 
       #__text_readonly 
-      #__text_lowercase 
       #__text_uppercase 
+      #__text_lowercase 
+      #__text_numeric 
     EndEnumeration
     
 ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;       Debug #PB_Text_Right  ; 1
-;       Debug #PB_Text_Center ; 2
-;       Debug #PB_Text_Border ; 4
+;       Debug #PB_Text_Right         ; 1  ; 2         ; 
+;       Debug #PB_Text_Center        ; 2  ; 1         ; 
+;       Debug #PB_Text_Border        ; 4  ; 131072    ; 
 ;       
-;       Debug #PB_Button_Right     ; 1
-;       Debug #PB_Button_Left      ; 2
-;       Debug #PB_Button_Toggle    ; 4
-;       Debug #PB_Button_Default   ; 8
-;       Debug #PB_Button_MultiLine ; 16
+;       Debug #PB_Button_Right       ; 1  ; 512       ; 
+;       Debug #PB_Button_Left        ; 2  ; 256       ; 
+;       Debug #PB_Button_Toggle      ; 4  ; 4099      ; 
+;       Debug #PB_Button_Default     ; 8  ; 1         ; 
+;       Debug #PB_Button_MultiLine   ; 16 ; 8192      ; 
 ;       
-;       Debug #PB_String_Password    ; 1
-;       Debug #PB_String_ReadOnly    ; 2
-;       Debug #PB_String_UpperCase   ; 4
-;       Debug #PB_String_LowerCase   ; 8
-;       Debug #PB_String_Numeric     ; 16
-;                                    ; Debug #PB_String_BorderLess  ; 32
+;       Debug #PB_String_Password    ; 1  ; 32        ; 
+;       Debug #PB_String_ReadOnly    ; 2  ; 2048      ; 
+;       Debug #PB_String_UpperCase   ; 4  ; 8         ; 
+;       Debug #PB_String_LowerCase   ; 8  ; 16        ; 
+;       Debug #PB_String_Numeric     ; 16 ; 8192      ; 
+;       Debug #PB_String_BorderLess  ; 32 ; 131072    ; 
 ;       
-;       Debug #PB_Editor_ReadOnly    ; 1
-;       Debug #PB_Editor_WordWrap    ; 2
+;       Debug #PB_Editor_ReadOnly    ; 1  ; 2048      ; 
+;       Debug #PB_Editor_WordWrap    ; 2  ; 268435456 ; 
 ;     CompilerEndIf
 
     #__text_border = #__flag_borderless;#PB_text_border
@@ -450,7 +455,7 @@
     #__Window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
                                                          ;     #__Window_closeGadget    = #PB_Window_NoActivate<<2
                                                          ;     #__Window_close          = #PB_Window_NoActivate<<2
-    #PB_Window                 = #PB_Window_NoActivate<<2
+    ;#PB_Window                 = #PB_Window_NoActivate<<2
     
     ;- _c_spin
     #__spin_left = #__text_left
@@ -495,33 +500,38 @@
     #__ListFlagValue = 2147483648 >> ( #__ListFlagCount - 1 )
     
     EnumerationBinary #__ListFlagValue
+      #__list_vertical   
       #__list_NoLines    
       #__list_SubLevel   
       #__list_NoButtons  
       #__list_CheckBoxes 
       #__list_ThreeState 
-      #__list_Collapsed  
       
       #__list_ClickSelect
       #__list_MultiSelect
                                             
-      #__list_Checked    
-      #__list_Expanded   
-      #__list_Selected   
-      #__list_Inbetween 
+      #__list_Collapsed  
+       #__list_Expanded   
+;       #__list_Checked    
+;       #__list_Selected   
+;       #__list_Inbetween 
     EndEnumeration
     
     ;- _c_tree
+    #PB_Tree_Collapse = 32
+    #PB_Tree_OptionBoxes = 64
+    #PB_Tree_GridLines = 128
     
     #__tree_alwaysselection = #__flag_alwaysselection
-    #__tree_nolines = #__flag_nolines
-    #__tree_nobuttons = #__flag_nogadgets
-    #__tree_checkboxes = #__flag_checkboxes
-    #__tree_threestate = #__flag_threeState
-    #__tree_optionboxes = #__flag_optionboxes
-    #__tree_gridlines = #__flag_gridLines
+    #__tree_nolines = #PB_Tree_NoLines ; #__flag_nolines
+    #__tree_nobuttons = #PB_Tree_NoButtons ; #__flag_nogadgets
+    #__tree_checkboxes = #PB_Tree_CheckBoxes ; #__flag_checkboxes
+    #__tree_threestate = #PB_Tree_ThreeState ; #__flag_threeState
+    #__tree_optionboxes = #PB_Tree_OptionBoxes ; #__flag_optionboxes
+    #__tree_gridlines = #PB_Tree_GridLines ; #__flag_gridLines
     #__tree_multiselect = #__flag_multiline
     #__tree_clickselect = #__flag_clickselect
+    #__tree_collapse = #PB_Tree_Collapse
     
     #__tree_property = #__flag_numeric
     #__tree_listview = #__flag_readonly

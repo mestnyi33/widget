@@ -1,9 +1,4 @@
-﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
-
-Uselib( Widget )
-
-#Window = 0
+﻿XIncludeFile "../../../widgets.pbi" : Uselib( Widget )
 
 Enumeration   1 ; Images
   #ImageSource
@@ -120,7 +115,7 @@ Procedure Events( )
   
 EndProcedure
 
-If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered )       
+If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered ), #PB_Default )   
   ;
   ; Create some images for the image demonstration
   ; 
@@ -175,19 +170,7 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   TargetFiles = ListIcon( 310, 160, 140, 140, "Drop Files here", 130 )
   TargetPrivate1 = ListIcon( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
   TargetPrivate2 = ListIcon( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
-  
-;   AddItem( TargetText, -1, "hello world" )
-;   AddItem( TargetText, -1, "The quick brown fox jumped over the lazy dog" )
-;   AddItem( TargetText, -1, "abcdefg" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-;   AddItem( TargetText, -1, "123456789" )
-  
+    
   ; Now enable the dropping on the target s
   ;
   EnableDrop( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
@@ -197,7 +180,7 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   EnableDrop( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
   
   ; Bind( -1, @Events( ) )
-  
+  ;
   Bind( SourceImage, @Events( ), #PB_EventType_DragStart )
   Bind( TargetImage, @Events( ), #PB_EventType_Drop )
   
@@ -208,14 +191,15 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   Bind( TargetPrivate1, @Events( ), #PB_EventType_Drop )
   Bind( TargetPrivate2, @Events( ), #PB_EventType_Drop )
   
-  ReDraw( Root( ) )
-  
-  Repeat
-    Event = WaitWindowEvent( )
-  Until Event = #PB_Event_CloseWindow
+  WaitClose( )
+;   ReDraw( Root( ) )
+;   
+;   Repeat
+;     Event = WaitWindowEvent( )
+;   Until Event = #PB_Event_CloseWindow
 EndIf
 
 End
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -f+
+; Folding = +f+
 ; EnableXP

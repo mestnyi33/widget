@@ -1,4 +1,27 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
+; Define i
+; For i = 0 To 32
+;   Debug ""+i +" "+ Str( 2147483648 >> ( (i - 1) ) )
+; Next
+
+;#__window_child          = #__flag_child
+Debug #PB_Window_Normal         ; 0     ; 0
+Debug #PB_Window_TitleBar       ; 8     ; 12582912   ; Creates a window with a titlebar.
+Debug #PB_Window_SystemMenu     ; 4     ; 13107200   ; Enables the system menu on the window title bar (Default).
+Debug #PB_Window_SizeGadget     ; 2     ; 12845056   ; Adds the sizeable feature To a window.
+Debug #PB_Window_MinimizeGadget ; 32    ; 13238272   ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
+Debug #PB_Window_MaximizeGadget ; 16    ; 13172736   ; Adds the maximize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
+                                                     ; (MacOS only ; #PB_Window_SizeGadget will be also automatically added).
+Debug #PB_Window_Invisible      ; 1     ; 268435456  ; Creates the window but don't display.
+Debug #PB_Window_ScreenCentered ; 64    ; 1          ; Centers the window in the middle of the screen. x,y parameters are ignored.
+Debug #PB_Window_WindowCentered ; 256   ; 2          ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified).
+Debug #PB_Window_BorderLess     ; 128   ; 2147483648 ; Creates a window without any borders.
+Debug #PB_Window_Tool           ; 2048  ; 4          ; Creates a window with a smaller titlebar And no taskbar entry. 
+                                                     ;                 x,y parameters are ignored.
+Debug #PB_Window_Maximize       ; 512   ; 16777216   ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+Debug #PB_Window_Minimize       ; 1024  ; 536870912  ;  Opens the window minimized.
+Debug #PB_Window_NoGadgets      ; 4096  ; 8          ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+Debug #PB_Window_NoActivate     ; 8192  ; 33554432   ; Don't activate the window after opening.
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget) 

@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widgets-bar.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)

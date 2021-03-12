@@ -504,7 +504,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data ; EventData( )
     EndStructure
     
-  ;- - _s_bind 
+   ;- - _s_bind 
     Structure _s_func
       *func.pFunc
     EndStructure
@@ -687,13 +687,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_canvas
     Structure _s_canvas
       *address            ; root list address
-      *widget._s_WIDGET   ; opened list element
+      *fontID             ; default drawing fontid
       
-      *fontID
       container.i
-      window.i
-      gadget.i
-      repaint.b
+      window.i            ; canvas window
+      gadget.i            ; canvas gadget
+      
+      postevent.b         ; post evet canvas repaint
+      bindevent.b         ; bind canvas event
     EndStructure
     
     ;- - _s_sticky
@@ -705,42 +706,21 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
-      
-; ;       
-; ;       *widget._s_WIDGET
-; ;       transform.b
-; ;       cursor.b
-; ;       y.l[constants::#__c]
-; ;       x.l[constants::#__c]
-; ;       height.l[constants::#__c]
-; ;       width.l[constants::#__c]
-; ;       *address
-; ;       count._s_count
-; ;       repaint.b
-; ;       *event._s_EVENT
-; ;       *container
-; ;       class.s
-; ;       *root._s_ROOT     ; this root
-; ;       
-; ;       *parent._s_WIDGET; this parent
-; ;       *window._s_WIDGET; this parent window       ; root( )\active\window
-; ;       color._s_color[4]
-; ;       
-; ;       text._s_text
+      *openlist._s_WIDGET   ; opened list element
     EndStructure
     
-    ;- - _s_events
-    Structure _s_events 
+    ;- - _s_INCLUDE
+    Structure _s_INCLUDE 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; top level
       
       *active._s_WIDGET             ; GetActiveWindow( )\
-      *widget._s_WIDGET             ; EventWidget( )\
-      *event._s_EVENTDATA
+      *widget._s_WIDGET             ; EventWidget( )\ 
+      *event._s_EVENTDATA           ; WidgetEvent( )\ ; \type ; \item ; \data
       
       List *_root._s_ROOT( )        ; 
-      List *_childrens._s_WIDGET( ) ; widget( )\
+      List *address._s_WIDGET( ) ; widget( )\
     EndStructure
     
     ;Global *event._s_events = AllocateStructure(_s_events)
@@ -753,5 +733,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------5-
+; Folding = ------f0-
 ; EnableXP

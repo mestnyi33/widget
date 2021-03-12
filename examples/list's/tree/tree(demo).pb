@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 UseLib(widget)
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ;ListViewGadget(0, 10, 10, 160, 160) 
     tree = PB(TreeGadget)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-    *tree = Tree(190, 10, 170, 160, #__Tree_GridLines | #__Tree_CheckBoxes | #__Tree_NoLines | #__Tree_ThreeState | #__Tree_Collapse)                                                     ; | | #__Tree_AlwaysShowSelection #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+    *tree = Tree(190, 10, 170, 160, #PB_Tree_GridLines | #PB_Tree_CheckBoxes | #__list_nolines | #PB_Tree_ThreeState | #PB_Tree_Collapse)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
     Define a
     
     For a = 0 To 10

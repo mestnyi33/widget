@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -87,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If *before
-          *last = GetLast(*before)
+          *last = GetLast(*before, 0)
           ;           Debug *before\class
           ;           Debug *last\class
           
@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetGadget(bind(Open(0, 10, 10),-1));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetClass(widget(), "form_0")
   Button(10,10,100,90,"button_0") : SetClass(widget(), GetText(widget()))

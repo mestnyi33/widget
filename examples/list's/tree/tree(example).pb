@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
 
@@ -215,19 +215,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_tree_widget()
     With structures::*event
       ;Debug " widget - "+this()\widget+" "+this()\event
-    Protected EventGadget = this()\widget
-    Protected EventType = this()\event
-    Protected EventData = this()\data
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEventType( )
+    Protected EventData = EventWidget( )\data
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
       Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DD::DragText(GetItemText(EventGadget, EventItem))
+        DragText(GetItemText(EventGadget, EventItem))
         
       Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        Debug DD::DropText()
+        Debug EventDropText()
         
       Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
@@ -417,7 +417,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
     ;{  3_example
-    *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
+    *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapse)                                         
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -485,7 +485,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 100, 210, 210, #__tree_NoLines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 100, 210, 210, #__list_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         AddItem(*g, 1, "Tree_1", -1, 1) 
         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -512,7 +512,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__list_nolines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7

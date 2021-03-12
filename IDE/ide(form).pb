@@ -593,7 +593,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Case #__event_Drop
           ; Debug "drop - " + DroppedText( )
           widget_add( EnterWidget, 
-                      _EventDropText( ),
+                      DD_DropText( ),
                       mouse()\x - EventWidget( )\x[#__c_inner],
                       mouse()\y - EventWidget( )\y[#__c_inner], 
                       100, 
@@ -810,7 +810,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select e_type
       Case #__event_DragStart
         Debug "drag - "
-        _DragText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        DD_DragText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
         
       Case #__event_StatusChange
         SetText( id_help_text, GetItemText( EnterWidget, e_item ) )

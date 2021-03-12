@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 ;- EXAMPLE
@@ -193,7 +193,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Demo()
     Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    Open(0, 0, 0, 250, 180)
+    Open(0, 0, 0, 250, 180) : bind(-1,-1)
     
     ;{ first container
     Container(55, 95, 30, 45)                     ; Gadget(9,   
