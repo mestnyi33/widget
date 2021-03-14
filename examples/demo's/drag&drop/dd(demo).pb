@@ -70,7 +70,7 @@ Procedure Events( )
     Case #PB_EventType_Drop
       Debug  "Drop - " + EventWidget
       ; clearitems(EventWidget)
-      
+           
       Select EventWidget
           
         Case TargetText
@@ -110,6 +110,10 @@ Procedure Events( )
           AddItem( TargetPrivate2, -1, "Private type 2 EventDrop" )
           
       EndSelect
+      
+;       If EventWidget = DD_DropPrivate( )
+;         AddItem( DD_DropPrivate( ), -1, "Private type 2 EventDrop" )
+;       EndIf
       
   EndSelect
   
@@ -201,5 +205,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +f+
+; Folding = -f+
 ; EnableXP

@@ -15,6 +15,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib( WIDGET )
   UsePNGImageDecoder( )
   
+  #_drag_private_type = 1
+  
   ;- ENUMs
   ; properties items
   Enumeration 
@@ -452,6 +454,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag.i
     
     If *parent 
+      class.s = LCase( Trim( class ) )
+      OpenList( *parent, GetState( *parent ) ) 
+      
+      If class = "scrollarea"
+        *param1 = width
+        *param2 = height
+        *param3 = 5
+      EndIf
+      
       If transform( ) And transform( )\grid\size
         x = ( x/transform( )\grid\size ) * transform( )\grid\size
         y = ( y/transform( )\grid\size ) * transform( )\grid\size
@@ -466,14 +477,13 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
       EndIf
       
-      class.s = LCase( Trim( class ) )
-      OpenList( *parent, GetState( *parent ) ) 
-      
-      If class = "scrollarea"
-        *param1 = width
-        *param2 = height
-        *param3 = 5
+      If Not width Or width = 1
+        width = 100
       EndIf
+      If Not height Or height = 1
+        height = 30
+      EndIf
+      
       
       ; create elements
       Select class
@@ -518,7 +528,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
-          EnableDrop( *new, #PB_Drop_Text, #PB_Drag_Copy )
+          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_drag_private_type )
         EndIf
         
         Class.s = GetClass( *new )+"_"+GetCount( *new )
@@ -588,22 +598,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected e_type = WidgetEventType( )
     Protected EnterWidget = EventWidget( )
     
-    If EventWidget( )\container
+    If IsContainer( EnterWidget )
       Select e_type 
-        Case #__event_Drop
-          ; Debug "drop - " + DroppedText( )
-          widget_add( EnterWidget, 
-                      DD_DropText( ),
-                      mouse()\x - EventWidget( )\x[#__c_inner],
-                      mouse()\y - EventWidget( )\y[#__c_inner], 
-                      100, 
-                      30 )
+        Case #PB_EventType_DragStart
+          DragPrivate( #_drag_private_type )
+          
+        Case #PB_EventType_Drop
+          widget_add( EnterWidget, GetText( id_elements_tree ), EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
           
           ; no create new 
           SetState( id_elements_tree, 0 )
-          Debug "drop widget"
+          ; Debug "drop - " + " xy=("+ EventDropX( ) +","+ EventDropY( ) +")" +" wh=("+ EventDropWidth( ) +","+ EventDropHeight( ) +")"
+          ;; Debug "drop widget"
           
-        Case #__event_LeftButtonUp
+        Case #PB_EventType_LeftButtonUp
           
           If transform( )\widget\transform <> 1
             SetState( id_inspector_tree, -1 )
@@ -619,7 +627,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Next
           EndIf
           
-        Case #__event_LeftButtonDown
+          
+        Case #PB_EventType_LeftButtonDown
           If transform( )\type > 0 Or group_select
             ;transform( )\grab = 1
             If group_select 
@@ -634,13 +643,13 @@ CompilerIf #PB_Compiler_IsMainFile
           ;           EndIf
           
           
-        Case #__event_MouseEnter
+        Case #PB_EventType_MouseEnter
           Debug "enter widget " + transform( )\type
           If transform( )\type > 0
             SetCursor( EnterWidget, #PB_Cursor_Cross )
           EndIf
           
-        Case #__event_MouseLeave
+        Case #PB_EventType_MouseLeave
           If transform( )\type > 0 
             If Not mouse( )\buttons
               SetCursor( EnterWidget, #PB_Cursor_Default )
@@ -652,44 +661,11 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Select e_type 
-      Case #__event_MouseMove
-      Case #__event_LeftButtonUp
-        If transform( )\grab
-          If transform( )\type
-            
-            ; default width 
-            If Not transform( )\id[0]\width
-              transform( )\id[0]\width = 50
-              transform( )\id[0]\x = mouse( )\delta\x + FocusWidget( )\x
-            EndIf
-            
-            ; default height
-            If Not transform( )\id[0]\height
-              transform( )\id[0]\height = 50
-              transform( )\id[0]\y = mouse( )\delta\y + FocusWidget( )\y
-            EndIf
-            
-            ;
-            transform( )\id[0]\x - FocusWidget( )\x[#__c_inner]
-            transform( )\id[0]\y - FocusWidget( )\y[#__c_inner]
-            
-            widget_add( EnterWidget, 
-                        GetText( id_elements_tree ),
-                        transform( )\id[0]\x,
-                        transform( )\id[0]\y, 
-                        transform( )\id[0]\width, 
-                        transform( )\id[0]\height )
-            
-            ; no create new 
-            SetState( id_elements_tree, 0 )
-            transform( )\type = 0
-          EndIf
-          
-          transform( )\grab = 0
-        EndIf
+      Case #PB_EventType_MouseMove
+      Case #PB_EventType_LeftButtonUp
         
         
-      Case #__event_StatusChange
+      Case #PB_EventType_StatusChange
         ;If GetState( id_inspector_tree ) <> GetData( EnterWidget )
         SetState( id_inspector_tree, GetData( EnterWidget ) )
         ;EndIf
@@ -698,7 +674,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         properties_update( id_properties_tree, EnterWidget )
         
-      Case #__event_Resize
+      Case #PB_EventType_Resize
         properties_update_coordinate( id_properties_tree, EnterWidget )
         
     EndSelect
@@ -808,14 +784,18 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EnterWidget = EventWidget( )
     
     Select e_type
-      Case #__event_DragStart
+      Case #PB_EventType_DragStart
         Debug "drag - "
-        DD_DragText( GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        ;         DD_EventDragWidth( ) 
+        ;         DD_EventDragHeight( )
         
-      Case #__event_StatusChange
+        transform( )\type = 0
+        DragPrivate( #_drag_private_type )
+        
+      Case #PB_EventType_StatusChange
         SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
         
-      Case #__event_Change
+      Case #PB_EventType_Change
         If EnterWidget = id_elements_tree
           transform( )\type = GetState( EnterWidget )
         EndIf
@@ -831,19 +811,19 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         
-      Case #__event_MouseEnter
+      Case #PB_EventType_MouseEnter
         ; Debug "id_elements - enter"
         ;       If transform( )\type > 0 
         ;         SetCursor( EventWidget( ), #PB_Cursor_Default )
         ;       EndIf
         
-      Case #__event_MouseLeave
+      Case #PB_EventType_MouseLeave
         ; Debug "id_elements - leave"
         ;       If transform( )\type > 0 
         ;         SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, transform( )\type ) ) )
         ;       EndIf
         
-      Case #__event_LeftClick
+      Case #PB_EventType_LeftClick
         If EnterWidget = id_elements_tree
           Debug "click"
           ; SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, transform( )\type ) ) )
@@ -1063,13 +1043,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( id_inspector_tree, @ide_events( ) )
     
     ;Bind( id_elements_tree, @ide_events( ) )
-    Bind( id_elements_tree, @ide_events( ), #__event_LeftClick )
-    Bind( id_elements_tree, @ide_events( ), #__event_Change )
-    Bind( id_elements_tree, @ide_events( ), #__event_StatusChange )
-    Bind( id_elements_tree, @ide_events( ), #__event_DragStart )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_LeftClick )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_Change )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_StatusChange )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_DragStart )
     
-    Bind( id_elements_tree, @ide_events( ), #__event_MouseEnter )
-    Bind( id_elements_tree, @ide_events( ), #__event_MouseLeave )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_MouseEnter )
+    Bind( id_elements_tree, @ide_events( ), #PB_EventType_MouseLeave )
     ProcedureReturn window_ide
   EndProcedure
   
@@ -1145,7 +1125,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ; ;   CloseGadgetList( )
     
     
-    
+    Bind( root( ), #PB_Default )
     Repeat 
       event = WaitWindowEvent( ) 
       
@@ -1176,7 +1156,8 @@ CompilerIf #PB_Compiler_IsMainFile
     group_width:      : IncludeBinary "group/group_width.png"
     group_height:     : IncludeBinary "group/group_height.png"
   EndDataSection
+  
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------
+; Folding = -----f----------4
 ; EnableXP

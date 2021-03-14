@@ -265,10 +265,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      index.l[3] ;;;;;
-      gadget.i[3]
-      
-      item.l  ; tab opened item index  
+      index.l  ; tab opened item index  
       fixed.l ; splitter fixed button index  
       mode.i
       
@@ -481,12 +478,18 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     EndStructure
 ;     
     ;- - _s_dd
-    Structure _S_DD Extends _s_coordinate
+    Structure _S_Drop
       privatetype.i
       format.i
       actions.i
+    EndStructure
+    
+    Structure _S_DD Extends _S_Drop
+      y.l
+      x.l
+      width.l
+      height.l
       
-      ; dragged
       *value
       string.s
     EndStructure
@@ -607,7 +610,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       draw_widget.b
       
-      item.l ; parent-panel tab item index
+      ;item.l ; parent-panel tab item index
+      tabindex.i
       
       
       child.b ; is the widget composite?
@@ -733,5 +737,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------f0-
+; Folding = -------8-
 ; EnableXP
