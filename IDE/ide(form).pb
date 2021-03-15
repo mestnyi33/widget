@@ -353,7 +353,7 @@ CompilerIf #PB_Compiler_IsMainFile
         UseZipPacker( )
       CompilerEndIf
       
-      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+      Protected PackEntryName.s, ImageSize, *memory, Image, ZipFile
       ZipFile = OpenPack( #PB_Any, ZipFile$, #PB_PackerPlugin_Zip )
       
       If ZipFile  
@@ -363,81 +363,72 @@ CompilerIf #PB_Compiler_IsMainFile
             PackEntryName.S = PackEntryName( ZipFile )
             ImageSize = PackEntrySize( ZipFile )
             If ImageSize
-              *Image = AllocateMemory( ImageSize )
-              UncompressPackMemory( ZipFile, *Image, ImageSize )
-              Image = CatchImage( #PB_Any, *Image, ImageSize )
+              *memory = AllocateMemory( ImageSize )
+              UncompressPackMemory( ZipFile, *memory, ImageSize )
               PackEntryName.S = ReplaceString( PackEntryName.S,".png","" )
+              
               If PackEntryName.S="application_form" 
                 PackEntryName.S="vd_windowgadget"
               EndIf
               
-              PackEntryName.S = ReplaceString( PackEntryName.S,"page_white_edit","vd_scintillagadget" )   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+              If PackEntryName.S="page_white_edit" 
+                PackEntryName.S="vd_scintillagadget"
+              EndIf
               
               Select PackEntryType( ZipFile )
                 Case #PB_Packer_File
-                  If Image
-                    If FindString( Left( PackEntryName.S, 3 ), "vd_" )
-                      PackEntryName.S = ReplaceString( PackEntryName.S,"vd_"," " )
-                      PackEntryName.S = Trim( ReplaceString( PackEntryName.S,"gadget","" ) )
-                      PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
-                      PackEntryName.S = ReplaceString( PackEntryName.S,"area","Area" )
-                      ;;PackEntryName.S = ReplaceString( PackEntryName.S,"bar","Bar" )
-                      PackEntryName.S = ReplaceString( PackEntryName.S,"image","Image" )
+                  If FindString( Left( PackEntryName.S, 3 ), "vd_" )
+                    PackEntryName.S = ReplaceString( PackEntryName.S,"vd_","" )
+                    PackEntryName.S = ReplaceString( PackEntryName.S,"gadget","" )
+                    PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
+                    PackEntryName = LCase( PackEntryName.S )
+                    
+                    If FindString( PackEntryName, "cursor" )
+                      PackEntryName.S = UCase( Left( PackEntryName.S, 1 ) ) + 
+                                        Right( PackEntryName.S, Len( PackEntryName.S )-1 )
                       
-                      Protected Left.S = UCase( Left( PackEntryName.S, 1 ) )
-                      Protected Right.S = Right( PackEntryName.S,Len( PackEntryName.S )-1 )
-                      PackEntryName.S = Left.S+Right.S
+                      Image = CatchImage( #PB_Any, *memory, ImageSize )
+                      AddItem( *id, 0, PackEntryName.S, Image )
+                      SetItemData( *id, 0, Image )
+                      Image = #Null
                       
-                      If FindString( LCase( PackEntryName.S ), "cursor" )
-                        
-                        ;Debug "add cursor"
-                        AddItem( *id, 0, PackEntryName.S, Image )
-                        SetItemData( *id, 0, Image )
-                        
-                        ;                   ElseIf FindString( LCase( PackEntryName.S ), "window" )
-                        ;                     
-                        ;                     Debug "add window"
-                        ;                     AddItem( *id, 1, PackEntryName.S, Image )
-                        ;                     SetItemData( *id, 1, Image )
-                        
-                        ;ElseIf FindString( LCase( PackEntryName.S ), "buttonimage" )
-                      ElseIf FindString( LCase( PackEntryName.S ), "window" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "image" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "button" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "string" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "text" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "progress" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                        
-                      ElseIf FindString( LCase( PackEntryName.S ), "container" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "scrollarea" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "splitter" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      ElseIf FindString( LCase( PackEntryName.S ), "panel" )
-                        AddItem( *id, -1, PackEntryName.S, Image )
-                        SetItemData( *id, CountItems( *id )-1, Image )
-                      EndIf
+                    ElseIf FindString( PackEntryName, "window" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "image" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "button" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "string" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "text" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "progress" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "container" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "scrollarea" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "splitter" )
+                      Image = #PB_Any
+                    ElseIf FindString( PackEntryName, "panel" )
+                      Image = #PB_Any
+                    Else
+                     ; Image = #PB_Any
+                    EndIf
+                    
+                    If Image
+                      PackEntryName.S = UCase( Left( PackEntryName.S, 1 ) ) + 
+                                        Right( PackEntryName.S, Len( PackEntryName.S )-1 )
+                      
+                      Image = CatchImage( #PB_Any, *memory, ImageSize )
+                      AddItem( *id, -1, PackEntryName.S, Image )
+                      SetItemData( *id, CountItems( *id )-1, Image )
+                      Image = #Null
                     EndIf
                   EndIf    
               EndSelect
               
-              FreeMemory( *Image )
+              FreeMemory( *memory )
             EndIf
           Wend  
         EndIf
@@ -1159,5 +1150,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----f----------4
+; Folding = -----------------
 ; EnableXP

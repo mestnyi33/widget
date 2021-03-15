@@ -1477,6 +1477,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     #PB_Drop_Item =- 5
     #PB_Cursor_Drag = 50
     #PB_Cursor_Drop = 51
+    #PB_Drag_Drop = 32
     
 ;     Global *drop._s_DD
 ;     Global NewMap *droped._s_DD( )
@@ -1492,23 +1493,23 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Macro _DD_action_( )
       Bool( _DD_drop_( ) And _DD_drag_( ) And 
-            _DD_drop_( )\PrivateType = _DD_drag_( )\PrivateType And 
             _DD_drop_( )\format = _DD_drag_( )\format And 
-            _DD_drop_( )\actions & _DD_drag_( )\actions )
+            _DD_drop_( )\actions & _DD_drag_( )\actions And
+            _DD_drop_( )\PrivateType = _DD_drag_( )\PrivateType )
     EndMacro
     
     Macro _DD_event_enter_( _result_, _this_ )
-      If _DD_drag_( ) 
-        ; _DD_drop_( ) = _this_\drop
+      If _this_\_state & #__s_dropped = #False
+        _this_\_state | #__s_dropped
         
-        ; If FindMapElement( *droped( ), Hex( _this_ ) )
-        ;   _DD_drop_( ) = *droped( )
-        ; Else
-        ;   _DD_drop_( ) = #Null
-        ; EndIf
-        
-        If _this_\_state & #__s_dropped = #False
-          _this_\_state | #__s_dropped
+        If _DD_drag_( ) 
+          ; _DD_drop_( ) = _this_\drop
+          
+          ; If FindMapElement( *droped( ), Hex( _this_ ) )
+          ;   _DD_drop_( ) = *droped( )
+          ; Else
+          ;   _DD_drop_( ) = #Null
+          ; EndIf
           
           If _DD_action_( )
             DD_cursor( #PB_Cursor_Drop )
@@ -1532,17 +1533,26 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro _DD_event_drag_( _result_, _this_ )
-      If _DD_drag_( )
-        If Not _this_\container
-          DD_cursor( #PB_Cursor_Drag )
+    Macro _DD_event_drag_( _result_, _this_, _mouse_x_, _mouse_y_ )
+      If _this_\_state & #__s_dragged = #False
+        _this_\_state | #__s_dragged | #__s_dropped
+        
+        DoEvents( _this_, #__event_DragStart, _mouse_x_, _mouse_y_ )
+        
+        If _DD_drag_( )
+          If Not _this_\container
+            DD_cursor( #PB_Cursor_Drag )
+          EndIf
+          
+          _result_ = #True
         EndIf
-        _result_ = #True
       EndIf
     EndMacro
     
     Macro _DD_event_drop_( _result_, _this_, _mouse_x_, _mouse_y_ )
       If _DD_drag_( )
+        _this_\_state &~ #__s_dragged
+            
         ;; DD_cursor( #PB_Cursor_Default )
         If _is_root_( _this_ ) 
           SetCursor( _this_, #PB_Cursor_Default )
@@ -1764,18 +1774,18 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.i DD_DropEnable( *this._s_WIDGET, Format.i, Actions.i, PrivateType.i = 0 )
-      ;                  ; windows ;    macos   ; linux ;
+      ;                        ; windows ;    macos   ; linux ;
       ; = Format
-      ; #PB_Drop_Text    ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
-      ; #PB_Drop_Image   ; = 8     ; 1346978644 ; -2    ; Accept images on this widget
-      ; #PB_Drop_Files   ; = 15    ; 1751544608 ; -3    ; Accept filenames on this widget
-      ; #PB_Drop_Private ; = 512   ; 1885499492 ; -4    ; Accept a "private" Drag & Drop on this gadgetProtected Result.i
+      ; #PB_Drop_Text          ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
+      ; #PB_Drop_Image         ; = 8     ; 1346978644 ; -2    ; Accept images on this widget
+      ; #PB_Drop_Files         ; = 15    ; 1751544608 ; -3    ; Accept filenames on this widget
+      ; #PB_Drop_Private       ; = 512   ; 1885499492 ; -4    ; Accept a "private" Drag & Drop on this gadgetProtected Result.i
       
       ; & Actions
-      ; #PB_Drag_None    ; = 0     ; 0          ; 0     ; The Data format will Not be accepted on the widget
-      ; #PB_Drag_Copy    ; = 1     ; 1          ; 2     ; The Data can be copied
-      ; #PB_Drag_Move    ; = 2     ; 16         ; 4     ; The Data can be moved
-      ; #PB_Drag_Link    ; = 4     ; 2          ; 8     ; The Data can be linked
+      ; #PB_Drag_None          ; = 0     ; 0          ; 0     ; The Data format will Not be accepted on the widget
+      ; #PB_Drag_Copy          ; = 1     ; 1          ; 2     ; The Data can be copied
+      ; #PB_Drag_Move          ; = 2     ; 16         ; 4     ; The Data can be moved
+      ; #PB_Drag_Link          ; = 4     ; 2          ; 8     ; The Data can be linked
       
       ; SetDragCallback( )
       ; 'State' specifies the current state of the Drag & Drop operation and is one of the following values:
@@ -6795,7 +6805,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;Debug Bool( *this\_state & #__s_scrolled ) ; ""+*this\bar\page\change+" "+*this\bar\thumb\change
               ; that is, if you did not move the items
               If Not *this\_state & #__s_scrolled And
-                 ActiveButton( ) = *this\bar\button[#__b_3] ; Not *this\_state & #__s_dragged And 
+                 ActiveButton( ) = *this\bar\button[#__b_3] 
                 
                 
                 If *this\index[#__tab_1] >= 0 And 
@@ -17671,12 +17681,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If change 
           ; mouse drag start
           If FocusWidget( ) And mouse( )\buttons
-            If FocusWidget( )\_state & #__s_dragged = #False
-              FocusWidget( )\_state | #__s_dragged | #__s_dropped
-              
-              DoEvents( FocusWidget( ), #__event_DragStart, mouse_x, mouse_y )
-              _DD_event_drag_( Repaint, FocusWidget() )
-            EndIf
+            _DD_event_drag_( Repaint, FocusWidget( ), mouse_x, mouse_y )
             
             ; mouse selected widget move event
             Repaint | DoEvents( FocusWidget( ), #__event_MouseMove, mouse_x, mouse_y )
@@ -17746,7 +17751,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               ; reset state
               FocusWidget( )\_state &~ #__s_selected 
-              FocusWidget( )\_state &~ #__s_dragged
             Else
               If EnterWidget( ) And Not _is_selected_( EnterWidget( ) )
                 Repaint | DoEvents( EnterWidget( ), #__event_MouseEnter, mouse_x, mouse_y )
@@ -18368,5 +18372,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------e--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
