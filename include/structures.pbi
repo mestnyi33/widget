@@ -530,7 +530,7 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     EndStructure
     
     ;-
-    ;- - _s_widget
+    ;- - _s_WIDGET
     Structure _s_WIDGET
       ;temp
    
@@ -549,7 +549,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
       __state.w ; #__ss_ (font; back; frame; fore; line)
       __width.a ; bar v size
-      __height.a[2] ; bar h size
+      __height.a[6] ; bar h size
       __draw.b 
       
       BarHeight_Caption.w
@@ -585,12 +585,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       StructureUnion
         *_owner._s_WIDGET; this window owner parent
         *_group._s_WIDGET; = option( ) groupbar gadget  
-        *_tt._s_tt
-        
       EndStructureUnion
       
-      *_popup._s_WIDGET; combobox( ) list-view gadget
+      *_tt._s_tt          ; notification = уведомление
       *_tab._s_WIDGET; = panel( ) tabbar gadget
+      *_popup._s_WIDGET; combobox( ) list-view gadget
       scroll._s_SCROLL  ; vertical & horizontal scrollbars
       
       *gadget._s_WIDGET[3] 
@@ -650,14 +649,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *time_click
       *time_down
+      *time
       
       *event._s_EVENT
       
       List *column._s_column( )
     EndStructure
     
-    ;- - _s_mouse
-    Structure _s_mouse Extends _s_point
+    ;- - _s_MOUSE
+    Structure _s_MOUSE Extends _s_POINT
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
       *bar_row._s_tabs[3]         ; at point element item
@@ -672,17 +672,18 @@ CompilerIf Not Defined(structures, #PB_Module)
       wheel._s_POINT
       delta._s_POINT
       
-                                   drag._s_DRAG  ;;;;;;;;;;;;;;;;;;;;;
       *_drag._S_DD
       *_transform._s_transform
     
-      ;change.b
+      change.b
       ;move._s_point
     EndStructure
     
     ;- - _s_keyboard
     Structure _s_keyboard
-      *widget._s_WIDGET   ; keyboard focused element
+      *widget._s_WIDGET   ; keyboard focus element
+      *window._s_WIDGET   ; active window element ; GetActiveWindow( )\
+      
       change.b
       input.c
       key.i[2]
@@ -690,6 +691,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_canvas
     Structure _s_canvas
+      repaint.b
       *address            ; root list address
       *fontID             ; default drawing fontid
       
@@ -705,6 +707,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_sticky
       *window._s_WIDGET
       *message._s_WIDGET
+      ; *tooltip._s_WIDGET            ; 
     EndStructure
     
     ;- - _s_ROOT
@@ -719,7 +722,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; top level
       
-      *active._s_WIDGET             ; GetActiveWindow( )\
       *widget._s_WIDGET             ; EventWidget( )\ 
       *event._s_EVENTDATA           ; WidgetEvent( )\ ; \type ; \item ; \data
       
@@ -737,5 +739,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------8-
+; Folding = ---------
 ; EnableXP

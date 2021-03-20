@@ -1,0 +1,168 @@
+﻿; 
+; Tree_properties
+; TypeFromClass
+; ClassFromType
+; IsContainer
+; 
+; Draw
+; ReDraw
+; 
+; GetMousex 
+; GetMouseY
+; 
+; x
+; Y 
+; Width 
+; Height 
+; 
+; Hide
+; Disable
+; Sticky 
+; 
+; Update
+; Child 
+; Change 
+; Flag 
+; Resize 
+; 
+; CountItems
+; ClearItems
+; RemoveItem 
+; 
+; GetLast 
+; GetAddress
+;  
+; GetDeltax
+; GetDeltaY
+; GetIndex
+; GetWidget
+
+; GetLevel
+; GetType
+; GetRoot
+; GetGadget 
+; GetWindow
+; GetCount 
+; GetItem
+; 
+; GetButtons
+;
+; SetActive
+; GetActive
+
+; GetClass
+; SetClass 
+; 
+; GetText
+; SetText 
+; 
+; GetData
+; SetData 
+; 
+; GetFont
+; SetFont 
+; 
+; GetState
+; SetState 
+; 
+; GetParent
+; SetParent 
+; 
+; GetColor 
+; SetColor
+; 
+; GetAttribute
+; SetAttribute 
+; 
+; GetPosition 
+; SetPosition 
+; 
+; 
+; GetItemState
+; SetItemState
+; 
+; GetItemData 
+; SetItemData
+; 
+; GetItemText
+; SetItemText
+; 
+; GetItemImage 
+; SetItemImage
+; 
+; GetItemFont 
+; SetItemFont
+; 
+; GetItemColor
+; SetItemColor
+; 
+; GetItemAttribute
+; SetItemAttribute
+; 
+; SetCursor 
+; SetAlignment 
+; 
+; SetImage 
+; SetBackgroundImage 
+
+
+;
+; Create 
+; Free
+; 
+
+; ; bar
+; Area 
+; Tab 
+; Spin 
+; Scroll 
+; Track 
+; Progress 
+; Splitter
+;
+; Tool
+; Menu
+; PopupMenu 
+; 
+; ; button
+; Text 
+; String 
+; Button
+; Option 
+; Checkbox 
+; HyperLink
+; 
+; ; list
+; Tree 
+; ListView 
+; Editor 
+; ListIcon 
+; 
+; ExplorerList 
+; 
+; Image
+; ButtonImage 
+; 
+; ; container
+; MDI 
+; Panel
+; Frame
+; Window 
+; Container
+; ScrollArea
+; 
+; AddItem
+; AddColumn
+; 
+; OpenList
+; CloseList 
+; 
+; Post 
+; Bind 
+; Unbind
+; 
+; Open 
+; Gadget 
+;
+; Message
+; 

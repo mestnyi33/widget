@@ -1,9 +1,9 @@
 ﻿DeclareModule func
   Declare.s InvertCase( Text.s )  
-  Declare.i Cursor(ImageID.i, x.l=0, y.l=0)
+  Declare.i CreateCursor( ImageID.i, x.l = 0, y.l = 0 )
   
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Declare.i ResizeIcon(hIcon.i, Width.l, Height.l, Depth.l=32)
+    Declare.i ResizeIcon( hIcon.i, Width.l, Height.l, Depth.l=32 )
   CompilerEndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -16,34 +16,48 @@ EndDeclareModule
 Module func
   #__sOC = SizeOf(Character)
   
-  Procedure.i Cursor(ImageID.i, x.l=0, y.l=0)
+  Procedure   FreeCursor( hCursor.i )
+		CompilerSelect #PB_Compiler_OS
+			CompilerCase #PB_OS_Linux
+				g_object_unref_( hCursor )
+			CompilerCase #PB_OS_MacOS
+				CocoaMessage( 0, hCursor, "release" )
+			CompilerCase #PB_OS_Windows
+				DestroyCursor_( hCursor )
+		CompilerEndSelect
+	EndProcedure
+	
+	Procedure.i CreateCursor( ImageID.i, x.l = 0, y.l = 0 )
     If ImageID
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
+          Protected *ic
           Protected ico.ICONINFO
           ico\fIcon = 0
           ico\xHotspot =- x 
           ico\yHotspot =- y 
           ico\hbmMask = ImageID
           ico\hbmColor = ImageID
-          Protected *Cursor = CreateIconIndirect_(ico) : If Not *cursor : *cursor = ImageID : EndIf
-          
+          *ic = CreateIconIndirect_( ico ) 
+          If Not *ic 
+            *ic = ImageID 
+          EndIf
         CompilerCase #PB_OS_Linux
-          Protected *cursor.GdkCursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
-          
+          Protected *ic.GdkCursor = gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, x, y )
         CompilerCase #PB_OS_MacOS
+          Protected *ic
           Protected Hotspot.NSPoint
           Hotspot\x = x
           Hotspot\y = y
-          Protected *cursor = CocoaMessage(0, 0, "NSCursor alloc")
-          CocoaMessage(0, *cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
-          
+          *ic = CocoaMessage( 0, 0, "NSCursor alloc" )
+          CocoaMessage( 0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot )
       CompilerEndSelect
     EndIf
     
-    ProcedureReturn *cursor
+    ProcedureReturn *ic
   EndProcedure
   
+  ;-
   Procedure.s InvertCase( Text.s )  
     Protected *C.CHARACTER = @Text
     
@@ -69,7 +83,8 @@ Module func
     Protected *p.string = @*a
     *p\s = Right(*p\s, Len(*p\s) - n)
   EndProcedure
-
+  
+  ;-
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure.i ResizeIcon(hIcon.i, Width.l, Height.l, Depth.l=32)
       Protected IInfo.ICONINFO, ColorImg.i, MaskImg.i, DC.i, RethIcon.i, ICONINFO.ICONINFO
@@ -147,5 +162,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug x
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v0+--
+; Folding = P-+--
 ; EnableXP

@@ -1,35 +1,35 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ; Debug "event - " +EventType()+  " gadget - " + EventGadget() +" focus = "+ #PB_EventType_Focus +" lostfocus = "+ #PB_EventType_LostFocus
   
-  Select EventType()
+  Select PB(EventType)()
     Case #PB_EventType_Focus
-      Debug ""+EventGadget() + " - gadget focus"
+      Debug ""+PB(EventGadget)() + " - gadget focus"
     Case #PB_EventType_LostFocus
-      Debug ""+EventGadget() + " - gadget lostfocus"
+      Debug ""+PB(EventGadget)() + " - gadget lostfocus"
   EndSelect
   
 EndProcedure
 
 Procedure events_widgets()
-  ; Debug "event - "+*event\type+ " widget - " + Str(*event\widget\index - 1)
+  ; Debug "event - "+WidgetEvent( )\type+ " widget - " + Str(EventWidget( )\index - 1)
   
-  Select *event\type
+  Select WidgetEvent( )\type
     Case #PB_EventType_Focus
-      Debug Str(*event\widget\index - 1)+ " - widget focus"
+      Debug Str(EventWidget( )\index)+ " - widget focus"
     Case #PB_EventType_LostFocus
-      Debug Str(*event\widget\index - 1)+ " - widget lostfocus"
+      Debug Str(EventWidget( )\index)+ " - widget lostfocus"
   EndSelect
   
 EndProcedure
 
 Procedure events_buttons()
-  Select *event\type
+  Select WidgetEvent( )\type
     Case #PB_EventType_LeftClick
-      ; Debug "click widget - " + Str(*event\widget\index - 1)
+      ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
-      Select (*event\widget\index - 1)
+      Select (EventWidget( )\index)
         Case 3 : SetActive(GetWidget(0))   ; Activate StringGadget
         Case 4 : SetActive(GetWidget(1))   ; Activate ComboBoxGadget
       EndSelect
@@ -75,6 +75,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
     Bind(GetWidget(i), @events_buttons())
   Next
   
+  Bind( #PB_Default, #PB_Default )
   Repeat
     Event = WaitWindowEvent()
     If Event = #PB_Event_Gadget
@@ -85,8 +86,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
     EndIf
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 21
-; FirstLine = 2
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

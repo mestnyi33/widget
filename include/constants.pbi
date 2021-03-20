@@ -779,7 +779,7 @@
     #PB_GadgetType_Menu      = -4       
     #PB_GadgetType_Root      = -5
     #PB_GadgetType_StatusBar = -6
-    #PB_GadgetType_PopupMenu     = -7
+    #PB_GadgetType_PopupMenu = -7
     #PB_GadgetType_Message   = -8
     #PB_GadgetType_Hiasm     = -9
     

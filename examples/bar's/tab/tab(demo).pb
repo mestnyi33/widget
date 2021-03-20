@@ -103,8 +103,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
     
     SetItemFont(*panel_1, 1, 6)
-  SetItemFont(*panel_2, 1, 6)
+    SetItemFont(*panel_2, 1, 6)
   
+    Bind( root( ), #PB_Default )
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   

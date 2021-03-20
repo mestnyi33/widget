@@ -50,7 +50,7 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
   
   Window(220, 50, 190, 90, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   String(10,10,170,30,"string_4")
-  ;SetActive(widget())
+  SetActive(widget())
   
   String(10,50,170,30,"string_5")
   ;SetActive(widget())

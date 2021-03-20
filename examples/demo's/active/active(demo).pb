@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -11,10 +11,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *this, *root, NewMap w_list.i()
   
   Procedure Widget_Handler()
-    Protected EventWidget.i = this()\widget,
-              EventType.i = this()\event,
-              EventItem.i = this()\item, 
-              EventData.i = this()\data
+    Protected EventWidget.i = EventWidget( ),
+              EventType.i = WidgetEvent( )\type,
+              EventItem.i = WidgetEvent( )\item, 
+              EventData.i = WidgetEvent( )\data
     
     Select EventType
       Case #__Event_MouseEnter
@@ -39,13 +39,13 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__Event_Repaint
         ; draw active window focused frame
-        If GetActive() = EventWidget
+        If GetActive( ) = EventWidget
           DrawingMode(#PB_2DDrawing_Outlined)
           Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
         EndIf
         
         ; draw active gadget focused frame
-        If GetGadget(GetActive()) = EventWidget
+        If GetGadget( GetActive( ) ) = EventWidget
           DrawingMode(#PB_2DDrawing_Outlined)
           Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
         EndIf
@@ -71,6 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
+    Bind( #PB_Default, #PB_Default )
     ReDraw(Root())
   EndProcedure
   
@@ -85,6 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
+    Bind( #PB_Default, #PB_Default )
     ReDraw(Root())
     ;       
     w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
@@ -96,6 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
+    Bind( #PB_Default, #PB_Default )
     ReDraw(Root())
     
     w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
@@ -107,6 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
+    Bind( #PB_Default, #PB_Default )
     ReDraw(Root())
   EndProcedure
   
@@ -132,6 +136,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(2)))
         
         Bind(#PB_All, @Widget_Handler())
+        Bind( #PB_Default, #PB_Default )
         ReDraw(Root())
       EndIf
       
@@ -155,6 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(102)))
         
         Bind(#PB_All, @Widget_Handler())
+        Bind( #PB_Default, #PB_Default )
         ReDraw(Root())
       EndIf
       
@@ -166,6 +172,7 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(212)) = String(10, 105, 180, 85, "String_212") : SetData(w_list(Hex(212)), 212) 
       
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       
       w_list(Hex(220)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu)) : SetData(w_list(Hex(220)), 220)
@@ -175,6 +182,7 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(222)) = String(10, 105, 180, 85, "String_222") : SetData(w_list(Hex(222)), 222)
       
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       
       w_list(Hex(230)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_230")) : SetData(w_list(Hex(230)), 230)
@@ -184,6 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(232)) = String(10, 105, 180, 85, "String_232") : SetData(w_list(Hex(232)), 232)
       
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -230,6 +239,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetActive(w_list(Hex(2)))
         
         Bind(#PB_All, @Widget_Handler());, w_list(Hex(22)))
+        Bind( #PB_Default, #PB_Default )
         ReDraw(Root())
       EndIf
       
@@ -245,6 +255,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       ;       
       w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
@@ -256,6 +267,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       
       w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
@@ -267,6 +279,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
+      Bind( #PB_Default, #PB_Default )
       ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
