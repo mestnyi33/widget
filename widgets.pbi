@@ -18662,7 +18662,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected *this.allocate( Widget ) 
       
       With *this
-        Static pos_x.l, pos_y.l
+        Static pos_x.l, pos_y.l, parent.i
+        If parent <> *parent
+          pos_x = 0
+          pos_y = 0
+          parent = *parent
+        EndIf
         
         *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__window_frame_size
         *this\child = Bool( Flag & #__window_child = #__window_child )
