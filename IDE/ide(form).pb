@@ -514,7 +514,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
             If transform( ) And transform( )\grid\size > 1 
               ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, 0, $FFFF0000 ) )
-              SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+              SetBackgroundImage( *new, Points( transform( )\grid\size-1, transform( )\grid\type, $FF000000 ) ) ; $BDC5C6C6 ) )
             EndIf
           EndIf
           

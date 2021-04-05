@@ -6,7 +6,7 @@
 ; 
 
 ;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widgets-bar.pbi"
+XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
       TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     EndIf
     
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+    WaitClose( )
   EndIf
   
 CompilerEndIf

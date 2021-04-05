@@ -7,6 +7,12 @@
     ;- - CONSTANTs
     ;{
     
+    Enumeration 
+      #_b_caption
+      #_b_menu
+      #_b_tool
+    EndEnumeration
+    
     ; list mode
     #__m_checkselect = 1
     #__m_clickselect = 2
@@ -14,8 +20,7 @@
     #__m_optionselect = 4
     
     ; default values 
-    #__grid_type = 0
-    #__grid_size = 8 
+    ;#__grid_type = 0
     #__a_size = 7;13 
     #__window_caption_height = 21
     #__window_frame_size = 4 
@@ -49,8 +54,8 @@
     
     #__sOC = SizeOf(Character)
     
-    #__a_count = 9+4
     #__a_moved = 9
+    #__a_count = #__a_moved+4
     
     #__bar_minus = 1
     

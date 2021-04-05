@@ -40,9 +40,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_Sys
     Bind(GetWidget(#Splitter), @events_widgets())
     
     Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#__text_border|#__text_center|#__text_top )
-
-    Repeat
-    Until WaitWindowEvent() = #PB_Event_CloseWindow
+    
+    WaitClose( )
+    
+;     Define event
+;     Repeat
+;       event = WaitWindowEvent()
+;       If event = #PB_Event_Gadget
+;         ;If GadgetType(EventGadget()) = #PB_GadgetType_Canvas
+;           eventhandler( )
+;         ;EndIf
+;       EndIf
+;     Until event = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -

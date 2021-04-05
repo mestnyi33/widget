@@ -46,16 +46,18 @@ CompilerIf #PB_Compiler_IsMainFile
     Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, 0, _canvas_gadget_ )
   EndMacro
   
-  Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _size_, _flag_=#Null)
-    _parent_\scroll\v = widget::scroll( _x_+_width_-_size_, _y_, _size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
-    _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_size_, 0,  _size_, 0, 0, 0, _flag_, 11 )
+  Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
+    _parent_\fs = _frame_size_
+    _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
+    _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
+    widget::bar_Resizes( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
   EndMacro                                                  
   
   Macro Area_Bind( _parent_, _callback_)
     If _callback_
       Bind( _parent_\scroll\v, _callback_ )
       Bind( _parent_\scroll\h, _callback_ )
-      Bind( root( ), 0 ) 
+      ;Bind( root( ), 0 ) 
     EndIf
   EndMacro                                                  
   
@@ -148,7 +150,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
     Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
     
-    If LastElement( Images( ) ) ; search for hit, starting from end ( z-order )
+    If LastElement( Images( ) ) And 
+       Not AtPoint( *this\scroll\v, mouse_x, mouse_y ) And
+       Not AtPoint( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
+                                                       ; search for hit, starting from end ( z-order )
       Repeat
         If mouse_x >= Images( )\x - scroll_x And mouse_x < Images( )\x+ Images( )\width - scroll_x 
           If mouse_y >= Images( )\y - scroll_y And mouse_y < Images( )\y + Images( )\height - scroll_y
@@ -188,36 +193,55 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure Canvas_CallBack( )
+  Procedure Canvas_SetCursor( mouse_x, mouse_y, cur = #PB_Cursor_Default )
     Static set_cursor 
     Protected cursor
+    
+    If cur <> #PB_Cursor_Default
+      cursor = cur
+    Else
+      If Not Mouse( )\buttons
+        If Bool( Canvas_HitTest( Images( ), mouse_x, mouse_y ) ) 
+          cursor = #PB_Cursor_Hand
+        Else 
+          cursor = #PB_Cursor_Default
+        EndIf
+      EndIf
+    EndIf
+    
+    If set_cursor <> cursor
+      set_cursor = cursor
+      SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, cursor )
+    EndIf
+  EndProcedure
+  
+  Procedure Canvas_CallBack( )
     Protected Repaint
     Protected Event = EventType( )
     Protected Canvas = EventGadget( )
-    Protected MouseX = GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
-    Protected MouseY = GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
-    ;   Protected Buttons = GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons )
-    ;   Protected WheelDelta = GetGadgetAttribute( EventGadget( ), #PB_Canvas_WheelDelta )
-    
+    Protected MouseX ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
+    Protected MouseY ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
+                     Width = GadgetWidth( Canvas ) - x*2
+                     Height = GadgetHeight( Canvas ) - y*2
     widget::EventHandler( )
     
-    Width = GadgetWidth( Canvas ) - x*2
-    Height = GadgetHeight( Canvas ) - y*2
+    MouseX = widget::Mouse( )\x
+    MouseY = widget::Mouse( )\y
+;     Width = widget::Root( )\width - x*2
+;     Height = widget::Root( )\height - y*2
     
     Select Event
       Case #PB_EventType_Repaint
         Repaint = #True
         
       Case #PB_EventType_LeftButtonUp : Drag = #False
-        SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default )
+        Canvas_SetCursor( Mousex, Mousey )
         
       Case #PB_EventType_LeftButtonDown
-        If Not _is_selected_( EventWidget( ) )
-          Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
-          If Drag 
-            SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows )
-            Repaint = #True 
-          EndIf
+        Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
+        If Drag 
+          Canvas_SetCursor( Mousex, Mousey, #PB_Cursor_Arrows )
+          Repaint = #True 
         EndIf
         
       Case #PB_EventType_MouseMove
@@ -233,21 +257,8 @@ CompilerIf #PB_Compiler_IsMainFile
               Repaint = #True
             EndIf
           EndIf
-          
-        ElseIf Not _is_selected_( EventWidget( ) )
-          If Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) ) 
-            ;If widget::_from_point_( Mousex, Mousey, Images( ), [3] )
-            cursor = #PB_Cursor_Hand
-            ;EndIf
-          Else 
-            cursor = #PB_Cursor_Default
-          EndIf
-          
-          If set_cursor <> cursor
-            set_cursor = cursor
-            SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, cursor )
-          EndIf
-          
+        Else 
+          Canvas_SetCursor( Mousex, Mousey )
         EndIf
         
       Case #PB_EventType_Resize 
@@ -325,13 +336,12 @@ CompilerIf #PB_Compiler_IsMainFile
     StopDrawing( )
   EndIf
   Canvas_AddImage( Images( ),x+180,y+180,hole,#True )
-  
-  *this\fs = 2
-  *this\bs = 0
+                   Width = GadgetWidth( MyCanvas ) - x*2
+                     Height = GadgetHeight( MyCanvas ) - y*2
+    
   ;
-  Area_Create( *this, x,y,width,height, 20 )
+  Area_Create( *this, x,y,width,height, 2,20 )
   Area_Bind( *this, @Area_Events( ) ) 
-  
   
   Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
   Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
@@ -387,5 +397,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 83vf0-r+
+; Folding = ---------
 ; EnableXP

@@ -42,7 +42,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       fore.i[4]
       back.i[4]
       frame.i[4]
-      alpha.a[2]
+      _alpha.a[2]
+      *alpha._s_color
     EndStructure
     
     ;- - _s_align
@@ -148,16 +149,21 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       *background._s_image
     EndStructure
     
+;     ;- - _s_anchor
+;     Structure _s_anchor Extends _s_coordinate
+;       round.a
+;       cursor.l
+;       color._s_color;[4]
+;     EndStructure
     ;- - _s_buttons
     Structure _s_buttons Extends _s_coordinate 
       ;;index.l
+      cursor.l ; anchor buttons
       
       size.l ; len >> size.l
       _state.l ; normal; entered; selected; disabled
       state.l ; temp
       
-      ; [3]fixed = thumb delta pos 
-      ; [1..2]fixed = splitter\bar\fixed
       fixed.l 
       
       hide.b
@@ -325,23 +331,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ; multi group
     Structure _s_group Extends _s_coordinate
-      ;*id._s_widget
       *WIDGET._s_WIDGET
-    EndStructure
-    
-    ;- - _s_anchor
-    Structure _s_anchor Extends _s_coordinate
-      round.a
-      cursor.l
-      color._s_color[4]
     EndStructure
     
     ;- - _s_transform
     Structure _s_transform
-      color._s_color
-      
       *main._s_WIDGET
       *WIDGET._s_WIDGET
+      *_a_WIDGET._s_WIDGET
       List *group._s_group( )
       
       *type
@@ -351,10 +348,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       size.l
       index.l
       
-      ;;text._s_text
       grid._s_grid
       dotted._s_dotted
-      id._s_anchor[constants::#__a_count+1]
+      id._s_buttons[constants::#__a_count+1]
     EndStructure
     
     ;- - _s_mode
@@ -543,19 +539,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;       *v._s_WIDGET     ; vertical scrollbar
       ;       *h._s_WIDGET     ; horizontal scrollbar
       *drop._s_DD
+      _a_transform.b ; add anchors on the widget (to size and move)
+      *_a_id_._s_buttons[constants::#__a_moved+1]
       
-      fs.a[5] ; frame size
+      fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
       bs.a ; border size
       _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
-      __state.w ; #__ss_ (font; back; frame; fore; line)
-      __width.a ; bar v size
-      __height.a[6] ; bar h size
+      __state.w ; #_s_ss_ (font; back; frame; fore; line)
       __draw.b 
       
-      BarHeight_Caption.w
-      BarHeight_Menu.w
-      BarHeight_Tab.w
-      BarHeight_Status.w
+      BarWidth.w ; bar v size
+      BarHeight.w ; bar h size 
+      MenuBarHeight.w
+      ToolBarHeight.w
+      StatusBarHeight.w
       
       y.l[constants::#__c]
       x.l[constants::#__c]
@@ -614,7 +611,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       
       child.b ; is the widget composite?
-      transform.b ; add anchors on the widget (to size and move)
       
       level.l 
       class.s  
@@ -663,8 +659,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       *bar_row._s_tabs[3]         ; at point element item
       *row._s_rows[2]         ; at point element item
       *button._s_buttons[3]   ; at point element button
-      *widget._s_WIDGET[2]    ; at point element
-                  ;  *selected._s_WIDGET  ; at point pushed element
+      
+      *entered._s_WIDGET      ; mouse enterd element
+      *leaved._s_WIDGET       ; mouse leaved element
+      *selected._s_WIDGET     ; mouse pushed element
       
       *grid
       buttons.l 
@@ -679,8 +677,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;move._s_point
     EndStructure
     
-    ;- - _s_keyboard
-    Structure _s_keyboard
+    ;- - _s_KEYBOARD
+    Structure _s_KEYBOARD
       *widget._s_WIDGET   ; keyboard focus element
       *window._s_WIDGET   ; active window element ; GetActiveWindow( )\
       
@@ -689,8 +687,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       key.i[2]
     EndStructure
     
-    ;- - _s_canvas
-    Structure _s_canvas
+    ;- - _s_CANVAS
+    Structure _s_CANVAS
       repaint.b
       *address            ; root list address
       *fontID             ; default drawing fontid
@@ -703,8 +701,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       bindevent.b         ; bind canvas event
     EndStructure
     
-    ;- - _s_sticky
-    Structure _s_sticky
+    ;- - _s_STICKY
+    Structure _s_STICKY
       *window._s_WIDGET
       *message._s_WIDGET
       ; *tooltip._s_WIDGET            ; 
@@ -739,5 +737,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; Folding = -------8-
 ; EnableXP

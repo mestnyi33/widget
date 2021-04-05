@@ -32,7 +32,7 @@ EndEnumeration
 Macro widget_copy()
   ClearList(*copy())
   
-  If Transform()\widget\transform = 1
+  If Transform()\widget\_a_transform = 1
     AddElement(*copy()) 
     *copy.allocate(group, ())
     *copy()\widget = Transform()\widget
@@ -52,7 +52,7 @@ Macro widget_copy()
 EndMacro
 
 Macro widget_delete()
-  If Transform()\widget\transform = 1
+  If Transform()\widget\_a_transform = 1
     ;  transform = Transform()\widget\parent
     
     RemoveItem(id_inspector_tree, GetData(Transform()\widget))
@@ -100,7 +100,7 @@ EndMacro
 Procedure toolbar_events()
   Protected *this._s_widget
   Protected e_type = this()\event
-  Protected e_item = this()\item
+  Protected e_item ;= this()\item
   Protected e_widget = this()\widget
   
   Select e_type
@@ -143,7 +143,7 @@ Procedure toolbar_events()
             widget_paste()
             
           Case #_tb_widget_delete
-            If Transform()\widget\transform = 1
+            If Transform()\widget\_a_transform = 1
               transform = Transform()\widget\parent
             Else
               transform = Transform()\widget
@@ -280,6 +280,7 @@ closelist()
 Button(120,120,170,40,"butt0")
 closelist()
 
+bind(-1,-1)
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 DataSection   

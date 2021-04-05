@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    *parent\__height[5] = 32;+2 + 6
+    *parent\MenuBarHeight = 32;+2 + 6
     *parent\_tab = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
     ProcedureReturn *parent\_tab

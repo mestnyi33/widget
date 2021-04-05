@@ -3,14 +3,14 @@
 XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
-Define editable = 0;#__flag_anchorsgadget  ; #__flag_flat ; 
+Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
 
 Procedure events_widgets()
   Protected repaint
   
-  Select this()\event
-    Case #PB_EventType_MouseEnter : this()\widget\color\back = $ff0000ff : repaint = 1
-    Case #PB_EventType_MouseLeave : this()\widget\color\back = $ff00ff00 : repaint = 1
+  Select WidgetEventType( )
+    Case #PB_EventType_MouseEnter : EventWidget( )\color\back = $ff0000ff : repaint = 1
+    Case #PB_EventType_MouseLeave : EventWidget( )\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
   If repaint
@@ -69,7 +69,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
     Next
   EndIf
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose( )
+  ;Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --

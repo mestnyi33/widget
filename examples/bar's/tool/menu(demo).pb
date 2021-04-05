@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;*parent\bs = 20
     ;*parent\fs = 1
     ;*parent\bs = 20
-    *parent\__height[1] = #__menu_height
-    Debug *parent\__height
+    *parent\MenuBarHeight = #__menu_height
+    Debug *parent\MenuBarHeight
 ;     Protected i
 ;     For i=0 To constants::#__c-1
 ;       Debug "   "+i
@@ -81,7 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 ;   OpenWindow(-1,150, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
   Open(OpenWindow(#PB_Any, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu))
-  ButtonGadget( #PB_Any, 10, 10, 300-20, 100-20, "button")
+  ;ButtonGadget( #PB_Any, 10, 10, 300-20, 100-20, "button")
+  ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
   
   CreateMenu(0, WindowID(GetWindow(root())))
   MenuTitle("File")
@@ -93,13 +94,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-  Button( 10, 10, 300-20, 100-20, "button")
+  ;Button( 10, 10, 300-20, 100-20, "button")
+  Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+  widget( )\bs = 8
+  SetFrame(widget( ), 3);, -1)
   
   Menu( widget( )\parent ) ;root( )\window )
   
   
 ;   ResizeWindow(GetWindow(root()), #PB_Ignore, #PB_Ignore, 600, 600)
 ;   ResizeGadget(GetGadget(root()), #PB_Ignore, #PB_Ignore, 600, 600)
+  Bind( #PB_Default, #PB_Default )
   
   Define Event
   Repeat
