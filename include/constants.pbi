@@ -21,6 +21,7 @@
     
     ; default values 
     ;#__grid_type = 0
+    #__grid_size = 7
     #__a_size = 7;13 
     #__window_caption_height = 21
     #__window_frame_size = 4 

@@ -268,8 +268,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   ;   Open(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
   ;   ReDraw(GetRoot(*panel))
   
+  Bind(-1,-1)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; CursorPosition = 270
+; FirstLine = 239
 ; Folding = ----
 ; EnableXP

@@ -96,10 +96,13 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(*f_5, #__color_back, $CA00D7FF)
     SetColor(*f_6, #__color_back, $CA00D7FF)
 
-    redraw(root())
+    ;redraw(root())
+    Bind(-1,-1)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 69
 ; Folding = -
 ; EnableXP

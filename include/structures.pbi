@@ -171,7 +171,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       interact.b
       
       arrow._s_arrow
-      color._s_color
+      color._s_color[4]
     EndStructure
     
 ;     ;- - _s_button
@@ -525,19 +525,18 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       *tab._s_tabs
 ;     EndStructure
     
+    Structure _s_LAYOUT
+      *widget._s_WIDGET
+    EndStructure
+    
+    Structure _s_TAB_WIDGET
+      index.i ; parent tab item index
+      *widget._s_WIDGET
+    EndStructure
+    
     ;-
     ;- - _s_WIDGET
     Structure _s_WIDGET
-      ;temp
-   
-   ;       *_drawing ; drawing_mode
-;       *_draw_alpha
-   ;       Map *_first._s_widget( )
-;       Map *_last._s_widget( )
-   
-      ; side.l[4] ; sidebar сторона 
-      ;       *v._s_WIDGET     ; vertical scrollbar
-      ;       *h._s_WIDGET     ; horizontal scrollbar
       *drop._s_DD
       _a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._s_buttons[constants::#__a_moved+1]
@@ -560,10 +559,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l[constants::#__c]
       
       ; placing layout
-      *first._s_WIDGET
-      *last._s_WIDGET
-      *after._s_WIDGET
-      *before._s_WIDGET
+      first._s_LAYOUT
+      last._s_LAYOUT
+      after._s_LAYOUT
+      before._s_LAYOUT
+      
+      tab._s_TAB_WIDGET
       
       *index[3]  
       ; \index[0] - widget index 
@@ -585,7 +586,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       EndStructureUnion
       
       *_tt._s_tt          ; notification = уведомление
-      *_tab._s_WIDGET; = panel( ) tabbar gadget
       *_popup._s_WIDGET; combobox( ) list-view gadget
       scroll._s_SCROLL  ; vertical & horizontal scrollbars
       
@@ -605,10 +605,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data
       
       draw_widget.b
-      
-      ;item.l ; parent-panel tab item index
-      tabindex.i
-      
       
       child.b ; is the widget composite?
       
@@ -737,5 +733,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------8-
+; Folding = -------v-
 ; EnableXP

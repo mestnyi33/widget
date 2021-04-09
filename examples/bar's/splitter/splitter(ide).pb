@@ -79,6 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Bind(-1,-1)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x64)
 ; Folding = -
 ; EnableXP
+; Executable = splitter(ide).exe
