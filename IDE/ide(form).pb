@@ -604,7 +604,7 @@ CompilerIf #PB_Compiler_IsMainFile
           
         Case #PB_EventType_LeftButtonUp
           
-          If transform( )\widget\transform <> 1
+          If transform( )\widget\_a_transform <> 1
             SetState( id_inspector_tree, -1 )
             If IsGadget( id_design_code )
               SetGadgetState( id_design_code, -1 )
@@ -676,7 +676,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Macro widget_copy( )
     ClearList( *copy( ) )
     
-    If transform( )\widget\transform = 1
+    If transform( )\widget\_a_transform = 1
       AddElement( *copy( ) ) 
       *copy.allocate( GROUP, ( ) )
       *copy( )\widget = transform( )\widget
@@ -696,7 +696,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro widget_delete( )
-    If transform( )\widget\transform = 1
+    If transform( )\widget\_a_transform = 1
       RemoveItem( id_inspector_tree, GetData( transform( )\widget ) )
       
       Free( transform( )\widget )

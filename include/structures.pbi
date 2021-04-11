@@ -496,42 +496,38 @@ CompilerIf Not Defined(structures, #PB_Module)
       *address._S_DD
     EndStructure
     
-    ;- - _s_post
+    ;- - _s_OBJECT
+    Structure _s_OBJECT
+      *widget._s_WIDGET
+    EndStructure
+    
+    ;- - _s_EVENTDATA
     Structure _s_EVENTDATA
       *type ; EventType( )
       *item ; EventItem( )
       *data ; EventData( )
     EndStructure
     
-   ;- - _s_bind 
-    Structure _s_func
+   ;- - _s_FUNC 
+    Structure _s_FUNC
       *func.pFunc
     EndStructure
     
-    Structure _s_bind 
+    ;- - _s_BIND 
+   Structure _s_BIND 
       *eventtype
-      List *callback._s_func( )
+      List *callback._s_FUNC( )
     EndStructure
     
+    ;- - _s_EVENT
     Structure _s_EVENT
       List *bind._s_bind( )
       List *queue._s_EVENTDATA( )
     EndStructure
     
-;     ;- - _s_parent
-;     Structure _s_parent
-;       *window._s_WIDGET
-;       *widget._s_WIDGET
-;       *tab._s_tabs
-;     EndStructure
-    
-    Structure _s_LAYOUT
-      *widget._s_WIDGET
-    EndStructure
-    
-    Structure _s_TAB_WIDGET
-      index.i ; parent tab item index
-      *widget._s_WIDGET
+    ;- - _s_TAB_WIDGET
+    Structure _s_TAB_WIDGET Extends _s_OBJECT
+      index.i ; parent-tab item index
     EndStructure
     
     ;-
@@ -559,10 +555,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l[constants::#__c]
       
       ; placing layout
-      first._s_LAYOUT
-      last._s_LAYOUT
-      after._s_LAYOUT
-      before._s_LAYOUT
+      first._s_OBJECT
+      last._s_OBJECT
+      after._s_OBJECT
+      before._s_OBJECT
       
       tab._s_TAB_WIDGET
       
@@ -717,7 +713,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       sticky._s_sticky              ; top level
       
       *widget._s_WIDGET             ; EventWidget( )\ 
-      *event._s_EVENTDATA           ; WidgetEvent( )\ ; \type ; \item ; \data
+      event._s_EVENTDATA            ; WidgetEvent( )\ ; \type ; \item ; \data
       
       List *_root._s_ROOT( )        ; 
       List *address._s_WIDGET( ) ; widget( )\
