@@ -20,9 +20,6 @@
     #__m_optionselect = 4
     
     ; default values 
-    ;#__grid_type = 0
-    #__grid_size = 7
-    #__a_size = 7;13 
     #__window_caption_height = 21
     #__window_frame_size = 4 
     #__border_scroll = 2
@@ -54,9 +51,6 @@
     #__arrow_size = 4 ;
     
     #__sOC = SizeOf(Character)
-    
-    #__a_moved = 9
-    #__a_count = #__a_moved+4
     
     #__bar_minus = 1
     
@@ -299,6 +293,20 @@
     #__align_auto                  = #__flag_autosize
     #__align_proportional          = #__flag_proportional
     #__align_proportional_vertical = #__flag_vertical
+    
+    ;- _c_anchors
+    #__a_size  = 7
+    #__a_moved = 9
+    #__a_count = #__a_moved+4
+    ;
+    EnumerationBinary 1
+      #__a_position
+      #__a_width
+      #__a_height
+      #__a_corner
+    EndEnumeration
+    #__a_edge = #__a_width | #__a_height
+    #__a_full  = #__a_position | #__a_corner | #__a_edge
     
     ;-
     ;- _c_bar

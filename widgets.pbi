@@ -1456,7 +1456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If transform( ) And transform( )\index = #__a_moved 
               Debug "move - cursor"
             _set_cursor_( _this_, #PB_Cursor_Arrows )
-          Else
+          ElseIf _this_\container
             If Not ( transform( ) And transform( )\index )
               Debug "drag - cursor"
               SetCursor( _this_, #PB_Cursor_Cross )
@@ -2027,7 +2027,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro a_draw_line( _address_ )
       ; left line
       If transform( )\id[10] 
-        If transform( )\id[10]\y = _address_\y[#__c_frame] And transform( )\id[10]\height = _address_\height[#__c_frame]
+        If _address_\_a_id_[#__a_moved] And transform( )\id[10]\y = _address_\y[#__c_frame] And transform( )\id[10]\height = _address_\height[#__c_frame]
           Box( transform( )\id[10]\x, transform( )\id[10]\y, transform( )\id[10]\width, transform( )\id[10]\height ,_address_\_a_id_[#__a_moved]\color\frame[_address_\_a_id_[#__a_moved]\color\state] ) 
         Else
           Box( transform( )\id[10]\x, transform( )\id[10]\y, transform( )\id[10]\width, transform( )\id[10]\height ,transform( )\id[10]\color\frame[transform( )\id[10]\color\state] ) 
@@ -2036,7 +2036,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; top line
       If transform( )\id[12] 
-        If transform( )\id[12]\y = _address_\y[#__c_frame] And transform( )\id[12]\height = _address_\height[#__c_frame]
+        If _address_\_a_id_[#__a_moved] And transform( )\id[12]\y = _address_\y[#__c_frame] And transform( )\id[12]\height = _address_\height[#__c_frame]
           Box( transform( )\id[12]\x, transform( )\id[12]\y, transform( )\id[12]\width, transform( )\id[12]\height ,_address_\_a_id_[#__a_moved]\color\frame[_address_\_a_id_[#__a_moved]\color\state] ) 
         Else
           Box( transform( )\id[12]\x, transform( )\id[12]\y, transform( )\id[12]\width, transform( )\id[12]\height ,transform( )\id[12]\color\frame[transform( )\id[12]\color\state] ) 
@@ -2045,7 +2045,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; right line
       If transform( )\id[11] 
-        If transform( )\id[11]\x = _address_\x[#__c_frame] And transform( )\id[11]\width = _address_\width[#__c_frame]
+        If _address_\_a_id_[#__a_moved] And transform( )\id[11]\x = _address_\x[#__c_frame] And transform( )\id[11]\width = _address_\width[#__c_frame]
           Box( transform( )\id[11]\x, transform( )\id[11]\y, transform( )\id[11]\width, transform( )\id[11]\height ,_address_\_a_id_[#__a_moved]\color\frame[_address_\_a_id_[#__a_moved]\color\state] ) 
         Else
           Box( transform( )\id[11]\x, transform( )\id[11]\y, transform( )\id[11]\width, transform( )\id[11]\height ,transform( )\id[11]\color\frame[transform( )\id[11]\color\state] ) 
@@ -2054,7 +2054,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; bottom line
       If transform( )\id[13] 
-        If transform( )\id[13]\x = _address_\x[#__c_frame] And transform( )\id[13]\width = _address_\width[#__c_frame]
+        If _address_\_a_id_[#__a_moved] And transform( )\id[13]\x = _address_\x[#__c_frame] And transform( )\id[13]\width = _address_\width[#__c_frame]
           Box( transform( )\id[13]\x, transform( )\id[13]\y, transform( )\id[13]\width, transform( )\id[13]\height ,_address_\_a_id_[#__a_moved]\color\frame[_address_\_a_id_[#__a_moved]\color\state] ) 
         Else
           Box( transform( )\id[13]\x, transform( )\id[13]\y, transform( )\id[13]\width, transform( )\id[13]\height ,transform( )\id[13]\color\frame[transform( )\id[13]\color\state] ) 
@@ -2230,44 +2230,83 @@ CompilerIf Not Defined( Widget, #PB_Module )
       transform( )\index = 0 
       
       ; From point anchor
-      For _index_ = 1 To #__a_moved ; #__a_count ; To 0 Step - 1
-        If _address_[_index_] And 
-           Atpoint( _address_[_index_], mouse( )\x, mouse( )\y ) 
-          
-          If _address_[_index_]\color\state <> #__s_1
+      For _index_ = 1 To #__a_moved 
+        If _address_[_index_]  
+          If Atpoint( _address_[_index_], mouse( )\x, mouse( )\y ) 
             
-            ;Debug "  enter - " +_index_
-            ;_set_cursor_( a_widget( ), _address_[_index_]\cursor )
-            _address_[_index_]\color\state = #__s_1
+            If _address_[_index_]\color\state <> #__s_1
+              ;_set_cursor_( a_widget( ), _address_[_index_]\cursor )
+              _address_[_index_]\color\state = #__s_1
+              _result_ = 1
+            EndIf
+            
+            transform( )\index = _index_
+            Break
+            
+          ElseIf _address_[_index_]\color\state <> #__s_0
+            ;_set_cursor_( a_widget( ), #PB_Cursor_Default )
+            _address_[_index_]\color\state = #__s_0
+            transform( )\index = 0
             _result_ = 1
           EndIf
-          
-          transform( )\index = _index_
-          Break
-          
-        ElseIf _address_[_index_]\color\state <> #__s_0
-          ;             If Not AtPoint(mouse_x, mouse_y, a_widget( ), [#__c_frame])
-          ;               Debug "  leave - " +_index_
-          ;             EndIf
-          ;_set_cursor_( a_widget( ), #PB_Cursor_Default )
-          _address_[_index_]\color\state = #__s_0
-          transform( )\index = 0
-          _result_ = 1
         EndIf
       Next
     EndMacro
     
     Macro a_remove( _this_, _index_ )
       For _index_ = 0 To #__a_moved
-        _this_\_a_id_[_index_] = #Null
+        If _this_\_a_id_[_index_]
+          FreeStructure( _this_\_a_id_[_index_] )
+          _this_\_a_id_[_index_] = #Null
+        EndIf
       Next
     EndMacro
     
     Macro a_add( _result_, _this_, _index_ )
       For _index_ = 0 To #__a_moved
+        If _this_\_a_mode & #__a_height = 0 And 
+           _this_\_a_mode & #__a_width = 0
+          If _index_ = 1 Or
+             _index_ = 2 Or
+             _index_ = 3 Or
+             _index_ = 4
+            Continue
+          EndIf
+        Else
+          If _this_\_a_mode & #__a_height = 0
+              If _index_ = 2 Or
+                 _index_ = 4
+                Continue
+              EndIf
+          EndIf
+          If _this_\_a_mode & #__a_width = 0
+              If _index_ = 1 Or
+                 _index_ = 3
+                Continue
+              EndIf
+          EndIf
+        EndIf
+        
+        If _this_\_a_mode & #__a_corner = 0
+          If _index_ = 5 Or
+             _index_ = 6 Or
+             _index_ = 7 Or
+             _index_ = 8
+            Continue
+          EndIf
+        EndIf
+        
+        If _this_\_a_mode & #__a_position = 0
+          If _index_ = #__a_moved
+            Continue
+          EndIf
+        EndIf
+        
+        ;
         If Not _this_\_a_id_[_index_]
           _this_\_a_id_.allocate( BUTTONS, [_index_] )
         EndIf
+        
         _this_\_a_id_[_index_]\cursor = *Data_Transform_Cursor\cursor[_index_]
         
         _this_\_a_id_[_index_]\color\frame[#__s_0] = $ff000000
@@ -14541,6 +14580,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; set transformation for the child
           If Not *this\_a_transform And *parent\_a_transform 
             *this\_a_transform = Bool( *parent\_a_transform )
+            *this\_a_mode = #__a_full | #__a_position
             a_set( *this )
           EndIf
           
@@ -19030,5 +19070,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------9-f-b--4-f8-3---4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------408-+-dr+--8--l-fv-5+------------
+; Folding = -----------------------------------j0---b--4-f8-3---4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------408-+-dr+--8--l-fv-5+------------
 ; EnableXP

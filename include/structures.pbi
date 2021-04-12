@@ -534,6 +534,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_WIDGET
     Structure _s_WIDGET
       *drop._s_DD
+      
+      _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._s_buttons[constants::#__a_moved+1]
       
