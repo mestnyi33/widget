@@ -7,6 +7,23 @@
     ;- - CONSTANTs
     ;{
     
+    #Boundary_Ignore          = -$80000000    ; 0b10000000...
+	#Boundary_Default         = -$7FFFFFFF    ; 0b01111111...
+	#Boundary_None            =  $3FFFFFFF    ; 0b00111111...
+	#Boundary_ParentSize      =  $60000000    ; 0b01100000...
+	#Boundary_ParentSizeMask  =  $C0000000    ; 0b11000000...
+	
+	Enumeration 1
+		#Boundary_MinX
+		#Boundary_MinY
+		#Boundary_MaxX
+		#Boundary_MaxY
+		#Boundary_MinWidth
+		#Boundary_MinHeight
+		#Boundary_MaxWidth
+		#Boundary_MaxHeight
+	EndEnumeration
+
     Enumeration 
       #_b_caption
       #_b_menu

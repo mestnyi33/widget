@@ -1,8 +1,8 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 Uselib(widget)
   
 ;-
-; Sticky window  example
+; Sticky window example
 CompilerIf #PB_Compiler_IsMainFile
   Global Desktop_0
   Global Desktop_0_Window_0, Desktop_0_Window_0_Button_0, Desktop_0_Window_0_Button_1

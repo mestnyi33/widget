@@ -7,29 +7,15 @@ Procedure a_mode( *this._s_widget, mode.i )
 EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  a_init(root());, 0)
+  a_init(root(), 0)
   SetColor(root(), #__color_back, RGBA(128, 192, 64, alpha))
   
-  *Object1 = Container(20, 20, 200, 100, #__flag_nogadgets) 
-  SetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
-  SetColor(widget(), #__color_frame, RGB(64, 128, 192))
-  
-  *Object2 = Container(20, 140, 200, 100, #__flag_nogadgets)
-  SetColor(widget(), #__color_back, RGBA(192, 64, 128, alpha))
-  SetColor(widget(), #__color_frame, RGBA(192, 64, 128, 255))
-  
-  *Object3 = Container(20, 260, 200, 100, #__flag_nogadgets) 
-  SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
-  SetColor(widget(), #__color_frame, RGB(128, 192, 64))
-  
-  *Object4 = Container(240, 20, 200, 100, #__flag_nogadgets)
-  SetColor(widget(), #__color_back, RGBA(192, 128, 64, alpha))
-  SetColor(widget(), #__color_frame, RGBA(192, 128, 64, 255))
-  
-  *Object5 = Container(240, 140, 200, 100, #__flag_nogadgets) 
-  SetColor(widget(), #__color_back, RGBA(128, 64, 192, alpha))
-  SetColor(widget(), #__color_frame, RGB(128, 64, 192))
-  
+  ; Create five different objects
+  *Object1 = Object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
+  *Object2 = Object(20, 140, 200, 100, "", RGBA(192, 64, 128, alpha))
+  *Object3 = Object(20, 260, 200, 100, "", RGBA(128, 192, 64, alpha))
+  *Object4 = Object(240, 20, 200, 100, "", RGBA(192, 128, 64, alpha))
+  *Object5 = Object(240, 140, 200, 100, "", RGBA(128, 64, 192, alpha))
   
   ; Define different handles to the objects
   a_mode(*Object1, #__a_width | #__a_position)

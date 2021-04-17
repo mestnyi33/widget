@@ -530,10 +530,23 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.i ; parent-tab item index
     EndStructure
     
+    Structure _s_BOUNDValue
+      min.i
+      max.i
+    EndStructure
+    
+    Structure _s_BOUNDS
+      x._s_BOUNDValue
+      y._s_BOUNDValue
+      width._s_BOUNDValue
+      height._s_BOUNDValue
+    EndStructure
+    
     ;-
     ;- - _s_WIDGET
     Structure _s_WIDGET
       *drop._s_DD
+      *bounds._s_BOUNDS
       
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
@@ -731,5 +744,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------v-
+; Folding = -------v+
 ; EnableXP
