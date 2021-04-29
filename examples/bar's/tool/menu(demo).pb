@@ -1,5 +1,5 @@
 ﻿;                                                                     - PB 
-;                                                        PopupMenu( ) - CreatePopupMenu( #Menu )
+;                                                PopupMenu( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
 ;
 ;                                           Menu( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
@@ -9,20 +9,21 @@
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
 ; 
-;                                                                     - MenuTitle( Title$ )
-;                                                                     - GetMenuTitleText( #Menu, Title )
-;                                                                     - SetMenuTitleText( #Menu, Title, Text$ )
+;                                                     Title( Title$ ) - MenuTitle( Title$ )
+;                         GetItemText( *address, #PB_Default, title ) - GetMenuTitleText( #Menu, Title )
+;                 SetItemText( *address, #PB_Default, text.s, title ) - SetMenuTitleText( #Menu, Title, Text$ )
 ; 
 ;                                                    Free( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                   Separator( *address = widget( ) ) - MenuBar( )
+;                                             Separator( [*address] ) - MenuBar( )
 ;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
-; 
-;                      AddItem( *address, item, text.s, image, mode ) - OpenSubMenu( Text$ [, ImageID] )
+;
+;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
+;                                        OpenItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
 ;                                                        CloseItem( ) - CloseSubMenu( )
 ; 
 ;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )

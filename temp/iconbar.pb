@@ -700,24 +700,28 @@ Procedure.i _GetIconBarGadgetDefault(Attribute.i)
       CompilerElse
         Result = $EDEDED
       CompilerEndIf
+      
     Case (#IconBar_TextColor)
       CompilerIf (#PB_Compiler_OS = #PB_OS_Windows)
         Result = GetSysColor_(#COLOR_MENUTEXT)
       CompilerElse
         Result = $000000
       CompilerEndIf
+      
     Case (#IconBar_DividerColor)
       CompilerIf (#PB_Compiler_OS = #PB_OS_Windows)
         Result = GetSysColor_(#COLOR_3DSHADOW)
       CompilerElse
         Result = $A0A0A0
       CompilerEndIf
+      
     Case (#IconBar_HighlightColor)
       CompilerIf (#PB_Compiler_OS = #PB_OS_Windows)
         Result = GetSysColor_(#COLOR_MENUHILIGHT)
       CompilerElse
         Result = $FF8000
       CompilerEndIf
+      
     Case (#IconBar_LatchColor)
       CompilerIf (#PB_Compiler_OS = #PB_OS_Windows)
         Result = GetSysColor_(#COLOR_3DLIGHT)

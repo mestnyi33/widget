@@ -1,5 +1,5 @@
 ﻿;                                                       - PB
-;                     Separator( *address = widget( ) ) - ToolBarSeparator( )
+;                               Separator( [*address] ) - ToolBarSeparator( )
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
@@ -27,21 +27,22 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    *parent\MenuBarHeight = 32;+2 + 6
-    *parent\_tab = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+    ;*parent\MenuBarHeight = 32;+2 + 6
+    *parent\ToolBarHeight = 32;+2 + 6
+    *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-    ProcedureReturn *parent\_tab
+    ProcedureReturn *parent\tab\widget
   EndProcedure
     
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-    If widget( )\_tab
-      AddItem( widget( )\_tab, _button_, _text_, _image_, _mode_)
+    If widget( )\tab\widget
+      AddItem( widget( )\tab\widget, _button_, _text_, _image_, _mode_)
     EndIf
   EndMacro
   
   Macro Separator( )
-    If widget( )\_tab
-      AddItem( widget( )\_tab, 65535, "|", #Null, #Null )
+    If widget( )\tab\widget
+      AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
     EndIf
   EndMacro
   

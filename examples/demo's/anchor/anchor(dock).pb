@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
     
@@ -8,7 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure.i _SetAlignment(*this._s_widget, Mode.l, Type.l=1)
-      
+    ProcedureReturn SetAlignment(*this, Mode, Type)
+    
       With *this
         Select Type
           Case 1 ; widget
@@ -32,37 +33,37 @@ CompilerIf #PB_Compiler_IsMainFile
                 
                 If \align\left And \align\right
                   \x = x2
-                  width = \parent\width[#__c_2] - x1 - x2
+                  width = \parent\width[2] - x1 - x2
                 EndIf
                 If \align\top And \align\bottom 
                   \y = y2
-                  height = \parent\height[#__c_2] - y1 - y2
+                  height = \parent\height[2] - y1 - y2
                 EndIf
                 
                 If \align\left And Not \align\right
                   \x = x2
                   \y = y2
                   x2 + \width
-                  height = \parent\height[#__c_2] - y1 - y2
+                  height = \parent\height[2] - y1 - y2
                 EndIf
                 If \align\right And Not \align\left
-                  \x = \parent\width[#__c_2] - \width - x1
+                  \x = \parent\width[2] - \width - x1
                   \y = y2
                   x1 + \width
-                  height = \parent\height[#__c_2] - y1 - y2
+                  height = \parent\height[2] - y1 - y2
                 EndIf
                 
                 If \align\top And Not \align\bottom 
                   \x = 0
                   \y = y2
                   y2 + \height
-                  width = \parent\width[#__c_2] - x1 - x2
+                  width = \parent\width[2] - x1 - x2
                 EndIf
                 If \align\bottom And Not \align\top
                   \x = 0
-                  \y = \parent\height[#__c_2] - \height - y1
+                  \y = \parent\height[2] - \height - y1
                   y1 + \height
-                  width = \parent\width[#__c_2] - x1 - x2
+                  width = \parent\width[2] - x1 - x2
                 EndIf
                 
                 
@@ -106,17 +107,17 @@ CompilerIf #PB_Compiler_IsMainFile
                 
               If \align\right
                 If \align\left
-                  \align\delta\x = \parent\width[#__c_2] - \width
+                  \align\delta\x = \parent\width[2] - \width
                 Else
-                  \align\delta\x = (\parent\width[#__c_2]-\x[#__c_3])
+                  \align\delta\x = (\parent\width[2]-\x[3])
                 EndIf
               EndIf
               
               If \align\bottom
                 If \align\top
-                  \align\delta\y = \parent\height[#__c_2] - \height
+                  \align\delta\y = \parent\height[2] - \height
                 Else
-                  \align\delta\y = (\parent\height[#__c_2]-\y[#__c_3])
+                  \align\delta\y = (\parent\height[2]-\y[3])
                 EndIf
               EndIf
                 
@@ -136,17 +137,17 @@ CompilerIf #PB_Compiler_IsMainFile
               
               If \align\right
                 If \align\left
-                  \align\delta\x = \parent\width[#__c_2] - \width
+                  \align\delta\x = \parent\width[2] - \width
                 Else
-                  \align\delta\x = (\parent\width[#__c_2]-\x[#__c_3])
+                  \align\delta\x = (\parent\width[2]-\x[3])
                 EndIf
               EndIf
               
               If \align\bottom
                 If \align\top
-                  \align\delta\y = \parent\height[#__c_2] - \height
+                  \align\delta\y = \parent\height[2] - \height
                 Else
-                  \align\delta\y = (\parent\height[#__c_2]-\y[#__c_3])
+                  \align\delta\y = (\parent\height[2]-\y[3])
                 EndIf
               EndIf
               
@@ -184,13 +185,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *demo
   Procedure events_widgets()
-;     SetData(*event\widget, (GetData(*event\widget) ! 1))
+;     SetData(EventWidget( ), (GetData(EventWidget( )) ! 1))
 ;     
-;     If GetData(*event\widget)
-;      ; *event\widget\color\state = 2
+;     If GetData(EventWidget( ))
+;      ; EventWidget( )\color\state = 2
 ;     EndIf
     
-    Select *event\widget
+    Select EventWidget( )
       Case *t
         _SetAlignment(*demo, #__align_Center|#__align_top|#__align_auto)
         
@@ -305,6 +306,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*lb, @events_widgets())
     Bind(*ce, @events_widgets())
     
+    Bind(-1,-1)
+    
     Define direction = 1
   Define Width, Height
   
@@ -350,6 +353,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----Zg
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = ----0g
 ; EnableXP

@@ -7,7 +7,19 @@
     ;- - CONSTANTs
     ;{
     
-    #Boundary_Ignore          = -$80000000    ; 0b10000000...
+    Enumeration -1
+		#SelectionStyle_Default
+		#SelectionStyle_None
+		#SelectionStyle_Solid
+		#SelectionStyle_Dotted
+		#SelectionStyle_Dashed
+	EndEnumeration
+	#SelectionStyle_Mode       = $100
+	#SelectionStyle_Completely = 0
+	#SelectionStyle_Partially  = $100
+	#SelectionStyle_Ignore = #PB_Ignore
+	
+  #Boundary_Ignore          = -$80000000    ; 0b10000000...
 	#Boundary_Default         = -$7FFFFFFF    ; 0b01111111...
 	#Boundary_None            =  $3FFFFFFF    ; 0b00111111...
 	#Boundary_ParentSize      =  $60000000    ; 0b01100000...
@@ -41,7 +53,7 @@
     #__window_frame_size = 4 
     #__border_scroll = 2
     
-    #__panel_height = 25
+    #__panel_height = 25 ;+ 4
     #__panel_width = 85
     
     #__menu_height = 25

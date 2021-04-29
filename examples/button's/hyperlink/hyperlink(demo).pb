@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
@@ -13,12 +13,12 @@ EndProcedure
 
 Procedure events_widgets()
   ;ClearDebugOutput()
-  ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
   
-  Select *event\event
+  Select WidgetEventType( )
     Case #PB_EventType_LeftClick
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
-      Debug  Str(GetIndex(*event\widget))+" - widget change " + GetState(*event\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -52,7 +52,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_Sy
     Bind(GetWidget(i), @events_widgets())
   Next
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --

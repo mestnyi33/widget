@@ -128,9 +128,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
     
-    Repeat
-      Define  Event = WaitWindowEvent()
-    Until Event= #PB_Event_CloseWindow
+    WaitClose( )
+;     Repeat
+;       Define  Event = WaitWindowEvent()
+;     Until Event= #PB_Event_CloseWindow
     
   EndIf   
 CompilerEndIf

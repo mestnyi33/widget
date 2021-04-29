@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
@@ -13,12 +13,12 @@ EndProcedure
 
 Procedure events_widgets()
   ;ClearDebugOutput()
-  Debug ""+this()\event+ " - event widget - " +Str(GetIndex(this()\widget)) + " state - "+ GetState(this()\widget) ; 
+  Debug ""+WidgetEventType( )+ " - event widget - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      ; Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      ; Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -60,7 +60,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   
   ;ClearDebugOutput()
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -

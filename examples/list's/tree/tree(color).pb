@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 UseLib(widget)
 
@@ -35,11 +35,12 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemColor(*w,  #PB_All, #__Color_Front,  $FF00FFFF, 2)
     SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3F00F0, 2)
     
+    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3Ff0F0, 1)
+    
     SetItemColor(*w,  #PB_All, #__Color_Line,  $FF3F00F0)
     
     redraw(root())
-    Repeat
-    Until WaitWindowEvent() = #PB_Event_CloseWindow
+    WaitClose( )
   EndIf
   CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

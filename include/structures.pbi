@@ -152,15 +152,15 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     ;- - _s_anchor
 ;     Structure _s_anchor Extends _s_coordinate
 ;       round.a
-;       cursor.l
+;       *cursor
 ;       color._s_color;[4]
 ;     EndStructure
     ;- - _s_buttons
     Structure _s_buttons Extends _s_coordinate 
       ;;index.l
-      cursor.l ; anchor buttons
+      *cursor ; anchor buttons
       
-      size.l ; len >> size.l
+      size.l 
       _state.l ; normal; entered; selected; disabled
       state.l ; temp
       
@@ -530,23 +530,32 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.i ; parent-tab item index
     EndStructure
     
+    ;-
     Structure _s_BOUNDValue
       min.i
       max.i
     EndStructure
     
-    Structure _s_BOUNDS
+    Structure _s_BOUNDMove
       x._s_BOUNDValue
       y._s_BOUNDValue
+    EndStructure
+    
+    Structure _s_BOUNDSize
       width._s_BOUNDValue
       height._s_BOUNDValue
+    EndStructure
+    
+    Structure _s_BOUNDS
+      *move._s_BOUNDMove
+      *size._s_BOUNDSize
     EndStructure
     
     ;-
     ;- - _s_WIDGET
     Structure _s_WIDGET
       *drop._s_DD
-      *bounds._s_BOUNDS
+      bounds._s_BOUNDS
       
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
@@ -614,6 +623,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *flag
       *data
+      *cursor
       
       draw_widget.b
       
@@ -625,11 +635,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       vertical.b
       type.b
       hide.b[2] 
-      cursor.l[2]
       round.a
       
       repaint.i
-      resize.l
+      resize.i
       
       *errors
       notify.l ; оповестить об изменении
@@ -640,13 +649,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       caption._s_caption
       color._s_color[4]
       
-      row._s_row
       text._s_text 
       
       *bar._s_bar
+      *row._s_row ; multi-text; buttons; lists; - gadgets
+      *_box_._s_buttons ; checkbox; optionbox
       
       ;combo_box._s_buttons
-      button._s_buttons ; checkbox; optionbox
       
       *align._s_align
       
@@ -663,16 +672,13 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_MOUSE Extends _s_POINT
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
       ;*behavior
-      *bar_row._s_tabs[3]         ; at point element item
+      *bar_row._s_tabs[3]     ; at point element item
       *row._s_rows[2]         ; at point element item
       *button._s_buttons[3]   ; at point element button
       
-      *entered._s_WIDGET      ; mouse enterd element
+      *entered._s_WIDGET      ; mouse entered element
+      *pressed._s_WIDGET      ; mouse button's pushed element
       *leaved._s_WIDGET       ; mouse leaved element
-      *selected._s_WIDGET     ; mouse pushed element
-      
-      *grid
-      buttons.l 
       
       wheel._s_POINT
       delta._s_POINT
@@ -680,15 +686,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       *_drag._S_DD
       *_transform._s_transform
     
-      change.b
-      ;move._s_point
+      *grid
+      buttons.l               ; 
+      change.b                ; if moved mouse this value #true
     EndStructure
     
     ;- - _s_KEYBOARD
-    Structure _s_KEYBOARD
+    Structure _s_KEYBOARD ; Ok
       *widget._s_WIDGET   ; keyboard focus element
-      *window._s_WIDGET   ; active window element ; GetActiveWindow( )\
-      
+      *window._s_WIDGET   ; active window element ; GetActive( )\
       change.b
       input.c
       key.i[2]
@@ -696,14 +702,15 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_CANVAS
     Structure _s_CANVAS
-      repaint.b
+      *cursor             ; current visible cursor
+      *fontID             ; current drawing fontid
       *address            ; root list address
-      *fontID             ; default drawing fontid
       
-      container.i
       window.i            ; canvas window
       gadget.i            ; canvas gadget
+      container.i         ; 
       
+      repaint.b
       postevent.b         ; post evet canvas repaint
       bindevent.b         ; bind canvas event
     EndStructure
@@ -718,7 +725,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
-      *openlist._s_WIDGET   ; opened list element
+      *opened._s_WIDGET   ; opened list element
     EndStructure
     
     ;- - _s_INCLUDE
@@ -744,5 +751,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------v+
+; Folding = --------0-
 ; EnableXP

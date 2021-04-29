@@ -152,6 +152,14 @@ If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
   SourcePrivate = ListIcon( 610, 10, 140, 140, "Drag private stuff here", 260 )
   
+  ;
+  ;
+  SetCursor( SourceText, #PB_Cursor_Hand )
+  SetCursor( SourceImage, #PB_Cursor_Hand )
+  SetCursor( SourceFiles, #PB_Cursor_Hand )
+  SetCursor( SourcePrivate, #PB_Cursor_Hand )
+  
+  ;
   AddItem( SourceText, -1, "hello world" )
   AddItem( SourceText, -1, "The quick brown fox jumped over the lazy dog" )
   AddItem( SourceText, -1, "abcdefg" )
@@ -174,7 +182,7 @@ If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   TargetFiles = ListIcon( 310, 160, 140, 140, "Drop Files here", 130 )
   TargetPrivate1 = ListIcon( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
   TargetPrivate2 = ListIcon( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
-    
+  
   ; Now enable the dropping on the target s
   ;
   EnableDrop( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
@@ -195,6 +203,8 @@ If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   Bind( TargetPrivate1, @Events( ), #PB_EventType_Drop )
   Bind( TargetPrivate2, @Events( ), #PB_EventType_Drop )
   
+  ; main loop
+  ;
   WaitClose( )
 ;   ReDraw( Root( ) )
 ;   

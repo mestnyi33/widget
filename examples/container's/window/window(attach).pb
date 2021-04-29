@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_()
     
-    Select This()\event
+    Select WidgetEventType( )
       Case #PB_EventType_LeftClick
         Define flag
         Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;Define *mdi._s_widget = Container(x,y,Width, height)
   Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
-  ;;a_init( *mdi )
+  a_init( *mdi, 0 )
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child
   
   Define *g0._s_widget = Window(50, 50, 400, 400, "main",flag,*mdi) : SetClass(widget(), "main") 
@@ -59,9 +59,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   bind(*g1b, @events_())
   
-  Repeat
-    Event = WaitWindowEvent()
-  Until Event = #PB_Event_CloseWindow
+  WaitClose( )
+;   Repeat
+;     Event = WaitWindowEvent()
+;   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -

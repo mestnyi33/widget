@@ -60,8 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_6, 250)
   SetState(s_7, 250)
   
-  
-  
+   
   widget::Tab(30, 30, 250, 30)
   For i=0 To 10
     widget::AddItem(widget( ), -1, "Tab "+Str(i))
@@ -85,10 +84,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Tab_SetState(s_3, 6)
   Tab_SetState(s_4, 1)
   
-  Define event
-  Repeat
-    event = WaitWindowEvent()
-  Until event = #PB_Event_CloseWindow
+  WaitClose( )
+;   Define event
+;   Repeat
+;     event = WaitWindowEvent()
+;   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
