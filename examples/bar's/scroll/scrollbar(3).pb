@@ -84,11 +84,13 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_1, 250-10)
   SetState(s_3, (250)/2)
   SetState(s_4, 10)
- 
-  Define event
-  Repeat
-    event = WaitWindowEvent()
-  Until event = #PB_Event_CloseWindow
+  
+  WaitClose( )
+  
+;   Define event
+;   Repeat
+;     event = WaitWindowEvent()
+;   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

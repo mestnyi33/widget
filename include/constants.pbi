@@ -53,7 +53,7 @@
     #__window_frame_size = 4 
     #__border_scroll = 2
     
-    #__panel_height = 25 ;+ 4
+    #__panel_height = 24 ;+ 4
     #__panel_width = 85
     
     #__menu_height = 25

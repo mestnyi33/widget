@@ -16250,7 +16250,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure   Container_Draw( *this._s_WIDGET )
+    Procedure   draw_container_( *this._s_WIDGET )
       With *this
         _clip_content_( *this, [#__c_clip2] )
         
@@ -16289,8 +16289,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *this\y[#__c_inner] + *this\y[#__c_required] + \text\y, 
                     \text\string, \color\front[\color\state]&$FFFFFF | \color\_alpha<<24 )
         EndIf
-        
-        ;
+      EndWith
+    EndProcedure
+    
+    Procedure   draw_container_frame_( *this._s_WIDGET )
+      Protected i
+      With *this
+        If \color\alpha And \color\alpha\frame
+          _draw_mode_alpha_( #PB_2DDrawing_Default )
+        Else
+          _draw_mode_( #PB_2DDrawing_Default )
+        EndIf
         _clip_content_( *this, [#__c_clip] )
         
         ; area scrollbars draw 
@@ -16298,26 +16307,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If *this\fs
-          If \fs = 1 
-            _draw_mode_( #PB_2DDrawing_Outlined )
-            RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\frame[*this\color\state] )
-          Else
-            ;             _draw_mode_( #PB_2DDrawing_Outlined )
-            ;             RoundBox( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_container]+2,*this\height[#__c_container]+2, *this\round, *this\round, $FFFFFFFF )
-            
-            If \color\alpha And \color\alpha\frame
-              _draw_mode_alpha_( #PB_2DDrawing_Default )
-            Else
-              _draw_mode_( #PB_2DDrawing_Default )
-            EndIf
-;             RoundBox( \x[#__c_frame], \y[#__c_inner] - \fs, \width[#__c_frame], \fs, \round,\round, \color\frame[*this\color\state] )
-;             RoundBox( \x[#__c_frame], \y[#__c_inner] - \fs, \fs, \height[#__c_frame], \round,\round, \color\frame[*this\color\state] )
-;             RoundBox( \x[#__c_frame] + \width[#__c_frame] - \fs, \y[#__c_inner] - \fs, \fs, \height[#__c_frame], \round,\round, \color\frame[*this\color\state] )
-;             RoundBox( \x[#__c_frame], \y[#__c_frame]+\height[#__c_frame] - \fs, \width[#__c_frame], \fs, \round,\round, \color\frame[*this\color\state] )
-            RoundBox( \x[#__c_frame], \y[#__c_frame], \width[#__c_frame], \fs, \round,\round, \color\frame[*this\color\state] )
-            RoundBox( \x[#__c_frame], \y[#__c_frame], \fs, \height[#__c_frame], \round,\round, \color\frame[*this\color\state] )
-            RoundBox( \x[#__c_frame] + \width[#__c_frame] - \fs, \y[#__c_frame], \fs, \height[#__c_frame], \round,\round, \color\frame[*this\color\state] )
-            RoundBox( \x[#__c_frame], \y[#__c_frame]+\height[#__c_frame] - \fs, \width[#__c_frame], \fs, \round,\round, \color\frame[*this\color\state] )
+          For i = 1 To \fs
+            ;_draw_box_( *this, color\frame, [#__c_frame] )
+          ;  RoundBox( *this\x[#__c_inner]-i-1, *this\y[#__c_inner]-i-1, *this\width[#__c_container]+i*2+2, *this\height[#__c_container]+i*2+2, *this\round,*this\round, *this\color\frame[*this\color\state] )
+            RoundBox( *this\x[#__c_inner]-i, *this\y[#__c_inner]-i, *this\width[#__c_container]+i*2, *this\height[#__c_container]+i*2, *this\round,*this\round, *this\color\frame[*this\color\state] )
+          Next
+          
+          If *this\scroll And (*this\scroll\v Or *this\scroll\h )
+            RoundBox( *this\x[#__c_inner]-1, *this\y[#__c_inner]-1, *this\width[#__c_container]+2, *this\height[#__c_container]+2, *this\round,*this\round, $ffffffff )
           EndIf
         EndIf
       EndWith
@@ -16353,10 +16350,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; draw widgets
         Select \type
           Case #__type_Window         : Window_Draw( *this )
-          Case #__type_MDI            : Container_Draw( *this )
-          Case #__type_Container      : Container_Draw( *this )
-          Case #__type_ScrollArea     : Container_Draw( *this )
-          Case #__type_Image          : Container_Draw( *this )
+          Case #__type_MDI,            
+               #__type_Container,
+               #__type_ScrollArea,
+               #__type_Image          
+            
+            _draw_mode_alpha_( #PB_2DDrawing_Default )
+              draw_container_( *this )
+            _draw_mode_alpha_( #PB_2DDrawing_Default )
+              draw_container_frame_( *this )
             
             ;- widget::panel_draw( )
           Case #__type_Panel         
@@ -19015,5 +19017,5 @@ EndDataSection
 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------T-P-v+fbz5fd0+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---i-----------2f---------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

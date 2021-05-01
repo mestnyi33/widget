@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets+.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
