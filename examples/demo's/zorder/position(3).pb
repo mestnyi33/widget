@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetParent(*b2, *c0, 1)
     EndIf
     
-    ;     - 
+;     - #after
 ;     - 0 0 none btn0 con0
 ;     - 1 1 btn0 con0 btn3
 ;     - 2 2 none 101 102
@@ -77,7 +77,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     - 12 10 302 303 none
 ;     - 13 11 con0 btn3 none
 ;     -
-
+;     - last
+;     - window - btn3
+;     - panel 
+;     -    (1) - btn1
+;     -    (2) - btn2
+;     -    (3) - 303
     
     debug_position()
     
