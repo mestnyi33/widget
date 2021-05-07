@@ -72,6 +72,7 @@ Bind(*list1, @event_widget( ), #PB_EventType_Drop)
 Bind(*list2, @event_widget( ), #PB_EventType_DragStart)
 Bind(*list2, @event_widget( ), #PB_EventType_Drop)
 
+WaitClose()
 Repeat
   
   Select WaitWindowEvent()   

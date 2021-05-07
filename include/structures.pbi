@@ -583,6 +583,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       last._s_OBJECT
       after._s_OBJECT
       before._s_OBJECT
+      *position
       
       tab._s_TAB_WIDGET
       
