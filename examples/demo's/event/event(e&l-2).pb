@@ -20,7 +20,7 @@ Procedure events_widgets()
   EndIf
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
+If Open(OpenWindow(#PB_Any, 0, 0, 240, 240, "enter&leave demo",
                    #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   If editable = #__flag_anchorsgadget
     a_init(root())

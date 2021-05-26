@@ -20,13 +20,13 @@ Procedure menu_events()
   If CurrentObject
     Select EventMenu()
       Case #MenuItem_ZOrder_Top
-        SetPosition(CurrentObject, #PB_List_First) 
+        SetPosition(CurrentObject, #PB_List_Last) 
       Case #MenuItem_ZOrder_Up
         SetPosition(CurrentObject, #PB_List_After) 
       Case #MenuItem_ZOrder_Down
         SetPosition(CurrentObject, #PB_List_Before) 
       Case #MenuItem_ZOrder_Bottom
-        SetPosition(CurrentObject, #PB_List_Last) 
+        SetPosition(CurrentObject, #PB_List_First) 
     EndSelect
     
     Redraw( root( ) )
@@ -50,7 +50,7 @@ If Open(#PB_Any, 0, 0, 800, 450, "Example 4: Changing the order of the objects (
   MenuItem(#MenuItem_ZOrder_Bottom, "Push to the deepest layer")
   
   Container(0, 0, 800, 450) 
-  a_init(widget(), 10) ; , 4)
+  a_init(widget(), 0) ; , 4)
   SetColor(widget(), #__color_back, RGBA(255, 255, 255, alpha))
   
   Object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha))

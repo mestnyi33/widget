@@ -42,9 +42,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi._s_widget = Container(x,y,Width, height)
   Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
   a_init( *mdi, 0 )
-  Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child
+  Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
   
-  Define *g0._s_widget = Window(50, 50, 400, 400, "main",flag,*mdi) : SetClass(widget(), "main") 
+  Define *g0._s_widget = Window(50, 50, 400, 400, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
   
   Define *g1._s_widget =  Window(X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetClass(widget(), "form_1") 
@@ -60,10 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
   bind(*g1b, @events_())
   
   WaitClose( )
-;   Repeat
-;     Event = WaitWindowEvent()
-;   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -
+; Folding = 8
 ; EnableXP

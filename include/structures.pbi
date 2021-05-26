@@ -18,8 +18,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l[constants::#__c]
     EndStructure
     
-    ;- - _s_coordinate
-    Structure _s_coordinate ;Extends _s_point
+    ;- - _s_COORDINATE
+    Structure _s_COORDINATE ;Extends _s_point
       y.l
       x.l
       width.l
@@ -48,7 +48,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_align
     Structure _s_align
-      delta._s_coordinate
+      delta._s_COORDINATE
       _left.l
       _top.l
       _right.l
@@ -81,13 +81,13 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_caret
-    Structure _s_caret Extends _s_coordinate
+    Structure _s_caret Extends _s_COORDINATE
       pos.l[3]
       time.l
     EndStructure
     
     ;- - _s_edit
-    Structure _s_edit Extends _s_coordinate
+    Structure _s_edit Extends _s_COORDINATE
       pos.l
       len.l
       
@@ -132,10 +132,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_image
-    Structure _s_image Extends _s_coordinate
+    Structure _s_image Extends _s_COORDINATE
       *id  ; - ImageID( ) 
       *img ; - Image( )
       
+      transparent.b
+      depth.a
       change.b
       size.w  ; icon small/large
       
@@ -150,13 +152,13 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
 ;     ;- - _s_anchor
-;     Structure _s_anchor Extends _s_coordinate
+;     Structure _s_anchor Extends _s_COORDINATE
 ;       round.a
 ;       *cursor
 ;       color._s_color;[4]
 ;     EndStructure
     ;- - _s_buttons
-    Structure _s_buttons Extends _s_coordinate 
+    Structure _s_buttons Extends _s_COORDINATE 
       ;;index.l
       *cursor ; anchor buttons
       
@@ -182,13 +184,13 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     EndStructure
     
     ;- - _s_margin
-    Structure _s_margin Extends _s_coordinate
+    Structure _s_margin Extends _s_COORDINATE
       color._s_color
       hide.b
     EndStructure
     
     ;- - _s_tabs
-    Structure _s_tabs ;Extends _s_coordinate
+    Structure _s_tabs ;Extends _s_COORDINATE
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[constants::#__c]
@@ -265,7 +267,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_column
-    Structure _s_column Extends _s_coordinate
+    Structure _s_column Extends _s_COORDINATE
       
     EndStructure
     
@@ -330,7 +332,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ; multi group
-    Structure _s_group Extends _s_coordinate
+    Structure _s_group Extends _s_COORDINATE
       *WIDGET._s_WIDGET
     EndStructure
     
@@ -407,12 +409,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_line_
     Structure _s_line_
-      v._s_coordinate
-      h._s_coordinate
+      v._s_COORDINATE
+      h._s_COORDINATE
     EndStructure
     
     ;- - _s_tt
-    Structure _s_tt Extends _s_coordinate
+    Structure _s_tt Extends _s_COORDINATE
       window.i
       gadget.i
       
@@ -424,7 +426,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_SCROLL
-    Structure _s_SCROLL Extends _s_coordinate
+    Structure _s_SCROLL Extends _s_COORDINATE
       align._s_align
       ;padding.b
       
@@ -452,7 +454,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     
 ;     ;- - _s_items
-;     Structure _s_items Extends _s_coordinate
+;     Structure _s_items Extends _s_COORDINATE
 ;       index.l
 ;       *parent._s_items
 ;       draw.b
@@ -520,7 +522,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_EVENT
-    Structure _s_EVENT
+    Structure _s_EVENT Extends _s_EVENTDATA
+      
       List *bind._s_bind( )
       List *queue._s_EVENTDATA( )
     EndStructure
@@ -528,6 +531,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_TAB_WIDGET
     Structure _s_TAB_WIDGET Extends _s_OBJECT
       index.i ; parent-tab item index
+    EndStructure
+    
+    ;- - _s_ATTACH
+    Structure _s_ATTACH Extends _s_COORDINATE
+      mode.a
+      *parent._s_WIDGET
     EndStructure
     
     ;-
@@ -554,6 +563,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;-
     ;- - _s_WIDGET
     Structure _s_WIDGET
+      *attach._s_ATTACH
+      
       *drop._s_DD
       bounds._s_BOUNDS
       
@@ -754,5 +765,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------0-
+; Folding = --------8-
 ; EnableXP

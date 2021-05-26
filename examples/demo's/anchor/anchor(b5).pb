@@ -50,38 +50,18 @@ a_init(root(), 0)
 SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
   
 
-Procedure SetAttachment( *this._s_widget, *parent._s_widget, mode.l )
-  Protected x, y
-  
-  If *parent And 
-     *this\child = 0
-    *this\child =- 1
-    ;;*this\parent = *parent
-    x = *this\x[#__c_container] + *parent\x[#__c_container] - *parent\fs - *parent\fs[1]
-  EndIf
-  
-  Resize( *this, x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-EndProcedure
 
 ; --- Attachment ---
 ; You can attach an object on another object directly during creation or later with AttachObject
 
 *Object1 = Object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
-OpenList( *Object1 )
 *Object2 = Object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
-;widget()\child =- 1
-;SetParent( *Object2, *Object1 )
-CloseList( )
+;*Object2 = Object(50, 170, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
+SetAttachment( *Object2, *Object1, 0 ) ; Attach object2 directly to object1, the position is then relative to object1
 
 *Object3 = Object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
-; ;widget()\x = 110
-; ; widget()\y
-; widget()\child =- 1
-; widget()\parent = *Object1
-; ;SetParent( *Object3, *Object1 )
-; Debug ""+widget()\text\string+" "+widget()\x+" "+widget()\y+" "+widget()\width+" "+widget()\height
-SetAttachment( *Object3, *Object1, 1 ) ; Attach object 3 to object 1 but just the x-position
+SetAttachment( *Object3, *Object1, 1 ) ; Attach object3 to object1 but just the x-position
 
 
 ; --- Panel container ---

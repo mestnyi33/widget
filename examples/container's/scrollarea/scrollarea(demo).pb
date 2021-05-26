@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
+  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, count;=1000;0
   
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -116,6 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())
     
+    WaitClose()
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf

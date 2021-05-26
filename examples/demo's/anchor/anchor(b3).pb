@@ -15,6 +15,7 @@ Procedure _Object( x.l,y.l,width.l,height.l, text.s, frameSize, Color.l  )
   SetColor(widget(), #__color_back, Color)
   SetColor(widget(), #__color_frame, Color&$FFFFFF | 255<<24)
   SetColor(widget(), #__color_front, Color&$FFFFFF | 255<<24)
+  widget()\round = 20
   SetFrame(widget(), frameSize);, -1), -2) ; bug
   ProcedureReturn widget( )
 EndProcedure

@@ -184,11 +184,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Canvas_AddImage( List Images.IMAGES( ), x, y, img, alphatest=0 )
     If AddElement( Images( ) )
-      Images( )\img    = img
-      Images( )\x          = x
-      Images( )\y          = y
-      Images( )\width  = ImageWidth( img )
-      Images( )\height = ImageHeight( img )
+      Images( )\img       = img
+      Images( )\x         = x
+      Images( )\y         = y
+      Images( )\width     = ImageWidth( img )
+      Images( )\height    = ImageHeight( img )
       Images( )\alphatest = alphatest
     EndIf
   EndProcedure
@@ -397,5 +397,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; Folding = R5--DDAA+
 ; EnableXP

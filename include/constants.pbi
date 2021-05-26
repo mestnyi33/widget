@@ -274,7 +274,6 @@
       
       
       #__flag_invert
-      #__flag_noactivate
       #__flag_autosize
       ;#__flag_invisible
       ;#__flag_sizegadget

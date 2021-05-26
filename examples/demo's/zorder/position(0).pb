@@ -9,22 +9,22 @@ CompilerIf #PB_Compiler_IsMainFile
   Global first2=-1,prev2=-1,next2=-1,last2=-1
   Global first3=-1,prev3=-1,next3=-1,last3=-1
   
-  Procedure _Event()
-    Select this()\event
+  Procedure _Event( )
+    Select WidgetEventType( )
       Case #PB_EventType_LeftClick 
-        Select this()\widget
+        Select EventWidget( )
           Case first1, first2, first3
-            SetPosition(this()\widget, #PB_List_First)
+            SetPosition( EventWidget( ), #PB_List_First)
           Case prev1, prev2, prev3
-            SetPosition(this()\widget, #PB_List_Before)
+            SetPosition( EventWidget( ), #PB_List_Before)
           Case next1, next2, next3
-            SetPosition(this()\widget, #PB_List_After)
+            SetPosition( EventWidget( ), #PB_List_After)
           Case last1, last2, last3
-            SetPosition(this()\widget, #PB_List_Last)
+            SetPosition( EventWidget( ), #PB_List_Last)
         EndSelect
         
-        ClearDebugOutput()
-        debug_position()
+        ClearDebugOutput( )
+        debug_position( )
     EndSelect
     
   EndProcedure
