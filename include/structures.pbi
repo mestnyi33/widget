@@ -12,6 +12,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       i.i
     EndStructure
     
+    ;- - _s_SIZE
+    Structure _s_SIZE
+      width.l
+      height.l
+    EndStructure
+    
     ;- - _s_point
     Structure _s_POINT
       y.l[5] ; убрать 
@@ -24,7 +30,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l
       width.l
       height.l
-    EndStructure
+    ; transporent.b
+      EndStructure
     
     ;- - _s_padding
     Structure _s_padding
@@ -136,7 +143,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *id  ; - ImageID( ) 
       *img ; - Image( )
       
-      transparent.b
+      ;;*output;transparent.b
       depth.a
       change.b
       size.w  ; icon small/large
@@ -195,6 +202,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l[constants::#__c]
       height.l[constants::#__c]
       width.l[constants::#__c]
+      ; transporent.b
       
       index.l  ; Index of new list element
       hide.b
@@ -396,6 +404,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l[5]
       height.l[5]
       width.l[5]
+      ; transporent.b
       
       text._s_text
       button._s_buttons[4]
@@ -588,6 +597,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l[constants::#__c]
       height.l[constants::#__c]
       width.l[constants::#__c]
+      ; transporent.b
       
       ; placing layout
       first._s_OBJECT
@@ -765,5 +775,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------8-
+; Folding = --------4-
 ; EnableXP

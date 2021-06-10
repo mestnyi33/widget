@@ -7,45 +7,105 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Event.i, MyCanvas, *mdi
   Global x=100,y=100, width=320, height=320 , focus
   
+;   Procedure Canvas_HitTest( *this._s_WIDGET, mouse_x, mouse_y )
+;     Protected Alpha = 0
+;     
+;     If *this\image[#__img_background]\depth > 31
+;       StartDrawing( ImageOutput( *this\image[#__img_background]\img ) )
+;       DrawingMode( #PB_2DDrawing_AlphaChannel )
+;       
+;       If mouse()\x-*this\x[#__c_inner] < *this\width[#__c_inner] And mouse()\y-*this\y[#__c_inner] < *this\height[#__c_inner]
+;         ;Debug ""+ Str(mouse()\x-*this\x[#__c_inner]) +" "+ Str( mouse()\y-*this\y[#__c_inner] )
+;         Alpha = Alpha( Point( mouse()\x-*this\x[#__c_inner], mouse()\y-*this\y[#__c_inner] ) ) ; get alpha
+;       EndIf
+;       StopDrawing()
+;     Else
+;       Alpha = 255
+;     EndIf
+;       
+;     ; ReDraw( *this\root )
+;     ProcedureReturn Alpha
+;   EndProcedure
+  
+;   Procedure Canvas_SetCursor( mouse_x, mouse_y, cur = #PB_Cursor_Default )
+; ;     Static set_cursor 
+; ;     Protected cursor
+; ;     
+; ;     If cur <> #PB_Cursor_Default
+; ;       cursor = cur
+; ;     Else
+; ;       If Not Mouse( )\buttons
+; ;         If Bool( Canvas_HitTest( EventWidget( ), mouse_x, mouse_y ) ) 
+; ;           cursor = #PB_Cursor_Hand
+; ;         Else 
+; ;           cursor = #PB_Cursor_Default
+; ;         EndIf
+; ;       EndIf
+; ;     EndIf
+; ;     
+; ;     If set_cursor <> cursor
+; ;       set_cursor = cursor
+; ;       SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, cursor )
+; ;     EndIf
+;   EndProcedure
+  
   Procedure CustomEvents( )
     Static Drag
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftButtonUp 
-        Drag = #False
+      Case #PB_EventType_LeftButtonUp : Drag = #False
+        ; Canvas_SetCursor( mouse()\x, mouse()\y  )
         
       Case #PB_EventType_LeftButtonDown
-        Drag = #True
+        Drag = 1;Bool( Canvas_HitTest( EventWidget( ), mouse()\x, mouse()\y ) )
+;         If Drag 
+;          ; Canvas_SetCursor( mouse()\x, mouse()\y , #PB_Cursor_Arrows )
+;         EndIf
         
       Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
         If Drag = #True
           If Resize( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
             ProcedureReturn #PB_EventType_Repaint
           EndIf
+;         Else 
+;          ; Canvas_SetCursor( mouse()\x, mouse()\y  )
         EndIf
         
     EndSelect
-   
+    
+;     Select WidgetEventType( )
+;       Case #PB_EventType_MouseEnter
+;         ; SetCursor( EventWidget( ), #PB_Cursor_Hand )
+;         
+;       Case #PB_EventType_MouseLeave
+;        ; SetCursor( EventWidget( ), #PB_Cursor_Default )
+;     EndSelect
+    
+    
   EndProcedure
   
   Procedure Canvas_AddImage( *mdi, x, y, img, alphatest=0 )
-    Protected *this._s_widget
-    
-    *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
+    Protected *this._s_widget = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     
     If alphatest
       ;*this\image[#__img_background]\transparent = 1
       ; SetColor( *this, #__color_back, #PB_Image_Transparent )
-    EndIf
-    
-    ;;*this\transporent = Bool( *this\image[#__img_background]\id And *this\image[#__img_background]\depth > 31 )
-        
+      ;; *this\transporent = 1
+      EndIf
+    ;_this_\image[#__img_background]
     SetCursor( *this, #PB_Cursor_Hand )
     
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonUp )
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonDown )
+    
     Bind( *this, @CustomEvents(), #PB_EventType_MouseMove )
+;     Bind( *this, @CustomEvents(), #PB_EventType_MouseEnter )
+;     Bind( *this, @CustomEvents(), #PB_EventType_MouseLeave )
+    
+    ;Bind( *mdi, @CustomEvents(), #PB_EventType_MouseMove )
+    ;Bind( *mdi, @CustomEvents(), #PB_EventType_MouseEnter )
+    ;Bind( *mdi, @CustomEvents(), #PB_EventType_MouseLeave )
   EndProcedure
   
   Procedure Canvas_resize( )

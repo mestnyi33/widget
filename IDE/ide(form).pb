@@ -605,7 +605,7 @@ CompilerIf #PB_Compiler_IsMainFile
           
         Case #PB_EventType_LeftButtonUp
           
-          If transform( ) And transform( )\widget\_a_transform <> 1
+          If transform( ) And transform( )\widget And transform( )\widget\_a_transform <> 1
             SetState( id_inspector_tree, -1 )
             If IsGadget( id_design_code )
               SetGadgetState( id_design_code, -1 )

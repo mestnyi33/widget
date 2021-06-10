@@ -107,6 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())
     
+    WaitClose()
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf

@@ -60,9 +60,20 @@ CompilerIf #PB_Compiler_IsMainFile
             RemoveItem(*tree, GetState(*tree))
           EndIf
         EndIf
+        
         If EventGadget = 6
-          SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
-          SetItemImage(*tree, GetState(*tree), 0)
+;           If GetGadgetItemImage(tree, GetGadgetState(tree))
+;             SetGadgetItemImage(tree, GetGadgetState(tree), 0)
+;           Else
+;             SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
+;           EndIf
+          If GetItemImage(*tree, GetState(*tree) ) <> #PB_Default
+            SetItemImage(*tree, GetState(*tree), #PB_Default)
+            SetGadgetItemImage(tree, GetGadgetState(tree), #NUL)
+          Else
+            SetItemImage(*tree, GetState(*tree), 0)
+            SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
+          EndIf
         EndIf
         If EventGadget = 7 ; <<
                            ;         FreeGadget(tree)
@@ -139,8 +150,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(tree, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
     Next
     
-    Debug " gadget "+ tree +" count items "+ CountGadgetItems(tree) +" "+ GadgetType(tree)
-    EnableGadgetDrop(tree, #PB_Drop_Text, #PB_Drag_Copy)
+    Debug " gadget "+ tree +" count items "+ PB(CountGadgetItems)(tree) +" "+ PB(GadgetType)(tree)
+    PB(EnableGadgetDrop)(tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     
     For a = 0 To 10
@@ -157,14 +168,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
     ;         EnableGadgetDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
-    PB(ButtonGadget)(3, 10, 180, 110, 24, "set state Item")
+    PB(ButtonGadget)(3, 10, 180, 110, 24, "change Item state")
     BindGadgetEvent(3, @events_tree_gadget())
     PB(ButtonGadget)(4, 130, 180, 110, 24, "add Item")
     BindGadgetEvent(4, @events_tree_gadget())
     PB(ButtonGadget)(5, 250, 180, 110, 24, "remove Item")
     BindGadgetEvent(5, @events_tree_gadget())
     
-    PB(ButtonGadget)(6, 10, 210, 110, 24, "set image Item")
+    PB(ButtonGadget)(6, 10, 210, 110, 24, "change Item image")
     BindGadgetEvent(6, @events_tree_gadget())
     PB(ButtonGadget)(7, 130, 210, 40, 24, "<")
     BindGadgetEvent(7, @events_tree_gadget())
@@ -177,6 +188,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     BindGadgetEvent(tree, @events_tree_gadget())
     ;       BindGadgetEvent(1, @events_tree_gadget())
+    
+    WaitClose( )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

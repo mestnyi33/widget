@@ -727,7 +727,7 @@ DeclareModule Gadget
     EndProcedure
     
     Procedure EventType_()
-      If widget::EventWidget( ) And widget::Atpoint(widget::this( )\mouse\x, widget::this( )\mouse\y, widget::EventWidget( )) 
+      If widget::EventWidget( ) And widget::Atpoint(widget::EventWidget( ), widget::Mouse( )\x, widget::Mouse( )\y) 
         ;if widget::EventWidget( )\event <>- 1
         ProcedureReturn widget::EventWidget( )\event
       Else
@@ -738,7 +738,7 @@ DeclareModule Gadget
     Procedure EventGadget_()
       If widget::EventWidget( ) And
          widget::EventWidget( )\root And 
-         widget::Atpoint(widget::this( )\mouse\x, widget::this( )\mouse\y, widget::EventWidget( )) 
+         widget::Atpoint(widget::EventWidget( ), widget::mouse( )\x, widget::mouse( )\y ) 
         
         ProcedureReturn widget::EventWidget( )\root\canvas\gadget
        Else
@@ -1316,5 +1316,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = n------PVd4tttttttttttttt0----
+; Folding = n------P0d4tttttttttttttt0----
 ; EnableXP

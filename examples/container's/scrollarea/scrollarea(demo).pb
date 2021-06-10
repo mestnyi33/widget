@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
+; bug scrollstep
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)

@@ -215,6 +215,12 @@
       #__color_fore
     EndEnumeration
     
+    Enumeration 
+      #__color_state_default
+      #__color_state_entered
+      #__color_state_selected
+    EndEnumeration
+    
     ;
     ;   ; Set/Get Attribute
     #__displayMode = 1<<13

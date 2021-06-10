@@ -23,23 +23,33 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetGadgetItemColor(0,  3, #PB_Gadget_BackColor,  $00FFFF)
     SetGadgetItemColor(0,  7, #PB_Gadget_BackColor,  $FFFF00)
     
-    SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
-    SetItemColor(*w,  3, #__Color_Back,  $FF00FFFF)
-    SetItemColor(*w,  7, #__Color_Back,  $FFFFFF00)
-    SetItemFont(*w,  7, (LoadFont(#PB_Any, "Helvetica", 18)))
+    SetItemFont(*w,  3, (LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)))
+    SetItemFont(*w,  7, (LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)))
     
+    ; index-3 item default frame-color
     SetItemColor(*w,  3, #__Color_Frame,  $FF0000f0)
     
-    SetItemFont(*w,  3, (LoadFont(#PB_Any, "Helvetica", 25)))
+    ; index-3 item default frame-color
+    SetItemColor(*w,  3, #__Color_Back,  $FF00FFFF)
     
-    SetItemColor(*w,  #PB_All, #__Color_Front,  $FF00FFFF, 2)
-    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3F00F0, 2)
+    ; index-7 item default back-color
+    SetItemColor(*w,  7, #__Color_Back,  $FFFFFF00)
     
-    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3Ff0F0, 1)
+    ; all default item's text-color 
+    SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
     
-    SetItemColor(*w,  #PB_All, #__Color_Line,  $FF3F00F0)
+    ; all selected item's text-color 
+    SetItemColor(*w,  #PB_All, #__Color_Front,  $FF00FFFF, #__color_state_selected)
     
-    redraw(root())
+    ; all selected item's back-color 
+    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3F00F0, #__color_state_selected)
+    
+    ; all entered item's back-color
+    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3Ff0F0, #__color_state_entered)
+    
+    ; vertical and horizontal line back-color
+    SetItemColor(*w,  #PB_All, #__Color_Line,  $C03AD55A)
+    
     WaitClose( )
   EndIf
   CompilerEndIf

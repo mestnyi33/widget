@@ -270,6 +270,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, -1, "Sub-Item 4", 0, 4)
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
+      
     g = 1
     ; 2_example
     TreeGadget(g, 10, 10+110, 210, 100)                                         
@@ -279,6 +280,12 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 2, "Sub-Item 2", 0, 2)
     AddGadgetItem(g, 4, "Sub-Item 4", 0, 4)
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+;     Define Indentation = 50    
+;     ; ----- Read current indentation and set TrackBar to that value
+;     ;CocoaMessage(@Indentation, GadgetID(g), "indentationPerLevel")
+;     CocoaMessage(0, GadgetID(g), "setIndentationPerLevel:@", @Indentation)
+    
     
     g = 2
     ; 2_example
@@ -537,6 +544,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemText(*g, 14, "25_font and text change")
     ;Bind(*g, @events_tree_widget())
     ;}
+    
+    WaitClose( )
     
     ;Define *g5,*g6
     redraw(root())
