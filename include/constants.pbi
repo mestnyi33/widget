@@ -161,7 +161,7 @@
     ;     #__ci_container = #__c_draw
     #__c_inner_b = #__c_inner
     
-    ; \_state
+    ;- \_state
     Enumeration
       #__s_normal      = 0<<0  ; 0
       #__s_selected    = 1<<0  ; 1
@@ -177,6 +177,8 @@
       
       #__s_dragged     = 1<<9  ; 512
       #__s_dropped     = 1<<10 ; 1024 ; drop enter state
+      
+      #__s_current     = 1<<11 ;
     EndEnumeration
     
     
@@ -703,6 +705,7 @@
       
       #PB_EventType_ResizeEnd
       
+      #PB_EventType_Draw
       #PB_EventType_Free         
       #PB_EventType_Create
       #PB_EventType_Drop
@@ -765,6 +768,8 @@
     
     #__event_mousewheelX = #PB_EventType_MouseWheelX
     #__event_mousewheelY = #PB_EventType_MouseWheelY
+    
+    #__event_draw = #PB_EventType_Draw
     
     ;-
     Enumeration event 1

@@ -139,7 +139,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro Mouse( ) : widget::this( )\mouse: EndMacro
     Macro Widget( ) : widget::this( )\address( ): EndMacro ; Returns last created widget 
     Macro Keyboard( ) : widget::this( )\keyboard: EndMacro
-    ;;Macro posted( _address_ ) : _address_\event\call( )\event_types(): EndMacro
+    ;;Macro posted( _address_ ) : _address_\event\bind( )\events(): EndMacro
     ;;Macro buttons( ) : widget::mouse( )\buttons: EndMacro
     
     Macro EnterRow( ) : widget::mouse( )\row: EndMacro; Returns mouse entered widget
@@ -343,29 +343,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Next
     EndMacro
     
-    Macro _call_event_( _result_, _address_ )
+    Macro _post_event_( _result_, _address_, _eventtype_ )
       If _address_
-        
-        ;;PushListPosition( _address_\call( ) )
-        ForEach _address_\call( )
-          ForEach _address_\call( )\type( )
-            If _address_\call( )\type( ) = #PB_All Or  
-               _address_\call( )\type( ) = WidgetEvent( )\type
-              
-              Select _address_\call( )\func( )
-                Case #PB_EventType_Repaint
-                  _result_ = #PB_EventType_Repaint
-                  Break 2
-                  
-                Case #PB_Ignore
-                  _result_ = #PB_Ignore
-                  Break 2
-              EndSelect
-            EndIf
-          Next
+        ;;Debug *this\height
+        ;;PushListPosition( _address_\bind( ) )
+        ForEach _address_\bind( )
+          If _address_\bind( )\eventtype = _eventtype_ Or 
+             _address_\bind( )\eventtype = #PB_All 
+            
+            ; Debug ""+_eventtype_ +" "+ #PB_EventType_ReDraw
+            ;;PushListPosition( _address_\bind( )\callback( ))
+            ForEach _address_\bind( )\callback( )
+              Debug _address_\bind( )\callback( )
+              If _address_\bind( )\callback( )\func( ) = #PB_Ignore
+                _result_ = #PB_Ignore
+                Break 2
+              EndIf
+            Next
+            
+            ;;PopListPosition( _address_\bind( )\callback( ))
+            
+            ;Break
+          EndIf
         Next
-        ;;PopListPosition( _address_\call( ) )
-        
+        ;;PopListPosition( _address_\bind( ) )
       EndIf
     EndMacro
     
@@ -16778,28 +16779,56 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\resize &~ #__resize_change
           EndIf
         EndIf
-        
-        ;
+         EndWith
+     
+         If *this\repaint ; _state &~ #__s_current
+           If *this\event
+             Debug *this\class +" "+ *this\text\string
+             ;             Protected result
+             ;             _post_event_( result, *this\event, #PB_EventType_ReDraw )
+             
+             If *this\event 
+               EventWidget( ) = *this
+               WidgetEvent( )\type = #PB_EventType_Draw
+               If *this\count\items And *this\row
+                 WidgetEvent( )\item = *this\row\selected
+               EndIf
+               
+               ; Debug "do event - "+eventtype
+               ;
+               Protected _check_ : _check_expression_( _check_, *this\event\bind( ), \eventtype = #PB_EventType_Draw )
+               If _check_
+                 ForEach *this\event\bind( )\callback( )
+                   Select *this\event\bind( )\callback( )\func( ) 
+                     Case #PB_Ignore
+                       Break
+                   EndSelect
+                 Next
+               EndIf  
+               
+               EventWidget( ) = #Null
+               WidgetEvent( )\type = #Null
+               WidgetEvent( )\item = #Null
+               WidgetEvent( )\data = #Null
+             EndIf
+           EndIf
+           
+           *this\repaint = #False
+         EndIf
+         
+;         ;
+       
+        ;         If *this\event
+        ;           If *this\event\type = #PB_EventType_LeftButtonDown
+        ;             Debug " get-alpha "+Alpha( Point( mouse()\x, mouse()\y ) ) ; get alpha
+        ;           EndIf
+        ;         EndIf
         If *this\event
-          If *this\repaint 
-            ; Debug *this\class +" "+ *this\text\string
-            Protected result
-            EventWidget( ) = *this 
-            WidgetEvent( )\type = #PB_EventType_Draw
-            
-            _call_event_( result, *this\event )
-            
-            EventWidget( ) = #Null
-            WidgetEvent( )\type = #Null
-            *this\repaint = #False
-          EndIf
-          
           If *this\event\type <> 0
             *this\event\type = 0
           EndIf
         EndIf
         
-      EndWith
     EndProcedure
     
     Procedure   ReDraw( *this._s_WIDGET )
@@ -16969,7 +16998,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
         Else
           ; set event value
-          EventWidget( ) = *this 
+          EventWidget( ) = *this
           WidgetEvent( )\type = eventtype
           WidgetEvent( )\item = *button
           WidgetEvent( )\data = *data
@@ -16978,26 +17007,25 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If Not _is_root_( *this )
             ; first call current-widget bind event function
             If *this\event
-              _call_event_( result, *this\event )
+              _post_event_( result, *this\event, eventtype )
             EndIf
             ; second call current-widget-window bind event function
             If result <> #PB_Ignore And
                Not _is_window_( *this ) And 
                Not _is_root_( *this\window ) And *this\window\event
-              _call_event_( result, *this\window\event )
+              _post_event_( result, *this\window\event, eventtype )
             EndIf
           EndIf
           ; theard call current-widget-root bind event function
           If result <> #PB_Ignore And *this\root\event
-            _call_event_( result, *this\root\event )
+            _post_event_( result, *this\root\event, eventtype )
           EndIf
           
-          ;
+          ; reset event value
           EventWidget( ) = #Null
           WidgetEvent( )\type = #Null
           WidgetEvent( )\item = #Null
           WidgetEvent( )\data = #Null
-          
         EndIf
         
       EndIf
@@ -17005,6 +17033,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn result
     EndProcedure
     
+    Macro _check_expression_2( _result_, _address_, _key_ )
+      Bool( ListSize( _address_ ))
+       _result_ = #False
+      PushListPosition( _address_ )
+      ForEach _address_
+        If _address_#_key_ 
+          _result_ = #True
+          Break
+        EndIf
+      Next
+      PopListPosition( _address_ )
+    EndMacro
+  
     Procedure.i Bind( *this._s_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
       Protected _check_.b
       
@@ -17023,21 +17064,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;
-        _check_expression_( _check_, *this\event\call( ), \func = *callback )
+        _check_expression_( _check_, *this\event\bind( ), \eventtype = eventtype )
         If Not _check_
-          AddElement( *this\event\call( ))
-          *this\event\call.allocate( EVENTBIND, ( )) 
-          *this\event\call( )\func = *callback
+          AddElement( *this\event\bind( ))
+          *this\event\bind.allocate( Bind, ( )) 
+          *this\event\bind( )\eventtype = eventtype
         EndIf
         
         ;
-        _check_expression_( _check_, *this\event\call( )\type( ), = eventtype )
+        _check_expression_2( _check_, *this\event\bind( )\callback( ), \func = *callback )
         If Not _check_
-          AddElement( *this\event\call( )\type( ))
-          *this\event\call( )\type( ) = eventtype
+          AddElement( *this\event\bind( )\callback( ))
+          *this\event\bind( )\callback.allocate( FUNC, ( ))
+          
+          Debug ""+*callback +" "+ *this\event\bind( )\callback( )
+          *this\event\bind( )\callback( )\func = *callback
         EndIf
         
-        ProcedureReturn *this\event\call( )
+        ProcedureReturn *this\event\bind( )
       Else
         If Root( )\canvas\bindevent = #False
           Root( )\canvas\bindevent = #True
@@ -17062,11 +17106,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; set bind evet
       Protected _check_
-      _check_expression_( _check_, *this\event\call( ), \func = *callback )
+      _check_expression_( _check_, *this\event\bind( ), \eventtype = eventtype )
       If _check_
-        ForEach *this\event\call( )\type( )
-          If *this\event\call( )\type( ) = eventtype
-            DeleteElement( *this\event\call( )\type( ))
+        ForEach *this\event\bind( )\callback( )
+          If *this\event\bind( )\callback( )\func = *callback
+            DeleteElement( *this\event\bind( )\callback( ))
           EndIf
         Next
       EndIf  
@@ -18020,19 +18064,26 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             WidgetEvent( )\item = *this\row\selected
           EndIf
           
-          _call_event_( Repaint, *this\event )
-          
-          If Repaint = #PB_EventType_Repaint
-            ;_post_repaint_( root( ) )
-            ReDraw( root( ) )
-          EndIf
-          
+          ; Debug "do event - "+eventtype
           ;
+          Protected _check_ : _check_expression_( _check_, *this\event\bind( ), \eventtype = eventtype )
+          If _check_
+            ForEach *this\event\bind( )\callback( )
+              Select *this\event\bind( )\callback( )\func( ) 
+                Case #PB_EventType_Repaint
+                  ;_post_repaint_( root( ) )
+                  ReDraw( root( ) )  
+                  
+                Case #PB_Ignore
+                  ProcedureReturn #PB_Ignore
+              EndSelect
+            Next
+          EndIf  
+          
           EventWidget( ) = #Null
           WidgetEvent( )\type = #Null
           WidgetEvent( )\item = #Null
-          ;WidgetEvent( )\data = #Null
-          
+          WidgetEvent( )\data = #Null
         EndIf
       EndIf
       
@@ -19138,9 +19189,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Procedure toolbar_events()
     Protected *this._s_widget
-    Protected e_type = WidgetEventType( )
+    Protected e_type = this()\event
     Protected e_item ;= this()\item
-    Protected e_widget = EventWidget( )
+    Protected e_widget = this()\widget
     
     Select e_type
       Case #PB_EventType_LeftClick
@@ -19349,5 +19400,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ld--4-----0--3-0------------f4v-8-+-----------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

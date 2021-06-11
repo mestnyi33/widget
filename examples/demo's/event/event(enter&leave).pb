@@ -55,6 +55,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
   CloseList()
   CloseList()
   
+  ; set text
+  ForEach widget()
+    SetText(widget( ), Str(GetData(widget())))
+  Next
+  
   
   If editable = #__flag_anchorsgadget
     Bind(#PB_All, @events_widgets())

@@ -519,21 +519,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data ; EventData( )
     EndStructure
     
-   ;- - _s_FUNC 
-    Structure _s_FUNC
-      *func.pFunc
-    EndStructure
-    
     ;- - _s_BIND 
-   Structure _s_BIND 
-      *eventtype
-      List *callback._s_FUNC( )
+   Structure _s_EVENTBIND 
+      *func.pFunc
+      List *type( )
     EndStructure
     
     ;- - _s_EVENT
     Structure _s_EVENT Extends _s_EVENTDATA
-      
-      List *bind._s_bind( )
+      List *call._s_EVENTBIND( )
       List *queue._s_EVENTDATA( )
     EndStructure
     
@@ -775,5 +769,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------4-
+; Folding = --------8-
 ; EnableXP

@@ -7,10 +7,38 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Event.i, MyCanvas, *mdi
   Global x=100,y=100, width=320, height=320 , focus
   
+  Macro Area_Draw( _this_ )
+    widget::bar_updates( _this_,
+                         _this_\scroll\h\x, 
+                         _this_\scroll\v\y, 
+                         (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
+                         (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+    
+    If Not _this_\scroll\v\hide
+      widget::Draw( _this_\scroll\v )
+    EndIf
+    If Not _this_\scroll\h\hide
+      widget::Draw( _this_\scroll\h )
+    EndIf
+    
+    UnclipOutput( )
+    DrawingMode( #PB_2DDrawing_Outlined )
+    Box( x, y, Width, Height, RGB( 0,255,0 ) )
+    Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
+    
+    ; Box( _this_\x[#__c_required], _this_\y[#__c_required], _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+    Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+  EndMacro
+  
   Procedure CustomEvents( )
     Static Drag
     
     Select WidgetEventType( )
+      Case #PB_EventType_Draw
+        Debug 6666
+        
+        Area_Draw( EventWidget( )\parent )
+        
       Case #PB_EventType_LeftButtonUp 
         Drag = #False
         
@@ -33,19 +61,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
+    *this\class = "image-"+Str(img)
+    *this\cursor = #PB_Cursor_Hand
     
     If alphatest
       ;*this\image[#__img_background]\transparent = 1
       ; SetColor( *this, #__color_back, #PB_Image_Transparent )
-    EndIf
-    
     ;;*this\transporent = Bool( *this\image[#__img_background]\id And *this\image[#__img_background]\depth > 31 )
-        
-    SetCursor( *this, #PB_Cursor_Hand )
+    EndIf
     
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonUp )
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonDown )
     Bind( *this, @CustomEvents(), #PB_EventType_MouseMove )
+    Bind( *this, @CustomEvents(), #PB_EventType_Draw )
   EndProcedure
   
   Procedure Canvas_resize( )
