@@ -124,7 +124,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       editable.b
       multiline.b
       
-      invert.b
+      inverted.b
+      vertical.b
       
       ; short._s_edit ; ".."
       edit._s_edit[4]
@@ -526,7 +527,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_EVENT
-    Structure _s_EVENT Extends _s_EVENTDATA
+    Structure _s_EVENT ; Extends _s_EVENTDATA
+      ;*type
       List *call._s_EVENTBIND( )
       List *queue._s_EVENTDATA( )
     EndStructure
@@ -768,6 +770,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --------8-
 ; EnableXP

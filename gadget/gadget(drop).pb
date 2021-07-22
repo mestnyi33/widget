@@ -222,6 +222,6 @@ If OpenWindow( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
 EndIf
 
 End
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x64)
 ; Folding = --9
 ; EnableXP

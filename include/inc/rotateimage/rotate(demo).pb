@@ -1,5 +1,5 @@
 ﻿; TEST - RotateImage
-
+; https://www.purebasic.fr/english/viewtopic.php?f=12&t=77028
 EnableExplicit
 
 IncludeFile "../rotateimage.pbi"

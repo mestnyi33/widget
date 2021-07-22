@@ -6414,7 +6414,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;
       If *this\bar\page\change <> 0
         ;- widget::Area_Update( )
-        If *this\parent And *this\parent\scroll And *this\type = #__type_ScrollBar
+        If *this\parent And 
+           *this\parent\scroll And *this\type = #__type_ScrollBar
           
           If *this\vertical
             If *this\parent\scroll\v = *this
@@ -6515,129 +6516,123 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected width = *this\width[#__c_frame]
       Protected height = *this\height[#__c_frame]
       
-      If *this\type = #__type_Spin 
-        
-        ;*this\bar\thumb\end = *this\bar\max
-        *this\bar\page\end = *this\bar\max 
-        *this\bar\area\end = *this\bar\max - *this\bar\thumb\Len 
-        *this\bar\percent = *this\bar\area\end / ( *this\bar\page\end - *this\bar\min )
-        
+      ; get area size
+      If *this\vertical
+        *this\bar\area\len = height 
       Else
-        ; get area size
-        If *this\vertical
-          *this\bar\area\len = height 
-        Else
-          *this\bar\area\len = width 
-        EndIf
-        
-        If *this\type = #__type_ScrollBar 
-          ; default button size
-          If *this\bar\max 
-            If *this\bar\button[#__b_1]\size =- 1 And *this\bar\button[#__b_2]\size =- 1
-              If *this\vertical And width > 7 And width < 21
-                *this\bar\button[#__b_1]\size = width - 1
-                *this\bar\button[#__b_2]\size = width - 1
-                
-              ElseIf Not *this\vertical And height > 7 And height < 21
-                *this\bar\button[#__b_1]\size = height - 1
-                *this\bar\button[#__b_2]\size = height - 1
-                
-              Else
-                *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
-                *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
-              EndIf
-            EndIf
-            
-            ;           If *this\bar\button[#__b_3]\size
-            ;             If *this\vertical
-            ;               If *this\width = 0
-            ;                 *this\width = *this\bar\button[#__b_3]\size
-            ;               EndIf
-            ;             Else
-            ;               If *this\height = 0
-            ;                 *this\height = *this\bar\button[#__b_3]\size
-            ;               EndIf
-            ;             EndIf
-            ;           EndIf
-          EndIf
-        EndIf
-        
-        
-        *this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] ) + bordersize
-        *this\bar\thumb\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - bordersize*2
-        
-        If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
-          If *this\bar\max
-            *this\bar\thumb\len = *this\bar\thumb\end - ( *this\bar\max - *this\bar\area\len )
-            *this\bar\page\end = *this\bar\max - ( *this\bar\thumb\end - *this\bar\thumb\len )
-          EndIf
-        Else
-          If *this\bar\page\len
-            ; get thumb size
-            *this\bar\thumb\len = Round(( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min )) * *this\bar\page\len, #PB_Round_Nearest )
-            If *this\bar\thumb\len > *this\bar\thumb\end 
-              *this\bar\thumb\len = *this\bar\thumb\end 
-            EndIf
-            If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
-              If *this\bar\thumb\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
-                *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
-              ElseIf *this\bar\button[#__b_3]\size > 7
-                Debug "get thumb size - ?????"
-                *this\bar\thumb\len = 0
-              EndIf
-            EndIf
-            
-            ; for the scroll-bar
-            If *this\bar\max > *this\bar\page\len
-              *this\bar\page\end = *this\bar\max - *this\bar\page\len
-            Else
-              *this\bar\page\end = *this\bar\page\len - *this\bar\max
-            EndIf
-          Else
-            ; get page end
-            If *this\bar\max
-              *this\bar\thumb\len = *this\bar\button[#__b_3]\size
-              ;*this\bar\thumb\len = Round(( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min )), #PB_Round_Nearest )
-              *this\bar\page\end = *this\bar\max
-            Else
-              ; get thumb size
-              *this\bar\thumb\len = *this\bar\button[#__b_3]\size
-              
-              ; one set end
-              If Not *this\bar\page\end And *this\bar\area\len 
-                *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len
-                
-                If Not *this\bar\page\pos
-                  *this\bar\page\pos = *this\bar\page\end/2 
-                EndIf
-                
-                ; if splitter fixed 
-                ; set splitter pos to center
-                If *this\bar\fixed
-                  If *this\bar\fixed = #__split_1
-                    *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
-                  Else
-                    *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\end - *this\bar\page\pos
-                  EndIf
-                EndIf
-              Else
-                If *this\bar\page\change Or *this\bar\fixed = 1
-                  *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len 
-                EndIf
-              EndIf
-            EndIf
-            
-          EndIf
-        EndIf
-        
-        If *this\bar\page\end
-          *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
-        Else
-          *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\min )
-        EndIf
-        
-        *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + bordersize )
+        *this\bar\area\len = width 
       EndIf
+      
+      If *this\type = #__type_ScrollBar 
+        ; default button size
+        If *this\bar\max 
+          If *this\bar\button[#__b_1]\size =- 1 And *this\bar\button[#__b_2]\size =- 1
+            If *this\vertical And width > 7 And width < 21
+              *this\bar\button[#__b_1]\size = width - 1
+              *this\bar\button[#__b_2]\size = width - 1
+              
+            ElseIf Not *this\vertical And height > 7 And height < 21
+              *this\bar\button[#__b_1]\size = height - 1
+              *this\bar\button[#__b_2]\size = height - 1
+              
+            Else
+              *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
+              *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
+            EndIf
+          EndIf
+          
+          ;           If *this\bar\button[#__b_3]\size
+          ;             If *this\vertical
+          ;               If *this\width = 0
+          ;                 *this\width = *this\bar\button[#__b_3]\size
+          ;               EndIf
+          ;             Else
+          ;               If *this\height = 0
+          ;                 *this\height = *this\bar\button[#__b_3]\size
+          ;               EndIf
+          ;             EndIf
+          ;           EndIf
+        EndIf
+      EndIf
+      ;Debug *this\bar\button[#__b_1]\size
+      
+      *this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] ) + bordersize
+      *this\bar\thumb\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size ) - bordersize*2
+      
+      If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
+        If *this\bar\max
+          *this\bar\thumb\len = *this\bar\thumb\end - ( *this\bar\max - *this\bar\area\len )
+          *this\bar\page\end = *this\bar\max - ( *this\bar\thumb\end - *this\bar\thumb\len )
+        EndIf
+      Else
+        If *this\bar\page\len
+          ; get thumb size
+          *this\bar\thumb\len = Round(( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min )) * *this\bar\page\len, #PB_Round_Nearest )
+;           If *this\bar\thumb\len > *this\bar\thumb\end 
+;             *this\bar\thumb\len = *this\bar\thumb\end 
+;           EndIf
+;           If *this\bar\thumb\len < *this\bar\button[#__b_3]\size 
+;             If *this\bar\thumb\end > *this\bar\button[#__b_3]\size + *this\bar\thumb\len
+;               *this\bar\thumb\len = *this\bar\button[#__b_3]\size 
+;             ElseIf *this\bar\button[#__b_3]\size > 7
+;               Debug "get thumb size - ?????"
+;               *this\bar\thumb\len = 0
+;             EndIf
+;           EndIf
+          
+          ; for the scroll-bar
+          If *this\bar\max > *this\bar\page\len
+            *this\bar\page\end = *this\bar\max - *this\bar\page\len
+          Else
+            *this\bar\page\end = *this\bar\page\len - *this\bar\max
+          EndIf
+        Else
+          ; get page end
+          If *this\bar\max
+           ; *this\bar\Page\len = 1
+            ; *this\bar\thumb\len =  Round(*this\bar\Area\len - (*this\bar\Area\len / (*this\bar\Max-*this\bar\Min))*((*this\bar\Max-*this\bar\Min) - *this\bar\Page\len), #PB_Round_Nearest)
+  
+            *this\bar\thumb\len = Round(( *this\bar\thumb\end / ( *this\bar\max - *this\bar\min )), #PB_Round_Nearest );*this\bar\button[#__b_3]\size
+            *this\bar\page\end = *this\bar\max
+          Else
+;             ; get thumb size
+;             *this\bar\thumb\len = *this\bar\button[#__b_3]\size
+            
+;             ; one set end
+;             If Not *this\bar\page\end And *this\bar\area\len 
+;               *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len
+;               
+;               If Not *this\bar\page\pos
+;                 *this\bar\page\pos = *this\bar\page\end/2 
+;               EndIf
+;               
+;               ; if splitter fixed 
+;               ; set splitter pos to center
+;               If *this\bar\fixed
+;                 If *this\bar\fixed = #__split_1
+;                   *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
+;                 Else
+;                   *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\end - *this\bar\page\pos
+;                 EndIf
+;               EndIf
+;             Else
+;               If *this\bar\page\change Or *this\bar\fixed = 1
+;                 *this\bar\page\end = *this\bar\area\len - *this\bar\thumb\len 
+;               EndIf
+;             EndIf
+          EndIf
+          
+        EndIf
+      EndIf
+      
+      If *this\bar\page\end
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\page\end - *this\bar\min )
+      Else
+        *this\bar\percent = ( *this\bar\thumb\end - *this\bar\thumb\len ) / ( *this\bar\min )
+      EndIf
+      
+      *this\bar\area\end = *this\bar\area\len - *this\bar\thumb\len - ( *this\bar\button[#__b_2]\size + *this\bar\min[2] + bordersize )
+      
       
       ;Debug ""+*this\bar\thumb\len +" "+ *this\bar\thumb\end +" "+ *this\class
       ProcedureReturn 1;Bar_Resize( *this )  
@@ -19269,323 +19264,98 @@ CompilerEndIf
 
 
 ;- 
-Macro UseLIB( _name_ )
+Macro Uselib( _name_ )
   UseModule _name_
   UseModule constants
   UseModule structures
 EndMacro
 
 
+;;XIncludeFile "../../../widgets.pbi" 
 
+Uselib(widget)
 
-CompilerIf #PB_Compiler_IsMainFile ;= 100
+Procedure events_gadgets()
+  ;ClearDebugOutput()
+  ; Debug ""+EventGadget()+ " - gadget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
   
-  Uselib(widget)
-  UsePNGImageDecoder()
-  Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
+  Select EventType()
+    Case #PB_EventType_Change
+     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+     
+    Case #PB_EventType_Up
+     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     Debug  ""+ EventGadget() +" - gadget up " + GetGadgetState(EventGadget())
+     
+   Case #PB_EventType_Down
+     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     Debug  ""+ EventGadget() +" - gadget down " + GetGadgetState(EventGadget())
+  EndSelect
+EndProcedure
+
+Procedure events_widgets()
+  ;ClearDebugOutput()
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
   
-  Define *new
-  ; toolbar buttons
-  Enumeration 
-    #_tb_group_left = 3
-    #_tb_group_right
-    #_tb_group_top
-    #_tb_group_bottom
-    #_tb_group_width
-    #_tb_group_height
-    
-    #_tb_align_left
-    #_tb_align_right
-    #_tb_align_top
-    #_tb_align_bottom
-    #_tb_align_center
-    
-    #_tb_widget_paste
-    #_tb_widget_delete
-    #_tb_widget_copy
-    #_tb_widget_cut
-  EndEnumeration
-  
-  Macro widget_copy()
-    ClearList(*copy())
-    
-    If Transform()\widget\_a_transform = 1
-      AddElement(*copy()) 
-      *copy.allocate(group, ())
-      *copy()\widget = Transform()\widget
-    Else
-      ;       ForEach Transform()\group()
-      ;         AddElement(*copy()) 
-      ;         *copy.allocate(group, ())
-      ;         *copy()\widget = Transform()\group()\widget
-      ;       Next
+  Select WidgetEventType( )
+    Case #PB_EventType_Up
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
-      CopyList(Transform()\group(), *copy())
-      
-    EndIf
-    
-    Transform()\id[0]\x = Transform()\grid\size
-    Transform()\id[0]\y = Transform()\grid\size
-  EndMacro
+    Case #PB_EventType_Down
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
+       
+    Case #PB_EventType_Change
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+  EndSelect
+EndProcedure
+
+; Shows possible flags of ButtonGadget in action...
+If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 320,0,320,200)
+  ;a_init(root())
+  SpinGadget(0, 10,  40, 250, 18, 0, 10000)
+  SetGadgetState(0, 5000)
   
-  Macro widget_delete()
-    If Transform()\widget\_a_transform = 1
-      ;  transform = Transform()\widget\parent
-      
-      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
-      Free(Transform()\widget)
-    Else
-      ;  transform = Transform()\widget
-      
-      ForEach Transform()\group()
-        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
-        Free(Transform()\group()\widget)
-        DeleteElement(Transform()\group())
-      Next
-      
-      ClearList(Transform()\group())
-    EndIf
-    
-    ; a_set(transform)
-  EndMacro
+  SpinGadget(1, 10, 120, 250, 25, 0, 30, #PB_Spin_Numeric)
+  SetGadgetState(1, 3000)
   
-  Macro widget_paste()
-    If ListSize(*copy())
-      ForEach *copy()
-        ;         widget_add(*copy()\widget\parent, 
-        ;                        *copy()\widget\class, 
-        ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\x[#__c_inner]),
-        ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\y[#__c_inner]), 
-        ;                        *copy()\widget\width[#__c_frame],
-        ;                        *copy()\widget\height[#__c_frame])
-      Next
-      
-      Transform()\id[0]\x + Transform()\grid\size
-      Transform()\id[0]\y + Transform()\grid\size
-      
-      ClearList(Transform()\group())
-      CopyList(*copy(), Transform()\group())
-    EndIf
-    
-    ForEach Transform()\group()
-      Debug " ggg "+Transform()\group()\widget
-    Next
-    
-    ;a_update(Transform()\widget)
-  EndMacro
+; ; ; ;   SpinGadget(2, 270, 10, 20, 170, 0, 10000, #PB_Spin_ReadOnly)
+; ; ; ;   SetGadgetState(2, 8000)
+;   
+;   TextGadget    (#PB_Any, 10,  20, 250, 20,"Spin Standard", #PB_Text_Center)
+;   TextGadget    (#PB_Any, 10, 100, 250, 20, "Spin Ticks", #PB_Text_Center)
+; ;   TextGadget    (#PB_Any,  90, 180, 200, 20, "Spin Vertical", #PB_Text_Right)
+;   
+  For i = 0 To 1
+    BindGadgetEvent(i, @events_gadgets())
+  Next
   
-  Procedure toolbar_events()
-    Protected *this._s_widget
-    Protected e_type = WidgetEventType( )
-    Protected e_item ;= this()\item
-    Protected e_widget = EventWidget( )
-    
-    Select e_type
-      Case #PB_EventType_LeftClick
-        If e_widget = id_elements_tree
-          Debug "click"
-          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
-        EndIf
-        
-        If getclass(e_widget) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
-          Static NewList *copy._s_group()
-          
-          
-          Select toolbarbutton
-            Case 1
-              If Getstate(e_widget)  
-                ; group
-                group_select = e_widget
-                ; SetAtributte(e_widget, #PB_Button_PressedImage)
-              Else
-                ; un group
-                group_select = 0
-              EndIf
-              
-              ForEach Transform()\group()
-                Debug Transform()\group()\widget\x
-                
-              Next
-              
-              
-            Case #_tb_widget_copy
-              widget_copy()
-              
-            Case #_tb_widget_cut
-              widget_copy()
-              widget_delete()
-              
-            Case #_tb_widget_paste
-              widget_paste()
-              
-            Case #_tb_widget_delete
-              If Transform()\widget\_a_transform = 1
-                transform = Transform()\widget\parent
-              Else
-                transform = Transform()\widget
-              EndIf
-              
-              widget_delete()
-              
-              a_set(transform)
-              
-            Case #_tb_group_left,
-                 #_tb_group_right, 
-                 #_tb_group_top, 
-                 #_tb_group_bottom, 
-                 #_tb_group_width, 
-                 #_tb_group_height
-              
-              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
-              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
-              
-              ForEach Transform()\group()
-                Select toolbarbutton
-                  Case #_tb_group_left ; left
-                                       ;Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_right ; right
-                    Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_top ; top
-                                      ;Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_bottom ; bottom
-                    Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_width ; stretch horizontal
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
-                    
-                  Case #_tb_group_height ; stretch vertical
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
-                    
-                EndSelect
-              Next
-              
-              a_update(Transform()\widget)
-              
-              ;Redraw(root())
-          EndSelect
-        EndIf
-        
-    EndSelect
-  EndProcedure
+  Spin(10,  40, 250, 18, 0, 10000)
+  SetState(GetWidget(0), 5000)
   
-  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
-    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
-    
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
-    ;widget()\color = widget()\parent\color
-    ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
-    widget()\data = _button_
-    ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
-  EndMacro
+  ;scroll(10, 120, 55, 25, 0, 30, 0)
+  Spin(10, 120, 250, 25, 0, 30, #__Spin_Numeric)
+  ;SetState(GetWidget(1), 3000)
   
-  Macro Separator()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
-    SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
-  EndMacro
+  Debug ""+widget()\bar\area\end
+; ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
+; ; ; ;   SetState(GetWidget(2), 8000)
+;   
+;   Text(10,  20, 250, 20,"Spin Standard", #__Text_Center)
+;   Text(10, 100, 250, 20, "Spin Ticks", #__Text_Center)
+; ;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
+;   
+;   ;Bind(#PB_All, @events_widgets())
   
+  For i = 0 To 1
+    Bind(GetWidget(i), @events_widgets())
+  Next
   
-  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
-  toolbar_design = Container(0,0,600,40) 
-  ;SetAlignment(widget(), #__align_top)
-  ;ToolBar(toolbar, window, flags)
-  
-  group_select = ToolBarButton(1, - 1, #__button_Toggle)
-  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
-  
-  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-  Separator()
-  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-  Separator()
-  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator()
-  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
-  
-  Separator()
-  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator()
-  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-  CloseList()
-  
-  
-  ;Container(0,40,600,600);, #__flag_autosize) 
-  ;SetAlignment(widget(), #__align_full) 
-  mdi(0,40,600,600, #__mdi_editable)
-  ; a_init(widget()) 
-  
-  
-  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
-  ; ; container(30,30,450-2,450-2)
-  ;;ScrollArea(30,30,450-2,450-2, 0,0)
-  ScrollArea(30,30,450-2,450-2, 250,750, transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
-  
-  Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
-  AddItem(widget(), -1, "item-1")
-  ;container(30,30,400,400)
-  Button(120,160,115,50,"butt1")
-  AddItem(widget()\parent, -1, "item-2")
-  Button(150,180,115,50,"butt2")
-  Button(180,200,115,50,"butt3")
-  Button(120,240,170,40,"butt4")
-  closelist()
-  Button(120,120,170,40,"butt0")
-  closelist()
-  
-  bind(-1,-1)
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  
-  DataSection   
-    ; include images
-    IncludePath #path + "ide/include/images"
-    
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
-    
-    group:            : IncludeBinary "group/group.png"
-    group_un:         : IncludeBinary "group/group_un.png"
-    group_top:        : IncludeBinary "group/group_top.png"
-    group_left:       : IncludeBinary "group/group_left.png"
-    group_right:      : IncludeBinary "group/group_right.png"
-    group_bottom:     : IncludeBinary "group/group_bottom.png"
-    group_width:      : IncludeBinary "group/group_width.png"
-    group_height:     : IncludeBinary "group/group_height.png"
-  EndDataSection
-  
-CompilerEndIf
+  WaitClose( )
+EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------f--v+--------------0e-9--+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
+; Folding = -----------------------------------------------------------------------------------------------------------------f---------8-0-8-f--+f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

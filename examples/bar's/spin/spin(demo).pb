@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
@@ -21,30 +21,30 @@ EndProcedure
 
 Procedure events_widgets()
   ;ClearDebugOutput()
-  ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
   
-  Select *event\event
+  Select WidgetEventType( )
     Case #PB_EventType_Up
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
-      Debug  ""+GetIndex(*event\widget)+" - widget up " + GetState(*event\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
     Case #PB_EventType_Down
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
-      Debug  ""+GetIndex(*event\widget)+" - widget down " + GetState(*event\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
        
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
-      Debug  ""+GetIndex(*event\widget)+" - widget change " + GetState(*event\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
 If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 320,0,320,200)
-  SpinGadget(0, 10,  40, 250, 20, 0, 10000)
+  SpinGadget(0, 10,  40, 250, 18, 0, 10000)
   SetGadgetState(0, 5000)
   
-  SpinGadget(1, 10, 120, 250, 20, 0, 30, #PB_Spin_Numeric)
-  SetGadgetState(1, 3000)
+  SpinGadget(1, 10, 120, 250, 25, 0, 30, #PB_Spin_Numeric)
+  SetGadgetState(1, 2000)
   
 ; ; ;   SpinGadget(2, 270, 10, 20, 170, 0, 10000, #PB_Spin_ReadOnly)
 ; ; ;   SetGadgetState(2, 8000)
@@ -57,11 +57,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  Spin(10,  40, 250, 20, 0, 10000)
+  Spin(10,  40, 250, 18, 0, 10000)
   SetState(GetWidget(0), 5000)
   
-  Spin(10, 120, 250, 20, 0, 30, #__Spin_Numeric)
-  SetState(GetWidget(1), 3000)
+  Spin(10, 120, 250, 25, 5, 30, #__Spin_Numeric);|#__bar_Vertical)
+  SetState(GetWidget(1), 2000)
   
 ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
 ; ; ;   SetState(GetWidget(2), 8000)
@@ -76,8 +76,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
     Bind(GetWidget(i), @events_widgets())
   Next
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = +
 ; EnableXP

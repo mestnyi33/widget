@@ -152,9 +152,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(GetWidget(i), @events_widgets())
     Next
     
+    bind(-1,-1)
+    ;WaitClose( ) 
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

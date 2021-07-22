@@ -660,7 +660,6 @@
     
     
     ;- _c_event
-    
     Enumeration #PB_Event_FirstCustomValue
       #PB_Event_Resize
       #PB_Event_ResizeEnd
@@ -695,11 +694,10 @@
     EndEnumeration
     
     Enumeration #PB_EventType_FirstCustomValue
-      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
+      CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
         #PB_EventType_Resize
       CompilerEndIf
-      
-      CompilerIf Not Defined(PB_EventType_returnKey, #PB_Constant)
+      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
         #PB_EventType_ReturnKey
       CompilerEndIf
       
@@ -771,59 +769,6 @@
     
     #__event_draw = #PB_EventType_Draw
     
-    ;-
-    Enumeration event 1
-      #__e_leftButtonDown    ; The left mouse button was pressed
-      #__e_leftButtonUp      ; The left mouse button was released
-      #__e_leftclick         ; A click With the left mouse button
-      #__e_leftdoubleclick   ; A double-click With the left mouse button
-      
-      #__e_middlebuttondown  ; The middle mouse button was pressed
-      #__e_middlebuttonup    ; The middle mouse button was released
-      
-      #__e_rightbuttondown   ; The right mouse button was pressed
-      #__e_rightbuttonup     ; The right mouse button was released
-      #__e_rightclick        ; A click With the right mouse button
-      #__e_rightdoubleclick  ; A double-click With the right mouse button
-      
-      #__e_mouseenter        ; The mouse cursor entered the gadget
-      #__e_mouseleave        ; The mouse cursor left the gadget
-      #__e_mousemove         ; The mouse cursor moved
-      #__e_mousewheel        ; The mouse wheel was moved
-      
-      #__e_focus             ; The gadget gained keyboard focus
-      #__e_lostfocus         ; The gadget lost keyboard focus
-      #__e_keydown           ; A key was pressed
-      #__e_keyup             ; A key was released
-      #__e_input             ; Text input was generated
-      #__e_returnkey       
-      
-      #__e_drop             
-      #__e_dragstart        
-      
-      #__e_change         
-      #__e_titlechange      
-      #__e_statuschange      
-      #__e_scrollchange    
-      
-      #__e_free             
-      #__e_create          
-      #__e_repaint          
-      #__e_resizestart       ; The gadget has been begin resized
-      #__e_resize            ; The gadget has been resized
-      #__e_resizeend         ; The gadget has been end resized
-      
-      #__e_down
-      #__e_up       
-      
-      #__e_sizeitem        
-      #__e_closeitem
-      
-      #__e_closewindow       
-      #__e_maximizewindow 
-      #__e_minimizewindow    
-      #__e_restorewindow 
-    EndEnumeration
     
     ;- _c_type
     #PB_GadgetType_All       = -1     
@@ -835,7 +780,6 @@
     #PB_GadgetType_PopupMenu = -7
     #PB_GadgetType_Message   = -8
     #PB_GadgetType_Hiasm     = -9
-    
     Enumeration 50
       #PB_GadgetType_TabBar
       #PB_GadgetType_Toggled
@@ -843,7 +787,6 @@
       #PB_GadgetType_ImageButton
       #PB_GadgetType_StringButton
     EndEnumeration
-    
     #__type_hiasm         = #PB_GadgetType_Hiasm
     #__type_message       = #PB_GadgetType_Message
     #__type_popupmenu     = #PB_GadgetType_PopupMenu
@@ -852,12 +795,11 @@
     #__type_menu          = #PB_GadgetType_Menu
     #__type_toolbar       = #PB_GadgetType_Toolbar
     #__type_window        = #PB_GadgetType_Window
-    
     #__type_tabbar        = #PB_GadgetType_TabBar
     #__type_toggled       = #PB_GadgetType_Toggled
-    #__type_property      = #PB_GadgetType_Property
+    #__type_property      = #PB_GadgetType_Property 
     
-    #__type_unknown       = #PB_GadgetType_Unknown
+    #__type_unknown       = #PB_GadgetType_Unknown  ;
     #__type_button        = #PB_GadgetType_Button
     #__type_buttonimage   = #PB_GadgetType_ButtonImage
     #__type_calendar      = #PB_GadgetType_Calendar

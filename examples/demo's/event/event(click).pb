@@ -12,6 +12,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Static _2click
     
     Select WidgetEventType( )
+      Case #PB_EventType_Draw ;: result = 1 : AddItem(w_flag, -1, " ------------ draw")
+        Debug "draw"
+        
       Case #PB_EventType_LeftButtonDown : result = 1
         If _2click = 2
           _2click = 0
@@ -33,6 +36,9 @@ CompilerIf #PB_Compiler_IsMainFile
     w_flag = widget::Tree(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
     w_this = widget::Button(10, 220, 150, 70, "Click me", #__button_multiline );| #__button_toggle) 
     
+    ; widget::Bind(w_this, @events_widgets(), #PB_All )
+    
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_Draw)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonDown)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftClick)

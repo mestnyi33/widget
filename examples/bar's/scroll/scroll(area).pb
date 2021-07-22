@@ -345,7 +345,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
   Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
-  
+  ;Debug *this\Scroll\v\width
   
   Repeat
     Event = WaitWindowEvent( )
