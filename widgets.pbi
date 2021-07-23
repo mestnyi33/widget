@@ -1077,6 +1077,76 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;- DECLARE_private_functions
     ;-
     
+;     Macro OSX_NSColorToRGB( _color_ )
+;       _color_
+;     EndMacro
+;     Macro BlendColor_(Color1, Color2, Scale=50)
+;       Color1
+;     EndMacro
+    
+    Procedure.i BlendColor_(Color1.i, Color2.i, Scale.i=50)
+      Define.i R1, G1, B1, R2, G2, B2
+      Define.f Blend = Scale / 100
+      
+      R1 = Red(Color1): G1 = Green(Color1): B1 = Blue(Color1)
+      R2 = Red(Color2): G2 = Green(Color2): B2 = Blue(Color2)
+      
+      ProcedureReturn RGB((R1*Blend) + (R2 * (1-Blend)), (G1*Blend) + (G2 * (1-Blend)), (B1*Blend) + (B2 * (1-Blend)))
+    EndProcedure
+    
+    Procedure OSX_NSColorToRGBA(NSColor)
+      Protected.cgfloat red, green, blue, alpha
+      Protected nscolorspace, rgba
+      nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
+      If nscolorspace
+        CocoaMessage(@red, nscolorspace, "redComponent")
+        CocoaMessage(@green, nscolorspace, "greenComponent")
+        CocoaMessage(@blue, nscolorspace, "blueComponent")
+        CocoaMessage(@alpha, nscolorspace, "alphaComponent")
+        rgba = RGBA(red * 255.9, green * 255.9, blue * 255.9, alpha * 255.)
+        ProcedureReturn rgba
+      EndIf
+    EndProcedure
+    
+    Procedure OSX_NSColorToRGB(NSColor)
+      Protected.cgfloat red, green, blue
+      Protected r, g, b, a
+      Protected nscolorspace, rgb
+      nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
+      If nscolorspace
+        CocoaMessage(@red, nscolorspace, "redComponent")
+        CocoaMessage(@green, nscolorspace, "greenComponent")
+        CocoaMessage(@blue, nscolorspace, "blueComponent")
+        rgb = RGB(red * 255.0, green * 255.0, blue * 255.0)
+        ProcedureReturn rgb
+      EndIf
+    EndProcedure
+    
+;     CompilerSelect #PB_Compiler_OS ;{ Color
+;       CompilerCase #PB_OS_Windows
+;         _get_colors_( )\Front         = GetSysColor_(#COLOR_WINDOWTEXT)
+;         _get_colors_( )\Back          = GetSysColor_(#COLOR_WINDOW)
+;         _get_colors_( )\Focus         = GetSysColor_(#COLOR_HIGHLIGHT)
+;         _get_colors_( )\Gadget        = GetSysColor_(#COLOR_mENU)
+;         _get_colors_( )\Button        = GetSysColor_(#COLOR_3DLIGHT)
+;         _get_colors_( )\Border        = GetSysColor_(#COLOR_WINDOWFRAME)
+;         _get_colors_( )\WordColor     = GetSysColor_(#COLOR_HOTLIGHT)
+;         _get_colors_( )\Highlight     = GetSysColor_(#COLOR_HIGHLIGHT)
+;         _get_colors_( )\HighlightText = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
+;         
+;       CompilerCase #PB_OS_MacOS
+;         _get_colors_( )\Front         = OSX_NSColorToRGBa(CocoaMessage(0, 0, "NSColor textColor"))
+;         ;_get_colors_( )\Back          = BlendColor_(OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor textBackgroundColor")), $FFFFFF, 80)
+;         ;_get_colors_( )\back[2]      = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor keyboardFocusIndicatorColor"))
+;         ;_get_colors_( )\Back         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor windowBackgroundColor"))
+;         _get_colors_( )\Back         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor controlBackgroundColor"))
+;         _get_colors_( )\frame         = OSX_NSColorToRGBa(CocoaMessage(0, 0, "NSColor grayColor"))
+;         ;_get_colors_( )\back[2]       = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor selectedTextBackgroundColor"))
+;         ;_get_colors_( )\front[2]      = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor selectedTextColor"))
+;       CompilerCase #PB_OS_Linux
+;         
+;     CompilerEndSelect ;}        
+    
     Declare.b Tab_Draw( *this )
     Declare.b Bar_Update( *this )
     Declare.b Bar_Resize( *this )
@@ -4250,8 +4320,30 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; inner x&y position
         ix = ( x + *this\fs + *this\fs[1] )
         iy = ( y + *this\fs + *this\fs[2] )
-        iwidth = width  - *this\fs*2 - ( *this\fs[1] + *this\fs[3] )
+        iwidth = width - *this\fs*2 - ( *this\fs[1] + *this\fs[3] )
         iheight = height - *this\fs*2 - ( *this\fs[2] + *this\fs[4] )
+        
+        ;
+        If *this\type = #__type_spin
+          If *this\flag & #__spin_Plus
+            ; set real buttons width
+            *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
+            *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
+            
+            If *this\vertical
+              iy + *this\bar\button[#__b_1]\size 
+              iheight - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )                         
+            Else
+              ix + *this\bar\button[#__b_1]\size
+              iwidth - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
+            EndIf
+          Else
+            ; set real buttons height
+            *this\bar\button[#__b_1]\size =  height/2 + Bool( height % 2 )
+            *this\bar\button[#__b_2]\size = *this\bar\button[#__b_1]\size
+            iwidth - *this\bar\button[#__b_3]\size
+          EndIf
+        EndIf
         
         ; 
         If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
@@ -4326,7 +4418,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
         EndIf
         
-        
         ; parent mdi
         If *this\parent And 
            _is_child_integral_( *this ) And 
@@ -4362,10 +4453,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         
-        ; if the widgets is composite
-        If *this\type = #__type_Spin
-          *this\width[#__c_inner] = *this\width[#__c_container] - *this\bs*2 - *this\bar\button[#__b_3]\size
-        EndIf
+;         ; if the widgets is composite
+;         If *this\type = #__type_Spin
+;         ;  *this\width[#__c_inner] = *this\width[#__c_container] - *this\bs*2 - *this\bar\button[#__b_3]\size
+;         EndIf
         
         ; if the integral scroll bars
         If ( *this\scroll And *this\scroll\v And *this\scroll\h )
@@ -5803,8 +5894,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Case #__type_Splitter       : Splitter_Draw( *this )
         EndSelect
         
-        ;            draw_mode( #PB_2DDrawing_Outlined )
-        ;            Box( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FF00FF00 )
+        draw_mode( #PB_2DDrawing_Outlined )
+        Box( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FF00FF00 )
         
         If *this\text\change <> 0
           *this\text\change = 0
@@ -5965,8 +6056,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
       EndIf
       
+      ; buttons state
       If *this\type = #__type_spin 
-        ; disable/enable button-scroll(left&top)-tab(right&bottom)
+        ; disable/enable button(left&top)-tab(right&bottom)
         If *this\bar\button[#__b_1]\size 
           If _bar_in_stop_( *this\bar )
             If *this\bar\button[#__b_1]\color\state <> #__s_3
@@ -5977,10 +6069,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               *this\bar\button[#__b_1]\color\state = #__s_0
             EndIf
           EndIf 
-        Else
         EndIf
         
-        ; disable/enable button-scroll(right&bottom)-tab(left&top)
+        ; disable/enable button(right&bottom)-tab(left&top)
         If *this\bar\button[#__b_2]\size And _bar_in_start_( *this\bar ) 
           If *this\bar\button[#__b_2]\color\state <> #__s_3 
             *this\bar\button[#__b_2]\color\state = #__s_3
@@ -5988,23 +6079,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         Else
           If *this\bar\button[#__b_2]\color\state <> #__s_2
             *this\bar\button[#__b_2]\color\state = #__s_0
-          EndIf
-        EndIf
-        
-        ; disable/enable button-thumb
-        If *this\type = #__type_ScrollBar
-          If *this\bar\thumb\len 
-            If *this\bar\button[#__b_1]\color\state = #__s_3 And
-               *this\bar\button[#__b_2]\color\state = #__s_3 
-              
-              If *this\bar\button[#__b_3]\color\state <> #__s_3
-                *this\bar\button[#__b_3]\color\state = #__s_3
-              EndIf
-            Else
-              If *this\bar\button[#__b_3]\color\state <> #__s_2
-                *this\bar\button[#__b_3]\color\state = #__s_0
-              EndIf
-            EndIf
           EndIf
         EndIf
         
@@ -6031,7 +6105,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
       EndIf
       
-      ; resize coordinate
+      
+      
+      ; buttons resize coordinate
       If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
         ; inner coordinate
         If *this\vertical
@@ -6176,29 +6252,56 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
       EndIf
       
-      
+      ; Ok
       If *this\type = #__type_Spin
-        Protected lines = Bool(*this\height[#__c_frame]%2) 
-        *this\bar\button[#__b_1]\size =  *this\height[#__c_frame]/2 + lines
-        *this\bar\button[#__b_2]\size = *this\bar\button[#__b_1]\size
+        *this\bar\button[#__b_3]\x = *this\x[#__c_inner] 
+        *this\bar\button[#__b_3]\y = *this\y[#__c_inner] 
+        *this\bar\button[#__b_3]\width = *this\width[#__c_inner] 
+        *this\bar\button[#__b_3]\height = *this\height[#__c_inner] 
         
-        *this\bar\button[#__b_3]\x = *this\x[#__c_frame] 
-        *this\bar\button[#__b_3]\y = *this\y[#__c_frame] 
-        *this\bar\button[#__b_3]\height = *this\height[#__c_frame]                         
-        *this\bar\button[#__b_3]\width = *this\width[#__c_frame] - *this\bar\button[#__b_3]\size   
-        
-        If *this\bar\button[#__b_1]\size 
-          *this\bar\button[#__b_1]\x = *this\bar\button[#__b_3]\x + *this\bar\button[#__b_3]\width - lines 
-          *this\bar\button[#__b_1]\y = *this\y[#__c_frame] 
-          *this\bar\button[#__b_1]\width = *this\bar\button[#__b_3]\size + lines
-          *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size                   
-        EndIf
-        
-        If *this\bar\button[#__b_2]\size 
-          *this\bar\button[#__b_2]\x = *this\bar\button[#__b_1]\x
-          *this\bar\button[#__b_2]\y = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_2]\size
-          *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size 
-          *this\bar\button[#__b_2]\width = *this\bar\button[#__b_1]\width
+        If Not *this\flag & #__spin_Plus
+          If *this\bar\button[#__b_1]\size 
+            *this\bar\button[#__b_1]\x = ( *this\x[#__c_frame] + *this\width[#__c_frame] ) - *this\bar\button[#__b_3]\size
+            *this\bar\button[#__b_1]\y = *this\y[#__c_frame] 
+            *this\bar\button[#__b_1]\width = *this\bar\button[#__b_3]\size
+            *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size                   
+          EndIf
+          If *this\bar\button[#__b_2]\size 
+            *this\bar\button[#__b_2]\x = *this\bar\button[#__b_1]\x
+            *this\bar\button[#__b_2]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *this\bar\button[#__b_2]\size
+            *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size 
+            *this\bar\button[#__b_2]\width = *this\bar\button[#__b_3]\size
+          EndIf
+          
+        Else
+          ; spin buttons numeric plus -/+ 
+          If *this\vertical
+            If *this\bar\button[#__b_1]\size 
+              *this\bar\button[#__b_1]\x = *this\x[#__c_frame]
+              *this\bar\button[#__b_1]\y = *this\y[#__c_frame] 
+              *this\bar\button[#__b_1]\width = *this\width[#__c_frame]
+              *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size              
+            EndIf
+            If *this\bar\button[#__b_2]\size 
+              *this\bar\button[#__b_2]\x = *this\x[#__c_frame]
+              *this\bar\button[#__b_2]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *this\bar\button[#__b_2]\size
+              *this\bar\button[#__b_2]\width = *this\width[#__c_frame]
+              *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size
+            EndIf
+          Else
+            If *this\bar\button[#__b_1]\size 
+              *this\bar\button[#__b_1]\x = *this\x[#__c_frame]
+              *this\bar\button[#__b_1]\y = *this\y[#__c_frame] 
+              *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\size
+              *this\bar\button[#__b_1]\height = *this\height[#__c_frame]               
+            EndIf
+            If *this\bar\button[#__b_2]\size 
+              *this\bar\button[#__b_2]\x = ( *this\x[#__c_frame] + *this\width[#__c_frame] ) - *this\bar\button[#__b_2]\size
+              *this\bar\button[#__b_2]\y = *this\y[#__c_frame]
+              *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\size
+              *this\bar\button[#__b_2]\height = *this\height[#__c_frame] 
+            EndIf
+          EndIf
         EndIf
       EndIf
       
@@ -6516,11 +6619,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected height = *this\height[#__c_frame]
       
       If *this\type = #__type_Spin 
+        If *this\vertical
+          *this\bar\area\len = height 
+        Else
+          *this\bar\area\len = width 
+        EndIf
         
-        ;*this\bar\thumb\end = *this\bar\max
+        ;*this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] )
+        *this\bar\thumb\end = *this\bar\area\len - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
+        
         *this\bar\page\end = *this\bar\max 
         *this\bar\area\end = *this\bar\max - *this\bar\thumb\Len 
-        *this\bar\percent = *this\bar\area\end / ( *this\bar\page\end - *this\bar\min )
+        *this\bar\percent = ( *this\bar\area\end - *this\bar\area\pos ) / ( *this\bar\page\end - *this\bar\min )
         
       Else
         ; get area size
@@ -15371,7 +15481,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected ScrollBars, *this.allocate( Widget )
       
       With *this
-        
+        *this\flag = Flag
+          
         *this\x[#__c_inner] =- 2147483648
         *this\y[#__c_inner] =- 2147483648
         *this\type = type
@@ -15473,6 +15584,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\bar.allocate( BAR )
           *this\scroll\increment = ScrollStep
           
+          If *this\type <> #__type_Splitter
+            If *param_1 
+              SetAttribute( *this, #__bar_minimum, *param_1 ) 
+            EndIf
+            If *param_2 
+              SetAttribute( *this, #__bar_maximum, *param_2 ) 
+            EndIf
+            If *param_3 
+              SetAttribute( *this, #__bar_pageLength, *param_3 ) 
+            EndIf
+          EndIf
+          
           ; - Create Scroll
           If *this\type = #__type_ScrollBar
             *this\color\back = $FFF9F9F9 ; - 1 
@@ -15527,10 +15650,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               *this\bar\inverted = #True
             EndIf
             
-            *this\fs = Bool( Not Flag&#__flag_borderless )
+            *this\fs = Bool( Not Flag&#__flag_borderless );*2
             *this\bs = *this\fs
             
             ; *this\text.allocate( TEXT )
+            Protected i_c
+            For i_c = 0 To 3
+              If *this\scroll\increment = ValF(StrF(*this\scroll\increment, i_c))
+                *this\text\string = StrF(*this\bar\page\pos, i_c)
+                *this\text\change = 1
+                Break
+              EndIf
+            Next
+            
             *this\text\change = 1
             *this\text\editable = 1
             *this\text\align\top = 1
@@ -15562,6 +15694,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\button[#__b_2]\arrow\type = #__arrow_type ; -1 0 1
             
             _set_text_flag_( *this, flag )
+            
             
           EndIf
           
@@ -15713,16 +15846,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\button[#__b_3]\interact = #True
             *this\bar\button[#__b_3]\round = 2
             
-          Else
-            If *param_1 
-              SetAttribute( *this, #__bar_minimum, *param_1 ) 
-            EndIf
-            If *param_2 
-              SetAttribute( *this, #__bar_maximum, *param_2 ) 
-            EndIf
-            If *param_3 
-              SetAttribute( *this, #__bar_pageLength, *param_3 ) 
-            EndIf
           EndIf
         EndIf
         
@@ -19560,7 +19683,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Button(180,200,115,50,"butt3")
   Button(120,240,170,40,"butt4")
   closelist()
-  Button(120,120,170,40,"butt0")
+  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
   closelist()
   
   bind(-1,-1)
@@ -19587,5 +19710,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------f--v+--------------0e-9--+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
+; Folding = ----------------------------------------------------------------------fj+fbzs------------------------------------4-+-f0--8-v-4--v--0-0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04u---------------------------------------------------------------------------------------
 ; EnableXP

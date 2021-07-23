@@ -513,6 +513,7 @@
     #__spin_center = #__text_center
     #__spin_numeric = #__text_numeric
     #__spin_vertical = #__bar_vertical
+    #__spin_Plus = 2
     
     ;     ;- 
     ; Debug #PB_Checkbox_Unchecked ; 0
@@ -1156,6 +1157,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
