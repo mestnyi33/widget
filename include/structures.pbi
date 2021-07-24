@@ -124,7 +124,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       editable.b
       multiline.b
       
-      inverted.b
+      invert.b
       vertical.b
       
       ; short._s_edit ; ".."
@@ -298,7 +298,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       percent.f
       ;;increment.f
       ; vertical.b
-      inverted.b
+      invert.b
       direction.l
       
       page._s_page

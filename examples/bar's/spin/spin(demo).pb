@@ -88,8 +88,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
   SetState(GetWidget(1), 15)
   SetState(GetWidget(2), 30)
   
-  Spin(10, 120, 250, 25, 5, 30, #__spin_Plus|#__bar_vertical|#__text_center)
-  Spin(280, 10, 25, 180, 5, 30, #__spin_Plus|#__bar_invert|#__text_center)
+  Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
+  Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
   SetState(widget( ), 5000)
   
 ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)

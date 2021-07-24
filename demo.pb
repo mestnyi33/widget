@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseList()
     SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
     
-    Widgets(Hex(301)) = Spin(0, 0, 100,20,0,10, #__bar_Vertical)
+    Widgets(Hex(301)) = Spin(0, 0, 100,20,0,10, #__spin_plus)
     Widgets(Hex(302)) = Spin(0, 0, 100,20,0,10)                 
     Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)))
     
@@ -135,6 +135,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

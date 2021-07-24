@@ -436,7 +436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro _text_rotate_( _address_ )
-      _address_\rotate = Bool( Not _address_\inverted ) * ( Bool( _address_\vertical ) * 90 ) + Bool( _address_\inverted ) * ( Bool( _address_\vertical ) * 270 + Bool( Not _address_\vertical ) * 180 )
+      _address_\rotate = Bool( Not _address_\invert ) * ( Bool( _address_\vertical ) * 90 ) + Bool( _address_\invert ) * ( Bool( _address_\vertical ) * 270 + Bool( Not _address_\vertical ) * 180 )
     EndMacro
     
           
@@ -541,7 +541,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         _draw_address_\text\height = TextHeight( "A" ); - Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * 2
-        _draw_address_\text\rotate = Bool( _draw_address_\text\inverted ) * 180 + Bool( _draw_address_\text\vertical ) * 90
+        _draw_address_\text\rotate = Bool( _draw_address_\text\invert ) * 180 + Bool( _draw_address_\text\vertical ) * 90
       EndIf
     EndMacro
     
@@ -583,7 +583,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf 
     EndMacro      
     
-    ; -
+    ;-
+    Macro _draw_plus_( _address_, _plus_, _size_ = 5 )
+      Line(_address_\x+(_address_\width-_size_)/2, _address_\y+(_address_\height-1)/2, _size_, 1, _address_\color\front[_address_\color\state])
+      If _plus_
+        Line(_address_\x+(_address_\width-1)/2, _address_\y+(_address_\height-_size_)/2, 1, _size_, _address_\color\front[_address_\color\state])
+      EndIf
+    EndMacro
+    
     Macro _draw_arrows_( _address_, _type_ )
       Arrow( _address_\x + ( _address_\width - _address_\arrow\size )/2,
              _address_\y + ( _address_\height - _address_\arrow\size )/2, _address_\arrow\size, _type_, 
@@ -796,12 +803,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro _bar_invert_page_pos_( _bar_, _scroll_pos_ )
-      ( Bool( _bar_\inverted ) * ( _bar_\page\end - ( _scroll_pos_ - _bar_\min )) + Bool( Not _bar_\inverted ) * ( _scroll_pos_ ))
+      ( Bool( _bar_\invert ) * ( _bar_\page\end - ( _scroll_pos_ - _bar_\min )) + Bool( Not _bar_\invert ) * ( _scroll_pos_ ))
     EndMacro
     
     Macro _bar_invert_thumb_pos_( _bar_, _thumb_pos_ )
-      ( Bool( _bar_\inverted ) * ( _bar_\area\end - _thumb_pos_ ) +
-        Bool( Not _bar_\inverted ) * ( _bar_\area\pos + _thumb_pos_ ))
+      ( Bool( _bar_\invert ) * ( _bar_\area\end - _thumb_pos_ ) +
+        Bool( Not _bar_\invert ) * ( _bar_\area\pos + _thumb_pos_ ))
     EndMacro
     
     Macro _bar_scroll_pos_( _this_, _pos_, _len_ )
@@ -3479,7 +3486,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
         _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
         _this_\text\pass = constants::_check_( _flag_, #__text_password )
-        _this_\text\inverted = constants::_check_( _flag_, #__text_invert )
+        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
         
         _set_align_( _this_\text, 
                      constants::_check_( _flag_, #__text_left ),
@@ -3624,7 +3631,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
         _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
         _this_\text\pass = constants::_check_( _flag_, #__text_password )
-        _this_\text\inverted = constants::_check_( _flag_, #__text_invert )
+        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
         
         _set_align_( _this_\text, 
                      constants::_check_( _flag_, #__text_left ),
@@ -4162,14 +4169,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
       EndIf
       
-      If *this\fs[1] <> *this\barWidth 
-        *this\fs[1] = *this\barWidth
+      If *this\type <> #__type_spin
+        If *this\fs[1] <> *this\barWidth 
+          *this\fs[1] = *this\barWidth
+        EndIf
+        
+        If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+          *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+        EndIf
       EndIf
-      
-      If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-        *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-      EndIf
-      
       
       With *this
         ; #__flag_autoSize
@@ -4322,28 +4330,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         iy = ( y + *this\fs + *this\fs[2] )
         iwidth = width - *this\fs*2 - ( *this\fs[1] + *this\fs[3] )
         iheight = height - *this\fs*2 - ( *this\fs[2] + *this\fs[4] )
-        
-        ;
-        If *this\type = #__type_spin
-          If *this\flag & #__spin_Plus
-            ; set real buttons width
-            *this\bar\button[#__b_1]\size = *this\bar\button[#__b_3]\size
-            *this\bar\button[#__b_2]\size = *this\bar\button[#__b_3]\size
-            
-            If *this\vertical
-              iy + *this\bar\button[#__b_1]\size 
-              iheight - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )                         
-            Else
-              ix + *this\bar\button[#__b_1]\size
-              iwidth - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
-            EndIf
-          Else
-            ; set real buttons height
-            *this\bar\button[#__b_1]\size =  height/2 + Bool( height % 2 )
-            *this\bar\button[#__b_2]\size = *this\bar\button[#__b_1]\size
-            iwidth - *this\bar\button[#__b_3]\size
-          EndIf
-        EndIf
         
         ; 
         If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
@@ -5405,7 +5391,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       With *this
         Protected i,a, _position_, _frame_size_ = 1, _gradient_ = 1
         Protected _vertical_ = *this\vertical
-        Protected _reverse_ = *this\bar\inverted
+        Protected _reverse_ = *this\bar\invert
         Protected _round_ = *this\bar\button[#__b_1]\round
         Protected alpha = 230
         Protected _frame_color_ = $000000 ; *this\bar\button[#__b_1]\color\frame[0]
@@ -5703,13 +5689,20 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         Box( EnterButton( )\x,EnterButton( )\y, EnterButton( )\width, EnterButton( )\height, EnterButton( )\color\frame[EnterButton( )\color\state] )
       EndIf
       
-      If *this\bar\button[#__b_1]\arrow\size
-        _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\vertical )) 
+      ; arrows on the buttons
+      If *this\flag & #__spin_Plus
+        ; -/+
+        _draw_plus_( *this\bar\button[#__b_1], Bool( *this\bar\invert ) )
+        _draw_plus_( *this\bar\button[#__b_2], Bool( Not *this\bar\invert ) )
+      Else
+        If *this\bar\button[#__b_1]\arrow\size
+          _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\vertical )) 
+        EndIf
+        If *this\bar\button[#__b_2]\arrow\size
+          _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\vertical ) + 2 ) 
+        EndIf
       EndIf
-      If *this\bar\button[#__b_2]\arrow\size
-        _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\vertical ) + 2 ) 
-      EndIf
-      
+    
       ; Draw string
       If *this\text And *this\text\string
         draw_mode_alpha( #PB_2DDrawing_Transparent )
@@ -5727,7 +5720,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           draw_mode( #PB_2DDrawing_XOr )
           
           If \vertical
-            x = \bar\button[#__b_3]\x + Bool( \bar\inverted )*( \bar\button[#__b_3]\width - 3 + 4 ) - 2
+            x = \bar\button[#__b_3]\x + Bool( \bar\invert )*( \bar\button[#__b_3]\width - 3 + 4 ) - 2
             y = *this\y + \bar\area\pos + \bar\button[#__b_3]\size/2  
             
             If \bar\mode & #PB_TrackBar_Ticks
@@ -5741,7 +5734,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
           Else
             x = *this\x + \bar\area\pos + \bar\button[#__b_3]\size/2 
-            y = \bar\button[#__b_3]\y + Bool( Not \bar\inverted )*( \bar\button[#__b_3]\height - 3 + 4 ) - 2
+            y = \bar\button[#__b_3]\y + Bool( Not \bar\invert )*( \bar\button[#__b_3]\height - 3 + 4 ) - 2
             
             If \bar\mode & #PB_TrackBar_Ticks
               For i = *this\bar\min To *this\bar\max
@@ -5894,8 +5887,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Case #__type_Splitter       : Splitter_Draw( *this )
         EndSelect
         
-        draw_mode( #PB_2DDrawing_Outlined )
-        Box( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FF00FF00 )
+        draw_mode( #PB_2DDrawing_Outlined ) : Box( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FF00FF00 )
         
         If *this\text\change <> 0
           *this\text\change = 0
@@ -6278,15 +6270,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If *this\vertical
             If *this\bar\button[#__b_1]\size 
               *this\bar\button[#__b_1]\x = *this\x[#__c_frame]
-              *this\bar\button[#__b_1]\y = *this\y[#__c_frame] 
+              *this\bar\button[#__b_1]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *this\bar\button[#__b_1]\size
               *this\bar\button[#__b_1]\width = *this\width[#__c_frame]
-              *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size              
+              *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\size
             EndIf
             If *this\bar\button[#__b_2]\size 
               *this\bar\button[#__b_2]\x = *this\x[#__c_frame]
-              *this\bar\button[#__b_2]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *this\bar\button[#__b_2]\size
+              *this\bar\button[#__b_2]\y = *this\y[#__c_frame] 
               *this\bar\button[#__b_2]\width = *this\width[#__c_frame]
-              *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size
+              *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\size              
             EndIf
           Else
             If *this\bar\button[#__b_1]\size 
@@ -6433,22 +6425,22 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this\type = #__type_TrackBar
         If *this\bar\direction > 0 
           If *this\bar\thumb\pos = *this\bar\area\end Or *this\bar\mode & #PB_TrackBar_Ticks
-            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\inverted ) * 2
+            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\invert ) * 2
           Else
-            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( Not *this\bar\inverted ) * 2
+            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( Not *this\bar\invert ) * 2
           EndIf
         Else
           If *this\bar\thumb\pos = *this\bar\area\pos Or *this\bar\mode & #PB_TrackBar_Ticks 
-            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\inverted ) * 2
+            *this\bar\button[#__b_3]\arrow\direction = Bool( Not *this\vertical ) + Bool( *this\vertical = *this\bar\invert ) * 2
           Else
-            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( *this\bar\inverted ) * 2
+            *this\bar\button[#__b_3]\arrow\direction = Bool( *this\vertical ) + Bool( *this\bar\invert ) * 2
           EndIf
         EndIf
         
         ; button draw color
         *this\bar\button[#__b_3]\color\state = #__s_2
         If Not *this\bar\mode & #PB_TrackBar_Ticks
-          If *this\bar\inverted
+          If *this\bar\invert
             *this\bar\button[#__b_2]\color\state = #__s_2
             ; *this\bar\button[#__b_1]\color\state = #__s_3
           Else
@@ -6474,7 +6466,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\bar\button[#__b_2]\y        = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
           *this\bar\button[#__b_2]\height   = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
           
-          If *this\bar\inverted
+          If *this\bar\invert
             *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + 6
             *this\bar\button[#__b_2]\x      = *this\x[#__c_frame] + 6
             *this\bar\button[#__b_3]\x      = *this\bar\button[#__b_1]\x - *this\bar\button[#__b_3]\width/4 - 1 -  Bool( *this\bar\button[#__b_3]\size>10 )
@@ -6499,7 +6491,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\bar\button[#__b_2]\x        = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
           *this\bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
           
-          If *this\bar\inverted
+          If *this\bar\invert
             *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_1]\height - 6
             *this\bar\button[#__b_2]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_2]\height - 6 
             *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y - *this\bar\button[#__b_3]\height/2 + Bool( *this\bar\button[#__b_3]\size>10 )
@@ -6623,6 +6615,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\bar\area\len = height 
         Else
           *this\bar\area\len = width 
+        EndIf
+        
+        ; set real spin-buttons height
+        If Not *this\flag & #__spin_Plus
+          *this\bar\button[#__b_1]\size =  height/2 + Bool( height % 2 )
+          *this\bar\button[#__b_2]\size = *this\bar\button[#__b_1]\size
         EndIf
         
         ;*this\bar\area\pos = ( *this\bar\button[#__b_1]\size + *this\bar\min[1] )
@@ -6913,39 +6911,57 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               If *this\bar\button[#__b_3]\size <> *value
                 *this\bar\button[#__b_3]\size = *value
                 
-                ; to reset the button size to default
-                If \type = #__type_ScrollBar Or
-                   *this\type = #__type_TabBar Or 
-                   *this\type = #__type_ToolBar
+                If *this\type = #__type_spin
+                  If *this\flag & #__spin_plus
+                    ; set real spin-buttons width
+                    *this\bar\button[#__b_1]\size = *value
+                    *this\bar\button[#__b_2]\size = *value
+                    
+                    If *this\vertical
+                      *this\fs[2] = *this\bar\button[#__b_2]\size
+                      *this\fs[4] = *this\bar\button[#__b_1]\size
+                    Else
+                      *this\fs[1] = *this\bar\button[#__b_1]\size 
+                      *this\fs[3] = *this\bar\button[#__b_2]\size                        
+                    EndIf
+                  Else
+                    *this\fs[3] = *value
+                  EndIf
+                Else
+                  ; to reset the button size to default
+                  If *this\type = #__type_ScrollBar Or
+                     *this\type = #__type_TabBar Or 
+                     *this\type = #__type_ToolBar
+                    
+                    If *value
+                      *this\bar\button[#__b_1]\size = #PB_Default
+                      *this\bar\button[#__b_2]\size = #PB_Default
+                    Else
+                      *this\bar\button[#__b_1]\size = 0
+                      *this\bar\button[#__b_2]\size = 0
+                    EndIf
+                  EndIf
                   
-                  If *value
-                    *this\bar\button[#__b_1]\size = #PB_Default
-                    *this\bar\button[#__b_2]\size = #PB_Default
-                  Else
-                    *this\bar\button[#__b_1]\size = 0
-                    *this\bar\button[#__b_2]\size = 0
+                  ; if it is a composite element of the parent
+                  If *this\child > 0 And *this\parent And *value
+                    *value + 1
+                    If *this\vertical
+                      Resize(*this, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value, #PB_Ignore)
+                    Else
+                      Resize(*this, #PB_Ignore, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value)
+                    EndIf
                   EndIf
+                  
+                  Bar_Update( *this )
+                  Bar_Resize( *this )
+                  PostEventCanvas( *this\root )
+                  
+                  ProcedureReturn #True
                 EndIf
-               
-                ; if it is a composite element of the parent
-                If *this\child > 0 And *this\parent And *value
-                  *value + 1
-                  If *this\vertical
-                    Resize(*this, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value, #PB_Ignore)
-                  Else
-                    Resize(*this, #PB_Ignore, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value)
-                  EndIf
-                EndIf
-                
-                Bar_Update( *this )
-                Bar_Resize( *this )
-                PostEventCanvas( *this\root )
-                
-                ProcedureReturn #True
               EndIf
               
             Case #__bar_invert
-              \bar\inverted = Bool( *value )
+              \bar\invert = Bool( *value )
               Bar_Update( *this )
               ProcedureReturn Bar_Resize( *this )  
             Case #__bar_ScrollStep 
@@ -7397,8 +7413,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           If _is_selected_( *this\bar\button[#__b_3] )
             Repaint = #True
-          ElseIf ( _is_selected_( *this\bar\button[#__b_1] ) And *this\bar\inverted ) Or
-                 ( _is_selected_( *this\bar\button[#__b_2] ) And Not *this\bar\inverted )
+          ElseIf ( _is_selected_( *this\bar\button[#__b_1] ) And *this\bar\invert ) Or
+                 ( _is_selected_( *this\bar\button[#__b_2] ) And Not *this\bar\invert )
             
             Send( #__event_Down, *this )
             ;;Repaint | Bar_SetState( *this, *this\bar\page\pos + *this\scroll\increment )
@@ -7407,8 +7423,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               Repaint = Bar_Resize( *this )  
             EndIf
             
-          ElseIf ( _is_selected_( *this\bar\button[#__b_2] ) And *this\bar\inverted ) Or 
-                 ( _is_selected_( *this\bar\button[#__b_1] ) And Not *this\bar\inverted )
+          ElseIf ( _is_selected_( *this\bar\button[#__b_2] ) And *this\bar\invert ) Or 
+                 ( _is_selected_( *this\bar\button[#__b_1] ) And Not *this\bar\invert )
             
             Send( #__event_Up, *this )
             ;; Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\scroll\increment )
@@ -12824,7 +12840,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             If flag & #__text_invert
-              *this\text\inverted = state 
+              *this\text\invert = state 
               *this\text\change = #True
             EndIf
           EndIf
@@ -13576,7 +13592,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
           Case #__bar_buttonsize : result = *this\bar\button[#__b_1]\size   
           Case #__bar_direction  : result = *this\bar\direction
-          Case #__bar_invert   : result = *this\bar\inverted
+          Case #__bar_invert   : result = *this\bar\invert
         EndSelect
       EndIf
       
@@ -15604,7 +15620,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
-            *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+            *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
             If Flag & #PB_ScrollBar_Vertical = #PB_ScrollBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
               *this\vertical = #True
@@ -15639,19 +15655,41 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; - Create Spin
           If *this\type = #__type_Spin
             *this\color\back =- 1 
+            *this\color = _get_colors_( )
+            *this\color\_alpha = 255
+            *this\color\back = $FFFFFFFF
+            
             *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
-            *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+            *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
-            If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
-              *this\vertical = #True
-              *this\bar\inverted = #True
+            If *this\flag & #__spin_Plus
+              flag | #__text_center
+              *this\flag | #__text_center
+              If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical ) 
+                *this\vertical = #True
+              EndIf
+            Else
+              If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
+                *this\vertical = #True
+                *this\bar\invert = #True
+              EndIf
             EndIf
             
             *this\fs = Bool( Not Flag&#__flag_borderless );*2
             *this\bs = *this\fs
+            
+            If Not *this\flag & #__spin_Plus
+              *this\bar\button[#__b_1]\arrow\size = #__arrow_size
+              *this\bar\button[#__b_2]\arrow\size = #__arrow_size
+              
+              *this\bar\button[#__b_1]\arrow\type = #__arrow_type ; -1 0 1
+              *this\bar\button[#__b_2]\arrow\type = #__arrow_type ; -1 0 1
+            EndIf
+            
+            Bar_SetAttribute( *this, #__bar_buttonsize, Size )
             
             ; *this\text.allocate( TEXT )
             Protected i_c
@@ -15665,33 +15703,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             *this\text\change = 1
             *this\text\editable = 1
-            *this\text\align\top = 1
+            ;*this\text\align\top = 1
             
             *this\text\padding\x = #__spin_padding_text
             *this\text\padding\y = #__spin_padding_text
-            
-            *this\color = _get_colors_( )
-            *this\color\_alpha = 255
-            *this\color\back = $FFFFFFFF
             
             *this\bar\button[#__b_1]\interact = #True
             *this\bar\button[#__b_2]\interact = #True
             ;*this\bar\button[#__b_3]\interact = #True
             
-            If *this\vertical
-              *this\bar\button[#__b_3]\size = Size + 2
-            Else
-              *this\bar\button[#__b_3]\size = Size*2 + 3
-            EndIf
-            
-            *this\bar\button[#__b_1]\size = Size
-            *this\bar\button[#__b_2]\size = Size
-            
-            *this\bar\button[#__b_1]\arrow\size = #__arrow_size
-            *this\bar\button[#__b_2]\arrow\size = #__arrow_size
-            
-            *this\bar\button[#__b_1]\arrow\type = #__arrow_type ; -1 0 1
-            *this\bar\button[#__b_2]\arrow\type = #__arrow_type ; -1 0 1
             
             _set_text_flag_( *this, flag )
             
@@ -15708,7 +15728,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
-            *this\bar\inverted = Bool( Flag & #__bar_invert = #False )
+            *this\bar\invert = Bool( Flag & #__bar_invert = #False )
             
             If Flag & #__bar_vertical = #__bar_vertical
               *this\vertical = #True
@@ -15751,13 +15771,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
-            *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+            *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
             If Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
               *this\vertical = #True
-              *this\bar\inverted = Bool( Not Flag & #__bar_invert )
+              *this\bar\invert = Bool( Not Flag & #__bar_invert )
             Else
-              *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+              *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             EndIf
             
             If flag & #PB_TrackBar_Ticks = #PB_TrackBar_Ticks
@@ -15795,9 +15815,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             If Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
               *this\vertical = #True
-              *this\bar\inverted = Bool( Not Flag & #__bar_invert )
+              *this\bar\invert = Bool( Not Flag & #__bar_invert )
             Else
-              *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+              *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             EndIf
             
             *this\bar\button[#__b_1]\round = *this\round
@@ -15823,7 +15843,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\index[#__split_1] = Bool( PB(IsGadget)( *this\gadget[#__split_1] ))
             *this\index[#__split_2] = Bool( PB(IsGadget)( *this\gadget[#__split_2] ))
             
-            *this\bar\inverted = Bool( Flag & #__bar_invert = #__bar_invert )
+            *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
             If flag & #PB_Splitter_Separator = #PB_Splitter_Separator
               *this\bar\mode = #PB_Splitter_Separator
@@ -19710,5 +19730,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------fj+fbzs------------------------------------4-+-f0--8-v-4--v--0-0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04u---------------------------------------------------------------------------------------
+; Folding = -----------------f+4---------------------------------------------------+7-tNz+X----------------------------------4-+-f0--8-v-4--v----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-t8---------------------------------------------------------------------------------------
 ; EnableXP

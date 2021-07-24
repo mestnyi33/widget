@@ -61,9 +61,6 @@
     #__from_mouse_state = 0
     #__focus_state = 1
     
-    #__spin_padding_text = 1
-    #__spin_buttonsize2 = 15
-    #__spin_buttonsize = 18
     ;#__splitter_buttonsize = 9
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       #__splitter_buttonsize = 9
@@ -508,6 +505,9 @@
     ;#PB_Window                 = #PB_Window_NoActivate<<2
     
     ;- _c_spin
+    #__spin_padding_text = 3
+    #__spin_buttonsize = #__scroll_buttonsize + 3
+    
     #__spin_left = #__text_left
     #__spin_right = #__text_right
     #__spin_center = #__text_center
