@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)) : Next
     
     Widgets(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame) )
-    ;Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
+    Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
     Widgets(Hex(#PB_GadgetType_Image)) = Image(170, 205, 160,95, img, #PB_Image_Border ) 
     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
     Widgets(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )

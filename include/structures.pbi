@@ -242,6 +242,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_row
     Structure _s_row
+     ;; *widget._s_WIDGET
+      
       ; list view
       ; drag.b
       sublevel.w
@@ -282,21 +284,18 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      index.l  ; tab opened item index  
-      fixed.l ; splitter fixed button index  
-      mode.i
+      *widget._s_WIDGET
       
-      ;;*selected._s_buttons
-      button._s_buttons[4]
+      fixed.l ; splitter fixed button index  
+      ;;mode.i ;;; temp
        
       max.l
       min.l[3]
-      ;hide.b
+      ; hide.b
       
-      change.b ;????
-      change_tab_items.b ; tab items to redraw
+      ;; change.b ;????
       percent.f
-      ;;increment.f
+      ;; scroll\increment.f
       ; vertical.b
       invert.b
       direction.l
@@ -304,18 +303,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       page._s_page
       area._s_page
       thumb._s_page  
-      
-      List *_s._s_tabs( )
+      button._s_buttons[4]
       
       ; tab
-      *active._s_rows         ; at point element item
-      *hover._s_rows
+      *active._s_rows ; _get_bar_active_item_
+      *hover._s_rows ; _get_bar_active_item_
       
-               *selected._s_tabs     ;???????????????   ; at point pushed item
-      *leaved._s_tabs         ; pushed last entered item
+      index.l ; tab opened item index  
+      change_tab_items.b ; tab items to redraw
+      
+               ;;*selected._s_tabs     ;???????????????   ; at point pushed item
+     ; *leaved._s_tabs         ; pushed last entered item
      ; *entered._s_tabs         ; pushed last entered item
-      List *draws._s_tabs( )
       
+      List *_s._s_tabs( )
+      List *draws._s_tabs( )
     EndStructure
     
     ;     ;- - _s_tab
@@ -675,7 +677,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *row._s_row ; multi-text; buttons; lists; - gadgets
       *_box_._s_buttons ; checkbox; optionbox
       
-      ;combo_box._s_buttons
+      *combo_list._s_WIDGET
       
       *align._s_align
       
@@ -745,11 +747,15 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
+      *popup._s_WIDGET
       *opened._s_WIDGET   ; opened list element
     EndStructure
     
     ;- - _s_INCLUDE
     Structure _s_INCLUDE 
+      *action_widget._s_WIDGET
+      action_type.s
+      
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; top level

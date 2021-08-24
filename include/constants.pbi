@@ -7,6 +7,11 @@
     ;- - CONSTANTs
     ;{
     
+    Enumeration 
+      #__action_create
+      #__action_add_items
+    EndEnumeration
+    
     Enumeration -1
 		#SelectionStyle_Default
 		#SelectionStyle_None
@@ -408,7 +413,7 @@
     #__textFlagCount = 10
     #__textFlagValue = 2147483648 >> ( #__textFlagCount - 1 )
     
-    EnumerationBinary #__textFlagValue
+    EnumerationBinary #__align_text_bottom ; #__textFlagValue
       #__text_vertical 
       #__text_invert 
       

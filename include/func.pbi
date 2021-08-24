@@ -31,6 +31,7 @@ DeclareModule func
   
   Declare   _HideGadget(Gadget, state)
   Declare SetWindowBackgroundImage(hWnd.i, hImage.i)
+  Declare TransformImage( source_image, flip_mode = 0, rotation_mode = 0, free_source_image = 1 )
 EndDeclareModule 
 
 Module func
@@ -504,6 +505,116 @@ Module func
     CompilerEndSelect
   EndProcedure
   
+  Procedure TransformImage( source_image, flip_mode = 0, rotation_mode = 0, free_source_image = 1 )
+    ; https://www.purebasic.fr/english/viewtopic.php?f=12&t=77720&sid=8511c4e16685f66b2418f5d3b5452d72
+    ; Transforms the source image by first flipping and then rotating it as specified.
+    ; Note that there's a lot of overlap between flip and rotation operations in terms of the end result. I've kept the operations separate though as it makes them easier to work with conceptually.
+    ; Returns a zero on failure or the Purebasic ID of the new rotated image on success.
+    ; PARAMETERS:-
+    ; source_image - The Purebasic ID of the source image to be rotated.
+    ; flip_mode - 0 = Don't flip (default). 1 = Flip vertically. 2 = Flip horizontally. 3 = Flip both vertically and horizontally.
+    ; rotation_mode - 0 = Don't rotate (default). 1 = Rotate 90 degrees clockwise (default). 2 = Rotate 180 degrees clockwise. 3 = Rotate 270 degrees clockwise.
+    ; free_source_image - 0 = Don't free source image. 1 = Free source image (default).
+    
+    If IsImage( source_image ) = 0 : ProcedureReturn 0 : EndIf ; The source image was invalid, so abort.
+    
+    source_image_width = ImageWidth( source_image )
+    source_image_height = ImageHeight( source_image )
+    
+    If ( flip_mode < 0 ) Or ( flip_mode > 3 ) : ProcedureReturn 0 : EndIf ; Abort if the flip mode is invalid.
+    
+    Select rotation_mode
+      Case 0, 2 ; Rotate 0 or 180 degrees clockwise.
+        output_image_width = source_image_width
+        output_image_height = source_image_height
+      Case 1, 3 ; Rotate 90 or 270 degrees clockwise.
+        output_image_width = source_image_height
+        output_image_height = source_image_width
+      Default
+        ProcedureReturn 0 ; The rotation mode was invalid, so abort.
+    EndSelect
+    
+    ; Create an array for the pixel data and copy the pixel data to it. This will also perform any flagged flip operations.
+    array_max_x = source_image_width - 1
+    array_max_y = source_image_height - 1
+    Dim TempPixelArray.l( array_max_x, array_max_y )
+    StartDrawing( ImageOutput( source_image ) )
+    DrawingMode( #PB_2DDrawing_AllChannels )
+    For y = 0 To array_max_y
+      For x = 0 To array_max_x
+        Select flip_mode
+          Case 0 ; Don't flip.
+            TempPixelArray( x, y ) = Point( x, y )
+          Case 1 ; Flip vertically.
+            TempPixelArray( x, y ) = Point( x, array_max_y - y )
+          Case 2 ; Flip horizontally.
+            TempPixelArray( x, y ) = Point( array_max_x - x, y )
+          Case 3 ; Flip both vertically and horizontally.
+            TempPixelArray( x, y ) = Point( array_max_x - x, array_max_y - y )
+        EndSelect
+      Next
+    Next
+    StopDrawing()
+    
+    ; Create the output image.
+    output_image = CreateImage( #PB_Any, output_image_width, output_image_height, ImageDepth( source_image ) ) : If output_image = 0 : ProcedureReturn 0 : EndIf
+    output_image_max_x = output_image_width - 1
+    output_image_max_y = output_image_height - 1
+    
+    ; Copy the pixel data from the pixel array to a new output image.
+    StartDrawing( ImageOutput( output_image ) )
+    DrawingMode( #PB_2DDrawing_AllChannels )
+    
+    Select rotation_mode
+      Case 0 ; Don't rotate.
+        For y = 0 To array_max_y
+          For x = 0 To array_max_x
+            Plot( x, y , TempPixelArray( x, y ) )
+          Next
+        Next
+        
+      Case 1 ; Rotate 90 degrees clockwise.
+        out_x = output_image_max_x
+        For y = 0 To array_max_y
+          out_y = 0
+          For x = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( x, y ) )
+            out_y + 1
+          Next
+          out_x - 1
+        Next
+        
+      Case 2 ; Rotate 180 degrees clockwise.
+        out_y = output_image_max_y
+        For y = 0 To array_max_y
+          out_x = output_image_max_x
+          For x = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( x, y ) )
+            out_x - 1
+          Next
+          out_y - 1
+        Next
+        
+      Case 3 ; Rotate 270 degrees clockwise.
+        out_x = 0
+        For y = 0 To array_max_y
+          out_y = output_image_max_y
+          For x = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( x, y ) )
+            out_y - 1
+          Next
+          out_x + 1
+        Next
+        
+    EndSelect
+    
+    StopDrawing()
+    
+    If free_source_image : FreeImage( source_image ) : EndIf ; Free the source image if it is flagged to be freed.
+    
+    ProcedureReturn output_image
+  EndProcedure
+  
 EndModule 
 
 UseModule func
@@ -550,6 +661,6 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
-; Folding = ----vq-f----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = --8-vq-f--v--
 ; EnableXP
