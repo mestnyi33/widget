@@ -12,11 +12,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       i.i
     EndStructure
     
-    ;- - _s_SIZE
-    Structure _s_SIZE
-      width.l
-      height.l
-    EndStructure
+;     Structure _s_coordinate_type
+;       pos.l
+;       size.l
+;     EndStructure
     
     ;- - _s_point
     Structure _s_POINT
@@ -24,21 +23,26 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l[constants::#__c]
     EndStructure
     
-    ;- - _s_COORDINATE
-    Structure _s_COORDINATE ;Extends _s_point
+    ;- - _s_size
+    Structure _s_SIZE
+      width.l
+      height.l
+    EndStructure
+    
+    ;- - _s_coordinate
+    Structure _s_COORDINATE 
       y.l
       x.l
       width.l
       height.l
-    ; transporent.b
-      EndStructure
+    EndStructure
     
-    ;- - _s_padding
-    Structure _s_padding
-      left.l
-      top.l
-      right.l
-      bottom.l
+    ;- - _s_position
+    Structure _s_POSITION
+      left.b
+      top.b
+      right.b
+      bottom.b
     EndStructure
     
     ;- - _s_color
@@ -54,26 +58,28 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_align
-    Structure _s_align
-      delta._s_COORDINATE
-      _left.l
-      _top.l
-      _right.l
-      _bottom.l
+    Structure _s_align 
+      delta._s_COORDINATE             
+      anchor._s_POSITION ; align the anchor to the left;right;top;bottom
       
-      left.b
-      top.b
-      right.b
-      bottom.b
+      ;;dock._s_COORDINATE
       
-      ; proportional.b
-      autosize.b
-      v.b
-      h.b
+      left.l
+      top.l
+      right.l
+      bottom.l
+      
+      *left_widget._s_WIDGET
+      *top_widget._s_WIDGET
+      *right_widget._s_WIDGET
+      *bottom_widget._s_WIDGET
+      
+      _x.b
+      _y.b
     EndStructure
     
     ;- - _s_arrow
-    Structure _s_arrow
+    Structure _s_ARROW
       size.a
       type.b
       direction.b
@@ -152,27 +158,27 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;;rotate.f
       align._s_align
       padding._s_point
-;       
-;       
-;       *pressed._s_image
-;       *released._s_image
-;       *background._s_image
+      ;       
+      ;       
+      ;       *pressed._s_image
+      ;       *released._s_image
+      ;       *background._s_image
     EndStructure
     
-;     ;- - _s_anchor
-;     Structure _s_anchor Extends _s_COORDINATE
-;       round.a
-;       *cursor
-;       color._s_color;[4]
-;     EndStructure
+    ;     ;- - _s_anchor
+    ;     Structure _s_anchor Extends _s_COORDINATE
+    ;       round.a
+    ;       *cursor
+    ;       color._s_color;[4]
+    ;     EndStructure
     ;- - _s_buttons
-    Structure _s_buttons Extends _s_COORDINATE 
+    Structure _s_BUTTONS Extends _s_COORDINATE 
       ;;index.l
       *cursor ; anchor buttons
       
       size.l 
       _state.l ; normal; entered; selected; disabled
-      state.l ; temp
+      state.l  ; temp
       
       fixed.l 
       
@@ -184,12 +190,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
-;     ;- - _s_button
-;     Structure _s_button 
-;       pushed.l
-;       entered.l
-;       id._s_buttons[3]
-;     EndStructure
+    ;     ;- - _s_button
+    ;     Structure _s_button 
+    ;       pushed.l
+    ;       entered.l
+    ;       id._s_buttons[3]
+    ;     EndStructure
     
     ;- - _s_margin
     Structure _s_margin Extends _s_COORDINATE
@@ -198,7 +204,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_tabs
-    Structure _s_tabs ;Extends _s_COORDINATE
+    Structure _s_TABS ;Extends _s_COORDINATE
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[constants::#__c]
@@ -207,7 +213,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       index.l  ; Index of new list element
       hide.b
-      draw.b
+      visible.b
       round.a
       
       text._s_text
@@ -217,64 +223,64 @@ CompilerIf Not Defined(structures, #PB_Module)
       checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
       _state.l
-      EndStructure
+    EndStructure
     
     ;- - _s_rows
-    Structure _s_rows Extends _s_tabs
+    Structure _s_ROWS Extends _s_TABS
       childrens.b
       
       sublevel.w
       sublevelsize.a
-            
+      
       button._s_buttons ; \box[0]\ -> \button\
-      ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
+                        ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       *parent._s_rows
       
       *option_group._s_rows
-               
+      
       ; edit
       margin._s_edit
       
       *data  ; set/get item data
     EndStructure
     
+    Structure _s_VISIBLEITEMS
+      *first._s_rows           ; first draw-elemnt in the list 
+      *last._s_rows            ; last draw-elemnt in the list 
+      List *_s._s_rows( )      ; all draw-elements
+    EndStructure
+;     selected item - выбранный элемент
+;     focused item - предмет в фокусе
+;     active item - активный элемент
+;     pressed item - нажатый элемент
+    
     ;- - _s_row
-    Structure _s_row
-     ;; *widget._s_WIDGET
-      
-      ; list view
-      ; drag.b
+    Structure _s_ROW
       sublevel.w
       sublevelsize.a
       
       *_tt._s_tt
       
+      List _s._s_rows( )
       *first._s_rows           ; first elemnt in the list 
-      *first_visible._s_rows   ; first draw elemnt in the list 
-      
       *last._s_rows            ; last elemnt in the list 
-      *last_visible._s_rows    ; last draw elemnt in the list 
       *last_add._s_rows        ; last added last element
       
-       *selected._s_rows        ; at point pushed item
-       *leaved._s_rows         ; pushed last entered item
-       *entered._s_rows         ; pushed last entered item
+      *active._s_rows        ; pushed item
+      ;*selected._s_rows        ; at point pushed item
+      *leaved._s_rows          ; pushed last leaved item
+      *entered._s_rows         ; pushed last entered item
       
-      List *draws._s_rows( )
+      visible._s_VISIBLEITEMS
       
-      ; edit
-      ;caret._s_caret
-      ;color._s_color
       margin._s_margin
       
-      ;
-      count.l
-      index.l
+                                 count.l
+      ;index.l
       box._s_buttons           ; editor - edit rectangle
       
-      List _s._s_rows( )
     EndStructure
     
     ;- - _s_column
@@ -287,8 +293,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *widget._s_WIDGET
       
       fixed.l ; splitter fixed button index  
-      ;;mode.i ;;; temp
-       
+              ;;mode.i ;;; temp
+      
       max.l
       min.l[3]
       ; hide.b
@@ -307,14 +313,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       ; tab
       *active._s_rows ; _get_bar_active_item_
-      *hover._s_rows ; _get_bar_active_item_
+      *hover._s_rows  ; _get_bar_active_item_
       
       index.l ; tab opened item index  
       change_tab_items.b ; tab items to redraw
       
-               ;;*selected._s_tabs     ;???????????????   ; at point pushed item
-     ; *leaved._s_tabs         ; pushed last entered item
-     ; *entered._s_tabs         ; pushed last entered item
+      ;;*selected._s_tabs     ;???????????????   ; at point pushed item
+      ; *leaved._s_tabs         ; pushed last entered item
+      ; *entered._s_tabs         ; pushed last entered item
       
       List *_s._s_tabs( )
       List *draws._s_tabs( )
@@ -368,21 +374,21 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_mode
     Structure _s_mode
-;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-;       SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
-;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
-;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
-;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
-;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-;                        ;                X,Y parameters are ignored.
-;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
-;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
-;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+      ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+      ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+      ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+      ;       SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
+      ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
+      ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
+      ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+      ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
+      ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+      ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+      ;                        ;                X,Y parameters are ignored.
+      ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+      ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
+      ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
+      ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
       
       ;inline.b
       lines.b
@@ -465,28 +471,28 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     
-;     ;- - _s_items
-;     Structure _s_items Extends _s_COORDINATE
-;       index.l
-;       *parent._s_items
-;       draw.b
-;       hide.b
-;       
-;       image._s_image
-;       text._s_text[4]
-;       box._s_buttons[2]
-;       color._s_color
-;       
-;       ;state.b
-;       round.a
-;       
-;       sublevel.w
-;       childrens.l
-;       sublevelsize.l
-;       
-;       *data      ; set/get item data
-;     EndStructure
-;     
+    ;     ;- - _s_items
+    ;     Structure _s_items Extends _s_COORDINATE
+    ;       index.l
+    ;       *parent._s_items
+    ;       draw.b
+    ;       hide.b
+    ;       
+    ;       image._s_image
+    ;       text._s_text[4]
+    ;       box._s_buttons[2]
+    ;       color._s_color
+    ;       
+    ;       ;state.b
+    ;       round.a
+    ;       
+    ;       sublevel.w
+    ;       childrens.l
+    ;       sublevelsize.l
+    ;       
+    ;       *data      ; set/get item data
+    ;     EndStructure
+    ;     
     ;- - _s_dd
     Structure _S_Drop
       privatetype.i
@@ -523,14 +529,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_BIND 
-   Structure _s_EVENTBIND 
+    Structure _s_EVENTBIND 
       *func.pFunc
       List *type( )
     EndStructure
     
     ;- - _s_EVENT
     Structure _s_EVENT ; Extends _s_EVENTDATA
-      ;*type
+                       ;*type
       List *call._s_EVENTBIND( )
       List *queue._s_EVENTDATA( )
     EndStructure
@@ -580,13 +586,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       *_a_id_._s_buttons[constants::#__a_moved+1]
       
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-      bs.a ; border size
-      _state.w ; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
+      bs.a    ; border size
+      _state.w; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
       __state.w ; #_s_ss_ (font; back; frame; fore; line)
       __draw.b 
       
       BarWidth.w ; bar v size
-      BarHeight.w ; bar h size 
+      BarHeight.w; bar h size 
       MenuBarHeight.w
       ToolBarHeight.w
       StatusBarHeight.w
@@ -628,8 +634,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       EndStructureUnion
       
       *_tt._s_tt          ; notification = уведомление
-      *_popup._s_WIDGET; combobox( ) list-view gadget
-      scroll._s_SCROLL  ; vertical & horizontal scrollbars
+      *_popup._s_WIDGET   ; combobox( ) list-view gadget
+      scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
       *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
@@ -693,7 +699,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_MOUSE
     Structure _s_MOUSE Extends _s_POINT
       interact.b ; determines the behavior of the mouse in a clamped (pushed) state
-      ;*behavior
+                 ;*behavior
       *bar_row._s_tabs[3]     ; at point element item
       *row._s_rows[2]         ; at point element item
       *button._s_buttons[3]   ; at point element button
@@ -707,7 +713,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *_drag._S_DD
       *_transform._s_transform
-    
+      
       *grid
       buttons.l               ; 
       change.b                ; if moved mouse this value #true
@@ -764,7 +770,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       event._s_EVENTDATA            ; WidgetEvent( )\ ; \type ; \item ; \data
       
       List *_root._s_ROOT( )        ; 
-      List *address._s_WIDGET( ) ; widget( )\
+      List *address._s_WIDGET( )    ; widget( )\
     EndStructure
     
     ;Global *event._s_events = AllocateStructure(_s_events)
@@ -777,5 +783,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------8-
+; Folding = ----------
 ; EnableXP

@@ -51,66 +51,66 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  ; Alignment text
-  CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-    ImportC ""
-      gtk_entry_set_alignment(Entry.i, Xalign.f)
-      gtk_label_set_yalign(*Label.GtkLabel, Yalign.F)
-    EndImport
-  CompilerEndIf
-  
-  Procedure SetTextAlignment()
-    ; Alignment text
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-      CocoaMessage(0,GadgetID(1),"setAlignment:", #NSCenterTextAlignment)
-      CocoaMessage(0,GadgetID(2),"setAlignment:", #NSRightTextAlignment)
-      
-      CocoaMessage(0, CocoaMessage(0, GadgetID(0), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(1), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(2), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(3), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(4), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(5), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(6), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, CocoaMessage(0, GadgetID(7), "cell"), "_setVerticallyCentered:", #True)
-      
-      CocoaMessage(0, CocoaMessage(0, GadgetID(8), "cell"), "_setVerticallyCentered:", #True)
-      CocoaMessage(0, GadgetID(8), "setNeedsDisplay:", #True)
-      
-    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-      
-      If OSVersion() > #PB_OS_Windows_XP
-        SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE) & $FFFFFFFC | #SS_CENTER)
-        SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLongPtr_(GadgetID(2), #GWL_STYLE) & $FFFFFFFC | #ES_RIGHT) 
-      Else
-        SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
-        SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
-      EndIf
-      
-      SetWindowLongPtr_(GadgetID(0), #GWL_STYLE, GetWindowLong_(GadgetID(0), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(3), #GWL_STYLE, GetWindowLong_(GadgetID(3), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(4), #GWL_STYLE, GetWindowLong_(GadgetID(4), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(5), #GWL_STYLE, GetWindowLong_(GadgetID(5), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(6), #GWL_STYLE, GetWindowLong_(GadgetID(6), #GWL_STYLE)|#SS_CENTERIMAGE)
-      SetWindowLongPtr_(GadgetID(7), #GWL_STYLE, GetWindowLong_(GadgetID(7), #GWL_STYLE)|#SS_CENTERIMAGE)
-      
-      SetWindowLongPtr_(GadgetID(8), #GWL_STYLE, GetWindowLong_(GadgetID(8), #GWL_STYLE)|#SS_CENTERIMAGE)
-      
-    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-      ;       ImportC ""
-      ;         gtk_entry_set_alignment(Entry.i, XAlign.f)
-      ;       EndImport
-      
-      ;gtk_text_view_set_justification_(GadgetID(Editor), #GTK_JUSTIFY_CENTER)
-      
-      gtk_label_set_yalign(GadgetID(8), 0.5)
-      
-      gtk_entry_set_alignment(GadgetID(1), 0.5)
-      gtk_entry_set_alignment(GadgetID(2), 1)
-    CompilerEndIf
-  EndProcedure
+;   ; Alignment text
+;   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+;     ImportC ""
+;       gtk_entry_set_alignment(Entry.i, Xalign.f)
+;       gtk_label_set_yalign(*Label.GtkLabel, Yalign.F)
+;     EndImport
+;   CompilerEndIf
+;   
+;   Procedure SetTextAlignment()
+;     ; Alignment text
+;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+;       CocoaMessage(0,GadgetID(1),"setAlignment:", #NSCenterTextAlignment)
+;       CocoaMessage(0,GadgetID(2),"setAlignment:", #NSRightTextAlignment)
+;       
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(0), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(1), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(2), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(3), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(4), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(5), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(6), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(7), "cell"), "_setVerticallyCentered:", #True)
+;       
+;       CocoaMessage(0, CocoaMessage(0, GadgetID(8), "cell"), "_setVerticallyCentered:", #True)
+;       CocoaMessage(0, GadgetID(8), "setNeedsDisplay:", #True)
+;       
+;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;       
+;       If OSVersion() > #PB_OS_Windows_XP
+;         SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE) & $FFFFFFFC | #SS_CENTER)
+;         SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLongPtr_(GadgetID(2), #GWL_STYLE) & $FFFFFFFC | #ES_RIGHT) 
+;       Else
+;         SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
+;         SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
+;       EndIf
+;       
+;       SetWindowLongPtr_(GadgetID(0), #GWL_STYLE, GetWindowLong_(GadgetID(0), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(3), #GWL_STYLE, GetWindowLong_(GadgetID(3), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(4), #GWL_STYLE, GetWindowLong_(GadgetID(4), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(5), #GWL_STYLE, GetWindowLong_(GadgetID(5), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(6), #GWL_STYLE, GetWindowLong_(GadgetID(6), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       SetWindowLongPtr_(GadgetID(7), #GWL_STYLE, GetWindowLong_(GadgetID(7), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       
+;       SetWindowLongPtr_(GadgetID(8), #GWL_STYLE, GetWindowLong_(GadgetID(8), #GWL_STYLE)|#SS_CENTERIMAGE)
+;       
+;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+;       ;       ImportC ""
+;       ;         gtk_entry_set_alignment(Entry.i, XAlign.f)
+;       ;       EndImport
+;       
+;       ;gtk_text_view_set_justification_(GadgetID(Editor), #GTK_JUSTIFY_CENTER)
+;       
+;       gtk_label_set_yalign(GadgetID(8), 0.5)
+;       
+;       gtk_entry_set_alignment(GadgetID(1), 0.5)
+;       gtk_entry_set_alignment(GadgetID(2), 1)
+;     CompilerEndIf
+;   EndProcedure
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline ComboBoxGadget H"
   UsePNGImageDecoder()
@@ -150,7 +150,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     Debug GetGadgetText(6)+" - get gadget text"
     Define a
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
-      For a = 1 To 5
+      For a = 1 To 31 ; xp-31 linux-qt=11
         AddGadgetItem(0, -1,"ComboBox item " + Str(a))
       Next
 
@@ -165,7 +165,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(2, -1, "ComboBox editable...3")
 
     SetGadgetState(0, 2)
-    SetGadgetState(1, 0)
+    SetGadgetState(1, 1)
     SetGadgetState(2, 0)    ; set (beginning with 0) the third item as active one
     
     
@@ -195,7 +195,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;       Bind(GetWidget(i), @events_widgets())
 ; ;     Next
     ComboBox(305+10, 10, 250, 21, #PB_ComboBox_Editable)
-      For a = 1 To 5
+      For a = 1 To 31
         AddItem(widget(), -1,"ComboBox item " + Str(a))
       Next
 
@@ -210,7 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
      AddItem(widget(), -1, "ComboBox editable...3")
 
     SetState(getwidget(0), 2)
-    SetState(getwidget(1), 0)
+    SetState(getwidget(1), 1)
     SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
     
     bind(-1,-1)
@@ -219,5 +219,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --
 ; EnableXP
