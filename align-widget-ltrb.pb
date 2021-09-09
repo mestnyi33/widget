@@ -924,8 +924,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Declare.i SetAttachment( *this, *parent, mode.a )
-    Declare.i SetAlignmentFlag( *this, Mode.l, Type.l = 1 )
-    Declare.i SetAlignment( *this, left.l, top.l, right.l, bottom.l, auto.b = #True )
     Declare   SetFrame( *this, size.a, mode.i = 0 )
     Declare   Object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1 )
     
@@ -1031,6 +1029,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i SetItemAttribute( *this, Item.l, Attribute.l, *value, Column.l = 0 )
     
     Declare   SetCursor( *this, *cursor )
+    Declare.i SetAlignment( *this, Mode.l, Type.l = 1 )
     
     Declare   SetImage( *this, *image )
     Declare   SetBackgroundImage( *this, *image )
@@ -4517,101 +4516,105 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\y[#__c_inner] + *this\fs + ( *this\fs[2] + *this\fs[4] )
         EndIf
         
-        ;-
+        
         ; then move and size parent resize all childrens
         If *this\container And *this\count\childrens
           ; Protected.l x, y, width, height
           Protected x2,y2,pw,ph, pwd,phd, frame = #__c_frame
+          If *this\type = #__type_window
+            frame = #__c_inner
+          EndIf
           
-          Protected delta_width, delta_height
+          If *this\align
+            pw = ( *this\width[frame] - *this\align\delta\width )
+            ph = ( *this\height[frame] - *this\align\delta\height )
+            pwd = pw/2 
+            phd = ph/2 
+          EndIf
           
           If StartEnumerate( *this ) 
             If Not _is_scrollbars_( Widget( ))
               
               If Widget( )\align
-                x2 = Widget( )\align\indent\right 
-                y2 = Widget( )\align\indent\bottom
-                
-                
-                If Widget( )\parent\align
-                  If Widget( )\parent\type = #__type_window
-                    frame = #__c_inner
-                  Else
-                    frame = #__c_frame
-                  EndIf
-                  ;Debug ""+  Widget( )\parent\align\width +" "+ Widget( )\parent\align\indent\right +" "+ Widget( )\parent\align\indent\left
-                  ;delta_width = Widget( )\parent\align\width  
-                  ;delta_height = Widget( )\parent\align\height
-                  delta_width = Widget( )\parent\align\indent\right - Widget( )\parent\align\indent\left ;- Widget( )\parent\fs
-                  delta_height = Widget( )\parent\align\indent\bottom - Widget( )\parent\align\indent\top ; - Widget( )\parent\fs*2 
-                  pw = ( Widget( )\parent\width[frame] - delta_width )
-                  ph = ( Widget( )\parent\height[frame] - delta_height )
-                  pwd = pw/2 
-                  phd = ph/2 
-                EndIf
+                x2 = ( Widget( )\align\delta\x + Widget( )\align\delta\width )
+                y2 = ( Widget( )\align\delta\y + Widget( )\align\delta\height )
                 
                 ; horizontal
                 If Widget( )\align\anchor\right > 0
-                  x = Widget( )\align\indent\left  
-                  If Widget( )\align\anchor\left = 0
-                    x + pw 
+                  If Widget( )\align\anchor\left > 0
+                    ; 3
+                    x = Widget( )\align\delta\x  
+                  Else
+                    ; 2
+                    x = Widget( )\align\delta\x + pw 
                   EndIf
                   width = x2 + pw
                 Else
                   If Widget( )\align\anchor\left > 0
                     ; 1
-                    x = Widget( )\align\indent\left  
+                    x = Widget( )\align\delta\x  
                     width = x2
                   Else
                     If Widget( )\align\anchor\right < 0
                       If Widget( )\align\anchor\left < 0
                         ; 6
-                        x = Widget( )\align\indent\left * Widget( )\parent\width[frame] / delta_width
-                        width = x2 * Widget( )\parent\width[frame] / delta_width
+                        x = Widget( )\align\delta\x * *this\width[frame] / *this\align\delta\width
+                        width = x2 * *this\width[frame] / *this\align\delta\width
                       Else
                         ; 5
-                        x = Widget( )\align\indent\left + pwd
+                        x = Widget( )\align\delta\x + pwd
                         width = x2 + pw 
                       EndIf
                     Else
-                      x = Widget( )\align\indent\left   
-                      If Widget( )\align\anchor\left = 0
-                        x + pwd
+                      If Widget( )\align\anchor\left < 0
+                        ; 4
+                        x = Widget( )\align\delta\x   
+                        width = x2 + pwd
+                      Else
+                        ; 0
+                        x = Widget( )\align\delta\x + pwd
+                        width = x2 + pwd
                       EndIf
-                      width = x2 + pwd
                     EndIf
                   EndIf
                 EndIf
                 
                 ; vertical
                 If Widget( )\align\anchor\bottom > 0
-                  y = Widget( )\align\indent\top  
-                  If Widget( )\align\anchor\top = 0
-                    y + ph
+                  If Widget( )\align\anchor\top > 0
+                    ; 3
+                    y = Widget( )\align\delta\y  
+                  Else
+                    ; 2
+                    y = Widget( )\align\delta\y + ph
                   EndIf
                   height = y2 + ph
                 Else
                   If Widget( )\align\anchor\top > 0
                     ; 1
-                    y = Widget( )\align\indent\top  
+                    y = Widget( )\align\delta\y  
                     height = y2
                   Else
                     If Widget( )\align\anchor\bottom < 0
                       If Widget( )\align\anchor\top < 0
                         ; 6
-                        y = Widget( )\align\indent\top * Widget( )\parent\height[frame] / delta_height
-                        height = y2 * Widget( )\parent\height[frame] / delta_height
+                        y = Widget( )\align\delta\y * *this\height[frame] / *this\align\delta\height
+                        height = y2 * *this\height[frame] / *this\align\delta\height
                       Else
                         ; 5
-                        y = Widget( )\align\indent\top + phd 
+                        y = Widget( )\align\delta\y + phd 
                         height = y2 + ph
                       EndIf
                     Else
-                      y = Widget( )\align\indent\top 
-                      If Widget( )\align\anchor\top = 0
-                        y + phd 
+                      If Widget( )\align\anchor\top < 0
+                        ; 4
+                        y = Widget( )\align\delta\y 
+                        height = y2 + phd
+                      Else
+                        ; 0
+                        y = Widget( )\align\delta\y + phd 
+                        height = y2 + phd
                       EndIf
-                      height = y2 + phd
                     EndIf
                   EndIf
                 EndIf
@@ -12460,7 +12463,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\resize &~ #__resize_maximize
           *this\resize | #__resize_restore
           
-          SetAlignmentFlag( *this, #__align_none )
+          SetAlignment( *this, #__align_none )
           Resize( *this, *this\root\x[#__c_rootrestore], *this\root\y[#__c_rootrestore], 
                   *this\root\width[#__c_rootrestore], *this\root\height[#__c_rootrestore] )
           
@@ -12508,7 +12511,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\resize | #__resize_minimize
           
           Resize( *this, *this\root\x[#__c_rootrestore], *this\parent\height[#__c_container] - *this\fs[2], *this\root\width[#__c_rootrestore], *this\fs[2] )
-          SetAlignmentFlag( *this, #__align_bottom )
+          SetAlignment( *this, #__align_bottom )
           
           If _is_root_( *this )
             PostEvent( #PB_Event_MinimizeWindow, *this\root\canvas\window, *this )
@@ -13273,7 +13276,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
          *this\type = #__type_ListView
         
         If *this\count\items <> 0
-         ;; Send( #__event_Change, *this, #PB_All ) ; 
+          ;;;;;Send( #__event_Change, *this, #PB_All ) ; меняет EventWidget()
           
           *this\change = 1
           *this\row\count = 0
@@ -14656,7 +14659,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
     EndProcedure
     
-    Procedure.i SetAlignmentFlag( *this._s_WIDGET, Mode.l, Type.l = 1 ) ; ok
+    Procedure.i SetAlignment( *this._s_WIDGET, Mode.l, Type.l = 1 ) ; ok
       Protected rx.b, ry.b
       
       With *this
@@ -14712,90 +14715,112 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 EndIf
               EndIf
               
-              Protected parent_width, parent_height 
+              
+              \align\delta\x = \x[#__c_container]
+              \align\delta\y = \y[#__c_container]
+              \align\delta\width = \width[#__c_frame]
+              \align\delta\height = \height[#__c_frame]
+              
+              \parent\align\delta\x = \parent\x[#__c_container]
+              \parent\align\delta\y = \parent\y[#__c_container]
               
               If *this\parent\type = #__type_window
-                parent_width = \parent\width[#__c_inner]
-                parent_height = \parent\height[#__c_inner]
+                \parent\align\delta\width = \parent\width[#__c_inner]
+                \parent\align\delta\height = \parent\height[#__c_inner]
               Else
-                parent_width = \parent\width[#__c_frame]
-                parent_height = \parent\height[#__c_frame]
+                \parent\align\delta\width = \parent\width[#__c_frame]
+                \parent\align\delta\height = \parent\height[#__c_frame]
               EndIf
-              
-              ;
-              If \parent\align\indent\right = 0
-                \parent\align\indent\left = \parent\x[#__c_container] 
-                \parent\align\indent\right = \parent\align\indent\left + parent_width
-              EndIf
-              If \parent\align\indent\bottom = 0
-                \parent\align\indent\top = \parent\y[#__c_container] 
-                \parent\align\indent\bottom = \parent\align\indent\top + parent_height 
-              EndIf
-              
-              \align\indent\left = \x[#__c_container]
-              \align\indent\right = \align\indent\left + \width
-              
-              \align\indent\top = \y[#__c_container]
-              \align\indent\bottom = \align\indent\top + \height
               
               
               ; docking
               If Mode & #__align_auto = #__align_auto
-                parent_width = ( \parent\align\indent\right - \parent\align\indent\left - \parent\fs*2 )
-                parent_height = ( \parent\align\indent\bottom - \parent\align\indent\top - \parent\fs*2 )
-                
-                ; full horizontal
-                If \align\anchor\right = 1 And \align\anchor\left = 1 
-                  \align\indent\left = \x[#__c_container]
-                  \align\indent\right = \align\indent\left + parent_width
-                  ;; Debug ""+ \text\string +" "+ \parent\x +" "+ \parent\align\indent\left +" "+ \parent\align\indent\right +" "+ \parent\width[#__c_inner]
-                  ; center
-                ElseIf \align\anchor\right = 0 And \align\anchor\left = 0
-                  \align\indent\left = ( parent_width - \width )/2
-                  \align\indent\right = \align\indent\left + \width
-                  ; right
-                ElseIf \align\anchor\right = 1 And \align\anchor\left = 0 
-                  \align\indent\left = parent_width - \width
-                  \align\indent\right = \align\indent\left + \width
+                If \align\anchor\right = 0 And \align\anchor\left = 0 ; center
+                  \align\delta\x = ( \parent\width[#__c_inner] - \align\delta\width )/2
+                ElseIf \align\anchor\right = 1 And \align\anchor\left = 0 ; right
+                  \align\delta\x = \parent\width[#__c_inner] - \align\delta\width
                 EndIf
                 
-                ; full vertical
-                If \align\anchor\bottom = 1 And \align\anchor\top = 1
-                  \align\indent\top = \y[#__c_container] 
-                  \align\indent\bottom = \align\indent\top + parent_height
-                  ; center
-                ElseIf \align\anchor\bottom = 0 And \align\anchor\top = 0
-                  \align\indent\top = ( parent_height - \height )/2
-                  \align\indent\bottom = \align\indent\top + \height
-                  ; bottom
-                ElseIf \align\anchor\bottom = 1
-                  \align\indent\top = parent_height - \height
-                  \align\indent\bottom = \align\indent\top + \height
+                If \align\anchor\bottom = 0 And \align\anchor\top = 0 ; center
+                  \align\delta\y = ( \parent\height[#__c_inner] - \align\delta\height )/2
+                ElseIf \align\anchor\bottom = 1 And \align\anchor\top = 0 ; bottom
+                  \align\delta\y = \parent\height[#__c_inner] - \align\delta\height
                 EndIf
                 
-                ; dock
-                If Mode & #__align_full = #__align_full
+                If (\align\anchor\right = 1 And \align\anchor\left = 1 ) Or (\align\anchor\bottom = 1 And \align\anchor\top = 1 ) 
+                  If (\align\anchor\right = 1 And \align\anchor\left = 1 ) ; full horizontal
+                    \align\delta\width = \parent\width[#__c_inner]
+                    
+                    If ( \align\anchor\bottom = 0 And \align\anchor\top = 1 ) ; top
+                                                                              ; \align\delta\y + \parent\align\top : \parent\align\top + *this\height[#__c_frame]
+                      If *this\parent\align\top_widget 
+                        \align\delta\y = *this\parent\align\top_widget\y + *this\parent\align\top_widget\height
+                      EndIf
+                      *this\parent\align\top_widget = *this
+                      
+                    ElseIf \align\anchor\bottom = 1 And \align\anchor\top = 0 ; bottom
+                                                                              ; \align\delta\y - \parent\align\bottom : \parent\align\bottom + *this\height[#__c_frame] + \parent\bs*2
+                      
+                      If *this\parent\align\bottom_widget 
+                        \align\delta\y = *this\parent\align\bottom_widget\y - *this\height
+                      EndIf
+                      *this\parent\align\bottom_widget = *this
+                    EndIf
+                  EndIf
+                  
+                  If (\align\anchor\bottom = 1 And \align\anchor\top = 1 ) ; full vertical
+                    \align\delta\height = \parent\height[#__c_inner] 
+                    
+                    If \align\anchor\right = 0 And \align\anchor\left = 1 ; left
+                                                                          ; \align\delta\x + \parent\align\left : \parent\align\left + *this\width[#__c_frame]
+                      
+                      If *this\parent\align\left_widget 
+                        \align\delta\x = *this\parent\align\left_widget\x + *this\parent\align\left_widget\width
+                      EndIf
+                      *this\parent\align\left_widget = *this  
+                      
+                    ElseIf \align\anchor\right = 1 And \align\anchor\left = 0 ; right
+                                                                              ; \align\delta\x - \parent\align\right : \parent\align\right + *this\width[#__c_frame] + \parent\bs*2
+                      
+                      If *this\parent\align\right_widget 
+                        \align\delta\x = *this\parent\align\right_widget\x - *this\width
+                      EndIf
+                      *this\parent\align\right_widget = *this
+                    EndIf
+                  EndIf
+                  
                   ; loop enumerate widgets
                   If StartEnumerate( *this\parent ) 
                     If Widget( )\align 
-                      
-                      If ( Widget( )\align\anchor\left = 0 Or Widget( )\align\anchor\right = 0 ) And 
-                         ( Widget( )\align\anchor\top = 1 And Widget( )\align\anchor\bottom = 1 )
-                        Widget( )\align\indent\top = Widget( )\parent\align\auto\top
-                        Widget( )\align\indent\bottom = parent_height - Widget( )\parent\align\auto\bottom
+                      If Not ( Widget( )\align\anchor\left = 1 And Widget( )\align\anchor\right = 1 And 
+                               Not ( Widget( )\align\anchor\top = 1 And Widget( )\align\anchor\bottom = 1 )) 
+                        
+                        ;                         Widget( )\align\delta\y = \parent\align\top
+                        ;                         Widget( )\align\delta\height = \parent\align\delta\height - Widget( )\align\delta\y - \parent\align\bottom
+                        
+                        If *this\parent\align\top_widget
+                          Widget( )\align\delta\y = *this\parent\align\top_widget\align\delta\y + *this\parent\align\top_widget\align\delta\height
+                        EndIf
+                        If *this\parent\align\bottom_widget
+                          Widget( )\align\delta\height = (\parent\align\delta\height - Widget( )\align\delta\y) - (\parent\align\delta\height - *this\parent\align\bottom_widget\align\delta\y)
+                        EndIf
                       EndIf
                       
-                      ;                         If ( Widget( )\align\anchor\top = 0 Or Widget( )\align\anchor\bottom = 0 ) And 
-                      ;                            ( Widget( )\align\anchor\left = 1 And Widget( )\align\anchor\right = 1 )
-                      ;                           Debug Widget( )\text\string
-                      ;                           Widget( )\align\indent\left = Widget( )\parent\align\auto\left
-                      ;                           Widget( )\align\indent\right = parent_width - Widget( )\parent\align\auto\right
-                      ;                         EndIf
+                      If Widget( )\align\anchor\left = 1 And
+                         Widget( )\align\anchor\right = 1 And 
+                         Widget( )\align\anchor\top = 1 And 
+                         Widget( )\align\anchor\bottom = 1
+                        
+                        ;                         Widget( )\align\delta\x = \parent\align\left
+                        ;                         Widget( )\align\delta\width = \parent\align\delta\width - Widget( )\align\delta\x - \parent\align\right
+                        
+                        Widget( )\align\delta\x = *this\parent\align\left_widget\align\delta\x + *this\parent\align\left_widget\align\delta\width 
+                        Widget( )\align\delta\width = (\parent\align\delta\width - Widget( )\align\delta\x) - (\parent\align\delta\width - *this\parent\align\right_widget\align\delta\x)
+                      EndIf
                     EndIf
                     StopEnumerate( )
                   EndIf
                 EndIf
-                ;                 
               EndIf
               
               ; update parent childrens coordinate
@@ -14807,181 +14832,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndWith
     EndProcedure
     
-    Procedure SetAlignment( *this._s_widget, left.l, top.l, right.l, bottom.l, auto.b = #True )
-    Protected flag
-    
-    If Not *this\align
-      ;
-      If left = #__align_full
-        left = #__align_auto
-        top = #__align_auto
-        bottom = #__align_auto
-        flag | #__align_full
-      EndIf
-      If right = #__align_full
-        right = #__align_auto
-        top = #__align_auto
-        bottom = #__align_auto
-        flag | #__align_full
-      EndIf
-      If top = #__align_full
-        top = #__align_auto
-        left = 1;#__align_auto
-        right = 1;#__align_auto
-        flag | #__align_full
-      EndIf
-      If bottom = #__align_full
-        bottom = #__align_auto
-        left = 1;#__align_auto
-        right = 1;#__align_auto
-        flag | #__align_full
-      EndIf
-      
-      
-      ;       If left = #__align_full
-      ;         left = #__align_auto
-      ;         top = 1;#__align_auto
-      ;         bottom = 1;#__align_auto
-      ;         flag | #__align_full
-      ;       EndIf
-      ;       If right = #__align_full
-      ;         right = #__align_auto
-      ;         top = 1;#__align_auto
-      ;         bottom = 1;#__align_auto
-      ;         flag | #__align_full
-      ;       EndIf
-      ;       If top = #__align_full
-      ;         top = #__align_auto
-      ;         left = #__align_auto
-      ;         right = #__align_auto
-      ;         flag | #__align_full
-      ;       EndIf
-      ;       If bottom = #__align_full
-      ;         bottom = #__align_auto
-      ;         left = #__align_auto
-      ;         right = #__align_auto
-      ;         flag | #__align_full
-      ;       EndIf
-      ;       
-      ; auto stick set
-      If *this\parent\align 
-        If left = #__align_auto 
-          If *this\parent\align\auto\left
-            left =- *this\parent\align\auto\left
-          EndIf
-        EndIf
-        If top = #__align_auto 
-          If *this\parent\align\auto\top
-            top =- *this\parent\align\auto\top
-          EndIf
-        EndIf
-        If right = #__align_auto 
-          If *this\parent\align\auto\right
-            right =- *this\parent\align\auto\right
-          EndIf
-        EndIf
-        If bottom = #__align_auto 
-          If *this\parent\align\auto\bottom
-            bottom =- *this\parent\align\auto\bottom
-          EndIf
-        EndIf
-      EndIf
-      
-      ;
-      If left = #__align_proportional Or 
-         right = #__align_proportional
-        flag | #__align_proportional_horizontal
-      EndIf
-      If top = #__align_proportional Or
-         bottom = #__align_proportional
-        flag | #__align_proportional_vertical
-      EndIf
-      
-      ;
-      If left
-        flag | #__align_left
-      Else
-        If top Or bottom
-          flag | #__align_center
-        EndIf  
-      EndIf
-      If top
-        flag | #__align_top
-      Else
-        If left Or right
-          flag | #__align_center
-        EndIf
-      EndIf
-      If right
-        flag | #__align_right
-      EndIf
-      If bottom
-        flag | #__align_bottom
-      EndIf
-      If left > 0 And top > 0 And right > 0 And bottom > 0 
-        flag | #__align_full
-      ElseIf left = 0 And top = 0 And right = 0 And bottom = 0
-        flag | #__align_center
-      EndIf
-      
-      If flag
-        If auto
-          flag | #__align_auto
-        EndIf
-        SetAlignmentFlag( *this, flag )
-      EndIf
-    EndIf
-    
-    
-    If *this\align
-      ; position indent 
-      If left < 0 Or right < 0
-        If left And right
-          *this\align\indent\left - left
-          *this\align\indent\right + right
-        Else
-          *this\align\indent\left - left + right 
-          *this\align\indent\right - left + right
-        EndIf
-      EndIf
-      If top < 0 Or bottom < 0
-        If top And bottom
-          *this\align\indent\top - top
-          *this\align\indent\bottom + bottom
-        Else
-          *this\align\indent\top - top + bottom
-          *this\align\indent\bottom - top + bottom
-        EndIf
-      EndIf
-      
-      ; auto stick get
-      If *this\align\anchor\left And *this\align\anchor\right
-      Else
-        If *this\align\anchor\left 
-          *this\parent\align\auto\left = *this\align\indent\right
-        EndIf
-        If *this\align\anchor\right
-          ;  *this\parent\align\auto\right = *this\parent\width[#__c_inner] - *this\align\indent\left
-          *this\parent\align\auto\right = ( *this\parent\align\indent\right - *this\parent\align\indent\left - *this\parent\fs*2 ) - *this\align\indent\left 
-        EndIf
-      EndIf
-      If *this\align\anchor\top And *this\align\anchor\bottom
-      Else
-        If *this\align\anchor\top
-          *this\parent\align\auto\top = *this\align\indent\bottom
-        EndIf
-        If *this\align\anchor\bottom
-          ; *this\parent\align\auto\bottom = *this\parent\height[#__c_inner] - *this\align\indent\top
-          *this\parent\align\auto\bottom = ( *this\parent\align\indent\bottom - *this\parent\align\indent\top - *this\parent\fs*2 ) - *this\align\indent\top
-        EndIf
-      EndIf
-    EndIf
-    
-    ;*this\text\string = "--"
-  EndProcedure
-  
-  
-  Procedure   MoveBounds( *this._s_widget, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    Procedure   MoveBounds( *this._s_widget, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
       ; If the value is set to #PB_Ignore, the current value is not changed. 
       ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
       Protected.l x = #PB_Ignore, y = #PB_Ignore, width = #PB_Ignore, height = #PB_Ignore
@@ -17943,6 +17794,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       _add_action_( *this )
       
       If *callback > 0
+        
         If *this = #PB_All And 
            ListSize( Root( ))
           *this = Root( )
@@ -18116,7 +17968,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       Protected Window = Window( x,y, width, height, Title, #__window_titlebar, *parent)
       Widget( )\class = #PB_Compiler_Procedure
-      ;SetAlignmentFlag( widget( ), #__align_center )
+      ;SetAlignment( widget( ), #__align_center )
       Bind( Widget( ), @message_events( ))
       Sticky( Widget( ), #True )
       
@@ -18265,18 +18117,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       CloseList( )
       
       Button( width-bw-f2,height-bh-f2,bw,bh,"Ok", #__button_default )
-      SetAlignmentFlag( Widget( ), #__align_bottom | #__align_right )
+      SetAlignment( Widget( ), #__align_bottom | #__align_right )
       
       If Flag & #PB_MessageRequester_YesNo Or 
          Flag & #PB_MessageRequester_YesNoCancel
         SetText( Widget( ), "Yes" )
         Button( width-( bw+f2 )*2-f2,height-bh-f2,bw,bh,"No" )
-        SetAlignmentFlag( Widget( ), #__align_bottom | #__align_right )
+        SetAlignment( Widget( ), #__align_bottom | #__align_right )
       EndIf
       
       If Flag & #PB_MessageRequester_YesNoCancel
         Button( width-( bw+f2 )*3-f2*2,height-bh-f2,bw,bh,"Cansel" )
-        SetAlignmentFlag( Widget( ), #__align_bottom | #__align_right )
+        SetAlignment( Widget( ), #__align_bottom | #__align_right )
       EndIf
       
       ; no do repeat
@@ -20029,321 +19881,359 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-
-
-CompilerIf #PB_Compiler_IsMainFile ;= 100
+CompilerIf #PB_Compiler_IsMainFile
+  UseLib(widget)
+  EnableExplicit
   
-  Uselib(widget)
-  UsePNGImageDecoder()
-  Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
+  Global tree_view
+  Global NewMap Widgets.i()
+  Global.i Window_0, Canvas_0, gEvent, gQuit, x=10,y=10
+  Global *this._s_widget
   
-  Define *new
-  ; toolbar buttons
-  Enumeration 
-    #_tb_group_left = 3
-    #_tb_group_right
-    #_tb_group_top
-    #_tb_group_bottom
-    #_tb_group_width
-    #_tb_group_height
-    
-    #_tb_align_left
-    #_tb_align_right
-    #_tb_align_top
-    #_tb_align_bottom
-    #_tb_align_center
-    
-    #_tb_widget_paste
-    #_tb_widget_delete
-    #_tb_widget_copy
-    #_tb_widget_cut
-  EndEnumeration
-  
-  Macro widget_copy()
-    ClearList(*copy())
-    
-    If Transform()\widget\_a_transform = 1
-      AddElement(*copy()) 
-      *copy.allocate(group, ())
-      *copy()\widget = Transform()\widget
-    Else
-      ;       ForEach Transform()\group()
-      ;         AddElement(*copy()) 
-      ;         *copy.allocate(group, ())
-      ;         *copy()\widget = Transform()\group()\widget
-      ;       Next
-      
-      CopyList(Transform()\group(), *copy())
-      
-    EndIf
-    
-    Transform()\id[0]\x = Transform()\grid\size
-    Transform()\id[0]\y = Transform()\grid\size
+  Macro AnchorLeft(_this_)
+    _this_\align\anchor\left
   EndMacro
   
-  Macro widget_delete()
-    If Transform()\widget\_a_transform = 1
-      ;  transform = Transform()\widget\parent
-      
-      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
-      Free(Transform()\widget)
-    Else
-      ;  transform = Transform()\widget
-      
-      ForEach Transform()\group()
-        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
-        Free(Transform()\group()\widget)
-        DeleteElement(Transform()\group())
-      Next
-      
-      ClearList(Transform()\group())
-    EndIf
+  Procedure SetAlignmentIndent( *this._s_widget, left, top, right, bottom )
+    Protected flag
     
-    ; a_set(transform)
-  EndMacro
-  
-  Macro widget_paste()
-    If ListSize(*copy())
-      ForEach *copy()
-        ;         widget_add(*copy()\widget\parent, 
-        ;                        *copy()\widget\class, 
-        ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\x[#__c_inner]),
-        ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\y[#__c_inner]), 
-        ;                        *copy()\widget\width[#__c_frame],
-        ;                        *copy()\widget\height[#__c_frame])
-      Next
-      
-      Transform()\id[0]\x + Transform()\grid\size
-      Transform()\id[0]\y + Transform()\grid\size
-      
-      ClearList(Transform()\group())
-      CopyList(*copy(), Transform()\group())
-    EndIf
-    
-    ForEach Transform()\group()
-      Debug " ggg "+Transform()\group()\widget
-    Next
-    
-    ;a_update(Transform()\widget)
-  EndMacro
-  
-  Procedure toolbar_events()
-    Protected *this._s_widget
-    Protected e_type = WidgetEventType( )
-    Protected e_item ;= this()\item
-    Protected e_widget = EventWidget( )
-    
-    Select e_type
-      Case #PB_EventType_LeftClick
-        If e_widget = id_elements_tree
-          Debug "click"
-          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
+    If Not *this\align
+      If left
+        flag | #__align_left
+      Else
+        If top Or bottom
+          flag | #__align_center
+        EndIf  
+      EndIf
+      If top
+        flag | #__align_top
+      Else
+        If left Or right
+          flag | #__align_center
         EndIf
+      EndIf
+      If right
+        flag | #__align_right
+      EndIf
+      If bottom
+        flag | #__align_bottom
+      EndIf
+      If left And top And right And bottom 
+        flag | #__align_full
+      ElseIf left = 0 And top = 0 And right = 0 And bottom = 0
+        flag | #__align_center
+      EndIf
+      
+      If flag
+        SetAlignment( *this, #__align_auto|flag )
+      EndIf
+    EndIf
+    
+    
+    If *this\align
+      If left And right
+        *this\align\delta\x + left
+        *this\align\delta\width - left - right
+      Else
+        *this\align\delta\x + left - right
+      EndIf
+      
+      If top And bottom
+        *this\align\delta\y + top
+        *this\align\delta\height - top - bottom
+      Else
+        *this\align\delta\y + top - bottom
+      EndIf
+    EndIf
+    
+    ;*this\text\string = "--"
+  EndProcedure
+  
+  
+  Procedure events()
+    Select WidgetEventType()
+      Case #__event_leftclick
         
-        If getclass(e_widget) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
-          Static NewList *copy._s_group()
+        ;Debug EventWidget()
+        ClearItems(tree_view)
+        ;Debug EventWidget()
+        If EventWidget() And EventWidget()\align
+          ;Debug AnchorLeft(EventWidget())
+          If GetText(EventWidget()) = "parent stretch"
+            EventWidget() = EventWidget()\parent
+          EndIf
           
+          If EventWidget()\align\anchor\left > 0
+            AddItem(tree_view, -1, "LEFT")
+          ElseIf EventWidget()\align\anchor\left < 0
+            AddItem(tree_view, -1, "LEFT-PROPORTIONAL")
+          EndIf
           
-          Select toolbarbutton
-            Case 1
-              If Getstate(e_widget)  
-                ; group
-                group_select = e_widget
-                ; SetAtributte(e_widget, #PB_Button_PressedImage)
-              Else
-                ; un group
-                group_select = 0
-              EndIf
-              
-              ForEach Transform()\group()
-                Debug Transform()\group()\widget\x
-                
-              Next
-              
-              
-            Case #_tb_widget_copy
-              widget_copy()
-              
-            Case #_tb_widget_cut
-              widget_copy()
-              widget_delete()
-              
-            Case #_tb_widget_paste
-              widget_paste()
-              
-            Case #_tb_widget_delete
-              If Transform()\widget\_a_transform = 1
-                transform = Transform()\widget\parent
-              Else
-                transform = Transform()\widget
-              EndIf
-              
-              widget_delete()
-              
-              a_set(transform)
-              
-            Case #_tb_group_left,
-                 #_tb_group_right, 
-                 #_tb_group_top, 
-                 #_tb_group_bottom, 
-                 #_tb_group_width, 
-                 #_tb_group_height
-              
-              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
-              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
-              
-              ForEach Transform()\group()
-                Select toolbarbutton
-                  Case #_tb_group_left ; left
-                                       ;Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_right ; right
-                    Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_top ; top
-                                      ;Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_bottom ; bottom
-                    Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_width ; stretch horizontal
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
-                    
-                  Case #_tb_group_height ; stretch vertical
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
-                    
-                EndSelect
-              Next
-              
-              a_update(Transform()\widget)
-              
-              ;Redraw(root())
-          EndSelect
+          If EventWidget()\align\anchor\right > 0
+            AddItem(tree_view, -1, "RIGHT")
+          ElseIf EventWidget()\align\anchor\right < 0
+            AddItem(tree_view, -1, "RIGHT-PROPORTIONAL")
+          EndIf
+          
+          If EventWidget()\align\anchor\top > 0
+            AddItem(tree_view, -1, "TOP")
+          ElseIf EventWidget()\align\anchor\top < 0
+            AddItem(tree_view, -1, "TOP-PROPORTIONAL")
+          EndIf
+          
+          If EventWidget()\align\anchor\bottom > 0
+            AddItem(tree_view, -1, "BOTTOM")
+          ElseIf EventWidget()\align\anchor\bottom < 0
+            AddItem(tree_view, -1, "BOTTOM-PROPORTIONAL")
+          EndIf
+          
+          If CountItems(tree_view) = 0
+            AddItem(tree_view, -1, "CENTER")
+          EndIf
+          
+          ; SetItemState(tree_view, CountItems(tree_view), 1)
+          ; ReDraw(tree_view)
         EndIf
         
     EndSelect
   EndProcedure
   
-  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
-    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
+  
+  Procedure example_0()
+    Define i
+    CreateImage(0,200,60) 
+    StartDrawing(ImageOutput(0))
+    For i=0 To 200
+      Circle(100, 30, 200-i, (i+50)*$010101)
+    Next
+    StopDrawing()
     
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
-    ;widget()\color = widget()\parent\color
-    ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
-    widget()\data = _button_
-    ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
-  EndMacro
-  
-  Macro Separator()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
-    SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
-  EndMacro
-  
-  
-  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
-  toolbar_design = Container(0,0,600,40) 
-  ;SetAlignmentFlag(widget(), #__align_top)
-  ;ToolBar(toolbar, window, flags)
-  
-  group_select = ToolBarButton(1, - 1, #__button_Toggle)
-  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
-  
-  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-  Separator()
-  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-  Separator()
-  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator()
-  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
-  
-  Separator()
-  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator()
-  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-  CloseList()
-  
-  
-  ;Container(0,40,600,600);, #__flag_autosize) 
-  ;SetAlignmentFlag(widget(), #__align_full) 
-  mdi(0,40,600,600, #__mdi_editable)
-  ; a_init(widget()) 
-  
-  
-  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
-  ; ; container(30,30,450-2,450-2)
-  ;;ScrollArea(30,30,450-2,450-2, 0,0)
-  ScrollArea(30,30,450-2,450-2, 250,750, transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
-  
-  Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
-  AddItem(widget(), -1, "item-1")
-  ;container(30,30,400,400)
-  ComboBox(120,160,115,50)
-  AddItem(widget(), -1, "combo1")
-  SetState(widget(), 0)
-  
-  ;Button(120,160,115,50,"butt1")
-  AddItem(widget()\parent, -1, "item-2")
-  Button(150,180,115,50,"butt2")
-  Button(180,200,115,50,"butt3")
-  Button(120,240,170,40,"butt4")
-  closelist()
-  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
-  closelist()
-  
-  bind(-1,-1)
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  
-  DataSection   
-    ; include images
-    ;;IncludePath #path + "ide/include/images" ; macos good windows bad
-    IncludePath #path + "/ide/include/images"
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 0, 0, 512, 200, "Resize gadget", #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
     
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
+    Widgets(Hex(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized", #__text_center)
+    ; Widgets(Hex(3)) = ButtonImageGadget(3, 10, 70, 200, 60, ImageID(0))
+    Widgets(Hex(2)) = Editor(10, 140, 200, 20) : SetText(Widgets(Hex(2)),"Editor")
+    Widgets(Hex(4)) = Button(10, 170, 490, 20, "Button / toggle", #__button_toggle)
+    Widgets(Hex(5)) = Text(220,10,190,20,"Text", #__text_center) : SetColor(Widgets(Hex(5)), #PB_Gadget_BackColor, $00FFFF)
+    Widgets(Hex(6)) = Container(220, 30, 190, 100, #PB_Container_Single) : SetColor(Widgets(Hex(6)), #PB_Gadget_BackColor, $cccccc) 
+    Widgets(Hex(7)) = Editor(10,  10, 170, 50) : SetText(Widgets(Hex(7)),"Editor")
+    Widgets(Hex(8)) = Button(10, 70, 80, 20, "Button") 
+    Widgets(Hex(9)) = Button(100, 70, 80, 20, "Button") 
+    CloseList() 
+    Widgets(Hex(10)) = String(220,  140, 190, 20, "String")
+    Widgets(Hex(11)) = Button(420,  10, 80, 80, "Bouton")
+    Widgets(Hex(12)) = CheckBox(420,  90, 200, 20, "CheckBox")
+    Widgets(Hex(13)) = CheckBox(420,  110, 200, 20, "CheckBox")
+    Widgets(Hex(14)) = CheckBox(420,  130, 200, 20, "CheckBox")
+    Widgets(Hex(15)) = CheckBox(420,  150, 200, 20, "CheckBox")
     
-    group:            : IncludeBinary "group/group.png"
-    group_un:         : IncludeBinary "group/group_un.png"
-    group_top:        : IncludeBinary "group/group_top.png"
-    group_left:       : IncludeBinary "group/group_left.png"
-    group_right:      : IncludeBinary "group/group_right.png"
-    group_bottom:     : IncludeBinary "group/group_bottom.png"
-    group_width:      : IncludeBinary "group/group_width.png"
-    group_height:     : IncludeBinary "group/group_height.png"
-  EndDataSection
+    SetAlignment(Widgets(Hex(2)),#__align_top|#__align_bottom) 
+    ;SetAlignment(Widgets(Hex(3)),#__align_center|#__align_right)              
+    SetAlignment(Widgets(Hex(4)),#__align_left|#__align_right|#__align_bottom)      
+    
+    SetAlignment(Widgets(Hex(5)),#__align_left|#__align_right)
+    
+    SetAlignment(Widgets(Hex(6)),#__align_full) 
+    SetAlignment(Widgets(Hex(7)),#__align_full)
+    
+    SetAlignment(Widgets(Hex(8)),#__align_bottom|#__align_left|#__align_proportional_horizontal) 
+    SetAlignment(Widgets(Hex(9)),#__align_bottom|#__align_right|#__align_proportional_horizontal) 
+    SetAlignment(Widgets(Hex(10)),#__align_bottom|#__align_left|#__align_right) 
+    SetAlignment(Widgets(Hex(11)),#__align_bottom|#__align_top|#__align_right) 
+    SetAlignment(Widgets(Hex(12)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(13)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(14)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(15)),#__align_bottom|#__align_right)
+    
+    bind(root(), @events())
+    bind(-1,-1)
+    
+  EndProcedure
   
+  ; proportional
+  Procedure example_1()
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 30, 30, 190, 200, "proportional", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    Widgets(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
+    Widgets(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
+    Widgets(Hex(4)) = Container(55, 45, 80, 20)         ; stretch       #stretch 
+    Widgets(Hex(44)) = Button(0, 5, 80, 20, "parent stretch")
+    CloseList()
+    
+    Widgets(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
+    
+    Widgets(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__button_right) ; proportional
+    Widgets(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__button_left) ; proportional
+    
+    Widgets(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__button_right) ; proportional
+    Widgets(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
+    Widgets(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
+    Widgets(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
+    Widgets(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
+    
+    
+    SetAlignment(Widgets(Hex(2)), #__align_center |#__align_top|#__align_proportional_vertical)    
+    SetAlignment(Widgets(Hex(3)), #__align_center |#__align_right)
+    SetAlignment(Widgets(Hex(4)), #__align_full   |#__align_bottom|#__align_proportional_vertical) ; stretch proportional
+    SetAlignment(Widgets(Hex(44)), #__align_center|#__align_top)
+    SetAlignment(Widgets(Hex(5)), #__align_bottom |#__align_left|#__align_right|#__align_proportional_horizontal)
+    
+    SetAlignment(Widgets(Hex(6)), #__align_bottom |#__align_left|#__align_proportional_horizontal)
+    SetAlignment(Widgets(Hex(7)), #__align_bottom |#__align_right|#__align_proportional_horizontal)
+    
+    SetAlignment(Widgets(Hex(8)), #__align_bottom)
+    SetAlignment(Widgets(Hex(9)), #__align_bottom)
+    SetAlignment(Widgets(Hex(10)), #__align_bottom |#__align_left|#__align_right)
+    SetAlignment(Widgets(Hex(11)), #__align_bottom |#__align_right)
+    SetAlignment(Widgets(Hex(12)), #__align_bottom |#__align_right)
+    
+    bind(root(), @events())
+    bind(-1,-1)
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
+  EndProcedure
+  
+  ; auto alignment
+  Procedure example_2()
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 130, 190, 200, "alignment", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    Widgets(Hex(10)) = Button(0, 0, 90, 50, "left&center&right")      
+    Widgets(Hex(11)) = Button(0, 0, 90, 50, "top&center&bottom")      
+    
+    Widgets(Hex(1)) = Button(0, 0, 80, 40, "left")        ; center \2     align_proportional_horizontal
+    Widgets(Hex(2)) = Button(0, 0, 80, 40, "top")         ; center \2     align_proportional_horizontal
+    Widgets(Hex(3)) = Button(0, 0, 80, 40, "right")       ; right         #right
+    Widgets(Hex(4)) = Button(0, 0, 80, 40, "bottom")      ; right         #right
+    
+    Widgets(Hex(5)) = Button(0, 0, 80, 40, "center")      ; center \2     align_proportional_horizontal
+    
+    Widgets(Hex(6)) = Button(0, 0, 80, 40, "left&top")    ; right         #right
+    Widgets(Hex(7)) = Button(0, 0, 80, 40, "right&top")   ; right         #right
+    Widgets(Hex(8)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
+    Widgets(Hex(9)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
+    
+    ;     SetAlignment(Widgets(Hex(10)),#__align_auto|#__align_center|#__align_left|#__align_right)      
+    ;     SetAlignment(Widgets(Hex(11)),#__align_auto|#__align_center|#__align_top|#__align_bottom)      
+    ;     
+    ;     SetAlignment(Widgets(Hex(1)),#__align_auto|#__align_center|#__align_left) 
+    ;     SetAlignment(Widgets(Hex(2)),#__align_auto|#__align_center|#__align_top) 
+    ;     SetAlignment(Widgets(Hex(3)),#__align_auto|#__align_center|#__align_right)              
+    ;     SetAlignment(Widgets(Hex(4)),#__align_auto|#__align_center|#__align_bottom)      
+    ;     
+    ;     SetAlignment(Widgets(Hex(6)),#__align_auto|#__align_none) 
+    ;     SetAlignment(Widgets(Hex(7)),#__align_auto|#__align_right)
+    ;     SetAlignment(Widgets(Hex(8)),#__align_auto|#__align_bottom|#__align_right) 
+    ;     SetAlignment(Widgets(Hex(9)),#__align_auto|#__align_bottom) 
+    
+    ;     SetAlignment(Widgets(Hex(5)),#__align_auto|#__align_center)
+    
+    
+    SetAlignmentIndent( Widgets(Hex(1)), 5,0,0,0 )
+    SetAlignmentIndent( Widgets(Hex(2)), 0,5,0,0 )
+    SetAlignmentIndent( Widgets(Hex(3)), 0,0,5,0 )
+    SetAlignmentIndent( Widgets(Hex(4)), 0,0,0,5 )
+    
+    SetAlignmentIndent( Widgets(Hex(6)), 5,5,0,0 )
+    SetAlignmentIndent( Widgets(Hex(7)), 0,5,5,0 )
+    SetAlignmentIndent( Widgets(Hex(8)), 0,0,5,5 )
+    SetAlignmentIndent( Widgets(Hex(9)), 5,0,0,5 )
+    
+    SetAlignmentIndent( Widgets(Hex(10)), 5,0,5,0 )
+    SetAlignmentIndent( Widgets(Hex(11)), 0,5,0,5 )
+    
+    SetAlignmentIndent( Widgets(Hex(5)), 0,0,0,0 )
+    
+    bind(root(), @events())
+    bind(-1,-1)
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
+  EndProcedure
+  
+  ; auto docking
+  Procedure example_3()
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 650, 260, 390, 200, "docking", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    Widgets(Hex(1)) = Button(0, 0, 60, 20, "left1")  
+    Widgets(Hex(2)) = Button(0, 0, 80, 40, "top1")   
+    Widgets(Hex(3)) = Button(0, 0, 60, 20, "right1")    
+    Widgets(Hex(4)) = Button(0, 0, 80, 20, "bottom1")   
+    
+    Widgets(Hex(11)) = Button(0, 0, 40, 20, "left2")   
+    Widgets(Hex(33)) = Button(0, 0, 40, 40, "right2")   
+    Widgets(Hex(22)) = Button(0, 0, 80, 20, "top2")   
+    Widgets(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
+    
+    Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    Widgets(Hex(51)) = Button(0, 0, 60, 20, "left3")  
+    Widgets(Hex(52)) = Button(0, 0, 80, 40, "top3")   
+    Widgets(Hex(53)) = Button(0, 0, 60, 20, "right3")    
+    Widgets(Hex(54)) = Button(0, 0, 80, 20, "bottom3")   
+    
+    Widgets(Hex(55)) = Button(0, 0, 80, 20, "center")   
+    
+    CloseList()
+    
+    SetAlignment(Widgets(Hex(1)), #__align_auto |#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(2)), #__align_auto |#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(3)), #__align_auto |#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(4)), #__align_auto |#__align_full|#__align_bottom)      
+    
+    SetAlignment(Widgets(Hex(11)),#__align_auto |#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(33)),#__align_auto |#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(22)),#__align_auto |#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(44)),#__align_auto |#__align_full|#__align_bottom)      
+    
+    SetAlignment(Widgets(Hex(5)), #__align_auto |#__align_full)
+    
+    SetAlignment(Widgets(Hex(51)),#__align_auto |#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(52)),#__align_auto |#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(53)),#__align_auto |#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(54)),#__align_auto |#__align_full|#__align_bottom)      
+    
+    SetAlignment(Widgets(Hex(55)),#__align_auto |#__align_full)
+    
+    bind(root(), @events())
+    bind(-1,-1)
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
+  EndProcedure
+  
+  example_1()
+  example_2()
+  example_3()
+  
+  
+  Procedure example_demo()
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 440, 100, 150, "docking", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
+    
+    CloseList()
+    
+    
+    bind(-1,-1)
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,200)
+  EndProcedure
+  
+  example_demo()
+  Repeat
+    gEvent= WaitWindowEvent()
+    
+    Select gEvent
+      Case #PB_Event_CloseWindow
+        gQuit= #True
+        
+    EndSelect
+    
+  Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------4-
 ; EnableXP

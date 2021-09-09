@@ -39,10 +39,10 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_position
     Structure _s_POSITION
-      left.b
-      top.b
-      right.b
-      bottom.b
+      *left
+      *top
+      *right
+      *bottom
     EndStructure
     
     ;- - _s_color
@@ -61,21 +61,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_align 
       delta._s_COORDINATE             
       anchor._s_POSITION ; align the anchor to the left;right;top;bottom
-      
-      ;;dock._s_COORDINATE
-      
-      left.l
-      top.l
-      right.l
-      bottom.l
-      
-      *left_widget._s_WIDGET
-      *top_widget._s_WIDGET
-      *right_widget._s_WIDGET
-      *bottom_widget._s_WIDGET
-      
-      _x.b
-      _y.b
+      auto._s_POSITION
+      indent._s_POSITION
     EndStructure
     
     ;- - _s_arrow

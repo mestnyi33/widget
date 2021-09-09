@@ -316,21 +316,39 @@
     
     ;- _c_align
     ; align type
-    #__align_widget                = 1
-    #__align_text                  = 2
-    #__align_image                 = 3
+    #__align_widget                  = 1
+    #__align_text                    = 2
+    #__align_image                   = 3
     
-    #__align_none                  = #False
-    #__align_left                  = #__flag_left
-    #__align_top                   = #__flag_top  
-    #__align_right                 = #__flag_right
-    #__align_bottom                = #__flag_bottom
-    #__align_center                = #__flag_center
+    #__align_none                    = #False
+    #__align_left                    = #__flag_left
+    #__align_top                     = #__flag_top  
+    #__align_right                   = #__flag_right
+    #__align_bottom                  = #__flag_bottom
+    #__align_center                  = #__flag_center
     
-    #__align_full                  = #__flag_full
-    #__align_auto                  = #__flag_autosize
-    #__align_proportional          = #__flag_proportional
-    #__align_proportional_vertical = #__flag_vertical
+    #__align_full                    = #__flag_full
+    #__align_auto                    = #__flag_autosize
+    #__align_proportional_horizontal = #__flag_proportional
+    #__align_proportional_vertical   = #__flag_vertical
+    
+    
+    #__align_full_left = #__align_left | #__align_top | #__align_bottom
+    #__align_full_right = #__align_right | #__align_top | #__align_bottom
+    #__align_full_top = #__align_top | #__align_left | #__align_right
+    #__align_full_bottom = #__align_bottom | #__align_left | #__align_right
+    
+    
+    #__align_left_proportional       = #__align_left   |#__align_proportional_horizontal
+    #__align_top_proportional        = #__align_top    |#__align_proportional_vertical
+    #__align_right_proportional      = #__align_right  |#__align_proportional_horizontal
+    #__align_bottom_proportional     = #__align_bottom |#__align_proportional_vertical
+    
+    #__align_left_right_proportional = #__align_left   |#__align_right  |#__align_proportional_horizontal
+    #__align_top_bottom_proportional = #__align_top    |#__align_bottom |#__align_proportional_vertical
+    
+    
+    #__align_proportional = 3
     
     ;;#__align_full = 0;#__align_left|#__align_top|#__align_right|#__align_bottom
     
