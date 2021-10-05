@@ -130,11 +130,16 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322, 600, "PanelGadget", #PB_Window_SystemMenu
   
   Debug "Begen enumerate alls"
   ForEach Widget()
-    Debug "Widget "+ Widget()\index
+    If _is_window_( widget() )
+      Debug "window "+ Widget()\index
+    Else
+      Debug "  gadget - "+ Widget()\index
+    EndIf
   Next
   
+  bind(-1,-1)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

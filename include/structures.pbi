@@ -12,10 +12,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       i.i
     EndStructure
     
-;     Structure _s_coordinate_type
-;       pos.l
-;       size.l
-;     EndStructure
+    ;     Structure _s_coordinate_type
+    ;       pos.l
+    ;       size.l
+    ;     EndStructure
     
     ;- - _s_point
     Structure _s_POINT
@@ -44,10 +44,51 @@ CompilerIf Not Defined(structures, #PB_Module)
       *right
       *bottom
     EndStructure
-    
+    ;--     STATE
+    Structure _s_STATE
+      *flag           ;& normal; entered; selected; disabled
+      press.b
+      enter.b
+      drag.b
+      focus.b
+      ;active.b
+      repaint.b
+    EndStructure
+    ;--     OBJECT_TYPE
+    Structure _s_OBJECT_TYPE
+      *row._s_ROWS
+      *widget._s_WIDGET
+      *button._s_BUTTONS
+    EndStructure
+    ;--     MOUSE
+    Structure _s_MOUSE Extends _s_POINT
+      interact.b ; determines the behavior of the mouse in a clamped (pushed) state
+      
+      entered._s_OBJECT_TYPE      ; mouse entered element
+      pressed._s_OBJECT_TYPE      ; mouse button's pushed element
+      leaved._s_OBJECT_TYPE       ; mouse leaved element
+      
+      wheel._s_POINT
+      delta._s_POINT
+      
+      *_drag._S_DD
+      *_transform._s_transform
+      
+      *grid
+      buttons.l                ; 
+      change.b                 ; if moved mouse this value #true
+    EndStructure
+    ;--     KEYBOARD
+    Structure _s_KEYBOARD ; Ok
+      *window._s_WIDGET   ; active window element ; GetActive( )\
+      focused._s_OBJECT_TYPE   ; keyboard focus element
+      change.b
+      input.c
+      key.i[2]
+    EndStructure
     ;- - _s_color
     Structure _s_color
-      state.b; entered; selected; disabled;
+      state.b ; entered; selected; disabled;
       front.i[4]
       line.i[4]
       fore.i[4]
@@ -59,6 +100,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_align
     Structure _s_align 
+      width.l
+      height.l
       delta._s_COORDINATE             
       anchor._s_POSITION ; align the anchor to the left;right;top;bottom
       auto._s_POSITION
@@ -160,12 +203,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;     EndStructure
     ;- - _s_buttons
     Structure _s_BUTTONS Extends _s_COORDINATE 
+      state._s_STATE
       ;;index.l
       *cursor ; anchor buttons
       
       size.l 
-      _state.l ; normal; entered; selected; disabled
-      state.l  ; temp
+      ___state.l  ; temp
       
       fixed.l 
       
@@ -192,6 +235,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_tabs
     Structure _s_TABS ;Extends _s_COORDINATE
+      state._s_STATE
+      
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[constants::#__c]
@@ -208,13 +253,22 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
       
       checkbox._s_buttons ; \box[1]\ -> \checkbox\
-      
-      _state.l
+    EndStructure
+    
+    ;- - _s_count
+    Structure _s_count
+      index.l
+      type.l
+      items.l
+      events.l
+      parents.b
+      childrens.l
     EndStructure
     
     ;- - _s_rows
     Structure _s_ROWS Extends _s_TABS
-      childrens.b
+      ;;state._s_STATE
+      count._s_count
       
       sublevel.w
       sublevelsize.a
@@ -232,17 +286,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *data  ; set/get item data
     EndStructure
-    
     Structure _s_VISIBLEITEMS
       *first._s_rows           ; first draw-elemnt in the list 
       *last._s_rows            ; last draw-elemnt in the list 
       List *_s._s_rows( )      ; all draw-elements
     EndStructure
-;     selected item - выбранный элемент
-;     focused item - предмет в фокусе
-;     active item - активный элемент
-;     pressed item - нажатый элемент
-    
     ;- - _s_row
     Structure _s_ROW
       sublevel.w
@@ -256,15 +304,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       *last_add._s_rows        ; last added last element
       
       *active._s_rows        ; pushed item
-      ;*selected._s_rows        ; at point pushed item
-      *leaved._s_rows          ; pushed last leaved item
-      *entered._s_rows         ; pushed last entered item
+                             ;*selected._s_rows        ; at point pushed item
+      *leaved._s_rows        ; pushed last leaved item
+      *entered._s_rows       ; pushed last entered item
       
       visible._s_VISIBLEITEMS
       
       margin._s_margin
       
-                                 count.l
+      count.l
       ;index.l
       box._s_buttons           ; editor - edit rectangle
       
@@ -448,15 +496,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; *Widget._s_widget
     EndStructure
     
-    ;- - _s_count
-    Structure _s_count
-      index.l
-      type.l
-      items.l
-      events.l
-      childrens.l
-    EndStructure
-    
     
     ;     ;- - _s_items
     ;     Structure _s_items Extends _s_COORDINATE
@@ -503,11 +542,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *address._S_DD
     EndStructure
     
-    ;- - _s_OBJECT
-    Structure _s_OBJECT
-      *widget._s_WIDGET
-    EndStructure
-    
     ;- - _s_EVENTDATA
     Structure _s_EVENTDATA
       *type ; EventType( )
@@ -529,43 +563,39 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_TAB_WIDGET
-    Structure _s_TAB_WIDGET Extends _s_OBJECT
+    Structure _s_TAB_WIDGET Extends _s_OBJECT_TYPE
       index.i ; parent-tab item index
     EndStructure
     
+    ;--      BOUND
+    Structure _s_BOUNDValue
+      min.i
+      max.i
+    EndStructure
+    Structure _s_BOUNDMove
+      x._s_BOUNDValue
+      y._s_BOUNDValue
+    EndStructure
+    Structure _s_BOUNDSize
+      width._s_BOUNDValue
+      height._s_BOUNDValue
+    EndStructure
+    Structure _s_BOUNDS
+      *move._s_BOUNDMove
+      *size._s_BOUNDSize
+    EndStructure
     ;- - _s_ATTACH
     Structure _s_ATTACH Extends _s_COORDINATE
       mode.a
       *parent._s_WIDGET
     EndStructure
     
-    ;-
-    Structure _s_BOUNDValue
-      min.i
-      max.i
-    EndStructure
-    
-    Structure _s_BOUNDMove
-      x._s_BOUNDValue
-      y._s_BOUNDValue
-    EndStructure
-    
-    Structure _s_BOUNDSize
-      width._s_BOUNDValue
-      height._s_BOUNDValue
-    EndStructure
-    
-    Structure _s_BOUNDS
-      *move._s_BOUNDMove
-      *size._s_BOUNDSize
-    EndStructure
-    
-    ;-
     ;- - _s_WIDGET
     Structure _s_WIDGET
-      *attach._s_ATTACH
+      state._s_STATE
       
       *drop._s_DD
+      *attach._s_ATTACH
       bounds._s_BOUNDS
       
       _a_mode.i
@@ -574,7 +604,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
       bs.a    ; border size
-      _state.w; #__s_ (entered; selected; disabled; focused; toggled; scrolled)
+      
       __state.w ; #_s_ss_ (font; back; frame; fore; line)
       __draw.b 
       
@@ -591,10 +621,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; transporent.b
       
       ; placing layout
-      first._s_OBJECT
-      last._s_OBJECT
-      after._s_OBJECT
-      before._s_OBJECT
+      first._s_OBJECT_TYPE
+      last._s_OBJECT_TYPE
+      after._s_OBJECT_TYPE
+      before._s_OBJECT_TYPE
       
       ; 
       *position ; ;#PB_List_First; #PB_List_Last
@@ -682,39 +712,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       List *column._s_column( )
     EndStructure
-    
-    ;- - _s_MOUSE
-    Structure _s_MOUSE Extends _s_POINT
-      interact.b ; determines the behavior of the mouse in a clamped (pushed) state
-                 ;*behavior
-      *bar_row._s_tabs[3]     ; at point element item
-      *row._s_rows[2]         ; at point element item
-      *button._s_buttons[3]   ; at point element button
-      
-      *entered._s_WIDGET      ; mouse entered element
-      *pressed._s_WIDGET      ; mouse button's pushed element
-      *leaved._s_WIDGET       ; mouse leaved element
-      
-      wheel._s_POINT
-      delta._s_POINT
-      
-      *_drag._S_DD
-      *_transform._s_transform
-      
-      *grid
-      buttons.l               ; 
-      change.b                ; if moved mouse this value #true
-    EndStructure
-    
-    ;- - _s_KEYBOARD
-    Structure _s_KEYBOARD ; Ok
-      *widget._s_WIDGET   ; keyboard focus element
-      *window._s_WIDGET   ; active window element ; GetActive( )\
-      change.b
-      input.c
-      key.i[2]
-    EndStructure
-    
     ;- - _s_CANVAS
     Structure _s_CANVAS
       *cursor             ; current visible cursor
@@ -728,36 +725,39 @@ CompilerIf Not Defined(structures, #PB_Module)
       repaint.b
       postevent.b         ; post evet canvas repaint
       bindevent.b         ; bind canvas event
+      
+      *parent._s_WIDGET   ; last list-opened parent element
     EndStructure
     
     ;- - _s_STICKY
     Structure _s_STICKY
-      *window._s_WIDGET
-      *message._s_WIDGET
-      ; *tooltip._s_WIDGET            ; 
+      *widget._s_WIDGET  ; popup gadget element
+      *window._s_WIDGET  ; top level window element
+      *message._s_WIDGET ; message window element
+      *tooltip._s_WIDGET ; tool tip element
     EndStructure
     
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
-      *popup._s_WIDGET
-      *opened._s_WIDGET   ; opened list element
+      List *list._s_WIDGET( )    ; widget( )\
     EndStructure
     
-    ;- - _s_INCLUDE
-    Structure _s_INCLUDE 
+    ;--      STRUCT
+    Structure _s_STRUCT 
       *action_widget._s_WIDGET
       action_type.s
       
+      Map *canvas._s_ROOT( )        ; 
+      List *_root._s_ROOT( )        ; 
+      List *_address._s_WIDGET( )   ; widget( )\
+      
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
-      sticky._s_sticky              ; top level
+      sticky._s_sticky              ; sticky( )\
       
       *widget._s_WIDGET             ; EventWidget( )\ 
       event._s_EVENTDATA            ; WidgetEvent( )\ ; \type ; \item ; \data
-      
-      List *_root._s_ROOT( )        ; 
-      List *address._s_WIDGET( )    ; widget( )\
     EndStructure
     
     ;Global *event._s_events = AllocateStructure(_s_events)

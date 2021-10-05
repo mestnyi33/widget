@@ -52,6 +52,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   SetState(GetWidget(3), #PB_Checkbox_Inbetween)  
   SetState(GetWidget(4), 1)  
   
+  SetColor(GetWidget(5), #PB_Gadget_FrontColor, $DCE89F1F)
+   
   ;Bind(#PB_All, @events_widgets())
   
   For i = 0 To 2
@@ -62,6 +64,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

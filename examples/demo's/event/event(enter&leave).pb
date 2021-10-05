@@ -6,14 +6,36 @@ Uselib(widget)
 Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
 
 Procedure events_widgets()
-  Protected repaint
+  Protected repaint, BackColor
   
   Select WidgetEventType( )
-    Case #PB_EventType_MouseEnter : EventWidget( )\color\back = $ff0000ff : repaint = 1
-    Case #PB_EventType_MouseLeave : EventWidget( )\color\back = $ff00ff00 : repaint = 1
+    Case #PB_EventType_MouseEnter 
+      EventWidget( )\color\back = $ff0000ff : repaint = 1
+    Case #PB_EventType_MouseLeave 
+      EventWidget( )\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
-  If repaint
+  If EventWidget( )\_state & #__s_enter
+    If mouse( )\buttons
+      BackColor = $ff00F7FF
+    Else
+      BackColor = $ff301DE8
+    EndIf
+  Else
+    BackColor = $ff13FF00
+  EndIf
+  If EventWidget( )\_state & #__s_select
+    BackColor = $ffFFAA00
+  Else
+    If EventWidget( )\_state & #__s_focus
+      BackColor = $ffFF0090
+    EndIf
+  EndIf
+  
+  
+  
+  If EventWidget( )\color\back <> BackColor ; repaint
+    EventWidget( )\color\back = BackColor
     ; Repaints( )
     ;_post_repaint_canvas_( root( )\canvas )
     ReDraw( root( ) )
@@ -77,6 +99,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
   WaitClose( )
   ;Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

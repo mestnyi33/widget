@@ -166,28 +166,28 @@
     ;- \_state
     Enumeration
       #__s_normal      = 0<<0  ; 0
-      #__s_selected    = 1<<0  ; 1
-      #__s_expanded    = 1<<1  ; 2
-      #__s_checked     = 1<<2  ; 4
-      #__s_collapsed   = 1<<3  ; 8
+      #__s_select    = 1<<0  ; 1
+      #__s_expand    = 1<<1  ; 2
+      #__s_check     = 1<<2  ; 4
+      #__s_collapse   = 1<<3  ; 8
       #__s_inbetween   = 1<<4  ; 16
       
-      #__s_entered     = 1<<5  ; 32
-      #__s_disabled    = 1<<6  ; 64
-      #__s_focused     = 1<<7  ; 128 ; keyboard focus
-      #__s_scrolled    = 1<<8  ; 256
+      #__s_enter     = 1<<5  ; 32
+      #__s_disable    = 1<<6  ; 64
+      #__s_focus     = 1<<7  ; 128 ; keyboard focus
+      #__s_scroll    = 1<<8  ; 256
       
-      #__s_dragged     = 1<<9  ; 512
-      #__s_dropped     = 1<<10 ; 1024 ; drop enter state
+      #__s_drag     = 1<<9  ; 512
+      #__s_drop     = 1<<10 ; 1024 ; drop enter state
       
       #__s_current     = 1<<11 ;
     EndEnumeration
     
     
     ;     Macro _get_state_index_( _adress_ )
-    ;       ( Bool( _adress_\_state & #__s_entered ) * 1 | 
-    ;         Bool( _adress_\_state & #__s_selected ) * 2 | 
-    ;         Bool( _adress_\_state & #__s_disabled ) * 3 )
+    ;       ( Bool( _adress_\_state & #__s_enter ) * 1 | 
+    ;         Bool( _adress_\_state & #__s_select ) * 2 | 
+    ;         Bool( _adress_\_state & #__s_disable ) * 3 )
     ;     EndMacro
     
     ; \__state

@@ -75,8 +75,8 @@ Procedure Events( )
           
         Case TargetText
           ;;Debug "EventDropText - "+ EventDropText( )
-          If EnterRow( )
-            AddItem( TargetText, EnterRow( )\index, EventDropText( ) )
+          If EnteredItem( )
+            AddItem( TargetText, EnteredItem( )\index, EventDropText( ) )
           Else
             AddItem( TargetText, - 1, EventDropText( ) )
           EndIf
@@ -214,6 +214,6 @@ If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
 EndIf
 
 End
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -f+
 ; EnableXP
