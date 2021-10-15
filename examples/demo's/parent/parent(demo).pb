@@ -1,5 +1,5 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "-widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -24,10 +24,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure Widgets_CallBack()
-    Protected EventWidget.i = this()\widget,
-              EventType.i = this()\event,
-              EventItem.i = this()\item, 
-              EventData.i = this()\data
+    Protected EventWidget.i = EventWidget(),
+              EventType.i = WidgetEventType(),
+              EventItem.i = WidgetEventItem(), 
+              EventData.i = WidgetEventData()
     
     Select EventType
       Case #PB_EventType_MouseEnter
@@ -139,12 +139,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Debug " add - "
         ForEach widget( ) 
-          If widget( )\before And widget( )\after
-            Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-          ElseIf widget( )\after
-            Debug " add - none "+ widget( )\class +" "+ widget( )\after\class
-          ElseIf widget( )\before
-            Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" none"
+          If widget( )\before\widget And widget( )\after\widget
+            Debug " add - "+ widget( )\before\widget\class +" "+ widget( )\class +" "+ widget( )\after\widget\class
+          ElseIf widget( )\after\widget
+            Debug " add - none "+ widget( )\class +" "+ widget( )\after\widget\class
+          ElseIf widget( )\before\widget
+            Debug " add - "+ widget( )\before\widget\class +" "+ widget( )\class +" none"
           Else
             Debug " add - none "+ widget( )\class  +" none"
           EndIf
@@ -173,7 +173,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 633, 342, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  If Open(10)
+  If Open(10): bind(-1,-1)
     Root()\class = "root_0"
     *d_0 = Button(pos_x,90,160,30,">>(Desktop)") : SetClass(widget(), GetText(widget())) 
     *pb_0 = Button(10,90+40,180,20,">>(Panel to hide item (0))") : SetClass(widget(), GetText(widget())) : Disable(*pb_0, 1)
@@ -181,7 +181,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *pb_2 = Button(10,90+90,180,20,">>(Panel to hide item (2))") : SetClass(widget(), GetText(widget())) 
     
     
-    *window_1 = Window(202, 0, 430, 314+(#__border_size + #__caption_height), "demo set  new parent", Flags )
+    *window_1 = Window(202, 0, 430, 314, "demo set  new parent", Flags )          ;   +(#__border_size + #__caption_height)
     *w_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
     
     *container = Container(215,10,200,130,#PB_Container_Flat) 
@@ -207,8 +207,8 @@ CompilerIf #PB_Compiler_IsMainFile
   X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
   
-  OpenWindow(20, X, Y, 185, 346+(#__caption_height), "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
-  *window_2 = Open(20)
+  OpenWindow(20, X, Y, 185, 346, "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))   ;     +(#__caption_height)
+  *window_2 = Open(20): bind(-1,-1)
   Root()\class = "root_1"
   
   *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
@@ -306,6 +306,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -6-
 ; EnableXP

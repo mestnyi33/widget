@@ -44,34 +44,28 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ; mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
       ; mask | #KeyDownMask
       
-      ;
-      ; get real event gadget
-      ;
-      Global event_window =- 1
-      Global event_gadget =- 1
-      Procedure events_gadgets( )
-        If GetActiveWindow( ) <> EventWindow( )
-          event_window = EventWindow( )
-        EndIf
-        event_gadget = EventGadget( )
-;         
-;         Debug ""+EventType() +" "+ GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons )
-      EndProcedure 
-      BindEvent( #PB_Event_Gadget, @events_gadgets( ) )
       
-      ;
-      ; callback function
-      ;
+      ;       ;
+      ;       ; callback function
+      ;       ;
       ProcedureC eventTapFunction(proxy, type, event, refcon)
-        If IsWindow( event_window )
-          Debug "  "+#PB_Compiler_Procedure  +" "+ GetActiveWindow() +" "+ EventWindow() +" "+ EventGadget() +" "+ event_gadget +" "+ type ;+" "+ root()
-          
-          If type = 1 ; LeftButtonDown
-            PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
+        Static event_window =- 1
+        Static event_gadget =- 1
+        
+        If type = 1 ; LeftButtonDown
+          If GetActiveWindow( ) <> EventWindow( ) 
             
-          ElseIf type = 2 ; LeftButtonUp
+            event_window = EventWindow( )
+            event_gadget = EventGadget( )
+            Debug " ---  fixmePB --- "+#PB_Compiler_Procedure +"( )"
+            
+            PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
+          EndIf
+        ElseIf type = 2 ; LeftButtonUp
+          If IsWindow( event_window )
             PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonUp )
             event_window =- 1
+            event_gadget =- 1
           EndIf
         EndIf
       EndProcedure
@@ -89,15 +83,26 @@ CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
   UseModule events
+  Define event
   
-  OpenWindow(0, 200, 100, 220, 220, "click hire", #PB_Window_SystemMenu)
-  CanvasGadget(0, 10, 10, 200, 200)
-  
-  OpenWindow(1, 300, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
+  OpenWindow(1, 200, 100, 220, 220, "click hire", #PB_Window_SystemMenu)
   CanvasGadget(1, 10, 10, 200, 200)
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  OpenWindow(2, 300, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
+  CanvasGadget(2, 10, 10, 200, 200)
+  
+  Repeat 
+    event = WaitWindowEvent()
+    If event = #PB_Event_Gadget
+      If EventType() = #PB_EventType_LeftButtonDown
+        Debug ""+EventGadget() + " #PB_EventType_LeftButtonDown "
+      EndIf
+      If EventType() = #PB_EventType_LeftButtonUp
+        Debug ""+EventGadget() + " #PB_EventType_LeftButtonUp "
+      EndIf
+    EndIf
+  Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 0--
 ; EnableXP

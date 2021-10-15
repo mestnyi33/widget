@@ -1,20 +1,19 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../-widgets.pbi" : Uselib(widget)
 
 Global i, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_LeftClick
-      If *b = *event\widget
+      If *b = EventWidget( )
         If i 
           SetParent(*w, *p1)
         Else
           SetParent(*w, *p2)
         EndIf
         
-        Debug GetParent(*w)
         If *ch
-          Debug ""+*w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
         EndIf
         
         i!1
@@ -22,7 +21,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
+If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)): bind(-1,-1)
   *p1 = Container(10, 10, 200, 200)            ; 0
   *w = Container(10, 10, 100, 100)             ; 1
   ;Container(10, 10, 100, 100)                  ; 2
@@ -32,7 +31,7 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)): bind(-1,-1)
   
   *p2 = Container(20, 180, 200, 200)           ; 4
   Button(-25, 10, 100, 30, "Button_4_5")       ; 5
@@ -56,6 +55,6 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

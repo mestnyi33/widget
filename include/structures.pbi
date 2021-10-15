@@ -587,12 +587,13 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ATTACH
     Structure _s_ATTACH Extends _s_COORDINATE
       mode.a
-      *parent._s_WIDGET
+      parent._s_OBJECT_TYPE
     EndStructure
     
     ;- - _s_WIDGET
     Structure _s_WIDGET
       state._s_STATE
+      parent._s_OBJECT_TYPE
       
       *drop._s_DD
       *attach._s_ATTACH
@@ -642,7 +643,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *container        ; 
       *root._s_ROOT     ; this root
       
-      *parent._s_WIDGET; this parent
       *window._s_WIDGET; this parent window       ; root( )\active\window
       
       StructureUnion
@@ -727,6 +727,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       bindevent.b         ; bind canvas event
       
       *parent._s_WIDGET   ; last list-opened parent element
+      List *child._s_WIDGET( )    ; widget( )\
     EndStructure
     
     ;- - _s_STICKY
@@ -740,7 +741,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
-      List *list._s_WIDGET( )    ; widget( )\
     EndStructure
     
     ;--      STRUCT

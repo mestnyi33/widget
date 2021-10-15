@@ -1,9 +1,11 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../-widgets.pbi" 
+
+Uselib(widget)
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 
 Procedure events_widgets()
-  Select this()\event
+  Select WidgetEventType()
     Case #PB_EventType_LeftClick
       If i 
         SetParent(*w, *p1)
@@ -11,21 +13,20 @@ Procedure events_widgets()
         SetParent(*w, *p2)
       EndIf
       
-      Debug GetParent(*w)
-      Debug ""+*w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
       
       i!1
   EndSelect
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
+  If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)): bind(-1,-1)
     *p2 = Container(20, 180, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)): bind(-1,-1)
     *p1 = Container(10, 10, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     *w = Container(10, 10, 100, 100)
@@ -37,11 +38,11 @@ EndProcedure
     
     i = 1
     SetParent(*w, *p2)
-    *w\root = *p2\root
+    ;*w\root = *p2\root
     
     ForEach widget()
       If widget() = *w
-        widget()\root = *p2\root
+        ;widget()\root = *p2\root
       EndIf
       
       Debug  ""+widget()\root +" "+ *p2\root +" - "+ widget()\text\string
@@ -51,6 +52,6 @@ EndProcedure
    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

@@ -15,7 +15,7 @@ Procedure events_widgets()
       EventWidget( )\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
-  If EventWidget( )\_state & #__s_enter
+  If EventWidget( )\state\enter
     If mouse( )\buttons
       BackColor = $ff00F7FF
     Else
@@ -24,10 +24,10 @@ Procedure events_widgets()
   Else
     BackColor = $ff13FF00
   EndIf
-  If EventWidget( )\_state & #__s_select
+  If EventWidget( )\state\press
     BackColor = $ffFFAA00
   Else
-    If EventWidget( )\_state & #__s_focus
+    If EventWidget( )\state\focus
       BackColor = $ffFF0090
     EndIf
   EndIf

@@ -1,4 +1,7 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib( Widget )
+﻿XIncludeFile "../../../-widgets.pbi" 
+
+EnableExplicit
+Uselib( Widget )
 
 Enumeration   1 ; Images
   #ImageSource

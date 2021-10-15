@@ -137,7 +137,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro This( ) : widget::*include: EndMacro
     Macro Root( ) : widget::*include\canvas( ): EndMacro
     Macro Mouse( ) : widget::*include\mouse: EndMacro
-    Macro Widget( ) : Root( )\list( ): EndMacro ; Returns last created widget 
+    Macro Widget( ) : Root( )\canvas\child( ): EndMacro ; Returns last created widget 
     Macro Keyboard( ) : widget::*include\keyboard: EndMacro
     
     Macro EnteredItem( ) : mouse( )\entered\row: EndMacro; Returns mouse entered widget
@@ -166,6 +166,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro WidgetEventItem( ) : WidgetEvent( )\item: EndMacro
     Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
     
+    Macro  ChangeCurrentRoot( _canvas_gadget_addres_s_ )
+      FindMapElement( Root( ), Str( _canvas_gadget_addres_s_ ) )
+    EndMacro
+    
+    
+    ;-
     Macro Transform( ) : mouse( )\_transform: EndMacro
     
     Macro _add_action_( _this_ )
@@ -238,13 +244,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro PostEventRepaint( _address_ )
+    Macro PostEventRepaint( _address_ ) 
       If _address_\root\state\repaint = #False
         _address_\root\state\repaint = #True
-        
+        ;;; Debug "-- post --- event -- repaint --"
         PostEvent( #PB_Event_Gadget, _address_\root\canvas\window, _address_\root\canvas\gadget, #PB_EventType_Repaint, _address_\root )
       ElseIf _address_\state\repaint = #False
         _address_\state\repaint = #True
+        
+        ;         If _address_\root\state\repaint = #False
+        ;           _address_\root\state\repaint = #True
+        ;           
+        ;           PostEvent( #PB_Event_Gadget, _address_\root\canvas\window, _address_\root\canvas\gadget, #PB_EventType_Repaint, _address_\root )
+        ;         EndIf
       EndIf
     EndMacro
     
@@ -261,11 +273,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         BindGadgetEvent( Root( )\canvas\gadget, @EventHandler( ))
       EndIf
-    EndMacro
-    
-    ;-
-    Macro  ChangeCurrentRoot( _canvas_gadget_addres_s_ )
-      FindMapElement( Root( ), Str( _canvas_gadget_addres_s_ ) )
     EndMacro
     
     ;-
@@ -373,7 +380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro _is_widget_( _this_ ) : Bool( _this_ > 0 And _this_\address ) : EndMacro
     Macro _is_window_( _this_ ) : Bool( _is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
     Macro _is_scrollbars_( _this_ ) 
-      Bool( _this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_\parent\scroll\h = _this_ )) 
+      Bool( _this_\parent\widget And _this_\parent\widget\scroll And ( _this_\parent\widget\scroll\v = _this_ Or _this_\parent\widget\scroll\h = _this_ )) 
     EndMacro
     
     Macro _is_root_container_( _this_ )
@@ -587,8 +594,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If _item_\text\fontID = #Null
         If _this_\text\fontID = #Null
           If _is_child_integral_( _this_ )
-            _this_\text\fontID = _this_\parent\text\fontID 
-            _this_\text\height = _this_\parent\text\height 
+            _this_\text\fontID = _this_\parent\widget\text\fontID 
+            _this_\text\height = _this_\parent\widget\text\height 
           Else
             _this_\text\fontID = _this_\root\text\fontID 
             _this_\text\height = _this_\root\text\height 
@@ -862,7 +869,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _this_\height[#__c_required] = _height_
       
       If StartEnumerate( _this_ )
-        If Widget( )\parent = _this_
+        If Widget( )\parent\widget = _this_
           If _this_\x[#__c_required] > Widget( )\x[#__c_container] 
             _this_\x[#__c_required] = Widget( )\x[#__c_container] 
           EndIf
@@ -874,7 +881,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If StartEnumerate( _this_ )
-        If Widget( )\parent = _this_
+        If Widget( )\parent\widget = _this_
           If _this_\width[#__c_required] < Widget( )\x[#__c_container] + Widget( )\width[#__c_frame] - _this_\x[#__c_required] 
             _this_\width[#__c_required] = Widget( )\x[#__c_container] + Widget( )\width[#__c_frame] - _this_\x[#__c_required] 
           EndIf
@@ -928,7 +935,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ForEach transform( )\group( )
           transform( )\group( )\widget\_a_transform = 1
           transform( )\group( )\widget\root\_a_transform = 1
-          transform( )\group( )\widget\parent\_a_transform = 1
+          transform( )\group( )\widget\parent\widget\_a_transform = 1
         Next
         
         transform( )\id[0]\x = 0
@@ -2283,7 +2290,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not Widget( )\hide And
                Widget( )\_a_transform And
                Widget( ) <> a_focus_widget( ) And
-               Widget( )\parent = a_focus_widget( )\parent And 
+               Widget( )\parent\widget = a_focus_widget( )\parent\widget And 
                Widget( )\tab\index = a_focus_widget( )\tab\index
               
               ;Left_line
@@ -2606,7 +2613,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;           EndIf
           ;           ;
           ;           *before = GetPosition( *this, #PB_List_Before )
-          ;           If *this <> *this\parent\last\widget
+          ;           If *this <> *this\parent\widget\last\widget
           ;             SetPosition( *this, #PB_List_Last ) 
           ;           EndIf
           
@@ -2616,7 +2623,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; a_add
         a_add( result, *this, i )
-        a_grid_change( *this\parent )
+        a_grid_change( *this\parent\widget )
         
         
         If position = #PB_Ignore
@@ -2682,7 +2689,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                   ; check transform group
         ForEach Widget( )
           If Widget( ) <> *parent And
-             Widget( )\parent = *parent And 
+             Widget( )\parent\widget = *parent And 
              ; child( widget( ), *parent ) And 
             (*parent\tab\widget And 
              Widget( )\tab\index = *parent\tab\widget\index[#__tab_2]) And 
@@ -2691,7 +2698,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             Widget( )\_a_transform = 2
             Widget( )\root\_a_transform =- 1
-            Widget( )\parent\_a_transform =- 1
+            Widget( )\parent\widget\_a_transform =- 1
           EndIf
         Next
         
@@ -2887,7 +2894,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; get layout current position
             *before = GetPosition( *this, #PB_List_Before )
             ; set layout last position
-            If *this <> *this\parent\last\widget
+            If *this <> *this\parent\widget\last\widget
               Repaint = SetPosition( *this, #PB_List_Last ) 
             EndIf
             
@@ -2919,18 +2926,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; 
             ; set delta pos
             ;
-            If a_focus_widget( )\parent 
+            If a_focus_widget( )\parent\widget 
               If a_focus_widget( )\_a_transform = 1
                 If Not ( a_focus_widget( )\attach And a_focus_widget( )\attach\mode = 2 )
-                  mouse_x + a_focus_widget( )\parent\x[#__c_inner]
+                  mouse_x + a_focus_widget( )\parent\widget\x[#__c_inner]
                 EndIf
                 If Not ( a_focus_widget( )\attach And a_focus_widget( )\attach\mode = 1 )
-                  mouse_y + a_focus_widget( )\parent\y[#__c_inner]
+                  mouse_y + a_focus_widget( )\parent\widget\y[#__c_inner]
                 EndIf
                 
                 If Not _is_child_integral_( a_focus_widget( ))
-                  mouse_x - a_focus_widget( )\parent\x[#__c_required]
-                  mouse_y - a_focus_widget( )\parent\y[#__c_required]
+                  mouse_x - a_focus_widget( )\parent\widget\x[#__c_required]
+                  mouse_y - a_focus_widget( )\parent\widget\y[#__c_required]
                 EndIf
               EndIf
             EndIf
@@ -2942,7 +2949,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               ; horizontal
               Select transform( )\index
                 Case 1, 5, 8, #__a_moved ; left
-                  mouse( )\delta\x - transform( )\pos - a_focus_widget( )\parent\fs
+                  mouse( )\delta\x - transform( )\pos - a_focus_widget( )\parent\widget\fs
                   
                 Case 3, 6, 7 ; right
                   mouse( )\delta\x - ( transform( )\size-transform( )\pos )
@@ -2951,7 +2958,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               ; vertical
               Select transform( )\index
                 Case 2, 5, 6, #__a_moved ; top
-                  mouse( )\delta\y - transform( )\pos - a_focus_widget( )\parent\fs
+                  mouse( )\delta\y - transform( )\pos - a_focus_widget( )\parent\widget\fs
                   
                 Case 4, 8, 7 ; bottom
                   mouse( )\delta\y - ( transform( )\size-transform( )\pos ) 
@@ -3053,7 +3060,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                             mouse_x = a_focus_widget( )\bounds\move\x\min
                           EndIf
                         EndIf
-                        mw = ( a_focus_widget( )\x[#__c_container] - mouse_x ) + a_focus_widget( )\width[#__c_frame] + (a_focus_widget( )\parent\fs); - a_focus_widget( )\fs[1])
+                        mw = ( a_focus_widget( )\x[#__c_container] - mouse_x ) + a_focus_widget( )\width[#__c_frame] + (a_focus_widget( )\parent\widget\fs); - a_focus_widget( )\fs[1])
                         If mw <= 0
                           mw = 0
                           mouse_x = a_focus_widget( )\x[#__c_frame] + a_focus_widget( )\width[#__c_frame]
@@ -3079,7 +3086,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                             mouse_y = a_focus_widget( )\bounds\move\y\min
                           EndIf
                         EndIf
-                        mh = ( a_focus_widget( )\y[#__c_container] - mouse_y ) + a_focus_widget( )\height[#__c_frame] + (a_focus_widget( )\parent\fs); - a_focus_widget( )\fs[2])
+                        mh = ( a_focus_widget( )\y[#__c_container] - mouse_y ) + a_focus_widget( )\height[#__c_frame] + (a_focus_widget( )\parent\widget\fs); - a_focus_widget( )\fs[2])
                         If mh <= 0
                           mh = 0
                           mouse_y = a_focus_widget( )\y[#__c_frame] + a_focus_widget( )\height[#__c_frame]
@@ -3273,10 +3280,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               mh = a_focus_widget( )\height[#__c_frame] 
               
               ; fixed in container
-              If a_focus_widget( )\parent And
-                 a_focus_widget( )\parent\container ;;> 0
-                mx + a_focus_widget( )\parent\fs
-                my + a_focus_widget( )\parent\fs
+              If a_focus_widget( )\parent\widget And
+                 a_focus_widget( )\parent\widget\container ;;> 0
+                mx + a_focus_widget( )\parent\widget\fs
+                my + a_focus_widget( )\parent\widget\fs
               EndIf
               
             Else
@@ -3323,15 +3330,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     EndIf
                     
                   Case #PB_Shortcut_Left  
-                    If a_focus_widget( )\parent
-                      Repaint = a_set( a_focus_widget( )\parent )
+                    If a_focus_widget( )\parent\widget
+                      Repaint = a_set( a_focus_widget( )\parent\widget )
                     EndIf
                     
                   Case #PB_Shortcut_Right 
                     If a_focus_widget( )\first\widget
                       Repaint = a_set( a_focus_widget( )\first\widget )
-                    ElseIf a_focus_widget( )\parent And a_focus_widget( )\parent\last\widget
-                      Repaint = a_set( a_focus_widget( )\parent\last\widget )
+                    ElseIf a_focus_widget( )\parent\widget And a_focus_widget( )\parent\widget\last\widget
+                      Repaint = a_set( a_focus_widget( )\parent\widget\last\widget )
                     EndIf
                     
                 EndSelect
@@ -3357,14 +3364,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     ;-
     Macro _position_move_( _this_ )
       ; if first element in parent list
-      If _this_\parent\first\widget = _this_
-        _this_\parent\first\widget = _this_\after\widget
+      If _this_\parent\widget\first\widget = _this_
+        _this_\parent\widget\first\widget = _this_\after\widget
       EndIf
       
       ; if last element in parent list
-      If _this_\parent\last\widget = _this_
+      If _this_\parent\widget\last\widget = _this_
         ; Debug #PB_Compiler_Procedure + " before - " + *this\before\widget\class
-        _this_\parent\last\widget = _this_\before\widget
+        _this_\parent\widget\last\widget = _this_\before\widget
       EndIf
       
       If _this_\before\widget
@@ -3720,9 +3727,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndMacro
     
     Macro _set_hide_state_( _this_ )
-      _this_\hide = Bool( _this_\hide[1] Or _this_\parent\hide Or 
-                          ( _this_\parent\type = #__type_Panel And 
-                            _this_\parent\tab\widget\index[#__tab_2] <> _this_\tab\index ))
+      _this_\hide = Bool( _this_\hide[1] Or _this_\parent\widget\hide Or 
+                          ( _this_\parent\widget\type = #__type_Panel And 
+                            _this_\parent\widget\tab\widget\index[#__tab_2] <> _this_\tab\index ))
     EndMacro
     
     Macro _set_check_state_( _address_, _three_state_ )
@@ -4082,9 +4089,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected *parent._s_widget 
       
       If *this\attach 
-        *parent = *this\attach\parent
+        *parent = *this\attach\parent\widget
       Else
-        *parent = *this\parent
+        *parent = *this\parent\widget
       EndIf
       
       _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
@@ -4229,8 +4236,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       With *this
         ; #__flag_autoSize
         If *this\align And 
-           *this\parent And Not _is_root_container_( *this ) And 
-           *this\parent\type <> #__type_Splitter And
+           *this\parent\widget And Not _is_root_container_( *this ) And 
+           *this\parent\widget\type <> #__type_Splitter And
            *this\align\anchor\left = 125 And 
            *this\align\anchor\top = 125 And 
            *this\align\anchor\right = 125 And
@@ -4238,10 +4245,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           x = 0
           Y = 0
-          width = *this\parent\width[#__c_inner] 
-          height = *this\parent\height[#__c_inner]
+          width = *this\parent\widget\width[#__c_inner] 
+          height = *this\parent\widget\height[#__c_inner]
           
-          If _is_root_( *this\parent )
+          If _is_root_( *this\parent\widget )
             width - *this\fs*2 - *this\fs[1]
             height - *this\fs*2 - *this\fs[2]
           EndIf
@@ -4260,8 +4267,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               x + ( x%transform( )\grid\size ) 
               x = ( x/transform( )\grid\size ) * transform( )\grid\size
             EndIf
-            If *this\parent And *this\parent\container
-              x - *this\parent\fs
+            If *this\parent\widget And *this\parent\widget\container
+              x - *this\parent\widget\fs
             EndIf
           EndIf
           
@@ -4270,8 +4277,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               y + ( y%transform( )\grid\size ) 
               y = ( y/transform( )\grid\size ) * transform( )\grid\size
             EndIf
-            If *this\parent And *this\parent\container
-              y - *this\parent\fs
+            If *this\parent\widget And *this\parent\widget\container
+              y - *this\parent\widget\fs
             EndIf
           EndIf
           
@@ -4294,9 +4301,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If x = #PB_Ignore 
           x = *this\x[#__c_container]
         Else
-          If *this\parent 
+          If *this\parent\widget 
             If Not _is_child_integral_( *this )
-              x + *this\parent\x[#__c_required] 
+              x + *this\parent\widget\x[#__c_required] 
             EndIf 
             *this\x[#__c_container] = x
           EndIf 
@@ -4305,9 +4312,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If y = #PB_Ignore 
           y = *this\y[#__c_container] 
         Else
-          If *this\parent 
+          If *this\parent\widget 
             If Not _is_child_integral_( *this )
-              y + *this\parent\y[#__c_required] 
+              y + *this\parent\widget\y[#__c_required] 
             EndIf 
             *this\y[#__c_container] = y
           EndIf 
@@ -4344,16 +4351,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;
-        If *this\parent                        
+        If *this\parent\widget                        
           ;           If *this\attach 
-          ;             x + *this\parent\x[#__c_frame]
-          ;             y + *this\parent\y[#__c_frame]
+          ;             x + *this\parent\widget\x[#__c_frame]
+          ;             y + *this\parent\widget\y[#__c_frame]
           ;           Else
           If Not ( *this\attach And *this\attach\mode = 2 )
-            x + *this\parent\x[#__c_inner]
+            x + *this\parent\widget\x[#__c_inner]
           EndIf
           If Not ( *this\attach And *this\attach\mode = 1 )
-            y + *this\parent\y[#__c_inner]
+            y + *this\parent\widget\y[#__c_inner]
           EndIf
           ;           EndIf
         EndIf
@@ -4454,16 +4461,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; parent mdi
-        If *this\parent And 
+        If *this\parent\widget And 
            _is_child_integral_( *this ) And 
-           *this\parent\type = #__type_MDI And 
-           *this\parent\scroll And
-           *this\parent\scroll\v <> *this And 
-           *this\parent\scroll\h <> *this And
-           *this\parent\scroll\v\bar\page\change = 0 And
-           *this\parent\scroll\h\bar\page\change = 0
+           *this\parent\widget\type = #__type_MDI And 
+           *this\parent\widget\scroll And
+           *this\parent\widget\scroll\v <> *this And 
+           *this\parent\widget\scroll\h <> *this And
+           *this\parent\widget\scroll\v\bar\page\change = 0 And
+           *this\parent\widget\scroll\h\bar\page\change = 0
           
-          _mdi_update_( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
+          _mdi_update_( *this\parent\widget, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
         EndIf
         
         ;
@@ -4536,7 +4543,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;-
         ; then move and size parent resize all childrens
-        If *this\container And *this\count\childrens
+        If *this\count\childrens And *this\container 
           ; Protected.l x, y, width, height
           Protected x2,y2,pw,ph, pwd,phd, frame = #__c_frame
           
@@ -4550,19 +4557,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 y2 = Widget( )\align\indent\bottom
                 
                 
-                If Widget( )\parent\align
-                  If Widget( )\parent\type = #__type_window
+                If Widget( )\parent\widget\align
+                  If Widget( )\parent\widget\type = #__type_window
                     frame = #__c_inner
                   Else
                     frame = #__c_frame
                   EndIf
-                  ;Debug ""+  Widget( )\parent\align\width +" "+ Widget( )\parent\align\indent\right +" "+ Widget( )\parent\align\indent\left
-                  ;delta_width = Widget( )\parent\align\width  
-                  ;delta_height = Widget( )\parent\align\height
-                  delta_width = Widget( )\parent\align\indent\right - Widget( )\parent\align\indent\left ;- Widget( )\parent\fs
-                  delta_height = Widget( )\parent\align\indent\bottom - Widget( )\parent\align\indent\top; - Widget( )\parent\fs*2 
-                  pw = ( Widget( )\parent\width[frame] - delta_width )
-                  ph = ( Widget( )\parent\height[frame] - delta_height )
+                  ;Debug ""+  Widget( )\parent\widget\align\width +" "+ Widget( )\parent\widget\align\indent\right +" "+ Widget( )\parent\widget\align\indent\left
+                  ;delta_width = Widget( )\parent\widget\align\width  
+                  ;delta_height = Widget( )\parent\widget\align\height
+                  delta_width = Widget( )\parent\widget\align\indent\right - Widget( )\parent\widget\align\indent\left ;- Widget( )\parent\widget\fs
+                  delta_height = Widget( )\parent\widget\align\indent\bottom - Widget( )\parent\widget\align\indent\top; - Widget( )\parent\widget\fs*2 
+                  pw = ( Widget( )\parent\widget\width[frame] - delta_width )
+                  ph = ( Widget( )\parent\widget\height[frame] - delta_height )
                   pwd = pw/2 
                   phd = ph/2 
                 EndIf
@@ -4583,8 +4590,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     If Widget( )\align\anchor\right < 0
                       If Widget( )\align\anchor\left < 0
                         ; 6
-                        x = Widget( )\align\indent\left * Widget( )\parent\width[frame] / delta_width
-                        width = x2 * Widget( )\parent\width[frame] / delta_width
+                        x = Widget( )\align\indent\left * Widget( )\parent\widget\width[frame] / delta_width
+                        width = x2 * Widget( )\parent\widget\width[frame] / delta_width
                       Else
                         ; 5
                         x = Widget( )\align\indent\left + pwd
@@ -4616,8 +4623,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     If Widget( )\align\anchor\bottom < 0
                       If Widget( )\align\anchor\top < 0
                         ; 6
-                        y = Widget( )\align\indent\top * Widget( )\parent\height[frame] / delta_height
-                        height = y2 * Widget( )\parent\height[frame] / delta_height
+                        y = Widget( )\align\indent\top * Widget( )\parent\widget\height[frame] / delta_height
+                        height = y2 * Widget( )\parent\widget\height[frame] / delta_height
                       Else
                         ; 5
                         y = Widget( )\align\indent\top + phd 
@@ -4737,15 +4744,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\bar\change_tab_items = #True
         ;;Debug " - - - "
         
-        If _is_child_integral_( *this ) ; *this\parent\tab\widget = *this 
-          If StartEnumerate( *this\parent )
+        If _is_child_integral_( *this ) ; *this\parent\widget\tab\widget = *this 
+          If StartEnumerate( *this\parent\widget )
             ;; Debug widget( )\text\string
             
             _set_hide_state_( Widget( ))
             StopEnumerate( )
           EndIf
           ;           
-          ;           Send( #__event_Change, *this\parent, State )
+          ;           Send( #__event_Change, *this\parent\widget, State )
           ;         Else
           ;           Send( #__event_Change, *this, State )
         EndIf
@@ -4775,9 +4782,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               *this\index[#__tab_2] + 1
             EndIf
             
-            If *this = *this\parent\tab\widget
-              If StartEnumerate( *this\parent )
-                If Widget( )\parent = *this\parent And 
+            If *this = *this\parent\widget\tab\widget
+              If StartEnumerate( *this\parent\widget )
+                If Widget( )\parent\widget = *this\parent\widget And 
                    Widget( )\tab\index = Item
                   Widget( )\tab\index + 1
                 EndIf
@@ -4808,7 +4815,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\bar\_s( )\index = item
         
         If _is_child_integral_( *this ) 
-          *this\parent\count\items + 1 
+          *this\parent\widget\count\items + 1 
         EndIf
         *this\count\items + 1 
         
@@ -4829,9 +4836,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         DeleteElement( *this\bar\_s( ), 1 )
         
-        If *this\parent\tab\widget = *this
-          Send( #__event_CloseItem, *this\parent, Item )
-          *this\parent\count\items - 1
+        If *this\parent\widget\tab\widget = *this
+          Send( #__event_CloseItem, *this\parent\widget, Item )
+          *this\parent\widget\count\items - 1
         Else
           Send( #__event_CloseItem, *this, Item )
         EndIf
@@ -4846,9 +4853,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\bar\change_tab_items = #True
         ClearList( *this\bar\_s( ))
         
-        If *this\parent\tab\widget = *this
-          Send( #__event_CloseItem, *this\parent, #PB_All )
-          *this\parent\count\items = 0
+        If *this\parent\widget\tab\widget = *this
+          Send( #__event_CloseItem, *this\parent\widget, #PB_All )
+          *this\parent\widget\count\items = 0
         Else
           Send( #__event_CloseItem, *this, #PB_All )
         EndIf
@@ -4959,7 +4966,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         Protected typ = 0
         Protected pos = 1
-        If *this\parent And *this\parent\type = #PB_GadgetType_Panel
+        If *this\parent\widget And *this\parent\widget\type = #PB_GadgetType_Panel
           pos = 2
         EndIf
         
@@ -5106,8 +5113,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           
           ;           draw_mode_alpha( #PB_2DDrawing_Default )
-          ;                 color = *this\parent\color\frame[0]
-          ;                 Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_frame], *this\parent\width[#__c_frame], *this\parent\fs-1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+          ;                 color = *this\parent\widget\color\frame[0]
+          ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_frame], *this\parent\widget\width[#__c_frame], *this\parent\widget\fs-1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
           
           ; draw all visible items
           ForEach \bar\_s( )
@@ -5180,7 +5187,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               If _is_child_integral_( *this ) 
-                color = *this\parent\color\back[0]
+                color = *this\parent\widget\color\back[0]
                 ; selected tab inner frame
                 Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y +1, 1, _get_bar_active_item_( *this )\height-2, color )
                 Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y +1, *this\bar\button[#__b_3]\width, 1, color )
@@ -5196,10 +5203,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 
                 
                 
-                color = *this\parent\color\frame[0]
-                Line( *this\parent\x[#__c_inner] - 1, *this\parent\y[#__c_inner] - 1, *this\parent\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                Line( *this\parent\x[#__c_inner] - 1, *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner], *this\parent\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                Line( *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner], *this\parent\y[#__c_inner] - 1, 1, *this\parent\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                color = *this\parent\widget\color\frame[0]
+                Line( *this\parent\widget\x[#__c_inner] - 1, *this\parent\widget\y[#__c_inner] - 1, *this\parent\widget\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                Line( *this\parent\widget\x[#__c_inner] - 1, *this\parent\widget\y[#__c_inner] + *this\parent\widget\height[#__c_inner], *this\parent\widget\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                Line( *this\parent\widget\x[#__c_inner] + *this\parent\widget\width[#__c_inner], *this\parent\widget\y[#__c_inner] - 1, 1, *this\parent\widget\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
               EndIf
             Else
               ; frame on the selected item
@@ -5216,7 +5223,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               color = *this\color\frame[0]
-              color = *this\parent\color\frame[2]
+              color = *this\parent\widget\color\frame[2]
               
               ; horizontal tab bottom line 
               If _get_bar_active_item_( *this )
@@ -5227,29 +5234,29 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               If _is_child_integral_( *this ) 
-                color = *this\parent\color\back[0] ;*this\parent\color\front[2]
-                                                   ; selected tab inner frame
+                color = *this\parent\widget\color\back[0] ;*this\parent\widget\color\front[2]
+                                                          ; selected tab inner frame
                 Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y +1, _get_bar_active_item_( *this )\width-2, 1, color )
                 Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y +1, 1, _get_bar_active_item_( *this )\height-1, color )
                 Line( x + _get_bar_active_item_( *this )\x + _get_bar_active_item_( *this )\width - 2, y + _get_bar_active_item_( *this )\y +1, 1, _get_bar_active_item_( *this )\height-1, color )
                 ;Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y + _get_bar_active_item_( *this )\height-1, _get_bar_active_item_( *this )\width-2, 1, color )
                 
                 ;;draw_mode_alpha( #PB_2DDrawing_Default )
-                color = *this\parent\color\frame[0]
-                ;Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_frame], *this\parent\width[#__c_frame], *this\parent\fs+*this\parent\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                color = *this\parent\widget\color\frame[0]
+                ;Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_frame], *this\parent\widget\width[#__c_frame], *this\parent\widget\fs+*this\parent\widget\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
                 
-                ; ;                 Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_inner] - *this\parent\fs, *this\parent\fs + pos, *this\parent\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                ; ;                 Box( *this\parent\x[#__c_frame] + *this\parent\width[#__c_frame] - (*this\parent\fs + pos), *this\parent\y[#__c_inner] - *this\parent\fs, *this\parent\fs + pos, *this\parent\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                ;                 Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_inner] - *this\parent\fs[2] - 1, *this\parent\fs-1, *this\parent\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                ;                 Box( *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner]+1, *this\parent\y[#__c_inner] - *this\parent\fs[2] - 1, *this\parent\fs-1, *this\parent\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ; ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_inner] - *this\parent\widget\fs, *this\parent\widget\fs + pos, *this\parent\widget\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ; ;                 Box( *this\parent\widget\x[#__c_frame] + *this\parent\widget\width[#__c_frame] - (*this\parent\widget\fs + pos), *this\parent\widget\y[#__c_inner] - *this\parent\widget\fs, *this\parent\widget\fs + pos, *this\parent\widget\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_inner] - *this\parent\widget\fs[2] - 1, *this\parent\widget\fs-1, *this\parent\widget\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ;                 Box( *this\parent\widget\x[#__c_inner] + *this\parent\widget\width[#__c_inner]+1, *this\parent\widget\y[#__c_inner] - *this\parent\widget\fs[2] - 1, *this\parent\widget\fs-1, *this\parent\widget\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
                 ;                 
-                ;                 Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_inner] - 1, *this\parent\fs, *this\parent\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                ;                 Box( *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner], *this\parent\y[#__c_inner] - 1, *this\parent\fs, *this\parent\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                ;                 Box( *this\parent\x[#__c_frame], *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner], *this\parent\width[#__c_frame], *this\parent\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_inner] - 1, *this\parent\widget\fs, *this\parent\widget\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ;                 Box( *this\parent\widget\x[#__c_inner] + *this\parent\widget\width[#__c_inner], *this\parent\widget\y[#__c_inner] - 1, *this\parent\widget\fs, *this\parent\widget\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_inner] + *this\parent\widget\height[#__c_inner], *this\parent\widget\width[#__c_frame], *this\parent\widget\fs, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
                 
-                Line( *this\parent\x[#__c_inner] - 1, *this\parent\y[#__c_inner] - 1, 1, *this\parent\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                Line( *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner], *this\parent\y[#__c_inner] - 1, 1, *this\parent\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
-                Line( *this\parent\x[#__c_inner] - 1, *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner], *this\parent\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                Line( *this\parent\widget\x[#__c_inner] - 1, *this\parent\widget\y[#__c_inner] - 1, 1, *this\parent\widget\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                Line( *this\parent\widget\x[#__c_inner] + *this\parent\widget\width[#__c_inner], *this\parent\widget\y[#__c_inner] - 1, 1, *this\parent\widget\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
+                Line( *this\parent\widget\x[#__c_inner] - 1, *this\parent\widget\y[#__c_inner] + *this\parent\widget\height[#__c_inner], *this\parent\widget\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
                 
               EndIf
             EndIf
@@ -5257,9 +5264,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Navigation
           Protected fabe_pos, fabe_out, button_size = 20, round=0, Size = 60
-          backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\color\state]
+          backcolor = $ffffffff;\parent\widget\parent\widget\color\back[\parent\widget\parent\widget\color\state]
           If Not backcolor
-            backcolor = \parent\color\back[\parent\color\state]
+            backcolor = \parent\widget\color\back[\parent\widget\color\state]
           EndIf
           If Not backcolor
             backcolor = \bar\button[#__b_2]\color\back[\color\state]
@@ -6449,7 +6456,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *bar\button[#__split_b1]\x        = *bar\widget\x[#__c_frame]
           *bar\button[#__split_b2]\x        = *bar\widget\x[#__c_frame]
           
-          If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And *bar\widget\index[#__split_1] And Not *bar\widget\parent )
+          If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And *bar\widget\index[#__split_1] And Not *bar\widget\parent\widget )
             *bar\button[#__split_b1]\y      = *bar\widget\y[#__c_frame] 
             *bar\button[#__split_b2]\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *bar\widget\y[#__c_frame] 
           Else
@@ -6638,24 +6645,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;
       If *bar\page\change <> 0
         ;- widget::Area_Update( )
-        If *bar\widget\parent And *bar\widget\parent\scroll And *bar\widget\type = #__type_ScrollBar
+        If *bar\widget\parent\widget And *bar\widget\parent\widget\scroll And *bar\widget\type = #__type_ScrollBar
           
           If *bar\widget\vertical
-            If *bar\widget\parent\scroll\v = *bar\widget
-              *bar\widget\parent\change =- 1
-              *bar\widget\parent\y[#__c_required] =- *bar\page\pos
+            If *bar\widget\parent\widget\scroll\v = *bar\widget
+              *bar\widget\parent\widget\change =- 1
+              *bar\widget\parent\widget\y[#__c_required] =- *bar\page\pos
               
               ; Area childrens x&y auto move 
-              If *bar\widget\parent\container
-                If StartEnumerate( *bar\widget\parent ) 
-                  If *bar\widget\parent = Widget( )\parent And 
-                     *bar\widget\parent\scroll\v <> Widget( ) And 
-                     *bar\widget\parent\scroll\h <> Widget( ) And Not Widget( )\align
+              If *bar\widget\parent\widget\container
+                If StartEnumerate( *bar\widget\parent\widget ) 
+                  If *bar\widget\parent\widget = Widget( )\parent\widget And 
+                     *bar\widget\parent\widget\scroll\v <> Widget( ) And 
+                     *bar\widget\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
                     
                     If _is_child_integral_( Widget( ))
                       Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore )
                     Else
-                      Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ) - *bar\widget\parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+                      Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ) - *bar\widget\parent\widget\y[#__c_required], #PB_Ignore, #PB_Ignore )
                     EndIf
                   EndIf
                   
@@ -6664,21 +6671,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             EndIf
           Else
-            If *bar\widget\parent\scroll\h = *bar\widget
-              *bar\widget\parent\change =- 2
-              *bar\widget\parent\x[#__c_required] =- *bar\page\pos
+            If *bar\widget\parent\widget\scroll\h = *bar\widget
+              *bar\widget\parent\widget\change =- 2
+              *bar\widget\parent\widget\x[#__c_required] =- *bar\page\pos
               
               ; Area childrens x&y auto move 
-              If *bar\widget\parent\container
-                If StartEnumerate( *bar\widget\parent ) 
-                  If *bar\widget\parent = Widget( )\parent And 
-                     *bar\widget\parent\scroll\v <> Widget( ) And 
-                     *bar\widget\parent\scroll\h <> Widget( ) And Not Widget( )\align
+              If *bar\widget\parent\widget\container
+                If StartEnumerate( *bar\widget\parent\widget ) 
+                  If *bar\widget\parent\widget = Widget( )\parent\widget And 
+                     *bar\widget\parent\widget\scroll\v <> Widget( ) And 
+                     *bar\widget\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
                     
                     If _is_child_integral_( Widget( ))
                       Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     Else
-                      Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ) - *bar\widget\parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                      Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ) - *bar\widget\parent\widget\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     EndIf
                   EndIf
                   
@@ -6712,7 +6719,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;         If _is_child_integral_( *bar\widget )
         ;           If *bar\widget\type = #__type_ScrollBar ; _is_scrollbars_( *bar\widget )
-        ;             Send( #__event_ScrollChange, *bar\widget\parent, *bar\widget, *bar\page\change )
+        ;             Send( #__event_ScrollChange, *bar\widget\parent\widget, *bar\widget, *bar\page\change )
         ;           EndIf
         ;         Else
         ;           Send( #__event_Change, *bar\widget, EnteredButton(), *bar\page\change )
@@ -6906,7 +6913,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; example-scroll(area) fixed
           If _is_child_integral_( *bar\widget )
             If *bar\widget\type = #__type_ScrollBar ; _is_scrollbars_( *bar\widget )
-              Send( #__event_ScrollChange, *bar\widget\parent, *bar\widget, *bar\page\change )
+              Send( #__event_ScrollChange, *bar\widget\parent\widget, *bar\widget, *bar\page\change )
             EndIf
           Else
             Send( #__event_Change, *bar\widget, EnteredButton(), *bar\page\change )
@@ -7073,12 +7080,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   EndIf
                   
                   ; if it is a composite element of the parent
-                  If *this\child > 0 And *this\parent And *value
+                  If *this\child > 0 And *this\parent\widget And *value
                     *value + 1
                     If *this\vertical
-                      Resize(*this, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value, #PB_Ignore)
+                      Resize(*this, *this\parent\widget\width[#__c_container]-*value, #PB_Ignore, *value, #PB_Ignore)
                     Else
-                      Resize(*this, #PB_Ignore, *this\parent\width[#__c_container]-*value, #PB_Ignore, *value)
+                      Resize(*this, #PB_Ignore, *this\parent\widget\width[#__c_container]-*value, #PB_Ignore, *value)
                     EndIf
                   EndIf
                   
@@ -7362,7 +7369,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             \v\height[#__c_container] = height - \v\fs*2 
             If \v\height[#__c_container] < 0 : \v\height[#__c_container] = 0 : EndIf
             \v\height[#__c_inner] = \v\height[#__c_container]
-            \v\height[#__c_clip] = \v\parent\height[#__c_clip]
+            \v\height[#__c_clip] = \v\parent\widget\height[#__c_clip]
             
             Bar_Update( \v\bar )
             Bar_Resize( \v\bar )
@@ -7394,7 +7401,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             \h\width[#__c_container] = width - \h\fs*2 
             If \h\width[#__c_container] < 0 : \h\width[#__c_container] = 0 : EndIf
             \h\width[#__c_inner] = \h\width[#__c_container]
-            \h\width[#__c_clip] = \h\parent\width[#__c_clip]
+            \h\width[#__c_clip] = \h\parent\widget\width[#__c_clip]
             
             Bar_Update( \h\bar )
             Bar_Resize( \h\bar )
@@ -12506,7 +12513,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           *this\resize | #__resize_maximize
-          Resize( *this, 0,0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
+          Resize( *this, 0,0, *this\parent\widget\width[#__c_container], *this\parent\widget\height[#__c_container] )
           
           If _is_root_( *this )
             PostEvent( #PB_Event_MaximizeWindow, *this\root\canvas\window, *this )
@@ -12532,7 +12539,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           *this\resize | #__resize_minimize
           
-          Resize( *this, *this\root\x[#__c_rootrestore], *this\parent\height[#__c_container] - *this\fs[2], *this\root\width[#__c_rootrestore], *this\fs[2] )
+          Resize( *this, *this\root\x[#__c_rootrestore], *this\parent\widget\height[#__c_container] - *this\fs[2], *this\root\width[#__c_rootrestore], *this\fs[2] )
           SetAlignmentFlag( *this, #__align_bottom )
           
           If _is_root_( *this )
@@ -12949,14 +12956,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     Procedure   Child( *this._s_WIDGET, *parent._s_WIDGET )
       Protected result 
       
-      Repeat
-        If *parent = *this\parent
-          result = *this
-          Break
-        EndIf
-        
-        *this = *this\parent
-      Until *this = *this\root ; is_root( *this )
+      If *parent\count\childrens
+        Repeat
+          If *parent = *this\parent\widget
+            result = *this
+            Break
+          EndIf
+          
+          *this = *this\parent\widget
+        Until *this = *this\root ; is_root( *this )
+      EndIf
       
       ProcedureReturn result
     EndProcedure
@@ -13317,14 +13326,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Procedure.i CloseList( )
       If OpenedWidget( ) And 
-         OpenedWidget( )\parent And
+         OpenedWidget( )\parent\widget And
          OpenedWidget( )\root\canvas\gadget = Root( )\canvas\gadget 
         
-        ; Debug "" + OpenedWidget( ) + " - " + OpenedWidget( )\class + " " + OpenedWidget( )\parent + " - " + OpenedWidget( )\parent\class
-        If OpenedWidget( )\parent\type = #__type_MDI
-          OpenList( OpenedWidget( )\parent\parent )
+        ; Debug "" + OpenedWidget( ) + " - " + OpenedWidget( )\class + " " + OpenedWidget( )\parent\widget + " - " + OpenedWidget( )\parent\widget\class
+        If OpenedWidget( )\parent\widget\type = #__type_MDI
+          OpenList( OpenedWidget( )\parent\widget\parent\widget )
         Else
-          OpenList( OpenedWidget( )\parent )
+          OpenList( OpenedWidget( )\parent\widget )
         EndIf
       Else
         OpenList( Root( ) )
@@ -13439,7 +13448,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure.i GetParent( *this._s_WIDGET )
-      ProcedureReturn *this\parent
+      ProcedureReturn *this\parent\widget
     EndProcedure
     
     Procedure.i GetAttribute( *this._s_WIDGET, Attribute.l )
@@ -14159,12 +14168,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If *this\address
             ChangeCurrentElement( Widget( ), *this\address )
             While PreviousElement( Widget( ))
+              ;If Widget( )\type = #PB_GadgetType_Window
               If Child( *this, Widget( )) ;And Widget( )\container
                 If Widget( )\state\focus = #False
                   Widget( )\state\focus = #True
                   result | DoEvents( Widget( ), #__event_Focus )
                 EndIf
               EndIf
+              ;EndIf
             Wend 
           EndIf
           
@@ -14173,8 +14184,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             GetActive( ) = *this
           Else
             If _is_child_integral_( *this )
-              GetActive( ) = *this\parent\window
-              GetActive( )\gadget = *this\parent
+              GetActive( ) = *this\parent\widget\window
+              GetActive( )\gadget = *this\parent\widget
             Else
               GetActive( ) = *this\window
               GetActive( )\gadget = *this
@@ -14243,12 +14254,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn result
     EndProcedure
     
+    Procedure  get_last( *last._s_WIDGET, tabindex.l )
+      
+      While *last <> *last\last\widget And *last\tab\index = tabindex
+        *last = *last\last\widget
+      Wend
+      
+      ProcedureReturn *last
+    EndProcedure
+    
     Procedure  GetLast( *last._s_WIDGET, tabindex.l )
       While *last\before\widget And *last\tab\index <> tabindex
         *last = *last\before\widget
         
         ;         If Not *last\before\widget 
-        ;           *last = *last\parent
+        ;           *last = *last\parent\widget
         ;           Break
         ;         EndIf
       Wend
@@ -14260,8 +14280,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected *result._s_WIDGET
       
       Select position
-        Case #PB_List_First : *result = *this\parent\first\widget
-          If *this\parent\tab\widget
+        Case #PB_List_First : *result = *this\parent\widget\first\widget
+          If *this\parent\widget\tab\widget
             ; get tab first address
             While *result\after\widget And 
                   *result\tab\index <> *this\tab\index
@@ -14281,8 +14301,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *result = *this\after\widget
           EndIf
           
-        Case #PB_List_Last   : *result = *this\parent\last\widget
-          If *this\parent\tab\widget
+        Case #PB_List_Last   : *result = *this\parent\widget\last\widget
+          If *this\parent\widget\tab\widget
             ; get tab last address
             While *result\before\widget And 
                   *result\tab\index <> *this\tab\index
@@ -14334,10 +14354,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If *this\before\widget
               *this\before\widget\after\widget = *this
             Else
-              If *this\parent\first\widget
-                *this\parent\first\widget\before\widget = *this
+              If *this\parent\widget\first\widget
+                *this\parent\widget\first\widget\before\widget = *this
               EndIf
-              *this\parent\first\widget = *this
+              *this\parent\widget\first\widget = *this
             EndIf
             
             result = 1
@@ -14354,8 +14374,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; get last moved address
             If *before\last\widget 
               ; get parent tab last address
-              If *before\last\widget\parent\tab\widget And 
-                 *before\last\widget\parent = *this\parent
+              If *before\last\widget\parent\widget\tab\widget And 
+                 *before\last\widget\parent\widget = *this\parent\widget
                 *last = GetLast( *before\last\widget, *this\tab\index )
               Else
                 ; get parent last address
@@ -14382,10 +14402,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If *this\after\widget
               *this\after\widget\before\widget = *this
             Else
-              If *this\parent\last\widget
-                *this\parent\last\widget\after\widget = *this
+              If *this\parent\widget\last\widget
+                *this\parent\widget\last\widget\after\widget = *this
               EndIf
-              *this\parent\last\widget = *this
+              *this\parent\widget\last\widget = *this
             EndIf
             
             result = 1
@@ -14396,7 +14416,31 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = 0 )
+    Procedure AddWidget( *this._s_WIDGET, *parent._s_WIDGET )
+      SetParent( *this, *parent, 0 )
+      ;       If *parent\root
+      ;         LastElement( *parent\root\canvas\child( ) )
+      ;         *this\address = AddElement( *parent\root\canvas\child( ) ) 
+      ;         *parent\root\canvas\child( ) = *this
+      ;         
+      ;         *parent\count\childrens + 1
+      ;         *this\parent\widget = *parent
+      ;         *this\root = *parent\root
+      ;         *this\window = *parent\window
+      ;         *this\count\parents = *parent\count\parents + 1
+      ;         
+      ;         *this\before\widget = *parent\last\widget
+      ;         *parent\last\widget = *this
+      ;         
+      ;         ;     If *parent <> *parent\root
+      ;         ;       LastElement( *parent\child( ) )
+      ;         ;       *this\address = AddElement( *parent\child( ) ) 
+      ;         ;       *parent\child( ) = *this
+      ;         ;     EndIf
+      ;       EndIf
+    EndProcedure
+    
+    Procedure   _SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = 0 )
       Protected x.l, y.l, *last._s_WIDGET, *lastParent._s_WIDGET
       
       If *parent 
@@ -14428,7 +14472,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf    
         EndIf
         
-        If *this\parent <> *parent Or 
+        If *this\parent\widget <> *parent Or 
            *this\tab\index <> tabindex
           *this\tab\index = tabindex
           
@@ -14457,9 +14501,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               If *last\tab\index <> tabindex
-                If *this\parent 
-                  If *this\parent\last\widget = *this
-                    *this\parent\last\widget = *this\before\widget
+                If *this\parent\widget 
+                  If *this\parent\widget\last\widget = *this
+                    *this\parent\widget\last\widget = *this\before\widget
                     *this\before\widget\after\widget = #Null
                     *this\before\widget = #Null
                   EndIf
@@ -14487,8 +14531,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ; change parent
-          If *this\parent
-            *LastParent = *this\parent
+          If *this\parent\widget
+            *LastParent = *this\parent\widget
             *LastParent\count\childrens - 1
             
             If *last
@@ -14531,7 +14575,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; set parent last address
           If *parent\last\widget 
             If *last 
-              If *parent = *last\parent 
+              If *parent = *last\parent\widget 
                 *this\before\widget = *last
               Else
                 *this\before\widget = *parent\last\widget
@@ -14577,7 +14621,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ;
-          *this\parent = *parent
+          *this\parent\widget = *parent
           *this\root = *parent\root
           
           ;;*this\window = *parent\window
@@ -14647,16 +14691,562 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             Resize( *this, x - *parent\x[#__c_required], y - *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+            PostRepaint( *parent\root ) 
+            PostRepaint( *LastParent\root )
+            ;             ; re draw new parent root 
+            ;             If *LastParent\root <> *parent\root
+            ;               Select Root( )
+            ;                 Case *LastParent\root : ReDraw( *parent\root )
+            ;                 Case *parent\root     : ReDraw( *LastParent\root )
+            ;               EndSelect
+            ;             EndIf
             
-            ; re draw new parent root 
-            If *LastParent\root <> *parent\root
-              Select Root( )
-                Case *LastParent\root : ReDraw( *parent\root )
-                Case *parent\root     : ReDraw( *LastParent\root )
-              EndSelect
+          EndIf
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure __SetParent( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
+      Protected parent_change, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( )
+      
+      If *parent
+        
+        
+        If *this\parent\widget
+          *lastParent = *this\parent\widget
+          ;         If root( ) <> *this\root
+          ;           ChangeCurrentRoot( *this\root\canvas\address )
+          ;         EndIf
+          
+          
+          If *this\address
+            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+            AddElement( *D( ) )
+            *D( ) = *this\root\canvas\child( )
+            
+            If *this\root\canvas\child( )\count\childrens
+              PushListPosition( *this\root\canvas\child( ) )
+              While NextElement( *this\root\canvas\child( ) )
+                If Not Child( *this\root\canvas\child( ), *this ) 
+                  Break
+                EndIf
+                
+                AddElement( *D( ) )
+                *D( ) = *this\root\canvas\child( )
+                *D( )\window = *parent\window
+                *D( )\root = *parent\root
+                Debug " children - "+ *D()\data +" - "+ *this\data
+                
+                If *this\root <> *parent\root
+                  DeleteElement( *this\root\canvas\child( ) )
+                EndIf
+              Wend 
+              PopListPosition( *this\root\canvas\child( ) )
+            EndIf
+            
+            If *this\root <> *parent\root
+              DeleteElement( *this\root\canvas\child( ) )
+            EndIf
+            
+            ;             If *this\root <> *parent\root
+            ;               ForEach *D( )
+            ;                 ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
+            ;                 DeleteElement( *this\root\canvas\child( ) )
+            ;               Next
+            ;             EndIf
+            
+            ; move with a parent and his children
+            If *this\root = *parent\root
+              ; move inside the list
+              ForEach *D( )
+                If *parent\last\widget
+                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
+                Else
+                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+                EndIf
+              Next
+            Else
+              ; move between lists
+              If *parent\last\widget
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
+              Else
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
+              EndIf
+              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
             EndIf
             
           EndIf
+          
+          parent_change = 1 
+        Else
+          ; Debug *this\class
+          If *parent\root
+            LastElement( *parent\root\canvas\child( ) )
+            *this\address = AddElement( *parent\root\canvas\child( ) ) 
+            *parent\root\canvas\child( ) = *this
+          EndIf
+        EndIf
+        
+        If *this\row
+          If item < 0 
+            item = 0
+          EndIf
+          
+          PushListPosition( *this\row\_s( ) )
+          *this\parent\row = SelectElement( *this\row\_s( ), item )
+          PopListPosition( *this\row\_s( ) )
+        EndIf
+        
+        *parent\count\childrens + 1
+        *this\parent\widget = *parent
+        *this\root = *parent\root
+        *this\window = *parent\window
+        *this\count\parents = *parent\count\parents + 1
+        
+        *this\before\widget = *parent\last\widget
+        *parent\last\widget = *this
+        
+        If parent_change
+          ; resize
+          x = *this\x[#__c_container]
+          y = *this\y[#__c_container]
+          
+          ; for the scrollarea container childrens
+          ; if new parent - scrollarea container
+          If *parent\scroll And *parent\scroll\v And *parent\scroll\h
+            x - *parent\scroll\h\bar\page\pos
+            y - *parent\scroll\v\bar\page\pos
+          EndIf
+          ; if last parent - scrollarea container
+          If *LastParent\scroll And *LastParent\scroll\v And *LastParent\scroll\h
+            x + *LastParent\scroll\h\bar\page\pos
+            y + *LastParent\scroll\v\bar\page\pos
+          EndIf
+          
+          Resize( *this, x - *parent\x[#__c_required], y - *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+          
+          ;;;;Resize( *this\parent\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;             If *parent
+          ;               ReDraw(*parent)
+          ;             EndIf
+          ;             If *oldparent
+          ;               ReDraw(*oldparent)
+          ;             EndIf
+          ;PostEventRepaint( *oldparent )
+          ;PostEventRepaint( *parent )
+          
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure ___SetParent( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
+      Protected parent_change, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+      
+      If *parent
+        If *this\parent\widget
+          If *this\parent\widget = *parent
+            ProcedureReturn #False
+          EndIf
+          
+          PostEventRepaint( *this\parent\widget )
+          PostEventRepaint( *parent )
+          
+          *lastParent = *this\parent\widget
+          ;         If root( ) <> *this\root
+          ;           ChangeCurrentRoot( *this\root\canvas\address )
+          ;         EndIf
+          
+          
+          If *this\address
+            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+            AddElement( *D( ) )
+            *D( ) = *this\root\canvas\child( )
+            
+            If *this\root\canvas\child( )\count\childrens
+              PushListPosition( *this\root\canvas\child( ) )
+              While NextElement( *this\root\canvas\child( ) )
+                If Not Child( *this\root\canvas\child( ), *this ) 
+                  Break
+                EndIf
+                
+                AddElement( *D( ) )
+                *D( ) = *this\root\canvas\child( )
+                *D( )\window = *parent\window
+                *D( )\root = *parent\root
+                ;; Debug " children - "+ *D()\data +" - "+ *this\data
+                
+              Wend 
+              PopListPosition( *this\root\canvas\child( ) )
+            EndIf
+            
+            ; move inside the list
+            ForEach *D( )
+              ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
+              *this\root\canvas\child( )\parent\widget\count\childrens - 1
+              *this\root\canvas\child( )\count\parents - 1
+              
+              If *this\root = *parent\root
+                Debug " - move inside the list - "
+                If *parent\last\widget
+                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
+                  ; ;                   *this\root\canvas\child( )\parent\widget\last\widget = *this\root\canvas\child( ) 
+                Else
+                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+                EndIf
+              Else
+                MoveElement( *this\root\canvas\child( ), #PB_List_Last ) 
+              EndIf
+            Next
+            
+            ; move with a parent and his children
+            If *this\root <> *parent\root
+              ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+              SplitList( *this\root\canvas\child( ), *D( ) )
+              
+              ; move between lists
+              If *parent\last\widget
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
+              Else
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
+              EndIf
+              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
+            EndIf
+          EndIf
+          
+          ;           If *this\before\widget
+          ;             *this\parent\widget\last\widget = *this\before\widget
+          ;           Else
+          ; ;           If *this\parent\widget\last\widget
+          ;             *this\parent\widget\last\widget = *this\parent\widget
+          ; ;           Else
+          ; ;             *this\parent\widget\last\widget = *this\parent\widget
+          ; ;           EndIf
+          ;           EndIf
+          
+          parent_change = 1 
+        Else
+          ; Debug *this\class
+          If *parent\root
+            If *parent\root\last\widget
+              If *parent\last\widget = *parent\root\last\widget\parent\widget
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\root\last\widget\address )
+              ElseIf *parent\last\widget
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
+              Else
+                LastElement( *parent\root\canvas\child( ) )
+              EndIf
+            Else
+              LastElement( *parent\root\canvas\child( ) )
+            EndIf
+            
+            *this\address = AddElement( *parent\root\canvas\child( ) ) 
+            *this\index = ListIndex( *parent\root\canvas\child( ) ) 
+            *parent\root\canvas\child( ) = *this
+            
+            ;*this\last\widget = *this
+          EndIf
+        EndIf
+        
+        If *this\row
+          If item < 0 
+            item = 0
+          EndIf
+          
+          PushListPosition( *this\row\_s( ) )
+          *this\parent\row = SelectElement( *this\row\_s( ), item )
+          PopListPosition( *this\row\_s( ) )
+        EndIf
+        
+        If *this\parent\widget
+          If *this\before\widget
+            ; *this\parent\widget\last\widget = *this\before\widget
+          Else
+            *this\parent\widget\last\widget = *this\parent\widget
+          EndIf
+        Else
+          *this\last\widget = *this
+          *this\before\widget = *parent\last\widget
+        EndIf
+        
+        If *this\before\widget
+          ;*this\before\widget\after\widget = *this
+        EndIf
+        *this\before\widget = *parent\last\widget
+        
+        If *parent\last\widget = *parent
+          *parent\first\widget = *this
+        EndIf
+        
+        *parent\last\widget = *this
+        *parent\root\last\widget = *this
+        
+        ;         ; set parent last address
+        ;           If *parent\last\widget And *parent\last\widget <> *parent
+        ;             If *last 
+        ;               If *parent = *last\parent\widget 
+        ;                 *this\before\widget = *last
+        ;               Else
+        ;                 *this\before\widget = *parent\last\widget
+        ;               EndIf
+        ;               
+        ;               If *this\before\widget
+        ;                 *this\after\widget = *this\before\widget\after\widget
+        ;                 *this\before\widget\after\widget = *this
+        ;               EndIf
+        ;               
+        ;               If *parent\last\widget\tab\index <= *this\tab\index
+        ;                 ;
+        ;                 If *parent\last\widget\position & #PB_List_Last 
+        ;                   If *parent\last\widget\tab\index = *this\tab\index
+        ;                     *parent\last\widget\position &~ #PB_List_Last
+        ;                   EndIf
+        ;                   *this\position | #PB_List_Last
+        ;                 EndIf
+        ;                 
+        ;                 *parent\last\widget = *this
+        ;               EndIf
+        ;             Else
+        ;               ;
+        ;               If *parent\first\widget\position & #PB_List_First 
+        ;                 If *parent\first\widget\tab\index = *this\tab\index
+        ;                   *parent\first\widget\position &~ #PB_List_First
+        ;                 EndIf
+        ;                 *this\position | #PB_List_First
+        ;               EndIf
+        ;               
+        ;               *parent\first\widget = *this
+        ;             EndIf
+        ;             
+        ;             If *this\after\widget
+        ;               *this\after\widget\before\widget = *this  
+        ;             EndIf
+        ;           Else
+        ;             *this\position | #PB_List_First | #PB_List_Last
+        ;             *this\before\widget = #Null
+        ;             *this\after\widget = #Null
+        ;             *parent\first\widget = *this
+        ;             *parent\last\widget = *this
+        ;           EndIf
+        ;           
+        ;           
+        
+        
+        
+        
+        
+        
+        
+        *parent\count\childrens + 1
+        *this\parent\widget = *parent
+        *this\root = *parent\root
+        *this\window = *parent\window
+        *this\count\parents = *parent\count\parents + 1
+        
+        ;*this\before\widget = *parent\last\widget
+        
+        
+        
+        If parent_change
+          ; resize
+          x = *this\x[#__c_container]
+          y = *this\y[#__c_container]
+          
+          ; for the scrollarea container childrens
+          ; if new parent - scrollarea container
+          If *parent\scroll And *parent\scroll\v And *parent\scroll\h
+            x - *parent\scroll\h\bar\page\pos
+            y - *parent\scroll\v\bar\page\pos
+          EndIf
+          ; if last parent - scrollarea container
+          If *LastParent\scroll And *LastParent\scroll\v And *LastParent\scroll\h
+            x + *LastParent\scroll\h\bar\page\pos
+            y + *LastParent\scroll\v\bar\page\pos
+          EndIf
+          
+          Resize( *this, x - *parent\x[#__c_required], y - *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+          
+          ;;;;Resize( *this\parent\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;             If *parent
+          ;               ReDraw(*parent)
+          ;             EndIf
+          ;             If *oldparent
+          ;               ReDraw(*oldparent)
+          ;             EndIf
+          ;           PostEventRepaint( *lastParent )
+          ;           PostEventRepaint( *parent )
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = 0 )
+      Protected ReParent.b, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+      
+      If *parent
+        If *this\parent\widget
+          If *this\parent\widget = *parent
+            ProcedureReturn #False
+          EndIf
+          
+          If *this\address
+            *lastParent = *this\parent\widget
+            *lastParent\count\childrens - 1
+            
+            If *parent\last\widget
+              If *parent\last\widget\count\childrens
+                *last = get_last( *parent\last\widget, tabindex )
+              Else
+                *last = *parent\last\widget
+              EndIf
+            EndIf
+            
+            
+            ;         If root( ) <> *this\root
+            ;           ChangeCurrentRoot( *this\root\canvas\address )
+            ;         EndIf
+            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+            AddElement( *D( ) )
+            *D( ) = *this\root\canvas\child( )
+            
+            If *this\root\canvas\child( )\count\childrens
+              PushListPosition( *this\root\canvas\child( ) )
+              While NextElement( *this\root\canvas\child( ) )
+                If Not Child( *this\root\canvas\child( ), *this ) 
+                  Break
+                EndIf
+                
+                AddElement( *D( ) )
+                *D( ) = *this\root\canvas\child( )
+                *D( )\window = *parent\window
+                *D( )\root = *parent\root
+                ;; Debug " children - "+ *D()\data +" - "+ *this\data
+                
+              Wend 
+              PopListPosition( *this\root\canvas\child( ) )
+            EndIf
+            
+            ; move with a parent and his children
+            If *this\root <> *parent\root
+              ForEach *D( )
+                ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
+                ; go to the end of the list to split the list
+                MoveElement( *this\root\canvas\child( ), #PB_List_Last ) 
+              Next
+              
+              ; now we split the list and transfer it to another list
+              ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+              SplitList( *this\root\canvas\child( ), *D( ) )
+              
+              ; move between lists
+              ChangeCurrentElement( *parent\root\canvas\child( ), *last\address )
+              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
+            Else
+              ; move inside the list
+              LastElement( *D( ) )
+              Repeat
+                ChangeCurrentElement( *parent\root\canvas\child( ), *D( )\address )
+                MoveElement( *parent\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
+              Until PreviousElement( *D( ) ) = 0
+            EndIf
+              
+            ReParent = #True 
+          EndIf
+          
+        Else
+          If *parent\root
+            If *parent\last\widget
+              If *parent\last\widget\count\childrens
+                LastElement( *parent\root\canvas\child( ) )
+                ; *last = get_last( *parent\last\widget, tabindex ) : ChangeCurrentElement( *parent\root\canvas\child( ), *last\address )
+              Else
+                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
+              EndIf
+            Else
+              LastElement( *parent\root\canvas\child( ) )
+            EndIf
+            
+            *this\address = AddElement( *parent\root\canvas\child( ) ) 
+            *parent\root\canvas\child( ) = *this
+          EndIf
+        EndIf
+        
+        If *this\after\widget
+          *this\after\widget\before\widget = *this\before\widget
+        EndIf
+        
+        If *this\before\widget
+          *this\before\widget\after\widget = *this\after\widget
+        EndIf
+        
+        If *this\parent\widget
+          If *this\parent\widget\first\widget = *this
+;             If *this\after\widget
+              *this\parent\widget\first\widget = *this\after\widget
+;             Else
+;               *this\parent\widget\first\widget = *this\parent\widget ; if last type
+;             EndIf
+          EndIf 
+          
+          If *this\parent\widget\last\widget = *this
+            If *this\before\widget
+              *this\parent\widget\last\widget = *this\before\widget
+            Else
+              *this\parent\widget\last\widget = *this\parent\widget ; if last type
+            EndIf
+          EndIf 
+        Else
+          *this\last\widget = *this ; if last type
+        EndIf
+        
+        If *parent\last\widget = *parent
+          *parent\first\widget = *this
+          *this\before\widget = #Null
+        Else
+          ; if the parent had the last item
+          ; then we make it "previous" instead of "present"
+          ; and "present" becomes "subsequent" instead of "previous"
+          *this\before\widget = *parent\last\widget
+          If *this\before\widget
+            *this\before\widget\after\widget = *this
+          EndIf
+        EndIf
+        
+        *this\after\widget = #Null
+        *parent\last\widget = *this
+        
+        
+        ;           
+        *this\root = *parent\root
+        *this\window = *parent\window
+        *this\parent\widget = *parent
+        *this\parent\widget\count\childrens + 1
+        *this\count\parents = *parent\count\parents + 1
+        
+       
+        ;
+        If ReParent
+          ; resize
+          x = *this\x[#__c_container]
+          y = *this\y[#__c_container]
+          
+          ; for the scrollarea container childrens
+          ; if new parent - scrollarea container
+          If *parent\scroll And *parent\scroll\v And *parent\scroll\h
+            x - *parent\scroll\h\bar\page\pos
+            y - *parent\scroll\v\bar\page\pos
+          EndIf
+          ; if last parent - scrollarea container
+          If *LastParent\scroll And *LastParent\scroll\v And *LastParent\scroll\h
+            x + *LastParent\scroll\h\bar\page\pos
+            y + *LastParent\scroll\v\bar\page\pos
+          EndIf
+          
+          Resize( *this, x - *parent\x[#__c_required], y - *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+          
+          PostEventRepaint( *lastParent )
+          PostEventRepaint( *parent )
         EndIf
       EndIf
       
@@ -14668,9 +15258,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       With *this
         Select Type
           Case 1 ; widget
-            If \parent
-              If Not \parent\align
-                \parent\align.allocate( ALIGN )
+            If \parent\widget
+              If Not \parent\widget\align
+                \parent\widget\align.allocate( ALIGN )
               EndIf
               If Not \align
                 \align.allocate( ALIGN )
@@ -14720,22 +15310,22 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               Protected parent_width, parent_height 
               
-              If *this\parent\type = #__type_window
-                parent_width = \parent\width[#__c_inner]
-                parent_height = \parent\height[#__c_inner]
+              If *this\parent\widget\type = #__type_window
+                parent_width = \parent\widget\width[#__c_inner]
+                parent_height = \parent\widget\height[#__c_inner]
               Else
-                parent_width = \parent\width[#__c_frame]
-                parent_height = \parent\height[#__c_frame]
+                parent_width = \parent\widget\width[#__c_frame]
+                parent_height = \parent\widget\height[#__c_frame]
               EndIf
               
               ;
-              If \parent\align\indent\right = 0
-                \parent\align\indent\left = \parent\x[#__c_container] 
-                \parent\align\indent\right = \parent\align\indent\left + parent_width
+              If \parent\widget\align\indent\right = 0
+                \parent\widget\align\indent\left = \parent\widget\x[#__c_container] 
+                \parent\widget\align\indent\right = \parent\widget\align\indent\left + parent_width
               EndIf
-              If \parent\align\indent\bottom = 0
-                \parent\align\indent\top = \parent\y[#__c_container] 
-                \parent\align\indent\bottom = \parent\align\indent\top + parent_height 
+              If \parent\widget\align\indent\bottom = 0
+                \parent\widget\align\indent\top = \parent\widget\y[#__c_container] 
+                \parent\widget\align\indent\bottom = \parent\widget\align\indent\top + parent_height 
               EndIf
               
               \align\indent\left = \x[#__c_container]
@@ -14747,14 +15337,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               ; docking
               If Mode & #__align_auto = #__align_auto
-                parent_width = ( \parent\align\indent\right - \parent\align\indent\left - \parent\fs*2 )
-                parent_height = ( \parent\align\indent\bottom - \parent\align\indent\top - \parent\fs*2 )
+                parent_width = ( \parent\widget\align\indent\right - \parent\widget\align\indent\left - \parent\widget\fs*2 )
+                parent_height = ( \parent\widget\align\indent\bottom - \parent\widget\align\indent\top - \parent\widget\fs*2 )
                 
                 ; full horizontal
                 If \align\anchor\right = 1 And \align\anchor\left = 1 
                   \align\indent\left = \x[#__c_container]
                   \align\indent\right = \align\indent\left + parent_width
-                  ;; Debug ""+ \text\string +" "+ \parent\x +" "+ \parent\align\indent\left +" "+ \parent\align\indent\right +" "+ \parent\width[#__c_inner]
+                  ;; Debug ""+ \text\string +" "+ \parent\widget\x +" "+ \parent\widget\align\indent\left +" "+ \parent\widget\align\indent\right +" "+ \parent\widget\width[#__c_inner]
                   ; center
                 ElseIf \align\anchor\right = 0 And \align\anchor\left = 0
                   \align\indent\left = ( parent_width - \width )/2
@@ -14782,20 +15372,20 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ; dock
                 If Mode & #__align_full = #__align_full
                   ; loop enumerate widgets
-                  If StartEnumerate( *this\parent ) 
+                  If StartEnumerate( *this\parent\widget ) 
                     If Widget( )\align 
                       
                       If ( Widget( )\align\anchor\left = 0 Or Widget( )\align\anchor\right = 0 ) And 
                          ( Widget( )\align\anchor\top = 1 And Widget( )\align\anchor\bottom = 1 )
-                        Widget( )\align\indent\top = Widget( )\parent\align\auto\top
-                        Widget( )\align\indent\bottom = parent_height - Widget( )\parent\align\auto\bottom
+                        Widget( )\align\indent\top = Widget( )\parent\widget\align\auto\top
+                        Widget( )\align\indent\bottom = parent_height - Widget( )\parent\widget\align\auto\bottom
                       EndIf
                       
                       ;                         If ( Widget( )\align\anchor\top = 0 Or Widget( )\align\anchor\bottom = 0 ) And 
                       ;                            ( Widget( )\align\anchor\left = 1 And Widget( )\align\anchor\right = 1 )
                       ;                           Debug Widget( )\text\string
-                      ;                           Widget( )\align\indent\left = Widget( )\parent\align\auto\left
-                      ;                           Widget( )\align\indent\right = parent_width - Widget( )\parent\align\auto\right
+                      ;                           Widget( )\align\indent\left = Widget( )\parent\widget\align\auto\left
+                      ;                           Widget( )\align\indent\right = parent_width - Widget( )\parent\widget\align\auto\right
                       ;                         EndIf
                     EndIf
                     StopEnumerate( )
@@ -14805,7 +15395,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               ; update parent childrens coordinate
-              Resize( \parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              Resize( \parent\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             EndIf
           Case 2 ; text
           Case 3 ; image
@@ -14881,9 +15471,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         ;;SetAlignmentFlag( *this, flag )
         
-        If*this\parent
-          If Not *this\parent\align
-            *this\parent\align.allocate( ALIGN )
+        If*this\parent\widget
+          If Not *this\parent\widget\align
+            *this\parent\widget\align.allocate( ALIGN )
           EndIf
           If Not *this\align
             *this\align.allocate( ALIGN )
@@ -14894,16 +15484,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Else
             ; auto stick reset
             If *this\align\anchor\left And *this\align\anchor\right = 0 
-              *this\parent\align\auto\left - *this\align\indent\right
+              *this\parent\widget\align\auto\left - *this\align\indent\right
             EndIf
             If *this\align\anchor\right And *this\align\anchor\left = 0
-              *this\parent\align\auto\right - ( ( *this\parent\align\indent\right - *this\parent\align\indent\left - *this\parent\fs*2 ) - *this\align\indent\left )
+              *this\parent\widget\align\auto\right - ( ( *this\parent\widget\align\indent\right - *this\parent\widget\align\indent\left - *this\parent\widget\fs*2 ) - *this\align\indent\left )
             EndIf
             If *this\align\anchor\top And *this\align\anchor\bottom = 0
-              *this\parent\align\auto\top - *this\align\indent\bottom
+              *this\parent\widget\align\auto\top - *this\align\indent\bottom
             EndIf
             If *this\align\anchor\bottom And *this\align\anchor\top = 0
-              *this\parent\align\auto\bottom - ( ( *this\parent\align\indent\bottom - *this\parent\align\indent\top - *this\parent\fs*2 ) - *this\align\indent\top )
+              *this\parent\widget\align\auto\bottom - ( ( *this\parent\widget\align\indent\bottom - *this\parent\widget\align\indent\top - *this\parent\widget\fs*2 ) - *this\align\indent\top )
             EndIf
           EndIf
           
@@ -14967,28 +15557,28 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ;
           Protected parent_width, parent_height 
-          If *this\parent\type = #__type_window
-            parent_width = *this\parent\width[#__c_inner]
-            parent_height = *this\parent\height[#__c_inner]
+          If *this\parent\widget\type = #__type_window
+            parent_width = *this\parent\widget\width[#__c_inner]
+            parent_height = *this\parent\widget\height[#__c_inner]
           Else
-            parent_width = *this\parent\width[#__c_frame]
-            parent_height = *this\parent\height[#__c_frame]
+            parent_width = *this\parent\widget\width[#__c_frame]
+            parent_height = *this\parent\widget\height[#__c_frame]
           EndIf
           
           ;
-          If*this\parent\align\indent\right = 0
-            *this\parent\align\indent\left = *this\parent\x[#__c_container] 
-            *this\parent\align\indent\right = *this\parent\align\indent\left + parent_width
+          If*this\parent\widget\align\indent\right = 0
+            *this\parent\widget\align\indent\left = *this\parent\widget\x[#__c_container] 
+            *this\parent\widget\align\indent\right = *this\parent\widget\align\indent\left + parent_width
           EndIf
-          If*this\parent\align\indent\bottom = 0
-            *this\parent\align\indent\top = *this\parent\y[#__c_container] 
-            *this\parent\align\indent\bottom = *this\parent\align\indent\top + parent_height 
+          If*this\parent\widget\align\indent\bottom = 0
+            *this\parent\widget\align\indent\top = *this\parent\widget\y[#__c_container] 
+            *this\parent\widget\align\indent\bottom = *this\parent\widget\align\indent\top + parent_height 
           EndIf
           
           ;
           If flag & #__align_auto = #__align_auto
-            parent_width = ( *this\parent\align\indent\right - *this\parent\align\indent\left - *this\parent\fs*2 )
-            parent_height = ( *this\parent\align\indent\bottom - *this\parent\align\indent\top - *this\parent\fs*2 )
+            parent_width = ( *this\parent\widget\align\indent\right - *this\parent\widget\align\indent\left - *this\parent\widget\fs*2 )
+            parent_height = ( *this\parent\widget\align\indent\bottom - *this\parent\widget\align\indent\top - *this\parent\widget\fs*2 )
             
             ; full horizontal
             If *this\align\anchor\right = 1 And *this\align\anchor\left = 1 
@@ -15060,14 +15650,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If *this\align
         ; auto stick set
-        If *this\parent\align 
+        If *this\parent\widget\align 
           If left = #__align_auto And 
-             *this\parent\align\auto\left
-            left =- *this\parent\align\auto\left
+             *this\parent\widget\align\auto\left
+            left =- *this\parent\widget\align\auto\left
           EndIf
           If right = #__align_auto And 
-             *this\parent\align\auto\right
-            right =- *this\parent\align\auto\right
+             *this\parent\widget\align\auto\right
+            right =- *this\parent\widget\align\auto\right
           EndIf
           If left < 0 Or right < 0
             If left And right
@@ -15080,12 +15670,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           If top = #__align_auto And 
-             *this\parent\align\auto\top
-            top =- *this\parent\align\auto\top
+             *this\parent\widget\align\auto\top
+            top =- *this\parent\widget\align\auto\top
           EndIf
           If bottom = #__align_auto And 
-             *this\parent\align\auto\bottom
-            bottom =- *this\parent\align\auto\bottom
+             *this\parent\widget\align\auto\bottom
+            bottom =- *this\parent\widget\align\auto\bottom
           EndIf
           If top < 0 Or bottom < 0
             If top And bottom
@@ -15100,52 +15690,52 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; auto stick get
         If *this\align\anchor\left And *this\align\anchor\right = 0 
-          *this\parent\align\auto\left = *this\align\indent\right
+          *this\parent\widget\align\auto\left = *this\align\indent\right
         EndIf
         If *this\align\anchor\right And *this\align\anchor\left = 0
-          *this\parent\align\auto\right = ( *this\parent\align\indent\right - *this\parent\align\indent\left - *this\parent\fs*2 ) - *this\align\indent\left 
+          *this\parent\widget\align\auto\right = ( *this\parent\widget\align\indent\right - *this\parent\widget\align\indent\left - *this\parent\widget\fs*2 ) - *this\align\indent\left 
         EndIf
         If *this\align\anchor\top And *this\align\anchor\bottom = 0
-          *this\parent\align\auto\top = *this\align\indent\bottom
+          *this\parent\widget\align\auto\top = *this\align\indent\bottom
         EndIf
         If *this\align\anchor\bottom And *this\align\anchor\top = 0
-          *this\parent\align\auto\bottom = ( *this\parent\align\indent\bottom - *this\parent\align\indent\top - *this\parent\fs*2 ) - *this\align\indent\top
+          *this\parent\widget\align\auto\bottom = ( *this\parent\widget\align\indent\bottom - *this\parent\widget\align\indent\top - *this\parent\widget\fs*2 ) - *this\align\indent\top
         EndIf
         
-        If ( *this\parent\align\auto\left Or
-             *this\parent\align\auto\top Or
-             *this\parent\align\auto\right Or
-             *this\parent\align\auto\bottom )
+        If ( *this\parent\widget\align\auto\left Or
+             *this\parent\widget\align\auto\top Or
+             *this\parent\widget\align\auto\right Or
+             *this\parent\widget\align\auto\bottom )
           
-          ;         Protected parent_width = ( *this\parent\align\indent\right - *this\parent\align\indent\left - *this\parent\fs*2 )
-          ;         Protected parent_height = ( *this\parent\align\indent\bottom - *this\parent\align\indent\top - *this\parent\fs*2 )
+          ;         Protected parent_width = ( *this\parent\widget\align\indent\right - *this\parent\widget\align\indent\left - *this\parent\widget\fs*2 )
+          ;         Protected parent_height = ( *this\parent\widget\align\indent\bottom - *this\parent\widget\align\indent\top - *this\parent\widget\fs*2 )
           
           ; loop enumerate widgets
-          If StartEnumerate( *this\parent ) 
+          If StartEnumerate( *this\parent\widget ) 
             If Widget( )\align 
               If Widget( )\align\anchor\left And Widget( )\align\anchor\right And 
                  Widget( )\align\anchor\top And Widget( )\align\anchor\bottom 
                 
-                Widget( )\align\indent\top = Widget( )\parent\align\auto\top
-                Widget( )\align\indent\bottom = parent_height - Widget( )\parent\align\auto\bottom
-                Widget( )\align\indent\left = Widget( )\parent\align\auto\left
-                Widget( )\align\indent\right = parent_width - Widget( )\parent\align\auto\right
+                Widget( )\align\indent\top = Widget( )\parent\widget\align\auto\top
+                Widget( )\align\indent\bottom = parent_height - Widget( )\parent\widget\align\auto\bottom
+                Widget( )\align\indent\left = Widget( )\parent\widget\align\auto\left
+                Widget( )\align\indent\right = parent_width - Widget( )\parent\widget\align\auto\right
                 
-                Debug Widget( )\class +""+ Widget( )\parent\align\auto\left +" "+ Widget( )\parent\align\auto\right
+                Debug Widget( )\class +""+ Widget( )\parent\widget\align\auto\left +" "+ Widget( )\parent\widget\align\auto\right
               EndIf
               
               If flag & #__align_full = #__align_full
                 If ( Widget( )\align\anchor\left = 0 Or Widget( )\align\anchor\right = 0 ) And 
                    ( Widget( )\align\anchor\top = 1 And Widget( )\align\anchor\bottom = 1 )
-                  Widget( )\align\indent\top = Widget( )\parent\align\auto\top
-                  Widget( )\align\indent\bottom = parent_height - Widget( )\parent\align\auto\bottom
+                  Widget( )\align\indent\top = Widget( )\parent\widget\align\auto\top
+                  Widget( )\align\indent\bottom = parent_height - Widget( )\parent\widget\align\auto\bottom
                 EndIf
                 ;           
                 ;           ;                         If ( Widget( )\align\anchor\top = 0 Or Widget( )\align\anchor\bottom = 0 ) And 
                 ;           ;                            ( Widget( )\align\anchor\left = 1 And Widget( )\align\anchor\right = 1 )
                 ;           ;                           Debug Widget( )\text\string
-                ;           ;                           Widget( )\align\indent\left = Widget( )\parent\align\auto\left
-                ;           ;                           Widget( )\align\indent\right = parent_width - Widget( )\parent\align\auto\right
+                ;           ;                           Widget( )\align\indent\left = Widget( )\parent\widget\align\auto\left
+                ;           ;                           Widget( )\align\indent\right = parent_width - Widget( )\parent\widget\align\auto\right
                 ;           ;                         EndIf
               EndIf
             EndIf
@@ -15154,8 +15744,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; update parent childrens coordinate
-        Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-        PostRepaint( *this\root )
+        Resize( *this\parent\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+        PostEventRepaint( *this\root )
       EndIf
       
     EndProcedure
@@ -15168,12 +15758,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\attach\mode = mode
           
           ; get attach-element first-parent
-          *this\attach\parent = *parent
-          While *this\attach\parent\attach
-            *this\attach\parent = *this\attach\parent\parent
+          *this\attach\parent\widget = *parent
+          While *this\attach\parent\widget\attach
+            *this\attach\parent\widget = *this\attach\parent\widget\parent\widget
           Wend
-          *this\attach\parent = *this\attach\parent\parent
+          *this\attach\parent\widget = *this\attach\parent\widget\parent\widget
           
+          ;AddWidget( *this, *parent )
           SetParent( *this, *parent, #PB_Default )
           ProcedureReturn *this\attach
         EndIf
@@ -15759,7 +16350,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           _set_align_flag_( *this, *parent, flag )
-          SetParent( *this, *parent, #PB_Default )
+          AddWidget( *this, *parent )
           
           If flag & #__flag_noscrollbars = #False
             Area( *this, 1, 0,0,0,0, Bool(( \mode\buttons = 0 And \mode\lines = 0 ) = 0 ))
@@ -16152,7 +16743,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;
         If *this\child
-          *this\parent = *parent
+          *this\parent\widget = *parent
           *this\root = *parent\root
           *this\window = *parent\window
           ; 
@@ -16164,7 +16755,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           _set_align_flag_( *this, *parent, flag )
           
           If *parent
-            SetParent( *this, *parent, #PB_Default )
+            AddWidget( *this, *parent )
           EndIf
           
           ; splitter 
@@ -16211,6 +16802,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
         EndIf
+        
+        ;         ; AddObject( )
+        ;         DoEvents( *this, #PB_EventType_Create )
+        ;         PostEventRepaint( *this )
       EndWith
       
       ProcedureReturn *this
@@ -16403,7 +16998,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       If flag & #__flag_noscrollbars = #False
         Area( *this,1,0,0,0,0 )
@@ -16511,7 +17106,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Area( *this,1,0,0,0,0 )
       Resize( *this, x,y,width,height )
@@ -16570,7 +17165,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Area( *this,1,0,0,0,0 )
       Resize( *this, x,y,width,height )
@@ -16616,7 +17211,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Resize( *this, x,y,width,height )
       
@@ -16673,13 +17268,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       ;       If flag & #__flag_noscrollbars = #False
       ;         Area( *this, 1, 0, 0, 0, 0 )
       ;       EndIf
       Resize( *this, x,y,width,height )
       
+      ;         ; AddObject( )
+      ;         DoEvents( *this, #PB_EventType_Create )
+      ;         PostEventRepaint( *this )
       ProcedureReturn *this
     EndProcedure
     
@@ -16734,7 +17332,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\text\multiline =- CountString( Text, #LF$ )
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Resize( *this, x,y,width,height )
       If Text.s
@@ -16782,7 +17380,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\text\padding\x = *this\_box_\width + 8
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Resize( *this, x,y,width,height )
       If Text.s
@@ -16822,7 +17420,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\color\front[#__s_1] = Color
       
       _set_align_flag_( *this, *parent, flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       Resize( *this, x,y,width,height )
       If Text.s
@@ -16886,7 +17484,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ; *this\ToolBarHeight = 3
       
       _set_align_flag_( *this, *parent, *this\flag )
-      SetParent( *this, *parent, #PB_Default )
+      AddWidget( *this, *parent )
       
       ;;;If flag & #__flag_noscrollbars = #False ; bug windows
       Area( *this, 1, 0,0,0,0, Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
@@ -16945,7 +17543,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;*this\text\align\horizontal = Bool( Not *this\text\align\anchor\left And Not *this\text\align\anchor\right )
         
         _set_align_flag_( *this, *parent, flag )
-        SetParent( *this, *parent, #PB_Default )
+        AddWidget( *this, *parent )
         
         
         Resize( *this, x,y,width,height )
@@ -17106,7 +17704,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ForEach *row( )
           If *row( )\visible And Not *row( )\hide 
-            x = *row( )\x - _scroll_x_ - Bool(*row()\parent Or *row( )\count\childrens) * *this\row\sublevelsize
+            x = *row( )\x - _scroll_x_ - Bool(*row( )\parent Or *row( )\count\childrens) * *this\row\sublevelsize
             y = *row( )\y - _scroll_y_
             
             If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
@@ -17117,7 +17715,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ; for the tree horizontal line
-            If *row()\parent
+            If *row( )\parent
               Line((x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
             EndIf
             
@@ -17138,7 +17736,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ForEach *row( )
           If *row( )\visible And Not *row( )\hide 
-            x = *row( )\x - _scroll_x_ - Bool(*row()\parent Or *row( )\count\childrens) * *this\row\sublevelsize
+            x = *row( )\x - _scroll_x_ - Bool(*row( )\parent Or *row( )\count\childrens) * *this\row\sublevelsize
             y = *row( )\y - _scroll_y_
             
             ; for the tree vertical line
@@ -17158,7 +17756,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               Line((x + *row( )\button\x+*row( )\button\width/2), (y+*row( )\height/2), 5, 1, *row( )\color\line )
             ElseIf Not (*this\mode\buttons And *row( )\count\childrens) Or *row( ) = *this\row\first Or *row( ) = *this\row\last
               If *row( ) = *this\row\first Or *row( ) = *this\row\last
-                x + Bool(*row()\parent Or *row( )\count\childrens) * *this\row\sublevelsize
+                x + Bool(*row( )\parent Or *row( )\count\childrens) * *this\row\sublevelsize
               EndIf
               Line((x + *row( )\button\x+*row( )\button\width/2) - minus, (y+*row( )\height/2), 7, 1, *row( )\color\line )
             EndIf
@@ -17175,7 +17773,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ForEach *row( )
           If *row( )\visible And Not *row( )\hide 
-            x = *row( )\x - _scroll_x_ - Bool(*row()\parent Or *row( )\count\childrens) * *this\row\sublevelsize
+            x = *row( )\x - _scroll_x_ - Bool(*row( )\parent Or *row( )\count\childrens) * *this\row\sublevelsize
             y = *row( )\y - _scroll_y_
             
             ; for the tree vertical line
@@ -17192,7 +17790,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             If *row( ) = *this\row\first Or *row( ) = *this\row\last Or (*row( )\count\childrens And *row( )\sublevel = 0)
-              x + Bool(*row()\parent Or *row( )\count\childrens) * *this\row\sublevelsize
+              x + Bool(*row( )\parent Or *row( )\count\childrens) * *this\row\sublevelsize
             EndIf
             
             If Not ( *this\mode\buttons And *row( )\count\childrens And *row( )\sublevel = 0 )
@@ -17215,8 +17813,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If *row( )\parent And *this\mode\check = #__m_optionselect
               ; option
               _draw_button_( 1, x, y, *row( )\checkbox\width, *row( )\checkbox\height, *row( )\checkbox\___state , 4 );, \color )
-            Else                                                                                                  ;If Not ( *this\mode\buttons And *row( )\count\childrens And *this\mode\check = #__m_optionselect )
-                                                                                                                  ; check
+            Else                                                                                                      ;If Not ( *this\mode\buttons And *row( )\count\childrens And *this\mode\check = #__m_optionselect )
+                                                                                                                      ; check
               _draw_button_( 3, x, y, *row( )\checkbox\width, *row( )\checkbox\height, *row( )\checkbox\___state , 2 );, \color )
             EndIf
           EndIf    
@@ -17625,14 +18223,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;         EndIf
       ;         
       ;         
-      ;         If *this\parent
-      ;           If test_draw_box_clip2_type = *this\parent\type
+      ;         If *this\parent\widget
+      ;           If test_draw_box_clip2_type = *this\parent\widget\type
       ;             draw_mode( #PB_2DDrawing_Outlined )
-      ;             Box( *this\parent\x[#__c_clip2], *this\parent\y[#__c_clip2], *this\parent\width[#__c_clip2], *this\parent\height[#__c_clip2], $ff00ff00 )
+      ;             Box( *this\parent\widget\x[#__c_clip2], *this\parent\widget\y[#__c_clip2], *this\parent\widget\width[#__c_clip2], *this\parent\widget\height[#__c_clip2], $ff00ff00 )
       ;           EndIf
-      ;           If test_draw_box_inner_type = *this\parent\type
+      ;           If test_draw_box_inner_type = *this\parent\widget\type
       ;             draw_mode( #PB_2DDrawing_Outlined )
-      ;             Box( *this\parent\x[#__c_inner], *this\parent\y[#__c_inner], *this\parent\width[#__c_inner], *this\parent\height[#__c_inner], $ffff0000 )
+      ;             Box( *this\parent\widget\x[#__c_inner], *this\parent\widget\y[#__c_inner], *this\parent\widget\width[#__c_inner], *this\parent\widget\height[#__c_inner], $ffff0000 )
       ;           EndIf
       ;         EndIf
       ;         ; ENDTEST
@@ -17890,8 +18488,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If Not *this\last\widget 
           DrawLast( *this )
         EndIf
-        If *this\position & #PB_List_Last And *this\parent 
-          DrawLast( *this\parent )
+        If *this\position & #PB_List_Last And *this\parent\widget 
+          DrawLast( *this\parent\widget )
+        EndIf
+        
+        If *this\data
+          DrawingMode( #PB_2DDrawing_Transparent )
+          DrawText(  *this\x, *this\y, Str(*this\data), 0)
         EndIf
         
         ;
@@ -17937,41 +18540,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If Not ( transform( ) And transform( )\grab )
           If _is_root_( *this )
             If *this\root\canvas\repaint = #True
-              If *this\root\color\back
-                DrawingMode( #PB_2DDrawing_AlphaBlend )
-                Box(0,0,*this\root\width, *this\root\height, *this\root\color\back)
-              Else
-                CompilerIf  #PB_Compiler_OS = #PB_OS_MacOS
-                  ; good transparent canvas
-                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-                CompilerElse
-                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
-                CompilerEndIf
-              EndIf
-              
-              If *this\image\id Or *this\image[#__img_background]\id
-                If *this\image\change <> 0
-                  _set_align_x_( *this\image, *this\image, *this\width[#__c_inner], 0 )
-                  _set_align_y_( *this\image, *this\image, *this\height[#__c_inner], 270 )
-                  *this\image\change = 0
-                EndIf
-                
-                draw_mode_alpha( #PB_2DDrawing_Default )
-                
-                ; background image draw 
-                If *this\image[#__img_background]\id
-                  DrawAlphaImage( *this\image[#__img_background]\id,
-                                  *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                                  *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
-                EndIf
-                
-                ; scroll image draw
-                If *this\image\id
-                  DrawAlphaImage( *this\image\id,
-                                  *this\x[#__c_inner] + *this\x[#__c_required] + *this\image\x,
-                                  *this\y[#__c_inner] + *this\y[#__c_required] + *this\image\y, *this\color\_alpha )
-                EndIf
-              EndIf
+              CompilerIf  #PB_Compiler_OS = #PB_OS_MacOS
+                ; good transparent canvas
+                FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+              CompilerElse
+                FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
+              CompilerEndIf
             EndIf
             
             ;
@@ -18927,11 +19501,41 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
       EndIf
       
+      If repaint
+        *this\state\repaint = #True
+      EndIf
       ProcedureReturn repaint
     EndProcedure
     
     Procedure DoEvents( *this._s_WIDGET, eventtype.l )
       Protected Repaint, mouse_x.l = Mouse( )\x, mouse_y.l = Mouse( )\y, _wheel_x_.b = 0, _wheel_y_.b = 0
+      
+      Select eventtype
+        Case #PB_EventType_LeftButtonDown,
+             #PB_EventType_LeftButtonUp,
+             #PB_EventType_MouseEnter,
+             #PB_EventType_MouseLeave,
+             #PB_EventType_StatusChange,
+             ;             ;; #PB_EventType_Repaint,
+             ;              #PB_EventType_Create,
+             ;              #PB_EventType_Focus,
+             ;              #PB_EventType_LostFocus,
+             ;              #PB_EventType_DragStart,
+          #PB_EventType_Drop
+          
+          *this\state\repaint = #True
+      EndSelect
+      
+      Select eventtype
+        Case #PB_EventType_Create,
+             #PB_EventType_Focus,
+             #PB_EventType_LostFocus,
+             #PB_EventType_DragStart,
+             #PB_EventType_Drop
+          
+          ;  Debug " DoEvent - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
+          ; *this\state\repaint = #True
+      EndSelect
       
       ;       If *this\event
       ;         *this\event\type = eventtype
@@ -19070,7 +19674,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               If *this\state\flag & #__s_collapse
                 ;Debug "collapsed"
-                Display( *this, *this\parent );, *this\x[#__c_frame], *this\y[#__c_frame] )+ *this\height[#__c_frame] )
+                Display( *this, *this\parent\widget );, *this\x[#__c_frame], *this\y[#__c_frame] )+ *this\height[#__c_frame] )
               EndIf
               
               Repaint = #True
@@ -19125,7 +19729,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;If *this\color\state = #__s_2
             SetState( *this, Bool( Bool( *this\state\flag & #__s_check ) ! 1 ))
             
-            Send( #__event_LeftClick, *this ) 
+            ;Send( #__event_LeftClick, *this ) 
+            Post( eventtype, *this, #PB_All, 0 )
             ;EndIf
           EndIf
           
@@ -19219,37 +19824,47 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\color\back = $FFFF0090
         
       EndIf
+      ;       
+      ;       ;   If *item
+      ;       ;     
+      ;       ;     If *item\state\enter
+      ;       ;       If *this\state\press
+      ;       ;         *item\color\back = $00F7FF
+      ;       ;       Else
+      ;       ;         *item\color\back = $301DE8
+      ;       ;       EndIf
+      ;       ;       
+      ;       ;     Else
+      ;       ;       If eventtype = #PB_EventType_Repaint
+      ;       ;         *item\color\back = $F3F3F3
+      ;       ;       Else
+      ;       ;         *item\color\back = $13FF00
+      ;       ;       EndIf
+      ;       ;     EndIf
+      ;       ;     
+      ;       ;     If *item\state\press
+      ;       ;       If *item\state\drag 
+      ;       ;         *item\color\back = $FFB1F8
+      ;       ;       Else
+      ;       ;         *item\color\back = $FFAA00
+      ;       ;       EndIf
+      ;       ;       
+      ;       ;     ElseIf *item\state\focus
+      ;       ;       *item\color\back = $FF0090
+      ;       ;       
+      ;       ;     EndIf
+      ;       ;     *this\state\repaint = #True
+      ;       ;   EndIf
       
-      ;   If *item
-      ;     
-      ;     If *item\state\enter
-      ;       If *this\state\press
-      ;         *item\color\back = $00F7FF
-      ;       Else
-      ;         *item\color\back = $301DE8
-      ;       EndIf
-      ;       
-      ;     Else
-      ;       If eventtype = #PB_EventType_Repaint
-      ;         *item\color\back = $F3F3F3
-      ;       Else
-      ;         *item\color\back = $13FF00
-      ;       EndIf
-      ;     EndIf
-      ;     
-      ;     If *item\state\press
-      ;       If *item\state\drag 
-      ;         *item\color\back = $FFB1F8
-      ;       Else
-      ;         *item\color\back = $FFAA00
-      ;       EndIf
-      ;       
-      ;     ElseIf *item\state\focus
-      ;       *item\color\back = $FF0090
-      ;       
-      ;     EndIf
-      ;     *this\state\repaint = #True
-      ;   EndIf
+      
+      ;
+      If *this\state\repaint = #True
+        *this\state\repaint = #False
+        
+        ;; Debug " PostReDraw - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
+        PostEventRepaint( *this\root ) ; ReDraw( *this\root )
+      EndIf
+      
       ProcedureReturn 1;Repaint
     EndProcedure
     
@@ -19267,22 +19882,47 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Case #__event_mouseEnter
             ChangeCurrentRoot( GadgetID(Canvas) )
             
-          Case #__event_repaint 
-            If EventData( ) <> #PB_Ignore
-              ChangeCurrentRoot( GadgetID(Canvas) )
-              
-              ;If #debug_repaint
-              Debug " - -  Canvas repaint - -  " ; + widget( )\row\count
-                                                 ;EndIf
-              Repaint = 1
-            EndIf
-            
           Case #__event_Resize : ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             ;If Not _is_root_container_( *this )
             Repaint = Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )  
+            ReDraw( Root( ) ) 
             ;EndIf
             Repaint = 1
         EndSelect
+        
+        If eventtype = #PB_EventType_Repaint
+          If EventData( ) <> #PB_Ignore
+            PushMapPosition( Root( ) )
+            ChangeCurrentRoot( GadgetID(Canvas) )
+            ;;; Debug "----------- canvas "+ Canvas +" --------------"
+            ForEach widget( )
+              If widget( )\root\canvas\gadget = Canvas 
+                PushListPosition( widget( ) )
+                
+                ;                 Select EventData( )
+                ;                   Case #PB_EventType_Create
+                ;                     ; DoEvents( widget( ), #PB_EventType_Create )
+                ;                     If widget( )\state\focus = #True
+                ;                       widget( )\state\focus = #False
+                ;                       SetActive( widget( ) ) 
+                ;                     EndIf
+                ;                 EndSelect
+                
+                widget( )\state\repaint = #False
+                DoEvents( widget( ), eventtype )
+                PopListPosition( widget( ) )
+              Else
+                Debug "repaint error widget( )"
+              EndIf
+            Next
+            
+            ;Root( )\canvas\repaint = #True
+            ;;; Debug " ReDraw - " + Canvas +" "+ Root( ) +" #PB_EventType_Repaint"
+            ReDraw( Root( ) )
+            PopMapPosition( Root( ) )
+          EndIf
+        EndIf
+        
         
         ; init default value
         If eventtype = #__event_LeftButtonDown
@@ -19592,24 +20232,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
         ElseIf eventtype = #__event_Focus
-          If FocusedWidget( )                          And Not FocusedWidget( )\_a_transform 
-            Repaint | SetActive( FocusedWidget( ) ) 
-          Else
-            If GetActive( ) 
-              If GetActive( )\gadget                 And Not GetActive( )\gadget\_a_transform 
-                Repaint | SetActive( GetActive( )\gadget ) 
-              ElseIf                                     Not GetActive( )\_a_transform 
-                Repaint | SetActive( GetActive( ) ) 
-              EndIf
-            Else
-              If EnteredWidget( )                      And Not EnteredWidget( )\_a_transform
-                Repaint = SetActive( EnteredWidget( )) 
-              EndIf
-            EndIf
-          EndIf
-          
+          ;           If FocusedWidget( )                          And Not FocusedWidget( )\_a_transform 
+          ;             Repaint | SetActive( FocusedWidget( ) ) 
+          ;           Else
+          ;             If GetActive( ) 
+          ;               If GetActive( )\gadget                 And Not GetActive( )\gadget\_a_transform 
+          ;                 Repaint | SetActive( GetActive( )\gadget ) 
+          ;               ElseIf                                     Not GetActive( )\_a_transform 
+          ;                 Repaint | SetActive( GetActive( ) ) 
+          ;               EndIf
+          ;             Else
+          ;               If EnteredWidget( )                      And Not EnteredWidget( )\_a_transform
+          ;                 Repaint = SetActive( EnteredWidget( )) 
+          ;               EndIf
+          ;             EndIf
+          ;           EndIf
+          ;           
         ElseIf eventtype = #__event_LostFocus
-          Repaint = SetActive( 0 ) 
+          ;           Repaint = SetActive( 0 ) 
           
         ElseIf eventtype = #__event_LeftButtonDown Or
                eventtype = #__event_MiddleButtonDown Or
@@ -19645,8 +20285,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   mouse( )\delta\y = mouse( )\y - EnteredWidget( )\y[#__c_container]
                   
                   If Not _is_child_integral_( EnteredWidget( ))
-                    mouse( )\delta\x - EnteredWidget( )\parent\x[#__c_required]
-                    mouse( )\delta\y - EnteredWidget( )\parent\y[#__c_required]
+                    mouse( )\delta\x - EnteredWidget( )\parent\widget\x[#__c_required]
+                    mouse( )\delta\y - EnteredWidget( )\parent\widget\y[#__c_required]
                   EndIf
                 EndIf
               EndIf
@@ -19655,7 +20295,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; do events down
             If eventtype = #__event_LeftButtonDown
               ; set active widget
-              If GetActiveGadget( ) = EnteredWidget( )\root\canvas\gadget                  And Not EnteredWidget( )\_a_transform 
+              If FocusedWidget( ) <> EnteredWidget( ) 
                 Repaint | SetActive( EnteredWidget( ))
               EndIf
               Repaint | DoEvents( EnteredWidget( ), #__event_LeftButtonDown )
@@ -19835,10 +20475,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
         EndIf
         
-        ; repaints all elements
-        If Repaint 
-          ReDraw( Root( ))
-        EndIf
+        ;         ; repaints all elements
+        ;         If Repaint 
+        ;           ReDraw( Root( ))
+        ;         EndIf
         
         ; reset
         If mouse( )\change <> #False
@@ -19850,13 +20490,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure EventDeactive( )
-      Protected canvas = GetWindowData( EventWindow( ))
-      ChangeCurrentRoot( GadgetID(Canvas) )
-      
-      Debug #PB_Compiler_Procedure + "( )"
-      If SetActive( 0 )
-        ReDraw( Root( ))
-      EndIf 
+      ;       Protected canvas = GetWindowData( EventWindow( ))
+      ;       ChangeCurrentRoot( GadgetID(Canvas) )
+      ;       
+      ;       Debug #PB_Compiler_Procedure + "( )"
+      ;       If SetActive( 0 )
+      ;         ReDraw( Root( ))
+      ;       EndIf 
     EndProcedure
     
     Procedure EventResize( )
@@ -19920,9 +20560,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If Not ChangeCurrentRoot( g ) 
         result = AddMapElement( Root( ), Str( g ) )
         Root( ) = AllocateStructure( _s_root )
+        Root( )\type = #PB_GadgetType_Container
+        Root( )\container = #PB_GadgetType_Container
+        
         Root( )\class = "Root"
         Root( )\root = Root( )
-        Root( )\parent = Root( )
         Root( )\window = Root( )
         
         Root( )\color = _get_colors_()
@@ -19935,22 +20577,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         Root( )\canvas\gadget = Canvas
         Root( )\canvas\address = g
         
+        AddWidget( Root(), Root() )
+        
         If flag & #PB_Window_NoGadgets = #False
-          OpenList( Root( ))
+          OpenedWidget( ) = Root( )
+          ; OpenList( Root( ))
         EndIf
         
         If flag & #PB_Window_NoActivate = #False
-          SetActive( Root( ))
+          ; Root( )\state\focus = #True
+          FocusedWidget( ) = Root( )
+          ; SetActive( Root( ))
         EndIf 
         
-        AddElement( Widget() )
-        Widget() = Root()
-        
-        ;;SetParent( Root(), Root() )
         Resize( Root( ), #PB_Ignore,#PB_Ignore,width,height ) ;??
         
         ; post repaint canvas event
-        PostEventCanvas( Root( )) 
+        PostEvent( #PB_Event_Gadget, Root( )\canvas\window, Root( )\canvas\gadget, #PB_EventType_Repaint, #PB_EventType_Create )
+        BindGadgetEvent( Root( )\canvas\gadget, @EventHandler( ))
       EndIf
       
       If g
@@ -19969,8 +20613,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           SetWindowPos_( g, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
         CompilerEndIf
       EndIf
-      bind(-1,-1)
-  
+      
+      ;bind(-1,-1)
+      
       ProcedureReturn Root( )
     EndProcedure
     
@@ -20066,7 +20711,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         If *parent
           If Root( ) = *parent 
-            Root( )\parent = *this
+            Root( )\parent\widget = *this
           EndIf
         Else
           If Root( )\canvas\container > 1
@@ -20082,13 +20727,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;
         _set_align_flag_( *this, *parent, flag )
+        AddWidget( *this, *parent )
+        
         If *parent And
            *this\child = 0 And 
            SetAttachment( *this, *parent, 0 )
           x - *parent\x[#__c_container] - *parent\fs[1]
           y - *parent\y[#__c_container] - *parent\fs[2] 
-        Else
-          SetParent( *this, *parent, #PB_Default )
         EndIf
         Resize( *this, x,y,width,height )
         
@@ -20174,28 +20819,28 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If \tab\widget
           EndIf
           
-          If *this\parent 
-            If *this\parent\scroll\v = *this
-              FreeStructure( *this\parent\scroll\v ) : *this\parent\scroll\v = 0
+          If *this\parent\widget 
+            If *this\parent\widget\scroll\v = *this
+              FreeStructure( *this\parent\widget\scroll\v ) : *this\parent\widget\scroll\v = 0
             EndIf
-            If *this\parent\scroll\h = *this
-              FreeStructure( *this\parent\scroll\h )  : *this\parent\scroll\h = 0
+            If *this\parent\widget\scroll\h = *this
+              FreeStructure( *this\parent\widget\scroll\h )  : *this\parent\widget\scroll\h = 0
             EndIf
             
-            If *this\parent\type = #__type_Splitter
-              If *this\parent\gadget[#__split_1] = *this
-                FreeStructure( *this\parent\gadget[#__split_1] ) : *this\parent\gadget[#__split_1] = 0
+            If *this\parent\widget\type = #__type_Splitter
+              If *this\parent\widget\gadget[#__split_1] = *this
+                FreeStructure( *this\parent\widget\gadget[#__split_1] ) : *this\parent\widget\gadget[#__split_1] = 0
               EndIf
-              If *this\parent\gadget[#__split_2] = *this
-                FreeStructure( *this\parent\gadget[#__split_2] )  : *this\parent\gadget[#__split_2] = 0
+              If *this\parent\widget\gadget[#__split_2] = *this
+                FreeStructure( *this\parent\widget\gadget[#__split_2] )  : *this\parent\widget\gadget[#__split_2] = 0
               EndIf
             EndIf
           EndIf
           
           
-          Debug  " free - " + ListSize( Widget( ))  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
-          If *this\parent And
-             *this\parent\count\childrens 
+          Debug  " free - " + ListSize( Widget( ))  + " " +  *this\root\count\childrens  + " " +  *this\parent\widget\count\childrens
+          If *this\parent\widget And
+             *this\parent\widget\count\childrens 
             
             _position_move_( *this )
             
@@ -20207,8 +20852,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 
                 If Widget( )\root\count\childrens > 0 
                   Widget( )\root\count\childrens - 1
-                  If Widget( )\parent <> Widget( )\root
-                    Widget( )\parent\count\childrens - 1
+                  If Widget( )\parent\widget <> Widget( )\root
+                    Widget( )\parent\widget\count\childrens - 1
                   EndIf
                   If StickyWindow( ) = Widget( )
                     StickyWindow( ) = #Null
@@ -20224,14 +20869,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             ForEver
           EndIf
-          Debug  "   free - " + ListSize( Widget( ))  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
+          Debug  "   free - " + ListSize( Widget( ))  + " " +  *this\root\count\childrens  + " " +  *this\parent\widget\count\childrens
           
           
           If EnteredWidget( ) = *this
-            EnteredWidget( ) = *this\parent
+            EnteredWidget( ) = *this\parent\widget
           EndIf
           If FocusedWidget( ) = *this
-            FocusedWidget( ) = *this\parent
+            FocusedWidget( ) = *this\parent\widget
           EndIf
           
           ; *this = 0
@@ -20268,262 +20913,385 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
+
 CompilerIf #PB_Compiler_IsMainFile
+  
   EnableExplicit
   UseLIB(widget)
   
- Enumeration 
-  #window_0
-  #window
-EndEnumeration
-
-
-; Shows using of several panels...
-Procedure BindEvents( )
-  Protected *this._s_WIDGET = EventWidget( )
-  Protected eventtype = WidgetEventType( )
+  Enumeration 
+    #window_0
+    #window
+  EndEnumeration
   
-  Select eventtype
-      ;       Case #PB_EventType_Draw          : Debug "draw"         
-    Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-    Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
-    Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
-    Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
-    Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
-    Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
-    Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
-    Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
-    Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
-    Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
-    Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
-    Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
-    Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
-    Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
-    Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
-  EndSelect
-EndProcedure
-
-OpenWindow(#window_0, 0, 0, 300, 300, "PanelGadget", #PB_Window_SystemMenu )
-
-Define *w, editable
-Define *root._s_WIDGET = Open(#window_0,10,10,300-20,300-20)
-;BindWidgetEvent( *root, @BindEvents( ) )
-
-SetData(*root, 1 )
-Define *p._s_WIDGET = Container( 80,80, 150,150 ) : SetData(*p, 2 )
-Define *c._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
-SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 4)
-SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 5)
-SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 6)
-Define *p2._s_WIDGET = Container( 40,40, 70,70, #__Flag_NoGadgets ) : SetData(*p2, 7 )
-CloseList( )
-CloseList( )
-SetParent( *c, *p2 )
-;SetParentWidget( *c,*p )
-
-;SetParentWidget( *c,*p )
-
-; ForEach *p\child()
-;   Debug "*p - "+*p\child()\x +" "+ *p\child()\width
-; Next
-; 
-; ForEach *p2\child()
-;   Debug "*p2 - "+*p2\child()\x +" "+ *p2\child()\width
-; Next
-
-OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-
-
-Define *w, editable
-Define *root1._s_WIDGET = Open(#window,10,10,300-20,300-20)
-;BindWidgetEvent( *root1, @BindEvents( ) )
-
-
-Define *root2._s_WIDGET = Open(#window,10,300,300-20,300-20)
-;BindWidgetEvent( *root2, @BindEvents( ) )
-
-
-Define *root3._s_WIDGET = Open(#window,300,10,300-20,600-20)
-;BindWidgetEvent( *root3, @BindEvents( ) )
-
-Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600-20)
-;BindWidgetEvent( *root4, @BindEvents( ) )
-
-
-
-Define count = 2;0000
-#st = 1
-Global  mx=#st,my=#st
-
-Define time = ElapsedMilliseconds( )
-
-OpenList( *root1 )
-SetData(Container(20, 20, 180, 180, editable), 1)
-SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
-SetData(Container(40, 20, 180, 180, editable), 3)
-SetData(Container(20, 20, 180, 180, editable), 4)
-
-SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
-SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
-SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
-
-;   SetData(Splitter(5, 80, 180, 50, 
-;                    Container(0,0,0,0, #__Flag_NoGadgets|editable), 
-;                    Container(0,0,0,0, #__Flag_NoGadgets|editable),
-;                    #PB_Splitter_Vertical|editable), 8) 
-
-CloseList( )
-CloseList( )
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
-SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-CloseList( )
-CloseList( )
-CloseList( )
-CloseList( )
-
-;
-OpenList( *root2 )
-SetData(*root2, 11 )
-Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-SetData(*p3, 12 )
-SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 13 )
-SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 14 )
-SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
-SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
-CloseList( )
-CloseList( )
-SetParent( *p2,*p3 )
-
-ChangeCurrentRoot( *root\root\canvas\address )
-Debug ""
-ForEach Widget()
-  If Widget()\parent
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width ;+" "+ ListSize(Widget()\parent\child())
-  Else
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
-  EndIf
-Next
-
-ChangeCurrentRoot( *root2\root\canvas\address )
-Debug "  "
-ForEach Widget()
-  If Widget()\parent
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width ;+" "+ ListSize(Widget()\parent\child())
-  Else
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
-  EndIf
-Next
-
-
-Define i
-OpenList( *root3 )
-*w = Tree( 20,20, 100,260-20+300)
-For i=1 To 10;00000
-  AddItem(*w, i, "text-"+Str(i))
-Next
-
-*w = Tree( 100,30, 100,260-20+300)
-For i=1 To 10;00000
-  AddItem(*w, i, "text-"+Str(i))
-Next
-
-Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
-
-
-;
-Define *window._s_WIDGET
-Define i,y = 5
-OpenList( *root4 )
-For i = 1 To 4
-  Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-  Container(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
-  Button(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
-  Button(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
-  CloseList( )                                     ; Gadget
-  y + 130
-Next
-
-; Define Window, Gadget
-; Debug "Begen enumerate window"
-; If StartWindow( )
-;   While NextWindow( @Window )
-;     Debug "Window "+Window
-;   Wend
-;   AbortWindow()
-; EndIf
-; ;   
-; ;   Debug "Begen enumerate all gadget"
-; ;   If StartGadget( )
-; ;     While NextGadget( @Gadget )
-; ;       Debug "Gadget "+Gadget
-; ;     Wend
-; ;     AbortGadget()
-; ;   EndIf
-; ;   
-; ;   Window = 8
-; ;   
-; ;   Debug "Begen enumerate gadget window = "+ Str(Window)
-; ;   If StartGadget( )
-; ;     While NextGadget( @Gadget, Window )
-; ;       Debug "Gadget "+Str(Gadget) +" Window "+ Window
-; ;     Wend
-; ;     AbortGadget()
-; ;   EndIf
-; ;   
-; ;   
-; ;   Debug "Begen enumerate alls"
-; ;   ForEach Widget()
-; ;     If _is_window_( widget() )
-; ;       Debug "window "+ Widget()\index
-; ;     Else
-; ;       Debug "  gadget - "+ Widget()\index
-; ;     EndIf
-; ;   Next
-; ;   
-; ;  Debug "Begen enumerate window"
-; ;   If StartEnumerate( Root( ) )
-; ;     ;If _is_window_( widget( ) )
-; ;     Debug "window " + widget( )
-; ; ; ;     *window = widget()
-; ;     ;EndIf
-; ;     StopEnumerate( )
-; ;   EndIf
-; ;   
-; ; ;   Debug "Begen enumerate all gadget"
-; ; ;   If StartEnumerate( Root( ) )
-; ; ;     ;If Not _is_window_( widget( ) )
-; ; ;       Debug "gadget - "+widget( )
-; ; ;     ;EndIf
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-; ;   
-; ; ;   Define Window = 8
-; ; ;   ;*window = GetWidget( Window )
-; ; ;   
-; ; ;   Debug "Begen enumerate gadget window = "+ Window
-; ; ;   Debug "window "+ Window
-; ; ;   If StartEnumerate( *window )
-; ; ;     Debug "  gadget - "+ widget( )
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-; ; ;   
-; ; ;   
-; ; ;   Debug "Begen enumerate alls"
-; ; ;   If StartEnumerate( Root( ) )
-; ; ;     If _is_window_( widget() )
-; ; ;       Debug "window "+ Widget()\index
-; ; ;     Else
-; ; ;       Debug "  gadget - "+ Widget()\index
-; ; ;     EndIf
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-
+  
+  ; Shows using of several panels...
+  Procedure BindEvents( )
+    Protected *this._s_WIDGET = EventWidget( )
+    Protected eventtype = WidgetEventType( )
+    
+    Select eventtype
+        ;       Case #PB_EventType_Draw          : Debug "draw"         
+      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
+      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
+      Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
+      Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
+      Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
+      Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
+      Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
+      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
+      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
+      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
+      Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
+      Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
+      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
+      Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
+      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
+    EndSelect
+  EndProcedure
+  
+  OpenWindow(#window_0, 0, 0, 300, 300, "PanelGadget", #PB_Window_SystemMenu )
+  
+  Define *w, editable
+  Define *root._s_WIDGET = Open(#window_0,10,10,300-20,300-20)
+  ;BindWidgetEvent( *root, @BindEvents( ) )
+  
+  SetData(*root, 1 )
+  Define *p._s_WIDGET = Container( 80,80, 150,150 ) : SetData(*p, 2 )
+  Define *c._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
+  Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetData(*p2, 4 )
+  SetData(Container( 5,5, 70,70 ), 5 )
+  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 6)
+  CloseList( )
+  CloseList( )
+  SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 7)
+  SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 8)
+  CloseList( )
+  CloseList( )
+  
+  SetParent( *c, *p2 )
+  ;SetParentWidget( *c,*p )
+  
+  ;SetParentWidget( *c,*p )
+  
+  ; ForEach *p\child()
+  ;   Debug "*p - "+*p\child()\x +" "+ *p\child()\width
+  ; Next
+  ; 
+  ; ForEach *p2\child()
+  ;   Debug "*p2 - "+*p2\child()\x +" "+ *p2\child()\width
+  ; Next
+  
+  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  
+  
+  Define *w, editable
+  
+  Define *root0._s_WIDGET = Open(#window,10,10,300-20,300-20)
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  
+  Define *g0 = Container(10,10,200,200) : SetClass(widget(), "form_0") : SetData(widget(), 11)
+  CloseList()
+  
+  Define *g1 = Container(30,30,200,200) : SetClass(widget(), "form_1") : SetData(widget(), 21)
+  Button(10,10,80,30,"button_1_0") : SetData(widget(), 22)
+  Button(10,50,80,30,"button_1_1") : SetData(widget(), 23)
+  Button(10,90,80,30,"button_1_2") : SetData(widget(), 24)
+  CloseList()
+  
+  Define *g2 = Container(50,50,200,200) : SetClass(widget(), "form_2") : SetData(widget(), 31)
+  Button(10,10,80,30,"button_2_0") : SetData(widget(), 32)
+  Button(10,50,80,30,"button_2_1") : SetData(widget(), 33)
+  Button(10,90,80,30,"button_2_2") : SetData(widget(), 34)
+  CloseList()
+  
+  OpenList(*g0)
+  Button(10,10,80,30,"button_0_0") : SetData(widget(), 12)
+  Button(10,50,80,30,"button_0_1") : SetData(widget(), 13)
+  Button(10,90,80,30,"button_0_2") : SetData(widget(), 14)
+  CloseList()
+  
+  Define *root1._s_WIDGET = Open(#window,300,10,300-20,300-20)
+  ;BindWidgetEvent( *root1, @BindEvents( ) )
+  
+  
+  Define *root2._s_WIDGET = Open(#window,10,300,300-20,300-20)
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  
+  
+  Define *root3._s_WIDGET = Open(#window,300,300,300-20,300-20)
+  ;BindWidgetEvent( *root3, @BindEvents( ) )
+  
+  Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600-20)
+  ;BindWidgetEvent( *root4, @BindEvents( ) )
+  
+  
+  
+  Define count = 2;0000
+  #st = 1
+  Global  mx=#st,my=#st
+  
+  Define time = ElapsedMilliseconds( )
+  
+  OpenList( *root1 )
+  SetData(Container(20, 20, 180, 180, editable), 1)
+  SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
+  SetData(Container(40, 20, 180, 180, editable), 3)
+  SetData(Container(20, 20, 180, 180, editable), 4)
+  
+  SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
+  SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
+  SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
+  
+  ;   SetData(Splitter(5, 80, 180, 50, 
+  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable), 
+  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable),
+  ;                    #PB_Splitter_Vertical|editable), 8) 
+  
+  CloseList( )
+  CloseList( )
+  SetData(Container(10, 45, 70, 180, editable), 11) 
+  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+  SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
+  SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
+  SetData(Container(10, 45, 70, 180, editable), 11) 
+  SetData(Container(10, 5, 70, 180, editable), 11) 
+  SetData(Container(10, 5, 70, 180, editable), 11) 
+  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+  CloseList( )
+  CloseList( )
+  CloseList( )
+  CloseList( )
+  
+  ;
+  OpenList( *root2 )
+  SetData(*root2, 11 )
+  Define *p3._s_WIDGET = Container( 80,80, 150,150 )
+  SetData(*p3, 12 )
+  SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 13 )
+  ;;Define *p3._s_WIDGET = widget( )
+  SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 14 )
+  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
+  SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
+  CloseList( )
+  CloseList( )
+  
+  ;   ChangeCurrentRoot( *root\root\canvas\address )
+  ;   Debug ""
+  ;   ForEach Widget()
+  ;     If Widget()\parent\widget
+  ;       If Widget()\before\widget
+  ;         Debug " "+ Widget()\before\widget\data +" << "+ Widget()\data +" >>| "+ Widget()\last\widget\data +" - "+ Widget()\parent\widget\last\widget\data
+  ;       Else
+  ;         Debug "    << "+Widget()\data +" >>| "+ Widget()\last\widget\data +" - "+ Widget()\parent\widget\last\widget\data
+  ;       EndIf
+  ;     Else
+  ;       Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+  ;     EndIf
+  ;   Next
+  ;   
+     SetParent( *p2,*p3 )
+     SetParent( *p2,*p )
+     SetParent( *p2,*p3 )
+     SetParent( *p2,*p )
+     SetParent( *p2,*p3 )
+  ;   
+  Define parent.s = "  "
+  Define first.s = "  "
+  Define before.s = "  "
+  Define after.s = "  "
+  Define last.s = "  "
+  Define parentlast.s = "  "
+  Define parentfirst.s = "  "
+  
+  ChangeCurrentRoot( *root\root\canvas\address )
+  Debug ""
+  ForEach Widget()
+    If Widget()\parent\widget
+      If Widget()\before\widget
+        before = Str( Widget()\before\widget\data )
+      Else
+        before = "  "
+      EndIf
+      If Widget()\after\widget
+        after = Str( Widget()\after\widget\data )
+      Else
+        after = "  "
+      EndIf
+      
+      parent = Str( Widget()\parent\widget\data )
+      parentfirst = Str( Widget()\parent\widget\first\widget\data )
+      parentlast = Str( Widget()\parent\widget\last\widget\data )
+      
+    Else
+      Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+    EndIf
+    
+    If Widget()\first\widget
+      first = Str( Widget()\first\widget\data )
+    Else
+        first = "  "
+      EndIf
+    
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ Widget()\last\widget\data +" >>|| "+ parentlast +" - "+ Widget()\root\data +" - "+ parent
+      
+  Next
+  
+  ChangeCurrentRoot( *root0\root\canvas\address )
+  Debug ""
+  ForEach Widget()
+    If Widget()\parent\widget
+      Debug " "+Widget()\class +" - "+ Widget()\data +" - "+ Widget()\last\widget\data +" - "+ Widget()\parent\widget\last\widget\data
+    Else
+      Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+    EndIf
+  Next
+  
+  Define parent.s = "  "
+  Define first.s = "  "
+  Define before.s = "  "
+  Define after.s = "  "
+  Define last.s = "  "
+  Define parentlast.s = "  "
+  Define parentfirst.s = "  "
+  
+  ChangeCurrentRoot( *root2\root\canvas\address )
+  Debug ""
+  ForEach Widget()
+    If Widget()\parent\widget
+      If Widget()\before\widget
+        before = Str( Widget()\before\widget\data )
+      Else
+        before = "  "
+      EndIf
+      If Widget()\after\widget
+        after = Str( Widget()\after\widget\data )
+      Else
+        after = "  "
+      EndIf
+      
+      parent = Str( Widget()\parent\widget\data )
+      parentfirst = Str( Widget()\parent\widget\first\widget\data )
+      parentlast = Str( Widget()\parent\widget\last\widget\data )
+      
+    Else
+      Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+    EndIf
+    
+    If Widget()\first\widget
+      first = Str( Widget()\first\widget\data )
+    Else
+        first = "  "
+      EndIf
+    
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ Widget()\last\widget\data +" >>|| "+ parentlast +" - "+ Widget()\root\data +" - "+ parent
+      
+  Next
+  
+  
+  Define i
+  OpenList( *root3 )
+  *w = Tree( 20,20, 100,260-20+300)
+  For i=1 To 10;00000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
+  
+  *w = Tree( 100,30, 100,260-20+300)
+  For i=1 To 10;00000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
+  
+  Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
+  
+  
+  ;
+  Define *window._s_WIDGET
+  Define i,y = 5
+  OpenList( *root4 )
+  For i = 1 To 4
+    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
+    Container(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
+    Button(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
+    Button(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
+    CloseList( )                                     ; Gadget
+    y + 130
+  Next
+  
+  ; Define Window, Gadget
+  ; Debug "Begen enumerate window"
+  ; If StartWindow( )
+  ;   While NextWindow( @Window )
+  ;     Debug "Window "+Window
+  ;   Wend
+  ;   AbortWindow()
+  ; EndIf
+  ; ;   
+  ; ;   Debug "Begen enumerate all gadget"
+  ; ;   If StartGadget( )
+  ; ;     While NextGadget( @Gadget )
+  ; ;       Debug "Gadget "+Gadget
+  ; ;     Wend
+  ; ;     AbortGadget()
+  ; ;   EndIf
+  ; ;   
+  ; ;   Window = 8
+  ; ;   
+  ; ;   Debug "Begen enumerate gadget window = "+ Str(Window)
+  ; ;   If StartGadget( )
+  ; ;     While NextGadget( @Gadget, Window )
+  ; ;       Debug "Gadget "+Str(Gadget) +" Window "+ Window
+  ; ;     Wend
+  ; ;     AbortGadget()
+  ; ;   EndIf
+  ; ;   
+  ; ;   
+  ; ;   Debug "Begen enumerate alls"
+  ; ;   ForEach Widget()
+  ; ;     If _is_window_( widget() )
+  ; ;       Debug "window "+ Widget()\index
+  ; ;     Else
+  ; ;       Debug "  gadget - "+ Widget()\index
+  ; ;     EndIf
+  ; ;   Next
+  ; ;   
+  ; ;  Debug "Begen enumerate window"
+  ; ;   If StartEnumerate( Root( ) )
+  ; ;     ;If _is_window_( widget( ) )
+  ; ;     Debug "window " + widget( )
+  ; ; ; ;     *window = widget()
+  ; ;     ;EndIf
+  ; ;     StopEnumerate( )
+  ; ;   EndIf
+  ; ;   
+  ; ; ;   Debug "Begen enumerate all gadget"
+  ; ; ;   If StartEnumerate( Root( ) )
+  ; ; ;     ;If Not _is_window_( widget( ) )
+  ; ; ;       Debug "gadget - "+widget( )
+  ; ; ;     ;EndIf
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  ; ;   
+  ; ; ;   Define Window = 8
+  ; ; ;   ;*window = GetWidget( Window )
+  ; ; ;   
+  ; ; ;   Debug "Begen enumerate gadget window = "+ Window
+  ; ; ;   Debug "window "+ Window
+  ; ; ;   If StartEnumerate( *window )
+  ; ; ;     Debug "  gadget - "+ widget( )
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  ; ; ;   
+  ; ; ;   
+  ; ; ;   Debug "Begen enumerate alls"
+  ; ; ;   If StartEnumerate( Root( ) )
+  ; ; ;     If _is_window_( widget() )
+  ; ; ;       Debug "window "+ Widget()\index
+  ; ; ;     Else
+  ; ; ;       Debug "  gadget - "+ Widget()\index
+  ; ; ;     EndIf
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  
   Define event, handle, enter, result
   Repeat 
     event = WaitWindowEvent( )
@@ -20544,7 +21312,6 @@ Next
     EndIf
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

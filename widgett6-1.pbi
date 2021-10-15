@@ -163,6 +163,7 @@ Structure _s_OBJECT Extends _s_COORDINATE
   visible.b
   
   parent._s_OBJECT_TYPE
+  before._s_OBJECT_TYPE
   last._s_OBJECT_TYPE
   draw._s_COORDINATE
   color._s_COLOR
@@ -210,11 +211,11 @@ Structure _s_CANVAS
   ;*last._s_WIDGET
   ;*widget._s_WIDGET
   *parent._s_WIDGET 
+  List *child._s_WIDGET( ) ; Widget( )\ - current element
 EndStructure
 ;--     ROOT
 Structure _s_ROOT Extends _s_WIDGET
   canvas._s_CANVAS
-  List *list._s_WIDGET( ) ; Widget( )\ - current element
 EndStructure
 ;--     STRUCT
 Structure _s_STRUCT
@@ -288,7 +289,7 @@ EndMacro
 
 ;-
 Macro Widget( ) 
-  RootWidget( )\list( ) ;RootWidget( )\canvas\last
+  RootWidget( )\canvas\child( ) ;RootWidget( )\canvas\last
 EndMacro                ; Returns last created widget address
 
 Macro OpenedWidget( )
@@ -420,7 +421,7 @@ EndEnumeration
 ;- DECLARE
 ;{         }
 Declare DoWidgetEvents( *this._s_WIDGET, eventtype, *item._s_ROW = #Null )
-Declare SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET )
+Declare SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
 ;}
 
 
@@ -899,10 +900,10 @@ EndProcedure
 
 Procedure AddWidget( *this._s_WIDGET, *parent._s_WIDGET )
   If *parent\root
-    LastElement( *parent\root\list( ) )
-    *this\address[1] = AddElement( *parent\root\list( ) ) 
-    *this\index = ListIndex( *parent\root\list( )) 
-    *parent\root\list( ) = *this
+    LastElement( *parent\root\canvas\child( ) )
+    *this\address[1] = AddElement( *parent\root\canvas\child( ) ) 
+    *this\index = ListIndex( *parent\root\canvas\child( )) 
+    *parent\root\canvas\child( ) = *this
     
     If *this <> *parent
       LastElement( *parent\child( ) )
@@ -963,7 +964,7 @@ Procedure RemoveWidget( *this._s_WIDGET )
  ; FreeStructure( @*this )
 EndProcedure
 
-Procedure SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET )
+Procedure _SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
   Protected parent_change
   
   If *parent
@@ -994,21 +995,21 @@ Procedure SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET )
 ;       SplitList( *parent\child( ),*this\parent\widget\child( )  )
       
  ;       If *this\address[1]
-;         ChangeCurrentElement( *this\root\list( ), *this\address[1] )
+;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
 ;        ; DeleteElement( *this\parent\widget\child( ) )
 ;       EndIf
       
-     ; MoveElement( *this\root\list( ), #PB_List_After, *parent\address )
-      ;*this\address[1] = *this\root\list( )
+     ; MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+      ;*this\address[1] = *this\root\canvas\child( )
       
 ;         LastElement( *parent\child( ) )
 ;       *this\address = AddElement( *parent\child( ) )
 ;       *parent\child( ) = *this 
     
 ; ;       If *this\address[1]
-; ;         ChangeCurrentElement( *this\root\list( ), *this\address[1] )
-; ;         ;  DeleteElement( *this\root\list( ) )                           
-; ;         ; Debug *this\root\list( )\Data
+; ;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
+; ;         ;  DeleteElement( *this\root\canvas\child( ) )                           
+; ;         ; Debug *this\root\canvas\child( )\Data
 ; ;       EndIf
 ; ; ;       *this\parent\widget\count\childrens - 1
 ;       
@@ -1031,6 +1032,316 @@ Procedure SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET )
   EndIf
   
 EndProcedure
+
+Procedure __SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
+  Protected parent_change
+  
+  If *parent
+    
+    If *this\parent\widget
+      If *this\root <> *parent\root
+        If *this\address
+          Protected._s_WIDGET NewList *D(), NewList *C()
+          
+          ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+          SplitList( *this\root\canvas\child( ), *D() )
+          
+          If *this\last\widget\address
+            ChangeCurrentElement( *D(), *this\last\widget\address )
+            SplitList( *D(), *C(), 1 )
+            MergeLists( *C(), *this\root\canvas\child( ), #PB_List_After )
+          EndIf
+          
+          ForEach *D()
+             Debug *D()\data
+            *D()\root = *parent\root
+          Next
+          
+          If *parent\address
+            ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
+           ; MergeLists( *D(), *parent\root\canvas\child( ), #PB_List_After )
+          EndIf
+        EndIf
+        
+      Else
+;         Protected NewList *Buffer._s_WIDGET()
+;   
+;         If *this\last\widget
+;           ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+;           Repeat 
+;             If *this\root\canvas\child( ) = *this Or *this\root\canvas\child( )\parent = *this
+;               AddElement( *Buffer() ) : *Buffer() = *this\root\canvas\child( )
+;             EndIf
+;           Until NextElement( *this\root\canvas\child( ) ) = 0 
+;           
+;           LastElement( *Buffer() )
+;           Repeat 
+;             ChangeCurrentElement( *this\root\canvas\child( ), *Buffer( ) )
+;             MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+;           Until PreviousElement( *Buffer()) = 0
+;         EndIf
+        
+        If *this\address
+          ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+        EndIf
+        ; ;       MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+        ; ;       Protected *address = @*this\root\canvas\child( )
+        ; ;       
+        ; ;       If *this\count\childrens
+        ; ;        If *this\address
+        ; ;         ChangeCurrentElement( *this\root\canvas\child( ), *address )
+        ; ;       EndIf
+        ; ;       ; PushListPosition( *this\root\canvas\child( ) )
+        ; ;         Repeat
+        ; ;           If Child( *this\root\canvas\child( ), *this )
+        ; ;             Debug *this\root\canvas\child( )\data
+        ; ;             MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+        ; ;             
+        ; ;             *this\root\canvas\child( )\window = *parent\window
+        ; ;             *this\root\canvas\child( )\root = *parent\root
+        ; ;           EndIf
+        ; ;         Until NextElement( *this\root\canvas\child( )) = 0
+        ; ;        ; PopListPosition( *this\root\canvas\child( ) )
+        ; ;       EndIf
+        ; ;       
+        If *parent\last\widget
+          MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
+        EndIf
+        
+        If *this\count\childrens
+          ;         If root( ) <> *this\root
+          ;           ChangeCurrentRoot( *this\root\canvas\address )
+          ;         EndIf
+          Protected *root._S_root = *this\root
+          
+          ResetList( *root\canvas\child( ) )
+          While  NextElement( *root\canvas\child( ) ) ;ForEach *root\canvas\child( )
+           ; Debug *root\canvas\child( )\data
+            
+            If *root\canvas\child( )\data = 3;If Child( *root\canvas\child( ), *this )
+              PushListPosition( *root\canvas\child( ) )
+              MoveElement( *root\canvas\child( ), #PB_List_After, *this\address )
+              PopListPosition( *root\canvas\child( ) )
+              ;             *root\canvas\child( )\window = *parent\window
+              ;             *root\canvas\child( )\root = *parent\root
+            EndIf
+          Wend ; Next ; Until NextElement( *this\root\canvas\child( )) = 0 ;
+          
+          ;       ForEach *root\canvas\child( )
+          ;           Debug *root\canvas\child( )\data
+          ;         Next ; Until NextElement( *this\root\canvas\child( )) = 0 ;
+          ;         
+          
+          ;         While NextElement( *this\root\canvas\child( )) 
+          ;           If Child( *this\root\canvas\child( ), *this )
+          ;             MoveElement( *this\root\canvas\child( ), #PB_List_Before, _before_\address )
+          ;           EndIf
+          ;         Wend
+          ;         
+          ;         While PreviousElement( *this\root\canvas\child( )) 
+          ;           If Child( *this\root\canvas\child( ), *this )
+          ;             MoveElement( *this\root\canvas\child( ), #PB_List_After, *this\address )
+          ;           EndIf
+          ;         Wend
+        EndIf
+        
+        ;SplitList( *this\root\canvas\child( ), *parent\child( ) )
+        
+        
+        ;       ;Debug ""+ *this\parent\widget +" "+ *this\root
+        ;       If *this\address
+        ;         ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
+        ;        ; DeleteElement( *this\parent\widget\child( ) )
+        ;       EndIf
+        ;       If *this\address[1]
+        ;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
+        ;        ; DeleteElement( *this\parent\widget\child( ) )
+        ;       EndIf
+        ;       MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+        ;       ;SplitList( *this\child( ), *parent\child( ) )
+        
+        ;       If *this\address[1]
+        ;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
+        ;         ;  DeleteElement( *this\root\canvas\child( ) )                           
+        ;         ; Debug *this\root\canvas\child( )\Data
+        ;       EndIf
+        ; ;       *this\parent\widget\count\childrens - 1
+        
+        ;SelectElement(B(), 1)
+        ;   SplitList( *this\root\canvas\child( ), *parent\root\canvas\child( ) )
+        ;MergeLists( *parent\root\canvas\child( ), *this\child( ), #PB_List_After)
+        ; 
+      EndIf
+      parent_change = 1 
+    Else
+      AddWidget( *this, *parent )
+    EndIf
+    
+;     If *this\row
+;       If item < 0 
+;         item = 0
+;       EndIf
+;       
+;       PushListPosition( *this\row\_s( ) )
+;       *this\parent\row = SelectElement( *this\row\_s( ), item )
+;       PopListPosition( *this\row\_s( ) )
+;     EndIf
+    
+    *parent\count\childrens + 1
+    *this\parent\widget = *parent
+    *this\root = *parent\root
+    *this\window = *parent\window
+    *this\count\parents = *parent\count\parents + 1
+    
+    *this\before\widget = *parent\last\widget
+    *parent\last\widget = *this
+    
+    If parent_change
+      ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    EndIf
+  EndIf
+  
+EndProcedure
+
+Procedure SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
+      Protected parent_change, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+      
+      If *parent
+        If *this\parent\widget
+          If *this\parent\widget = *parent
+            ProcedureReturn #False
+          EndIf
+          
+          ;PostRepaint( *this\parent\widget )
+          ;PostRepaint( *parent )
+          
+          *lastParent = *this\parent\widget
+                  If RootWidget( ) <> *this\root
+                    ChangeCurrentRootWidget( *this\root\canvas\address )
+                  EndIf
+          
+          
+          If *this\address
+            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+            AddElement( *D( ) )
+            *D( ) = *this\root\canvas\child( )
+            
+            If *this\root\canvas\child( )\count\childrens
+              PushListPosition( *this\root\canvas\child( ) )
+              While NextElement( *this\root\canvas\child( ) )
+                If Not ChildWidget( *this\root\canvas\child( ), *this ) 
+                  Break
+                EndIf
+                
+                AddElement( *D( ) )
+                *D( ) = *this\root\canvas\child( )
+                *D( )\window = *parent\window
+                *D( )\root = *parent\root
+               ;; Debug " children - "+ *D()\data +" - "+ *this\data
+                
+              Wend 
+              PopListPosition( *this\root\canvas\child( ) )
+            EndIf
+            
+            ; move inside the list
+            ForEach *D( )
+              ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
+              ;;Debug " inside "+*D( )\data +" "+ *this\root\canvas\child( )\data
+                    
+              *this\root\canvas\child( )\count\childrens - 1
+              *this\root\canvas\child( )\count\parents - 1
+              
+              If *this\root = *parent\root
+                ;                 If *parent\last\widget
+                MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
+                *parent\last\widget = *this\root\canvas\child( )
+                ;;;;*parent\last\widget\address = @*this\root\canvas\child( )
+                ;                 Else
+                ;                   MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
+                ;                 EndIf
+              Else
+                ; 
+                MoveElement( *this\root\canvas\child( ), #PB_List_Last ) 
+              EndIf
+            Next
+            
+            ; move with a parent and his children
+            If *this\root <> *parent\root
+              ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
+              SplitList( *this\root\canvas\child( ), *D( ) )
+              
+               ; move between lists
+              ;               If *parent\last\widget
+              ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
+              ;               Else
+              ;                 ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
+              ;               EndIf
+              
+              LastElement( *parent\root\canvas\child( ) ) ;
+              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
+              
+              ForEach *parent\root\canvas\child( )
+                Debug "   *parent "+*parent\root\canvas\child( )\data +" "+  *parent\data +" "+  *parent\last\widget\data
+              Next
+              
+            EndIf
+            
+          EndIf
+          
+          parent_change = 1 
+        Else
+          ; Debug *this\class
+          If *parent\root
+            LastElement( *parent\root\canvas\child( ) )
+            *this\address = AddElement( *parent\root\canvas\child( ) ) 
+            *parent\root\canvas\child( ) = *this
+            *parent\root\canvas\child( )\address = @*parent\root\canvas\child( )
+            
+            ;If *parent <> *parent\root
+            LastElement( *parent\child( ) )
+            AddElement( *parent\child( ) ) 
+            *parent\child( ) = *this
+            *parent\child( )\address = @*parent\child( )
+            ;EndIf
+          EndIf
+        EndIf
+        
+;         If *this\row
+;           If item < 0 
+;             item = 0
+;           EndIf
+;           
+;           PushListPosition( *this\row\_s( ) )
+;           *this\parent\row = SelectElement( *this\row\_s( ), item )
+;           PopListPosition( *this\row\_s( ) )
+;         EndIf
+        
+        If *this\parent\widget
+          If *this\before\widget
+            *this\parent\widget\last\widget = *this\before\widget
+          Else
+            *this\parent\widget\last\widget = *this\parent\widget
+          EndIf
+        Else
+          *this\last\widget = *this
+          *this\before\widget = *parent\last\widget
+          *parent\last\widget = *this
+        EndIf
+        
+        *this\root = *parent\root
+        *this\window = *parent\window
+        *this\parent\widget = *parent
+        *this\parent\widget\count\childrens + 1
+        *this\count\parents = *parent\count\parents + 1
+        
+        
+        
+        If parent_change
+          ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+        EndIf
+      EndIf
+      
+    EndProcedure
 
 Procedure OpenCanvas( window, gadget, x,y,width,height, flag = 0 )
   Protected g, w
@@ -1303,13 +1614,19 @@ Procedure WidgetsEvents( eventtype )
       ChangeCurrentRootWidget( GadgetID( EventGadget( ) ) )
       
       Debug "canvas - " + EventGadget( ) +" event - repaint"
+      
       ForEach widget( )
         If widget( )\root\canvas\gadget = EventGadget( )
+          PushListPosition( widget( ) )
+          widget( )\state\repaint = #False
           DoWidgetEvents( widget( ), eventtype )
+          PopListPosition( widget( ) )
         Else
           Debug "repaint error widget( )"
         EndIf
-      Next       
+      Next
+      
+      ReDrawWidget( RootWidget( ) )  
     EndIf
     
     ;
@@ -1844,9 +2161,10 @@ SetData(*root, 1 )
 Define *p._s_WIDGET = Container( 80,80, 150,150 ) : SetData(*p, 2 )
 Define *c._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
 SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 4)
-SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 5)
 SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 6)
-Define *p2._s_WIDGET = Container( 40,40, 70,70, #__Flag_NoGadgets ) : SetData(*p2, 7 )
+Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetData(*p2, 7 )
+SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 5)
+CloseList( )
 CloseList( )
 CloseList( )
 SetParentWidget( *c, *p2 )
@@ -1929,7 +2247,7 @@ SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
 SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
 CloseList( )
 CloseList( )
-;SetParentWidget( *p2,*p3 )
+SetParentWidget( *p2,*p3 )
 
 ChangeCurrentRootWidget( *root\root\canvas\address )
 Debug ""
@@ -1939,11 +2257,11 @@ ForEach Widget()
   Else
     Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
   EndIf
-  If widget()\count\childrens
-    ForEach Widget()\child()
-       Debug "   "+Widget()\child()\data +" - "+ Widget()\child()\x +" "+ Widget()\child()\width +" "+ ListSize(Widget()\child()\parent\widget\child())
-   Next
-  EndIf
+;   If widget()\count\childrens And ListSize( Widget()\child() )
+;     ForEach Widget()\child()
+;        Debug "   "+Widget()\child()\data +" - "+ Widget()\child()\x +" "+ Widget()\child()\width +" "+ ListSize(Widget()\child()\parent\widget\child())
+;    Next
+;   EndIf
 Next
 
 ChangeCurrentRootWidget( *root2\root\canvas\address )
@@ -1955,6 +2273,7 @@ ForEach Widget()
     Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
   EndIf
 Next
+
 
 
 Define i
@@ -2080,5 +2399,5 @@ Repeat
   EndIf
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------d--------------------------
+; Folding = -------------------d-8----------------------------
 ; EnableXP
