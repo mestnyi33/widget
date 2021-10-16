@@ -189,8 +189,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     *panel = Panel(10,145,200,160) 
-    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,90,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
-    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
+    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,70,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
+    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,80,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
     AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
     CloseList()
     

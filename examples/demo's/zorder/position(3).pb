@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "-widgets.pbi"
 
 
 
@@ -33,10 +33,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(115, 25, 50, 30,"102") : SetClass(widget(), GetText(widget()))  
     Button(125, 45, 50, 30,"103") : SetClass(widget(), GetText(widget()))  
     AddItem(*c0, -1, "2")
+    ;Define *b201 = Button(105,  5, 50, 30,"201") : SetClass(*b201, GetText(*b201))  
     Button(105,  5, 50, 30,"201") : SetClass(widget(), GetText(widget()))  
     Button(115, 25, 50, 30,"202") : SetClass(widget(), GetText(widget()))  
     Button(125, 45, 50, 30,"203") : SetClass(widget(), GetText(widget()))  
     AddItem(*c0, -1, "3")
+    ;Define *b301 = Button(105,  5, 50, 30,"301") : SetClass(*b301, GetText(*b301))  
     Button(105,  5, 50, 30,"301") : SetClass(widget(), GetText(widget()))  
     Button(115, 25, 50, 30,"302") : SetClass(widget(), GetText(widget()))  
     Button(125, 45, 50, 30,"303") : SetClass(widget(), GetText(widget()))  
@@ -90,6 +92,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

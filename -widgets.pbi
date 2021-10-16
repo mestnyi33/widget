@@ -57,25 +57,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro debug_position( _text_="" )
       Debug " " +_text_+ " - "
       ForEach Widget( ) 
-        If Widget( )\before\widget And Widget( )\after\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
-        ElseIf Widget( )\after\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
-        ElseIf Widget( )\before\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" none"
-        Else
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position + " none " 
+        If Widget( ) <> Widget( )\root
+          If Widget( )\before\widget And Widget( )\after\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" "+ Widget( )\after\widget\class
+          ElseIf Widget( )\after\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +" "+ Widget( )\after\widget\class
+          ElseIf Widget( )\before\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" none"
+          Else
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class + " none " 
+          EndIf
+          
+;           If Widget( )\before\widget And Widget( )\after\widget
+;             Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
+;           ElseIf Widget( )\after\widget
+;             Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
+;           ElseIf Widget( )\before\widget
+;             Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" none"
+;           Else
+;             Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position + " none " 
+;           EndIf
+;           
+;           ;         If Widget( )\before\widget And Widget( )\after\widget
+;           ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" "+ Widget( )\after\widget\class
+;           ;         ElseIf Widget( )\after\widget
+;           ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +" "+ Widget( )\after\widget\class
+;           ;         ElseIf Widget( )\before\widget
+;           ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" none"
+;           ;         Else
+;           ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class + " none " 
+;           ;         EndIf
         EndIf
-        
-        ;         If Widget( )\before\widget And Widget( )\after\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" "+ Widget( )\after\widget\class
-        ;         ElseIf Widget( )\after\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +" "+ Widget( )\after\widget\class
-        ;         ElseIf Widget( )\before\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" none"
-        ;         Else
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class + " none " 
-        ;         EndIf
       Next
       Debug ""
     EndMacro
@@ -14254,7 +14266,29 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn result
     EndProcedure
     
+    Procedure  get_last_tab( *this._s_WIDGET, tabindex.l )
+      PushListPosition( *this\root\canvas\child( ) )
+      ChangeCurrentElement( *this\root\canvas\child( ), *this\last\widget\address )
+      
+      If *this\count\childrens
+        Repeat
+          If Not Child( *this\root\canvas\child( ), *this ) 
+            Break
+          EndIf
+          
+          If *this\root\canvas\child( )\tab\index = tabindex
+            *this = *this\root\canvas\child( )
+            Break
+          EndIf
+        Until PreviousElement( *this\root\canvas\child( ) ) = 0
+      EndIf
+      PopListPosition( *this\root\canvas\child( ) )
+      
+      ProcedureReturn *this
+    EndProcedure
+    
     Procedure  get_last( *last._s_WIDGET, tabindex.l )
+      ProcedureReturn get_last_tab( *last, tabindex )
       
       While *last <> *last\last\widget And *last\tab\index = tabindex
         *last = *last\last\widget
@@ -14417,7 +14451,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure AddWidget( *this._s_WIDGET, *parent._s_WIDGET )
-      SetParent( *this, *parent, 0 )
+      SetParent( *this, *parent, #PB_Default )
       ;       If *parent\root
       ;         LastElement( *parent\root\canvas\child( ) )
       ;         *this\address = AddElement( *parent\root\canvas\child( ) ) 
@@ -15085,6 +15119,46 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected ReParent.b, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
       
       If *parent
+        ;TODO
+        If tabindex < 0 
+          If *parent\tab\widget And 
+             *parent\tab\widget\type = #__type_TabBar
+            tabindex = *parent\tab\widget\bar\index 
+          Else
+            tabindex = 0
+          EndIf
+          
+        ElseIf tabindex
+          If *parent\type = #__type_Splitter
+            If tabindex%2
+              *parent\gadget[#__split_1] = *this
+              *parent\index[#__split_1] = Bool( PB(IsGadget)( *this ))
+              Update( *parent )
+              If *parent\index[#__split_1]
+                ProcedureReturn 0
+              EndIf
+            Else
+              *parent\gadget[#__split_2] = *this
+              *parent\index[#__split_2] = Bool( PB(IsGadget)( *this ))
+              Update( *parent )
+              If *parent\index[#__split_2]
+                ProcedureReturn 0
+              EndIf
+            EndIf    
+          EndIf    
+        EndIf
+        
+        *this\tab\index = tabindex
+        
+        ; set hide state 
+        If *parent\hide
+          *this\hide = #True
+        ElseIf *parent\tab\widget
+          ; hide all children except the selected tab
+          *this\hide = Bool(*parent\tab\widget\index[#__tab_2] <> tabindex)
+        EndIf
+          
+        
         If *this\parent\widget
           If *this\parent\widget = *parent
             ProcedureReturn #False
@@ -15094,23 +15168,17 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *lastParent = *this\parent\widget
             *lastParent\count\childrens - 1
             
-            If *parent\last\widget
-              If *parent\last\widget\count\childrens
-                *last = get_last( *parent\last\widget, tabindex )
-              Else
-                *last = *parent\last\widget
-              EndIf
-            EndIf
-            
-            
             ;         If root( ) <> *this\root
             ;           ChangeCurrentRoot( *this\root\canvas\address )
             ;         EndIf
+            ; 
+            *last = get_last_tab( *parent, tabindex )
+                
             ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
             AddElement( *D( ) )
             *D( ) = *this\root\canvas\child( )
             
-            If *this\root\canvas\child( )\count\childrens
+            If *this\count\childrens
               PushListPosition( *this\root\canvas\child( ) )
               While NextElement( *this\root\canvas\child( ) )
                 If Not Child( *this\root\canvas\child( ), *this ) 
@@ -15128,7 +15196,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ; move with a parent and his children
-            If *this\root <> *parent\root
+            If *this\root = *parent\root
+              ; move inside the list
+              LastElement( *D( ) )
+              Repeat
+                ChangeCurrentElement( *parent\root\canvas\child( ), *D( )\address )
+                MoveElement( *parent\root\canvas\child( ), #PB_List_After, *last\address )
+              Until PreviousElement( *D( ) ) = 0
+            Else
               ForEach *D( )
                 ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
                 ; go to the end of the list to split the list
@@ -15142,13 +15217,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               ; move between lists
               ChangeCurrentElement( *parent\root\canvas\child( ), *last\address )
               MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
-            Else
-              ; move inside the list
-              LastElement( *D( ) )
-              Repeat
-                ChangeCurrentElement( *parent\root\canvas\child( ), *D( )\address )
-                MoveElement( *parent\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
-              Until PreviousElement( *D( ) ) = 0
             EndIf
               
             ReParent = #True 
@@ -15159,7 +15227,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If *parent\last\widget
               If *parent\last\widget\count\childrens
                 LastElement( *parent\root\canvas\child( ) )
-                ; *last = get_last( *parent\last\widget, tabindex ) : ChangeCurrentElement( *parent\root\canvas\child( ), *last\address )
+                 ;*last = get_last_tab( *parent, tabindex ) : ChangeCurrentElement( *parent\root\canvas\child( ), *last\address )
               Else
                 ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
               EndIf
@@ -15168,6 +15236,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             *this\address = AddElement( *parent\root\canvas\child( ) ) 
+            *this\index = ListIndex( *parent\root\canvas\child( ) ) 
             *parent\root\canvas\child( ) = *this
           EndIf
         EndIf
@@ -15202,30 +15271,66 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         If *parent\last\widget = *parent
           *parent\first\widget = *this
+          *parent\last\widget = *this
           *this\before\widget = #Null
         Else
           ; if the parent had the last item
           ; then we make it "previous" instead of "present"
           ; and "present" becomes "subsequent" instead of "previous"
-          *this\before\widget = *parent\last\widget
+          If *this\parent\widget
+            If *last\tab\index = *this\tab\index
+              *this\before\widget = *last
+            EndIf
+          Else
+            If *parent\last\widget\tab\index = *this\tab\index
+              *this\before\widget = *parent\last\widget
+            EndIf
+            
+            *parent\last\widget = *this
+          EndIf
+          
           If *this\before\widget
-            *this\before\widget\after\widget = *this
+            ; If *this\before\widget\tab\index = *this\tab\index
+              *this\before\widget\after\widget = *this
+            ; EndIf
           EndIf
         EndIf
         
         *this\after\widget = #Null
-        *parent\last\widget = *this
         
         
         ;           
         *this\root = *parent\root
-        *this\window = *parent\window
+        If _is_window_( *parent ) 
+          *this\window = *parent
+        Else
+          *this\window = *parent\window
+        EndIf
         *this\parent\widget = *parent
+        *this\level = *parent\level + 1
         *this\parent\widget\count\childrens + 1
         *this\count\parents = *parent\count\parents + 1
         
-       
-        ;
+        ; TODO
+          If *this\window
+            Static NewMap typecount.l( )
+            
+            *this\count\index = typecount( Hex( *this\window + *this\type ))
+            typecount( Hex( *this\window + *this\type )) + 1
+            
+            If *parent\_a_transform
+              *this\count\type = typecount( Hex( *parent ) + "_" + Hex( *this\type ))
+              typecount( Hex( *parent ) + "_" + Hex( *this\type )) + 1
+            EndIf
+          EndIf
+          ; set transformation for the child
+          If Not *this\_a_transform And *parent\_a_transform 
+            *this\_a_transform = Bool( *parent\_a_transform )
+            *this\_a_mode = #__a_full | #__a_position
+            a_set( *this )
+          EndIf
+          
+          ;
         If ReParent
           ; resize
           x = *this\x[#__c_container]
@@ -21313,5 +21418,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------+-f---------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -57,25 +57,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro debug_position( _text_="" )
       Debug " " +_text_+ " - "
       ForEach Widget( ) 
-        If Widget( )\before\widget And Widget( )\after\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
-        ElseIf Widget( )\after\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
-        ElseIf Widget( )\before\widget
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" none"
-        Else
-          Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position + " none " 
+        If Widget( ) <> Widget( )\root
+          If Widget( )\before\widget And Widget( )\after\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
+          ElseIf Widget( )\after\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position +" "+ Widget( )\after\widget\class +"-"+ Widget( )\after\widget\position
+          ElseIf Widget( )\before\widget
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +"-"+ Widget( )\before\widget\position +" "+ Widget( )\class +"-"+ Widget( )\position +" none"
+          Else
+            Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +"-"+ Widget( )\position + " none " 
+          EndIf
+          
+          ;         If Widget( )\before\widget And Widget( )\after\widget
+          ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" "+ Widget( )\after\widget\class
+          ;         ElseIf Widget( )\after\widget
+          ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +" "+ Widget( )\after\widget\class
+          ;         ElseIf Widget( )\before\widget
+          ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" none"
+          ;         Else
+          ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class + " none " 
+          ;         EndIf
         EndIf
-        
-        ;         If Widget( )\before\widget And Widget( )\after\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" "+ Widget( )\after\widget\class
-        ;         ElseIf Widget( )\after\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class +" "+ Widget( )\after\widget\class
-        ;         ElseIf Widget( )\before\widget
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" "+ Widget( )\before\widget\class +" "+ Widget( )\class +" none"
-        ;         Else
-        ;           Debug " - "+ Str(ListIndex(Widget())) +" "+ Widget( )\index +" none "+ Widget( )\class + " none " 
-        ;         EndIf
       Next
       Debug ""
     EndMacro
@@ -20545,5 +20547,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +--------8--9-------------------f---------------------------------u----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---v------------------80--------------------------------------------------------4-------------------------------------fvt-4----------------
+; Folding = +--------8--9-------------------f---------------------------------u----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------80--------------------------------------------------------4-------------------------------------fvt-4----------------
 ; EnableXP
