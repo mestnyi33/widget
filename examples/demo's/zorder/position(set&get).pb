@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../-widgets.pbi" 
 
 
 ;- EXAMPLE
@@ -39,8 +39,13 @@ CompilerIf #PB_Compiler_IsMainFile
     SetClass(widget(), "first_1")
     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
     
-    Button(4, 0, 215-12, h-8-4, "1", #__Button_Right|#__text_top) 
+    Container(4, 0, 215-6-6, h-4-2-6) 
+    SetClass(widget(), "first_2")
+    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    
+    Button(4, 0, 215-12, h-8-4-4, "1", #__Button_Right|#__text_top) 
     SetClass(widget(), GetText(widget())) 
+    CloseList()
     CloseList()
     CloseList()
     ;}
@@ -106,6 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Demo()
   
+    
   Define gEvent, gQuit, text.s, repaint 
   
   Repeat
@@ -212,6 +218,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = -Tq-
 ; EnableXP

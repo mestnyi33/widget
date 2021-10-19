@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     -
     
     
-    debug_position()
+    debug_position(root())
     
     WaitClose()
     

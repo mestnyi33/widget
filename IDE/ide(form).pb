@@ -1,6 +1,6 @@
 ﻿
 ;XIncludeFile "../transform().pbi"
-XIncludeFile "../widgets.pbi"
+XIncludeFile "../-widgets.pbi"
 ; XIncludeFile "../examples/empty5.pb"
 
 ;

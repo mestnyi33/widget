@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetState(*p1,1)
     
-    debug_position()
+    debug_position(root())
     
     WaitClose()
     

@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     -    (2) - btn2
 ;     -    (3) - 303
     
-    debug_position()
+    debug_position(root())
     
     WaitClose()
     
