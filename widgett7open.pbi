@@ -158,14 +158,13 @@ Structure _s_OBJECT Extends _s_COORDINATE
   type.i
   index.i
   *Data
-  *address[2]
+  ;*address[2]
   
   visible.b
   
-  last._s_OBJECT_TYPE
-  before._s_OBJECT_TYPE
-  
   parent._s_OBJECT_TYPE
+  before._s_OBJECT_TYPE
+  last._s_OBJECT_TYPE
   draw._s_COORDINATE
   color._s_COLOR
   count._s_COUNT
@@ -212,7 +211,7 @@ Structure _s_CANVAS
   ;*last._s_WIDGET
   ;*widget._s_WIDGET
   *parent._s_WIDGET 
-  List *child._s_WIDGET( )
+  List *child._s_WIDGET( ) ; Widget( )\ - current element
 EndStructure
 ;--     ROOT
 Structure _s_ROOT Extends _s_WIDGET
@@ -220,7 +219,7 @@ Structure _s_ROOT Extends _s_WIDGET
 EndStructure
 ;--     STRUCT
 Structure _s_STRUCT
-  Map *canvas._s_ROOT( )   ;
+  Map *child._s_ROOT( )   ;
   mouse._s_MOUSE           ; WidgetMouse( )\ - 
                            ; \entered\item._s_OBJECT_TYPE - mouse entered item
                            ; \entered\widget._s_OBJECT_TYPE - mouse entered element
@@ -252,15 +251,15 @@ EndMacro
 
 ;-
 Macro RootWidget( ) 
-  *widget\canvas( )
+  *canvas\child( )
 EndMacro
 
 Macro WidgetMouse( )
-  *widget\mouse
+  *canvas\mouse
 EndMacro
 
 Macro WidgetKeyboard( ) 
-  *widget\keyboard
+  *canvas\keyboard
 EndMacro
 
 Macro WidgetEvent( )
@@ -290,12 +289,12 @@ EndMacro
 
 ;-
 Macro Widget( ) 
-  RootWidget( )\canvas\child( )
-EndMacro                ; Returns last created widget address
+  RootWidget( )\canvas\child( ) ;RootWidget( )\canvas\last
+EndMacro                        ; Returns last created widget address
 
 Macro OpenedWidget( )
   RootWidget( )\canvas\parent;\widget
-EndMacro ; Returns last parent opened-widget-list
+EndMacro                     ; Returns last parent opened-widget-list
 
 Macro EnteredWidget( )
   WidgetMouse( )\entered\widget
@@ -347,8 +346,8 @@ Macro StartEnumerate( _parent_ )
   Bool( _parent_\count\childrens )
   
   ;   ;PushListPosition( Widget( ))
-  ;   If _parent_\address
-  ;     ChangeCurrentElement( _parent_\child( ), _parent_\address )
+  ;   If _parent_
+  ;     ChangeCurrentElement( _parent_\child( ), _parent_ )
   ;   Else
   ;     ResetList( Widget( ))
   ;   EndIf
@@ -381,7 +380,7 @@ EndMacro
 
 ;- GLOBAL
 ;{        }
-Global *widget.allocate( STRUCT )
+Global *canvas.allocate( STRUCT )
 Global NewList *draw._s_WIDGET( )
 ;}
 
@@ -540,21 +539,20 @@ EndMacro
 
 
 Procedure   ChildWidget( *this._s_WIDGET, *parent._s_WIDGET )
-      Protected result 
-      
-      If *parent\count\childrens
-        Repeat
-          If *parent = *this\parent\widget
-            result = *this
-            Break
-          EndIf
-          
-          *this = *this\parent\widget
-        Until *this = *this\root ; is_root( *this )
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
+  Protected result 
+  
+  Repeat
+    If *parent = *this\parent\widget
+      result = *this
+      Break
+    EndIf
+    
+    *this = *this\parent\widget
+  Until *this = *this\root 
+  
+  ProcedureReturn result
+EndProcedure
+
 
 Procedure EnterGadgetID( ) 
   Protected handle
@@ -667,7 +665,7 @@ Procedure ResizeWidget( *this._s_WIDGET, x,y,width,height )
         Else
           If *this\draw\x > *this\x
             *this\draw\width = *this\width + *this\x - *this\parent\widget\fs ;*this\x-*this\draw\x
-                                                                       ;*this\draw\width = *this\parent\widget\draw\width + *this\draw\width
+                                                                              ;*this\draw\width = *this\parent\widget\draw\width + *this\draw\width
           Else
             *this\draw\width = *this\width
           EndIf
@@ -678,7 +676,7 @@ Procedure ResizeWidget( *this._s_WIDGET, x,y,width,height )
         Else
           If *this\draw\y > *this\y
             *this\draw\height = *this\height + *this\y - *this\parent\widget\fs ;*this\y-*this\draw\y
-                                                                         ;*this\draw\height = *this\parent\widget\draw\height + *this\draw\height
+                                                                                ;*this\draw\height = *this\parent\widget\draw\height + *this\draw\height
           Else
             *this\draw\height = *this\height
           EndIf
@@ -794,7 +792,7 @@ Procedure DrawLast( *this._s_WIDGET, x, y  )
 EndProcedure
 
 Procedure DrawWidget( *this._s_WIDGET, x, y )
-  If *this\address
+  If *this
     If *this\visible 
       ;
       DrawFirst( *this, x, y )
@@ -816,7 +814,7 @@ EndProcedure
 Procedure ReDrawWidget( *this._s_WIDGET )
   Protected x,y
   
-  If *this\address
+  If *this
     If *this\parent\widget
       x = *this\parent\widget\x
       y = *this\parent\widget\y
@@ -836,13 +834,13 @@ Procedure FreeWidget( *this._s_WIDGET )
   EndIf
   
   If *this\parent\widget
-    If *this\address
+    If *this
       If *this\parent\widget\count\childrens
-        ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
+        ChangeCurrentElement( *this\parent\widget\child( ), *this )
         DeleteElement( *this\parent\widget\child( ) )
         *this\parent\widget\count\childrens - 1
       EndIf
-      *this\address = #Null
+      *this = #Null
     EndIf
   Else 
     ; it's root widget
@@ -872,7 +870,7 @@ Procedure AddItem( *this._s_WIDGET, position, text.s )
     
     *item\color\back = $8ED4C4
     
-    *item\address = result
+    ;*item\address = result
     *this\items( ) = *item
     
     
@@ -900,16 +898,47 @@ Procedure AddItem( *this._s_WIDGET, position, text.s )
   EndIf
 EndProcedure
 
-Procedure AddWidget( *this._s_WIDGET, *parent._s_WIDGET )
-  SetParentWidget( *this, *parent )
+Procedure NewWidget( *parent._s_WIDGET )
+  Protected result
+  
+  If IsGadget( *parent )
+    If Not FindMapElement( RootWidget( ), Str( GadgetID( *parent ) ) )
+      AddMapElement( RootWidget( ), Str( GadgetID( *parent ) ) )
+      
+      RootWidget( ) = AllocateStructure( _s_ROOT )
+      result = RootWidget( )
+      
+      LastElement( RootWidget( )\canvas\child( ) )
+      AddElement( RootWidget( )\canvas\child( ) ) 
+      RootWidget( )\canvas\child( ) = result
+      RootWidget( )\canvas\child( )\index = ListIndex( RootWidget( )\canvas\child( )) 
+    EndIf
+    
+  Else
+    LastElement( *parent\child( ) )
+    AddElement( *parent\child( ) )
+    *parent\child( ) = AllocateStructure( _s_WIDGET )
+    result = *parent\child( )
+    
+    LastElement( *parent\root\canvas\child( ) )
+    AddElement( *parent\root\canvas\child( ) ) 
+    *parent\root\canvas\child( ) = result
+    *parent\root\canvas\child( )\index = ListIndex( *parent\root\canvas\child( )) 
+  EndIf
+  
+  AddElement( widget( ) )
+  widget( ) = result
+  
+  ProcedureReturn result
 EndProcedure
 
 Procedure AddObject( *this._s_WIDGET, type, x,y,width,height, frameSize = 1)
   Protected result, *new._s_WIDGET
   
   If *this
-    *new = AllocateStructure( _s_WIDGET )
-    
+    ;*new = NewWidget( *this )
+    *new = SetParentWidget( *new, *this )
+      
     If *new
       If *this\last\item
         *this\last\item\last\widget = *new
@@ -919,8 +948,6 @@ Procedure AddObject( *this._s_WIDGET, type, x,y,width,height, frameSize = 1)
       *new\fs = frameSize
       *new\color\back = $F3F3F3
       
-      ;AddWidget( *new, *this )
-      SetParentWidget( *new, *this )
       ResizeWidget( *new, x,y,width,height )
       
       DoWidgetEvents( *new, #PB_EventType_Create )
@@ -931,366 +958,156 @@ Procedure AddObject( *this._s_WIDGET, type, x,y,width,height, frameSize = 1)
 EndProcedure
 
 Procedure RemoveWidget( *this._s_WIDGET )
-;   If *this\count\childrens 
-;     *this\count\childrens = 0
-;     FreeList( *this\child( ) )
-;   EndIf
-  
-  If *this\parent\widget
-    If *this\address
-      If *this\parent\widget\count\childrens
-        ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
-        DeleteElement( *this\parent\widget\child( ) )
-        *this\parent\widget\count\childrens - 1
-      EndIf
-      *this\address = #Null
-    EndIf
-;   Else 
-;     ; it's root widget
-;     If *this = GetGadgetData( *this\root\canvas\gadget ) 
-;       SetGadgetData( *this\root\canvas\gadget, #Null )
-;     EndIf
-  EndIf
-  
- ; FreeStructure( @*this )
-EndProcedure
-
-Procedure _SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
-  Protected parent_change
-  
-  If *parent
-    
-    If *this\parent\widget
-      Protected NewList *D._s_WIDGET()
-      Protected NewList *C._s_WIDGET()
-      
-;       ChangeCurrentElement( *this\root\child( ), *this\address )
-;       SplitList( *this\root\child( ), *D( ) )
-;       ForEach *D()
-;             Debug *D()\Data
-;           Next
-;           
-;       If *this\last\widget
-;         ChangeCurrentElement( *D( ), *this\last\widget\address )
-;         SplitList( *D( ), *C( ) )
-;         
-;         MergeLists( *C(), *this\root\child( ), #PB_List_After )
-;         
-;         ChangeCurrentElement( *parent\root\child( ), *parent\address )
-;       MergeLists( *D(), *parent\root\child( ), #PB_List_After )
-;       EndIf
-;     
-;       
-;       FreeList( *C() )
-;       FreeList( *D() )
-      
-      
-;       ;Debug ""+ *this\parent\widget +" "+ *this\root
-;       If *this\address
-;         ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
-;        ; DeleteElement( *this\parent\widget\child( ) )
-;       EndIf
-;       If *this\address[1]
-;         ChangeCurrentElement( *this\root\list( ), *this\address[1] )
-;        ; DeleteElement( *this\parent\widget\child( ) )
-;       EndIf
-;       MoveElement( *this\root\list( ), #PB_List_After, *parent\address )
-;       ;SplitList( *this\child( ), *parent\child( ) )
-      
-;       If *this\address[1]
-;         ChangeCurrentElement( *this\root\list( ), *this\address[1] )
-;         ;  DeleteElement( *this\root\list( ) )                           
-;         ; Debug *this\root\list( )\Data
-;       EndIf
-; ;       *this\parent\widget\count\childrens - 1
-      
-      ;SelectElement(B(), 1)
-   ;   SplitList( *this\root\list( ), *parent\root\list( ) )
-  ;MergeLists( *parent\root\list( ), *this\child( ), #PB_List_After)
-  ;AddWidget( *this, *parent )
-    
-      parent_change = 1 
-    Else
-       AddWidget( *this, *parent )
-    EndIf
-    
-    PushListPosition( *this\items( ) )
-    *this\parent\item = SelectElement( *this\items( ), item )
-    PopListPosition( *this\items( ) )
-    
-    *this\parent\widget = *parent
-    *this\root = *parent\root
-    *this\window = *parent\window
-    *parent\count\childrens + 1
-    *this\count\parents = *parent\count\parents + 1
-      
-    If parent_change
-      ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-    EndIf
-  EndIf
-  
-EndProcedure
-
-Procedure __SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
-  Protected parent_change
-  Protected NewList *D._s_WIDGET( )
-          
-  If *parent
-    
-    If *this\parent\widget
-      If *this\address
-            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
-            AddElement( *D( ) )
-            *D( ) = *this\root\canvas\child( )
-            
-            If *this\root\canvas\child( )\count\childrens
-              While NextElement( *this\root\canvas\child( ) )
-                If *this\root\canvas\child( )\parent\widget <> *this ; Not Child( *this\root\canvas\child( ), *this ) 
-                  Break
-                EndIf
-                
-                AddElement( *D( ) )
-                *D( ) = *this\root\canvas\child( )
-                *D( )\window = *parent\window
-                *D( )\root = *parent\root
-                Debug " children - "+ *D()\data +" - "+ *this\data
-              Wend 
-            EndIf
-            
-            ; move with a parent and his children
-            If *this\root = *parent\root
-              ; move inside the list
-              ForEach *D( )
-                If *parent\last\widget
-                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
-                Else
-                  MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
-                EndIf
-              Next
-            Else
-              ; move between lists
-              If *parent\last\widget
-                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
-              Else
-                ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
-              EndIf
-              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
-            EndIf
-          EndIf
-          
-      parent_change = 1 
-    Else
-      AddWidget( *this, *parent )
-    EndIf
-    
-;     If *this\row
-;       If item < 0 
-;         item = 0
-;       EndIf
-;       
-;       PushListPosition( *this\row\_s( ) )
-;       *this\parent\row = SelectElement( *this\row\_s( ), item )
-;       PopListPosition( *this\row\_s( ) )
-;     EndIf
-    
-    *parent\count\childrens + 1
-    *this\parent\widget = *parent
-    *this\root = *parent\root
-    *this\window = *parent\window
-    *this\count\parents = *parent\count\parents + 1
-    
-    ;*this\before\widget = *parent\last\widget
-    *parent\last\widget = *this
-    
-    If parent_change
-      ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-    EndIf
-  EndIf
-  
+  ; ;   If *this\count\childrens 
+  ; ;     *this\count\childrens = 0
+  ; ;     FreeList( *this\child( ) )
+  ; ;   EndIf
+  ;   
+  ;   If *this\parent\widget
+  ;     If *this\address
+  ;       If *this\parent\widget\count\childrens
+  ;         ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
+  ;         DeleteElement( *this\parent\widget\child( ) )
+  ;         *this\parent\widget\count\childrens - 1
+  ;       EndIf
+  ;       *this\address = #Null
+  ;     EndIf
+  ; ;   Else 
+  ; ;     ; it's root widget
+  ; ;     If *this = GetGadgetData( *this\root\canvas\gadget ) 
+  ; ;       SetGadgetData( *this\root\canvas\gadget, #Null )
+  ; ;     EndIf
+  ;   EndIf
+  ;   
+  ;  ; FreeStructure( @*this )
 EndProcedure
 
 Procedure SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
-      Protected parent_change, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
-      
-      If *parent
-        If *this\parent\widget
-          If *this\parent\widget = *parent
-            ProcedureReturn #False
-          EndIf
-          
-          ;PostRepaint( *this\parent\widget )
-          ;PostRepaint( *parent )
-          
-          *lastParent = *this\parent\widget
-                  If RootWidget( ) <> *this\root
-                    ChangeCurrentRootWidget( *this\root\canvas\address )
-                  EndIf
-          
-          
-          If *this\address
-            ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
-            AddElement( *D( ) )
-            *D( ) = *this\root\canvas\child( )
-            
-;             If *this\root\canvas\child( )\count\childrens
-;               PushListPosition( *this\root\canvas\child( ) )
-;               While NextElement( *this\root\canvas\child( ) )
-;                 If Not ChildWidget( *this\root\canvas\child( ), *this ) 
-;                   Break
-;                 EndIf
-;                 
-;                 AddElement( *D( ) )
-;                 *D( ) = *this\root\canvas\child( )
-;                 *D( )\window = *parent\window
-;                 *D( )\root = *parent\root
-;                ;; Debug " children - "+ *D()\data +" - "+ *this\data
-;                 
-;               Wend 
-;               PopListPosition( *this\root\canvas\child( ) )
-;             EndIf
-            
-            ; move inside the list
-            ForEach *D( )
-              ChangeCurrentElement( *this\root\canvas\child( ), *D( )\address )
-              ;;Debug " inside "+*D( )\data +" "+ *this\root\canvas\child( )\data
-                    
-              *this\root\canvas\child( )\count\childrens - 1
-              *this\root\canvas\child( )\count\parents - 1
-              
-              If *this\root = *parent\root
-                ;                 If *parent\last\widget
-                MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget\address )
-                *parent\last\widget = *this\root\canvas\child( )
-                ;;;;*parent\last\widget\address = @*this\root\canvas\child( )
-                ;                 Else
-                ;                   MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
-                ;                 EndIf
-              Else
-                ; 
-                MoveElement( *this\root\canvas\child( ), #PB_List_Last ) 
-              EndIf
-            Next
-            
-            ; move with a parent and his children
-            If *this\root <> *parent\root
-              ChangeCurrentElement( *this\root\canvas\child( ), *this\address )
-              SplitList( *this\root\canvas\child( ), *D( ) )
-              
-               ; move between lists
-              ;               If *parent\last\widget
-              ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget\address )
-              ;               Else
-              ;                 ChangeCurrentElement( *parent\root\canvas\child( ), *parent\address )
-              ;               EndIf
-              
-              ;LastElement( *parent\root\canvas\child( ) ) ;
-              MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
-              
-              ForEach *parent\root\canvas\child( )
-                Debug "   *parent "+*parent\root\canvas\child( )\data +" "+  *parent\data +" "+  *parent\last\widget\data
-              Next
-              
-            EndIf
-            
-          EndIf
-          
-          parent_change = 1 
-        Else
-          ; Debug *this\class
-          If *parent\root
-            LastElement( *parent\root\canvas\child( ) )
-            *this\address = AddElement( *parent\root\canvas\child( ) ) 
-            *parent\root\canvas\child( ) = *this
-            
-            ;If *parent <> *parent\root
-            LastElement( *parent\child( ) )
-            AddElement( *parent\child( ) ) 
-            *parent\child( ) = *this
-            ;EndIf
-          EndIf
-        EndIf
-        
-;         If *this\row
-;           If item < 0 
-;             item = 0
-;           EndIf
-;           
-;           PushListPosition( *this\row\_s( ) )
-;           *this\parent\row = SelectElement( *this\row\_s( ), item )
-;           PopListPosition( *this\row\_s( ) )
-;         EndIf
-        
-        If *this\parent\widget
-          If *this\before\widget
-            *this\parent\widget\last\widget = *this\before\widget
-          Else
-            *this\parent\widget\last\widget = *this\parent\widget
-          EndIf
-        Else
-          *this\last\widget = *this
-          *this\before\widget = *parent\last\widget
-          *parent\last\widget = *this
-        EndIf
-        
-        *this\root = *parent\root
-        *this\window = *parent\window
-        *this\parent\widget = *parent
-        *this\parent\widget\count\childrens + 1
-        *this\count\parents = *parent\count\parents + 1
-        
-        
-        
-        If parent_change
-          ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        EndIf
+  Protected parent_change, x,y, *last._s_WIDGET, *lastParent._s_WIDGET, NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+  
+  If *parent
+    If *this And *this\parent\widget
+      If *this\parent\widget = *parent
+        ProcedureReturn #False
       EndIf
       
-    EndProcedure
-
-Procedure OpenCanvas( window, gadget, x,y,width,height, flag = 0 )
-  Protected g, w
-  
-  If window =- 1
-    window = OpenWindow( window, x,y,width,height, "", flag )
-    x = 0
-    y = 0
+;       ;PostRepaint( *this\parent\widget )
+;       ;PostRepaint( *parent )
+;       
+;       *lastParent = *this\parent\widget
+;       If RootWidget( ) <> *this\root
+;         ChangeCurrentRootWidget( *this\root\canvas\address )
+;       EndIf
+;       
+;       
+;       If *this
+;         ChangeCurrentElement( *this\root\canvas\child( ), *this )
+;         AddElement( *D( ) )
+;         *D( ) = *this\root\canvas\child( )
+;         
+;         If *this\root\canvas\child( )\count\childrens
+;           PushListPosition( *this\root\canvas\child( ) )
+;           While NextElement( *this\root\canvas\child( ) )
+;             If Not ChildWidget( *this\root\canvas\child( ), *this ) 
+;               Break
+;             EndIf
+;             
+;             AddElement( *D( ) )
+;             *D( ) = *this\root\canvas\child( )
+;             *D( )\window = *parent\window
+;             *D( )\root = *parent\root
+;             ;; Debug " children - "+ *D()\data +" - "+ *this\data
+;             
+;           Wend 
+;           PopListPosition( *this\root\canvas\child( ) )
+;         EndIf
+;         
+;         ; move inside the list
+;         ForEach *D( )
+;           ChangeCurrentElement( *this\root\canvas\child( ), *D( ) )
+;           ;;Debug " inside "+*D( )\data +" "+ *this\root\canvas\child( )\data
+;           
+;           *this\root\canvas\child( )\count\childrens - 1
+;           *this\root\canvas\child( )\count\parents - 1
+;           
+;           If *this\root = *parent\root
+;             ;                 If *parent\last\widget
+;             MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\last\widget )
+;             *parent\last\widget = *this\root\canvas\child( )
+;             ;;;;*parent\last\widget = @*this\root\canvas\child( )
+;             ;                 Else
+;             ;                   MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent )
+;             ;                 EndIf
+;           Else
+;             ; 
+;             MoveElement( *this\root\canvas\child( ), #PB_List_Last ) 
+;           EndIf
+;         Next
+;         
+;         ; move with a parent and his children
+;         If *this\root <> *parent\root
+;           ChangeCurrentElement( *this\root\canvas\child( ), *this )
+;           SplitList( *this\root\canvas\child( ), *D( ) )
+;           
+;           ; move between lists
+;           ;               If *parent\last\widget
+;           ChangeCurrentElement( *parent\root\canvas\child( ), *parent\last\widget )
+;           ;               Else
+;           ;                 ChangeCurrentElement( *parent\root\canvas\child( ), *parent )
+;           ;               EndIf
+;           
+;           LastElement( *parent\root\canvas\child( ) ) ;
+;           MergeLists( *D( ), *parent\root\canvas\child( ), #PB_List_After )
+;           
+;           ForEach *parent\root\canvas\child( )
+;             Debug "   *parent "+*parent\root\canvas\child( )\data +" "+  *parent\data +" "+  *parent\last\widget\data
+;           Next
+;           
+;         EndIf
+;         
+;       EndIf
+;       
+      parent_change = 1 
+    Else
+      *this = NewWidget( *parent )
+    EndIf
+    
+    ;         If *this\row
+    ;           If item < 0 
+    ;             item = 0
+    ;           EndIf
+    ;           
+    ;           PushListPosition( *this\row\_s( ) )
+    ;           *this\parent\row = SelectElement( *this\row\_s( ), item )
+    ;           PopListPosition( *this\row\_s( ) )
+    ;         EndIf
+    
+    If *this\parent\widget
+      If *this\before\widget
+        *this\parent\widget\last\widget = *this\before\widget
+      Else
+        *this\parent\widget\last\widget = *this\parent\widget
+      EndIf
+    Else
+      *this\last\widget = *this
+      *this\before\widget = *parent\last\widget
+      *parent\last\widget = *this
+    EndIf
+    
+    *this\root = *parent\root
+    *this\window = *parent\window
+    *this\parent\widget = *parent
+    *this\parent\widget\count\childrens + 1
+    *this\count\parents = *parent\count\parents + 1
+    
+    
+    
+    If parent_change
+      ResizeWidget( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    EndIf
   EndIf
   
-  If Not ( IsGadget( gadget ) And 
-           GadgetType( gadget ) = #PB_GadgetType_Canvas )
-    g = CanvasGadget( gadget, x,y,width,height, #PB_Canvas_Keyboard ) 
-    If gadget =- 1 : gadget = g : g = GadgetID( gadget ) : EndIf
-    x = 0 : y = 0
-  EndIf
-  
-  If Not ChangeCurrentRootWidget( g ) 
-    AddMapElement( RootWidget( ), Str( g ) )
-    RootWidget( ) = AllocateStructure( _s_ROOT )
-    RootWidget( )\address = RootWidget( )
-    
-    
-    RootWidget( )\fs = 1
-    RootWidget( )\root = RootWidget( )
-    RootWidget( )\canvas\window = window
-    RootWidget( )\canvas\gadget = gadget
-    RootWidget( )\canvas\address = g
-    
-    ResizeWidget( RootWidget( ), x,y,width,height )
-    ;OpenList( RootWidget( ) )
-    OpenedWidget( ) = RootWidget( )
-    
-    AddWidget( RootWidget( ), RootWidget( ) )
-    
-    DoWidgetEvents( RootWidget( ), #PB_EventType_Create )
-    PostRepaint( RootWidget( ) ) 
-    
-    ; z - order
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
-      SetWindowPos_( g, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
-    CompilerEndIf
-    ProcedureReturn RootWidget( )
-  EndIf
+  ProcedureReturn *this
 EndProcedure
 
 Procedure OpenList( *this._s_WIDGET, *item = 0 )
@@ -1310,34 +1127,83 @@ Procedure CloseList( )
   EndIf
 EndProcedure
 
+Procedure OpenCanvas( window, gadget, x,y,width,height, flag = 0 )
+  Protected g, w, UseGadgetList
+  
+  If IsWindow( window )
+    w = WindowID( Window )
+  Else
+    window = OpenWindow( window, x,y,width,height, "", flag ) : If Window =- 1 : Window = w : w = WindowID( Window ) : EndIf
+    x = 0
+    y = 0
+  EndIf
+  
+  ; get a handle from the previous usage list
+  If w
+    UseGadgetList = UseGadgetList( w )
+  EndIf
+  
+  ;
+  If Not ( IsGadget( gadget ) And 
+           GadgetType( gadget ) = #PB_GadgetType_Canvas )
+    g = CanvasGadget( gadget, x,y,width,height, #PB_Canvas_Keyboard ) 
+    If gadget =- 1 : gadget = g : g = GadgetID( gadget ) : EndIf
+    x = 0 : y = 0
+  EndIf
+  
+  ; 
+  If UseGadgetList
+    UseGadgetList( UseGadgetList )
+  EndIf
+      
+  If NewWidget( gadget )
+    RootWidget( )\fs = 1
+    RootWidget( )\root = RootWidget( )
+    RootWidget( )\canvas\window = window
+    RootWidget( )\canvas\gadget = gadget
+    RootWidget( )\canvas\address = g
+    
+    ResizeWidget( RootWidget( ), x,y,width,height )
+    ;OpenList( RootWidget( ) )
+    OpenedWidget( ) = RootWidget( )
+    
+    DoWidgetEvents( RootWidget( ), #PB_EventType_Create )
+    PostRepaint( RootWidget( ) ) 
+    
+    ; z - order
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
+      SetWindowPos_( g, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
+    CompilerEndIf
+    
+    ProcedureReturn RootWidget( )
+  EndIf
+EndProcedure
+
 ;-
-Procedure GetAtPointWidget( *this._s_WIDGET, mouse_x, mouse_y )
+Procedure GetAtPointWidget( List *child._s_WIDGET( ), mouse_x, mouse_y )
   Protected result 
   
-  If *this\count\childrens
-    LastElement( *this\child( ) )
-    Repeat 
-      If *this\child( )\visible And *this\child( )\parent\widget = *this And 
-         Atbox( *this\child( )\draw\x, *this\child( )\draw\y, *this\child( )\draw\width, *this\child( )\draw\height, mouse_x-*this\child( )\parent\widget\x, mouse_y-*this\child( )\parent\widget\y )
-        
-        If *this\child( )\count\childrens
-          result = GetAtPointWidget( *this\child( )\child( )\parent\widget, mouse_x-*this\child( )\parent\widget\x, mouse_y-*this\child( )\parent\widget\y )
-        EndIf
-        
-        If result = 0
-          result = *this\child( )
-        EndIf
-        
-        If result
-          Break
-        EndIf
+  LastElement( *child( ) )
+  Repeat 
+    If *child( ) And *child( )\visible And ;*child( )\child( )\parent\widget = *child( ) And 
+       Atbox( *child( )\draw\x, *child( )\draw\y, *child( )\draw\width, *child( )\draw\height, mouse_x-*child( )\parent\widget\x, mouse_y-*child( )\parent\widget\y )
+      If *child( )\count\childrens
+        result = GetAtPointWidget( *child( )\child( ), mouse_x-*child( )\parent\widget\x, mouse_y-*child( )\parent\widget\y )
       EndIf
-    Until PreviousElement( *this\child( ) ) = 0
-  EndIf
+      
+      If result = 0
+        result = *child( )
+      EndIf
+      
+      If result
+        Break
+      EndIf
+    EndIf
+  Until PreviousElement( *child( ) ) = 0
   
   ProcedureReturn result
 EndProcedure
-
 
 Procedure GetAtPointItem( List *object._s_OBJECT( ), mouse_x, mouse_y )
   Protected result
@@ -1514,36 +1380,38 @@ Procedure DoWidgetEvents( *this._s_WIDGET, eventtype, *item._s_ROW = #Null )
 EndProcedure
 
 Procedure WidgetsEvents( eventtype )
+  
   If RootWidget( )
     Protected window = RootWidget( )\canvas\window
     Protected canvas = RootWidget( )\canvas\gadget
     
     If eventtype = #PB_EventType_Repaint
       ChangeCurrentRootWidget( GadgetID( EventGadget( ) ) )
-      Protected *root._s_ROOT = EventData( )
       
-      Debug "canvas - " + EventGadget( ) +" event - repaint " +EventData( )
+      Debug "canvas - " + EventGadget( ) +" event - repaint"
       
-;       ForEach widget( )
-;         If widget( )\root\canvas\gadget = EventGadget( )
-;           PushListPosition( widget( ) )
-;           widget( )\state\repaint = #False
-;           DoWidgetEvents( widget( ), eventtype )
-;           PopListPosition( widget( ) )
-;         Else
-;           Debug "repaint error widget( )"
-;         EndIf
-;       Next
+      ForEach widget( )
+        If widget( )\root\canvas\gadget = EventGadget( )
+          PushListPosition( widget( ) )
+          widget( )\state\repaint = #False
+          DoWidgetEvents( widget( ), eventtype )
+          PopListPosition( widget( ) )
+        Else
+          Debug "repaint error widget( )"
+        EndIf
+      Next
       
-      ReDrawWidget( RootWidget( ) )
+      ReDrawWidget( RootWidget( ) )  
     EndIf
     
     ;
     If eventtype = #PB_EventType_MouseEnter Or 
        eventtype = #PB_EventType_MouseMove
-      WidgetMouse( )\x = WindowMouseX( window ) - GadgetX( canvas, #PB_Gadget_WindowCoordinate ) ; GetGadgetAttribute( canvas, #PB_Canvas_MouseX )
-      WidgetMouse( )\y = WindowMouseY( window ) - GadgetY( canvas, #PB_Gadget_WindowCoordinate ) ; GetGadgetAttribute( canvas, #PB_canvas_MouseY )
-      
+;       WidgetMouse( )\x = WindowMouseX( window ) - GadgetX( canvas, #PB_Gadget_WindowCoordinate ) ; GetGadgetAttribute( canvas, #PB_Canvas_MouseX )
+;       WidgetMouse( )\y = WindowMouseY( window ) - GadgetY( canvas, #PB_Gadget_WindowCoordinate ) ; GetGadgetAttribute( canvas, #PB_canvas_MouseY )
+      WidgetMouse( )\x = DesktopMouseX( ) - GadgetX( Canvas, #PB_Gadget_ScreenCoordinate )
+      WidgetMouse( )\y = DesktopMouseY( ) - GadgetY( Canvas, #PB_Gadget_ScreenCoordinate )
+          
       ; Debug " "+ WidgetMouse( )\x +" "+ WidgetMouse( )\y
     ElseIf eventtype = #PB_EventType_MouseLeave   
       WidgetMouse( )\x =- 1
@@ -1564,10 +1432,29 @@ Procedure WidgetsEvents( eventtype )
       WidgetMouse( )\buttons &~ #PB_Canvas_MiddleButton
     EndIf
     
-    ;
+;     ;
+;     If eventtype = #PB_EventType_MouseEnter 
+;           If EnteredWidget( ) And 
+;              EnteredWidget( )\state\enter = #False
+;             EnteredWidget( )\state\enter = #True
+;             ; Debug "enter " + EnteredWidget( )\class
+;             
+;             DoWidgetEvents( EnteredWidget( ), #PB_EventType_MouseEnter )
+;           EndIf
+;           
+;         ElseIf eventtype = #PB_EventType_MouseLeave 
+;           If EnteredWidget( ) And 
+;              EnteredWidget( )\state\enter = #True
+;             EnteredWidget( )\state\enter = #False
+;             ; Debug "leave " + EnteredWidget( )\class
+;             
+;             DoWidgetEvents( EnteredWidget( ), #PB_EventType_MouseLeave )
+;           EndIf
+;         EndIf
+        
     If eventtype = #PB_EventType_MouseMove Or
        eventtype = #PB_EventType_MouseEnter Or
-       eventtype = #PB_EventType_MouseLeave Or
+       ; eventtype = #PB_EventType_MouseLeave Or
        eventtype = #PB_EventType_LeftButtonDown Or 
        eventtype = #PB_EventType_RightButtonDown Or
        eventtype = #PB_EventType_MiddleButtonDown Or
@@ -1576,55 +1463,115 @@ Procedure WidgetsEvents( eventtype )
        eventtype = #PB_EventType_MiddleButtonUp
       
       ;
+      EnteredWidget( ) = 0
+        
+      
       If RootWidget( )\count\childrens
         ; Define time = ElapsedMilliseconds( )
-        EnteredWidget( ) = GetAtPointWidget( RootWidget( ), WidgetMouse( )\x, WidgetMouse( )\y )
+        EnteredWidget( ) = GetAtPointWidget( RootWidget( )\child( ), WidgetMouse( )\x, WidgetMouse( )\y )
         ; Debug ElapsedMilliseconds( ) - time
-      EndIf
-      
-      If Not EnteredWidget( ) And RootWidget( )\visible And 
-         Atbox( RootWidget( )\draw\x, RootWidget( )\draw\y, RootWidget( )\draw\width, RootWidget( )\draw\height, WidgetMouse( )\x, WidgetMouse( )\y )
-        EnteredWidget( ) = RootWidget( )
+        If EnteredWidget( ) = 0
+          If RootWidget( )\visible And 
+             Atbox( RootWidget( )\draw\x, RootWidget( )\draw\y, RootWidget( )\draw\width, RootWidget( )\draw\height, WidgetMouse( )\x, WidgetMouse( )\y )
+            EnteredWidget( ) = RootWidget( )
+          EndIf
+        EndIf
+      Else
+        If RootWidget( )\visible And 
+           Atbox( RootWidget( )\draw\x, RootWidget( )\draw\y, RootWidget( )\draw\width, RootWidget( )\draw\height, WidgetMouse( )\x, WidgetMouse( )\y )
+          EnteredWidget( ) = RootWidget( )
+        EndIf
       EndIf
       
       ; Debug ""+EnteredWidget( ) +" "+ WidgetMouse( )\x +" "+ WidgetMouse( )\y
+      ;Debug RootWidget()\data
       
       If EnteredWidget( )
         If EnteredWidget( )\count\items
           If Atbox( EnteredWidget( )\draw\x+EnteredWidget( )\fs, EnteredWidget( )\draw\y+EnteredWidget( )\fs, EnteredWidget( )\draw\width-EnteredWidget( )\fs*2, EnteredWidget( )\draw\height-EnteredWidget( )\fs*2, WidgetMouse( )\x, WidgetMouse( )\y )
-            EnteredItem( ) = GetAtPointItem( EnteredWidget( )\items( ), WidgetMouse( )\x-EnteredWidget( )\x, WidgetMouse( )\y-EnteredWidget( )\y )
-          Else
-            EnteredItem( ) = #Null
+            If Not ( EnteredItem( ) And Atbox( EnteredItem( )\x, EnteredItem( )\y, EnteredItem( )\width, EnteredItem( )\height, WidgetMouse( )\x-EnteredWidget( )\x, WidgetMouse( )\y-EnteredWidget( )\y ) )
+              EnteredItem( ) = GetAtPointItem( EnteredWidget( )\items( ), WidgetMouse( )\x-EnteredWidget( )\x, WidgetMouse( )\y-EnteredWidget( )\y )
+            EndIf
           EndIf
           
           ; items state enter&leave
-          If LeavedItem( ) <> EnteredItem( )
-            If LeavedItem( )
-              LeavedItem( )\state\enter = #False
-              LeavedItem( )\state\repaint = #True
-              If LeavedWidget( )
-                DoWidgetEvents( LeavedWidget( ), #PB_EventType_StatusChange, LeavedItem( ) )
+          If EnteredItem( )
+            If LeavedItem( ) <> EnteredItem( )
+              If LeavedItem( )
+                LeavedItem( )\state\enter = #False
+                LeavedItem( )\state\repaint = #True
+                If LeavedWidget( )
+                  DoWidgetEvents( LeavedWidget( ), #PB_EventType_StatusChange, LeavedItem( ) )
+                EndIf
               EndIf
-            EndIf
-            
-            LeavedItem( ) = EnteredItem( )
-            
-            If EnteredItem( ) And
-               EnteredItem( )\state\enter = #False
-              EnteredItem( )\state\enter = #True 
-              EnteredItem( )\state\repaint = #True
-              DoWidgetEvents( EnteredWidget( ), #PB_EventType_StatusChange, EnteredItem( ) )
+              
+              LeavedItem( ) = EnteredItem( )
+              
+              If EnteredItem( ) And
+                 EnteredItem( )\state\enter = #False
+                EnteredItem( )\state\enter = #True 
+                EnteredItem( )\state\repaint = #True
+                DoWidgetEvents( EnteredWidget( ), #PB_EventType_StatusChange, EnteredItem( ) )
+              EndIf
             EndIf
           EndIf
         EndIf
       EndIf
-      
+       ;Debug ""+LeavedWidget( ) +" "+ EnteredWidget( )
+         
       ; widgets state enter&leave
       If LeavedWidget( ) <> EnteredWidget( )
         If LeavedWidget( )
           LeavedWidget( )\state\enter = #False
           LeavedWidget( )\state\repaint = #True
+          
+          If LeavedWidget( ) And 
+             LeavedWidget( )\count\items
+            
+            If EnteredItem( ) ;And EnteredItem( )\state\enter = #True
+                              ;Debug 444
+                              ; Debug 555
+                              ;If WidgetMouse( )\x > LeavedWidget( )\x And WidgetMouse( )\x <= ( LeavedWidget( )\x + LeavedWidget( )\width ) And ( LeavedWidget( )\x + LeavedWidget( )\width ) > 0
+                              ;Debug " "+WidgetMouse( )\y +" "+ LeavedWidget( )\y
+              
+              Protected *enter_item 
+              
+              If WidgetMouse( )\y - LeavedWidget( )\y <= EnteredItem( )\y
+                Debug 8888
+                PushListPosition( LeavedWidget( )\items( ) )  
+                FirstElement( LeavedWidget( )\items( ) )
+                *enter_item = LeavedWidget( )\items( )
+                PopListPosition( LeavedWidget( )\items( ) )
+              ElseIf WidgetMouse( )\y - LeavedWidget( )\y >= EnteredItem( )\y + EnteredItem( )\height
+                Debug 9999
+                PushListPosition( LeavedWidget( )\items( ) )  
+                LastElement( LeavedWidget( )\items( ) )
+                *enter_item = LeavedWidget( )\items( )
+                PopListPosition( LeavedWidget( )\items( ) )
+              EndIf
+              
+              If *enter_item And 
+                 EnteredItem( ) <> *enter_item
+                EnteredItem( )\state\enter = #False 
+                EnteredItem( )\state\repaint = #True
+                DoWidgetEvents( LeavedWidget( ), #PB_EventType_StatusChange, EnteredItem( ) )
+                
+                EnteredItem( ) = *enter_item
+                EnteredItem( )\state\enter = #True
+                EnteredItem( )\state\repaint = #True
+                DoWidgetEvents( LeavedWidget( ), #PB_EventType_StatusChange, EnteredItem( ) )
+                LeavedItem( ) = EnteredItem( )
+              EndIf
+              ;EndIf
+            EndIf
+            
+            ;             EnteredItem( )\state\enter = #False 
+            ;             EnteredItem( )\state\repaint = #True
+            ;               DoWidgetEvents( LeavedWidget( ), #PB_EventType_StatusChange, EnteredItem( ) )
+          EndIf
+          
           DoWidgetEvents( LeavedWidget( ), #PB_EventType_MouseLeave, LeavedItem( ) )
+;           LeavedItem( ) = #Null
         EndIf
         
         LeavedWidget( ) = EnteredWidget( )
@@ -1633,6 +1580,7 @@ Procedure WidgetsEvents( eventtype )
            EnteredWidget( )\state\enter = #False
           EnteredWidget( )\state\enter = #True 
           EnteredWidget( )\state\repaint = #True
+          
           DoWidgetEvents( EnteredWidget( ), #PB_EventType_MouseEnter, EnteredItem( ) )
         EndIf
       EndIf
@@ -1788,14 +1736,14 @@ Procedure WidgetsEvents( eventtype )
             Case #PB_Shortcut_Tab
               Protected NewList *child._s_WIDGET( ) 
               
-              If FocusedWidget( )\address
+              If FocusedWidget( )
                 If FocusedWidget( )\count\childrens
                   CopyList( FocusedWidget( )\child( ), *child( ) )
                   Debug 55
                 Else
                   If FocusedWidget( )\parent\widget
                     Debug 77
-                    ChangeCurrentElement( *child( ), FocusedWidget( )\address )
+                    ChangeCurrentElement( *child( ), FocusedWidget( ) )
                     If NextElement( *child( ) ) = 0
                       Debug *child( )
                       CopyList( *child( )\parent\widget\child( ), *child( ) )
@@ -1808,7 +1756,7 @@ Procedure WidgetsEvents( eventtype )
                 EndIf
                 ;               If FocusedWidget( )\parent\widget
                 ;                 CopyList( FocusedWidget( )\parent\widget\child( ), *child( ) )
-                ;                 ChangeCurrentElement( *child( ), FocusedWidget( )\address )
+                ;                 ChangeCurrentElement( *child( ), FocusedWidget( ) )
                 ;                 NextElement( *child( ) )
                 ;               Else
                 ;                 CopyList( FocusedWidget( )\canvas\widget\child( ), *child( ) )
@@ -1867,7 +1815,7 @@ EndProcedure
 
 ;-
 Procedure Enumerate( *this._s_WIDGET )
-  If *this\address
+  If *this
     Debug "widget - "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
     
     If *this\count\childrens
@@ -1942,362 +1890,108 @@ EndProcedure
 ;-
 
 
-Global enumerate_count
-
-Procedure StartWindow( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure NextWindow( *this.Integer ) 
-  Protected *element
-  ; Widget() = GetChildrens(Root())
+CompilerIf #PB_Compiler_IsMainFile
   
-  If Not enumerate_count
-    *element = FirstElement(Widget())
-  Else
-    *element = NextElement(Widget())
-  EndIf
+  EnableExplicit
+  ;UseLIB(widget)
   
-  enumerate_count + 1
+  Enumeration 
+    #window_0
+    #window_1
+  EndEnumeration
   
-  If Widget()\type <> #PB_GadgetType_Window
-    While *element
-      *element = NextElement(Widget())
-      
-      If Widget()\type = #PB_GadgetType_Window
-        Break
-      EndIf 
-    Wend
-  EndIf
   
-  If Widget()\type <> #PB_GadgetType_Window
-    ProcedureReturn 0
-  EndIf
+  ; Shows using of several panels...
+  Procedure BindEvents( )
+    Protected *this._s_WIDGET = EventWidget( )
+    Protected eventtype = WidgetEventType( )
+    
+    Select eventtype
+        ;       Case #PB_EventType_Draw          : Debug "draw"         
+      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this\data +" - wheel-x"
+      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this\data +" - wheel-y"
+      Case #PB_EventType_Input           : Debug  " - "+ *this\data +" - input"
+      Case #PB_EventType_KeyDown         : Debug  " - "+ *this\data +" - key-down"
+      Case #PB_EventType_KeyUp           : Debug  " - "+ *this\data +" - key-up"
+      Case #PB_EventType_Focus           : Debug  " - "+ *this\data +" - focus"
+      Case #PB_EventType_LostFocus       : Debug  " - "+ *this\data +" - lfocus"
+      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this\data +" - enter"
+      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this\data +" - leave"
+      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this\data +" - down"
+      Case #PB_EventType_DragStart       : Debug  " - "+ *this\data +" - drag"
+      Case #PB_EventType_Drop            : Debug  " - "+ *this\data +" - drop"
+      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this\data +" - up"
+      Case #PB_EventType_LeftClick       : Debug  " - "+ *this\data +" - click"
+      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this\data +" - 2_click"
+    EndSelect
+  EndProcedure
   
-  *this\i = Widget()\index ; ListIndex(Widget())
-  ProcedureReturn *element
   
-EndProcedure
-
-Procedure AbortWindow( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure StartGadget( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure NextGadget( *this.Integer, parent =- 1) 
-  Protected *element
+;   Procedure BindWidgetEvent( *this._s_widget, *callback )
+;     Bind( *this, *callback )
+;   EndProcedure
   
-  If Not enumerate_count
-    *element = FirstElement(Widget())
-  Else
-    *element = NextElement(Widget())
-  EndIf
+  OpenWindow(#window_0, 0, 0, 300, 300, "PanelGadget", #PB_Window_SystemMenu )
   
-  enumerate_count + 1
+  OpenWindow(#window_1, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
-  If Widget()\type = #PB_GadgetType_Window
-    While *element
-      *element = NextElement(Widget())
-      
-      If Widget()\type <> #PB_GadgetType_Window And
-         Not (Widget()\parent\widget\index <> parent And parent <> #PB_Any)
-        Break
-      EndIf 
-    Wend
-  EndIf
   
-  If Widget()\type = #PB_GadgetType_Window Or
-     (Widget()\parent\widget\index <> parent And parent <> #PB_Any)
-    enumerate_count = 0
-    ProcedureReturn 0
-  EndIf
   
-  *this\i = Widget()\index ; ListIndex(Widget())
-                           ;Debug Widget()\text\string
-  ProcedureReturn *element
+  Define *root._s_WIDGET = OpenCanvas(#window_0,-1, 10,10,300-20,300-20) : SetData(*root, 1 )
+  BindWidgetEvent( *root, @BindEvents( ) )
   
-EndProcedure
-
-Procedure AbortGadget( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Enumeration 
-  #window_0
-  #window
-EndEnumeration
-
-
-; Shows using of several panels...
-Procedure BindEvents( )
-  Protected *this._s_WIDGET = EventWidget( )
-  Protected eventtype = WidgetEventType( )
   
-  Select eventtype
-      ;       Case #PB_EventType_Draw          : Debug "draw"         
-    Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-    Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
-    Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
-    Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
-    Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
-    Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
-    Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
-    Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
-    Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
-    Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
-    Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
-    Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
-    Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
-    Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
-    Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
-  EndSelect
-EndProcedure
-
-OpenWindow(#window_0, 0, 0, 300, 300, "PanelGadget", #PB_Window_SystemMenu )
-
-Define *w, editable
-Define *root._s_WIDGET = OpenCanvas(#window_0,-1, 10,10,300-20,300-20)
-BindWidgetEvent( *root, @BindEvents( ) )
-
-SetData(*root, 1 )
-Define *p._s_WIDGET = Container( 80,80, 150,150 ) : SetData(*p, 2 )
-Define *c._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
-SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 4)
-SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 6)
-Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetData(*p2, 7 )
-SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 5)
-CloseList( )
-CloseList( )
-CloseList( )
-;SetParentWidget( *c, *p2 )
-;SetParentWidget( *c,*p )
-
-;SetParentWidget( *c,*p )
-
-; ForEach *p\child()
-;   Debug "*p - "+*p\child()\x +" "+ *p\child()\width
-; Next
-; 
-; ForEach *p2\child()
-;   Debug "*p2 - "+*p2\child()\x +" "+ *p2\child()\width
-; Next
-
-OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-
-
-Define *w, editable
-Define *root1._s_WIDGET = OpenCanvas(#window,-1, 10,10,300-20,300-20)
-;BindWidgetEvent( *root1, @BindEvents( ) )
-
-
-Define *root2._s_WIDGET = OpenCanvas(#window,-1, 10,300,300-20,300-20)
-;BindWidgetEvent( *root2, @BindEvents( ) )
-
-
-Define *root3._s_WIDGET = OpenCanvas(#window,-1, 300,10,300-20,600-20)
-;BindWidgetEvent( *root3, @BindEvents( ) )
-
-Define *root4._s_WIDGET = OpenCanvas(#window,-1, 590, 10, 200, 600-20)
-BindWidgetEvent( *root4, @BindEvents( ) )
-
-
-
-Define count = 2;0000
-#st = 1
-Global  mx=#st,my=#st
-
-Define time = ElapsedMilliseconds( )
-
-OpenList( *root1 )
-SetData(Container(20, 20, 180, 180, editable), 1)
-SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
-SetData(Container(40, 20, 180, 180, editable), 3)
-SetData(Container(20, 20, 180, 180, editable), 4)
-
-SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
-SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
-SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
-
-;   SetData(Splitter(5, 80, 180, 50, 
-;                    Container(0,0,0,0, #__Flag_NoGadgets|editable), 
-;                    Container(0,0,0,0, #__Flag_NoGadgets|editable),
-;                    #PB_Splitter_Vertical|editable), 8) 
-
-CloseList( )
-CloseList( )
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
-SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-CloseList( )
-CloseList( )
-CloseList( )
-CloseList( )
-
-;
-OpenList( *root2 )
-SetData(*root2, 11 )
-Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-SetData(*p3, 12 )
-SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 13 )
-SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 14 )
-SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
-SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
-CloseList( )
-CloseList( )
-;SetParentWidget( *p2,*p3 )
-
-ChangeCurrentRootWidget( *root\root\canvas\address )
-Debug ""
-ForEach Widget()
-  If Widget()\parent\widget
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width +" "+ ListSize(Widget()\parent\widget\child())
-  Else
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
-  EndIf
-;   If widget()\count\childrens And ListSize( Widget()\child() )
-;     ForEach Widget()\child()
-;        Debug "   "+Widget()\child()\data +" - "+ Widget()\child()\x +" "+ Widget()\child()\width +" "+ ListSize(Widget()\child()\parent\widget\child())
-;    Next
-;   EndIf
-Next
-
-ChangeCurrentRootWidget( *root2\root\canvas\address )
-Debug "  "
-ForEach Widget()
-  If Widget()\parent\widget
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width +" "+ ListSize(Widget()\parent\widget\child())
-  Else
-    Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
-  EndIf
-Next
-
-
-
-Define i
-OpenList( *root3 )
-*w = Tree( 20,20, 100,260-20+300)
-For i=1 To 10;00000
-  AddItem(*w, i, "text-"+Str(i))
-Next
-
-*w = Tree( 100,30, 100,260-20+300)
-For i=1 To 10;00000
-  AddItem(*w, i, "text-"+Str(i))
-Next
-
-Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
-
-
-;
-Define *window._s_WIDGET
-Define i,y = 5
-OpenList( *root4 )
-For i = 1 To 4
-  Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-  Container(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
-  Button(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
-  Button(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
-  CloseList( )                                     ; Gadget
-  y + 130
-Next
-
-; Define Window, Gadget
-; Debug "Begen enumerate window"
-; If StartWindow( )
-;   While NextWindow( @Window )
-;     Debug "Window "+Window
-;   Wend
-;   AbortWindow()
-; EndIf
-; ;   
-; ;   Debug "Begen enumerate all gadget"
-; ;   If StartGadget( )
-; ;     While NextGadget( @Gadget )
-; ;       Debug "Gadget "+Gadget
-; ;     Wend
-; ;     AbortGadget()
-; ;   EndIf
-; ;   
-; ;   Window = 8
-; ;   
-; ;   Debug "Begen enumerate gadget window = "+ Str(Window)
-; ;   If StartGadget( )
-; ;     While NextGadget( @Gadget, Window )
-; ;       Debug "Gadget "+Str(Gadget) +" Window "+ Window
-; ;     Wend
-; ;     AbortGadget()
-; ;   EndIf
-; ;   
-; ;   
-; ;   Debug "Begen enumerate alls"
-; ;   ForEach Widget()
-; ;     If _is_window_( widget() )
-; ;       Debug "window "+ Widget()\index
-; ;     Else
-; ;       Debug "  gadget - "+ Widget()\index
-; ;     EndIf
-; ;   Next
-; ;   
-; ;  Debug "Begen enumerate window"
-; ;   If StartEnumerate( RootWidget( ) )
-; ;     ;If _is_window_( widget( ) )
-; ;     Debug "window " + widget( )
-; ; ; ;     *window = widget()
-; ;     ;EndIf
-; ;     StopEnumerate( )
-; ;   EndIf
-; ;   
-; ; ;   Debug "Begen enumerate all gadget"
-; ; ;   If StartEnumerate( RootWidget( ) )
-; ; ;     ;If Not _is_window_( widget( ) )
-; ; ;       Debug "gadget - "+widget( )
-; ; ;     ;EndIf
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-; ;   
-; ; ;   Define Window = 8
-; ; ;   ;*window = GetWidget( Window )
-; ; ;   
-; ; ;   Debug "Begen enumerate gadget window = "+ Window
-; ; ;   Debug "window "+ Window
-; ; ;   If StartEnumerate( *window )
-; ; ;     Debug "  gadget - "+ widget( )
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-; ; ;   
-; ; ;   
-; ; ;   Debug "Begen enumerate alls"
-; ; ;   If StartEnumerate( RootWidget( ) )
-; ; ;     If _is_window_( widget() )
-; ; ;       Debug "window "+ Widget()\index
-; ; ;     Else
-; ; ;       Debug "  gadget - "+ Widget()\index
-; ; ;     EndIf
-; ; ;     StopEnumerate( )
-; ; ;   EndIf
-
-Define event, handle, enter, result
-Repeat 
-  event = WaitWindowEvent( )
-  If event = #PB_Event_Gadget
+  Define *root0._s_WIDGET = OpenCanvas(#window_1,-1, 10,10,300-20,300-20) : SetData(*root0, 2 )
+  BindWidgetEvent( *root0, @BindEvents( ) )
+  
+  
+  Define *root1._s_WIDGET = OpenCanvas(#window_1,-1, 300,10,300-20,300-20) : SetData(*root1, 3 )
+  BindWidgetEvent( *root1, @BindEvents( ) )
+  
+  
+  Define *root2._s_WIDGET = OpenCanvas(#window_1,-1, 10,300,300-20,300-20) : SetData(*root2, 4 )
+  BindWidgetEvent( *root2, @BindEvents( ) )
+  
+  
+  Define *root3._s_WIDGET = OpenCanvas(#window_1,-1, 300,300,300-20,300-20) : SetData(*root3, 5 )
+  BindWidgetEvent( *root3, @BindEvents( ) )
+  
+  
+  Define *root4._s_WIDGET = OpenCanvas(#window_1,-1, 590, 10, 200, 600-20) : SetData(*root4, 6 )
+  BindWidgetEvent( *root4, @BindEvents( ) )
+  
+  
+  ;
+  OpenList( *root )
+    SetData(Container( 80,80, 150,150 ), 11 )
+      SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 12 )
+      SetData(Container( 40,40, 70,70 ), 13 )
+        SetData(Container( 5,5, 70,70 ), 14 )
+          SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15)
+        CloseList( )
+      CloseList( )
+      SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 16)
+      SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 17)
+    CloseList( )
+  CloseList( )
+  
+  CloseList( ) ; *root4
+  CloseList( ) ; *root3
+  CloseList( ) ; *root2
+  ;CloseList( ) ; *root1
+  ;CloseList( ) ; *root0
+  
+  SetData(Container( 80,80, 150,150 ), 21 )
+    
+  Define event, handle, enter, result
+  Repeat 
+    event = WaitWindowEvent( )
+    If event = #PB_Event_Gadget
     If EventType( ) = #PB_EventType_MouseMove
-      enter = EnterGadgetID( )
+      enter = GadgetID( EventGadget() ) ;EnterGadgetID( )
       
       If handle <> enter
         handle = enter
-        
         ChangeCurrentRootWidget( handle )
       EndIf
       ;       ElseIf EventType( ) = #PB_EventType_MouseEnter ; bug do't send mouse enter event then press mouse buttons
@@ -2306,7 +2000,8 @@ Repeat
     
     WidgetsEvents( EventType( ) )
   EndIf
-Until event = #PB_Event_CloseWindow
+  Until event = #PB_Event_CloseWindow
+CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---------------------+---------------------------
+; Folding = -------------------------------4-zdf--0v-----
 ; EnableXP

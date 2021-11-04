@@ -1,4 +1,4 @@
-﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../" : XIncludeFile "-widgets.pbi"
 ; XIncludeFile "../empty5.pb"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -173,6 +173,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

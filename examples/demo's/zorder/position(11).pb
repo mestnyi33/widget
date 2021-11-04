@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../-widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile

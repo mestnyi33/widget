@@ -18,7 +18,7 @@
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
      
     ; Цвета по умолчанию
-    \front[0] = $ff000000
+    \front[0] = $ff000001
     \fore[0] = $ffF8F8F8 
     \back[0] = $ffE2E2E2
     \line[0] = $ff000000
@@ -265,6 +265,6 @@ EndDeclareModule
 
 Module colors
 EndModule
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

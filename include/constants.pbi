@@ -687,6 +687,8 @@
     
     ;- _c_event
     Enumeration #PB_Event_FirstCustomValue
+      #PB_Event_Widget
+      
       #PB_Event_Resize
       #PB_Event_ResizeEnd
       

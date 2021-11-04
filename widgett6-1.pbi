@@ -979,45 +979,9 @@ Procedure _SetParentWidget( *this._s_WIDGET, *parent._s_WIDGET, item.l = 0 )
       SplitList( *this\parent\widget\child( ), *parent\child( ) )
       
       
-; ;       If *this\address
-; ;         ChangeCurrentElement( *this\parent\widget\child( ), *this\address )
-; ;       NextElement( *this\parent\widget\child( ))
-; ;         ; DeleteElement( *this\parent\widget\child( ) )
-; ;       EndIf 
-; ;      If *this\address
-; ;         ChangeCurrentElement( *parent\child( ), *this\address )
-; ;       NextElement( *parent\child( ))
-; ;         ; DeleteElement( *this\parent\widget\child( ) )
-; ;       EndIf 
-; ;        Debug *this\parent\widget\child( )\Data
-; ;      MergeLists( *parent\child( ), *this\parent\widget\child( ));, #PB_List_Before)
-     
-;       SplitList( *parent\child( ),*this\parent\widget\child( )  )
-      
- ;       If *this\address[1]
-;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
-;        ; DeleteElement( *this\parent\widget\child( ) )
-;       EndIf
-      
-     ; MoveElement( *this\root\canvas\child( ), #PB_List_After, *parent\address )
-      ;*this\address[1] = *this\root\canvas\child( )
-      
-;         LastElement( *parent\child( ) )
-;       *this\address = AddElement( *parent\child( ) )
-;       *parent\child( ) = *this 
-    
-; ;       If *this\address[1]
-; ;         ChangeCurrentElement( *this\root\canvas\child( ), *this\address[1] )
-; ;         ;  DeleteElement( *this\root\canvas\child( ) )                           
-; ;         ; Debug *this\root\canvas\child( )\Data
-; ;       EndIf
-; ; ;       *this\parent\widget\count\childrens - 1
-;       
-;    ; SelectElement(B(), 1)
- ;MergeLists( *parent\child( ), *this\parent\widget\child( ));, #PB_List_After)
-  ;AddWidget( *this, *parent )
-      
       parent_change = 1 
+    Else
+      
     EndIf
     
     *this\parent\widget = *parent
@@ -2399,5 +2363,5 @@ Repeat
   EndIf
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------d-8----------------------------
+; Folding = -------------------f-8----------------------------
 ; EnableXP

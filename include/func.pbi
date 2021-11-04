@@ -24,6 +24,17 @@ DeclareModule func
     Declare.i GetFontSize( FontID.i )
   CompilerEndIf
   
+  CompilerIf #PB_Compiler_Unicode
+    Macro MidFast(_string_, _start_pos_, _length_=-1)
+      PeekS(@_string_ + ((_start_pos_ - 1) * SizeOf(Character)), _length_, #PB_Unicode)
+    EndMacro 
+  CompilerElse
+    Macro MidFast(_string_, _start_pos_, _length_=-1)
+      PeekS(@_string_ + ((_start_pos_ - 1) * SizeOf(Character)), _length_, #PB_Ascii)
+    EndMacro  
+  CompilerEndIf
+    
+    
   Declare.i GetImageWidth( ImageID.i )
   Declare.i GetImageHeight( ImageID.i )
   Declare.i SetImageWidth( ImageID.i, Width.l )
@@ -197,6 +208,8 @@ Module func
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Protected size.NSSize
       CocoaMessage(@size, ImageID, "size")
+      ; Size\height = CocoaMessage(0, ImageID, "pixelsHigh")
+      
       ProcedureReturn size\height
     CompilerEndIf
   EndProcedure
@@ -205,6 +218,8 @@ Module func
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Protected size.NSSize
       CocoaMessage(@size, ImageID, "size")
+      ; Size\width = CocoaMessage(0, ImageID, "pixelsWide")
+      
       ProcedureReturn size\width
     CompilerEndIf
   EndProcedure
@@ -662,5 +677,5 @@ CompilerEndIf
 ;   EndIf
 ; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --8-vq-f--v--
+; Folding = --f---0-8--0--
 ; EnableXP

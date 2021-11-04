@@ -97,6 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetPosition(*this, #PB_List_Before, *current)
     ;SetPosition(*this, #PB_List_After, *current)
     
+    SetText(*button, GetClass(GetPosition(*this, #PB_List_Before)) +" < 5 > "+ GetClass(GetPosition(*this, #PB_List_After)) ) 
+    
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
     
     OpenWindow(10, 0, 0, 130, 180, "", #PB_Window_TitleBar|#PB_Window_ScreenCentered, ParentID)
@@ -219,5 +221,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -Tq-
+; Folding = ----
 ; EnableXP

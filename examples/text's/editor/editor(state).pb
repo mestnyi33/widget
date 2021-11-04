@@ -1,5 +1,5 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "-widgets.pbi"
 
 UseLib(widget)
 
@@ -43,7 +43,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
   ; HideGadget(0, 0)
   
-  Redraw(root())
+  ;Redraw(root())
   
   Debug " -------- "
   
@@ -87,10 +87,11 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   
   Debug " -------- "
   
-  Redraw(root())
+  ; Redraw(root())
+  
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

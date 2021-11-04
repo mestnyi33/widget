@@ -645,7 +645,7 @@ CompilerIf #PB_Compiler_IsMainFile
           
         Case #PB_EventType_MouseLeave
           If transform( ) And transform( )\type > 0 
-            If Not mouse( )\buttons
+            If Not Mouse( )\buttons
               SetCursor( EnterWidget, #PB_Cursor_Default )
             EndIf
           EndIf
@@ -787,7 +787,11 @@ CompilerIf #PB_Compiler_IsMainFile
         DragPrivate( #_drag_private_type )
         
       Case #PB_EventType_StatusChange
-        SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
+        If e_item = -1
+          ;SetText( id_help_text, GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        Else
+          SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
+        EndIf
         
       Case #PB_EventType_Change
         If EnterWidget = id_elements_tree
@@ -901,7 +905,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
               a_update( transform( )\widget )
               
-              ;Redraw( root( ) )
+              ;Redraw( Root() )
           EndSelect
         EndIf
         
@@ -1120,7 +1124,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ; ;   CloseGadgetList( )
     
     
-    Bind( root( ), #PB_Default )
+    Bind( Root(), #PB_Default )
     Repeat 
       event = WaitWindowEvent( ) 
       
@@ -1154,5 +1158,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------
+; Folding = ------------------
 ; EnableXP

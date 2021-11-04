@@ -7591,12 +7591,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ( _this_\y[#__c_inner] + _this_\row\_s( )\y + _this_\y[#__c_required] )
     EndMacro
     
-    Macro edit_row_text_x_( _this_ )
-      ( _this_\x[#__c_inner] + _this_\row\_s( )\text\x + _this_\x[#__c_required] )
+    Macro edit_row_text_x_( _this_, _row_ )
+      ( _this_\x[#__c_inner] + _row_\text\x + _this_\x[#__c_required] )
     EndMacro
     
-    Macro edit_row_text_y_( _this_ )
-      ( _this_\y[#__c_inner] + _this_\row\_s( )\text\y + _this_\y[#__c_required] )
+    Macro edit_row_text_y_( _this_, _row_ )
+      ( _this_\y[#__c_inner] + _row_\text\y + _this_\y[#__c_required] )
     EndMacro
     
     Macro edit_text_scroll_x_( _this_ )
@@ -7624,15 +7624,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;- 
-    Procedure.l edit_caret_( *this._s_WIDGET )
+    Procedure.l edit_caret_( *this._s_WIDGET, *row._s_rows )
       ; Get caret position
       Protected i.l, x.l, Position.l =- 1,  
                 Mousex.l, Distance.f, MinDistance.f = Infinity( )
       
-      Mousex = Mouse( )\x - edit_row_text_x_( *this )
+      Mousex = Mouse( )\x - edit_row_text_x_( *this, *row )
       
-      For i = 0 To *this\row\_s( )\text\len
-        x = TextWidth( Left( *this\row\_s( )\text\string, i ))
+      For i = 0 To *row\text\len
+        x = TextWidth( Left( *row\text\string, i ))
         Distance = ( Mousex - x )*( Mousex - x )
         
         If MinDistance > Distance 
@@ -7943,7 +7943,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If _start_draw_( *this )
           
           If _caret_ =- 1
-            _caret_ = edit_caret_( *this ) 
+            _caret_ = edit_caret_( *this, \row\_s( ) ) 
           Else
             ; Ctrl - A
             Repaint =- 2
@@ -9657,8 +9657,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; Draw selections
               If *this\row\_s( )\visible 
                 Y = edit_row_y_( *this )
-                Text_x = edit_row_text_x_( *this )
-                Text_Y = edit_row_text_y_( *this )
+                Text_x = edit_row_text_x_( *this, *this\row\_s( ))
+                Text_Y = edit_row_text_y_( *this, *this\row\_s( ) )
                 
                 Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] )
                 Protected sel_text_x2 = edit_row_edit_text_x_( *this, [2] )
@@ -10463,42 +10463,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 ;}
                 
               Case #PB_EventType_LeftButtonDown
-                ;*currentRow = EnteredRow( *this )
+                *currentRow = EnteredRow( *this )
                 
-                If is_item_( *this, _line_ ) And 
-                   _line_ <> \row\_s( )\index  
-                  \row\_s( )\color\state = 0
-                  *currentRow = SelectElement( *this\row\_s( ), _line_ ) 
-                EndIf
-                
-;                 If FocusedRow( *this )
-;                   Debug ""+FocusedRow( *this )\text\string +" "+ *this\row\_s( )\text\string
+;                 If is_item_( *this, _line_ ) And 
+;                    _line_ <> \row\_s( )\index  
+;                   \row\_s( )\color\state = 0
+;                   SelectElement( *this\row\_s( ), _line_ ) 
 ;                 EndIf
                 
-                If _line_ = *this\row\_s( )\index
-                  *this\row\_s( )\color\state = 1
+                If _line_ = *currentRow\index - 1
+                  *currentRow\color\state = 1
                   
                   If FocusedRow( *this ) And 
-                     FocusedRow( *this ) = *this\row\_s( ) And
+                     FocusedRow( *this ) = *currentRow And
                      ( ElapsedMilliseconds( ) - *this\text\caret\time ) < 500
-                    Debug 888
+                    
                     *this\text\caret\pos[2] = 0
                     *this\row\box\___state= #False
                     FocusedRow( *this ) = #Null
                     EnteredRowindex( *this ) = _line_
-                    *this\text\caret\pos[1] = *this\row\_s( )\text\len ; Чтобы не прокручивало в конец строки
-                    Repaint = edit_sel_draw_( *this, _line_, *this\row\_s( )\text\len )
+                    *this\text\caret\pos[1] = *currentRow\text\len ; Чтобы не прокручивало в конец строки
+                    Repaint = edit_sel_draw_( *this, _line_, *currentRow\text\len )
                     
                   Else
                     _start_draw_( *this )
-                    FocusedRow( *this ) = *this\row\_s( )
+                    FocusedRow( *this ) = *currentRow
                     
                     If *this\text\editable And edit_sel_is_line_( *this )
                       ; Отмечаем что кликнули
                       ; по выделеному тексту
                       *this\row\box\___state= 1
                       
-                      Debug "sel - " + *this\row\_s( )\text\edit[2]\width
+                      Debug "sel - " + *currentRow\text\edit[2]\width
                       set_cursor_( *this, #PB_Cursor_Default )
                     Else
                       ; reset items selection
@@ -10510,9 +10506,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Next
                       PopListPosition( *this\row\_s( ))
                       
-                      Caret = edit_caret_( *this )
+                      Caret = edit_caret_( *this, *currentRow )
                       
-                      FocusedRowIndex( *this ) = *this\row\_s( )\index 
+                      FocusedRowIndex( *this ) = *currentRow\index - 1
                       
                       
                       If *this\text\caret\pos[1] <> Caret
@@ -10619,7 +10615,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     
                     set_cursor_( *this, #PB_Cursor_IBeam )
                   Else
-                    *this\text\caret\pos[2] = edit_caret_( *this )
+                    *this\text\caret\pos[2] = edit_caret_( *this, *this\row\_s( ) )
                     *this\row\_s( )\text\edit[2]\len = 0
                     FocusedRowindex( *this ) = _line_
                     
@@ -11424,7 +11420,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Else
                 EnteredRow( *this )\state\press = #True
               EndIf
-              
               FocusedRow( *this ) = EnteredRow( *this )
               
             Else
@@ -19479,7 +19474,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                eventtype = #PB_EventType_RightButtonDown
           
           PressedWidget( ) = EnteredWidget( )
-          ;PressedRow( EnteredWidget( ) ) = EnteredRow( EnteredWidget( ) )
           
           ;
           If EnteredWidget( )
@@ -19521,9 +19515,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If EnteredWidget( ) <> FocusedWidget( ) 
                 SetActive( EnteredWidget( ))
               EndIf
-              
-            ;  FocusedRow( EnteredWidget( ) ) = EnteredRow( EnteredWidget( ) )
-          
             EndIf
             
             ; do events down
@@ -20630,5 +20621,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------u------8--------------------4P8---vv-------------0------------------------------------------------------------------------------------------------------------------------------------------8-8----------------------------------------------f-----------------84-0---------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

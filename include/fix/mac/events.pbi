@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       #LeftMouseUpMask        = 1 << 2
       ; #RightMouseDownMask     = 1 << 3
       ; #RightMouseUpMask       = 1 << 4
-      ; #MouseMovedMask         = 1 << 5
+       #MouseMovedMask         = 1 << 5
       ; #LeftMouseDraggedMask   = 1 << 6
       ; #RightMouseDraggedMask  = 1 << 7
       ; #KeyDownMask            = 1 << 10
@@ -39,11 +39,10 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       
       GetCurrentProcess(@psn.q)
       
-      mask = #LeftMouseDownMask | #LeftMouseUpMask
+      mask = #LeftMouseDownMask | #LeftMouseUpMask | #MouseMovedMask ;| 1 << 8 | 1 << 9 ; 
       ; mask | #RightMouseDownMask | #RightMouseUpMask
       ; mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
       ; mask | #KeyDownMask
-      
       
       ;       ;
       ;       ; callback function
@@ -52,7 +51,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         Static event_window =- 1
         Static event_gadget =- 1
         
-        If type = 1 ; LeftButtonDown
+        If type = 1 ; 1 << type = #LeftMouseDownMask ; LeftButtonDown
           If GetActiveWindow( ) <> EventWindow( ) 
             
             event_window = EventWindow( )
@@ -61,12 +60,39 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             
             PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
           EndIf
-        ElseIf type = 2 ; LeftButtonUp
+        ElseIf type = 2 ; 1 << type = #LeftMouseUpMask ; LeftButtonUp
           If IsWindow( event_window )
             PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonUp )
             event_window =- 1
             event_gadget =- 1
           EndIf
+          
+          ; bug mouse enter 
+        ElseIf type = 5 Or type = 8 Or type = 9 ; 1 << type = #MouseMovedMask ; MouseMove
+          Static lastView
+          Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+          
+          If NSEvent
+            Protected  Window = CocoaMessage(0, NSEvent, "window")
+            
+            If Window
+              Protected Point.NSPoint
+              CocoaMessage(@Point, NSEvent, "locationInWindow")
+              Protected contentView = CocoaMessage(0, Window, "contentView")
+              
+              Protected View = CocoaMessage(0, contentView, "hitTest:@", @Point)
+              
+              If lastView <> View 
+                If lastView
+                 ; PostEvent( #PB_Event_Gadget, EventWindow(), LastView, #PB_EventType_MouseLeave )
+                EndIf
+                
+                lastView = View 
+                                ; Debug "eventTapFunction - "+Window +" "+ contentView +" "+ View +" "+ EventGadget()
+                PostEvent( #PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change, View )
+              EndIf
+            EndIf
+          EndIf           
         EndIf
       EndProcedure
       
@@ -85,12 +111,16 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule events
   Define event
   
-  OpenWindow(1, 200, 100, 220, 220, "click hire", #PB_Window_SystemMenu)
+  OpenWindow(1, 200, 100, 320, 320, "click hire", #PB_Window_SystemMenu)
   CanvasGadget(1, 10, 10, 200, 200)
+  CanvasGadget(11, 110, 110, 200, 200)
   
-  OpenWindow(2, 300, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
+  OpenWindow(2, 450, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
   CanvasGadget(2, 10, 10, 200, 200)
   
+  Debug GadgetID(1)
+  Debug GadgetID(11)
+  Debug GadgetID(2)
   Repeat 
     event = WaitWindowEvent()
     If event = #PB_Event_Gadget
@@ -100,9 +130,19 @@ CompilerIf #PB_Compiler_IsMainFile
       If EventType() = #PB_EventType_LeftButtonUp
         Debug ""+EventGadget() + " #PB_EventType_LeftButtonUp "
       EndIf
+      
+      If EventType() = #PB_EventType_Change
+        Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
+      EndIf
+      If EventType() = #PB_EventType_MouseEnter
+        Debug ""+EventGadget() + " #PB_EventType_MouseEnter " +EventData()
+      EndIf
+      If EventType() = #PB_EventType_MouseLeave
+        Debug ""+EventGadget() + " #PB_EventType_MouseLeave "
+      EndIf
     EndIf
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0--
+; Folding = 0---
 ; EnableXP

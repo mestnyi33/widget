@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../-widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,50 +15,73 @@ CompilerIf #PB_Compiler_IsMainFile
   
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *g = window(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(widget(), "window")
+  ; last-root
+   Define *w = window(10,10,200,200, "window_main", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(*w, "window_main")
   
-  Define *g0 = window(10,10,200,200, "form_0", 0, *g) : SetClass(widget(), "form_0")
+  Define *f0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu, *w) : SetClass(*f0, "form_0")
 ;   Button(10,10,100,30,"button_0_0") : SetClass(widget(), GetText(widget()))
 ;   Button(10,50,100,30,"button_0_1") : SetClass(widget(), GetText(widget()))
 ;   Button(10,90,100,30,"button_0_2") : SetClass(widget(), GetText(widget()))
   
-  Define *g1 = Container(30,10,200,200) : SetClass(widget(), "form_1")
+  Define *g1 = Container(30,10,200,200) : SetClass(*g1, "container_1")
   Button(10,10,100,30,"button_1_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_1_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_1_2") : SetClass(widget(), GetText(widget()))
 
-  Define *g2 = Container(50,10,200,200) : SetClass(widget(), "form_2")
+  Define *g2 = Container(50,10,200,200) : SetClass(*g2, "container_2")
   Button(10,10,100,30,"button_2_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_2_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_2_2") : SetClass(widget(), GetText(widget()))
-  
-  window(120,40,200,200, "window_0", #PB_Window_SystemMenu, *g) : SetClass(widget(), "window_0")
+;   
+  Define *f1 = window(120,40,200,200, "form_1", #PB_Window_SystemMenu, *w) : SetClass(*f1, "form_1")
   Button(10,10,80,30,"button_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,80,30,"button_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,80,30,"button_2") : SetClass(widget(), GetText(widget()))
   
-  OpenList(*g0)
+  OpenList(*f0)
   Button(10,10,130,30,"button_0_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,130,30,"button_0_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,130,30,"button_0_2") : SetClass(widget(), GetText(widget()))
   CloseList()
   
-  ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
+;   ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
             
            
 ;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
 ;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   Debug "---->>"
   ForEach widget()
-    Debug "  "+ widget()\class
+    Debug "  "+ Space(widget()\level*4) +" "+ widget()\class
   Next
   Debug "<<----"
   
+  
+; debug >> result 
+;   ---->>
+;    window_main
+;        form_0
+;            container_1
+;                button_1_0
+;                button_1_1
+;                button_1_2
+;                container_2
+;                    button_2_0
+;                    button_2_1
+;                    button_2_2
+;            button_0_0
+;            button_0_1
+;            button_0_2
+;        form_1
+;            button_0
+;            button_1
+;            button_2
+;   <<----
+
   WaitClose( )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

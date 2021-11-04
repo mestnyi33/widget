@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     CloseList()
     
-    ReDraw(Root())
+    ReDraw(RootWidget())
     
     Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
     

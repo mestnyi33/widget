@@ -56,6 +56,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     ;--     OBJECT_TYPE
     Structure _s_OBJECT_TYPE
+      *root._s_ROOT
       *row._s_ROWS
       *widget._s_WIDGET
       *button._s_BUTTONS
@@ -277,7 +278,8 @@ CompilerIf Not Defined(structures, #PB_Module)
                         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
-      *parent._s_rows
+      *_parent._s_rows
+      parent._s_OBJECT_TYPE
       
       *option_group._s_rows
       
@@ -350,7 +352,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *active._s_rows ; _get_bar_active_item_
       *hover._s_rows  ; _get_bar_active_item_
       
-      index.l ; tab opened item index  
       change_tab_items.b ; tab items to redraw
       
       ;;*selected._s_tabs     ;???????????????   ; at point pushed item
@@ -544,6 +545,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_EVENTDATA
     Structure _s_EVENTDATA
+      *back.pFunc
+      
       *type ; EventType( )
       *item ; EventItem( )
       *data ; EventData( )
@@ -557,13 +560,15 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_EVENT
     Structure _s_EVENT ; Extends _s_EVENTDATA
-                       ;*type
-      List *call._s_EVENTBIND( )
+      List *post._s_EVENTDATA( )
+      
+      List *call._s_EVENTDATA( )
+      List *_call._s_EVENTBIND( )
       List *queue._s_EVENTDATA( )
     EndStructure
     
     ;- - _s_TAB_WIDGET
-    Structure _s_TAB_WIDGET Extends _s_OBJECT_TYPE
+    Structure _s_OBJECT_TYPE_EX Extends _s_OBJECT_TYPE
       index.i ; parent-tab item index
     EndStructure
     
@@ -593,7 +598,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_WIDGET
     Structure _s_WIDGET
       state._s_STATE
-      parent._s_OBJECT_TYPE
       
       *drop._s_DD
       *attach._s_ATTACH
@@ -627,10 +631,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       after._s_OBJECT_TYPE
       before._s_OBJECT_TYPE
       
+      parent._s_OBJECT_TYPE_EX
+      tab._s_OBJECT_TYPE_EX
+      
       ; 
       *position ; ;#PB_List_First; #PB_List_Last
       
-      tab._s_TAB_WIDGET
       
       *index[3]  
       ; \index[0] - widget index 
@@ -641,8 +647,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *address          ; widgets list address
       *container        ; 
-      *root._s_ROOT     ; this root
       
+      *root._s_ROOT     ; this root
       *window._s_WIDGET; this parent window       ; root( )\active\window
       
       StructureUnion
@@ -726,7 +732,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       postevent.b         ; post evet canvas repaint
       bindevent.b         ; bind canvas event
       
-      *parent._s_WIDGET   ; last list-opened parent element
       List *child._s_WIDGET( )    ; widget( )\
     EndStructure
     
@@ -748,16 +753,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       *action_widget._s_WIDGET
       action_type.s
       
-      Map *canvas._s_ROOT( )        ; 
-      List *_root._s_ROOT( )        ; 
-      List *_address._s_WIDGET( )   ; widget( )\
-      
+      *opened._s_WIDGET             ; last list opened element
+       
+      Map *roots._s_ROOT( )         ; 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; sticky( )\
       
       *widget._s_WIDGET             ; EventWidget( )\ 
       event._s_EVENTDATA            ; WidgetEvent( )\ ; \type ; \item ; \data
+      
+      
+      ; для совместимости
+      List *_root._s_ROOT( )        ; 
+      List *_address._s_WIDGET( )   ; widget( )\
     EndStructure
     
     ;Global *event._s_events = AllocateStructure(_s_events)
