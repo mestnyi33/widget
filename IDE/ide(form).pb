@@ -414,7 +414,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     ElseIf FindString( PackEntryName, "panel" )
                       Image = #PB_Any
                     Else
-                     ; Image = #PB_Any
+                      ; Image = #PB_Any
                     EndIf
                     
                     If Image
@@ -588,15 +588,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events( )
     Protected e_type = WidgetEventType( )
-    Protected EnterWidget = EventWidget( )
+    Protected EventWidget = EventWidget( )
     
-    If IsContainer( EnterWidget )
+    If IsContainer( EventWidget )
       Select e_type 
         Case #PB_EventType_DragStart
           DragPrivate( #_drag_private_type )
           
         Case #PB_EventType_Drop
-          widget_add( EnterWidget, GetText( id_elements_tree ), EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+          widget_add( EventWidget, GetText( id_elements_tree ), EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
           
           ; no create new 
           SetState( id_elements_tree, 0 )
@@ -624,7 +624,7 @@ CompilerIf #PB_Compiler_IsMainFile
           If transform( )\type > 0 Or group_select
             ;transform( )\grab = 1
             If group_select 
-              group_drag = EnterWidget
+              group_drag = EventWidget
             EndIf
           EndIf
           
@@ -639,14 +639,14 @@ CompilerIf #PB_Compiler_IsMainFile
           If transform( )
             Debug "enter widget " + transform( )\type
             If transform( )\type > 0
-              SetCursor( EnterWidget, #PB_Cursor_Cross )
+              SetCursor( EventWidget, #PB_Cursor_Cross )
             EndIf
           EndIf
           
         Case #PB_EventType_MouseLeave
           If transform( ) And transform( )\type > 0 
             If Not Mouse( )\buttons
-              SetCursor( EnterWidget, #PB_Cursor_Default )
+              SetCursor( EventWidget, #PB_Cursor_Default )
             EndIf
           EndIf
           
@@ -660,16 +660,16 @@ CompilerIf #PB_Compiler_IsMainFile
         
         
       Case #PB_EventType_StatusChange
-        ;If GetState( id_inspector_tree ) <> GetData( EnterWidget )
-        SetState( id_inspector_tree, GetData( EnterWidget ) )
+        ;If GetState( id_inspector_tree ) <> GetData( EventWidget )
+        SetState( id_inspector_tree, GetData( EventWidget ) )
         ;EndIf
         If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, GetData( EnterWidget ) )
+          SetGadgetState( id_design_code, GetData( EventWidget ) )
         EndIf
-        properties_update( id_properties_tree, EnterWidget )
+        properties_update( id_properties_tree, EventWidget )
         
       Case #PB_EventType_Resize
-        properties_update_coordinate( id_properties_tree, EnterWidget )
+        properties_update_coordinate( id_properties_tree, EventWidget )
         
     EndSelect
     
@@ -775,7 +775,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._s_widget
     Protected e_type = WidgetEvent( )\type
     Protected e_item = WidgetEvent( )\item
-    Protected EnterWidget = EventWidget( )
+    Protected EventWidget = EventWidget( )
     
     Select e_type
       Case #PB_EventType_DragStart
@@ -787,19 +787,78 @@ CompilerIf #PB_Compiler_IsMainFile
         DragPrivate( #_drag_private_type )
         
       Case #PB_EventType_StatusChange
-        If e_item = -1
-          ;SetText( id_help_text, GetItemText( EnterWidget, GetState( EnterWidget ) ) )
+        If EventWidget = listview_debug
+          
+          ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
         Else
-          SetText( id_help_text, GetItemText( EnterWidget, e_item ) )
+          If e_item = -1
+            ;SetText( id_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
+          Else
+            SetText( id_help_text, GetItemText( EventWidget, e_item ) )
+          EndIf
         EndIf
         
       Case #PB_EventType_Change
-        If EnterWidget = id_elements_tree
-          transform( )\type = GetState( EnterWidget )
+        Protected q, startpos, stoppos
+        
+        If EventWidget = listview_debug
+          Protected x = #PB_Ignore, y = #PB_Ignore
+          Protected width = #PB_Ignore, height = #PB_Ignore
+          
+          Protected findstring.s = Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos )
+          Protected countstring = CountString( findstring, "," )
+          
+          Select countstring
+            Case 0, 1, 2, 3, 4
+              For q = EventWidget( )\text\edit[1]\len To EventWidget( )\text\edit[1]\pos Step - 1
+                If Mid( EventWidget( )\text\string, q, 1 ) = "(" Or 
+                   Mid( EventWidget( )\text\string, q, 1 ) = ~"\"" Or
+                   Mid( EventWidget( )\text\string, q, 1 ) = ","
+                  startpos = q + 1
+                  Break
+                EndIf
+              Next q
+              
+              For q = EventWidget( )\text\edit[3]\pos To ( EventWidget( )\text\edit[3]\pos + EventWidget( )\text\edit[3]\len )
+                If Mid( EventWidget( )\text\string, q, 1 ) = "," Or
+                   Mid( EventWidget( )\text\string, q, 1 ) = ~"\"" Or
+                   Mid( EventWidget( )\text\string, q, 1 ) = ")"
+                  stoppos = q
+                  Break
+                EndIf
+              Next q
+              
+              If stoppos And stoppos - startpos
+                findstring = Mid( EventWidget( )\text\string, startpos, stoppos - startpos )
+                
+                If countstring = 4
+                  SetText( transform( )\widget, findstring )
+                Else
+                  If countstring = 0
+                    x = Val( findstring )
+                  ElseIf countstring = 1
+                    y = Val( findstring )
+                  ElseIf countstring = 2
+                    width = Val( findstring )
+                  ElseIf countstring = 3
+                    height = Val( findstring )
+                  EndIf
+                  
+                  Resize( transform( )\widget, x, y, width, height)
+                EndIf
+                
+              EndIf
+          EndSelect
+          
+          ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
         EndIf
         
-        If EnterWidget = id_inspector_tree
-          *this = GetItemData( EnterWidget, GetState( EnterWidget ) )
+        If EventWidget = id_elements_tree
+          transform( )\type = GetState( EventWidget )
+        EndIf
+        
+        If EventWidget = id_inspector_tree
+          *this = GetItemData( EventWidget, GetState( EventWidget ) )
           
           If a_set( *this )
             a_reset( )
@@ -822,22 +881,22 @@ CompilerIf #PB_Compiler_IsMainFile
         ;       EndIf
         
       Case #PB_EventType_LeftClick
-        If EnterWidget = id_elements_tree
+        If EventWidget = id_elements_tree
           Debug "click"
           ; SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, transform( )\type ) ) )
         EndIf
         
-        If getclass( EnterWidget ) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData( EnterWidget )
+        If getclass( EventWidget ) = "ToolBar"
+          Protected transform, move_x, move_y, toolbarbutton = GetData( EventWidget )
           Static NewList *copy._s_group( )
           
           
           Select toolbarbutton
             Case 1
-              If Getstate( EnterWidget )  
+              If Getstate( EventWidget )  
                 ; group
-                group_select = EnterWidget
-                ; SetAtributte( EnterWidget, #PB_Button_PressedImage )
+                group_select = EventWidget
+                ; SetAtributte( EventWidget, #PB_Button_PressedImage )
               Else
                 ; un group
                 group_select = 0
@@ -958,14 +1017,14 @@ CompilerIf #PB_Compiler_IsMainFile
     EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     
     listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
-;     ;
-;     id_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( id_design_panel )
-;     AddItem( id_design_panel, -1, "Form" )
-;     id_design_form = MDI( 0,0,0,0, #__flag_autosize ) 
-;     
-;     AddItem( id_design_panel, -1, "Code" )
-;     id_design_code = Editor( 0,0,0,0 ) 
-;     CloseList( )
+                                       ;     ;
+                                       ;     id_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( id_design_panel )
+                                       ;     AddItem( id_design_panel, -1, "Form" )
+                                       ;     id_design_form = MDI( 0,0,0,0, #__flag_autosize ) 
+                                       ;     
+                                       ;     AddItem( id_design_panel, -1, "Code" )
+                                       ;     id_design_code = Editor( 0,0,0,0 ) 
+                                       ;     CloseList( )
     
     
     ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
@@ -1041,6 +1100,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Bind( id_inspector_tree, @ide_events( ) )
     
+    Bind( listview_debug, @ide_events( ), #PB_EventType_Change )
+    Bind( listview_debug, @ide_events( ), #PB_EventType_StatusChange )
+    
     ;Bind( id_elements_tree, @ide_events( ) )
     Bind( id_elements_tree, @ide_events( ), #PB_EventType_LeftClick )
     Bind( id_elements_tree, @ide_events( ), #PB_EventType_Change )
@@ -1062,50 +1124,50 @@ CompilerIf #PB_Compiler_IsMainFile
     ; example 1
     ;   ;OpenList( id_design_form )
     Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
-;     Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
-;     widget_add( *container, "button", 10, 20, 30, 30 )
-;     widget_add( *window, "button", 10, 20, 100, 30 )
-;     
-;     Define item = 1
-;     SetState( id_inspector_tree, item )
-;     If IsGadget( id_design_code )
-;       SetGadgetState( id_design_code, item )
-;     EndIf
-;     Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-;     widget_add( *container2, "button", 10, 20, 30, 30 )
-;     
-;     SetState( id_inspector_tree, 0 )
-;     widget_add( *window, "button", 10, 130, 100, 30 )
-;     
-;     ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-;     ;   Define *container = widget_add( *window, "container", 80, 10 )
-;     ;   widget_add( *container, "button", -10, 20 )
-;     ;   widget_add( *window, "button", 10, 20 )
-;     ;   ;CloseList( )
-;     
-;     ;     ; example 2
-;     ;     ;   ;OpenList( id_design_form )
-;     ;     SetState( group_select, 1 ) 
-;     ;     
-;     ;     Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
-;     ;     widget_add( *window, "button", 15, 25, 50, 30 )
-;     ;     widget_add( *window, "text", 25, 65, 50, 30 )
-;     ;     widget_add( *window, "button", 35, 65+40, 50, 30 )
-;     ;     widget_add( *window, "text", 45, 65+40*2, 50, 30 )
-;     ;     
-;     ;     ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-;     ;     Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
-;     ;     widget_add( *container, "progress", 15, 25, 30, 30 )
-;     ;     widget_add( *container, "text", 25, 65, 50, 30 )
-;     ;     widget_add( *container, "button", 35, 65+40, 80, 30 )
-;     ;     widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-;     ;     
-;     ;     Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-;     ;     widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-;     ;     widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-;     ;     widget_add( *container2, "string", 25, 65, 100, 30 )
-;     ;     widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
-;     
+    ;     Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+    ;     widget_add( *container, "button", 10, 20, 30, 30 )
+    ;     widget_add( *window, "button", 10, 20, 100, 30 )
+    ;     
+    ;     Define item = 1
+    ;     SetState( id_inspector_tree, item )
+    ;     If IsGadget( id_design_code )
+    ;       SetGadgetState( id_design_code, item )
+    ;     EndIf
+    ;     Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+    ;     widget_add( *container2, "button", 10, 20, 30, 30 )
+    ;     
+    ;     SetState( id_inspector_tree, 0 )
+    ;     widget_add( *window, "button", 10, 130, 100, 30 )
+    ;     
+    ;     ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+    ;     ;   Define *container = widget_add( *window, "container", 80, 10 )
+    ;     ;   widget_add( *container, "button", -10, 20 )
+    ;     ;   widget_add( *window, "button", 10, 20 )
+    ;     ;   ;CloseList( )
+    ;     
+    ;     ;     ; example 2
+    ;     ;     ;   ;OpenList( id_design_form )
+    ;     ;     SetState( group_select, 1 ) 
+    ;     ;     
+    ;     ;     Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+    ;     ;     widget_add( *window, "button", 15, 25, 50, 30 )
+    ;     ;     widget_add( *window, "text", 25, 65, 50, 30 )
+    ;     ;     widget_add( *window, "button", 35, 65+40, 50, 30 )
+    ;     ;     widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+    ;     ;     
+    ;     ;     ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+    ;     ;     Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+    ;     ;     widget_add( *container, "progress", 15, 25, 30, 30 )
+    ;     ;     widget_add( *container, "text", 25, 65, 50, 30 )
+    ;     ;     widget_add( *container, "button", 35, 65+40, 80, 30 )
+    ;     ;     widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+    ;     ;     
+    ;     ;     Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+    ;     ;     widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+    ;     ;     widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+    ;     ;     widget_add( *container2, "string", 25, 65, 100, 30 )
+    ;     ;     widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
+    ;     
     
     
     
@@ -1158,5 +1220,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------
+; Folding = -------------------
 ; EnableXP

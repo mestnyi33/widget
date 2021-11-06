@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../" : XIncludeFile "-widgets.pbi"
 ; XIncludeFile "../empty5.pb"
 
 ;- EXAMPLE
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If eventtype = #PB_EventType_Focus
       Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
-      Debug String.s +" - widget"
+     ; Debug String.s +" - widget"
     EndIf
     
   EndProcedure

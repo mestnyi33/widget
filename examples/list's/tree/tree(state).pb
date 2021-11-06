@@ -1,8 +1,8 @@
 ﻿; 
 ; demo state
 ;
-IncludePath "../../"
-XIncludeFile "widgets.pbi"
+IncludePath "../../../"
+XIncludeFile "-widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -13,10 +13,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure button_events()
     Protected count
     
-    Select this()\event
+    Select WidgetEventType( )
      Case #PB_EventType_LeftClick
        
-       Select this()\widget
+       Select EventWidget( )
          Case *added
            AddItem(*w1, -1, "item " +Str(CountItems(*w1)) +" (added)")
            AddItem(*w2, -1, "item " +Str(CountItems(*w2)) +" (added)")
@@ -42,18 +42,18 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events()
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_RightClick
         AddItem(*w1, -1, "item " +Str(CountItems(*w1)) +" (added)")
         AddItem(*w2, -1, "item " +Str(CountItems(*w2)) +" (added)")
            
       Case #PB_EventType_Change
-        SetState(*w1, GetState(this()\widget))
+        SetState(*w1, GetState(EventWidget( )))
     EndSelect
   EndProcedure
   
   Procedure gadget_events()
-    Select EventType()
+    Select EventType( )
       Case #PB_EventType_Change
         SetGadgetState(*g1, GetGadgetState(EventGadget()))
         
@@ -104,6 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
