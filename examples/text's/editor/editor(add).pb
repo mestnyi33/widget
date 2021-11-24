@@ -1,4 +1,4 @@
-﻿IncludePath "../../../": XIncludeFile "-widgets.pbi": UseModule Widget
+﻿IncludePath "../../../": XIncludeFile "-widgets-editor.pbi": UseModule Widget
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

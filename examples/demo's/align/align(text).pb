@@ -11,28 +11,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
     Protected vertical
-    If _flag_ & #__flag_vertical = #__flag_vertical
-      _flag_ &~ #__flag_vertical
-      vertical = 1
-    EndIf
+;     If _flag_ & #__flag_vertical = #__flag_vertical
+;       _flag_ &~ #__flag_vertical
+;       vertical = 1
+;     EndIf
     
     _text_ +#LF$+ _text_
     
-  ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
+  ;  Text(_x_,_y_,_width_,_height_,_text_,_flag_)
   ;  Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ; CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
-   ;;String(_x_,_y_,_width_,_height_,"String",_flag_)
+  ;  Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+  ;  CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+     Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
   ;  String(_x_,_y_,_width_,_height_,_text_,_flag_)
-  If vertical
-   ; widget()\vertical = 1
-  EndIf
+     
+  ;   widget()\vertical = 1
   
 EndProcedure
   
   Define m.s = #LF$
-  Define height = 60
+  Define height = 80
   Define hor_space = 80
   Define text_v.s = "Standard"+ m.s +"Button Button"+ m.s +"(Vertical)"
   Define text_h.s = "Standard"+ m.s +"Button Button"+ m.s +"(horizontal)"

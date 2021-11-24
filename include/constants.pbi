@@ -56,7 +56,7 @@
     ; default values 
     #__window_caption_height = 21
     #__window_frame_size = 4 
-    #__border_scroll = 2
+    #__border_scroll = 10
     
     #__panel_height = 24 ;+ 4
     #__panel_width = 85
@@ -746,6 +746,9 @@
       
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
+      
+;       #PB_EventType_TimerStart
+;       #PB_EventType_TimerStop
     EndEnumeration
     
     #__event_free             = #PB_EventType_Free    

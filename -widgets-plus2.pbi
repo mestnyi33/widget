@@ -1,4 +1,4 @@
-﻿; ver: 2.0.0.0
+﻿; ver: 3.0.0.0
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   #path = "/Users/as/Documents/GitHub/widget/"
@@ -31,6 +31,7 @@ CompilerEndIf
 CompilerIf Not Defined( colors, #PB_Module )
   XIncludeFile "include/colors.pbi"
 CompilerEndIf
+
 
 CompilerIf Not Defined( Widget, #PB_Module )
   ;-  >>>
@@ -20235,321 +20236,452 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-
-
-CompilerIf #PB_Compiler_IsMainFile ;= 100
+CompilerIf #PB_Compiler_IsMainFile
   
-  Uselib(widget)
-  UsePNGImageDecoder()
-  Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
+  EnableExplicit
+  UseLIB(widget)
   
-  Define *new
-  ; toolbar buttons
   Enumeration 
-    #_tb_group_left = 3
-    #_tb_group_right
-    #_tb_group_top
-    #_tb_group_bottom
-    #_tb_group_width
-    #_tb_group_height
-    
-    #_tb_align_left
-    #_tb_align_right
-    #_tb_align_top
-    #_tb_align_bottom
-    #_tb_align_center
-    
-    #_tb_widget_paste
-    #_tb_widget_delete
-    #_tb_widget_copy
-    #_tb_widget_cut
+    #window_0
+    #window
   EndEnumeration
   
-  Macro widget_copy()
-    ClearList(*copy())
-    
-    If Transform()\widget\_a_transform = 1
-      AddElement(*copy()) 
-      *copy.allocate(group, ())
-      *copy()\widget = Transform()\widget
-    Else
-      ;       ForEach Transform()\group()
-      ;         AddElement(*copy()) 
-      ;         *copy.allocate(group, ())
-      ;         *copy()\widget = Transform()\group()\widget
-      ;       Next
-      
-      CopyList(Transform()\group(), *copy())
-      
-    EndIf
-    
-    Transform()\id[0]\x = Transform()\grid\size
-    Transform()\id[0]\y = Transform()\grid\size
-  EndMacro
   
-  Macro widget_delete()
-    If Transform()\widget\_a_transform = 1
-      ;  transform = Transform()\widget\parent\widget
-      
-      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
-      Free(Transform()\widget)
-    Else
-      ;  transform = Transform()\widget
-      
-      ForEach Transform()\group()
-        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
-        Free(Transform()\group()\widget)
-        DeleteElement(Transform()\group())
-      Next
-      
-      ClearList(Transform()\group())
-    EndIf
+  ; Shows using of several panels...
+  Procedure BindEvents( )
+    Protected *this._S_widget = EventWidget( )
+    Protected eventtype = WidgetEventType( )
     
-    ; a_set(transform)
-  EndMacro
-  
-  Macro widget_paste()
-    If ListSize(*copy())
-      ForEach *copy()
-        ;         widget_add(*copy()\widget\parent\widget, 
-        ;                        *copy()\widget\class, 
-        ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\widget\x[#__c_inner]),
-        ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\widget\y[#__c_inner]), 
-        ;                        *copy()\widget\width[#__c_frame],
-        ;                        *copy()\widget\height[#__c_frame])
-      Next
-      
-      Transform()\id[0]\x + Transform()\grid\size
-      Transform()\id[0]\y + Transform()\grid\size
-      
-      ClearList(Transform()\group())
-      CopyList(*copy(), Transform()\group())
-    EndIf
-    
-    ForEach Transform()\group()
-      Debug " ggg "+Transform()\group()\widget
-    Next
-    
-    ;a_update(Transform()\widget)
-  EndMacro
-  
-  Procedure toolbar_events()
-    Protected *this._s_widget
-    Protected e_type = WidgetEventType( )
-    Protected e_item ;= this()\item
-    Protected e_widget = EventWidget( )
-    
-    Select e_type
-      Case #PB_EventType_LeftClick
-        If e_widget = id_elements_tree
-          Debug "click"
-          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
-        EndIf
-        
-        If getclass(e_widget) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
-          Static NewList *copy._s_group()
-          
-          
-          Select toolbarbutton
-            Case 1
-              If Getstate(e_widget)  
-                ; group
-                group_select = e_widget
-                ; SetAtributte(e_widget, #PB_Button_PressedImage)
-              Else
-                ; un group
-                group_select = 0
-              EndIf
-              
-              ForEach Transform()\group()
-                Debug Transform()\group()\widget\x
-                
-              Next
-              
-              
-            Case #_tb_widget_copy
-              widget_copy()
-              
-            Case #_tb_widget_cut
-              widget_copy()
-              widget_delete()
-              
-            Case #_tb_widget_paste
-              widget_paste()
-              
-            Case #_tb_widget_delete
-              If Transform()\widget\_a_transform = 1
-                transform = Transform()\widget\parent\widget
-              Else
-                transform = Transform()\widget
-              EndIf
-              
-              widget_delete()
-              
-              a_set(transform)
-              
-            Case #_tb_group_left,
-                 #_tb_group_right, 
-                 #_tb_group_top, 
-                 #_tb_group_bottom, 
-                 #_tb_group_width, 
-                 #_tb_group_height
-              
-              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
-              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
-              
-              ForEach Transform()\group()
-                Select toolbarbutton
-                  Case #_tb_group_left ; left
-                                       ;Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_right ; right
-                    Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_top ; top
-                                      ;Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_bottom ; bottom
-                    Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_width ; stretch horizontal
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
-                    
-                  Case #_tb_group_height ; stretch vertical
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
-                    
-                EndSelect
-              Next
-              
-              a_update(Transform()\widget)
-              
-              ;Redraw(root())
-          EndSelect
-        EndIf
-        
+    Select eventtype
+        ;       Case #PB_EventType_Draw          : Debug "draw"         
+      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
+      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
+      Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
+      Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
+      Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
+      Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
+      Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
+      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
+      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
+      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
+      Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
+      Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
+      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
+      Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
+      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
     EndSelect
   EndProcedure
   
-  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
-    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
-    
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
-    ;widget()\color = widget()\_parent\color
-    ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
-    widget()\data = _button_
-    ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
-  EndMacro
+  OpenWindow(#window_0, 0, 0, 300, 300, "PanelGadget", #PB_Window_SystemMenu )
   
-  Macro Separator()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
-    SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
-  EndMacro
+  Define i
+  Define *w._S_widget, editable
+  Define *root._S_widget = Open(#window_0,10,10,300-20,300-20)
+  ;BindWidgetEvent( *root, @BindEvents( ) )
   
+  SetData(*root, 1 )
+  Define *p._S_widget = Container( 80,80, 150,150 ) : SetData(*p, 2 )
+  Define *c._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
+  Define *p2._S_widget = Container( 40,40, 70,70 ) : SetData(*p2, 4 )
+  SetData(Container( 5,5, 70,70 ), 5 )
+  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 6)
+  CloseList( )
+  CloseList( )
+  SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 7)
+  SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 8)
+  CloseList( )
+  CloseList( )
   
-  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
-  toolbar_design = Container(0,0,600,40) 
-  ;SetAlignmentFlag(widget(), #__align_top)
-  ;ToolBar(toolbar, window, flags)
+  SetParent( *c, *p2 )
+  ;SetParentWidget( *c,*p )
   
-  group_select = ToolBarButton(1, - 1, #__button_Toggle)
-  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+  ;SetParentWidget( *c,*p )
   
-  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-  Separator()
-  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-  Separator()
-  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator()
-  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
+  ; ForEach *p\child( )
+  ;   Debug "*p - "+*p\child( )\x +" "+ *p\child( )\width
+  ; Next
+  ; 
+  ; ForEach *p2\child( )
+  ;   Debug "*p2 - "+*p2\child( )\x +" "+ *p2\child( )\width
+  ; Next
   
-  Separator()
-  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator()
-  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-  CloseList()
+  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   
-  ;Container(0,40,600,600);, #__flag_autosize) 
-  ;SetAlignmentFlag(widget(), #__align_full) 
-  mdi(0,40,600,600, #__mdi_editable)
-  ; a_init(widget()) 
+  ;{ OpenRoot0
+  Define *root0._S_widget = Open(#window,10,10,300-20,300-20)
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  
+  ; ;   Define *g0 = Container(10,10,200,200) : SetClass(widget( ), "form_0") : SetData(widget( ), 11)
+  ; ;   CloseList( )
+  ; ;   
+  ; ;   Define *g1 = Container(30,30,200,200) : SetClass(widget( ), "form_1") : SetData(widget( ), 21)
+  ; ;   Button(10,10,80,30,"button_1_0") : SetData(widget( ), 22)
+  ; ;   Button(10,50,80,30,"button_1_1") : SetData(widget( ), 23)
+  ; ;   Button(10,90,80,30,"button_1_2") : SetData(widget( ), 24)
+  ; ;   CloseList( )
+  ; ;   
+  ; ;   Define *g2 = Container(50,50,220,220) : SetClass(widget( ), "form_2") : SetData(widget( ), 31)
+  ; ;   Button(10,10,80,30,"button_2_0") : SetData(widget( ), 32)
+  ; ;   Button(10,50,80,30,"button_2_1") : SetData(widget( ), 33)
+  ; ;   Button(10,90,80,30,"button_2_2") : SetData(widget( ), 34)
+  Define Text.s, m.s=#LF$, a,*g = Editor(10, 10, 200+60, 200);, #__flag_autosize) 
+  Text.s = "This is a long line." + m.s +
+           "Who should show." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "I have to write the text in the box or not." + 
+           m.s +
+           m.s +
+           m.s +
+           m.s +
+           "The string must be very long." + m.s +
+           "Otherwise it will not work." ;+ m.s +
+  SetText(*g, Text.s) 
+  For a = 0 To 2
+    AddItem(*g, a, "Line "+Str(a))
+  Next
+  AddItem(*g, 7+a, "_")
+  For a = 4 To 6
+    AddItem(*g, a, "Line "+Str(a))
+  Next
+  ;SetFont(*g, FontID(0))
+  *g = String(10, 220, 200+60, 50, "string gadget text text text text text long long very long")
+  ; ;   CloseList( )
+  ; ;   
+  ; ;   OpenList(*g0)
+  ; ;   Button(10,10,80,30,"button_0_0") : SetData(widget( ), 12)
+  ; ;   Button(10,50,80,30,"button_0_1") : SetData(widget( ), 13)
+  ; ;   Button(10,90,80,30,"button_0_2") : SetData(widget( ), 14)
+  ; ;   CloseList( )
+  ; ;   ;}
+  
+  Define *root1._S_widget = Open(#window,300,10,300-20,300-20)
+  ;BindWidgetEvent( *root1, @BindEvents( ) )
   
   
-  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
-  ; ; container(30,30,450-2,450-2)
-  ;;ScrollArea(30,30,450-2,450-2, 0,0)
-  ScrollArea(30,30,450-2,450-2, 250,750, transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
+  Define *root2._S_widget = Open(#window,10,300,300-20,300-20)
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
   
-  Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
-  AddItem(widget(), -1, "item-1")
-  ;container(30,30,400,400)
-  ComboBox(120,160,115,50)
-  AddItem(widget(), -1, "combo1")
-  SetState(widget(), 0)
+  *w = ComboBox( 20,20, 150,40)
+  For i=1 To 100;0000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
   
-  ;Button(120,160,115,50,"butt1")
-  AddItem(widget()\parent\widget, -1, "item-2")
-  Button(150,180,115,50,"butt2")
-  Button(180,200,115,50,"butt3")
-  Button(120,240,170,40,"butt4")
-  closelist()
-  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
-  closelist()
   
-  bind(-1,-1)
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  Define *root3._S_widget = Open(#window,300,300,300-20,300-20)
+  ;BindWidgetEvent( *root3, @BindEvents( ) )
   
-  DataSection   
-    ; include images
-    ;;IncludePath #path + "ide/include/images" ; macos good windows bad
-    IncludePath #path + "/ide/include/images"
-    
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
-    
-    group:            : IncludeBinary "group/group.png"
-    group_un:         : IncludeBinary "group/group_un.png"
-    group_top:        : IncludeBinary "group/group_top.png"
-    group_left:       : IncludeBinary "group/group_left.png"
-    group_right:      : IncludeBinary "group/group_right.png"
-    group_bottom:     : IncludeBinary "group/group_bottom.png"
-    group_width:      : IncludeBinary "group/group_width.png"
-    group_height:     : IncludeBinary "group/group_height.png"
-  EndDataSection
+  Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20)
+  ;BindWidgetEvent( *root4, @BindEvents( ) )
   
+  
+  
+  Define count = 2;0000
+  #st = 1
+  Global  mx=#st,my=#st
+  
+  Define time = ElapsedMilliseconds( )
+  
+  OpenList( *root1 )
+  Define *panel._S_widget = Panel(20, 20, 180+40, 180+60, editable) : SetData(*panel, 100)
+  AddItem( *panel, -1, "item_1" )
+  SetData(Container(20, 20, 180, 180, editable), 1) 
+  SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
+  SetData(Container(40, 20, 180, 180, editable), 3)
+  SetData(Container(20, 20, 180, 180, editable), 4)
+  
+  SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
+  SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
+  SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
+  
+  ;   SetData(Splitter(5, 80, 180, 50, 
+  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable), 
+  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable),
+  ;                    #PB_Splitter_Vertical|editable), 8) 
+  
+  CloseList( ) ; 3
+  CloseList( ) ; 4
+  SetData(Container(10, 45, 70, 180, editable), 11) 
+  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+  SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
+  SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
+  SetData(Container(10, 45, 70, 180, editable), 111) 
+  SetData(Container(10, 5, 70, 180, editable), 1111) 
+  SetData(Container(10, 5, 70, 180, editable), 11111) 
+  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+  CloseList( ) ; 11111
+  CloseList( ) ; 1111
+  CloseList( ) ; 111
+  CloseList( ) ; 11
+  CloseList( ) ; 1
+  AddItem( *panel, -1, "item_2" )
+  Button( 10,10, 80,80, "item_2")
+  AddItem( *panel, -1, "item_3" )
+  Button( 20,20, 80,80, "item_3")
+  AddItem( *panel, -1, "item_4" )
+  Button( 30,30, 80,80, "item_4")
+  AddItem( *panel, -1, "item_5" )
+  Button( 40,40, 80,80, "item_5")
+  CloseList( ) ; *panel
+  CloseList( ) ; *root1
+  
+  ;
+  OpenList( *root2 )
+  SetData(*root2, 11 )
+  Define *p3._S_widget = Container( 80,80, 150,150 )
+  SetData(*p3, 12 )
+  SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 13 )
+  ;;Define *p3._S_widget = widget( )
+  SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 14 )
+  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
+  SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
+  CloseList( )
+  CloseList( )
+  
+  ;   ChangeCurrentRoot( *root\root\canvas\address )
+  ;   Debug ""
+  ;   ForEach Widget( )
+  ;     If Widget( )\parent\widget
+  ;       If Widget( )\before\widget
+  ;         Debug " "+ Widget( )\before\widget\data +" << "+ Widget( )\data +" >>| "+ Widget( )\last\widget\data +" - "+ Widget( )\parent\widget\last\widget\data
+  ;       Else
+  ;         Debug "    << "+Widget( )\data +" >>| "+ Widget( )\last\widget\data +" - "+ Widget( )\parent\widget\last\widget\data
+  ;       EndIf
+  ;     Else
+  ;       Debug " "+Widget( )\data +" - "+ Widget( )\x +" "+ Widget( )\width
+  ;     EndIf
+  ;   Next
+  ;   
+  SetParent( *p2,*p3 )
+  SetParent( *p2,*p )
+  SetParent( *p2,*p3 )
+  SetParent( *p2,*p )
+  SetParent( *p2,*p3 )
+  ; ; ;   ;   
+  ; ; ;   Define parent.s = "  "
+  ; ; ;   Define first.s = "  "
+  ; ; ;   Define before.s = "  "
+  ; ; ;   Define after.s = "  "
+  ; ; ;   Define last.s = "  "
+  ; ; ;   Define parentlast.s = "  "
+  ; ; ;   Define parentfirst.s = "  "
+  ; ; ;   
+  ; ; ;   ChangeCurrentRoot(*root\root\canvas\address )
+  ; ; ;   Debug ""
+  ; ; ;   ForEach Widget( )
+  ; ; ;     If Widget( )\parent\widget
+  ; ; ;       If Widget( )\before\widget
+  ; ; ;         before = Str( Widget( )\before\widget\data )
+  ; ; ;       Else
+  ; ; ;         before = "  "
+  ; ; ;       EndIf
+  ; ; ;       If Widget( )\after\widget
+  ; ; ;         after = Str( Widget( )\after\widget\data )
+  ; ; ;       Else
+  ; ; ;         after = "  "
+  ; ; ;       EndIf
+  ; ; ;       
+  ; ; ;       parent = Str( Widget( )\parent\widget\data )
+  ; ; ;       parentfirst = Str( Widget( )\parent\widget\first\widget\data )
+  ; ; ;       parentlast = Str( Widget( )\parent\widget\last\widget\data )
+  ; ; ;       
+  ; ; ;     Else
+  ; ; ;       Debug " "+Widget( )\data +" - "+ Widget( )\x +" "+ Widget( )\width
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     If Widget( )\first\widget
+  ; ; ;       first = Str( Widget( )\first\widget\data )
+  ; ; ;     Else
+  ; ; ;       first = "  "
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget( )\data +" >> "+ after +" >>| "+ Widget( )\last\widget\data +" >>|| "+ parentlast +" - "+ Widget( )\root\data +" - "+ parent
+  ; ; ;     
+  ; ; ;   Next
+  ; ; ;   
+  ; ; ;   ChangeCurrentRoot(*root0\root\canvas\address )
+  ; ; ;   Debug ""
+  ; ; ;   ForEach Widget( )
+  ; ; ;     If Widget( )\parent\widget
+  ; ; ;       Debug " "+Widget( )\class +" - "+ Widget( )\data +" - "+ Widget( )\last\widget\data +" - "+ Widget( )\parent\widget\last\widget\data
+  ; ; ;     Else
+  ; ; ;       Debug " "+Widget( )\data +" - "+ Widget( )\x +" "+ Widget( )\width
+  ; ; ;     EndIf
+  ; ; ;   Next
+  ; ; ;   
+  ; ; ;   Define parent.s = "  "
+  ; ; ;   Define first.s = "  "
+  ; ; ;   Define before.s = "  "
+  ; ; ;   Define after.s = "  "
+  ; ; ;   Define last.s = "  "
+  ; ; ;   Define parentlast.s = "  "
+  ; ; ;   Define parentfirst.s = "  "
+  ; ; ;   
+  ; ; ;   ChangeCurrentRoot(*root2\root\canvas\address )
+  ; ; ;   Debug ""
+  ; ; ;   ForEach Widget( )
+  ; ; ;     If Widget( )\parent\widget
+  ; ; ;       If Widget( )\before\widget
+  ; ; ;         before = Str( Widget( )\before\widget\data )
+  ; ; ;       Else
+  ; ; ;         before = "  "
+  ; ; ;       EndIf
+  ; ; ;       If Widget( )\after\widget
+  ; ; ;         after = Str( Widget( )\after\widget\data )
+  ; ; ;       Else
+  ; ; ;         after = "  "
+  ; ; ;       EndIf
+  ; ; ;       
+  ; ; ;       parent = Str( Widget( )\parent\widget\data )
+  ; ; ;       parentfirst = Str( Widget( )\parent\widget\first\widget\data )
+  ; ; ;       parentlast = Str( Widget( )\parent\widget\last\widget\data )
+  ; ; ;       
+  ; ; ;     Else
+  ; ; ;       Debug " "+Widget( )\data +" - "+ Widget( )\x +" "+ Widget( )\width
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     If Widget( )\first\widget
+  ; ; ;       first = Str( Widget( )\first\widget\data )
+  ; ; ;     Else
+  ; ; ;       first = "  "
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget( )\data +" >> "+ after +" >>| "+ Widget( )\last\widget\data +" >>|| "+ parentlast +" - "+ Widget( )\root\data +" - "+ parent
+  ; ; ;     
+  ; ; ;   Next
+  ; ; ;   
+  
+  OpenList( *root3 )
+  *w = Tree( 20,20, 150,200)
+  For i=1 To 100;0000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
+  
+  *w = Tree( 100,30, 100,260-20+300, #__flag_borderless)
+  SetColor( *w, #__color_back, $FF07EAF6 )
+  For i=1 To 10;00000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
+  
+  *w = Tree( 180,40, 100,260-20+300)
+  For i=1 To 100;00000
+    AddItem(*w, i, "text-"+Str(i))
+  Next
+  
+  Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
+  
+  
+  ;
+  Define *window._S_widget
+  Define i,y = 5
+  OpenList( *root4 )
+  For i = 1 To 4
+    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
+    Container(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
+    Button(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
+    Button(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
+    CloseList( )                                     ; Gadget
+    y + 130
+  Next
+  
+  ; Define Window, Gadget
+  ; Debug "Begen enumerate window"
+  ; If StartWindow( )
+  ;   While NextWindow( @Window )
+  ;     Debug "Window "+Window
+  ;   Wend
+  ;   AbortWindow( )
+  ; EndIf
+  ; ;   
+  ; ;   Debug "Begen enumerate all gadget"
+  ; ;   If StartGadget( )
+  ; ;     While NextGadget( @Gadget )
+  ; ;       Debug "Gadget "+Gadget
+  ; ;     Wend
+  ; ;     AbortGadget( )
+  ; ;   EndIf
+  ; ;   
+  ; ;   Window = 8
+  ; ;   
+  ; ;   Debug "Begen enumerate gadget window = "+ Str(Window)
+  ; ;   If StartGadget( )
+  ; ;     While NextGadget( @Gadget, Window )
+  ; ;       Debug "Gadget "+Str(Gadget) +" Window "+ Window
+  ; ;     Wend
+  ; ;     AbortGadget( )
+  ; ;   EndIf
+  ; ;   
+  ; ;   
+  ; ;   Debug "Begen enumerate alls"
+  ; ;   ForEach Widget( )
+  ; ;     If is_window_( widget( ) )
+  ; ;       Debug "window "+ Widget( )\index
+  ; ;     Else
+  ; ;       Debug "  gadget - "+ Widget( )\index
+  ; ;     EndIf
+  ; ;   Next
+  ; ;   
+  ; ;  Debug "Begen enumerate window"
+  ; ;   If StartEnumerate( Root( ) )
+  ; ;     ;If is_window_( widget( ) )
+  ; ;     Debug "window " + widget( )
+  ; ; ; ;     *window = widget( )
+  ; ;     ;EndIf
+  ; ;     StopEnumerate( )
+  ; ;   EndIf
+  ; ;   
+  ; ; ;   Debug "Begen enumerate all gadget"
+  ; ; ;   If StartEnumerate( Root( ) )
+  ; ; ;     ;If Not is_window_( widget( ) )
+  ; ; ;       Debug "gadget - "+widget( )
+  ; ; ;     ;EndIf
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  ; ;   
+  ; ; ;   Define Window = 8
+  ; ; ;   ;*window = GetWidget( Window )
+  ; ; ;   
+  ; ; ;   Debug "Begen enumerate gadget window = "+ Window
+  ; ; ;   Debug "window "+ Window
+  ; ; ;   If StartEnumerate( *window )
+  ; ; ;     Debug "  gadget - "+ widget( )
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  ; ; ;   
+  ; ; ;   
+  ; ; ;   Debug "Begen enumerate alls"
+  ; ; ;   If StartEnumerate( Root( ) )
+  ; ; ;     If is_window_( widget( ) )
+  ; ; ;       Debug "window "+ Widget( )\index
+  ; ; ;     Else
+  ; ; ;       Debug "  gadget - "+ Widget( )\index
+  ; ; ;     EndIf
+  ; ; ;     StopEnumerate( )
+  ; ; ;   EndIf
+  
+  Define event, handle, enter, result
+  Repeat 
+    event = WaitWindowEvent( )
+    If event = #PB_Event_Gadget
+      If EventType( ) = #PB_EventType_MouseMove
+        ;       enter = EnterGadgetID( )
+        ;       
+        ;       If handle <> enter
+        ;         handle = enter
+        ;         
+        ;         ChangeCurrentRoot( handle )
+        ;       EndIf
+        ;             ElseIf EventType( ) = #PB_EventType_MouseEnter ; bug do't send mouse enter event then press mouse buttons
+        ;               Root( ) = GetRoot( GadgetID( EventGadget( ) ) )
+      EndIf
+      
+      ;     WidgetsEvents( EventType( ) )
+    EndIf
+  Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +--------8--9-------------------f---------------------------------u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------80----------------------------------------------------------------------------------------------fvt-4----------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
