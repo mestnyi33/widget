@@ -131,8 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     
-    SetTextAlignment()
-    SetGadgetText(6, "pas")
+    SetTextAlignment( )
+    ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
     String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #__string_readonly)
@@ -145,8 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile
     String(305+8, (height+5)*7+10, 290, height, "")
     String(305+8, (height+5)*8+10, 290, 90, Text)
     
-    SetText(GetWidget(6), "pas")
-    Debug GetText(GetWidget(6))+"- get widget text"
+    ;SetText(GetWidget(6+1), "pas")
+    Debug GetText(GetWidget(6+1))+"- get widget text"
     
     For i=0 To 8
       Bind(GetWidget(i), @events_widgets())

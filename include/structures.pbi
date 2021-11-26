@@ -155,13 +155,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;     ;     Char.c
       *fontID ; .i[2]
       
-      StructureUnion
+      ;StructureUnion
         pass.b
         lower.b
         upper.b
         numeric.b
-      EndStructureUnion
-      
+        ;EndStructureUnion
+        
       editable.b
       multiline.b
       
@@ -661,10 +661,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *root._S_root     ; this root
       *window._S_widget; this parent window       ; root( )\active\window
       
-      StructureUnion
+      ;StructureUnion
         *_owner._S_widget; this window owner parent
         *_group._S_widget; = option( ) groupbar gadget  
-      EndStructureUnion
+      ;EndStructureUnion
       
       *_tt._S_tt          ; notification = уведомление
       *_popup._S_widget   ; combobox( ) list-view gadget
