@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/widget"
+  IncludePath "";/Users/As/Documents/GitHub/widget"
   XIncludeFile "include/fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   IncludePath "/media/sf_as/Documents/GitHub/widget"
@@ -682,7 +682,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare Message( Title.s, Text.s, Flag.i = #Null )
     
     Declare.i Tree_Properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
-    
+
     Declare a_init( *this )
     Declare a_set( *this, size.l = #__a_size, position.l = #PB_Ignore )
     Declare a_update( *parent )
@@ -16636,7 +16636,7 @@ Macro Uselib(_name_)
   UseModule structures
 EndMacro
 
-
+CompilerIf #PB_Compiler_IsMainFile
 UseLib(widget)
 
 LN=1000; количесвто итемов 
@@ -16687,6 +16687,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+CompilerEndIf
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

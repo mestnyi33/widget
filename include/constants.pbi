@@ -685,7 +685,7 @@
     
     
     
-    ;- _c_event
+    ;- _c_event_type
     Enumeration #PB_Event_FirstCustomValue
       #PB_Event_Widget
       
@@ -747,6 +747,8 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
+      #PB_EventType_MouseStatus
+      #PB_EventType_StatusChangeEdit
 ;       #PB_EventType_TimerStart
 ;       #PB_EventType_TimerStop
     EndEnumeration
@@ -789,7 +791,7 @@
     #__event_titlechange      = #PB_EventType_TitleChange
     #__event_change           = #PB_EventType_Change
     #__event_dragstart        = #PB_EventType_DragStart
-    #__event_returnkey        = #PB_EventType_returnKey
+    #__event_returnkey        = #PB_EventType_ReturnKey
     #__event_closeitem        = #PB_EventType_CloseItem
     
     #__event_down             = #PB_EventType_Down
@@ -801,7 +803,7 @@
     #__event_draw = #PB_EventType_Draw
     
     
-    ;- _c_type
+    ;- _c_object_type
     #PB_GadgetType_All       = -1     
     #PB_GadgetType_Window    = -2       
     #PB_GadgetType_Toolbar   = -3      

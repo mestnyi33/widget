@@ -1,0 +1,6 @@
+﻿Enumeration   ; GShellError
+  #G_SHELL_ERROR_BAD_QUOTING
+  #G_SHELL_ERROR_EMPTY_STRING
+  #G_SHELL_ERROR_FAILED
+EndEnumeration
+

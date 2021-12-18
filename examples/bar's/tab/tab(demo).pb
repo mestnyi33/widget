@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../-widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -19,10 +19,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ClearDebugOutput()
     ; Debug ""+Str(This()\widget\index - 1)+ " - widget  event - " +This()\type+ "  state - " GetState(This()\widget) ; 
     
-    Select This()\event
+    Select WidgetEventType( )
       Case #PB_EventType_Change
-        SetGadgetState((This()\widget\index - 1), GetState(This()\widget))
-        Debug  Str(This()\widget\index - 1)+" - widget change " + GetState(This()\widget)
+        SetGadgetState((EventWidget( )\index - 1), GetState(EventWidget( )))
+        Debug  Str(EventWidget( )\index - 1)+" - widget change " + GetState(EventWidget( ))
     EndSelect
   EndProcedure
   
@@ -110,6 +110,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

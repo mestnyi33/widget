@@ -42,21 +42,53 @@
 ; ver. 0.0.2.0
 ;
 
+; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+;   #path = "/Users/As/Documents/GitHub/widget/"
+;   IncludePath #path
+;   XIncludeFile "include/fixme(mac).pbi"
+; CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
+;   #path = "/media/sf_as/Documents/GitHub/widget"
+;   IncludePath #path
+;   XIncludeFile "include/fixme(lin).pbi"
+; CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows 
+;   #path = "Z:/Documents/GitHub/widget"
+;   ;#path "C:\Users\as\Desktop\Widget_15_08_2020"
+;   IncludePath #path
+;   XIncludeFile "include/fixme(win).pbi"
+; CompilerEndIf
+; 
+; 
+; CompilerIf Not Defined( func, #PB_Module )
+;   XIncludeFile "include/func.pbi"
+; CompilerEndIf
+; 
+; CompilerIf Not Defined( constants, #PB_Module )
+;   XIncludeFile "include/constants.pbi"
+; CompilerEndIf
+; 
+; CompilerIf Not Defined( structures, #PB_Module )
+;   XIncludeFile "include/structures.pbi"
+; CompilerEndIf
+; 
+; CompilerIf Not Defined( colors, #PB_Module )
+;   XIncludeFile "include/colors.pbi"
+; CompilerEndIf
+
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  #path = "/Users/as/Documents/GitHub/widget/"
-  IncludePath #path
-  XIncludeFile "include/fixme(mac).pbi"
+  #path = "/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   #path = "/media/sf_as/Documents/GitHub/widget"
-  IncludePath #path
-  XIncludeFile "include/fixme(lin).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows 
   #path = "Z:/Documents/GitHub/widget"
   ;#path "C:\Users\as\Desktop\Widget_15_08_2020"
-  IncludePath #path
-  XIncludeFile "include/fixme(win).pbi"
 CompilerEndIf
 
+IncludePath #path
+
+CompilerIf Not Defined( fix, #PB_Module )
+  ; fix all pb bug's
+  XIncludeFile "include/fix.pbi"
+CompilerEndIf
 
 CompilerIf Not Defined( func, #PB_Module )
   XIncludeFile "include/func.pbi"
@@ -17048,6 +17080,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------j-------------0F88---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------H-------------8L34---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

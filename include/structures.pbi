@@ -53,6 +53,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       focus.b
       ;active.b
       repaint.b
+      
+      create.b
     EndStructure
     ;--     objecttype
     Structure _S_objecttype
@@ -126,6 +128,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;- - _S_caret
     Structure _S_caret Extends _S_coordinate
+      direction.b
+      
       pos.l[4]
       time.l
       
@@ -760,9 +764,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--      struct
     Structure _S_struct 
+      *drawing
       *action_widget._S_widget
       action_type.s
-      
+       
       *opened._S_widget             ; last list opened element
        
       Map *roots._S_root( )         ; 

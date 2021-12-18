@@ -1,4 +1,5 @@
 ﻿IncludePath "../../../" : XIncludeFile "-widgets.pbi"
+;IncludePath "../../../" : XIncludeFile "-widgets-edit.pbi"
 ; XIncludeFile "../empty5.pb"
 
 ;- EXAMPLE

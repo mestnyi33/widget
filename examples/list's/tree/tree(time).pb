@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(Widget)
   EnableExplicit
   Define *w,a, Event
-  Define gLN=500;0      ;0; количесвто итемов 
+  Define gLN=5000;0      ;0; количесвто итемов 
   Define LN=5000;0;0
 
   If Open(OpenWindow(#PB_Any, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu))
@@ -47,6 +47,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

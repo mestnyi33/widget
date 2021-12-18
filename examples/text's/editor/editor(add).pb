@@ -1,10 +1,15 @@
-﻿IncludePath "../../../": XIncludeFile "-widgets-editor.pbi": UseModule Widget
+﻿; IncludePath "../../../": XIncludeFile "-widgets-editor.pbi
+;XIncludeFile "../../../-widgets-edit.pbi"
+XIncludeFile "../../../-widgets.pbi"
+ ;XIncludeFile "editor(code).pb"
+ ;XIncludeFile "empty.pb"
+UseLib( Widget )
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Define a, Event
   Define gLN=500;0      ;0; количесвто итемов 
-  Define LN=5000;0;0
+  Define LN=500;0;0
 
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     Open(0, 270, 10, 250, 680)
@@ -21,6 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
+    Repaints( ) 
     
     EditorGadget(0, 10, 10, 250, 680)
     ; HideGadget(0, 1)
