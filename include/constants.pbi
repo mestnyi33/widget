@@ -1180,6 +1180,23 @@
     ; ;   #PB_Canvas_Keyboard
     ; ;   #PB_Canvas_DrawFocus
     ; ;   
+    
+    
+    CompilerIf Not Defined(PB_ToolBar_Small, #PB_Constant)
+      #PB_ToolBar_Small = 1<<0
+    CompilerEndIf
+    CompilerIf Not Defined(PB_MessageRequester_Info, #PB_Constant)
+      #PB_MessageRequester_Info = 1<<2
+    CompilerEndIf
+    CompilerIf Not Defined(PB_MessageRequester_Error, #PB_Constant)
+      #PB_MessageRequester_Error = 1<<3
+    CompilerEndIf
+    CompilerIf Not Defined(PB_MessageRequester_Warning, #PB_Constant)
+      #PB_MessageRequester_Warning = 1<<4
+    CompilerEndIf
+    CompilerIf Not Defined(PB_Canvas_Container, #PB_Constant)
+      #PB_Canvas_Container = 1<<5
+    CompilerEndIf
   EndDeclareModule 
   
   
@@ -1190,5 +1207,5 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Folding = ---
 ; EnableXP

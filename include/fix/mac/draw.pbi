@@ -138,7 +138,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndIf
         
         CocoaMessage(@*drawing\size, CocoaMessage(0, 0, "NSString stringWithString:$", @""), "sizeWithAttributes:", *drawing\attributes)
-        *drawing\size\height - 2 
+        ;;*drawing\size\height - 2 
       EndProcedure
       
       Procedure.i mac_DrawingMode(Mode.i)
@@ -181,7 +181,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           
           NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
           CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
-          Size\height - 1 ;; bug
+          ;;Size\height - 1 ;; bug
           
           
           ; ;           If Angle = 0
@@ -510,6 +510,6 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent( #PB_Event_Gadget, @events_gadgets() )
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---------
 ; EnableXP

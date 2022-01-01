@@ -8,10 +8,13 @@ UseLib( Widget )
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Define a, Event
-  Define gLN=500;0      ;0; количесвто итемов 
-  Define LN=500;0;0
-
+  Define gLN=5000      ;0; количесвто итемов 
+  Define LN=5000;0
+  
+  Declare event_repaint()
+  
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
+    BindEvent( #PB_Event_Repaint, @event_repaint() )
     Open(0, 270, 10, 250, 680)
     Define *w = Editor(0, 0, 250, 680) 
     
@@ -55,6 +58,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Event=WaitWindowEvent()
     Until  Event= #PB_Event_CloseWindow
   EndIf
+  
+  Procedure event_repaint()
+    Debug "#PB_Event_Repaint"
+    
+   ; Repaints( ) 
+    
+  EndProcedure
+  
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

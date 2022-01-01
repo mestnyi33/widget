@@ -1,6 +1,6 @@
 ﻿
 ;XIncludeFile "../transform().pbi"
-XIncludeFile "../-widgets.pbi"
+XIncludeFile "../widgets-plus.pbi"
 ; XIncludeFile "../examples/empty5.pb"
 
 ;
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Color = 0 : Color = $ff808080 : EndIf
       
-      If StartDrawing( ImageOutput( ID ) )
+;       If StartDrawing( ImageOutput( ID ) )
         DrawingMode( #PB_2DDrawing_AllChannels )
         ;Box( 0, 0, width, height, BoxColor )
         
@@ -136,8 +136,8 @@ CompilerIf #PB_Compiler_IsMainFile
           x + Steps
         Next
         
-        StopDrawing( )
-      EndIf
+;         StopDrawing( )
+;       EndIf
     EndIf
     
     ProcedureReturn ID

@@ -53,6 +53,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       focus.b
       ;active.b
       repaint.b
+      click.b
       
       create.b
     EndStructure
@@ -561,6 +562,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _S_eventdata
       *back.pFunc
       
+      *id
+      ; *widget._S_widget
       *type ; eventType( )
       *item ; eventItem( )
       *data ; eventdata( )
@@ -729,6 +732,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *time
       
       *event._S_event
+      events._S_eventdata ;?????????
       
       List *column._S_column( )
     EndStructure
@@ -747,6 +751,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       bindevent.b         ; bind canvas event
       
       List *child._S_widget( )    ; widget( )\
+      event._S_eventdata   ; 
+      List *events._S_eventdata( )    ; 
     EndStructure
     
     ;- - _S_sticky
