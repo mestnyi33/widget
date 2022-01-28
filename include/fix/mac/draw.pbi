@@ -33,6 +33,10 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         PB(DrawingMode)(_mode_) 
       EndMacro
       
+      Macro GetGadgetFont(FontID)
+        PB_(GetGadgetFont)(FontID)
+      EndMacro
+      
       Macro DrawingFont(FontID)
         PB_(DrawingFont)(FontID)
       EndMacro
@@ -55,7 +59,12 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         PB_(DrawRotatedText)(x, y, Text, Angle, FrontColor, BackColor)
       EndMacro
       
+      Macro SetOrigin( x, y )
+        PB_(SetOrigin)(x ,y)
+      EndMacro
       
+      
+      Declare.i mac_SetOrigin( x.l, y.l )
       Declare.i mac_GetGadgetFont(Gadget.i)
       Declare.i mac_FreeFont(Font.i)
       Declare.i mac_TextHeight(Text.s)
@@ -107,6 +116,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndProcedure
       
       Procedure.i mac_TextHeight(Text.s)
+        ; ProcedureReturn PB(TextHeight)(Text.s)
         If *drawing
           If Not *drawing\size\height
             *drawing\size\height = PB(TextHeight)("A")
@@ -116,6 +126,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndProcedure
       
       Procedure.i mac_TextWidth(Text.s)
+        ; ProcedureReturn PB(TextWidth)(Text.s)
         If Text And *drawing And *drawing\fontID
           Protected NSString, Attributes, NSSize.NSSize
           NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
@@ -146,6 +157,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           *drawing = AllocateStructure(_S_drawing)
         EndIf
         *drawing\mode = Mode
+      EndProcedure
+      
+      Procedure.i mac_SetOrigin( x.l, y.l )
+        Debug "no-fix SetOrigin( )"
+        PB(SetOrigin)( x,y )
       EndProcedure
       
       Procedure.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
@@ -424,27 +440,81 @@ CompilerIf #PB_Compiler_IsMainFile
     Box(x, y, 100, 100, $FF000000)
   EndProcedure
   
-  If OpenWindow(1, 200, 100, 460, 220, "bug when clicking on the canvas in an inactive window", #PB_Window_SystemMenu)
-    CanvasGadget(1, 10, 10, 440, 200)
+  If PB(OpenWindow)(2, 200, 100, 460, 220, "bug clip and set origin then drawing", #PB_Window_SystemMenu)
+    PB(CanvasGadget)(2, 10, 10, 440, 200)
+    StringGadget(12, 400, 10, 40, 25, "●●●●")
+    StringGadget(13, 400, 40, 40, 25, "●●●●", #PB_String_Password)
+    Define FontID = PB(GetGadgetFont)( #PB_Default )
     
-    If StartDrawing( CanvasOutput( 1 ) )
+    If PB(StartDrawing)( PB(CanvasOutput)( 2 ) )
+      If FontID
+        PB(DrawingFont)( FontID )
+      Else
+        Debug "no-pb-FontID"
+      EndIf
       ; bug 
       x = 50 : y = 50
       PB(ClipOutput)(x, y, 100, 100) ; restrict all drawing to this region
       
       PB(DrawingMode)(#PB_2DDrawing_Default)
+      PB(Circle)( x,  y, 50, $FF0000FF)  
+      PB(Circle)( x, y+100, 50, $Ff00FF00)  
+      PB(Circle)(x+100,  y, 50, $FFFF0000)  
+      PB(Circle)(x+100, y+100, 50, $FF00FFFF)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Transparent)
+      PB(DrawText)(x-10,y+(100-PB(TextHeight)("A"))/2,"error clip text ●●●● in mac os", $FF000000)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Outlined)
+      PB(Box)(x, y, 100, 100, $FF000000)
+      
+      PB(SetOrigin)( 20,20 )
+      x = 200 : y = 50
+      PB(ClipOutput)(x, y, 100, 100) ; restrict all drawing to this region
+      
+      PB(DrawingMode)(#PB_2DDrawing_Default)
+      PB(Circle)( x,  y, 50, $FF0000FF)  
+      PB(Circle)( x, y+100, 50, $Ff00FF00)  
+      PB(Circle)(x+100,  y, 50, $FFFF0000)  
+      PB(Circle)(x+100, y+100, 50, $FF00FFFF)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Transparent)
+      PB(DrawText)(x-10,y+(100-PB(TextHeight)("A"))/2,"error set origin in mac os", $FF000000)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Outlined)
+      PB(Box)(x, y, 100, 100, $FF000000)
+      
+      PB(StopDrawing)( )
+    EndIf
+  EndIf
+  
+  If OpenWindow(1, 350, 250, 460, 220, "fix clip then drawing", #PB_Window_SystemMenu)   ; and set origin
+    CanvasGadget(1, 10, 10, 440, 200)
+    FontID = GetGadgetFont( #PB_Default )
+    
+    If StartDrawing( CanvasOutput( 1 ) )
+      If FontID
+        DrawingFont( FontID )
+      Else
+        Debug "no-FontID"
+      EndIf
+      ; fix
+      x = 50 : y = 50
+      ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Default)
       Circle( x,  y, 50, $FF0000FF)  
       Circle( x, y+100, 50, $Ff00FF00)  
       Circle(x+100,  y, 50, $FFFF0000)  
       Circle(x+100, y+100, 50, $FF00FFFF)  
       
-      PB(DrawingMode)(#PB_2DDrawing_Transparent)
-      PB(DrawText)(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,y+(100-TextHeight("A"))/2,"error clip text ●●●● in mac os", $FF000000)  
       
-      PB(DrawingMode)(#PB_2DDrawing_Outlined)
+      DrawingMode(#PB_2DDrawing_Outlined)
       Box(x, y, 100, 100, $FF000000)
       
-      ; fix
+      SetOrigin( 20,20 )
       x = 200 : y = 50
       ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
       
@@ -464,52 +534,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndIf
   
-  If OpenWindow(2, 350, 250, 460, 220, "bug clip and set origin then drawing", #PB_Window_SystemMenu)
-    CanvasGadget(2, 10, 10, 440, 200)
-    
-    If StartDrawing( CanvasOutput( 2 ) )
-      SetOrigin( 20,20 )
-      
-      ; bug 
-      x = 50 : y = 50
-      PB(ClipOutput)(x, y, 100, 100) ; restrict all drawing to this region
-      
-      PB(DrawingMode)(#PB_2DDrawing_Default)
-      Circle( x,  y, 50, $FF0000FF)  
-      Circle( x, y+100, 50, $Ff00FF00)  
-      Circle(x+100,  y, 50, $FFFF0000)  
-      Circle(x+100, y+100, 50, $FF00FFFF)  
-      
-      PB(DrawingMode)(#PB_2DDrawing_Transparent)
-      PB(DrawText)(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-      
-      PB(DrawingMode)(#PB_2DDrawing_Outlined)
-      Box(x, y, 100, 100, $FF000000)
-      
-      ; fix
-      SetOrigin( 20,20 )
-      x = 200 : y = 50
-      ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
-      
-      DrawingMode(#PB_2DDrawing_Default)
-      Circle( x,  y, 50, $FF0000FF)  
-      Circle( x, y+100, 50, $Ff00FF00)  
-      Circle(x+100,  y, 50, $FFFF0000)  
-      Circle(x+100, y+100, 50, $FF00FFFF)  
-      
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,y+(100-TextHeight("A"))/2,"error set origin in mac os", $FF000000)  
-      
-      DrawingMode(#PB_2DDrawing_Outlined)
-      Box(x, y, 100, 100, $FF000000)
-      
-      StopDrawing( )
-    EndIf
-  EndIf
-  
   BindEvent( #PB_Event_Gadget, @events_gadgets() )
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---------
+; Folding = -------4v-
 ; EnableXP

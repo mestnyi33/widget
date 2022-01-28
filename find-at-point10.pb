@@ -704,14 +704,12 @@ ReDrawWidget( *root2 )
 Define event
 Repeat 
   event = WaitWindowEvent( )
+  
   If event = #PB_Event_Gadget
     
     WidgetEvents( EventGadget(), EventType( ) )
-    
   EndIf
-  
 Until event = #PB_Event_CloseWindow
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----------------
 ; EnableXP

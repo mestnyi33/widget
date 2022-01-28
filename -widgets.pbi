@@ -278,65 +278,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     ;-
-    Macro WaitClose( _window_ = #PB_Any, _time_ = 0 )
-      
-      If Root( )
-        ReDraw( Root( ))
-        
-        Repeat 
-          Select WaitWindowEvent( _time_ ) 
-            Case #PB_Event_Gadget
-              If Root( )\canvas\bindevent = #False
-                Root( )\canvas\repaint = #True
-                EventHandler( )
-              EndIf
-              
-            Case #PB_Event_CloseWindow
-              If _window_ = #PB_Any 
-                If EventWidget( )
-                  Debug " - close - " + EventWidget( ) ; +" "+ GetWindow( _window_ )
-                  If EventWidget( )\container = #__type_window
-                    ;Else
-                    
-                    ForEach Root( )
-                      Debug Root( )
-                      free( Root( ))
-                      ;               ForEach widget( )
-                      ;                 Debug ""+widget( )\root +" "+ is_root_(widget( ))
-                      ;               Next
-                    Next
-                    Break
-                  EndIf
-                Else
-                  Debug " - close0 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-                  Break
-                EndIf
-                
-              ElseIf PB(EventGadget)( ) = _window_
-                Debug " - close1 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-                Free( _window_ )
-                Break
-                
-              ElseIf PB(EventWindow)( ) = _window_ 
-                If Post( _window_, #PB_EventType_Free )
-                  Debug " - close2 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-                  Break
-                EndIf
-              EndIf
-              
-          EndSelect
-        ForEver
-        
-        ReDraw( Root( ))
-        If IsWindow( PB(EventWindow)( ))
-          Debug " - end - "
-          PB(CloseWindow)( PB(EventWindow)( ))
-          End 
-        EndIf
-      EndIf  
-      
-    EndMacro
-    
     
     ;-
     Macro GetActive( ): Keyboard( )\window: EndMacro   ; Returns activeed window
@@ -640,7 +581,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _draw_address_\root\canvas\fontID = _draw_address_\text\fontID
         
         ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _draw_address_ + " fontID - "+ _draw_address_\text\fontID
-        DrawingFont( _draw_address_\text\fontID ) 
+        ;If Not _draw_address_\text\pass
+          DrawingFont( _draw_address_\text\fontID ) 
+        ;EndIf
         _draw_address_\text\change = #True
       EndIf
       
@@ -677,7 +620,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\root\canvas\fontID = _item_\text\fontID
         
         Debug "draw current item font - " + #PB_Compiler_Procedure  + " " +  _this_  + " " +  _item_\index + " fontID - "+ _item_\text\fontID
-        DrawingFont( _item_\text\fontID ) 
+        ;DrawingFont( _item_\text\fontID ) 
+        ;If Not _this_\text\pass
+          DrawingFont( _item_\text\fontID ) 
+        ;EndIf
         _item_\text\height = TextHeight( "A" ) 
         _item_\text\change = #True
       EndIf
@@ -947,7 +893,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ; Requester
     Global resize_one
     
-    Declare Message( Title.s, Text.s, Flag.i = #Null )
+    Declare   WaitClose( *this = #PB_Any, waittime.l = 0 )
+    Declare   Message( Title.s, Text.s, Flag.i = #Null )
     
     Declare.i Tree_properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
     
@@ -8217,8 +8164,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
         ElseIf \text\pass
           Len = Len( Text.s ) 
-          ;For i = 1 To Len : String.s + "●" : Next
-          For i = 1 To Len : String.s + "•" : Next
+          For i = 1 To Len : String.s + "●" : Next
+          ;For i = 1 To Len : String.s + "•" : Next
           
         Else
           Select #True
@@ -19478,6 +19425,83 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+      Procedure   WaitClose( *this._S_widget = #PB_Any, waittime.l = 0 )
+      Protected result 
+      Protected *window._S_widget = *this;\window
+      Protected PBWindow = PB(EventWindow)( )
+      
+      If Root( )
+        ; ReDraw( Root( ))
+        If ListSize( EventList( Root( ) ) )
+          ClearList( EventList( Root( ) ) )
+        EndIf
+        
+        Repeat 
+          Select WaitWindowEvent( waittime ) 
+              ; Case #PB_Event_Message
+              
+            Case #PB_Event_Gadget
+              If Root( )\canvas\bindevent = #False
+                Root( )\canvas\repaint = #True
+                EventHandler( )
+                
+                result = EventMessageHandler( )
+                
+              EndIf
+              
+            Case #PB_Event_CloseWindow
+              If *window = #PB_Any 
+                If EventWidget( )
+                  Debug " - close - " + EventWidget( ) ; +" "+ GetWindow( *window )
+                  If EventWidget( )\container = #__type_window
+                    ;Else
+                    
+                    ForEach Root( )
+                      Debug Root( )
+                      free( Root( ))
+                      ;               ForEach widget( )
+                      ;                 Debug ""+widget( )\root +" "+ is_root_(widget( ))
+                      ;               Next
+                    Next
+                    Break
+                  EndIf
+                Else
+                  Debug " - close0 - " + PBWindow ; +" "+ GetWindow( *window )
+                  Break
+                EndIf
+                
+              ElseIf PB(EventGadget)( ) = *window
+                Debug " - close1 - " + PBWindow ; +" "+ GetWindow( *window )
+                Free( *window )
+                ReDraw( Root() )
+                Break
+                
+              ElseIf PBWindow = *window 
+                If Post( *window, #PB_EventType_Free )
+                  Debug " - close2 - " + PBWindow ; +" "+ GetWindow( *window )
+                  Break
+                EndIf
+                ;               Else
+                ;                Debug 555
+                ;                Free( *window )
+                ;                 
+                ;                 Break
+              EndIf
+              
+          EndSelect
+        ForEver
+        
+        ;         ; ReDraw( Root( ))
+        ;         
+        ;         If IsWindow( PBWindow)
+        ;           Debug " - end - "
+        ;           PB(CloseWindow)( PBWindow)
+        ;           End 
+        ;         EndIf
+      EndIf  
+      
+    EndProcedure
+  
   EndModule
   ;- <<< 
 CompilerEndIf
@@ -19612,7 +19636,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; ;   Debug *g\text\len 
   
   ;SetFont(*g, FontID(0))
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #__string_numeric|#__string_right)
+  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #__string_password|#__string_right)
   ; ;   CloseList( )
   ; ;   
   ; ;   OpenList(*g0)
@@ -19947,5 +19971,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--4vf-t-8------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---84v-3-0------------------------------------------4-------
 ; EnableXP

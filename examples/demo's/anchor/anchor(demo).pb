@@ -55,13 +55,17 @@ CompilerIf #PB_Compiler_IsMainFile
     _temp_spin_(x,y,width,height, min, max)
   EndMacro
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 190, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    Container( 0,0,230,190 )
-    a_init( widget( ) )
-    Button( 50,45,135,95, "button" )
+  If OpenWindow(0, 0, 0, 230+230+15, 210, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    Open(0, 0, 0, 230+230+15, 210)
+    Container( 10,10,220,190 )
+    a_init( widget( ), 15 )
+    image( 5,5,60,60, -1 )
+    Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
+    image( 150,110,60,60, -1 )
+    a_set( *a )
     CloseList( )
     
-    Container( 230,0,230,190 )
+    Container( 235,10,230,190 )
     Frame( 5,5,230,190, "preferences" )
     Text( 10,10,100,20, "grid", #__text_border )
     *grid = Spin( 10,30,100,30, 0,100 )
@@ -84,7 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
   
+  
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

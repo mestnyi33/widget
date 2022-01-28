@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets-plus.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open( OpenWindow( #PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) )
     Global main = GetWindow( Root( ) )
-    BindEventCanvas( )
+    ;BindEventCanvas( )
     
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button" )
     ButtonGadget( 1, 10, 40, 200, 20, "Left button", #PB_Button_Left )
@@ -103,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow( 11, 0, 0, 260, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
     Open( 11, 10, 10 , 240, 160 )
-    BindEventCanvas( ) 
+    ;BindEventCanvas( ) 
     c2 = GetGadget( Root( ) )
     
     *Button_0 = Button( 270, 5,  60, 120, "Button ( Vertical )", #__button_multiline|#__button_vertical );|#__button_inverted )
@@ -133,10 +133,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_CloseWindow
         CloseWindow( EventWindow( ) ) 
         Break
+      Default
+        CanvasEvents(  )
     EndSelect
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

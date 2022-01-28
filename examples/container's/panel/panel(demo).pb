@@ -1,5 +1,10 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
-
+; #NSTopTabsBezelBorder    = 0
+; #NSLeftTabsBezelBorder   = 1
+; #NSBottomTabsBezelBorder = 2
+; #NSRightTabsBezelBorder  = 3
+; CocoaMessage(0, GadgetID( Panel ), "setTabViewType:", #NSTopTabsBezelBorder ) ; положение итемов
+            
 ; - AddItem(): Add a panel. 
 ; - RemoveItem(): Remove a panel. 
 ; - CountItems(): Count the number of panels. 
@@ -159,6 +164,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Bind( root( ), #PB_Default )
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

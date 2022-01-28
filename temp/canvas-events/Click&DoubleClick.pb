@@ -1,11 +1,11 @@
 ﻿
 
-; OpenWindow(1, 200, 100, 320, 320, "click hire", #PB_Window_SystemMenu)
-;   CanvasGadget(1, 10, 10, 200, 200)
-;   CanvasGadget(11, 110, 110, 200, 200)
+OpenWindow(1, 200, 100, 320, 320, "click hire", #PB_Window_SystemMenu)
+  CanvasGadget(1, 10, 10, 200, 200)
+  CanvasGadget(11, 110, 110, 200, 200)
 
 OpenWindow(2, 450, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
-CanvasGadget(2, 10, 10, 200, 200)
+CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard)
 
 Define time_click, PressedGadget
 Repeat 
@@ -50,6 +50,13 @@ Repeat
       EndIf
     CompilerEndIf
     
+      If EventType() = #PB_EventType_Focus
+        Debug ""+EventGadget() + " #PB_EventType_Focus "
+      EndIf
+      If EventType() = #PB_EventType_LostFocus
+        Debug ""+EventGadget() + " #PB_EventType_LostFocus "
+      EndIf
+     
     ;       If EventType() = #PB_EventType_Change
     ;         Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
     ;       EndIf
@@ -70,8 +77,6 @@ Until event = #PB_Event_CloseWindow
 ;   2 #PB_EventType_LeftDoubleClick 
 ;   2 #PB_EventType_LeftButtonUp 
 ;   2 #PB_EventType_LeftClick 
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 19
-; FirstLine = 9
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 8--
 ; EnableXP

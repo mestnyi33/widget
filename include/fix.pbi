@@ -1,6 +1,6 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  XIncludeFile "fix/mac/events.pbi"
-  XIncludeFile "fix/mac/draw.pbi"
+   XIncludeFile "fix/mac/events.pbi"
+   XIncludeFile "fix/mac/draw.pbi"
   
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   
@@ -15,7 +15,7 @@ DeclareModule fix
   EndMacro
   
   ;- mac
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined( draw, #PB_Module )
     Macro PB_(Function)
       draw::mac_#Function
     EndMacro
@@ -74,6 +74,6 @@ Module fix
 EndModule 
 
 UseModule fix
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

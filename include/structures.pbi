@@ -404,7 +404,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *widget._S_widget
     EndStructure
     
-    ;- - _S_transform
+    ;- - _S_anchors
     Structure _S_transform
       *main._S_widget
       *widget._S_widget
@@ -663,10 +663,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; \index[2] - tab selected item index
       
       *address          ; widgets list address
-      *container        ; 
-      
       *root._S_root     ; this root
-      *window._S_widget; this parent window       ; root( )\active\window
+      *window._S_widget ; this parent window       ; root( )\active\window
+      
+      
+      *container        ; 
+      count._S_count
       
       ;StructureUnion
         *_owner._S_widget; this window owner parent
@@ -713,7 +715,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       interact.i 
       
       mode._S_mode
-      count._S_count
       caption._S_caption
       color._S_color[4]
       
