@@ -1,16 +1,31 @@
 ﻿;- MACOS
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  DeclareModule events
-    EnableExplicit
-    
-    Macro PB(Function)
-      Function
-    EndMacro
-    
-    Declare.i WaitEvent( *callback, event.i )
-  EndDeclareModule 
+  CompilerIf #PB_Compiler_IsMainFile
+    DeclareModule constants
+      Enumeration #PB_EventType_FirstCustomValue
+        #PB_EventType_Repaint
+        #PB_EventType_Drop
+      EndEnumeration
+    EndDeclareModule
+    Module constants
+    EndModule
+    UseModule constants
+  CompilerEndIf
+ 
+    DeclareModule events
+      EnableExplicit
+      
+      Macro PB(Function)
+        Function
+      EndMacro
+      
+      Declare.i WaitEvent( *callback, event.i )
+    EndDeclareModule 
   
   Module events
+    CompilerIf #PB_Compiler_IsMainFile
+      UseModule constants
+    CompilerEndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       ; bug when clicking on the canvas in an inactive window
@@ -249,14 +264,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ;
         If MouseMove 
           ;Debug "x="+MouseX +" y="+ MouseY
-          If MouseDrag 
-            ; mouse drag start
-            If DraggedGadget <> PressedGadget
-              DraggedGadget = PressedGadget
-              CallCFunctionFast( *callback, PressedGadget, #PB_EventType_DragStart )
-            EndIf
-          EndIf
-          
           If EnteredGadget <> Canvas 
             If EnteredGadget >= 0
               CallCFunctionFast( *callback, EnteredGadget , #PB_EventType_MouseLeave )
@@ -268,6 +275,14 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_MouseEnter )
             EndIf
           Else
+            If MouseDrag 
+              ; mouse drag start
+              If DraggedGadget <> PressedGadget
+                DraggedGadget = PressedGadget
+                CallCFunctionFast( *callback, PressedGadget, #PB_EventType_DragStart )
+              EndIf
+            EndIf
+            
             If EnteredGadget <> PressedGadget And MouseDrag
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_MouseMove )
             EndIf
@@ -309,32 +324,48 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ;
         If EventType = #PB_EventType_LeftButtonUp
           If Not ( ClickTime And ElapsedMilliseconds( ) - ClickTime < DoubleClickTime( ) )
-            If PressedGadget = DraggedGadget
-              ;           If FindMapElement( IsEnableDrop( ), Str( EnteredID ) )
-              ;             ; EnteredGadget >= 0 And
-              ;              DroppedGadget = EnteredGadget
-              ;             
-              ;             CallCFunctionFast( *callback, DroppedGadget, #PB_EventType_Drop )
-              ;           EndIf
-              DraggedGadget =- 1
-            EndIf
-            
-            If LeftClick
+            If LeftClick 
               LeftClick = 0
+              
+              If PressedGadget = DraggedGadget
+                CompilerIf Defined( constants, #PB_Module )
+                  CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
+                CompilerEndIf
+              EndIf
+              
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftButtonUp )
               
-              If PressedGadget >= 0 And
-                 EnteredID = GadgetID( PressedGadget )
-                
-                CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftClick )
+              If PressedGadget <> DraggedGadget
+                If PressedGadget >= 0 And
+                   EnteredID = GadgetID( PressedGadget )
+                  
+                  CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftClick )
+                EndIf
+              Else
+                DraggedGadget =- 1
               EndIf
             Else
-              CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
+              If PressedGadget = DraggedGadget
+                CompilerIf Defined( constants, #PB_Module )
+                  CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
+                CompilerEndIf
+                DraggedGadget =- 1
+              Else
+                CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
+              EndIf
             EndIf
+            
             
             ClickTime = ElapsedMilliseconds( )
           Else
-            CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
+            If PressedGadget = DraggedGadget
+              CompilerIf Defined( constants, #PB_Module )
+                CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
+              CompilerEndIf
+              DraggedGadget =- 1
+            Else
+              CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
+            EndIf
             ClickTime = 0
           EndIf
           
@@ -391,8 +422,8 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_DragStart
         Debug ""+Gadget + " #PB_EventType_DragStart " 
-        ;       Case #PB_EventType_Drop
-        ;         Debug ""+Gadget + " #PB_EventType_Drop " 
+      Case #PB_EventType_Drop
+        Debug ""+Gadget + " #PB_EventType_Drop " 
       Case #PB_EventType_Focus
         Debug ""+Gadget + " #PB_EventType_Focus " 
         DrawCanvasBack( gadget, $FFA7A4)
@@ -429,6 +460,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu)
   CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+  ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
   
   Debug GadgetID(1)
   Debug GadgetID(11)
@@ -463,6 +495,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       EndIf
     EndIf
     
+        If event = #PB_Event_GadgetDrop
+          Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_GadgetDrop "
+        EndIf
     ;     If event = #PB_Event_Repaint
     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
     ;     EndIf
@@ -482,5 +517,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------
+; Folding = --------------
 ; EnableXP
