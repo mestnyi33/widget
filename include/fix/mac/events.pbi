@@ -1,13 +1,14 @@
 ﻿;- MACOS
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   DeclareModule events
+    EnableExplicit
     
-      Macro PB(Function)
-        Function
-      EndMacro
-      
-      Declare.i WaitEvent( *callback, event.i )
-    EndDeclareModule 
+    Macro PB(Function)
+      Function
+    EndMacro
+    
+    Declare.i WaitEvent( *callback, event.i )
+  EndDeclareModule 
   
   Module events
     
@@ -17,8 +18,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       #LeftMouseUpMask        = 1 << 2
       ; #RightMouseDownMask     = 1 << 3
       ; #RightMouseUpMask       = 1 << 4
-       #MouseMovedMask         = 1 << 5
-       #LeftMouseDraggedMask   = 1 << 6
+      #MouseMovedMask         = 1 << 5
+      #LeftMouseDraggedMask   = 1 << 6
       ; #RightMouseDraggedMask  = 1 << 7
       ; #KeyDownMask            = 1 << 10
       ; #KeyUpMask              = 1 << 11
@@ -28,13 +29,12 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ; #OtherMouseUpMask       = 1 << 26
       ; #OtherMouseDraggedMask  = 1 << 27
       
-      Global PressedGadgetID,
-           EnteredGadget =- 1,
-           PressedGadget =- 1,
-           DraggedGadget =- 1,
-           FocusedGadget =- 1
-    Global MouseX, MouseY, ClickTime
-    Global psn.q, mask, eventTap, key.s
+      Global EnteredGadget =- 1,
+             PressedGadget =- 1,
+             DraggedGadget =- 1,
+             FocusedGadget =- 1
+      
+      Global psn.q, mask, eventTap, key.s
       
       ImportC ""
         CFRunLoopGetCurrent()
@@ -48,14 +48,22 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         PB_Window_GetID(hWnd) 
       EndImport
       
-;       Procedure.s GetClassName( handle.i )
-;         Protected Result
-;         CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
-;         If Result
-;           ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
-;         EndIf
-;       EndProcedure
-;       
+      ;       Procedure.s GetClassName( handle.i )
+      ;         Protected Result
+      ;         CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
+      ;         If Result
+      ;           ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
+      ;         EndIf
+      ;       EndProcedure
+      ;       
+      ;       Procedure WindowNumber( WindowID )
+      ;         ProcedureReturn CocoaMessage(0, WindowID, "windowNumber")
+      ;       EndProcedure
+      ;       
+      ;       Procedure NSWindow( NSApp, WindowNumber )
+      ;         ProcedureReturn CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+      ;       EndProcedure
+      
       Procedure IDWindow(Handle)
         ProcedureReturn PB_Window_GetID(Handle)
       EndProcedure
@@ -64,20 +72,40 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ProcedureReturn CocoaMessage(0, Handle, "tag")
       EndProcedure
       
-      Procedure EnteredID( NSWindow ) 
-        Protected Point.NSPoint
-        ; CocoaMessage(@Point, NSEvent, "locationInWindow")
-        CocoaMessage(@Point, NSWindow, "mouseLocationOutsideOfEventStream")
-        Protected contentView = CocoaMessage(0, NSWindow, "contentView")
-        ProcedureReturn CocoaMessage(0, contentView, "hitTest:@", @Point)
-      EndProcedure    
+      Procedure GetWindowUnderMouse( )
+        Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
+        
+        ; get-WindowNumber
+        CocoaMessage(@Point, 0, "NSEvent mouseLocation")
+        WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
+        
+        ; get-NSWindow
+        NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
+        NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+        
+        ProcedureReturn NSWindow
+      EndProcedure
+      
+      Procedure GetObjectUnderMouse( NSWindow )
+        
+        Protected.i ContentView, NSApp, WindowNumber, Point.CGPoint
+        
+        If NSWindow
+          CocoaMessage(@Point, NSWindow, "mouseLocationOutsideOfEventStream")
+          ContentView = CocoaMessage(0, NSWindow, "contentView")
+          ProcedureReturn CocoaMessage(0, ContentView, "hitTest:@", @Point)
+        Else
+          ProcedureReturn 0
+        EndIf
+        
+      EndProcedure
       
       GetCurrentProcess(@psn.q)
       
       mask = #LeftMouseDownMask | #LeftMouseUpMask | #LeftMouseDraggedMask ; | #MouseMovedMask ;| 1 << 8 | 1 << 9 ; 
-      ; mask | #RightMouseDownMask | #RightMouseUpMask
-      ; mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
-      ; mask | #KeyDownMask
+                                                                           ; mask | #RightMouseDownMask | #RightMouseUpMask
+                                                                           ; mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
+                                                                           ; mask | #KeyDownMask
       
       ;       ;
       ;       ; callback function
@@ -90,11 +118,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         If NSWindow
           Protected Point.NSPoint
           event_window = IDWindow( NSWindow )
-          Protected EnteredID = EnteredID( NSWindow )
+          Protected EnteredID = GetObjectUnderMouse( NSWindow )
           If EnteredID
             event_gadget = IDGadget( EnteredID )
             If IsGadget( event_gadget )
-              PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown, NSEvent )
+              PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
               SetActiveGadget( event_gadget )
             EndIf
           EndIf
@@ -127,21 +155,22 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             EndIf
             event_window =- 1
           EndIf
+          
         ElseIf type = 6
-          If event_window >= 0
+          If event_window >= 0 And event_gadget =- 1
             event_window =- 1
           EndIf
         EndIf
       EndProcedure
- 
+      
       eventTap = CGEventTapCreateForPSN(@psn, 0, 1, mask, @eventTapFunction(), 0)
       If eventTap
         CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopCommonModes")
       EndIf
       
-     CompilerEndIf
-     
-     Macro CanvasMouseX( _canvas_ )
+    CompilerEndIf
+    
+    Macro CanvasMouseX( _canvas_ )
       ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
       DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
       ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )  
@@ -154,18 +183,18 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     EndMacro
     
     Procedure.i WaitEvent( *callback, event.i )
-      Static down
-      Protected EnteredID, MouseChange, MouseMove
-      Protected Canvas =- 1, EventType =- 1, mouse_x, mouse_y
-      
       If Not *callback
         ProcedureReturn 0
       EndIf
       
-      If Event( ) = #PB_Event_Gadget Or PressedGadgetID
+      Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY
+      Protected MouseChange, MouseMove, Mousex, Mousey
+      Protected EnteredID, Canvas =- 1, EventType =- 1
+      
+      If Event( ) = #PB_Event_Gadget Or MouseDrag
         ; Debug "event - "+event+" "+Event()
         EventType = EventType( )
-        EnteredID = EnteredID( WindowID( EventWindow( ) ) )
+        EnteredID = GetObjectUnderMouse( GetWindowUnderMouse( ) )
         
         ;
         If EnteredID  
@@ -183,11 +212,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           EndIf
           
           If Canvas >= 0
-            mouse_x = CanvasMouseX( Canvas )
-            mouse_y = CanvasMouseY( Canvas )
+            Mousex = CanvasMouseX( Canvas )
+            Mousey = CanvasMouseY( Canvas )
           Else
-            mouse_x =- 1
-            mouse_y =- 1
+            Mousex =- 1
+            Mousey =- 1
           EndIf
           
           MouseChange = #True
@@ -200,29 +229,27 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndIf
         
         ;
-        If PressedGadgetID  
-          mouse_x = CanvasMouseX( PressedGadget )
-          mouse_y = CanvasMouseY( PressedGadget )
+        If MouseChange Or MouseDrag
+          If MouseDrag  
+            Mousex = CanvasMouseX( PressedGadget )
+            Mousey = CanvasMouseY( PressedGadget )
+          EndIf
           
-          MouseChange = #True
-        EndIf
-        
-        ;
-        If MouseChange
-          If MouseX <> mouse_x
-            MouseX = mouse_x
+          If MouseMoveX <> Mousex
+            MouseMoveX = Mousex
             MouseMove = #True
           EndIf
           
-          If MouseY <> mouse_y
-            MouseY = mouse_y
+          If MouseMoveY <> Mousey
+            MouseMoveY = Mousey
             MouseMove = #True
           EndIf
         EndIf
         
         ;
         If MouseMove 
-          If PressedGadgetID 
+          ;Debug "x="+MouseX +" y="+ MouseY
+          If MouseDrag 
             ; mouse drag start
             If DraggedGadget <> PressedGadget
               DraggedGadget = PressedGadget
@@ -241,7 +268,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_MouseEnter )
             EndIf
           Else
-            If EnteredGadget <> PressedGadget And PressedGadgetID
+            If EnteredGadget <> PressedGadget And MouseDrag
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_MouseMove )
             EndIf
             
@@ -254,7 +281,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         
         ;
         If EventType = #PB_EventType_LeftButtonDown
+          MouseDrag = 1
           PressedGadget = EventGadget( )
+          
           If FocusedGadget =- 1
             FocusedGadget = GetActiveGadget( )
             If GadgetType( FocusedGadget ) = #PB_GadgetType_Canvas
@@ -270,11 +299,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             CallCFunctionFast( *callback, FocusedGadget, #PB_EventType_Focus )
           EndIf
           
-          PressedGadgetID = GadgetID( PressedGadget )
-          
           If Not ( ClickTime And ElapsedMilliseconds( ) - ClickTime < 160 )
-            down = 1
             CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftButtonDown )
+            LeftClick = 1
             ClickTime = 0
           EndIf
         EndIf
@@ -283,8 +310,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         If EventType = #PB_EventType_LeftButtonUp
           If Not ( ClickTime And ElapsedMilliseconds( ) - ClickTime < DoubleClickTime( ) )
             If PressedGadget = DraggedGadget
-              ;           ; Debug EnteredID
-              ;           If FindMapElement( IsEnableDrop( ), Str(EnteredID) )
+              ;           If FindMapElement( IsEnableDrop( ), Str( EnteredID ) )
               ;             ; EnteredGadget >= 0 And
               ;              DroppedGadget = EnteredGadget
               ;             
@@ -293,8 +319,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               DraggedGadget =- 1
             EndIf
             
-            If down
-              down = 0
+            If LeftClick
+              LeftClick = 0
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftButtonUp )
               
               If PressedGadget >= 0 And
@@ -312,17 +338,18 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             ClickTime = 0
           EndIf
           
-          PressedGadgetID = 0
+          MouseDrag = 0
         EndIf
         
         
         If EventType = #PB_EventType_Resize
           CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Resize )
         EndIf
-;         If EventType = #PB_EventType_Repaint
-;           CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Repaint )
-;         EndIf
-        
+        CompilerIf Defined( constants, #PB_Module )
+          If EventType = constants::#PB_EventType_Repaint
+            CallCFunctionFast( *callback, EventGadget( ), constants::#PB_EventType_Repaint )
+          EndIf
+        CompilerEndIf
       EndIf
       
       ProcedureReturn event
@@ -359,12 +386,13 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure EventHandler( gadget, eventtype )
+    Protected window = EventWindow()
     Select eventtype
         
       Case #PB_EventType_DragStart
         Debug ""+Gadget + " #PB_EventType_DragStart " 
-;       Case #PB_EventType_Drop
-;         Debug ""+Gadget + " #PB_EventType_Drop " 
+        ;       Case #PB_EventType_Drop
+        ;         Debug ""+Gadget + " #PB_EventType_Drop " 
       Case #PB_EventType_Focus
         Debug ""+Gadget + " #PB_EventType_Focus " 
         DrawCanvasBack( gadget, $FFA7A4)
@@ -383,9 +411,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseEnter
         DrawCanvasFrame( gadget, $2C70F5)
         Debug ""+Gadget + " #PB_EventType_MouseEnter " 
+        ;PostEvent( #PB_Event_Gadget , window, gadget, #PB_EventType_Resize )
+        
       Case #PB_EventType_MouseLeave
         DrawCanvasFrame( gadget, 0 )
         Debug ""+Gadget + " #PB_EventType_MouseLeave " 
+        PostEvent( #PB_Event_Gadget , window, gadget, #PB_EventType_Resize )
       Case #PB_EventType_MouseMove
         ; Debug ""+Gadget + " #PB_EventType_MouseMove " 
         
@@ -407,49 +438,49 @@ CompilerIf #PB_Compiler_IsMainFile
     event = WaitEvent( @EventHandler( ), WaitWindowEvent( ) )
     
     If event = #PB_Event_Gadget
-;       If EventType() = #PB_EventType_Focus
-;         Debug ""+EventGadget() + " #PB_EventType_Focus "
-;       EndIf
-;       If EventType() = #PB_EventType_LostFocus
-;         Debug "  "+EventGadget() + " #PB_EventType_LostFocus "
-;       EndIf
-;       
-;       If EventType() = #PB_EventType_LeftButtonDown
-;         Debug ""+EventGadget() + " #PB_EventType_LeftButtonDown "
-;       EndIf
-;       If EventType() = #PB_EventType_LeftButtonUp
-;         Debug "  "+EventGadget() + " #PB_EventType_LeftButtonUp "
-;       EndIf
-;       
-;       If EventType() = #PB_EventType_Change
-;         Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
-;       EndIf
-;       If EventType() = #PB_EventType_MouseEnter
-;         Debug ""+EventGadget() + " #PB_EventType_MouseEnter " +EventData() +" "+ GetActiveWindow( )
-;       EndIf
-;       If EventType() = #PB_EventType_MouseLeave
-;         Debug "  "+EventGadget() + " #PB_EventType_MouseLeave "
-;       EndIf
+      ;       If EventType() = #PB_EventType_Focus
+      ;         Debug ""+EventGadget() + " #PB_EventType_Focus "
+      ;       EndIf
+      ;       If EventType() = #PB_EventType_LostFocus
+      ;         Debug "  "+EventGadget() + " #PB_EventType_LostFocus "
+      ;       EndIf
+      ;       
+      ;       If EventType() = #PB_EventType_LeftButtonDown
+      ;         Debug ""+EventGadget() + " #PB_EventType_LeftButtonDown "
+      ;       EndIf
+      ;       If EventType() = #PB_EventType_LeftButtonUp
+      ;         Debug "  "+EventGadget() + " #PB_EventType_LeftButtonUp "
+      ;       EndIf
+      ;       
+      ;       If EventType() = #PB_EventType_Change
+      ;         Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
+      ;       EndIf
+      ;       If EventType() = #PB_EventType_MouseEnter
+      ;         Debug ""+EventGadget() + " #PB_EventType_MouseEnter " +EventData() +" "+ GetActiveWindow( )
+      ;       EndIf
+      ;       If EventType() = #PB_EventType_MouseLeave
+      ;         Debug "  "+EventGadget() + " #PB_EventType_MouseLeave "
+      ;       EndIf
     EndIf
     
-;     If event = #PB_Event_Repaint
-;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
-;     EndIf
-;     If event = #PB_Event_LeftClick
-;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_LeftClick "
-;     EndIf
-;     If event = #PB_Event_RightClick
-;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_RightClick "
-;     EndIf
-;     If event = #PB_Event_ActivateWindow
-;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_ActivateWindow "
-;     EndIf
-;     If event = #PB_Event_DeactivateWindow
-;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_DeactivateWindow "
-;     EndIf
+    ;     If event = #PB_Event_Repaint
+    ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
+    ;     EndIf
+    ;     If event = #PB_Event_LeftClick
+    ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_LeftClick "
+    ;     EndIf
+    ;     If event = #PB_Event_RightClick
+    ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_RightClick "
+    ;     EndIf
+    ;     If event = #PB_Event_ActivateWindow
+    ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_ActivateWindow "
+    ;     EndIf
+    ;     If event = #PB_Event_DeactivateWindow
+    ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_DeactivateWindow "
+    ;     EndIf
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------
+; Folding = ------------
 ; EnableXP
