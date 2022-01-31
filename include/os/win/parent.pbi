@@ -12,7 +12,7 @@ EndDeclareModule
 Module Parent
   Procedure.s GetClassName( handle.i )
     Protected Class$ = Space( 16 )
-    GetClassNameName_( handle, @Class$, Len( Class$ ) )
+    GetClassName_( handle, @Class$, Len( Class$ ) )
     ProcedureReturn Class$
   EndProcedure
   
@@ -284,6 +284,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 14
+; FirstLine = 6
 ; Folding = -v-0--
 ; EnableXP

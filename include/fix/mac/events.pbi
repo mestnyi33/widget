@@ -9,23 +9,71 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     EndDeclareModule
     Module constants
     EndModule
-    UseModule constants
   CompilerEndIf
- 
-    DeclareModule events
-      EnableExplicit
-      
-      Macro PB(Function)
-        Function
-      EndMacro
-      
-      Declare.i WaitEvent( *callback, event.i )
-    EndDeclareModule 
+  
+  DeclareModule events
+    EnableExplicit
+    
+    ;     Macro PB(Function)
+    ;       Function
+    ;     EndMacro
+    
+    Declare.i WaitEvent( *callback, event.i )
+  EndDeclareModule 
   
   Module events
-    CompilerIf #PB_Compiler_IsMainFile
-      UseModule constants
-    CompilerEndIf
+    UseModule constants
+    
+    Import ""
+      PB_Window_GetID(hWnd) 
+    EndImport
+    
+    Global EnteredGadget =- 1,
+           PressedGadget =- 1,
+           DraggedGadget =- 1,
+           FocusedGadget =- 1
+    
+    
+    ;       Procedure.s GetClassName( handle.i )
+    ;         Protected Result
+    ;         CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
+    ;         If Result
+    ;           ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
+    ;         EndIf
+    ;       EndProcedure
+    ;       
+    Procedure IDWindow(Handle)
+      ProcedureReturn PB_Window_GetID(Handle)
+    EndProcedure
+    
+    Procedure IDGadget(Handle)
+      ProcedureReturn CocoaMessage(0, Handle, "tag")
+    EndProcedure
+    
+    Procedure GetWindowUnderMouse( )
+      Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
+      
+      ; get-WindowNumber
+      CocoaMessage(@Point, 0, "NSEvent mouseLocation")
+      WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
+      
+      ; get-NSWindow
+      NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
+      NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+      
+      ProcedureReturn NSWindow
+    EndProcedure
+    
+    Procedure GetObjectUnderMouse( NSWindow )
+      If NSWindow
+        Protected.i ContentView, NSApp, WindowNumber, Point.CGPoint
+        CocoaMessage(@Point, NSWindow, "mouseLocationOutsideOfEventStream")
+        ContentView = CocoaMessage(0, NSWindow, "contentView")
+        ProcedureReturn CocoaMessage(0, ContentView, "hitTest:@", @Point)
+      Else
+        ProcedureReturn 0
+      EndIf
+    EndProcedure
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       ; bug when clicking on the canvas in an inactive window
@@ -44,11 +92,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ; #OtherMouseUpMask       = 1 << 26
       ; #OtherMouseDraggedMask  = 1 << 27
       
-      Global EnteredGadget =- 1,
-             PressedGadget =- 1,
-             DraggedGadget =- 1,
-             FocusedGadget =- 1
-      
       Global psn.q, mask, eventTap, key.s
       
       ImportC ""
@@ -59,18 +102,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         CGEventTapCreateForPSN(*psn, place, options, eventsOfInterest.q, callback, refcon)
       EndImport
       
-      Import ""
-        PB_Window_GetID(hWnd) 
-      EndImport
-      
-      ;       Procedure.s GetClassName( handle.i )
-      ;         Protected Result
-      ;         CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
-      ;         If Result
-      ;           ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
-      ;         EndIf
-      ;       EndProcedure
-      ;       
       ;       Procedure WindowNumber( WindowID )
       ;         ProcedureReturn CocoaMessage(0, WindowID, "windowNumber")
       ;       EndProcedure
@@ -78,42 +109,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;       Procedure NSWindow( NSApp, WindowNumber )
       ;         ProcedureReturn CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
       ;       EndProcedure
-      
-      Procedure IDWindow(Handle)
-        ProcedureReturn PB_Window_GetID(Handle)
-      EndProcedure
-      
-      Procedure IDGadget(Handle)
-        ProcedureReturn CocoaMessage(0, Handle, "tag")
-      EndProcedure
-      
-      Procedure GetWindowUnderMouse( )
-        Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
-        
-        ; get-WindowNumber
-        CocoaMessage(@Point, 0, "NSEvent mouseLocation")
-        WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
-        
-        ; get-NSWindow
-        NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
-        NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
-        
-        ProcedureReturn NSWindow
-      EndProcedure
-      
-      Procedure GetObjectUnderMouse( NSWindow )
-        
-        Protected.i ContentView, NSApp, WindowNumber, Point.CGPoint
-        
-        If NSWindow
-          CocoaMessage(@Point, NSWindow, "mouseLocationOutsideOfEventStream")
-          ContentView = CocoaMessage(0, NSWindow, "contentView")
-          ProcedureReturn CocoaMessage(0, ContentView, "hitTest:@", @Point)
-        Else
-          ProcedureReturn 0
-        EndIf
-        
-      EndProcedure
       
       GetCurrentProcess(@psn.q)
       
@@ -202,29 +197,35 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ProcedureReturn 0
       EndIf
       
-      Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY
-      Protected MouseChange, MouseMove, Mousex, Mousey
+      Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY
+      Protected MouseMove, MouseX, MouseY, MoveStart
       Protected EnteredID, Canvas =- 1, EventType =- 1
       
-      If Event( ) = #PB_Event_Gadget Or MouseDrag
-        ; Debug "event - "+event+" "+Event()
+      If MouseDrag Or Event( ) = #PB_Event_Gadget
         EventType = EventType( )
-        EnteredID = GetObjectUnderMouse( GetWindowUnderMouse( ) )
+        
+        If EventType = #PB_EventType_LeftButtonDown
+          MouseDrag = 1
+        EndIf
+        
+        If EventType = #PB_EventType_LeftButtonUp
+          If EnteredGadget >= 0 
+            If MouseDrag > 0 And PressedGadget = DraggedGadget 
+              CompilerIf Defined( constants, #PB_Module )
+                CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
+              CompilerEndIf
+            EndIf
+          EndIf
+          MouseDrag = 0
+        EndIf
+        
+        If MouseDrag >= 0
+          EnteredID = GetObjectUnderMouse( GetWindowUnderMouse( ) )
+        EndIf
         
         ;
-        If EnteredID  
+        If EnteredID
           Canvas = IDGadget( EnteredID )
-          
-          If EventType = #PB_EventType_MouseLeave
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-              If EnteredGadget = Canvas And 
-                 EnteredGadget = EventGadget( )
-                MouseMove = 1
-                Canvas =- 1
-                ; Debug ""+Canvas +" "+ EventType +" "+ EventWindow() +" "+ EventGadget()
-              EndIf
-            CompilerEndIf
-          EndIf
           
           If Canvas >= 0
             Mousex = CanvasMouseX( Canvas )
@@ -233,38 +234,32 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             Mousex =- 1
             Mousey =- 1
           EndIf
-          
-          MouseChange = #True
         Else
-          If EventType = #PB_EventType_MouseLeave
-            ; Debug ""+EnteredID +" "+ Canvas +" "+ EventType +" "+ EventWindow() +" "+ EventGadget()
-            MouseChange = 1
-            Canvas =- 1
-          EndIf
+          Mousex =- 1
+          Mousey =- 1
         EndIf
         
         ;
-        If MouseChange Or MouseDrag
-          If MouseDrag  
-            Mousex = CanvasMouseX( PressedGadget )
-            Mousey = CanvasMouseY( PressedGadget )
-          EndIf
-          
-          If MouseMoveX <> Mousex
-            MouseMoveX = Mousex
-            MouseMove = #True
-          EndIf
-          
-          If MouseMoveY <> Mousey
-            MouseMoveY = Mousey
-            MouseMove = #True
-          EndIf
+        If MouseDrag And
+           Mousex =- 1 And Mousey =- 1
+          Mousex = CanvasMouseX( PressedGadget )
+          Mousey = CanvasMouseY( PressedGadget )
+        EndIf
+        
+        If MouseMoveX <> Mousex
+          MouseMoveX = Mousex
+          MouseMove = #True
+        EndIf
+        
+        If MouseMoveY <> Mousey
+          MouseMoveY = Mousey
+          MouseMove = #True
         EndIf
         
         ;
         If MouseMove 
-          ;Debug "x="+MouseX +" y="+ MouseY
-          If EnteredGadget <> Canvas 
+          If MouseDrag >= 0 And 
+             EnteredGadget <> Canvas
             If EnteredGadget >= 0
               CallCFunctionFast( *callback, EnteredGadget , #PB_EventType_MouseLeave )
             EndIf
@@ -275,11 +270,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_MouseEnter )
             EndIf
           Else
-            If MouseDrag 
-              ; mouse drag start
+            ; mouse drag start
+            If MouseDrag > 0
               If DraggedGadget <> PressedGadget
                 DraggedGadget = PressedGadget
                 CallCFunctionFast( *callback, PressedGadget, #PB_EventType_DragStart )
+                DeltaX = GadgetX( PressedGadget ) 
+                DeltaY = GadgetY( PressedGadget )
               EndIf
             EndIf
             
@@ -289,15 +286,19 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             
             If EnteredGadget >= 0
               CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_MouseMove )
+              If MouseDrag > 0 And PressedGadget = EnteredGadget 
+                If DeltaX <> GadgetX( PressedGadget ) Or 
+                   DeltaY <> GadgetY( PressedGadget )
+                  MouseDrag =- 1
+                EndIf
+              EndIf
             EndIf
           EndIf
-          
         EndIf
         
         ;
         If EventType = #PB_EventType_LeftButtonDown
-          MouseDrag = 1
-          PressedGadget = EventGadget( )
+          PressedGadget = EnteredGadget ; EventGadget( )
           
           If FocusedGadget =- 1
             FocusedGadget = GetActiveGadget( )
@@ -327,49 +328,28 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             If LeftClick 
               LeftClick = 0
               
-              If PressedGadget = DraggedGadget
-                CompilerIf Defined( constants, #PB_Module )
-                  CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
-                CompilerEndIf
-              EndIf
-              
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftButtonUp )
               
               If PressedGadget <> DraggedGadget
-                If PressedGadget >= 0 And
-                   EnteredID = GadgetID( PressedGadget )
-                  
+                If PressedGadget >= 0 And EnteredID = GadgetID( PressedGadget )
                   CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftClick )
                 EndIf
-              Else
-                DraggedGadget =- 1
               EndIf
             Else
-              If PressedGadget = DraggedGadget
-                CompilerIf Defined( constants, #PB_Module )
-                  CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
-                CompilerEndIf
-                DraggedGadget =- 1
-              Else
+              If PressedGadget <> DraggedGadget
                 CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
               EndIf
             EndIf
             
-            
             ClickTime = ElapsedMilliseconds( )
           Else
-            If PressedGadget = DraggedGadget
-              CompilerIf Defined( constants, #PB_Module )
-                CallCFunctionFast( *callback, EnteredGadget, #PB_EventType_Drop )
-              CompilerEndIf
-              DraggedGadget =- 1
-            Else
+            If PressedGadget <> DraggedGadget
               CallCFunctionFast( *callback, PressedGadget, #PB_EventType_LeftDoubleClick )
             EndIf
             ClickTime = 0
           EndIf
-          
-          MouseDrag = 0
+          ;
+          DraggedGadget =- 1
         EndIf
         
         
@@ -377,8 +357,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Resize )
         EndIf
         CompilerIf Defined( constants, #PB_Module )
-          If EventType = constants::#PB_EventType_Repaint
-            CallCFunctionFast( *callback, EventGadget( ), constants::#PB_EventType_Repaint )
+          If EventType = #PB_EventType_Repaint
+            CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Repaint )
           EndIf
         CompilerEndIf
       EndIf
@@ -391,7 +371,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
+  UseModule constants
   UseModule events
+  
   Define event
   
   Procedure DrawCanvasBack( gadget, color )
@@ -418,9 +400,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure EventHandler( gadget, eventtype )
     Protected window = EventWindow()
+    Static dragGadget =- 1, deltax, deltay
+    
     Select eventtype
-        
       Case #PB_EventType_DragStart
+        dragGadget = gadget
         Debug ""+Gadget + " #PB_EventType_DragStart " 
       Case #PB_EventType_Drop
         Debug ""+Gadget + " #PB_EventType_Drop " 
@@ -432,8 +416,11 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+Gadget + " #PB_EventType_LostFocus " 
         DrawCanvasBack( gadget, $FFFFFF)
       Case #PB_EventType_LeftButtonDown
+        deltax = DesktopMouseX()-GadgetX( gadget, #PB_Gadget_WindowCoordinate )
+        deltay = DesktopMouseY()-GadgetY( gadget, #PB_Gadget_WindowCoordinate )
         Debug ""+Gadget + " #PB_EventType_LeftButtonDown " 
       Case #PB_EventType_LeftButtonUp
+        dragGadget =- 1
         Debug ""+Gadget + " #PB_EventType_LeftButtonUp " 
       Case #PB_EventType_LeftClick
         Debug ""+Gadget + " #PB_EventType_LeftClick " 
@@ -447,9 +434,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseLeave
         DrawCanvasFrame( gadget, 0 )
         Debug ""+Gadget + " #PB_EventType_MouseLeave " 
-        PostEvent( #PB_Event_Gadget , window, gadget, #PB_EventType_Resize )
+        ; PostEvent( #PB_Event_Gadget , window, gadget, #PB_EventType_Resize )
       Case #PB_EventType_MouseMove
         ; Debug ""+Gadget + " #PB_EventType_MouseMove " 
+        If dragGadget >=0 And dragGadget = 1
+          ResizeGadget( dragGadget, DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+        EndIf
         
     EndSelect
   EndProcedure
@@ -460,7 +450,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu)
   CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-  ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+                                                        ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
   
   Debug GadgetID(1)
   Debug GadgetID(11)
@@ -495,9 +485,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       EndIf
     EndIf
     
-        If event = #PB_Event_GadgetDrop
-          Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_GadgetDrop "
-        EndIf
+    If event = #PB_Event_GadgetDrop
+      Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_GadgetDrop "
+    EndIf
     ;     If event = #PB_Event_Repaint
     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
     ;     EndIf
@@ -517,5 +507,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------
+; Folding = -------------
 ; EnableXP
