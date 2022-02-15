@@ -12,7 +12,7 @@ Module Parent
     PB_Window_GetID(hWnd) 
   EndImport
   
-  Procedure.s GetClass( handle.i )
+  Procedure.s GetClassName( handle.i )
     Protected Result
     
     CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
@@ -25,13 +25,13 @@ Module Parent
   Procedure NSView( GadgetID )
     Protected handle
     
-    Select GetClass( GadgetID )
+    Select GetClassName( GadgetID )
       Case "PBEditorGadgetTextView", "PBScintillaView", "PBListViewTableView", "PBTreeOutlineView", 
            "PB_NSTextField", "PB_NSTableView", "PB_NSOutlineView", "PB_WebView"
         handle = GadgetID
         
         While handle
-          Select GetClass( handle )
+          Select GetClassName( handle )
             Case "PB_SpinView", "PBTreeScrollView", "PBWebScrollView", "NSScrollView", "NSBox"
               GadgetID = handle
               Break
@@ -103,7 +103,7 @@ Module Parent
     
     If IsGadget( Gadget )
       If ParentID
-        Select GetClass( ParentID )
+        Select GetClassName( ParentID )
           Case "PBTabView"
             Protected Panel = IDGadget( ParentID )
             Protected i = item
@@ -118,9 +118,11 @@ Module Parent
             If i <> item 
               SetGadgetState( Panel, i )
             EndIf
+            
           Case "PB_CanvasView"
             ParentID = CocoaMessage( 0, ParentID, "subviews" )
             ParentID = CocoaMessage( 0, ParentID, "objectAtIndex:", CocoaMessage( 0, ParentID, "count" ) - 1 )
+            
           Default
             ParentID = CocoaMessage( 0, ParentID, "contentView" )
         EndSelect
@@ -332,5 +334,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = v------
+; Folding = -------
 ; EnableXP

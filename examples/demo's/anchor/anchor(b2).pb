@@ -1,4 +1,6 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../CE.pb" 
+Uselib(widget)
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
@@ -54,6 +56,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

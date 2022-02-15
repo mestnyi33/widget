@@ -67,6 +67,7 @@ AddObjectHandle(Object, #Handle_Size | #Handle_Position)
 AddObjectHandle(Child, #Handle_Size | #Handle_Position)
 
 
+
 ; The window's event loop
 Repeat
 	
@@ -85,6 +86,6 @@ End
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 62
+; EnableCompileCount = 64
 ; EnableBuildCount = 0
 ; EnableExeConstant

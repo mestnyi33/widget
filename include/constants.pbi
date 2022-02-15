@@ -13,34 +13,33 @@
     EndEnumeration
     
     Enumeration -1
-		#SelectionStyle_Default
-		#SelectionStyle_None
-		#SelectionStyle_Solid
-		#SelectionStyle_Dotted
-		#SelectionStyle_Dashed
-	EndEnumeration
-	#SelectionStyle_Mode       = $100
-	#SelectionStyle_Completely = 0
-	#SelectionStyle_Partially  = $100
-	#SelectionStyle_Ignore = #PB_Ignore
-	
-  #Boundary_Ignore          = -$80000000    ; 0b10000000...
-	#Boundary_Default         = -$7FFFFFFF    ; 0b01111111...
-	#Boundary_None            =  $3FFFFFFF    ; 0b00111111...
-	#Boundary_ParentSize      =  $60000000    ; 0b01100000...
-	#Boundary_ParentSizeMask  =  $C0000000    ; 0b11000000...
-	
-	Enumeration 1
-		#Boundary_MinX
-		#Boundary_MinY
-		#Boundary_MaxX
-		#Boundary_MaxY
-		#Boundary_MinWidth
-		#Boundary_MinHeight
-		#Boundary_MaxWidth
-		#Boundary_MaxHeight
-	EndEnumeration
-
+      #SelectionStyle_Default
+      #SelectionStyle_None
+      #SelectionStyle_Solid
+      #SelectionStyle_Dotted
+      #SelectionStyle_Dashed
+    EndEnumeration
+    #SelectionStyle_Mode       = $100
+    #SelectionStyle_Completely = 0
+    #SelectionStyle_Partially  = $100
+    #SelectionStyle_Ignore = #PB_Ignore
+    
+    Enumeration 1
+      #Boundary_MinX
+      #Boundary_MinY
+      #Boundary_MaxX
+      #Boundary_MaxY
+      #Boundary_MinWidth
+      #Boundary_MinHeight
+      #Boundary_MaxWidth
+      #Boundary_MaxHeight
+    EndEnumeration
+    #Boundary_Ignore          = -$80000000    ; 0b10000000...
+    #Boundary_Default         = -$7FFFFFFF    ; 0b01111111...
+    #Boundary_None            =  $3FFFFFFF    ; 0b00111111...
+    #Boundary_ParentSize      =  $60000000    ; 0b01100000...
+    #Boundary_ParentSizeMask  =  $C0000000    ; 0b11000000...
+    
     Enumeration 
       #_b_caption
       #_b_menu
@@ -166,14 +165,14 @@
     ;- \_state
     Enumeration
       #__s_normal      = 0<<0  ; 0
-      #__s_select    = 1<<0  ; 1
-      #__s_expand    = 1<<1  ; 2
-      #__s_check     = 1<<2  ; 4
-      #__s_collapse   = 1<<3  ; 8
+      #__s_select    = 1<<0    ; 1
+      #__s_expand    = 1<<1    ; 2
+      #__s_check     = 1<<2    ; 4
+      #__s_collapse   = 1<<3   ; 8
       #__s_inbetween   = 1<<4  ; 16
       
       #__s_enter     = 1<<5  ; 32
-      #__s_disable    = 1<<6  ; 64
+      #__s_disable    = 1<<6 ; 64
       #__s_focus     = 1<<7  ; 128 ; keyboard focus
       #__s_scroll    = 1<<8  ; 256
       
@@ -353,7 +352,7 @@
     ;;#__align_full = 0;#__align_left|#__align_top|#__align_right|#__align_bottom
     
     ;- _c_anchors
-    #__a_size  = 7
+    #__a_size  = 20;7
     #__a_moved = 9
     #__a_count = #__a_moved+4
     ;
@@ -391,7 +390,7 @@
     #__alignFlagValue = 2147483648 >> ( #__alignFlagCount - 1 )
     
     EnumerationBinary #__alignFlagValue
-    ;EnumerationBinary 64
+      ;EnumerationBinary 64
       #__align_text_left 
       #__align_text_top
       #__align_text_center
@@ -420,13 +419,13 @@
       #__align_widget_proportional_vertical
     EndEnumeration
     
-;     #__ImageFlagCount = 2
-;     #__imageFlagValue = 2147483648 >> ( #__imageFlagCount - 1 )
-;     
-;     EnumerationBinary #__imageFlagValue
-;       #__image_vertical 
-;       #__image_invert 
-;     EndEnumeration
+    ;     #__ImageFlagCount = 2
+    ;     #__imageFlagValue = 2147483648 >> ( #__imageFlagCount - 1 )
+    ;     
+    ;     EnumerationBinary #__imageFlagValue
+    ;       #__image_vertical 
+    ;       #__image_invert 
+    ;     EndEnumeration
     
     
     ;- _c_text
@@ -448,28 +447,28 @@
       #__text_numeric 
     EndEnumeration
     
-;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;       Debug #PB_Text_Right         ; 1  ; 2         ; 
-;       Debug #PB_Text_Center        ; 2  ; 1         ; 
-;       Debug #PB_Text_Border        ; 4  ; 131072    ; 
-;       
-;       Debug #PB_Button_Right       ; 1  ; 512       ; 
-;       Debug #PB_Button_Left        ; 2  ; 256       ; 
-;       Debug #PB_Button_Toggle      ; 4  ; 4099      ; 
-;       Debug #PB_Button_Default     ; 8  ; 1         ; 
-;       Debug #PB_Button_MultiLine   ; 16 ; 8192      ; 
-;       
-;       Debug #PB_String_Password    ; 1  ; 32        ; 
-;       Debug #PB_String_ReadOnly    ; 2  ; 2048      ; 
-;       Debug #PB_String_UpperCase   ; 4  ; 8         ; 
-;       Debug #PB_String_LowerCase   ; 8  ; 16        ; 
-;       Debug #PB_String_Numeric     ; 16 ; 8192      ; 
-;       Debug #PB_String_BorderLess  ; 32 ; 131072    ; 
-;       
-;       Debug #PB_Editor_ReadOnly    ; 1  ; 2048      ; 
-;       Debug #PB_Editor_WordWrap    ; 2  ; 268435456 ; 
-;     CompilerEndIf
-
+    ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ;       Debug #PB_Text_Right         ; 1  ; 2         ; 
+    ;       Debug #PB_Text_Center        ; 2  ; 1         ; 
+    ;       Debug #PB_Text_Border        ; 4  ; 131072    ; 
+    ;       
+    ;       Debug #PB_Button_Right       ; 1  ; 512       ; 
+    ;       Debug #PB_Button_Left        ; 2  ; 256       ; 
+    ;       Debug #PB_Button_Toggle      ; 4  ; 4099      ; 
+    ;       Debug #PB_Button_Default     ; 8  ; 1         ; 
+    ;       Debug #PB_Button_MultiLine   ; 16 ; 8192      ; 
+    ;       
+    ;       Debug #PB_String_Password    ; 1  ; 32        ; 
+    ;       Debug #PB_String_ReadOnly    ; 2  ; 2048      ; 
+    ;       Debug #PB_String_UpperCase   ; 4  ; 8         ; 
+    ;       Debug #PB_String_LowerCase   ; 8  ; 16        ; 
+    ;       Debug #PB_String_Numeric     ; 16 ; 8192      ; 
+    ;       Debug #PB_String_BorderLess  ; 32 ; 131072    ; 
+    ;       
+    ;       Debug #PB_Editor_ReadOnly    ; 1  ; 2048      ; 
+    ;       Debug #PB_Editor_WordWrap    ; 2  ; 268435456 ; 
+    ;     CompilerEndIf
+    
     #__text_border = #__flag_borderless;#PB_text_border
     
     #__text_left = #__align_text_left
@@ -479,16 +478,16 @@
     #__text_bottom = #__align_text_bottom
     #__text_middle = #__text_center
     
-;     #__text_invert = #__flag_invert
-;     #__text_vertical = #__flag_vertical
-;     
-;     #__text_multiline = #__flag_multiline
-;     #__text_wordwrap = #__flag_wordwrap
-;     #__text_numeric = #__flag_numeric
-;     #__text_password = #__flag_password
-;     #__text_readonly = #__flag_readonly
-;     #__text_lowercase = #__flag_lowercase
-;     #__text_uppercase = #__flag_uppercase
+    ;     #__text_invert = #__flag_invert
+    ;     #__text_vertical = #__flag_vertical
+    ;     
+    ;     #__text_multiline = #__flag_multiline
+    ;     #__text_wordwrap = #__flag_wordwrap
+    ;     #__text_numeric = #__flag_numeric
+    ;     #__text_password = #__flag_password
+    ;     #__text_readonly = #__flag_readonly
+    ;     #__text_lowercase = #__flag_lowercase
+    ;     #__text_uppercase = #__flag_uppercase
     
     #__image_left = #__text_left
     #__image_top = #__text_top
@@ -527,7 +526,7 @@
     #__Window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
                                                          ;     #__Window_closeGadget    = #PB_Window_NoActivate<<2
                                                          ;     #__Window_close          = #PB_Window_NoActivate<<2
-    ;#PB_Window                 = #PB_Window_NoActivate<<2
+                                                         ;#PB_Window                 = #PB_Window_NoActivate<<2
     
     ;- _c_spin
     #__spin_padding_text = 3
@@ -585,12 +584,12 @@
       
       #__list_ClickSelect
       #__list_MultiSelect
-                                            
+      
       #__list_Collapsed  
-       #__list_Expanded   
-;       #__list_Checked    
-;       #__list_Selected   
-;       #__list_Inbetween 
+      #__list_Expanded   
+      ;       #__list_Checked    
+      ;       #__list_Selected   
+      ;       #__list_Inbetween 
     EndEnumeration
     
     ;- _c_tree
@@ -604,7 +603,7 @@
     #__tree_checkboxes = #PB_Tree_CheckBoxes ; #__flag_checkboxes
     #__tree_threestate = #PB_Tree_ThreeState ; #__flag_threeState
     #__tree_optionboxes = #PB_Tree_OptionBoxes ; #__flag_optionboxes
-    #__tree_gridlines = #PB_Tree_GridLines ; #__flag_gridLines
+    #__tree_gridlines = #PB_Tree_GridLines     ; #__flag_gridLines
     #__tree_multiselect = #__flag_multiline
     #__tree_clickselect = #__flag_clickselect
     #__tree_collapse = #PB_Tree_Collapse
@@ -735,7 +734,7 @@
       #PB_EventType_Free         
       #PB_EventType_Create
       #PB_EventType_Drop
-     
+      
       #PB_EventType_Repaint
       #PB_EventType_ScrollChange
       
@@ -749,8 +748,8 @@
       
       #PB_EventType_MouseStatus
       #PB_EventType_StatusChangeEdit
-;       #PB_EventType_TimerStart
-;       #PB_EventType_TimerStop
+      ;       #PB_EventType_TimerStart
+      ;       #PB_EventType_TimerStop
     EndEnumeration
     
     #__event_free             = #PB_EventType_Free    

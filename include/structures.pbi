@@ -214,7 +214,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;- - _S_buttons
     Structure _S_BUTTONS Extends _S_coordinate 
       state._S_state
-      ;;index.l
+       index.l ; - anchors
       *cursor ; anchor buttons
       
       size.l 
@@ -423,6 +423,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       id._S_buttons[constants::#__a_count+1]
     EndStructure
     
+    Structure _S_a
+      index.b
+      transform.b
+      mode.i
+      *id._S_buttons[constants::#__a_moved+1]
+    EndStructure
+    
     ;- - _S_mode
     Structure _S_mode
       ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
@@ -623,6 +630,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._S_buttons[constants::#__a_moved+1]
+      _a_._S_a
+      
       
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
       bs.a    ; border size

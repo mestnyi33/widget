@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿; XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../CE.pb" 
 
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
@@ -75,11 +76,18 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;   CloseGadgetList()
     
     
-    SetActiveGadget( GetGadget( Root( ) ) )
+    ;SetActiveGadget( GetGadget( Root( ) ) )
     
     ; WaitClose( )
     Define _time_ = 0
     Define _window_ = #PB_Any
+    
+    
+    Define event
+    Repeat 
+      event = events::WaitEvent( @EventHandler( ), WaitWindowEvent( ) )
+      ; event = WaitEvent( WaitWindowEvent( ) )
+    Until event = #PB_Event_CloseWindow
     
     If Root( )
       ReDraw( Root( ) )
@@ -139,6 +147,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

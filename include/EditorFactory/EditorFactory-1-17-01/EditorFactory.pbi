@@ -24,13 +24,27 @@
 ;  - Shardik, for his code using custom cursors
 ;    https://www.purebasic.fr/english/viewtopic.php?p=558545
 ; 
-; Current version of the Module: 1.15.00, on 2021-01-24.
+; Current version of the Module: 1.17.01, on 2021-08-07.
 ;
 ; Change Log (1.15):
 ;  - Added: SetObjectFrameClipping(), SetObjectFrameOffset()
 ;  - Added: #Object_All, #Object_Default, #Object_Selected as possible constants for various functions.
 ;  - Added: #EventType_Created, #EventType_Freed
-;  - Change: CanvasObjectsEvent() do not need a specific gadget
+;  - Changed: CanvasObjectsEvent() do not need a specific gadget
+;
+; Change Log (1.16):
+;  - Added: IsObjectFrame(), AddObjectFrame(), RemoveObjectFrame(), MoveObjectFrame()
+;  - Added: ReleaseCanvasObjects()
+;  - Added: #EventType_LeftMouseButtonHold, #EventType_RightMouseButtonHold, #EventType_MiddleMouseButtonHold
+;  - Changed: CreateObject() - handling of the frame index!
+;  - Changed: AddObjectFrame() - frame properties
+;  - Changed: SetObjectFrameClipping() --> SetObjectFrameViewBox() - changed behavior
+;  - Changed: SetObjectFrameOffset()   --> SetObjectFrameInnerOffset() - changed behavior
+;
+; Change Log (1.17):
+;  - Added: Example #6: Example06_Gadgets.pb
+;  - Changed: More states returned by ObjectState() to create custom gadget easily, see example #6
+
 
 
 DeclareModule EditorFactory
@@ -103,6 +117,11 @@ DeclareModule EditorFactory
 		#Frame_ChildDrawingClipped
 	EndEnumeration
 	
+	Enumeration
+		#Frame_NoFrame     = -3
+		#Frame_ViewedFrame = -2
+		#Frame_LastFrame   = -1
+	EndEnumeration
 	
 	Enumeration -1
 		#SelectionStyle_Default
@@ -158,14 +177,17 @@ DeclareModule EditorFactory
 		#EventType_LeftMouseBottonUp
 		#EventType_LeftMouseClick
 		#EventType_LeftMouseDoubleClick
+		#EventType_LeftMouseButtonHold
 		#EventType_RightMouseBottonDown
 		#EventType_RightMouseBottonUp
 		#EventType_RightMouseClick
 		#EventType_RightMouseDoubleClick
+		#EventType_RightMouseButtonHold
 		#EventType_MiddleMouseBottonDown
 		#EventType_MiddleMouseBottonUp
 		#EventType_MiddleMouseClick
 		#EventType_MiddleMouseDoubleClick
+		#EventType_MiddleMouseButtonHold
 		#EventType_Moved
 		#EventType_Resized
 		#EventType_Selected
@@ -187,10 +209,15 @@ DeclareModule EditorFactory
 	EndEnumeration
 	
 	EnumerationBinary
-		#State_Selected
-		#State_Disabled
 		#State_Hidden
+		#State_Disabled
+		#State_Hovered
+		#State_Selected
+		#State_LeftMousePushed
+		#State_RightMousePushed
+		#State_MiddleMousePushed
 	EndEnumeration
+	#State_Normal = 0
 	
 	EnumerationBinary 0
 		#Object_GlobalPosition
@@ -202,12 +229,16 @@ DeclareModule EditorFactory
 	Prototype.i ObjectDrawingCallback(iObject.i, iWidth.i, iHeight.i, iData.i)
 	Prototype.i DrawingCallback(iCanvasGadget.i, iData.i)
 	
+	Declare.i ReleaseCanvasObjects(iCanvasGadget.i)
 	Declare.i InitializeCanvasObjects(iCanvasGadget.i, iWindow.i)
 	Declare.i IsCanvasObjects(iCanvasGadget.i)
 	Declare.i IsObject(iObject.i)
 	Declare.i FreeObject(iObject.i, eFlags.i=#Object_FreeChildObjects)
-	Declare.i CreateObject(iCanvasGadget.i, iObject.i, iX.i, iY.i, iWidth.i, iHeight.i, iParentObject.i=#PB_Default, iFrameIndex.i=#PB_Default)
+	Declare.i CreateObject(iCanvasGadget.i, iObject.i, iX.i, iY.i, iWidth.i, iHeight.i, iParentObject.i=#PB_Default, iFrameIndex.i=#Frame_NoFrame)
 	Declare.i DuplicateObject(iObject.i, iNewObject.i, iNewCanvasGadget.i=#PB_Ignore, bDuplicateChilds.i=#True)
+	Declare.i AddObjectFrame(iObject.i, iFrameIndex.i, iViewBoxX.i=0, iViewBoxY.i=0, iViewBoxWidth.i=#Boundary_ParentSize, iViewBoxHeight.i=#Boundary_ParentSize, iInnerWidth.i=#Boundary_None, iInnerHeight.i=#Boundary_None, iInnerOffsetX.i=0, iInnerOffsetY.i=0)
+	Declare.i RemoveObjectFrame(iObject.i, iFrameIndex.i)
+	Declare.i MoveObjectFrame(iObject.i, iFrameIndex.i, iNewFrameIndex.i, iNewObject.i=#PB_Ignore)
 	Declare.i AddObjectHandle(iObject.i, eType.i, iImage.i=#PB_Default, eAlignment.i=#Alignment_Default, iX.i=0, iY.i=0)
 	Declare.i RemoveObjectHandle(iObject.i, eType.i)
 	Declare.i ObjectHandleDisplayMode(iObject.i, eMode.i, iCanvasGadget.i=#PB_Ignore)
@@ -215,7 +246,7 @@ DeclareModule EditorFactory
 	Declare   FreeCustomCursor(hCursorHandle.i)
 	Declare.i ParentObject(iObject.i)
 	Declare.i VisibleObjectFrame(iObject.i)
-	Declare   AttachObject(iObject.i, iParentObject.i, eMode.i=#Attachment_Position|#Attachment_PreserveGlobalPosition, iFrameIndex.i=#PB_Default)
+	Declare   AttachObject(iObject.i, iParentObject.i, eMode.i=#Attachment_Position|#Attachment_PreserveGlobalPosition, iFrameIndex.i=#Frame_NoFrame)
 	Declare   DetachObject(iObject.i, eMode.i=#Attachment_PreserveGlobalPosition)
 	Declare   ShowObjectFrame(iObject.i, iFrameIndex.i)
 	Declare.i CountObjectFrames(iObject.i)
@@ -253,8 +284,8 @@ DeclareModule EditorFactory
 	Declare.i SetObjectResizeStep(iObject.i, iX.i, iY.i)
 	Declare.i SetObjectBoundaryStyle(iObject.i, eType.i, iColor.i=$FF000000, dThickness.d=1.0)
 	Declare.i SetObjectSelectionStyle(iObject.i, eType.i=#SelectionStyle_Ignore, iColor.i=#SelectionStyle_Ignore, dThickness.d=#SelectionStyle_Ignore, dDistance.d=#SelectionStyle_Ignore)
-	Declare.i SetObjectFrameClipping(iObject.i, bEnabled.i, iLeftPadding.i=0, iTopPadding.i=0, iRightPadding.i=0, iBottomPedding.i=0)
-	Declare.i SetObjectFrameOffset(iObject.i, iX.i=0, iY.i=0, iMode.i=#PB_Absolute)
+	Declare.i SetObjectFrameViewBox(iObject.i, iFrameIndex.i, iX.i=0, iY.i=0, iWidth.i=#Boundary_ParentSize, iHeight.i=#Boundary_ParentSize, bEnabledClipping.i=#True)
+	Declare.i SetObjectFrameInnerOffset(iObject.i, iFrameIndex.i, iX.i=0, iY.i=0, iMode.i=#PB_Absolute)
 	Declare   SetCursorSelectionStyle(iCanvasGadget.i, eType.i=#SelectionStyle_Ignore, iColor.i=#SelectionStyle_Ignore, dThickness.d=#SelectionStyle_Ignore, iBackgroundColor.i=#SelectionStyle_Ignore)
 	Declare.i GetObjectBoundary(iObject.i, eBoundary.i)
 	Declare.i GetObjectHandles(iObject.i)
@@ -337,19 +368,19 @@ Module EditorFactory
 		iSizeY.i
 	EndStructure
 	
-	Structure ObjectFrameClip
+	Structure FrameBox
 		bEnabled.i
-		iLeft.i
-		iTop.i
-		iRight.i
-		iBottom.i
 		iX.i
 		iY.i
+		iWidth.i
+		iHeight.i
 	EndStructure
 	
 	Structure FrameFake
 		*pObjectManager.ObjectManager
 		*pParentObject.Object
+		ViewBox.FrameBox
+		InnerArea.FrameBox
 		List		*lpChildObject()
 	EndStructure
 	
@@ -382,15 +413,18 @@ Module EditorFactory
 		eHandleDisplayMode.i
 		Map			msAttribute.s()
 		List		lFrame.FrameFake()
-		FrameClip.ObjectFrameClip
 		*pVisibleFrame.Frame
+		*pNoFrame.Frame
 		eAttachmentMode.i
 		bFreed.i
+		List		*lpConnectedObject.Object()
 	EndStructure
 	
 	Structure Frame
 		*pObjectManager.ObjectManager
 		*pParentObject.Object
+		ViewBox.FrameBox
+		InnerArea.FrameBox
 		List		*lpChildObject.Object()
 	EndStructure
 	
@@ -422,6 +456,7 @@ Module EditorFactory
 		iHoveredHandle.i
 		iMouseDownHandle.i[4]
 		iMouseClickHandle.i[4]
+		iMouseHoldTime.i[4]
 		eCurrentCursor.i
 		hCurrentCursorHandle.i
 		bMovement.i
@@ -440,6 +475,9 @@ Module EditorFactory
 		iCallbackData.i
 		eCursor.i
 		hCursorHandle.i
+		iMouseButtonHoldThread.i
+		iEventMutex.i
+		bQuitThread.i
 	EndStructure
 	
 	Structure EditorFactory
@@ -499,6 +537,24 @@ Module EditorFactory
 			PopListPosition(EditorFactory\lObject())
 			ProcedureReturn ReturnValue
 		Until #True
+		
+	EndMacro
+	
+	Macro _ObjectFrameID_(pFrame, pObject, iFrameIndex, ReturnValue = #False)
+		
+		PushListPosition(pObject\lFrame())
+		If iFrameIndex = #Frame_NoFrame And pObject\pNoFrame
+			pFrame = pObject\pNoFrame
+		ElseIf iFrameIndex = #Frame_ViewedFrame And pObject\pVisibleFrame
+			pFrame = pObject\pVisibleFrame
+		ElseIf iFrameIndex >= 0 And iFrameIndex < ListSize(pObject\lFrame()) - 1
+			pFrame = SelectElement(pObject\lFrame(), iFrameIndex+1) ; +1, because index 0 is the attachment frame
+		Else
+			Debug "EditorFactory.Error: Invalid object frame index number for "+#PB_Compiler_Procedure+" (" +  _DQ_#iFrameIndex#_DQ_ + " = "+Str(iFrameIndex)+")"
+			PopListPosition(pObject\lFrame())
+			ProcedureReturn ReturnValue
+		EndIf
+		PopListPosition(pObject\lFrame())
 		
 	EndMacro
 	
@@ -712,7 +768,7 @@ Module EditorFactory
 		
 		While *Object\pParentFrame\pParentObject
 			If *Object\eAttachmentMode & #Attachment_X
-				iX + *Object\pParentFrame\pParentObject\iX + *Object\pParentFrame\pParentObject\FrameClip\iX
+				iX + *Object\pParentFrame\pParentObject\iX + *Object\pParentFrame\ViewBox\iX - *Object\pParentFrame\InnerArea\iX
 				*Object = *Object\pParentFrame\pParentObject
 			Else
 				Break
@@ -727,7 +783,7 @@ Module EditorFactory
 		
 		While *Object\pParentFrame\pParentObject
 			If *Object\eAttachmentMode & #Attachment_Y
-				iY + *Object\pParentFrame\pParentObject\iY + *Object\pParentFrame\pParentObject\FrameClip\iY
+				iY + *Object\pParentFrame\pParentObject\iY + *Object\pParentFrame\ViewBox\iY - *Object\pParentFrame\InnerArea\iY
 				*Object = *Object\pParentFrame\pParentObject
 			Else
 				Break
@@ -735,6 +791,16 @@ Module EditorFactory
 		Wend
 		
 		ProcedureReturn iY
+		
+	EndProcedure
+	
+	Procedure.i DecodeParentSize(iEncodedValue.i, iParentValue.i)
+		
+		If iEncodedValue & #Boundary_ParentSizeMask = #Boundary_ParentSize & #Boundary_ParentSizeMask
+			ProcedureReturn iParentValue + (iEncodedValue - #Boundary_ParentSize)
+		Else
+			ProcedureReturn iEncodedValue
+		EndIf
 		
 	EndProcedure
 	
@@ -759,6 +825,9 @@ Module EditorFactory
 			If \iMinX <> #Boundary_None And iX < iMinX
 				iX = iMinX
 			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iWidth <> #Boundary_None And iX < 0
+				iX = 0
+			EndIf
 			
 			If \iMaxX & #Boundary_ParentSizeMask = #Boundary_ParentSize & #Boundary_ParentSizeMask And *Object\pParentFrame
 				If *Object\pParentFrame\pParentObject And *Object\eAttachmentMode & #Attachment_X
@@ -774,6 +843,10 @@ Module EditorFactory
 			EndIf
 			If \iMaxX <> #Boundary_None And iX > iMaxX
 				iX = iMaxX
+			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iWidth <> #Boundary_None And
+			   *Object\pParentFrame\pParentObject And iX > DecodeParentSize(*Object\pParentFrame\InnerArea\iWidth, *Object\pParentFrame\pParentObject\iWidth) - iWidth
+				iX = DecodeParentSize(*Object\pParentFrame\InnerArea\iWidth, *Object\pParentFrame\pParentObject\iWidth) - iWidth
 			EndIf
 			
 			If *Object\Grid\iMoveX > 0
@@ -807,6 +880,9 @@ Module EditorFactory
 			If \iMinY <> #Boundary_None And iY < iMinY
 				iY = iMinY
 			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iHeight <> #Boundary_None And iY < 0
+				iY = 0
+			EndIf
 			
 			If \iMaxY & #Boundary_ParentSizeMask = #Boundary_ParentSize & #Boundary_ParentSizeMask And *Object\pParentFrame
 				If *Object\pParentFrame\pParentObject And *Object\eAttachmentMode & #Attachment_Y
@@ -822,6 +898,10 @@ Module EditorFactory
 			EndIf
 			If \iMaxY <> #Boundary_None And iY > iMaxY
 				iY = iMaxY
+			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iHeight <> #Boundary_None And
+			   *Object\pParentFrame\pParentObject And iY > DecodeParentSize(*Object\pParentFrame\InnerArea\iHeight, *Object\pParentFrame\pParentObject\iHeight) - iHeight
+				iY = DecodeParentSize(*Object\pParentFrame\InnerArea\iHeight, *Object\pParentFrame\pParentObject\iHeight) - iHeight
 			EndIf
 			
 			If *Object\Grid\iMoveY > 0
@@ -866,6 +946,11 @@ Module EditorFactory
 					iMaxWidth = iMaxX-iMinX
 				EndIf
 			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iWidth <> #Boundary_None And
+			   *Object\pParentFrame\pParentObject And iMaxWidth > DecodeParentSize(*Object\pParentFrame\InnerArea\iWidth, *Object\pParentFrame\pParentObject\iWidth)
+				iMaxWidth = DecodeParentSize(*Object\pParentFrame\InnerArea\iWidth, *Object\pParentFrame\pParentObject\iWidth)
+			EndIf
+			
 			ForEach *Object\lFrame()
 				ForEach *Object\lFrame()\lpChildObject()
 					*ChildObject = *Object\lFrame()\lpChildObject()
@@ -928,6 +1013,11 @@ Module EditorFactory
 					iMaxHeight = iMaxY-iMinY
 				EndIf
 			EndIf
+			If *Object\pParentFrame And *Object\pParentFrame\InnerArea\iHeight <> #Boundary_None And
+			   *Object\pParentFrame\pParentObject And iMaxHeight > DecodeParentSize(*Object\pParentFrame\InnerArea\iHeight, *Object\pParentFrame\pParentObject\iHeight)
+				iMaxHeight = DecodeParentSize(*Object\pParentFrame\InnerArea\iHeight, *Object\pParentFrame\pParentObject\iHeight)
+			EndIf
+			
 			ForEach *Object\lFrame()
 				ForEach *Object\lFrame()\lpChildObject()
 					*ChildObject = *Object\lFrame()\lpChildObject()
@@ -961,8 +1051,8 @@ Module EditorFactory
 	Procedure   PostRedrawEvent(*ObjectManager.ObjectManager)
 		
 		If *ObjectManager\bRedrawPosted = #False
-			PostEvent(#PB_Event_Gadget, *ObjectManager\iWindow, *ObjectManager\iCanvasGadget, #PB_EventType_FirstCustomValue)
 			*ObjectManager\bRedrawPosted = #True
+			PostEvent(#PB_Event_Gadget, *ObjectManager\iWindow, *ObjectManager\iCanvasGadget, #PB_EventType_FirstCustomValue)
 		EndIf
 		
 	EndProcedure
@@ -1009,6 +1099,14 @@ Module EditorFactory
 	
 	Procedure   PostObjectEvent(*ObjectManager.ObjectManager, iEventType.i, *Object.Object, *Data.EventDataArray=#Null)
 		
+		Protected iFrameIndex.i
+		
+		If iEventType = #EventType_Resized
+			For iFrameIndex = CountObjectFrames(*Object)-1 To 0 Step -1
+				SetObjectFrameInnerOffset(*Object, iFrameIndex, 0, 0, #PB_Relative)
+			Next
+		EndIf
+		LockMutex(*ObjectManager\iEventMutex)
 		LastElement(*ObjectManager\lEvent())
 		AddElement(*ObjectManager\lEvent())
 		*ObjectManager\lEvent()\iEvent     = #Event_Object
@@ -1019,11 +1117,13 @@ Module EditorFactory
 			*ObjectManager\lEvent()\iEventData = *Data
 		EndIf
 		*ObjectManager\lEvent()\pObject    = *Object
+		UnlockMutex(*ObjectManager\iEventMutex)
 		
 	EndProcedure
 	
 	Procedure   PostHandleEvent(*ObjectManager.ObjectManager, iEventType.i, *Object.Object, eHandle.i, *Data.EventDataArray=#Null)
 		
+		LockMutex(*ObjectManager\iEventMutex)
 		LastElement(*ObjectManager\lEvent())
 		AddElement(*ObjectManager\lEvent())
 		*ObjectManager\lEvent()\iEvent     = #Event_Handle
@@ -1031,6 +1131,7 @@ Module EditorFactory
 		*ObjectManager\lEvent()\iEventData = *Data
 		*ObjectManager\lEvent()\pObject    = *Object
 		*ObjectManager\lEvent()\eHandle    = eHandle
+		UnlockMutex(*ObjectManager\iEventMutex)
 		
 	EndProcedure
 	
@@ -1051,16 +1152,21 @@ Module EditorFactory
 					iX = *Object\iX + Bool(*Object\eAttachmentMode & #Attachment_X) * iParentX
 					iY = *Object\iY + Bool(*Object\eAttachmentMode & #Attachment_Y) * iParentY
 					
+					If *Object\pNoFrame
+						If ObjectEvents_Frame(*Object\pNoFrame, iX, iY)
+							ProcedureReturn #True
+						EndIf
+					EndIf
 					If *Object\pVisibleFrame
-						If *Object\FrameClip\bEnabled 
-							If \iMouseX >= iX+*Object\FrameClip\iLeft And \iMouseX < iX+*Object\iWidth-*Object\FrameClip\iRight And
-							   \iMouseY >= iY+*Object\FrameClip\iTop And \iMouseY < iY+*Object\iHeight-*Object\FrameClip\iBottom
-								If ObjectEvents_Frame(*Object\pVisibleFrame, iX+*Object\FrameClip\iX, iY+*Object\FrameClip\iY)
+						If *Object\pVisibleFrame\ViewBox\bEnabled 
+							If \iMouseX >= iX+*Object\pVisibleFrame\ViewBox\iX And \iMouseX < iX+*Object\pVisibleFrame\ViewBox\iX+DecodeParentSize(*Object\pVisibleFrame\ViewBox\iWidth, *Object\iWidth) And
+							   \iMouseY >= iY+*Object\pVisibleFrame\ViewBox\iY And \iMouseY < iY+*Object\pVisibleFrame\ViewBox\iY+DecodeParentSize(*Object\pVisibleFrame\ViewBox\iHeight, *Object\iHeight)
+								If ObjectEvents_Frame(*Object\pVisibleFrame, iX+*Object\pVisibleFrame\ViewBox\iX-*Object\pVisibleFrame\InnerArea\iX, iY+*Object\pVisibleFrame\ViewBox\iY-*Object\pVisibleFrame\InnerArea\iY)
 									ProcedureReturn #True
 								EndIf
 							EndIf
 						Else
-							If ObjectEvents_Frame(*Object\pVisibleFrame, iX+*Object\FrameClip\iX, iY+*Object\FrameClip\iY)
+							If ObjectEvents_Frame(*Object\pVisibleFrame, iX+*Object\pVisibleFrame\ViewBox\iX-*Object\pVisibleFrame\InnerArea\iX, iY+*Object\pVisibleFrame\ViewBox\iY-*Object\pVisibleFrame\InnerArea\iY)
 								ProcedureReturn #True
 							EndIf
 						EndIf
@@ -1313,15 +1419,18 @@ Module EditorFactory
 						EndIf
 					Next
 				EndIf
+				If \pNoFrame
+					ObjectDrawing_Frame(\pNoFrame, iX, iY)
+				EndIf
 				If \pVisibleFrame
-					If \FrameClip\bEnabled
+					If \pVisibleFrame\ViewBox\bEnabled
 						SaveVectorState()
-						AddPathBox(iX+\FrameClip\iLeft, iY+\FrameClip\iTop, iWidth-(\FrameClip\iLeft+\FrameClip\iRight), iHeight-(\FrameClip\iTop+\FrameClip\iBottom))
+						AddPathBox(iX+\pVisibleFrame\ViewBox\iX, iY+\pVisibleFrame\ViewBox\iY, DecodeParentSize(\pVisibleFrame\ViewBox\iWidth, iWidth), DecodeParentSize(\pVisibleFrame\ViewBox\iHeight, iHeight))
 						ClipPath()
-						ObjectDrawing_Frame(\pVisibleFrame, iX+\FrameClip\iX, iY+\FrameClip\iY)
+						ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
 						RestoreVectorState()
 					Else
-						ObjectDrawing_Frame(\pVisibleFrame, iX+\FrameClip\iX, iY+\FrameClip\iY)
+						ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
 					EndIf
 				EndIf
 			EndWith
@@ -1615,6 +1724,10 @@ Module EditorFactory
 							If \iMouseClickHandle[1] = \iHoveredHandle And \pMouseClickObject[1] = \pHoveredObject And ElapsedMilliseconds() - \iMouseDoubleClickTime[1] < DoubleClickTime()
 								PostHandleEvent(*ObjectManager, #EventType_LeftMouseDoubleClick, \pHoveredObject, \iHoveredHandle)
 							EndIf
+							CompilerIf #PB_Compiler_Thread
+								PostHandleEvent(*ObjectManager, #EventType_LeftMouseButtonHold, \pHoveredObject, \iHoveredHandle)
+								\iMouseHoldTime[1] = ElapsedMilliseconds()
+							CompilerEndIf
 						Else
 							\iMouseDownHandle[1] = #Handle_None
 						EndIf
@@ -1628,6 +1741,7 @@ Module EditorFactory
 					EndIf
 					ObjectDrawing(*ObjectManager)
 				Case #PB_EventType_LeftButtonUp ;- LeftButtonUp
+					\iMouseHoldTime[1] = 0
 					\pMouseClickObject[1] = #Null
 					If \pHoveredObject
 						PostObjectEvent(*ObjectManager, #EventType_LeftMouseBottonUp, \pHoveredObject)
@@ -1645,6 +1759,7 @@ Module EditorFactory
 							EndIf
 						EndIf
 					EndIf
+					\pMouseDownObject[1] = #Null
 					If  \iTransformationMode = #Handle_SelectionFrame
 						iX = \iAnchorMouseX
 						iY = \iAnchorMouseY
@@ -1683,78 +1798,78 @@ Module EditorFactory
 										iX = AdjustX(\lpObject(), \lpObject()\iX + \iMouseX - \iAnchorMouseX, \lpObject()\iWidth)
 										iY = AdjustY(\lpObject(), \lpObject()\iY + \iMouseY - \iAnchorMouseY, \lpObject()\iHeight)
 										If iX <> \lpObject()\iX Or iY <> \lpObject()\iY
+											\lpObject()\iX = iX
+											\lpObject()\iY = iY
 											PostObjectEvent(*ObjectManager, #EventType_Moved, \lpObject())
 										EndIf
-										\lpObject()\iX = iX
-										\lpObject()\iY = iY
 									Case #Handle_BottomLeft
 										iWidth              = AdjustWidth(\lpObject(), \lpObject()\iWidth-\iMouseX+\iAnchorMouseX)
 										iHeight             = AdjustHeight(\lpObject(), \lpObject()\iHeight+\iMouseY-\iAnchorMouseY)
 										If iWidth <> \lpObject()\iWidth Or iHeight <> \lpObject()\iHeight
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
+											\lpObject()\iWidth  = iWidth
+											\lpObject()\iHeight = iHeight
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
-										\lpObject()\iWidth  = iWidth
-										\lpObject()\iHeight = iHeight
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 									Case #Handle_Bottom
 										iHeight             = AdjustHeight(\lpObject(), \lpObject()\iHeight+\iMouseY-\iAnchorMouseY)
 										If iHeight <> \lpObject()\iHeight
+											\lpObject()\iHeight = iHeight
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iHeight = iHeight
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 									Case #Handle_BottomRight
 										iWidth  = AdjustWidth(\lpObject(), \lpObject()\iWidth+\iMouseX-\iAnchorMouseX)
 										iHeight = AdjustHeight(\lpObject(), \lpObject()\iHeight+\iMouseY-\iAnchorMouseY)
 										If iWidth <> \lpObject()\iWidth Or iHeight <> \lpObject()\iHeight
+											\lpObject()\iWidth  = iWidth
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
+											\lpObject()\iHeight = iHeight
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iWidth  = iWidth
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
-										\lpObject()\iHeight = iHeight
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY, \lpObject()\iHeight)
 									Case #Handle_Left
 										iWidth              = AdjustWidth(\lpObject(), \lpObject()\iWidth-\iMouseX+\iAnchorMouseX)
 										If iWidth <> \lpObject()\iWidth
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
+											\lpObject()\iWidth  = iWidth
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
-										\lpObject()\iWidth  = iWidth
 									Case #Handle_Right
 										iWidth  = AdjustWidth(\lpObject(), \lpObject()\iWidth+\iMouseX-\iAnchorMouseX)
 										If iWidth <> \lpObject()\iWidth
+											\lpObject()\iWidth  = iWidth
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iWidth  = iWidth
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
 									Case #Handle_TopLeft
 										iWidth              = AdjustWidth(\lpObject(), \lpObject()\iWidth-\iMouseX+\iAnchorMouseX)
 										iHeight             = AdjustHeight(\lpObject(), \lpObject()\iHeight-\iMouseY+\iAnchorMouseY)
 										If iWidth <> \lpObject()\iWidth Or iHeight <> \lpObject()\iHeight
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
+											\lpObject()\iWidth  = iWidth
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
+											\lpObject()\iHeight = iHeight
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX-iWidth+\lpObject()\iWidth, iWidth)
-										\lpObject()\iWidth  = iWidth
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
-										\lpObject()\iHeight = iHeight
 									Case #Handle_Top
 										iHeight = AdjustHeight(\lpObject(), \lpObject()\iHeight-\iMouseY+\iAnchorMouseY)
 										If iHeight <> \lpObject()\iHeight
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
+											\lpObject()\iHeight = iHeight
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
-										\lpObject()\iHeight = iHeight
 									Case #Handle_TopRight
 										iWidth  = AdjustWidth(\lpObject(), \lpObject()\iWidth+\iMouseX-\iAnchorMouseX)
 										iHeight = AdjustHeight(\lpObject(), \lpObject()\iHeight-\iMouseY+\iAnchorMouseY)
 										If iWidth <> \lpObject()\iWidth Or iHeight <> \lpObject()\iHeight
+											\lpObject()\iWidth  = iWidth
+											\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
+											\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
+											\lpObject()\iHeight = iHeight
 											PostObjectEvent(*ObjectManager, #EventType_Resized, \lpObject())
 										EndIf
-										\lpObject()\iWidth  = iWidth
-										\lpObject()\iX      = AdjustX(\lpObject(), \lpObject()\iX, \lpObject()\iWidth)
-										\lpObject()\iY      = AdjustY(\lpObject(), \lpObject()\iY-iHeight+\lpObject()\iHeight, iHeight)
-										\lpObject()\iHeight = iHeight
 								EndSelect
 							EndIf
 						Next
@@ -1775,6 +1890,10 @@ Module EditorFactory
 							If \iMouseClickHandle[3] = \iHoveredHandle And \pMouseClickObject[3] = \pHoveredObject And ElapsedMilliseconds() - \iMouseDoubleClickTime[3] < DoubleClickTime()
 								PostHandleEvent(*ObjectManager, #EventType_MiddleMouseDoubleClick, \pHoveredObject, \iHoveredHandle)
 							EndIf
+							CompilerIf #PB_Compiler_Thread
+								PostHandleEvent(*ObjectManager, #EventType_LeftMouseButtonHold, \pHoveredObject, \iHoveredHandle)
+								\iMouseHoldTime[3] = ElapsedMilliseconds()
+							CompilerEndIf
 						Else
 							\iMouseDownHandle[3] = #Handle_None
 						EndIf
@@ -1782,6 +1901,7 @@ Module EditorFactory
 						\pMouseDownObject[3] = #Null
 					EndIf
 				Case #PB_EventType_MiddleButtonUp ;- MiddleButtonUp
+					\iMouseHoldTime[3] = 0
 					\pMouseClickObject[3] = #Null
 					If \pHoveredObject
 						PostObjectEvent(*ObjectManager, #EventType_MiddleMouseBottonUp, \pHoveredObject)
@@ -1799,6 +1919,7 @@ Module EditorFactory
 							EndIf
 						EndIf
 					EndIf
+					\pMouseDownObject[3] = #Null
 				Case #PB_EventType_RightButtonDown ;- RightButtonDown
 					If \pHoveredObject
 						\pMouseDownObject[2] = \pHoveredObject
@@ -1812,6 +1933,10 @@ Module EditorFactory
 							If \iMouseClickHandle[2] = \iHoveredHandle And \pMouseClickObject[2] = \pHoveredObject And ElapsedMilliseconds() - \iMouseDoubleClickTime[2] < DoubleClickTime()
 								PostHandleEvent(*ObjectManager, #EventType_LeftMouseDoubleClick, \pHoveredObject, \iHoveredHandle)
 							EndIf
+							CompilerIf #PB_Compiler_Thread
+								PostHandleEvent(*ObjectManager, #EventType_LeftMouseButtonHold, \pHoveredObject, \iHoveredHandle)
+								\iMouseHoldTime[2] = ElapsedMilliseconds()
+							CompilerEndIf
 						Else
 							\iMouseDownHandle[2] = #Handle_None
 						EndIf
@@ -1819,6 +1944,7 @@ Module EditorFactory
 						\pMouseDownObject[2] = #Null
 					EndIf
 				Case #PB_EventType_RightButtonUp ;- RightButtonUp
+					\iMouseHoldTime[2] = 0
 					\pMouseClickObject[2] = #Null
 					If \pHoveredObject
 						PostObjectEvent(*ObjectManager, #EventType_RightMouseBottonUp, \pHoveredObject)
@@ -1836,14 +1962,43 @@ Module EditorFactory
 							EndIf
 						EndIf
 					EndIf
+					\pMouseDownObject[2] = #Null
 				Case #Redraw
-					*ObjectManager\bRedrawPosted = #False
 					ObjectDrawing(*ObjectManager)
+					*ObjectManager\bRedrawPosted = #False
 			EndSelect
 		EndWith
 		
 	EndProcedure
 	
+	Procedure   MouseButtonHold_Thread(*ObjectManager.ObjectManager)
+		
+		Protected *HoveredObject, HoveredHandle.i, *Event.ObjectManagerEvent
+		
+		With *ObjectManager
+			Repeat
+				Delay(50)
+				LockMutex(*ObjectManager\iEventMutex)
+				*Event = LastElement(*ObjectManager\lEvent())
+				*HoveredObject = \pHoveredObject
+				HoveredHandle  = \iHoveredHandle
+				If \iMouseHoldTime[1] <> 0 And ElapsedMilliseconds() > \iMouseHoldTime[1] + DoubleClickTime()/2 And *ObjectManager\bRedrawPosted = #False
+					PostHandleEvent(*ObjectManager, #EventType_LeftMouseButtonHold, *HoveredObject, HoveredHandle)
+					PostRedrawEvent(*ObjectManager)
+				EndIf
+				If \iMouseHoldTime[2] <> 0 And ElapsedMilliseconds() > \iMouseHoldTime[2] + DoubleClickTime()/2 And *ObjectManager\bRedrawPosted = #False
+					PostHandleEvent(*ObjectManager, #EventType_RightMouseButtonHold, *HoveredObject, HoveredHandle)
+					PostRedrawEvent(*ObjectManager)
+				EndIf
+				If \iMouseHoldTime[3] <> 0 And ElapsedMilliseconds() > \iMouseHoldTime[3] + DoubleClickTime()/2 And *ObjectManager\bRedrawPosted = #False
+					PostHandleEvent(*ObjectManager, #EventType_MiddleMouseButtonHold, *HoveredObject, HoveredHandle)
+					PostRedrawEvent(*ObjectManager)
+				EndIf
+				UnlockMutex(*ObjectManager\iEventMutex)
+			Until *ObjectManager\bQuitThread
+		EndWith
+		
+	EndProcedure
 	
 	
 	;---------------------------------
@@ -1852,6 +2007,40 @@ Module EditorFactory
 	
 	
 	;- General
+	
+	
+	
+	;{ Deinitializes the whole object manager for the specified canvas gadget and frees all resources.
+	;  iCanvasGadget:         PB Gadget number.
+  ;  Result:                #True, if deinitialization succeeded, otherwise #False.
+	;
+	;  Désinitialise l'ensemble du gestionnaire d'objets pour le canevas gadget spécifié et libère toutes les ressources qui y sont associés.
+	;  iCanvasGadget:         PB Numéro de gadget.
+	;  Résultat:              #True, si la désinitialisation (libération) a réussi, sinon #False.
+	;}
+	Procedure.i ReleaseCanvasObjects(iCanvasGadget.i)
+		
+		Protected *ObjectManager.ObjectManager : _ObjectManagerID_(*ObjectManager, iCanvasGadget, 0)
+		
+		With *ObjectManager
+			UnbindGadgetEvent(iCanvasGadget, @EventCallback_UpdateCanvasGadget())
+			\bQuitThread = #True
+			If \iMouseButtonHoldThread
+				WaitThread(\iMouseButtonHoldThread)
+			EndIf
+			FreeMutex(\iEventMutex)
+			ClearList(\lEvent())
+			ForEach \MainFrame\lpChildObject()
+				FreeObject(\MainFrame\lpChildObject(), #Object_FreeChildObjects)
+			Next
+			SetGadgetData(iCanvasGadget, #Null)
+			ChangeCurrentElement(EditorFactory\lObjectManager(), *ObjectManager)
+			DeleteElement(EditorFactory\lObjectManager())
+		EndWith
+		
+		ProcedureReturn #True
+		
+	EndProcedure
 	
 	
 	;{ Initializes the object manager for the specified canvas gadget in the specified window.
@@ -1893,6 +2082,13 @@ Module EditorFactory
 			BindGadgetEvent(iCanvasGadget, @EventCallback_UpdateCanvasGadget())
 			\eCursor                               = #PB_Cursor_Default
 			\MainFrame\pObjectManager              = EditorFactory\lObjectManager()
+			\MainFrame\InnerArea\iWidth            = #Boundary_None
+			\MainFrame\InnerArea\iHeight           = #Boundary_None
+			CompilerIf #PB_Compiler_Thread
+				ElapsedMilliseconds()
+				\iMouseButtonHoldThread                = CreateThread(@MouseButtonHold_Thread(), @EditorFactory\lObjectManager())
+			CompilerEndIf
+			\iEventMutex = CreateMutex()
 		EndWith
 		
 		If Not EditorFactory\bInitialized
@@ -1992,6 +2188,29 @@ Module EditorFactory
 	EndProcedure
 	
 	
+	;{ Verifies whether an object frame exists.
+	;  iObject:               Object number.
+	;  iFrameIndex:           An index of a frame (starting with 0).
+  ;  Result:                #True, if the frame exists, otherwise #False.
+	;
+	;  Vérifie si un cadre d'objet existe.
+	;  iObject:               Numéro de l'objet.
+	;  iFrameIndex:           Un index d'une trame (commençant par 0).
+	;  Résultat:              #True, si le cadre existe, sinon #False.
+	;} 
+	Procedure.i IsObjectFrame(iObject.i, iFrameIndex.i)
+		
+		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
+		
+		If iFrameIndex >= 0 And iFrameIndex < ListSize(*Object\lFrame())-1
+			ProcedureReturn #True
+		Else
+			ProcedureReturn #False
+		EndIf
+		
+	EndProcedure
+	
+	
 	;{ Frees and removes the object from its parent canvas gadget.
 	;  iObject:               Object number.
 	;  eFlags:                #Object_FreeChildObjects or #Object_DetachChildObjects, to free or detach all child objects.
@@ -2059,8 +2278,10 @@ Module EditorFactory
 	;  iObject:               A self defined object number or #PB_Any to generate a unique number. The self defined number must be between 1 and 65535.
 	;  iX, iY:                The position of the object.
 	;  iWidth, iHeight:       The size of the object.
-	;  iParentObject:         A valid object number to which the object should attached (optional). By default the main frame will beused.
-	;  iFrameIndex:           An index of the frame (starting with 1) in which the object should attached (optional). By default the viewed frame is used.
+	;  iParentObject:         A valid object number to which the object should attached (optional). By default the object will be placed on the canvas frame.
+	;  iFrameIndex:           An index of the frame (starting with 0) or one of the following constants, in which the object should attached (optional).
+	;                          - #Frame_NoFrame:     The object will be attached to the non-indexed standard frame (frame for attachments).
+	;                          - #Frame_ViewedFrame: The object will be attached to the currently shown indexed frame.
 	;  Result:                The object number of the created object or 0 if creation failed. 
 	;
 	;  Crée et ajoute un Objet au Canevas spécifié. ATTENTION: InitializeCanvasObjects() doit être appelé avant d'ajouter des Objets à ce Canevas.
@@ -2068,11 +2289,13 @@ Module EditorFactory
 	;  iObject:               Un Numéro de l'Objet auto-défini ou #PB_Any pour générer un numéro unique. Le nombre auto-défini doit être compris entre 1 et 65535.
 	;  iX, iY:                La position de l'Objet sur le Canevas.
   ;  iWidth, iHeight:       La taille de l'Objet sur le Canevas.
-	;	 iParentObject :        Un numéro d'objet valide auquel l'objet doit être rattaché (facultatif). Par défaut, le cadre principal sera utilisé.
-	;  iFrameIndex :          Un index de la trame (commençant par 1) dans laquelle l'objet doit être attaché (facultatif). Par défaut, c'est le cadre visualisé qui est utilisé.
-	;  Resulta:               Renvoie le numéro de l'Objet créé ou 0 si la création a échoué.
+	;	 iParentObject:         Un numéro d'objet valide auquel l'objet doit être rattaché (facultatif). Par défaut, l'objet sera placé sur le cadre de la toile.
+	;  iFrameIndex:           Un index du cadre (commençant par 0) ou l'une des constantes suivantes, dans lequel l'objet doit être attaché (facultatif).
+	;                          - #Frame_NoFrame:     L'objet sera attaché au cadre standard non indexé (cadre pour les pièces jointes).
+  ;                          - #Frame_ViewedFrame: L'objet sera attaché au cadre indexé actuellement affiché.
+	;  Résultat:              Le numéro d'objet de l'objet créé ou 0 si la création a échoué. 
 	;}
-	Procedure.i CreateObject(iCanvasGadget.i, iObject.i, iX.i, iY.i, iWidth.i, iHeight.i, iParentObject.i=#PB_Default, iFrameIndex.i=#PB_Default)
+	Procedure.i CreateObject(iCanvasGadget.i, iObject.i, iX.i, iY.i, iWidth.i, iHeight.i, iParentObject.i=#PB_Default, iFrameIndex.i=#Frame_NoFrame)
 		
 		Protected *ObjectManager.ObjectManager : _ObjectManagerID_(*ObjectManager, iCanvasGadget, 0)
 		Protected *Object.Object, *Frame.Frame, *ParentObject.Object
@@ -2081,29 +2304,7 @@ Module EditorFactory
 			*Frame = *ObjectManager\MainFrame
 		Else
 			_ObjectID_(*ParentObject, iParentObject, #False)
-			If iFrameIndex = #PB_Default Or iFrameIndex = 0
-				If *ParentObject\pVisibleFrame = #Null
-					If ListSize(*ParentObject\lFrame()) = 0
-						*ParentObject\pVisibleFrame = AddElement(*ParentObject\lFrame())
-						*ParentObject\lFrame()\pParentObject = *ParentObject
-						*ParentObject\lFrame()\pObjectManager = *ParentObject\pParentFrame\pObjectManager
-					Else
-						*ParentObject\pVisibleFrame = FirstElement(*ParentObject\lFrame())
-					EndIf
-				EndIf
-				*Frame = *ParentObject\pVisibleFrame
-			Else
-				LastElement(*ParentObject\lFrame())
-				While ListSize(*ParentObject\lFrame()) <= iFrameIndex-1
-					AddElement(*ParentObject\lFrame())
-					If *ParentObject\pVisibleFrame = #Null
-						*ParentObject\pVisibleFrame = *ParentObject\lFrame()
-					EndIf
-					*ParentObject\lFrame()\pParentObject  = *ParentObject
-					*ParentObject\lFrame()\pObjectManager = *ParentObject\pParentFrame\pObjectManager
-				Wend
-				*Frame = SelectElement(*ParentObject\lFrame(), iFrameIndex-1)
-			EndIf
+			_ObjectFrameID_(*Frame, *ParentObject, iFrameIndex, #False)
 		EndIf
 		
 		If iObject= #PB_Any
@@ -2142,27 +2343,27 @@ Module EditorFactory
 			ProcedureReturn 0
 		EndIf
 		
-		*Object\pParentFrame       = *Frame
+		*Object\pParentFrame                   = *Frame
 		If *Frame <> *ObjectManager\MainFrame 
-			*Object\eAttachmentMode  = #Attachment_Position
+			*Object\eAttachmentMode              = #Attachment_Position
 		EndIf
-		*Object\Boundaries         = EditorFactory\DefaultObject\Boundaries
-		*Object\iWidth             = AdjustWidth(*Object, iWidth)
-		*Object\iHeight            = AdjustHeight(*Object, iHeight)
-		*Object\iX                 = AdjustX(*Object, iX, *Object\iWidth)
-		*Object\iY                 = AdjustY(*Object, iY, *Object\iHeight)
-		*Object\eCursor            = EditorFactory\DefaultObject\eCursor
-		*Object\hCursorHandle      = EditorFactory\DefaultObject\hCursorHandle
-		*Object\eHandleDisplayMode = EditorFactory\DefaultObject\eHandleDisplayMode
-		*Object\pSelectionStyle    = EditorFactory\DefaultObject\pSelectionStyle
-		*Object\pBoundaryStyle     = EditorFactory\DefaultObject\pBoundaryStyle
-		*Object\Grid               = EditorFactory\DefaultObject\Grid
-		*Object\eHandle            = EditorFactory\DefaultObject\eHandle
+		*Object\Boundaries                     = EditorFactory\DefaultObject\Boundaries
+		*Object\iWidth                         = AdjustWidth(*Object, iWidth)
+		*Object\iHeight                        = AdjustHeight(*Object, iHeight)
+		*Object\iX                             = AdjustX(*Object, iX, *Object\iWidth)
+		*Object\iY                             = AdjustY(*Object, iY, *Object\iHeight)
+		*Object\eCursor                        = EditorFactory\DefaultObject\eCursor
+		*Object\hCursorHandle                  = EditorFactory\DefaultObject\hCursorHandle
+		*Object\eHandleDisplayMode             = EditorFactory\DefaultObject\eHandleDisplayMode
+		*Object\pSelectionStyle                = EditorFactory\DefaultObject\pSelectionStyle
+		*Object\pBoundaryStyle                 = EditorFactory\DefaultObject\pBoundaryStyle
+		*Object\Grid                           = EditorFactory\DefaultObject\Grid
+		*Object\eHandle                        = EditorFactory\DefaultObject\eHandle
 		CopyArray(EditorFactory\DefaultObject\aHandle(), *Object\aHandle())
-		*Object\FrameClip          = EditorFactory\DefaultObject\FrameClip
-		*Object\pDrawingCallback   = EditorFactory\DefaultObject\pDrawingCallback
-		*Object\iCallbackData      = EditorFactory\DefaultObject\iCallbackData
-		*Object\bDisjunct          = #False
+		*Object\pDrawingCallback               = EditorFactory\DefaultObject\pDrawingCallback
+		*Object\iCallbackData                  = EditorFactory\DefaultObject\iCallbackData
+		*Object\bDisjunct                      = #False
+		*Object\pNoFrame                       = AddObjectFrame(*Object, #Frame_NoFrame)
 		PostObjectEvent(*ObjectManager, #EventType_Created, *Object)
 		PostRedrawEvent(*ObjectManager)
 		
@@ -2258,6 +2459,7 @@ Module EditorFactory
 			CopyStructure(*Object\pSelectionStyle, *NewObject\pSelectionStyle, ObjectStyle)
 		EndIf
 		*NewObject\pParentFrame = *NewFrame
+		*NewObject\pNoFrame     = FirstElement(*NewObject\lFrame())
 		If *Object\pVisibleFrame
 			ChangeCurrentElement(*Object\lFrame(), *Object\pVisibleFrame)
 			*NewObject\pVisibleFrame = SelectElement(*NewObject\lFrame(), ListIndex(*Object\lFrame()))
@@ -2280,34 +2482,143 @@ Module EditorFactory
 	EndProcedure
 	
 	
-	Procedure.i AddObjectFrame(iObject.i, iFrameIndex.i)
-	
+	;{ Adds a new object frame the the object.
+	;  iObject:               Object number.
+	;  iFrameIndex:           Index (starting with 0), at which the frame should be insert. #Frame_LastFrame can be used to add the frame to the end of all frames.
+	;                         This new frame will be automatically set as the current visible frame.
+	;  iViewBoxX:             Local X-position of the clipping for inner child objects. 0 means that the clipping is exactly at the edge of the object.
+	;  iViewBoxY:             Local Y-position of the clipping for inner child objects. 0 means that the clipping is exactly at the edge of the object.
+	;  iViewBoxWidth:         Width of the clipping area for inner child objects. Add #Boundary_ParentSize to a value (#Boundary_ParentSize ± value) to make the width relative to the object size.
+	;  iViewBoxHeight:        Height of the clipping area for inner child objects. Add #Boundary_ParentSize to a value (#Boundary_ParentSize ± value) to make the height relative to the object size.
+	;  Result:                The index of the new added frame, or -1 in case of a failure.
+	;
+	;  Ajoute un nouveau cadre à l'objet.
+	;  iObject:               Numéro de l'objet.
+	;  iFrameIndex:           Index (commençant par 0), auquel la trame doit être insérée. #Frame_LastFrame peut être utilisé pour ajouter le cadre à la fin de tous les cadres.
+  ;                         Ce nouveau cadre sera automatiquement défini comme le cadre visible actuel.
+	;  iViewBoxX:             Position X locale de l'écrêtage pour les objets enfants internes. 0 signifie que l'écrêtage se trouve exactement au bord de l'objet.
+	;  iViewBoxY:             Position Y locale de l'écrêtage pour les objets enfants internes. 0 signifie que l'écrêtage se trouve exactement au bord de l'objet.
+	;  iViewBoxWidth:         Largeur de la zone d'écrêtage pour les objets enfants internes. Ajoutez #Boundary_ParentSize à une valeur (#Boundary_ParentSize ± valeur) pour que la largeur soit relative à la taille de l'objet.
+	;  iViewBoxHeight:        Hauteur de la zone d'écrêtage pour les objets enfants internes. Ajoutez #Boundary_ParentSize à une valeur (#Boundary_ParentSize ± valeur) pour que la hauteur soit relative à la taille de l'objet.
+	;  Résultat:              L'index de la nouvelle trame ajoutée, ou -1 en cas d'échec.
+	;}
+	Procedure.i AddObjectFrame(iObject.i, iFrameIndex.i, iViewBoxX.i=0, iViewBoxY.i=0, iViewBoxWidth.i=#Boundary_ParentSize, iViewBoxHeight.i=#Boundary_ParentSize, iInnerWidth.i=#Boundary_None, iInnerHeight.i=#Boundary_None, iInnerOffsetX.i=0, iInnerOffsetY.i=0)
+		
+		Protected *Object.Object : _ObjectID_(*Object, iObject, -1)
+		Protected *Frame.Frame, iResult.i
+		
+		If iFrameIndex = #Frame_NoFrame And ListSize(*Object\lFrame()) = 0
+			*Frame = AddElement(*Object\lFrame())
+			*Object\pNoFrame = *Frame
+			iResult = *Frame
+		ElseIf iFrameIndex >= 0 And iFrameIndex < ListSize(*Object\lFrame())-1
+			SelectElement(*Object\lFrame(), iFrameIndex+1)
+			*Frame = AddElement(*Object\lFrame())
+			*Object\pVisibleFrame = *Frame
+			iResult = iFrameIndex
+		Else
+			LastElement(*Object\lFrame())
+			*Frame = AddElement(*Object\lFrame())
+			*Object\pVisibleFrame = *Frame
+			iResult = ListIndex(*Object\lFrame()) - 1
+		EndIf
+		
+		With *Frame
+			\pParentObject     = *Object
+			\pObjectManager    = *Object\pParentFrame\pObjectManager
+			\ViewBox\bEnabled  = #True
+			\ViewBox\iX        = iViewBoxX
+			\ViewBox\iY        = iViewBoxY
+			\ViewBox\iWidth    = iViewBoxWidth
+			\ViewBox\iHeight   = iViewBoxHeight
+			\InnerArea\iWidth  = iInnerWidth
+			\InnerArea\iHeight = iInnerHeight
+			\InnerArea\iX      = iInnerOffsetX
+			\InnerArea\iY      = iInnerOffsetY
+		EndWith
+		
+		ProcedureReturn iResult
+		
 	EndProcedure
 	
 	
+	;{ Removes an object frame togerther with all their child objects.
+	;  iObject:               Object number.
+	;  iFrameIndex:           An index of the frame (starting with 0) which should be removed.
+  ;  Result:                #True, if freeing succeeded, otherwise #False.
+	;
+	;  Supprime un cadre d'objet avec tous les objets enfants qui y sont.
+	;  iObject:               Numéro de l'objet.
+	;  iFrameIndex:           Un index de la trame (commençant par 0) qui doit être supprimé.
+	;  Résultat:              #True, si la libération a réussi, sinon #False.
+	;}
 	Procedure.i RemoveObjectFrame(iObject.i, iFrameIndex.i)
 		
-		Protected *Object.Object : _ObjectID_(*Object, iObject, 0)
+		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
 		
-		If iFrameIndex > 0 And iFrameIndex <= ListSize(*Object\lFrame())
-			SelectElement(*Object\lFrame(), iFrameIndex-1)
+		If iFrameIndex >= 0 And iFrameIndex < ListSize(*Object\lFrame()) - 1
+			SelectElement(*Object\lFrame(), iFrameIndex+1)
 			ForEach *Object\lFrame()\lpChildObject()
 				FreeObject(*Object\lFrame()\lpChildObject(), #Object_FreeChildObjects)
 			Next
-			DeleteElement(*Object\lFrame())
+			*Object\pVisibleFrame = DeleteElement(*Object\lFrame())
+			ProcedureReturn #True
 		EndIf
 		
-		ProcedureReturn iFrameIndex
+		ProcedureReturn #False
 		
 	EndProcedure
 	
 	
+	;{ Moves an object frame to another index and optionally also to another object.
+	;  iObject:               Object number.
+	;  iFrameIndex:           An index of the frame (starting with 0) or #Frame_ViewedFrame which should be moved.
+	;  iNewFrameIndex:        The index (starting with 0), at which the frame should be insert. #Frame_LastFrame can be used to add the frame to the end of all frames.
+	;  iNewObject:            The new object number. In case of #PB_Ignore, the frame keeps it parent object.
+  ;  Result:                The index of the new added frame, or -1 in case of a failure.
+	;
+	;  Déplace une trame d'objet vers un autre index et éventuellement aussi vers un autre objet.
+	;  iObject:               Numéro de l'objet.
+	;  iFrameIndex:           Un index de la trame (commençant par 0) ou utilisez #Frame_ViewedFrame pour déplacée la trame visible actuellement.
+	;  iNewFrameIndex:        L'index (commençant par 0), auquel la trame doit être insérée. #Frame_LastFrame peut être utilisé pour ajouter le cadre à la fin de tous les cadres.
+	;  iNewObject:            Le numéro du nouvel objet. Dans le cas de #PB_Ignore, la trame conserve son objet parent.
+	;  Résultat :             L'index de la nouvelle trame ajoutée, ou -1 en cas d'échec.
+	;}
 	Procedure.i MoveObjectFrame(iObject.i, iFrameIndex.i, iNewFrameIndex.i, iNewObject.i=#PB_Ignore)
 		
-		Protected *Object.Object : _ObjectID_(*Object, iObject, 0)
+		Protected *Object.Object : _ObjectID_(*Object, iObject, -1)
+		Protected *Frame.Frame   : _ObjectFrameID_(*Frame, *Object, iFrameIndex, -1)
+		Protected *NewObject.Object = *Object
+		Protected *Position, *TempObject.Object
 		
-		
-		
+		If iNewObject = #PB_Ignore
+			
+			If iNewFrameIndex >= 0 And iNewFrameIndex < ListSize(*NewObject\lFrame())-1
+				*Position = SelectElement(*Object\lFrame(), iNewFrameIndex + 1)
+				ChangeCurrentElement(*Object\lFrame(), *Frame)
+				MoveElement(*Object\lFrame(), #PB_List_Before, *Position)
+			Else
+				ChangeCurrentElement(*Object\lFrame(), *Frame)
+				MoveElement(*Object\lFrame(), #PB_List_Last)
+			EndIf
+			ProcedureReturn ListIndex(*Object\lFrame()) - 1
+			
+		Else
+			
+			_ObjectID_(*NewObject, iNewObject, -1)
+			If AddObjectFrame(iNewObject, iNewFrameIndex) <> -1
+				*NewObject\lFrame()\pObjectManager = *Frame\pObjectManager
+				*NewObject\lFrame()\pParentObject  = *Frame\pParentObject
+				CopyList(*Frame\lpChildObject(), *NewObject\lFrame()\lpChildObject())
+				ForEach *NewObject\lFrame()\lpChildObject()
+					*TempObject = *NewObject\lFrame()\lpChildObject()
+					*TempObject\pParentFrame = *NewObject\lFrame()
+				Next
+				*Object\pVisibleFrame = DeleteElement(*Object\lFrame())
+				ProcedureReturn ListIndex(*NewObject\lFrame()) - 1
+			EndIf
+			
+		EndIf
 		
 	EndProcedure
 	
@@ -2598,21 +2909,21 @@ Module EditorFactory
 	
 	;{ Gives the number of currently visible frame of the object.
 	;  iObject:               Object number.
-	;  Result:                The inedx of the frame starting with 1, or 0 if not frame exists.
+	;  Result:                The inedx of the frame starting with 0, or -1 if not frame exists.
 	;
 	;  Donne le nombre de frame actuellement visibles de l'obje conteneur.
 	;  iObjet :               Numéro de l'objet.
-	;  Résultat :             L'inedx de la trame commençant par 1, ou 0 si aucune trame n'existe.
+	;  Résultat :             L'inedx de la trame commençant par 0, ou -1 si aucune trame n'existe.
 	;}
 	Procedure.i VisibleObjectFrame(iObject.i)
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #Null)
-		Protected iIndex.i = 0
+		Protected iIndex.i = -1
 		
 		PushListPosition(*Object\lFrame())
 		If *Object\pVisibleFrame
 			ChangeCurrentElement(*Object\lFrame(), *Object\pVisibleFrame)
-			iIndex = ListIndex(*Object\lFrame())+1
+			iIndex = ListIndex(*Object\lFrame()) - 1
 		EndIf
 		PopListPosition(*Object\lFrame())
 		
@@ -2632,7 +2943,9 @@ Module EditorFactory
 	;                          - #Attachment_Y:                      The Y position is attached to the parent object
 	;                          - #Attachment_Position:               Both, X and Y position, is attached to the parent object
 	;                          - #Attachment_PreserveGlobalPosition: The global position of the object will be maintained, otherwise the local position is adopted.
-	;  iFrameIndex:           An index of the frame (starting with 1) in which the object should attached (optional). By default the viewed frame is used.
+	;  iFrameIndex:           An index of the frame (starting with 0) or one of the following constants, in which the object should attached (optional).
+	;                          - #Frame_NoFrame:     The object will be attached to the non-indexed standard frame (frame for attachments).
+	;                          - #Frame_ViewedFrame: The object will be attached to the currently shown indexed frame.
 	;  Result:                #True if the attachment succeeded, otherwise #False.
 	;
 	;  Attache l'objet spécifié à un autre objet en tant qu'enfant.
@@ -2643,14 +2956,17 @@ Module EditorFactory
 	;                          - #Attachment_Y: la position Y est attachée à l'objet parent.
 	;                          - #Attachment_Position: Les deux positions, X et Y, sont attachées à l'objet parent.
 	;                          - #Attachment_PreserveGlobalPosition: La position globale de l'objet sera maintenue, sinon la position locale est adoptée.
-	;  iFrameIndex:           Un index de la trame (commençant par 1) dans laquelle l'objet doit être rattaché (facultatif). Par défaut, c'est le cadre visualisé qui est utilisé.
+	;  iFrameIndex:           Un index du cadre (commençant par 1) ou l'une des constantes suivantes, dans lequel l'objet doit être attaché (facultatif).
+	;                          - #Frame_NoFrame:     L'objet sera attaché au cadre standard non indexé (cadre pour les pièces jointes).
+  ;                          - #Frame_ViewedFrame: L'objet sera attaché au cadre indexé actuellement affiché.
 	;  Result:                #True si l'attachement a réussi, sinon #False.
 	;}
-	Procedure.i AttachObject(iObject.i, iParentObject.i, eMode.i=#Attachment_Position|#Attachment_PreserveGlobalPosition, iFrameIndex.i=#PB_Default)
+	Procedure.i AttachObject(iObject.i, iParentObject.i, eMode.i=#Attachment_Position|#Attachment_PreserveGlobalPosition, iFrameIndex.i=#Frame_NoFrame)
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
 		Protected *ParentObject.Object : _ObjectID_(*ParentObject, iParentObject, #False)
-		Protected *Frame.Frame, *TempObject.Object
+		Protected *Frame.Frame : _ObjectFrameID_(*Frame, *ParentObject, iFrameIndex)
+		Protected *TempObject.Object
 		
 		; Zirkulare Hirachie?
 		*TempObject = *ParentObject
@@ -2667,30 +2983,6 @@ Module EditorFactory
 				DeleteElement(*Object\pParentFrame\lpChildObject())
 			EndIf
 		Next
-		
-		If iFrameIndex = #PB_Default Or iFrameIndex = 0
-			If *ParentObject\pVisibleFrame = #Null
-				If ListSize(*ParentObject\lFrame()) = 0
-					*ParentObject\pVisibleFrame = AddElement(*ParentObject\lFrame())
-					*ParentObject\lFrame()\pParentObject = *ParentObject
-					*ParentObject\lFrame()\pObjectManager = *ParentObject\pParentFrame\pObjectManager
-				Else
-					*ParentObject\pVisibleFrame = FirstElement(*ParentObject\lFrame())
-				EndIf
-			EndIf
-			*Frame = *ParentObject\pVisibleFrame
-		Else
-			LastElement(*ParentObject\lFrame())
-			While ListSize(*ParentObject\lFrame()) <= iFrameIndex-1
-				AddElement(*ParentObject\lFrame())
-				If *ParentObject\pVisibleFrame = #Null
-					*ParentObject\pVisibleFrame = *ParentObject\lFrame()
-				EndIf
-				*ParentObject\lFrame()\pParentObject  = *ParentObject
-				*ParentObject\lFrame()\pObjectManager = *ParentObject\pParentFrame\pObjectManager
-			Wend
-			*Frame = SelectElement(*ParentObject\lFrame(), iFrameIndex-1)
-		EndIf
 		
 		*Object\pParentFrame    = *Frame
 		*Object\eAttachmentMode = eMode & (#Attachment_Position|#Attachment_Size)
@@ -2745,6 +3037,36 @@ Module EditorFactory
 	EndProcedure
 	
 	
+	; NOT IN USE !
+	Procedure.i ConnectObjects(iObject1.i, iObject2.i)
+		
+		Protected *Object1.Object : _ObjectID_(*Object1, iObject1, #False)
+		Protected *Object2.Object : _ObjectID_(*Object2, iObject2, #False)
+		
+		Repeat
+			ForEach *Object1\lpConnectedObject()
+				If *Object1\lpConnectedObject() = *Object2
+					Break 2
+				EndIf
+			Next
+			AddElement(*Object1\lpConnectedObject())
+			*Object1\lpConnectedObject() = *Object2
+		Until #True
+		Repeat
+			ForEach *Object2\lpConnectedObject()
+				If *Object2\lpConnectedObject() = *Object1
+					Break 2
+				EndIf
+			Next
+			AddElement(*Object2\lpConnectedObject())
+			*Object2\lpConnectedObject() = *Object1
+		Until #True
+		
+		ProcedureReturn #True
+		
+	EndProcedure
+	
+	
 	;{ Changes the viewed frame of an object.
 	;  iObject:               Object number.
 	;  iFrameIndex:           Index of the frame, started with 0.
@@ -2757,14 +3079,8 @@ Module EditorFactory
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject)
 		
-		If iFrameIndex > 0
-			LastElement(*Object\lFrame())
-			While ListSize(*Object\lFrame()) <= iFrameIndex-1
-				AddElement(*Object\lFrame())
-				*Object\lFrame()\pParentObject  = *Object
-				*Object\lFrame()\pObjectManager = *Object\pParentFrame\pObjectManager
-			Wend
-			*Object\pVisibleFrame = SelectElement(*Object\lFrame(), iFrameIndex-1)
+		If iFrameIndex >= 0 And iFrameIndex < ListSize(*Object\lFrame()) - 1
+			*Object\pVisibleFrame = SelectElement(*Object\lFrame(), iFrameIndex+1)
 			PostRedrawEvent(*Object\pParentFrame\pObjectManager)
 		EndIf
 		
@@ -2785,7 +3101,7 @@ Module EditorFactory
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject)
 		
-		ProcedureReturn ListSize(*Object\lFrame())
+		ProcedureReturn ListSize(*Object\lFrame()) - 1
 		
 	EndProcedure
 	
@@ -3027,12 +3343,16 @@ Module EditorFactory
 	;- Examinations
 	
 	
-	;{ Give the current state of the specified object.
+	;{ Give the current state of the specified object. !! UPDATE !!
 	;  iObject:         Object number.
 	;  Result:          A combination of the following constants:
-	;                    - #State_Disabled:   The object is disabled.
-	;                    - #State_Selected:   The object is selected.
-	;                    - #State_Hidden:     The object is hidden.
+	;                    - #State_Disabled:          The object is disabled.
+	;                    - #State_Selected:          The object is selected.
+	;                    - #State_Hidden:            The object is hidden.
+	;                    - #State_Hovered:           The object is hovered by the cursor.
+	;                    - #State_LeftMousePushed:   The object is pushed by the left mouse button.
+	;                    - #State_RightMousePushed:  The object is pushed by the right mouse button.
+	;                    - #State_MiddleMousePushed: The object is pushed by the middle mouse button.
 	;                   Or 0 if the object doesn't exist.
 	;
 	; Indiquez l'état actuel de l'Objet spécifié.
@@ -3051,6 +3371,19 @@ Module EditorFactory
 		If *Object\bDisabled : eState | #State_Disabled : EndIf
 		If *Object\bSelected : eState | #State_Selected : EndIf
 		If *Object\bHidden   : eState | #State_Hidden   : EndIf
+		
+		If *Object = *Object\pParentFrame\pObjectManager\pHoveredObject
+			eState | #State_Hovered
+		EndIf
+		If *Object = *Object\pParentFrame\pObjectManager\pMouseDownObject[1]
+			eState | #State_LeftMousePushed
+		EndIf
+		If *Object = *Object\pParentFrame\pObjectManager\pMouseDownObject[2]
+			eState | #State_RightMousePushed
+		EndIf
+		If *Object = *Object\pParentFrame\pObjectManager\pMouseDownObject[3]
+			eState | #State_MiddleMousePushed
+		EndIf
 		
 		ProcedureReturn eState
 		
@@ -3142,12 +3475,15 @@ Module EditorFactory
 					ChangeCurrentElement(EditorFactory\lObject(), *ObjectManager\CurrentExaminedEvent\pObject) ; Now realy freed
 					DeleteElement(EditorFactory\lObject())
 				EndIf
+				LockMutex(*ObjectManager\iEventMutex)
 				If FirstElement(*ObjectManager\lEvent())
 					EditorFactory\pCurrentObjectManager = *ObjectManager
 					*ObjectManager\CurrentExaminedEvent = *ObjectManager\lEvent()
 					DeleteElement(*ObjectManager\lEvent())
+					UnlockMutex(*ObjectManager\iEventMutex)
 					ProcedureReturn *ObjectManager\CurrentExaminedEvent\iEvent
 				Else
+					UnlockMutex(*ObjectManager\iEventMutex)
 					ClearStructure(*ObjectManager\CurrentExaminedEvent, ObjectManagerEvent)
 				EndIf
 			Next
@@ -3158,12 +3494,15 @@ Module EditorFactory
 				ChangeCurrentElement(EditorFactory\lObject(), *ObjectManager\CurrentExaminedEvent\pObject) ; Now realy freed
 				DeleteElement(EditorFactory\lObject())
 			EndIf
+			LockMutex(*ObjectManager\iEventMutex)
 			If FirstElement(*ObjectManager\lEvent())
 				EditorFactory\pCurrentObjectManager = *ObjectManager
 				*ObjectManager\CurrentExaminedEvent = *ObjectManager\lEvent()
 				DeleteElement(*ObjectManager\lEvent())
+				UnlockMutex(*ObjectManager\iEventMutex)
 				ProcedureReturn *ObjectManager\CurrentExaminedEvent\iEvent
 			Else
+				UnlockMutex(*ObjectManager\iEventMutex)
 				ClearStructure(*ObjectManager\CurrentExaminedEvent, ObjectManagerEvent)
 				ProcedureReturn #Event_None
 			EndIf
@@ -3200,14 +3539,17 @@ Module EditorFactory
 	;                          - #EventType_LeftMouseBottonUp:       Left mouse button was released from an object/handle.
 	;                          - #EventType_LeftMouseClick:          Left mouse button was clicked on an object/handle.
 	;                          - #EventType_LeftMouseDoubleClick:    Left mouse button was double clicked on an object/handle.
+	;                          - #EventType_LeftMouseButtonHold:     Left mouse button is held on an handle. (Only possible in thread safe mode)
 	;                          - #EventType_MiddleMouseBottonDown:   Middle mouse button was pressed on an object/handle.
 	;                          - #EventType_MiddleMouseBottonUp:     Middle mouse button was released from an object/handle.
 	;                          - #EventType_MiddleMouseClick:        Middle mouse button was clicked on an object/handle.
 	;                          - #EventType_MiddleMouseDoubleClick:  Middle mouse button was double clicked on an object/handle.
+	;                          - #EventType_MiddleMouseButtonHold:   Middle mouse button is held on an handle. (Only possible in thread safe mode)
 	;                          - #EventType_RightMouseBottonDown:    Right mouse button was pressed on an object/handle.
 	;                          - #EventType_RightMouseBottonUp:      Right mouse button was released from an object/handle.
 	;                          - #EventType_RightMouseClick:         Right mouse button was clicked on an object/handle.
 	;                          - #EventType_RightMouseDoubleClick:   Right mouse button was double clicked on an object/handle.
+	;                          - #EventType_RightMouseButtonHold:    Right mouse button is held on an handle. (Only possible in thread safe mode)
 	;                          - #EventType_MouseWheel:              The mouse wheel was rotated on an object/handle.
 	;                          - #EventType_KeyDown:                 A key was pressed on an object/handle. Use CanvasObjectsEventData() to get the key.
 	;                          - #EventType_KeyUp:                   A key was released on an object/handle. Use CanvasObjectsEventData() to get the key.
@@ -3228,14 +3570,17 @@ Module EditorFactory
   ;                          - #EventType_LeftMouseBottonUp:       Le bouton gauche de la souris a été relâché sur un objet/poignée.
   ;                          - #EventType_LeftMouseClick:          Le bouton gauche de la souris a été cliqué sur un objet/poignée.
   ;                          - #EventType_LeftMouseDoubleClick:    Le bouton gauche de la souris a été double-cliqué sur un objet/une poignée.
+	;                          - #EventType_LeftMouseButtonHold:     Le bouton gauche de la souris est maintenu sur une poignée. (Uniquement possible en mode thread safe)
 	;                          - #EventType_MiddleMouseBottonDown:   le bouton du milieu de la souris a été enfoncé sur un objet/une poignée.
   ;                          - #EventType_MiddleMouseBottonUp:     Le bouton du milieu de la souris a été relâché sur un objet/poignée.
   ;                          - #EventType_MiddleMouseClick:        Le bouton du milieu de la souris a été cliqué sur un objet/poignée.
-	;                          - #EventType_MiddleMouseDoubleClick:  Le bouton du milieu de la souris a été double-cliqué sur un objet/une poignée.
+  ;                          - #EventType_MiddleMouseDoubleClick:  Le bouton du milieu de la souris a été double-cliqué sur un objet/une poignée.
+	;                          - #EventType_MiddleMouseButtonHold:   Le bouton du milieu de la souris est maintenu sur une poignée. (Possible uniquement en mode thread safe)
 	;                          - #EventType_RightMouseBottonDown:    Le bouton droit de la souris a été enfoncé sur un objet/une poignée.
   ;                          - #EventType_RightMouseBottonUp:      Le bouton droit de la souris a été relâché sur un objet/poignée.
   ;                          - #EventType_RightMouseClick:         Le bouton droit de la souris a été cliqué sur un objet/une poignée.
-	;                          - #EventType_RightMouseDoubleClick:   Le bouton droit de la souris a été double-cliqué sur un objet/une poignée.
+  ;                          - #EventType_RightMouseDoubleClick:   Le bouton droit de la souris a été double-cliqué sur un objet/une poignée.
+	;                          - #EventType_RightMouseButtonHold:    Le bouton droit de la souris est maintenu sur une poignée. (Uniquement possible en mode thread safe)
 	;                          - #EventType_MouseWheel:              La molette de la souris a été tournée sur un objet/une poignée.
 	;                          - #EventType_KeyDown:                 Une touche a été enfoncée sur un objet/une poignée.
 	;                          - #EventType_KeyUp :                  Une touche a été relâchée sur un objet/une poignée.
@@ -3556,6 +3901,7 @@ Module EditorFactory
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
 		
 		*Object\iData = iData
+		PostRedrawEvent(*Object\pParentFrame\pObjectManager)
 		
 		ProcedureReturn #True
 		
@@ -3579,6 +3925,7 @@ Module EditorFactory
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
 		
 		*Object\msAttribute(sName) = sValue
+		PostRedrawEvent(*Object\pParentFrame\pObjectManager)
 		
 		ProcedureReturn #True
 		
@@ -4068,35 +4415,36 @@ Module EditorFactory
 	EndProcedure
 	
 	
-	;{ Defines a clipping frame for the drawing of child objects, which means child objects in the object will not be displayed outside the clipping frame.
-	;  It can be used For example To make tabs, For example To make PanelGadget.
+	;{ Defines the view box for the drawing of child objects, which means child objects will shifted and will be not displayed outside the view box. It can be used for example to design a PanelGadget or ScrollAreaGadget.
 	;  iObject:               Number of the object.
-	;  bEnabled:              #True, To enable the clipping, Or #False, To disable the clipping (child objects will be drawn over their parent's border).
-	;  iLeftPadding:          The left margin in pixel. 0 means that the clipping is exactly at the edge of the object. (Not used If clipping is Not enabled)
-	;  iTopPadding:           The top margin in pixel. 0 means that the clipping is exactly at the edge of the object. (Not used If clipping is Not enabled)
-	;  iRightPadding:         The right margin in pixel. 0 means that the clipping is exactly at the edge of the object. (Not used If clipping is Not enabled)
-	;  iBottomPadding:        The bottom margin in pixel. 0 means that the clipping is exactly at the edge of the object. (Not used If clipping is Not enabled)
-	;  Result:                #True If cuts are enabled Or #False If the object does Not exist.
+	;  iFrameIndex:           An index of the frame (starting with 0) or #Frame_ViewedFrame to use the currently shown frame.
+	;  iViewBoxX:             Local X-position of the clipping for inner child objects. 0 means that the clipping is exactly at the edge of the object.
+	;  iViewBoxY:             Local Y-position of the clipping for inner child objects. 0 means that the clipping is exactly at the edge of the object.
+	;  iViewBoxWidth:         Width of the clipping area for inner child objects. Add #Boundary_ParentSize to a value (#Boundary_ParentSize ± value) to make the width relative to the object size.
+	;  iViewBoxHeight:        Height of the clipping area for inner child objects. Add #Boundary_ParentSize to a value (#Boundary_ParentSize ± value) to make the height relative to the object size.
+	;  bEnabledClipping:      #True, to enable the clipping, or #False, to disable the clipping (child objects will be drawn over their parent's border).
+  ;  Result:                #True if the view box is set or #False if the object or frame does not exist.
 	;
-	;  Définit un cadre de découpage pour le dessin des objets enfants, ce qui signifie que les objets enfants de l'objet ne seront pas affichés en dehors du cadre de découpage.
-	;  Ceci peut être utilisé par exemple pour faire des onglets, par exemple pour faire un PanelGadget.
+	;  Définit la boîte de vue pour le dessin des objets enfants, ce qui signifie que les objets enfants seront décalés et ne seront pas affichés en dehors de la boîte de vue. Il peut être utilisé par exemple pour concevoir un PanelGadget ou un ScrollAreaGadget.
 	;  iObject:               Numéro de l'objet.
-	;  bEnabled:              #True, pour activer le découpage, ou #False, pour désactiver le découpage (les objets enfants seront dessinés sur la bordure de leur parent).
-	;  iLeftPadding:          La découpe gauche en pixel. 0 signifie que le découpage se trouve exactement au bord de l'objet. (Non utilisé si le découpage n'est pas activé)
-	;  iTopPadding:           La découpe supérieure en pixel. 0 signifie que le découpage se trouve exactement au bord de l'objet. (Non utilisé si le découpage n'est pas activé)
-	;  iRightPadding:         La découpe droite en pixel. 0 signifie que le découpage se trouve exactement au bord de l'objet. (Non utilisé si le découpage n'est pas activé)
-	;  iBottomPadding:        La découpe inférieure en pixel. 0 signifie que le découpage se trouve exactement au bord de l'objet. (Non utilisé si le découpage n'est pas activé)
-	;  Résultat:              #True si les coupes sont activées ou #False si l'objet n'existe pas.
+	;  iFrameIndex:           Un index du cadre (commençant par 0) ou #Frame_ViewedFrame pour utiliser le cadre actuellement affiché.
+	;  iViewBoxX:             Position locale en X du découpage pour les objets enfants internes. 0 signifie que le découpage est exactement au bord de l'objet.
+	;  iViewBoxY:             Position locale en Y de l'écrêtage pour les objets enfants internes. 0 signifie que l'écrêtage se trouve exactement au bord de l'objet.
+	;  iViewBoxWidth:         Largeur de la zone d'écrêtage pour les objets enfants internes. Ajoutez #Boundary_ParentSize à une valeur (#Boundary_ParentSize ± valeur) pour que la largeur soit relative à la taille de l'objet.
+	;  iViewBoxHeight:        hauteur de la zone d'écrêtage pour les objets enfants internes. Ajoutez #Boundary_ParentSize à une valeur (#Boundary_ParentSize ± valeur) pour que la hauteur soit relative à la taille de l'objet.
+	;  bEnabledClipping:      #True, pour activer l'écrêtage, ou #False, pour désactiver l'écrêtage (les objets enfants seront dessinés par-dessus la bordure de leur parent).
+	;  Resultat:              #True si la boîte de vue est définie ou #False si l'objet ou le cadre n'existe pas.
 	;}
-	Procedure.i SetObjectFrameClipping(iObject.i, bEnabled.i, iLeftPadding.i=0, iTopPadding.i=0, iRightPadding.i=0, iBottomPedding.i=0)
+	Procedure.i SetObjectFrameViewBox(iObject.i, iFrameIndex.i, iX.i=0, iY.i=0, iWidth.i=#Boundary_ParentSize, iHeight.i=#Boundary_ParentSize, bEnabledClipping.i=#True)
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
+		Protected *Frame.Frame : _ObjectFrameID_(*Frame, *Object, iFrameIndex, #False)
 		
-		*Object\FrameClip\bEnabled = bEnabled
-		*Object\FrameClip\iLeft    = iLeftPadding
-		*Object\FrameClip\iTop     = iTopPadding
-		*Object\FrameClip\iRight   = iRightPadding
-		*Object\FrameClip\iBottom  = iBottomPedding
+		*Frame\ViewBox\bEnabled = bEnabledClipping
+		*Frame\ViewBox\iX       = iX
+		*Frame\ViewBox\iY       = iY
+		*Frame\ViewBox\iWidth   = iWidth
+		*Frame\ViewBox\iHeight  = iHeight
 		PostRedrawEvent(*Object\pParentFrame\pObjectManager)
 		
 		ProcedureReturn #True
@@ -4105,33 +4453,57 @@ Module EditorFactory
 	
 	
 	;{ Defines the offset of the drawing of the object's frame content, It is useful to make a ScrollAreaGadget.
-	;  For example, by clicking on a button of a scroll bar To shift the image of the object relative To the parent's frame.
+	;  For example, by clicking on a button of a scroll bar to shift the image of the object relative to the parent's frame.
+	;  The set value is automatically adjusted between 0 and InnerWidth-ParentWidth or 0 and InnerHeight-ParentHeight.
 	;  iObject:               Number of the object.
+	;  iFrameIndex:           An index of the frame (starting with 0) or #Frame_ViewedFrame to use the currently shown frame.
 	;  iX:                    The X-offset of the drawed frame content. In other words, how the drawing of child objects will shifted.
 	;  iY:                    The Y-offset of the drawed frame content. In other words, how the drawing of child objects will shifted.
 	;  iMode:                 #PB_Absolute To change the absolute offset Or #PB_Relative To change the offset relative To the old value.
 	;  Result:                #True If the offset has been changed Or #False If the object does Not exist.
 	;
 	;  Définit le décalage du dessin du contenu du cadre de l'objet, Utile pour faire des ScrollAreaGadget, l'objet devras être un conteneur.
-	;  Par exemple, C'est utile pour réaliser un ScrollAreaGadget, en cliquant sur un bouton d'une barre de défilement pour décaler l'image de l'objet par rapport au cadre du parent.
-	;  iObject:               Numéro de l'objet.
+  ;  Par exemple, C'est utile pour réaliser un ScrollAreaGadget, en cliquant sur un bouton d'une barre de défilement pour décaler l'image de l'objet par rapport au cadre du parent.
+	;  La valeur définie est automatiquement ajustée entre 0 et InnerWidth-ParentWidth ou 0 et InnerHeight-ParentHeight.
+  ;  iObject:               Numéro de l'objet.
+	;  iFrameIndex:            Un index du cadre (commençant par 0) ou #Frame_ViewedFrame pour utiliser le cadre actuellement affiché.
 	;  iX:                    Le décalage X du contenu du cadre dessiné. En d'autres termes, comment le dessin des objets enfants sera décalé.
 	;  iY:                    Le décalage Y du contenu du cadre dessiné. En d'autres termes, comment le dessin des objets enfants sera décalé.
 	;  iMode:                 #PB_Absolute pour modifier le décalage absolu ou #PB_Relative pour modifier le décalage par rapport à l'ancienne valeur.
 	;  Résultat:              #True si le décalage a été modifié ou #False si l'objet n'existe pas.
 	;}
-	Procedure.i SetObjectFrameOffset(iObject.i, iX.i=0, iY.i=0, iMode.i=#PB_Absolute)
+	Procedure.i SetObjectFrameInnerOffset(iObject.i, iFrameIndex.i, iX.i=0, iY.i=0, iMode.i=#PB_Absolute)
 		
 		Protected *Object.Object : _ObjectID_(*Object, iObject, #False)
+		Protected *Frame.Frame : _ObjectFrameID_(*Frame, *Object, iFrameIndex, #False)
 		
 		Select iMode
 			Case #PB_Absolute
-				*Object\FrameClip\iX    = iX
-				*Object\FrameClip\iY    = iY
+				*Frame\InnerArea\iX    = iX
+				*Frame\InnerArea\iY    = iY
 			Case #PB_Relative
-				*Object\FrameClip\iX    + iX
-				*Object\FrameClip\iY    + iY
+				*Frame\InnerArea\iX    + iX
+				*Frame\InnerArea\iY    + iY
 		EndSelect
+		If *Frame\InnerArea\iX < 0
+			*Frame\InnerArea\iX = 0
+		ElseIf *Frame\InnerArea\iX > *Frame\InnerArea\iWidth - DecodeParentSize(*Frame\ViewBox\iWidth, *Frame\pParentObject\iWidth)
+			If *Frame\InnerArea\iWidth - DecodeParentSize(*Frame\ViewBox\iWidth, *Frame\pParentObject\iWidth) > 0
+				*Frame\InnerArea\iX = *Frame\InnerArea\iWidth - DecodeParentSize(*Frame\ViewBox\iWidth, *Frame\pParentObject\iWidth)
+			Else
+				*Frame\InnerArea\iX = 0
+			EndIf
+		EndIf
+		If *Frame\InnerArea\iY < 0
+			*Frame\InnerArea\iY = 0
+		ElseIf *Frame\InnerArea\iY > *Frame\InnerArea\iHeight - DecodeParentSize(*Frame\ViewBox\iHeight, *Frame\pParentObject\iHeight)
+			If *Frame\InnerArea\iHeight - DecodeParentSize(*Frame\ViewBox\iHeight, *Frame\pParentObject\iHeight) > 0
+				*Frame\InnerArea\iY = *Frame\InnerArea\iHeight - DecodeParentSize(*Frame\ViewBox\iHeight, *Frame\pParentObject\iHeight)
+			Else
+				*Frame\InnerArea\iY = 0
+			EndIf
+		EndIf
+		
 		PostRedrawEvent(*Object\pParentFrame\pObjectManager)
 		
 		ProcedureReturn #True
@@ -4739,9 +5111,11 @@ Module EditorFactory
 EndModule
 
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = DAE+fQxGYNqDJP6ETCAnESSSSIJAAkMQGgAcCBAAIBAAAAg-------------------------------------------
+
+; IDE Options = PureBasic 6.00 Alpha 4 (Windows - x64)
+; CursorPosition = 44
+; Folding = DIE9-gCbIrR0LJJ9whkBAADPQSAAAABAAkByAEASIAAAAAAAAA9
 ; EnableXP
-; EnableCompileCount = 211
+; EnableCompileCount = 212
 ; EnableBuildCount = 0
 ; EnableExeConstant
