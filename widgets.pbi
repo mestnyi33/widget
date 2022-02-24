@@ -2584,7 +2584,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Not _this_\_a_id_[_index_]
           _this_\_a_id_.allocate( BUTTONS, [_index_] )
         EndIf
-        
+         
         _this_\_a_id_[_index_]\cursor = *Data_Transform_Cursor\cursor[_index_]
         
         _this_\_a_id_[_index_]\color\frame[#__s_0] = $ff000000
@@ -17947,7 +17947,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;
         If Not ( transform( ) And transform( )\grab )
           If _is_root_( *this )
-            If *this\root\canvas\repaint = #True
               If *this\root\color\back
                 DrawingMode( #PB_2DDrawing_AlphaBlend )
                 Box(0,0,*this\root\width, *this\root\height, *this\root\color\back)
@@ -17960,6 +17959,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 CompilerEndIf
               EndIf
               
+            If *this\root\canvas\repaint = #True
               If *this\image\id Or *this\image[#__img_background]\id
                 If *this\image\change <> 0
                   _set_align_x_( *this\image, *this\image, *this\width[#__c_inner], 0 )

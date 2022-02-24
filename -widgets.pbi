@@ -11,6 +11,10 @@ CompilerEndIf
 
 IncludePath #path
 
+CompilerIf Not Defined( constants, #PB_Module )
+  XIncludeFile "include/constants.pbi"
+CompilerEndIf
+
 CompilerIf Not Defined( fix, #PB_Module )
   ; fix all pb bug's
   XIncludeFile "include/fix.pbi"
@@ -18,10 +22,6 @@ CompilerEndIf
 
 CompilerIf Not Defined( func, #PB_Module )
   XIncludeFile "include/func.pbi"
-CompilerEndIf
-
-CompilerIf Not Defined( constants, #PB_Module )
-  XIncludeFile "include/constants.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined( structures, #PB_Module )
@@ -153,6 +153,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro Mouse( ) : widget::*canvas\mouse: EndMacro
     Macro Keyboard( ) : widget::*canvas\keyboard: EndMacro
     
+    Macro EventList( _address_ ): _address_\canvas\events( ): EndMacro
     Macro Widget( ) : WidgetList( Root( ) ): EndMacro ; Returns last created widget 
     Macro WidgetList( _address_ ) : _address_\canvas\child( ) : EndMacro
     Macro RowList( _this_ ): _this_\row\_s( ): EndMacro
@@ -19425,7 +19426,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-      Procedure   WaitClose( *this._S_widget = #PB_Any, waittime.l = 0 )
+    Procedure   WaitClose( *this._S_widget = #PB_Any, waittime.l = 0 )
       Protected result 
       Protected *window._S_widget = *this;\window
       Protected PBWindow = PB(EventWindow)( )
@@ -19437,17 +19438,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         Repeat 
-          Select WaitWindowEvent( waittime ) 
+          Select events::WaitEvent( @EventHandler( ), WaitWindowEvent( waittime ) )
               ; Case #PB_Event_Message
               
-            Case #PB_Event_Gadget
-              If Root( )\canvas\bindevent = #False
-                Root( )\canvas\repaint = #True
-                EventHandler( )
-                
-                result = EventMessageHandler( )
-                
-              EndIf
+              ;             Case #PB_Event_Gadget
+              ;               If Root( )\canvas\bindevent = #False
+              ;                 Root( )\canvas\repaint = #True
+              ;                 EventHandler( )
+              ;                 
+              ;                 result = EventMessageHandler( )
+              ;                 
+              ;               EndIf
               
             Case #PB_Event_CloseWindow
               If *window = #PB_Any 
@@ -19459,8 +19460,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ForEach Root( )
                       Debug Root( )
                       free( Root( ))
-                      ;               ForEach widget( )
-                      ;                 Debug ""+widget( )\root +" "+ is_root_(widget( ))
+                      ;               ForEach enumWidget( )
+                      ;                 Debug ""+ enumWidget( )\root +" "+ is_root_( enumWidget( ))
                       ;               Next
                     Next
                     Break
@@ -19501,8 +19502,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf  
       
     EndProcedure
-  
-  EndModule
+  endModule
   ;- <<< 
 CompilerEndIf
 
@@ -19971,5 +19971,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---84v-3-0------------------------------------------4-------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--4vf-t-8------------------------------------------v-------
 ; EnableXP

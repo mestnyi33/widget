@@ -113,19 +113,24 @@ Module Parent
             Protected i = item
             If item <> #PB_Default
               i = GetGadgetState( Panel )
+              ;;Debug CocoaMessage(0, GadgetID( Panel ), "tabState" )
+              ; CocoaMessage(0, GadgetID( Panel ), "selectedTabViewItem" )
+              ;Debug CocoaMessage(0, GadgetID( Panel ), "view" )
+              ;;Debug CocoaMessage(0, CocoaMessage(0, GadgetID( Panel ), "selectedTabViewItem" ), "tabView" )
             EndIf
             If i <> item 
-              SetGadgetState( Panel, item )
-            EndIf
+               SetGadgetState( Panel, item )
+              ;;CocoaMessage(0, GadgetID( Panel ), "selectTabViewItem:", item )
+           EndIf
             ParentID = CocoaMessage( 0, ParentID, "subviews" )
             ParentID = CocoaMessage( 0, ParentID, "objectAtIndex:", CocoaMessage( 0, ParentID, "count" ) - 1 )
             If i <> item 
-              ;Debug  CocoaMessage(0, gadgetID( Panel ), "selectedItem")
+              ;;Debug  CocoaMessage(0, gadgetID( Panel ), "selectedItem")
                SetGadgetState( Panel, i )
 ;                 CocoaMessage(0, gadgetID( Panel ), "tabView:", i )
             
-;               CocoaMessage(0, gadgetID( Panel ), "didSelectItem:", i )
-;               CocoaMessage(0, gadgetID( Panel ), "didSelectTabViewItem:", i )
+;               CocoaMessage(0, gadgetID( Panel ), "selectedTabViewItem:", i )
+             ;  CocoaMessage(0, GadgetID( Panel ), "selectTabViewItem:", i )
             EndIf
           Case "PB_CanvasView"
             ParentID = CocoaMessage( 0, ParentID, "subviews" )

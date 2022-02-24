@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../CE.pb" 
 
 EnableExplicit
 Uselib(widget)
@@ -63,6 +64,6 @@ If Open(#PB_Any, 0, 0, 800, 450, "Example 4: Changing the order of the objects (
   BindEvent( #PB_Event_Menu, @menu_events())
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -1,6 +1,7 @@
-﻿	XIncludeFile "../../../widgets.pbi" 
-	; bug scroll area with the anchor_widget 
-	; bug then left anchor moveed and width = 0
+﻿ ; XIncludeFile "../../../widgets.pbi" 
+ XIncludeFile "../../../CE.pb" 
+; bug scroll area with the anchor_widget 
+; bug then left anchor moveed and width = 0
 	
 	
 Uselib(widget)
@@ -302,6 +303,6 @@ DataSection
 	Data.q $61F86359FC0F019D,$AFF8C3495FE63029,$C804C013131FCCC2,$DF8800030087C035,$0000CBF81800AA70
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

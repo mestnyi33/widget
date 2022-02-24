@@ -1,6 +1,7 @@
 ﻿
 ;XIncludeFile "../transform().pbi"
-XIncludeFile "../widgets-plus.pbi"
+;XIncludeFile "../widgets-plus.pbi"
+XIncludeFile "../CE.pb"
 ; XIncludeFile "../examples/empty5.pb"
 
 ;
@@ -1185,17 +1186,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
     ; ; ; ;   CloseGadgetList( )
     
-    
-    Bind( Root(), #PB_Default )
-    Repeat 
-      event = WaitWindowEvent( ) 
-      
-      ;     Select EventWindow( )
-      ;       Case window_ide 
-      ;         ide_window_events( event )
-      ;     EndSelect
-      
-    Until event = #PB_Event_CloseWindow
+    WaitClose( )
+;     Bind( Root(), #PB_Default )
+;     Repeat 
+;       event = WaitWindowEvent( ) 
+;       
+;       ;     Select EventWindow( )
+;       ;       Case window_ide 
+;       ;         ide_window_events( event )
+;       ;     EndSelect
+;       
+;     Until event = #PB_Event_CloseWindow
   CompilerEndIf
   
   

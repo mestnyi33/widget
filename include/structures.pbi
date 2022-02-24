@@ -424,6 +424,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     
     Structure _S_a
+      pos.l
+      size.l
+      
       index.b
       transform.b
       mode.i
@@ -786,6 +789,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
        
       *opened._S_widget             ; last list opened element
        
+      *root._S_root       ; 
       Map *roots._S_root( )         ; 
       mouse._S_mouse                ; mouse( )\
       keyboard._S_keyboard          ; keyboard( )\

@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../CE.pb" 
 
 Uselib(widget)
 Global alpha = 128
@@ -42,6 +43,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 782, 452, "Example 3: Object boundaries to pos
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

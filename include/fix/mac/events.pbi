@@ -359,6 +359,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             
             If EnteredGadget( ) >= 0
               CallCFunctionFast( *callback, EnteredGadget( ), #PB_EventType_MouseMove )
+              ; if move gadget x&y position
               If MouseDrag > 0 And PressedGadget( ) = EnteredGadget( ) 
                 If DeltaX <> GadgetX( PressedGadget( ) ) Or 
                    DeltaY <> GadgetY( PressedGadget( ) )
@@ -515,7 +516,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseMove
         ; Debug ""+Gadget + " #PB_EventType_MouseMove " 
-        If DraggedGadget( ) = 1
+;         If DraggedGadget( ) = 1
+;           ResizeGadget( DraggedGadget( ), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+;         EndIf
+        If DraggedGadget( ) = 0
           ResizeGadget( DraggedGadget( ), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
         EndIf
         
@@ -523,6 +527,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
+  CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
   CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
   CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
   
@@ -585,5 +590,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---------------
+; Folding = --------K------
 ; EnableXP
