@@ -17172,6 +17172,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure GetAtPointItems( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
       Protected repaint, *item._S_ROWS
+      Protected mouse_orig_x = mouse_x
+      Protected mouse_orig_y = mouse_y
       
       If *this\row
         mouse_x = Mouse( )\x - *this\x[#__c_inner] ; - scroll_x_( *this ) 
@@ -17189,7 +17191,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If Not ( EnteredRow( *this ) And 
                    EnteredRow( *this )\visible And 
                    EnteredRow( *this )\hide = 0 And 
-                   ( is_at_point_( EnteredRow( *this ), mouse_x, mouse_y ) Or
+                   ( ( *this\state\enter And is_at_point_( VisibleRowList( *this ), mouse_x, mouse_y )) Or
                      ( *this\state\drag And is_at_point_y_( EnteredRow( *this ), mouse_y )) ))
             
             ; search entered item
@@ -17197,7 +17199,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Repeat                                 
               If VisibleRowList( *this )\visible And 
                  VisibleRowList( *this )\hide = 0 And 
-                 ( is_at_point_( VisibleRowList( *this ), mouse_x, mouse_y ) Or
+                 ( ( *this\state\enter And is_at_point_( VisibleRowList( *this ), mouse_x, mouse_y )) Or
                    ( *this\state\drag And is_at_point_y_( VisibleRowList( *this ), mouse_y )) )
                 *item = VisibleRowList( *this ) 
                 Break
@@ -17237,11 +17239,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             If PressedRow( *this )\state\press = #False
               PressedRow( *this )\state\press = #True
-              ; If PressedRow( *this )\state\press
+              
               PressedRow( *this )\color\state = #__S_2
               PressedRow( *this )\color\back[PressedRow( *this )\color\state] = $FF2C70F5
               *this\state\repaint = #True
-              ; EndIf
             EndIf
           EndIf
         EndIf
@@ -17249,15 +17250,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If eventtype = #PB_EventType_LeftButtonUp
           If PressedRow( *this )
             If PressedRow( *this )\state\press = #True
-              ; If PressedRow( *this )\state\press
+              PressedRow( *this )\state\press = #False
+              
               If PressedRow( *this )\state\enter
                 PressedRow( *this )\color\state = #__S_1
               Else
                 PressedRow( *this )\color\state = #__S_0
               EndIf
               *this\state\repaint = #True
-              ; EndIf
-              PressedRow( *this )\state\press = #False
             EndIf
           EndIf
         EndIf
@@ -17299,16 +17299,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If EnteredRow( *this )\state\enter = #True
               EnteredRow( *this )\state\enter = #False
               
-              If *this\state\drag 
-                If PressedRow( *this )
-                  If PressedRow( *this )\state\press = #True
-                    PressedRow( *this )\state\press = #False
-                    
-                    PressedRow( *this )\color\state = #__S_0
-                  EndIf
+              EnteredRow( *this )\color\state = #__S_0
+            EndIf
+            
+            If *this\state\drag 
+              If PressedRow( *this )
+                If PressedRow( *this )\state\press = #True
+                  PressedRow( *this )\state\press = #False
+                  
+                  PressedRow( *this )\color\state = #__S_0
                 EndIf
-              Else
-                EnteredRow( *this )\color\state = #__S_0
               EndIf
             EndIf
           EndIf
@@ -17320,20 +17320,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If EnteredRow( *this )
-            If EnteredRow( *this )\state\enter = #False
-              EnteredRow( *this )\state\enter = #True
-              
-              If *this\state\drag 
-                If PressedRow( *this )
-                  If PressedRow( *this )\state\press = #False
-                    PressedRow( *this )\state\press = #True
-                    
-                    PressedRow( *this )\color\state = #__S_2
-                    PressedRow( *this )\color\back[PressedRow( *this )\color\state] = $FF2C70F5
-                  EndIf
-                EndIf
-              Else
+            If *this\state\enter
+              If EnteredRow( *this )\state\enter = #False
+                EnteredRow( *this )\state\enter = #True
+                
                 EnteredRow( *this )\color\state = #__S_1
+              EndIf
+            EndIf
+            
+            If *this\state\drag 
+              If PressedRow( *this )
+                If PressedRow( *this )\state\press = #False
+                  PressedRow( *this )\state\press = #True
+                  
+                  PressedRow( *this )\color\state = #__S_2
+                  PressedRow( *this )\color\back[PressedRow( *this )\color\state] = $FF2C70F5
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -18421,8 +18423,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
         ElseIf eventtype = #PB_EventType_MouseMove 
           If Mouse( )\change > 1
-            If EnteredWidget( )
-              ; mouse entered-widget move event
+            ; mouse entered-widget move event
+            If EnteredWidget( ) And EnteredWidget( )\state\enter
               Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseMove )
             EndIf
             
@@ -18441,9 +18443,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 DoEvents( PressedWidget( ), #PB_EventType_DragStart);, PressedItem( ) )
               EndIf
               
-              If EnteredWidget( ) <> PressedWidget( )
-                ; mouse pressed-widget move event
-                Repaint | DoEvents( PressedWidget( ), #PB_EventType_MouseMove )
+              ; mouse pressed-widget move event
+              If EnteredWidget( ) <> PressedWidget( )  
+                If PressedWidget( ) And PressedWidget( )\state\drag
+                   Repaint | DoEvents( PressedWidget( ), #PB_EventType_MouseMove )
+                EndIf
               EndIf
             EndIf
             
@@ -19646,5 +19650,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------z--f-------------83-+---4-------------------------
 ; EnableXP
