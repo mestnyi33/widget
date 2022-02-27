@@ -17213,9 +17213,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If FocusedRow( *this )\state\focus = #True
                   FocusedRow( *this )\state\focus = #False
                   
-                  If FocusedRow( *this )\state\press = #False
+                  ;If FocusedRow( *this )\state\press = #False
                     FocusedRow( *this )\color\state = #__S_0
-                  EndIf
+                  ;EndIf
                 EndIf
               EndIf
             EndIf
@@ -17243,9 +17243,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If FocusedRow( *this )\state\focus = #False
                   FocusedRow( *this )\state\focus = #True
                   
-                  If FocusedRow( *this )\state\press = #False
+                  ;If FocusedRow( *this )\state\press = #False
                     FocusedRow( *this )\color\state = #__S_2
-                  EndIf
+                  ;EndIf
                   FocusedRow( *this )\color\back[FocusedRow( *this )\color\state] = $FF2C70F5
                 EndIf
               EndIf
@@ -18534,7 +18534,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ChangeCurrentRoot( GadgetID(Canvas) )
               ;+ ChangeCurrentRoot(GadgetID(PB(EventGadget)( )) )
               ;+ Canvas.i = Root( )\canvas\gadget
-              
+              ; 
               Protected result
               
               ;               Static repaint_count
@@ -18603,6 +18603,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ;Root( )\canvas\repaint = #True
               ;;; Debug " ReDraw - " + Canvas +" "+ Root( ) +" #PB_EventType_Repaint"
               ; DoEvents( Root( ), #PB_EventType_Repaint )
+              If Drawing( )
+                Drawing( ) = 0
+                StopDrawing( )
+              EndIf
+              
               ReDraw( Root( ) )
               PopMapPosition( Root( ) )
             EndIf
@@ -18673,7 +18678,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If PressedWidget( )
-              If PressedWidget( )\root <> Root( )
+              If PressedWidget( )\state\press And 
+                 PressedWidget( )\root <> Root( )
                 Mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
                 Mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
               EndIf
@@ -19793,41 +19799,51 @@ CompilerIf #PB_Compiler_IsMainFile
   Define time = ElapsedMilliseconds( )
   
   OpenList( *root1 )
-  Define *panel._S_widget = Panel(20, 20, 180+40, 180+60, editable) : SetData(*panel, 100)
+  Define *panel._S_widget = Panel(20, 20, 180+40, 180+60, editable) : SetText(*panel, "1")
   AddItem( *panel, -1, "item_1" )
   Button( 20,20, 80,80, "item_1")
   AddItem( *panel, -1, "item_2" )
   Button( 10,10, 80,80, "item_2")
   AddItem( *panel, -1, "item_3" )
-  SetData(Container(20, 20, 180, 180, editable), 1) 
-  SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
-  SetData(Container(40, 20, 180, 180, editable), 3)
-  SetData(Container(20, 20, 180, 180, editable), 4)
   
-  SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
-  SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
-  SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
+  SetText(Container(20, 20, 180, 180, editable), "4") 
+  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "5") 
+  SetText(Container(40, 20, 180, 180, editable), "6")
+  Define seven = Container(20, 20, 180, 180, editable)
+  SetText(seven, "      7")
   
-  ;   SetData(Splitter(5, 80, 180, 50, 
-  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable), 
-  ;                    Container(0,0,0,0, #__Flag_NoGadgets|editable),
-  ;                    #PB_Splitter_Vertical|editable), 8) 
+  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     8") 
+  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
+  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
   
-  CloseList( ) ; 3
-  CloseList( ) ; 4
-  SetData(Container(10, 45, 70, 180, editable), 11) 
-  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-  SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
-  SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
-  SetData(Container(10, 45, 70, 180, editable), 111) 
-  SetData(Container(10, 5, 70, 180, editable), 1111) 
-  SetData(Container(10, 5, 70, 180, editable), 11111) 
-  SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-  CloseList( ) ; 11111
-  CloseList( ) ; 1111
-  CloseList( ) ; 111
+  CloseList( ) ; 7
+  CloseList( ) ; 6
+  SetText(Container(10, 45, 70, 180, editable), "11") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
+  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
+  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "14") 
+  
+  SetText(Container(10, 45, 70, 180, editable), "15") 
+  SetText(Container(10, 5, 70, 180, editable), "16") 
+  SetText(Container(10, 5, 70, 180, editable), "17") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
+  CloseList( ) ; 17
+  CloseList( ) ; 16
+  CloseList( ) ; 15
   CloseList( ) ; 11
   CloseList( ) ; 1
+  
+   OpenList( seven )
+;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
+;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
+;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
+;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
+;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1") 
+   SetText(Container( 5, 80, 180, 50, #__Flag_NoGadgets|editable), "container-7")
+  CloseList( ) ; 7
+  
+   OpenList( *panel )
+
   AddItem( *panel, -1, "item_4" )
   Button( 30,30, 80,80, "item_4")
   AddItem( *panel, -1, "item_5" )
@@ -19837,22 +19853,22 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState( *panel, 2 )
   ;
   OpenList( *root2 )
-  SetData(*root2, 11 )
+  SetText(*root2, "*root2" )
   ;Define *p3._S_widget = Container( 80,80, 150,150 )
   Define *p3._S_widget = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-  SetData(*p3, 12 )
-  SetData(Container( 40,-30, 50,50, #__Flag_NoGadgets ), 13 )
+  SetText(*p3, "12" )
+  SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
   
-  Define *p2._S_widget = Container( 40,40, 70,70 ) : SetData(*p2, 4 )
-  SetData(Container( 5,5, 70,70 ), 5 )
-  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 6)
+  Define *p2._S_widget = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
+  SetText(Container( 5,5, 70,70 ), "5" )
+  SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
   CloseList( )
-  Define *c._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetData(*c, 3 )
+  Define *c._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c, "3" )
   CloseList( )
   
-  SetData(Container( 50,130, 50,50, #__Flag_NoGadgets ), 14 )
-  SetData(Container( -30,40, 50,50, #__Flag_NoGadgets ), 15 )
-  SetData(Container( 130,50, 50,50, #__Flag_NoGadgets ), 16 )
+  SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
+  SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
+  SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
   CloseList( )
   CloseList( )
   
@@ -19894,5 +19910,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---f----0---------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--44---f------------------------------4-84------------------
 ; EnableXP
