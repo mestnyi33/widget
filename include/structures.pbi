@@ -61,6 +61,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _S_objecttype
       *root._S_root
       *row._S_rowS
+      *last._S_widget
       *widget._S_widget
       *button._S_BUTTONS
     EndStructure
@@ -788,6 +789,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       action_type.s
        
       *opened._S_widget             ; last list opened element
+      *closed._S_widget             ; last list opened element
        
       *root._S_root       ; 
       Map *roots._S_root( )         ; 

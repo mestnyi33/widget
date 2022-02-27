@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Events_widgets()
-    Debug "ww "+ this()\event +" "+ this()\widget\index
+    Debug "ww "+ widgetevent()\type +" "+ eventwidget()\index
   EndProcedure
   
   OpenWindow(0, 100, 100, 200, 200, "PB (window_0 & gadget)", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
@@ -53,6 +53,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(Root(), @Events_widgets())
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
