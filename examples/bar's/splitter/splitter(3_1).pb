@@ -4,7 +4,7 @@
 
 ;XIncludeFile "../../../widgets.pbi"
 ;XIncludeFile "../../../widgets-splitter.pbi"
-XIncludeFile "../../../widgets-bar.pbi"
+XIncludeFile "../../../-widgets.pbi"
 
 
 ;- EXAMPLE
@@ -140,6 +140,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

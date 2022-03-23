@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets-bar.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pb"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -24,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0);, 0, 0, 510, 340)
   
   ; first splitter
-  s_0 = widget::Tab(300, 30, 250, 40, 0,250,0)
+  s_0 = widget::Tab(300, 30, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
@@ -38,18 +39,18 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Debug widget( )\bar\thumb\len
 ;   Debug ""
 ;   
-  s_1 = widget::Tab(300, 30+50, 250, 40, 0,250,0)
+  s_1 = widget::Tab(300, 30+50, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
   ; first splitter
-  s_3 = widget::Tab(300, 30+100, 250, 40, 0,250,0)
+  s_3 = widget::Tab(300, 30+100, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  s_4 = widget::Tab(300, 30+150, 250, 40, 0,250,0)
+  s_4 = widget::Tab(300, 30+150, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
@@ -66,6 +67,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -1,4 +1,6 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widget-events.pb"
+; XIncludeFile "../../../widgets.pbi" 
+Uselib(widget)
 
 Procedure events_gadgets()
   ; Debug "event - " +EventType()+  " gadget - " + EventGadget() +" focus = "+ #PB_EventType_Focus +" lostfocus = "+ #PB_EventType_LostFocus
@@ -86,6 +88,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
     EndIf
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

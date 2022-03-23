@@ -70,9 +70,16 @@ Module Parent
           EndIf
           ProcedureReturn gtk_notebook_get_nth_page_( handle, Item ) 
           
-        Case "GtkFixed", "GtkLayout"
+        Case "GtkFixed"
           ProcedureReturn handle
           
+        Case "GtkLayout"
+           CompilerIf Subsystem("gtk2")
+             ProcedureReturn g_list_nth_data_( gtk_container_get_children_( handle ), 0 )
+           CompilerElse
+             ProcedureReturn handle
+           CompilerEndIf 
+           
       EndSelect 
     EndIf
   EndProcedure
@@ -178,11 +185,11 @@ Module Parent
     Wend
   EndProcedure
   
-  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget handle
+  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
     ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
   EndProcedure
   
-  Procedure GetParent( gadget.i ) ; Return the handle of the parent gadget from the gadget handle
+  Procedure GetParent( gadget.i ) ; Return the handle of the parent gadget from the gadget ident
     ProcedureReturn IDGadget( GetParentID( GadgetID( gadget.i ) ) )
   EndProcedure
   
@@ -340,7 +347,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow( 20, WindowX( 10 )-210, WindowY( 10 ), 240, 350, "old parent", Flags, WindowID( 10 ) )
   
   ;SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
-   SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
+   ButtonGadget( #CHILD,30,10,160,70,"Buttongadget" ) 
 ;   ButtonGadget( 201,0,0,30,30,"1" )
 ;   ButtonGadget( 202,0,0,30,30,"2" )
 ;   SplitterGadget( #CHILD,30,20,150,30,201,202 )
@@ -491,6 +498,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---f-4-----
+; IDE Options = PureBasic 5.72 (Linux - x64)
+; Folding = ----+v-----
 ; EnableXP

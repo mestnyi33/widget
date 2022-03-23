@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf Not Defined(Splitter, #PB_Module)
   DeclareModule Splitter
@@ -196,6 +196,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---0
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ----
 ; EnableXP

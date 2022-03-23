@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../widget-events.pb"
+; XIncludeFile "../../../widgets.pbi" 
 
 Uselib(widget)
 
@@ -32,6 +33,6 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "demo activate windows", #P
 EndIf
 
 End  
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

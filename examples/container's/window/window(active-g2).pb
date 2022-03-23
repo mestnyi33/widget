@@ -42,37 +42,37 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 ;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
 
   Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  button(10,10,170,30,"button_0")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_0 = button(10,10,170,30,"button_0")
+  ;SetActive(*button_0)
+  Bind( *button_0, @active_0(), #PB_EventType_Focus)
+  Bind( *button_0, @deactive_0(), #PB_EventType_LostFocus)
   
-  button(10,50,170,30,"button_1")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_1 = button(10,50,170,30,"button_1")
+  ;SetActive(*button_1)
+  Bind( *button_1, @active_0(), #PB_EventType_Focus)
+  Bind( *button_1, @deactive_0(), #PB_EventType_LostFocus)
   
   Window(110, 30, 190, 90, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  button(10,10,170,30,"button_2")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_2 = button(10,10,170,30,"button_2")
+  ;SetActive(*button_2)
+  Bind( *button_2, @active_0(), #PB_EventType_Focus)
+  Bind( *button_2, @deactive_0(), #PB_EventType_LostFocus)
   
-  button(10,50,170,30,"button_3")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_3 = button(10,50,170,30,"button_3")
+  ;SetActive(*button_3)
+  Bind( *button_3, @active_0(), #PB_EventType_Focus)
+  Bind( *button_3, @deactive_0(), #PB_EventType_LostFocus)
   
   Window(220, 50, 190, 90, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  button(10,10,170,30,"button_4")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_4 = button(10,10,170,30,"button_4")
+  ;SetActive(*button_4)
+  Bind( *button_4, @active_0(), #PB_EventType_Focus)
+  Bind( *button_4, @deactive_0(), #PB_EventType_LostFocus)
   
-  button(10,50,170,30,"button_5")
-  ;SetActive(widget())
-  Bind( widget(), @active_0(), #PB_EventType_Focus)
-  Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+  Define *button_5 = button(10,50,170,30,"button_5")
+  ;SetActive(*button_5)
+  Bind( *button_5, @active_0(), #PB_EventType_Focus)
+  Bind( *button_5, @deactive_0(), #PB_EventType_LostFocus)
   
     
 ;   Bind( #PB_All, @active_0(), #PB_EventType_Focus)
@@ -92,6 +92,6 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

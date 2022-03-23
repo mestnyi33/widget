@@ -9,54 +9,48 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global b_0,b_1,b_2,s_0,b_2,b_3,s_1, s_2
+  Global *w_1,*w_2,*w_3,*w_4,*w_5,*w_6,*w_7
   
   Procedure resize_window_0()
     Protected width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
-;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+;     ResizeGadget(3, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
+;     ResizeGadget(6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
     ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     
-;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    Resize(s_2, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+;     Resize(*w_3, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
+;     Resize(*w_6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
+    Resize(*w_7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
   EndProcedure
   
-  OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  widget::Open(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::Open(0);, 0, 0, 510, 340)
-  
   ; first splitter
-  ButtonGadget(1, 0, 0, 0, 0, "BTN1")
-  ButtonGadget(2, 0, 0, 0, 0, "BTN2")
-  SplitterGadget(3, 0, 0, 0, 0, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  ButtonGadget(1, 0,0,0,0, "BTN1")
+  ButtonGadget(2, 0,0,0,0, "BTN2")
+  SplitterGadget(3, 0,0,0,0, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
   
-  ButtonGadget(4, 0, 0, 0, 0, "BTN1")
-  ButtonGadget(5, 0, 0, 0, 0, "BTN2")
-  SplitterGadget(6, 0, 0, 0, 0, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  ButtonGadget(4, 0,0,0,0, "BTN4")
+  ButtonGadget(5, 0,0,0,0, "BTN5")
+  SplitterGadget(6, 0,0,0,0, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
   
   
   
   ; first splitter
-  b_0 = widget::Button(0, 0, 0, 0, "BTN1")
-  b_1 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_0 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  *w_1 = widget::Button(0,0,0,0, "BTN1")
+  *w_2 = widget::Button(0,0,0,0, "BTN2")
+  *w_3 = widget::Splitter(0,0,0,0, *w_1, *w_2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
 
-  b_2 = widget::Button(0, 0, 0, 0, "BTN1")
-  b_3 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_1 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
+  *w_4 = widget::Button(0,0,0,0, "BTN4")
+  *w_5 = widget::Button(0,0,0,0, "BTN5")
+  *w_6 = widget::Splitter(0,0,0,0, *w_4, *w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  *w_7 = widget::Splitter(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator)
   
   
-  Define event
-  Repeat
-    event = WaitWindowEvent()
-  Until event = #PB_Event_CloseWindow
-  End
+  WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

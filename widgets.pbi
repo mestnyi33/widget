@@ -154,6 +154,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro Widget( ) : widget::*include\_address( ): EndMacro ; Returns last created widget 
     Macro Keyboard( ) : widget::*include\keyboard: EndMacro
     
+    Macro RowList( _this_ ): _this_\row\_s( ): EndMacro
+    
     Macro EnteredItem( ) : mouse( )\entered\row: EndMacro; Returns mouse entered widget
     Macro LeavedItem( ) : mouse( )\leaved\row: EndMacro; Returns mouse entered widget
     
@@ -185,7 +187,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If This( )\action_widget And This( )\action_widget\type = #__type_combobox
             This( )\action_widget\change = 1
             ;Redraw( This( )\action_widget\root )
-            ;_update_items_( This( )\action_widget, This( )\action_widget\row )
+            ;_update_items_( This( )\action_widget )
           EndIf
         EndIf
         
@@ -594,7 +596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro _draw_font_item_( _this_, _item_, _change_ )
+    Macro draw_font_item_( _this_, _item_, _change_ )
       If _item_\text\fontID = #Null
         If _this_\text\fontID = #Null
           If _is_child_integral_( _this_ )
@@ -677,12 +679,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       BackColor( #PB_Default ) : FrontColor( #PB_Default ) ; bug
     EndMacro
     
-    Macro _draw_box_( _address_, _color_type_, _mode_= )
+    Macro draw_box_( _address_, _color_type_, _mode_= )
       draw_box_round( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, 
                       _address_\round, _address_\round, _address_\_color_type_[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
     EndMacro
     
-    Macro _draw_box_button_( _address_, _color_type_ )
+    Macro draw_box_button_( _address_, _color_type_ )
       If Not _address_\hide
         draw_box_round( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
         draw_box_round( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
@@ -701,7 +703,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Line( _address_\x + _size_ + ( _address_\width - _size_ )/2, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
         EndIf
         
-        _draw_box_button_( _address_, color\frame )
+        draw_box_button_( _address_, color\frame )
       EndIf
     EndMacro
     
@@ -715,7 +717,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Line( _address_\x + 2 + ( _address_\width - _size_ )/2, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
         EndIf
         
-        _draw_box_button_( _address_, color\frame )
+        draw_box_button_( _address_, color\frame )
       EndIf
     EndMacro
     
@@ -729,7 +731,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Line( _address_\x - 2 + ( _address_\width )/2 + _size_, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\_alpha<<24 )
         EndIf
         
-        _draw_box_button_( _address_, color\frame )
+        draw_box_button_( _address_, color\frame )
       EndIf
     EndMacro
     
@@ -860,7 +862,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Bool( Not _bar_\invert ) * ( _bar_\area\pos + _thumb_pos_ ))
     EndMacro
     
-    Macro _bar_scroll_pos_( _this_, _pos_, _len_ )
+    Macro bar_scroll_pos_( _this_, _pos_, _len_ )
       Bool( Bool(((( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) < 0 And Bar_SetState( _this_\bar, (( _pos_ ) + _this_\bar\min ) )) Or
             Bool(( (( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) > ( _this_\bar\page\len - ( _len_ )) And Bar_SetState( _this_\bar, (( _pos_ ) + _this_\bar\min ) - ( _this_\bar\page\len - ( _len_ ) ))) )
     EndMacro
@@ -954,7 +956,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i SetAlignmentFlag( *this, Mode.l, Type.l = 1 )
     Declare.i SetAlignment( *this, left.l, top.l, right.l, bottom.l, auto.b = #True )
     Declare   SetFrame( *this, size.a, mode.i = 0 )
-    Declare   Object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1 )
+    Declare   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1 )
     
     Declare.i TypeFromClass( class.s )
     Declare.s ClassFromType( type.i )
@@ -1140,7 +1142,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.b Bar_Resize( *bar )
     Declare.b Bar_SetState( *bar, state.f )
     
-    Declare.l _draw_items_( *this._s_WIDGET, List *row._s_rows( ), _scroll_x_, _scroll_y_ )
+    Declare.l draw_items_( *this._s_WIDGET, List *row._s_rows( ), _scroll_x_, _scroll_y_ )
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;     Macro OSX_NSColorToRGB( _color_ )
@@ -3626,7 +3628,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
     EndMacro
     
-    Macro _set_image_( _this_, _address_, _image_ )
+    Macro set_image_( _this_, _address_, _image_ )
       If IsImage( _image_ )
         _address_\change = 1
         _address_\img = _image_ 
@@ -4700,7 +4702,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       _parent_\scroll\h = Create( _parent_, _parent_\class+"_horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize,  0,_area_width_,_width_, #Null$, #__flag_child, Bool( _mode_ )*#__scroll_buttonsize, 7, _scroll_step_ )
     EndMacro                                                  
     
-    Macro Area_Draw( _this_ )
+    Macro bar_area_draw_( _this_ )
       If _this_\scroll
         ;_content_clip_( _this_, [#__c_clip] )
         
@@ -4822,7 +4824,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         *this\count\items + 1 
         
-        _set_image_( *this, \bar\_s( )\Image, Image )
+        set_image_( *this, \bar\_s( )\Image, Image )
         PostEventCanvas( *this\root )
       EndWith
       
@@ -4898,7 +4900,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndMacro
     
     Macro _draw_item_( _this_, _item_, x, y, _round_, _mode_= )
-      ;_draw_font_item_( _this_, _item_, 0 )
+      ;draw_font_item_( _this_, _item_, 0 )
       
       Tab_Draw_Item( _this_\vertical, _item_, x, y,
                      _item_\color\fore#_mode_,
@@ -5006,7 +5008,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
               
               ; 
-              _draw_font_item_( *this, *this\bar\_s( ), *this\bar\_s( )\change )
+              draw_font_item_( *this, *this\bar\_s( ), *this\bar\_s( )\change )
               
               ; init items position
               If *this\vertical
@@ -5121,7 +5123,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; draw all visible items
           ForEach \bar\_s( )
-            _draw_font_item_( *this, *this\bar\_s( ), 0 )
+            draw_font_item_( *this, *this\bar\_s( ), 0 )
             
             ; real visible items
             If *this\vertical
@@ -5148,7 +5150,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
              _get_bar_enter_item_( *this )\visible And 
              _get_bar_enter_item_( *this ) <> _get_bar_active_item_( *this )
             
-            _draw_font_item_( *this, _get_bar_enter_item_( *this ), 0 )
+            draw_font_item_( *this, _get_bar_enter_item_( *this ), 0 )
             
             _draw_item_( *this, _get_bar_enter_item_( *this ), x, y, *this\bar\button[#__b_3]\round, [1] )
           EndIf
@@ -5157,7 +5159,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If _get_bar_active_item_( *this ) And 
              _get_bar_active_item_( *this )\visible
             
-            _draw_font_item_( *this, _get_bar_active_item_( *this ), 0 )
+            draw_font_item_( *this, _get_bar_active_item_( *this ), 0 )
             
             _draw_item_( *this, _get_bar_active_item_( *this ), x, y, *this\bar\button[#__b_3]\round, [2] )
           EndIf
@@ -5409,7 +5411,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; Draw scroll bar background
           If *this\color\back <>- 1
             draw_mode_alpha( #PB_2DDrawing_Default )
-            _draw_box_(*this, color\back, [#__c_frame])
+            draw_box_(*this, color\back, [#__c_frame])
           EndIf
           
           ;
@@ -5420,7 +5422,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               _draw_gradient_(*this\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
             Else
               draw_mode_alpha( #PB_2DDrawing_Default )
-              _draw_box_(*this\bar\button[#__b_1], color\back)
+              draw_box_(*this\bar\button[#__b_1], color\back)
             EndIf
           EndIf
           If Not*this\bar\button[#__b_2]\hide
@@ -5429,7 +5431,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               _draw_gradient_(*this\vertical,\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
             Else
               draw_mode_alpha( #PB_2DDrawing_Default )
-              _draw_box_(*this\bar\button[#__b_2], color\back)
+              draw_box_(*this\bar\button[#__b_2], color\back)
             EndIf
           EndIf
           
@@ -5456,13 +5458,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If *this\bar\button[#__b_1]\arrow\size
               _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\vertical )) 
             EndIf
-            _draw_box_(*this\bar\button[#__b_1], color\frame)
+            draw_box_(*this\bar\button[#__b_1], color\frame)
           EndIf
           If Not *this\bar\button[#__b_2]\hide
             If *this\bar\button[#__b_2]\arrow\size
               _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\vertical ) + 2 ) 
             EndIf
-            _draw_box_(\bar\button[#__b_2], color\frame)
+            draw_box_(\bar\button[#__b_2], color\frame)
           EndIf
           
           
@@ -5495,7 +5497,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             ; Draw thumb frame
             draw_mode_alpha( #PB_2DDrawing_Outlined )
-            _draw_box_(\bar\button[#__b_3], color\frame)
+            draw_box_(\bar\button[#__b_3], color\frame)
           EndIf
           
         EndIf
@@ -7681,15 +7683,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Macro _text_scroll_x_( _this_ )
       If *this\scroll\h And Not *this\scroll\v\hide And _this_\text\caret\x
-        ; *this\change =- _bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x, ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
-        *this\change =- _bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x), ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
+        ; *this\change =- bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x, ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
+        *this\change =- bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x), ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
       EndIf
     EndMacro
     
     Macro _text_scroll_y_( _this_ )
       If *this\scroll\v And Not *this\scroll\v\hide
-        ;  *this\change =- _bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y), ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
-        *this\change =- _bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\y, ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
+        ;  *this\change =- bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y), ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
+        *this\change =- bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\y, ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
       EndIf
     EndMacro
     
@@ -7703,8 +7705,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       Mousex = mouse( )\x - _row_text_x_( *this )
       
-      For i = 0 To *this\row\_s( )\text\len
-        x = TextWidth( Left( *this\row\_s( )\text\string, i ))
+      For i = 0 To RowList( *this )\text\len
+        x = TextWidth( Left( RowList( *this )\text\string, i ))
         Distance = ( Mousex - x )*( Mousex - x )
         
         If MinDistance > Distance 
@@ -7720,98 +7722,98 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If _pos_ < 0 : _pos_ = 0 : EndIf
       If _len_ < 0 : _len_ = 0 : EndIf
       
-      If _pos_ > *this\row\_s( )\text\len
-        _pos_ = *this\row\_s( )\text\len
+      If _pos_ > RowList( *this )\text\len
+        _pos_ = RowList( *this )\text\len
       EndIf
       
-      If _len_ > *this\row\_s( )\text\len
-        _len_ = *this\row\_s( )\text\len
+      If _len_ > RowList( *this )\text\len
+        _len_ = RowList( *this )\text\len
       EndIf
       
       Protected _line_ = *this\index[#__s_1]
       Protected _caret_last_len_ = Bool( _line_ <> *this\index[#__s_2] And 
-                                         ( *this\row\_s( )\index < *this\index[#__s_1] Or 
-                                           *this\row\_s( )\index < *this\index[#__s_2] )) * *this\mode\fullselection
+                                         ( RowList( *this )\index < *this\index[#__s_1] Or 
+                                           RowList( *this )\index < *this\index[#__s_2] )) * *this\mode\fullselection
       
       ;     If  _caret_last_len_
       ;       _caret_last_len_ = *this\width[2]
       ;     EndIf
       
-      *this\row\_s( )\text\edit[1]\len = _pos_
-      *this\row\_s( )\text\edit[2]\len = _len_
+      RowList( *this )\text\edit[1]\len = _pos_
+      RowList( *this )\text\edit[2]\len = _len_
       
-      *this\row\_s( )\text\edit[1]\pos = 0 
-      *this\row\_s( )\text\edit[2]\pos = *this\row\_s( )\text\edit[1]\len
+      RowList( *this )\text\edit[1]\pos = 0 
+      RowList( *this )\text\edit[2]\pos = RowList( *this )\text\edit[1]\len
       
-      *this\row\_s( )\text\edit[3]\pos = *this\row\_s( )\text\edit[2]\pos + *this\row\_s( )\text\edit[2]\len 
-      *this\row\_s( )\text\edit[3]\len = *this\row\_s( )\text\len - *this\row\_s( )\text\edit[3]\pos
+      RowList( *this )\text\edit[3]\pos = RowList( *this )\text\edit[2]\pos + RowList( *this )\text\edit[2]\len 
+      RowList( *this )\text\edit[3]\len = RowList( *this )\text\len - RowList( *this )\text\edit[3]\pos
       
       ; set string & size ( left;selected;right )
-      If *this\row\_s( )\text\edit[1]\len > 0
-        *this\row\_s( )\text\edit[1]\string = Left( *this\row\_s( )\text\string, *this\row\_s( )\text\edit[1]\len )
-        *this\row\_s( )\text\edit[1]\width = TextWidth( *this\row\_s( )\text\edit[1]\string ) 
+      If RowList( *this )\text\edit[1]\len > 0
+        RowList( *this )\text\edit[1]\string = Left( RowList( *this )\text\string, RowList( *this )\text\edit[1]\len )
+        RowList( *this )\text\edit[1]\width = TextWidth( RowList( *this )\text\edit[1]\string ) 
       Else
-        *this\row\_s( )\text\edit[1]\string = ""
-        *this\row\_s( )\text\edit[1]\width = 0
+        RowList( *this )\text\edit[1]\string = ""
+        RowList( *this )\text\edit[1]\width = 0
       EndIf
-      If *this\row\_s( )\text\edit[2]\len > 0
-        If *this\row\_s( )\text\edit[2]\len <> *this\row\_s( )\text\len
-          *this\row\_s( )\text\edit[2]\string = Mid( *this\row\_s( )\text\string, 1 + *this\row\_s( )\text\edit[2]\pos, *this\row\_s( )\text\edit[2]\len )
-          *this\row\_s( )\text\edit[2]\width = TextWidth( *this\row\_s( )\text\edit[2]\string ) + _caret_last_len_ 
-          ;         + Bool(( _line_ <  *this\index[2] And *this\row\_s( )\index = _line_ ) Or
-          ;                                                                                                  ;( _line_ <> *this\row\_s( )\index And *this\row\_s( )\index <> *this\index[2] ) Or
-          ;         ( _line_  > *this\index[2] And *this\row\_s( )\index = *this\index[2] )) * *this\mode\fullselection
+      If RowList( *this )\text\edit[2]\len > 0
+        If RowList( *this )\text\edit[2]\len <> RowList( *this )\text\len
+          RowList( *this )\text\edit[2]\string = Mid( RowList( *this )\text\string, 1 + RowList( *this )\text\edit[2]\pos, RowList( *this )\text\edit[2]\len )
+          RowList( *this )\text\edit[2]\width = TextWidth( RowList( *this )\text\edit[2]\string ) + _caret_last_len_ 
+          ;         + Bool(( _line_ <  *this\index[2] And RowList( *this )\index = _line_ ) Or
+          ;                                                                                                  ;( _line_ <> RowList( *this )\index And RowList( *this )\index <> *this\index[2] ) Or
+          ;         ( _line_  > *this\index[2] And RowList( *this )\index = *this\index[2] )) * *this\mode\fullselection
         Else
-          *this\row\_s( )\text\edit[2]\string = *this\row\_s( )\text\string
-          *this\row\_s( )\text\edit[2]\width = *this\row\_s( )\text\width + _caret_last_len_
+          RowList( *this )\text\edit[2]\string = RowList( *this )\text\string
+          RowList( *this )\text\edit[2]\width = RowList( *this )\text\width + _caret_last_len_
         EndIf
       Else
-        *this\row\_s( )\text\edit[2]\string = ""
-        *this\row\_s( )\text\edit[2]\width = _caret_last_len_
+        RowList( *this )\text\edit[2]\string = ""
+        RowList( *this )\text\edit[2]\width = _caret_last_len_
       EndIf
       
-      If *this\row\_s( )\text\edit[3]\len > 0
-        *this\row\_s( )\text\edit[3]\string = Right( *this\row\_s( )\text\string, *this\row\_s( )\text\edit[3]\len )
-        *this\row\_s( )\text\edit[3]\width = TextWidth( *this\row\_s( )\text\edit[3]\string )  
+      If RowList( *this )\text\edit[3]\len > 0
+        RowList( *this )\text\edit[3]\string = Right( RowList( *this )\text\string, RowList( *this )\text\edit[3]\len )
+        RowList( *this )\text\edit[3]\width = TextWidth( RowList( *this )\text\edit[3]\string )  
       Else
-        *this\row\_s( )\text\edit[3]\string = ""
-        *this\row\_s( )\text\edit[3]\width = 0
+        RowList( *this )\text\edit[3]\string = ""
+        RowList( *this )\text\edit[3]\width = 0
       EndIf
       
       ; because bug in mac os
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        If *this\row\_s( )\text\edit[2]\width And Not ( _line_ = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] ) And
-           *this\row\_s( )\text\edit[2]\width <> *this\row\_s( )\text\width - ( *this\row\_s( )\text\edit[1]\width + *this\row\_s( )\text\edit[3]\width ) + _caret_last_len_
-          *this\row\_s( )\text\edit[2]\width = *this\row\_s( )\text\width - ( *this\row\_s( )\text\edit[1]\width + *this\row\_s( )\text\edit[3]\width ) + _caret_last_len_
+        If RowList( *this )\text\edit[2]\width And Not ( _line_ = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] ) And
+           RowList( *this )\text\edit[2]\width <> RowList( *this )\text\width - ( RowList( *this )\text\edit[1]\width + RowList( *this )\text\edit[3]\width ) + _caret_last_len_
+          RowList( *this )\text\edit[2]\width = RowList( *this )\text\width - ( RowList( *this )\text\edit[1]\width + RowList( *this )\text\edit[3]\width ) + _caret_last_len_
         EndIf
       CompilerEndIf
       
       ; для красоты
-      If *this\row\_s( )\text\edit[2]\width > *this\width[#__c_required]
-        *this\row\_s( )\text\edit[2]\width - _caret_last_len_
+      If RowList( *this )\text\edit[2]\width > *this\width[#__c_required]
+        RowList( *this )\text\edit[2]\width - _caret_last_len_
       EndIf
       
       ; set position ( left;selected;right )
-      *this\row\_s( )\text\edit[1]\x = *this\row\_s( )\text\x 
-      *this\row\_s( )\text\edit[2]\x = ( *this\row\_s( )\text\edit[1]\x + *this\row\_s( )\text\edit[1]\width ) 
-      *this\row\_s( )\text\edit[3]\x = ( *this\row\_s( )\text\edit[2]\x + *this\row\_s( )\text\edit[2]\width )
+      RowList( *this )\text\edit[1]\x = RowList( *this )\text\x 
+      RowList( *this )\text\edit[2]\x = ( RowList( *this )\text\edit[1]\x + RowList( *this )\text\edit[1]\width ) 
+      RowList( *this )\text\edit[3]\x = ( RowList( *this )\text\edit[2]\x + RowList( *this )\text\edit[2]\width )
       
       ; если выделили свнизу вверх
       ; то запоминаем позицию начала текста[3]
-      If *this\index[#__s_2] >= *this\row\_s( )\index
-        *this\text\edit[1]\len = ( *this\row\_s( )\text\pos + *this\row\_s( )\text\edit[2]\pos )
+      If *this\index[#__s_2] >= RowList( *this )\index
+        *this\text\edit[1]\len = ( RowList( *this )\text\pos + RowList( *this )\text\edit[2]\pos )
         *this\text\edit[2]\pos = *this\text\edit[1]\len
       EndIf
       
       ; если выделили сверху ввниз
       ; то запоминаем позицию начала текста[3]
-      If *this\index[#__s_2] <= *this\row\_s( )\index
-        *this\text\edit[3]\pos = ( *this\row\_s( )\text\pos + *this\row\_s( )\text\edit[3]\pos )
+      If *this\index[#__s_2] <= RowList( *this )\index
+        *this\text\edit[3]\pos = ( RowList( *this )\text\pos + RowList( *this )\text\edit[3]\pos )
         *this\text\edit[3]\len = ( *this\text\len - *this\text\edit[3]\pos )
       EndIf
       
       ; text/pos/len/state
-      If _line_ = *this\row\_s( )\index
+      If _line_ = RowList( *this )\index
         If *this\text\edit[2]\len <> ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
           *this\text\edit[2]\len = ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
         EndIf
@@ -7834,21 +7836,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;       ; set cursor pos
-        ;       If _line_ = *this\row\_s( )\index
-        *this\text\caret\y = *this\row\_s( )\text\y + Bool( #PB_Compiler_OS <> #PB_OS_Windows )
-        *this\text\caret\height = *this\row\_s( )\text\height
+        ;       If _line_ = RowList( *this )\index
+        *this\text\caret\y = RowList( *this )\text\y + Bool( #PB_Compiler_OS <> #PB_OS_Windows )
+        *this\text\caret\height = RowList( *this )\text\height
         
         If _line_ > *this\index[#__s_2] Or
            ( _line_ = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] )
-          *this\text\caret\x = *this\row\_s( )\text\edit[3]\x
-          *this\text\caret\pos = *this\row\_s( )\text\pos + *this\row\_s( )\text\edit[3]\pos
+          *this\text\caret\x = RowList( *this )\text\edit[3]\x
+          *this\text\caret\pos = RowList( *this )\text\pos + RowList( *this )\text\edit[3]\pos
         Else
-          ;           If *this\row\_s( )\text\edit[2]\x
-          *this\text\caret\x = *this\row\_s( )\text\edit[2]\x
+          ;           If RowList( *this )\text\edit[2]\x
+          *this\text\caret\x = RowList( *this )\text\edit[2]\x
           ;           Else
           ;             *this\text\caret\x = *this\text\padding\x
           ;           EndIf
-          *this\text\caret\pos = *this\row\_s( )\text\pos + *this\row\_s( )\text\edit[2]\pos
+          *this\text\caret\pos = RowList( *this )\text\pos + RowList( *this )\text\edit[2]\pos
         EndIf
         
         ;*this\text\caret\width = 1
@@ -7883,21 +7885,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If _scroll_
         
-        PushListPosition( *this\row\_s( )) 
-        ForEach *this\row\_s( )
-          If ( _line_ = *this\row\_s( )\index Or *this\index[#__s_2] = *this\row\_s( )\index ) Or    ; линия
-             ( _line_ < *this\row\_s( )\index And *this\index[#__s_2] > *this\row\_s( )\index ) Or   ; верх
-             ( _line_ > *this\row\_s( )\index And *this\index[#__s_2] < *this\row\_s( )\index )      ; вниз
+        PushListPosition( RowList( *this )) 
+        ForEach RowList( *this )
+          If ( _line_ = RowList( *this )\index Or *this\index[#__s_2] = RowList( *this )\index ) Or    ; линия
+             ( _line_ < RowList( *this )\index And *this\index[#__s_2] > RowList( *this )\index ) Or   ; верх
+             ( _line_ > RowList( *this )\index And *this\index[#__s_2] < RowList( *this )\index )      ; вниз
             
-            If _line_ = *this\index[#__s_2]  ; And *this\index[2] = *this\row\_s( )\index
+            If _line_ = *this\index[#__s_2]  ; And *this\index[2] = RowList( *this )\index
               If *this\text\caret\pos[1] > *this\text\caret\pos[2]
                 _edit_sel_( *this, *this\text\caret\pos[2], *this\text\caret\pos[1] - *this\text\caret\pos[2] )
               Else
                 _edit_sel_( *this, *this\text\caret\pos[1], *this\text\caret\pos[2] - *this\text\caret\pos[1] )
               EndIf
               
-            ElseIf ( _line_ < *this\row\_s( )\index And *this\index[#__s_2] > *this\row\_s( )\index ) Or   ; верх
-                   ( _line_ > *this\row\_s( )\index And *this\index[#__s_2] < *this\row\_s( )\index )      ; вниз
+            ElseIf ( _line_ < RowList( *this )\index And *this\index[#__s_2] > RowList( *this )\index ) Or   ; верх
+                   ( _line_ > RowList( *this )\index And *this\index[#__s_2] < RowList( *this )\index )      ; вниз
               
               If _line_ < 0
                 ; если курсор перешел за верхный предел
@@ -7906,19 +7908,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               ElseIf _line_ > *this\count\items - 1
                 ; если курсор перешел за нижный предел
                 *this\index[#__s_1] = *this\count\items - 1
-                *this\text\caret\pos[1] = *this\row\_s( )\text\len
+                *this\text\caret\pos[1] = RowList( *this )\text\len
               EndIf
               
-              _edit_sel_( *this, 0, *this\row\_s( )\text\len )
+              _edit_sel_( *this, 0, RowList( *this )\text\len )
               
-            ElseIf _line_ = *this\row\_s( )\index 
+            ElseIf _line_ = RowList( *this )\index 
               If _line_ > *this\index[#__s_2] 
                 _edit_sel_( *this, 0, *this\text\caret\pos[1] )
               Else
-                _edit_sel_( *this, *this\text\caret\pos[1], *this\row\_s( )\text\len - *this\text\caret\pos[1] )
+                _edit_sel_( *this, *this\text\caret\pos[1], RowList( *this )\text\len - *this\text\caret\pos[1] )
               EndIf
               
-            ElseIf *this\index[#__s_2] = *this\row\_s( )\index
+            ElseIf *this\index[#__s_2] = RowList( *this )\index
               
               
               If *this\count\items = 1 And 
@@ -7929,8 +7931,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 If *this\text\caret\pos[2] > *this\text\caret\pos[1]
                   _edit_sel_( *this, 0, *this\text\caret\pos[2] )
                 Else
-                  *this\text\caret\pos[1] = *this\row\_s( )\text\len
-                  _edit_sel_( *this, *this\text\caret\pos[2], Bool( _line_ <> *this\index[#__s_2] ) * ( *this\row\_s( )\text\len - *this\text\caret\pos[2] ))
+                  *this\text\caret\pos[1] = RowList( *this )\text\len
+                  _edit_sel_( *this, *this\text\caret\pos[2], Bool( _line_ <> *this\index[#__s_2] ) * ( RowList( *this )\text\len - *this\text\caret\pos[2] ))
                 EndIf
                 
                 *this\index[#__s_1] = _line_
@@ -7940,19 +7942,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   *this\text\caret\pos[1] = 0
                 ElseIf _line_ > *this\count\items - 1
                   *this\index[#__s_1] = *this\count\items - 1
-                  *this\text\caret\pos[1] = *this\row\_s( )\text\len
+                  *this\text\caret\pos[1] = RowList( *this )\text\len
                 EndIf
                 
                 If *this\index[#__s_2] > _line_ 
                   _edit_sel_( *this, 0, *this\text\caret\pos[2] )
                 Else
-                  _edit_sel_( *this, *this\text\caret\pos[2], ( *this\row\_s( )\text\len - *this\text\caret\pos[2] ))
+                  _edit_sel_( *this, *this\text\caret\pos[2], ( RowList( *this )\text\len - *this\text\caret\pos[2] ))
                 EndIf
               EndIf
               
             EndIf
             
-            If *this\index[#__s_1] = *this\row\_s( )\index
+            If *this\index[#__s_1] = RowList( *this )\index
               ; vertical scroll
               If _scroll_ = 1
                 _text_scroll_y_( *this )
@@ -7964,15 +7966,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             EndIf
             
-          ElseIf ( *this\row\_s( )\text\edit[2]\width <> 0 And 
-                   *this\index[#__s_2] <> *this\row\_s( )\index And _line_ <> *this\row\_s( )\index )
+          ElseIf ( RowList( *this )\text\edit[2]\width <> 0 And 
+                   *this\index[#__s_2] <> RowList( *this )\index And _line_ <> RowList( *this )\index )
             
             ; reset selected string
-            _edit_sel_reset_( *this\row\_s( ))
+            _edit_sel_reset_( RowList( *this ))
             
           EndIf
         Next
-        PopListPosition( *this\row\_s( )) 
+        PopListPosition( RowList( *this )) 
         
       EndIf 
       
@@ -7994,9 +7996,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; select enter mouse item
         If _line_ >= 0 And 
            _line_ < *this\count\items And 
-           _line_ <> *this\row\_s( )\index
+           _line_ <> RowList( *this )\index
           \row\_s( )\color\state = 0
-          SelectElement( *this\row\_s( ), _line_ ) 
+          SelectElement( RowList( *this ), _line_ ) 
           \row\_s( )\color\state = 1
         EndIf
         
@@ -8017,14 +8019,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             If _edit_sel_is_line_( *this )
-              If *this\text\caret\pos[2] <> *this\row\_s( )\text\edit[1]\len
-                *this\text\caret\pos[2] = *this\row\_s( )\text\edit[1]\len
-                *this\text\caret\pos[1] = *this\row\_s( )\text\edit[1]\len + *this\row\_s( )\text\edit[2]\len
+              If *this\text\caret\pos[2] <> RowList( *this )\text\edit[1]\len
+                *this\text\caret\pos[2] = RowList( *this )\text\edit[1]\len
+                *this\text\caret\pos[1] = RowList( *this )\text\edit[1]\len + RowList( *this )\text\edit[2]\len
                 
-                If _caret_ < *this\row\_s( )\text\edit[1]\len + *this\row\_s( )\text\edit[2]\len/2
-                  _caret_ = *this\row\_s( )\text\edit[1]\len
+                If _caret_ < RowList( *this )\text\edit[1]\len + RowList( *this )\text\edit[2]\len/2
+                  _caret_ = RowList( *this )\text\edit[1]\len
                 Else
-                  _caret_ = *this\row\_s( )\text\edit[1]\len + *this\row\_s( )\text\edit[2]\len
+                  _caret_ = RowList( *this )\text\edit[1]\len + RowList( *this )\text\edit[2]\len
                 EndIf
                 
                 Repaint =- 1
@@ -8039,9 +8041,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             If Repaint 
               ; set cursor pos
-              *this\text\caret\y = *this\row\_s( )\text\y
-              *this\text\caret\height = *this\row\_s( )\text\height - 1
-              *this\text\caret\x = *this\row\_s( )\text\x + TextWidth( Left( *this\row\_s( )\text\string, _caret_ ))
+              *this\text\caret\y = RowList( *this )\text\y
+              *this\text\caret\height = RowList( *this )\text\height - 1
+              *this\text\caret\x = RowList( *this )\text\x + TextWidth( Left( RowList( *this )\text\string, _caret_ ))
               _text_scroll_x_( *this )
             EndIf
             
@@ -8070,8 +8072,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ; ProcedureReturn 
       
       ; key - ( return & backspace )
-      If *this\index[#__s_2] = *this\row\_s( )\index 
-        *this\row\active = *this\row\_s( )
+      If *this\index[#__s_2] = RowList( *this )\index 
+        *this\row\active = RowList( *this )
         
         If *this\index[#__s_2] = *this\index[#__s_1]
           If *this\text\caret\pos[1] > *this\text\caret\pos[2]
@@ -8084,8 +8086,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ;     If *this\row\count = *this\count\items
       ;       ; move caret
-      ;       If *this\index[2] + 1 = *this\row\_s( )\index 
-      ;         ;         *this\index[1] = *this\row\_s( )\index 
+      ;       If *this\index[2] + 1 = RowList( *this )\index 
+      ;         ;         *this\index[1] = RowList( *this )\index 
       ;         ;         *this\index[2] = *this\index[1]
       ;         
       ;         If *this\index[2] = *this\index[1]
@@ -8104,127 +8106,127 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       Protected  _line_ = *this\index[#__s_1]
       ;       If _line_ > 0 
-      ;         SelectElement( *this\row\_s( ), _line_ )
+      ;         SelectElement( RowList( *this ), _line_ )
       ;       EndIf
       
-      ;; PushListPosition( *this\row\_s( ))
+      ;; PushListPosition( RowList( *this ))
       
-      If _line_ = *this\index[#__s_2]  ; And *this\index[2] = *this\row\_s( )\index
+      If _line_ = *this\index[#__s_2]  ; And *this\index[2] = RowList( *this )\index
         If *this\text\caret\pos[1] > *this\text\caret\pos[2]
           _edit_sel_( *this, *this\text\caret\pos[2], *this\text\caret\pos[1] - *this\text\caret\pos[2] )
         Else
           _edit_sel_( *this, *this\text\caret\pos[1], *this\text\caret\pos[2] - *this\text\caret\pos[1] )
         EndIf
         
-      ElseIf ( *this\index[#__s_2] > *this\row\_s( )\index And _line_ < *this\row\_s( )\index ) Or   ; верх
-             ( *this\index[#__s_2] < *this\row\_s( )\index And _line_ > *this\row\_s( )\index )      ; вниз
+      ElseIf ( *this\index[#__s_2] > RowList( *this )\index And _line_ < RowList( *this )\index ) Or   ; верх
+             ( *this\index[#__s_2] < RowList( *this )\index And _line_ > RowList( *this )\index )      ; вниз
         
-        _edit_sel_( *this, 0, *this\row\_s( )\text\len )
+        _edit_sel_( *this, 0, RowList( *this )\text\len )
         
-      ElseIf _line_ = *this\row\_s( )\index 
+      ElseIf _line_ = RowList( *this )\index 
         If _line_ > *this\index[#__s_2] 
           _edit_sel_( *this, 0, *this\text\caret\pos[1] )
         Else
-          _edit_sel_( *this, *this\text\caret\pos[1], *this\row\_s( )\text\len - *this\text\caret\pos[1] )
+          _edit_sel_( *this, *this\text\caret\pos[1], RowList( *this )\text\len - *this\text\caret\pos[1] )
         EndIf
         
-      ElseIf *this\index[#__s_2] = *this\row\_s( )\index
+      ElseIf *this\index[#__s_2] = RowList( *this )\index
         If *this\index[#__s_2] > _line_ 
           _edit_sel_( *this, 0, *this\text\caret\pos[2] )
         Else
-          _edit_sel_( *this, *this\text\caret\pos[2], *this\row\_s( )\text\len - *this\text\caret\pos[2] )
+          _edit_sel_( *this, *this\text\caret\pos[2], RowList( *this )\text\len - *this\text\caret\pos[2] )
         EndIf
         
       EndIf
       
-      ;; PopListPosition( *this\row\_s( ))
+      ;; PopListPosition( RowList( *this ))
       
       
       
       
       ProcedureReturn 
       
-      If ( *this\index[#__s_2] = *this\row\_s( )\index Or *this\index[#__s_1] = *this\row\_s( )\index ) Or    ; линия
-         ( *this\index[#__s_2] > *this\row\_s( )\index And *this\index[#__s_1] < *this\row\_s( )\index ) Or   ; верх
-         ( *this\index[#__s_2] < *this\row\_s( )\index And *this\index[#__s_1] > *this\row\_s( )\index )      ; вниз
+      If ( *this\index[#__s_2] = RowList( *this )\index Or *this\index[#__s_1] = RowList( *this )\index ) Or    ; линия
+         ( *this\index[#__s_2] > RowList( *this )\index And *this\index[#__s_1] < RowList( *this )\index ) Or   ; верх
+         ( *this\index[#__s_2] < RowList( *this )\index And *this\index[#__s_1] > RowList( *this )\index )      ; вниз
         
-        If ( *this\index[#__s_2] > *this\row\_s( )\index And *this\index[#__s_1] < *this\row\_s( )\index ) Or   ; верх
-           ( *this\index[#__s_2] < *this\row\_s( )\index And *this\index[#__s_1] > *this\row\_s( )\index )      ; вниз
+        If ( *this\index[#__s_2] > RowList( *this )\index And *this\index[#__s_1] < RowList( *this )\index ) Or   ; верх
+           ( *this\index[#__s_2] < RowList( *this )\index And *this\index[#__s_1] > RowList( *this )\index )      ; вниз
           
-          *this\row\_s( )\text\edit[1]\len = 0 
-          *this\row\_s( )\text\edit[2]\len = *this\row\_s( )\text\len
+          RowList( *this )\text\edit[1]\len = 0 
+          RowList( *this )\text\edit[2]\len = RowList( *this )\text\len
           
-        ElseIf *this\index[#__s_1] = *this\row\_s( )\index 
+        ElseIf *this\index[#__s_1] = RowList( *this )\index 
           If *this\index[#__s_1] > *this\index[#__s_2] 
-            *this\row\_s( )\text\edit[1]\len = 0 
-            *this\row\_s( )\text\edit[2]\len = *this\text\caret\pos[1]
+            RowList( *this )\text\edit[1]\len = 0 
+            RowList( *this )\text\edit[2]\len = *this\text\caret\pos[1]
           Else
-            *this\row\_s( )\text\edit[1]\len = *this\text\caret\pos[1] 
-            *this\row\_s( )\text\edit[2]\len = *this\row\_s( )\text\len - *this\row\_s( )\text\edit[1]\len
+            RowList( *this )\text\edit[1]\len = *this\text\caret\pos[1] 
+            RowList( *this )\text\edit[2]\len = RowList( *this )\text\len - RowList( *this )\text\edit[1]\len
           EndIf
           
-        ElseIf *this\index[#__s_2] = *this\row\_s( )\index
+        ElseIf *this\index[#__s_2] = RowList( *this )\index
           If *this\index[#__s_2] > *this\index[#__s_1] 
-            *this\row\_s( )\text\edit[1]\len = 0 
-            *this\row\_s( )\text\edit[2]\len = *this\text\caret\pos[2]
+            RowList( *this )\text\edit[1]\len = 0 
+            RowList( *this )\text\edit[2]\len = *this\text\caret\pos[2]
           Else
-            *this\row\_s( )\text\edit[1]\len = *this\text\caret\pos[2] 
-            *this\row\_s( )\text\edit[2]\len = *this\row\_s( )\text\len - *this\row\_s( )\text\edit[1]\len
+            RowList( *this )\text\edit[1]\len = *this\text\caret\pos[2] 
+            RowList( *this )\text\edit[2]\len = RowList( *this )\text\len - RowList( *this )\text\edit[1]\len
           EndIf
           
         EndIf
         
-        *this\row\_s( )\text\edit[1]\pos = 0 
-        *this\row\_s( )\text\edit[2]\pos = *this\row\_s( )\text\edit[1]\len
+        RowList( *this )\text\edit[1]\pos = 0 
+        RowList( *this )\text\edit[2]\pos = RowList( *this )\text\edit[1]\len
         
-        *this\row\_s( )\text\edit[3]\pos = *this\row\_s( )\text\edit[2]\pos + *this\row\_s( )\text\edit[2]\len 
-        *this\row\_s( )\text\edit[3]\len = *this\row\_s( )\text\len - *this\row\_s( )\text\edit[3]\pos
+        RowList( *this )\text\edit[3]\pos = RowList( *this )\text\edit[2]\pos + RowList( *this )\text\edit[2]\len 
+        RowList( *this )\text\edit[3]\len = RowList( *this )\text\len - RowList( *this )\text\edit[3]\pos
         
         ; set string & size ( left;selected;right )
-        If *this\row\_s( )\text\edit[1]\len > 0
-          *this\row\_s( )\text\edit[1]\string = Left( *this\row\_s( )\text\string, *this\row\_s( )\text\edit[1]\len )
-          *this\row\_s( )\text\edit[1]\width = TextWidth( *this\row\_s( )\text\edit[1]\string ) 
+        If RowList( *this )\text\edit[1]\len > 0
+          RowList( *this )\text\edit[1]\string = Left( RowList( *this )\text\string, RowList( *this )\text\edit[1]\len )
+          RowList( *this )\text\edit[1]\width = TextWidth( RowList( *this )\text\edit[1]\string ) 
         Else
-          *this\row\_s( )\text\edit[1]\string = ""
-          *this\row\_s( )\text\edit[1]\width = 0
+          RowList( *this )\text\edit[1]\string = ""
+          RowList( *this )\text\edit[1]\width = 0
         EndIf
-        If *this\row\_s( )\text\edit[2]\len > 0
-          If *this\row\_s( )\text\edit[2]\len = *this\row\_s( )\text\len
-            *this\row\_s( )\text\edit[2]\string = *this\row\_s( )\text\string
-            *this\row\_s( )\text\edit[2]\width = *this\row\_s( )\text\width + *this\mode\fullselection
+        If RowList( *this )\text\edit[2]\len > 0
+          If RowList( *this )\text\edit[2]\len = RowList( *this )\text\len
+            RowList( *this )\text\edit[2]\string = RowList( *this )\text\string
+            RowList( *this )\text\edit[2]\width = RowList( *this )\text\width + *this\mode\fullselection
           Else
-            *this\row\_s( )\text\edit[2]\string = Mid( *this\row\_s( )\text\string, 1 + *this\row\_s( )\text\edit[2]\pos, *this\row\_s( )\text\edit[2]\len )
-            *this\row\_s( )\text\edit[2]\width = TextWidth( *this\row\_s( )\text\edit[2]\string ) + Bool(( *this\index[#__s_1] <  *this\index[#__s_2] And *this\row\_s( )\index = *this\index[#__s_1] ) Or
-                                                                                                         ; ( *this\index[1] <> *this\row\_s( )\index And *this\row\_s( )\index <> *this\index[2] ) Or
-            ( *this\index[#__s_1]  > *this\index[#__s_2] And *this\row\_s( )\index = *this\index[#__s_2] )) * *this\mode\fullselection
+            RowList( *this )\text\edit[2]\string = Mid( RowList( *this )\text\string, 1 + RowList( *this )\text\edit[2]\pos, RowList( *this )\text\edit[2]\len )
+            RowList( *this )\text\edit[2]\width = TextWidth( RowList( *this )\text\edit[2]\string ) + Bool(( *this\index[#__s_1] <  *this\index[#__s_2] And RowList( *this )\index = *this\index[#__s_1] ) Or
+                                                                                                         ; ( *this\index[1] <> RowList( *this )\index And RowList( *this )\index <> *this\index[2] ) Or
+            ( *this\index[#__s_1]  > *this\index[#__s_2] And RowList( *this )\index = *this\index[#__s_2] )) * *this\mode\fullselection
           EndIf
         Else
-          *this\row\_s( )\text\edit[2]\string = ""
-          *this\row\_s( )\text\edit[2]\width = 0
+          RowList( *this )\text\edit[2]\string = ""
+          RowList( *this )\text\edit[2]\width = 0
         EndIf
-        If *this\row\_s( )\text\edit[3]\len > 0
-          *this\row\_s( )\text\edit[3]\string = Right( *this\row\_s( )\text\string, *this\row\_s( )\text\edit[3]\len )
-          *this\row\_s( )\text\edit[3]\width = TextWidth( *this\row\_s( )\text\edit[3]\string )  
+        If RowList( *this )\text\edit[3]\len > 0
+          RowList( *this )\text\edit[3]\string = Right( RowList( *this )\text\string, RowList( *this )\text\edit[3]\len )
+          RowList( *this )\text\edit[3]\width = TextWidth( RowList( *this )\text\edit[3]\string )  
         Else
-          *this\row\_s( )\text\edit[3]\string = ""
-          *this\row\_s( )\text\edit[3]\width = 0
+          RowList( *this )\text\edit[3]\string = ""
+          RowList( *this )\text\edit[3]\width = 0
         EndIf
         
         ; set position ( left;selected;right )
-        *this\row\_s( )\text\edit[1]\x = *this\row\_s( )\text\x 
-        *this\row\_s( )\text\edit[2]\x = ( *this\row\_s( )\text\edit[1]\x + *this\row\_s( )\text\edit[1]\width ) 
-        *this\row\_s( )\text\edit[3]\x = ( *this\row\_s( )\text\edit[2]\x + *this\row\_s( )\text\edit[2]\width )
+        RowList( *this )\text\edit[1]\x = RowList( *this )\text\x 
+        RowList( *this )\text\edit[2]\x = ( RowList( *this )\text\edit[1]\x + RowList( *this )\text\edit[1]\width ) 
+        RowList( *this )\text\edit[3]\x = ( RowList( *this )\text\edit[2]\x + RowList( *this )\text\edit[2]\width )
         
         ; set cursor pos
-        If *this\index[#__s_1] = *this\row\_s( )\index 
-          *this\text\caret\y = *this\row\_s( )\text\y
-          *this\text\caret\height = *this\row\_s( )\text\height
+        If *this\index[#__s_1] = RowList( *this )\index 
+          *this\text\caret\y = RowList( *this )\text\y
+          *this\text\caret\height = RowList( *this )\text\height
           
           If *this\index[#__s_1] > *this\index[#__s_2] Or
              ( *this\index[#__s_1] = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] )
-            *this\text\caret\x = *this\row\_s( )\text\edit[3]\x
+            *this\text\caret\x = RowList( *this )\text\edit[3]\x
           Else
-            *this\text\caret\x = *this\row\_s( )\text\edit[2]\x
+            *this\text\caret\x = RowList( *this )\text\edit[2]\x
           EndIf
         EndIf
       EndIf
@@ -8375,13 +8377,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ; reset items selection
-          PushListPosition( *this\row\_s( ))
-          ForEach *this\row\_s( )
-            If *this\row\_s( )\text\edit[2]\width <> 0 
-              _edit_sel_reset_( *this\row\_s( ))
+          PushListPosition( RowList( *this ))
+          ForEach RowList( *this )
+            If RowList( *this )\text\edit[2]\width <> 0 
+              _edit_sel_reset_( RowList( *this ))
             EndIf
           Next
-          PopListPosition( *this\row\_s( ))
+          PopListPosition( RowList( *this ))
           
           \text\caret\pos[2] = \text\caret\pos[1] 
           \index[#__s_1] = \index[#__s_2]
@@ -8681,7 +8683,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ;;row( )\text\width = TextWidth( row( )\text\string )
                 
                 ; drawing item font
-                _draw_font_item_( *this, row( ), row( )\text\change )
+                draw_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ))
@@ -9065,7 +9067,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ;;row( )\text\width = TextWidth( row( )\text\string )
                 
                 ; drawing item font
-                _draw_font_item_( *this, row( ), row( )\text\change )
+                draw_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ))
@@ -9433,7 +9435,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ;;row( )\text\width = TextWidth( row( )\text\string )
                 
                 ; drawing item font
-                _draw_font_item_( *this, row( ), row( )\text\change )
+                draw_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ))
@@ -9657,7 +9659,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         With *this
           ; Make output multi line text
           If *this\change > 0 ;<> 0
-            Editor_Update( *this, *this\row\_s( ))
+            Editor_Update( *this, RowList( *this ))
           EndIf
           
           ; Draw back color
@@ -9702,7 +9704,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                                          _row_y_( *this ) < *this\y[#__c_inner] + *this\height[#__c_inner] )
               
               ; Draw selections
-              If *this\row\_s( )\visible 
+              If RowList( *this )\visible 
                 Y = _row_y_( *this )
                 Text_x = _row_text_x_( *this )
                 Text_Y = _row_text_y_( *this )
@@ -9716,40 +9718,40 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 
                 Protected text_sel_state = 2 + Bool( Not _is_focused_( *this ))
                 Protected text_sel_width = \row\_s( )\text\edit[2]\width + Bool( Not _is_focused_( *this )) * *this\text\caret\width
-                Protected text_state = *this\row\_s( )\color\state
+                Protected text_state = RowList( *this )\color\state
                 
-                text_state = Bool( *this\row\_s( )\index = *this\index[#__s_1] ) + Bool( *this\row\_s( )\index = *this\index[#__s_1] And Not _is_focused_( *this ))*2
+                text_state = Bool( RowList( *this )\index = *this\index[#__s_1] ) + Bool( RowList( *this )\index = *this\index[#__s_1] And Not _is_focused_( *this ))*2
                 
                 If *this\text\editable
                   ; Draw lines
                   ; Если для итема установили задный 
                   ; фон отличный от заднего фона едитора
-                  If *this\row\_s( )\color\back  
+                  If RowList( *this )\color\back  
                     draw_mode_alpha( #PB_2DDrawing_Default )
-                    draw_box_round( sel_x,Y,sel_width ,*this\row\_s( )\height, *this\row\_s( )\round,*this\row\_s( )\round, *this\row\_s( )\color\back[0] )
+                    draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\back[0] )
                     
                     If *this\color\back And 
-                       *this\color\back <> *this\row\_s( )\color\back
+                       *this\color\back <> RowList( *this )\color\back
                       ; Draw margin back color
                       If *this\row\margin\width > 0
                         ; то рисуем вертикальную линию на границе поля нумерации и начало итема
                         draw_mode_alpha( #PB_2DDrawing_Default )
-                        Box( *this\row\margin\x, *this\row\_s( )\y, *this\row\margin\width, *this\row\_s( )\height, *this\row\margin\color\back )
-                        Line( *this\x[#__c_inner] + *this\row\margin\width, *this\row\_s( )\y, 1, *this\row\_s( )\height, *this\color\back ) ; $FF000000 );
+                        Box( *this\row\margin\x, RowList( *this )\y, *this\row\margin\width, RowList( *this )\height, *this\row\margin\color\back )
+                        Line( *this\x[#__c_inner] + *this\row\margin\width, RowList( *this )\y, 1, RowList( *this )\height, *this\color\back ) ; $FF000000 );
                       EndIf
                     EndIf
                   EndIf
                   
                   ; Draw entered selection
-                  If text_state ; *this\row\_s( )\index = *this\index[1] ; \color\state;
-                    If *this\row\_s( )\color\back[text_state] <>- 1              ; no draw transparent
+                  If text_state ; RowList( *this )\index = *this\index[1] ; \color\state;
+                    If RowList( *this )\color\back[text_state] <>- 1              ; no draw transparent
                       draw_mode_alpha( #PB_2DDrawing_Default )
-                      draw_box_round( sel_x,Y,sel_width ,*this\row\_s( )\height, *this\row\_s( )\round,*this\row\_s( )\round, *this\row\_s( )\color\back[text_state] )
+                      draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\back[text_state] )
                     EndIf
                     
-                    If *this\row\_s( )\color\frame[text_state] <>- 1 ; no draw transparent
+                    If RowList( *this )\color\frame[text_state] <>- 1 ; no draw transparent
                       draw_mode_alpha( #PB_2DDrawing_Outlined )
-                      draw_box_round( sel_x,Y,sel_width ,*this\row\_s( )\height, *this\row\_s( )\round,*this\row\_s( )\round, *this\row\_s( )\color\frame[text_state] )
+                      draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\frame[text_state] )
                     EndIf
                   EndIf
                 EndIf
@@ -9757,18 +9759,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ; Draw text
                 ; Draw string
                 If *this\text\editable And 
-                   *this\row\_s( )\text\edit[2]\width And 
-                   *this\row\_s( )\color\front[2] <> *this\color\front
+                   RowList( *this )\text\edit[2]\width And 
+                   RowList( *this )\color\front[2] <> *this\color\front
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                     If \row\_s( )\text\string.s
                       draw_mode_alpha( #PB_2DDrawing_Transparent )
-                      DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\string.s, *this\text\rotate, *this\row\_s( )\color\front[*this\row\_s( )\color\state] )
+                      DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                     EndIf
                     
                     If \row\_s( )\text\edit[2]\width
                       draw_mode_alpha( #PB_2DDrawing_Default )
-                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, *this\row\_s( )\color\back[text_sel_state] )
+                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
                     EndIf
                     
                     draw_mode_alpha( #PB_2DDrawing_Transparent )
@@ -9778,72 +9780,72 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                          ( *this\index[#__s_1] = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] ))
                       
                       If \row\_s( )\text\edit[2]\string.s
-                        DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, *this\row\_s( )\color\front[text_sel_state] )
+                        DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
                       EndIf
                       
                       ; to left select
                     Else
                       If \row\_s( )\text\edit[2]\string.s
-                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s + \row\_s( )\text\edit[2]\string.s, *this\text\rotate, *this\row\_s( )\color\front[text_sel_state] )
+                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s + \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
                       EndIf
                       
                       If \row\_s( )\text\edit[1]\string.s
-                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, *this\row\_s( )\color\front[*this\row\_s( )\color\state] )
+                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                       EndIf
                     EndIf
                     
                   CompilerElse
                     If \row\_s( )\text\edit[2]\width
                       draw_mode_alpha( #PB_2DDrawing_Default )
-                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, *this\row\_s( )\color\back[text_sel_state] )
+                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
                     EndIf
                     
                     draw_mode_alpha( #PB_2DDrawing_Transparent )
                     
                     If \row\_s( )\text\edit[1]\string.s
-                      DrawRotatedText( sel_text_x1, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, *this\row\_s( )\color\front[*this\row\_s( )\color\state] )
+                      DrawRotatedText( sel_text_x1, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                     EndIf
                     If \row\_s( )\text\edit[2]\string.s
-                      DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, *this\row\_s( )\color\front[text_sel_state] )
+                      DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
                     EndIf
                     If \row\_s( )\text\edit[3]\string.s
-                      DrawRotatedText( sel_text_x3, Text_Y, \row\_s( )\text\edit[3]\string.s, *this\text\rotate, *this\row\_s( )\color\front[*this\row\_s( )\color\state] )
+                      DrawRotatedText( sel_text_x3, Text_Y, \row\_s( )\text\edit[3]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                     EndIf
                   CompilerEndIf
                   
                 Else
-                  If *this\row\_s( )\text\edit[2]\width
+                  If RowList( *this )\text\edit[2]\width
                     draw_mode_alpha( #PB_2DDrawing_Default )
-                    Box( sel_text_x2, Y, text_sel_width, *this\row\_s( )\height, $FFFBD9B7 );*this\row\_s( )\color\back[2] )
+                    Box( sel_text_x2, Y, text_sel_width, RowList( *this )\height, $FFFBD9B7 );RowList( *this )\color\back[2] )
                   EndIf
                   
                   If *this\color\state = 2
                     draw_mode( #PB_2DDrawing_Transparent )
-                    DrawRotatedText( Text_x, Text_Y, *this\row\_s( )\text\string.s, *this\text\rotate, *this\row\_s( )\color\front[text_sel_state] )
+                    DrawRotatedText( Text_x, Text_Y, RowList( *this )\text\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
                   Else
                     draw_mode( #PB_2DDrawing_Transparent )
-                    DrawRotatedText( Text_x, Text_Y, *this\row\_s( )\text\string.s, *this\text\rotate, *this\row\_s( )\color\front[*this\row\_s( )\color\state] )
+                    DrawRotatedText( Text_x, Text_Y, RowList( *this )\text\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                   EndIf
                 EndIf
                 
                 ; Draw margin text
                 If *this\row\margin\width > 0
                   draw_mode( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *this\row\_s( )\margin\x + Bool( *this\vertical ) * *this\x[#__c_required],
-                                   *this\row\_s( )\margin\y + Bool( Not *this\vertical ) * *this\y[#__c_required], 
-                                   *this\row\_s( )\margin\string, *this\text\rotate, *this\row\margin\color\front )
+                  DrawRotatedText( RowList( *this )\margin\x + Bool( *this\vertical ) * *this\x[#__c_required],
+                                   RowList( *this )\margin\y + Bool( Not *this\vertical ) * *this\y[#__c_required], 
+                                   RowList( *this )\margin\string, *this\text\rotate, *this\row\margin\color\front )
                 EndIf
                 
                 ; Horizontal line
                 If *this\mode\GridLines And
-                   *this\row\_s( )\color\line And 
-                   *this\row\_s( )\color\line <> *this\row\_s( )\color\back 
+                   RowList( *this )\color\line And 
+                   RowList( *this )\color\line <> RowList( *this )\color\back 
                   draw_mode_alpha( #PB_2DDrawing_Default )
-                  Box( *this\row\_s( )\x, ( *this\row\_s( )\y + *this\row\_s( )\height + Bool( *this\mode\gridlines>1 )) + *this\y[#__c_required], *this\row\_s( )\width, 1, *this\color\line )
+                  Box( RowList( *this )\x, ( RowList( *this )\y + RowList( *this )\height + Bool( *this\mode\gridlines>1 )) + *this\y[#__c_required], RowList( *this )\width, 1, *this\color\line )
                 EndIf
               EndIf
             Next
-            PopListPosition( *this\row\_s( )) ; 
+            PopListPosition( RowList( *this )) ; 
           EndIf
           
           ; Draw caret
@@ -9864,7 +9866,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ; Draw scroll bars
-          Area_Draw( *this )
+          bar_area_draw_( *this )
           
           If *this\text\change : *this\text\change = 0 : EndIf
           If *this\change : *this\change = 0 : EndIf
@@ -10002,7 +10004,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     Procedure   Editor_Events_Key( *this._s_WIDGET, eventtype.l, mouse_x.l, mouse_y.l )
       Static _caret_last_pos_, DoubleClick.i
       Protected Repaint.i, _key_control_.i, _key_shift_.i, Caret.i, Item.i, String.s
-      Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *this\row\_s( )\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
+      Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = RowList( *this )\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
       
       With *this
         _key_shift_ = Bool( keyboard( )\key[1] & #PB_Canvas_Shift )
@@ -10128,8 +10130,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     Else
                       *this\index[#__s_2] + _step_ 
                       
-                      If SelectElement( *this\row\_s( ), *this\index[#__s_2] ) 
-                        _caret_max_ = *this\row\_s( )\text\len
+                      If SelectElement( RowList( *this ), *this\index[#__s_2] ) 
+                        _caret_max_ = RowList( *this )\text\len
                         
                         If *this\text\caret\pos[1] <> _caret_max_
                           *this\text\caret\pos[2] = _caret_max_
@@ -10153,10 +10155,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   EndIf
                 ElseIf *this\index[#__s_1] = _line_last_
                   
-                  If *this\row\_s( )\index <> _line_last_ And
-                     SelectElement( *this\row\_s( ), _line_last_ ) 
-                    _caret_max_ = *this\row\_s( )\text\len
-                    Debug "" + #PB_Compiler_Procedure + "*this\row\_s( )\index <> _line_last_"
+                  If RowList( *this )\index <> _line_last_ And
+                     SelectElement( RowList( *this ), _line_last_ ) 
+                    _caret_max_ = RowList( *this )\text\len
+                    Debug "" + #PB_Compiler_Procedure + "RowList( *this )\index <> _line_last_"
                   EndIf
                   
                   If *this\text\caret\pos[1] <> _caret_max_ : *this\text\caret\pos[2] = _caret_max_ : _caret_last_pos_ = *this\text\caret\pos[1]
@@ -10173,15 +10175,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     _line_ = *this\index[#__s_1] - Bool( *this\index[#__s_1] > _line_first_ And *this\text\caret\pos[1] = _caret_min_ ) * _step_
                     
                     ; коректируем позицию коректора
-                    If *this\row\_s( )\index <> _line_ And
-                       SelectElement( *this\row\_s( ), _line_ ) 
+                    If RowList( *this )\index <> _line_ And
+                       SelectElement( RowList( *this ), _line_ ) 
                     EndIf
-                    If *this\text\caret\pos[1] > *this\row\_s( )\text\len
-                      *this\text\caret\pos[1] = *this\row\_s( )\text\len
+                    If *this\text\caret\pos[1] > RowList( *this )\text\len
+                      *this\text\caret\pos[1] = RowList( *this )\text\len
                     EndIf
                     
                     If *this\index[#__s_1] <> _line_
-                      Repaint = _edit_sel_draw_( *this, _line_, *this\row\_s( )\text\len )  
+                      Repaint = _edit_sel_draw_( *this, _line_, RowList( *this )\text\len )  
                     ElseIf *this\text\caret\pos[1] > _caret_min_
                       Repaint = _edit_sel_draw_( *this, _line_, *this\text\caret\pos[1] - _step_ )  
                     EndIf
@@ -10205,9 +10207,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       If *this\text\caret\pos[1] = _caret_min_
                         *this\index[#__s_2] - _step_
                         
-                        If SelectElement( *this\row\_s( ), *this\index[#__s_2] ) 
-                          *this\text\caret\pos[1] = *this\row\_s( )\text\len
-                          *this\text\caret\pos[2] = *this\row\_s( )\text\len
+                        If SelectElement( RowList( *this ), *this\index[#__s_2] ) 
+                          *this\text\caret\pos[1] = RowList( *this )\text\len
+                          *this\text\caret\pos[2] = RowList( *this )\text\len
                         EndIf
                       EndIf
                     EndIf
@@ -10229,9 +10231,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   If _key_control_
                     Repaint = _edit_sel_draw_( *this, *this\index[#__s_2], *this\text\len )  
                   Else
-                    If *this\row\_s( )\index <> *this\index[#__s_1] And
-                       SelectElement( *this\row\_s( ), *this\index[#__s_1] ) 
-                      _caret_max_ = *this\row\_s( )\text\len
+                    If RowList( *this )\index <> *this\index[#__s_1] And
+                       SelectElement( RowList( *this ), *this\index[#__s_1] ) 
+                      _caret_max_ = RowList( *this )\text\len
                     EndIf
                     
                     If *this\text\caret\pos[1] > _caret_max_
@@ -10267,7 +10269,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       If *this\text\caret\pos[1] = _caret_max_
                         *this\index[#__s_2] + _step_
                         
-                        If SelectElement( *this\row\_s( ), *this\index[#__s_2] ) 
+                        If SelectElement( RowList( *this ), *this\index[#__s_2] ) 
                           *this\text\caret\pos[1] = 0
                           *this\text\caret\pos[2] = 0
                         EndIf
@@ -10323,8 +10325,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                         \index[#__s_1] - 1
                         \index[#__s_2] - 1
                         
-                        If *this\row\_s( )\index <> \index[#__s_2] And
-                           SelectElement( *this\row\_s( ), \index[#__s_2] ) 
+                        If RowList( *this )\index <> \index[#__s_2] And
+                           SelectElement( RowList( *this ), \index[#__s_2] ) 
                         EndIf
                         ;: _edit_sel_draw_( *this, \index[2], \text\len )
                         
@@ -10462,7 +10464,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;If \text\editable  
         
         If *this And ( *this\scroll\v And *this\scroll\h And Not EnteredButton( ))
-          If ListSize( *this\row\_s( ))
+          If ListSize( RowList( *this ))
             If Not \hide ;And \interact
                          ; Get line position
                          ;If mouse( )\buttons ; сним двойной клик не работает
@@ -10511,7 +10513,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 If _is_item_( *this, _line_ ) And 
                    _line_ <> \row\_s( )\index  
                   \row\_s( )\color\state = 0
-                  SelectElement( *this\row\_s( ), _line_ ) 
+                  SelectElement( RowList( *this ), _line_ ) 
                 EndIf
                 
                 If _line_ = \row\_s( )\index
@@ -10541,13 +10543,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       _set_cursor_( *this, #PB_Cursor_Default )
                     Else
                       ; reset items selection
-                      PushListPosition( *this\row\_s( ))
-                      ForEach *this\row\_s( )
-                        If *this\row\_s( )\text\edit[2]\width <> 0 
-                          _edit_sel_reset_( *this\row\_s( ))
+                      PushListPosition( RowList( *this ))
+                      ForEach RowList( *this )
+                        If RowList( *this )\text\edit[2]\width <> 0 
+                          _edit_sel_reset_( RowList( *this ))
                         EndIf
                       Next
-                      PopListPosition( *this\row\_s( ))
+                      PopListPosition( RowList( *this ))
                       
                       Caret = _text_caret_( *this )
                       
@@ -10599,8 +10601,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     *this\row\active\text\string = RemoveString( *this\row\active\text\string, *this\row\active\text\edit[2]\string, #PB_String_CaseSensitive, *this\row\active\text\edit[2]\pos, 1 )
                     *this\text\string = RemoveString( *this\text\string, *this\row\active\text\edit[2]\string, #PB_String_CaseSensitive, *this\row\active\text\pos + *this\row\active\text\edit[2]\pos, 1 )
                     
-                    *this\row\_s( )\text\string = InsertString( *this\row\_s( )\text\string, *this\row\active\text\edit[2]\string, *this\text\caret\pos[2] + 1 )
-                    *this\text\string = InsertString( *this\text\string, *this\row\active\text\edit[2]\string, *this\row\_s( )\text\pos + *this\text\caret\pos[2] + 1 )
+                    RowList( *this )\text\string = InsertString( RowList( *this )\text\string, *this\row\active\text\edit[2]\string, *this\text\caret\pos[2] + 1 )
+                    *this\text\string = InsertString( *this\text\string, *this\row\active\text\edit[2]\string, RowList( *this )\text\pos + *this\text\caret\pos[2] + 1 )
                     
                     
                     ;                       \row\_s( )\text\edit[1]\string.s = Left( \row\_s( )\text\string.s, \text\caret\pos[1] )
@@ -10659,7 +10661,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     _set_cursor_( *this, #PB_Cursor_IBeam )
                   Else
                     *this\text\caret\pos[2] = _text_caret_( *this )
-                    *this\row\_s( )\text\edit[2]\len = 0
+                    RowList( *this )\text\edit[2]\len = 0
                     *this\index[#__s_2] = _line_
                     
                     If *this\text\caret\pos[1] <> *this\text\caret\pos[2] + *this\row\active\text\edit[2]\len
@@ -10690,7 +10692,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 If _is_item_( *this, \index[#__s_2] ) And 
                    \index[#__s_2] <> \row\_s( )\index  
                   \row\_s( )\color\state = 0
-                  SelectElement( *this\row\_s( ), \index[#__s_2] ) 
+                  SelectElement( RowList( *this ), \index[#__s_2] ) 
                 EndIf
                 
             EndSelect
@@ -10755,7 +10757,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     ;- 
     ;-  TREE
-    Declare.l Tree_Draw( *this._s_WIDGET, List row._s_rows( ))
+    Declare.l Tree_Draw( *this._s_WIDGET )
     Declare tt_close( *this._s_tt )
     
     Procedure tt_tree_Draw( *this._s_tt, *color._s_color = 0 )
@@ -10850,14 +10852,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     ;- 
-    Macro _tree_items_scroll_y_( _address_, _pos_, _len_ )
-      _bar_scroll_pos_( _address_, ( _pos_ ) - _address_\y, _len_ )
-      ; 
-      ;bar_SetState( _address_\bar, (( _pos_ - _address_\y ) - ( _address_\bar\page\len - _len_ ) )) 
+    Macro row_scroll_y_( _this_, _row_, _page_height_= )
+     ; bar_scroll_pos_( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
+      bar_scroll_pos_( _this_\scroll\v, ( _row_\y _page_height_ ) - _this_\scroll\v\y, _row_\height )
     EndMacro
     
-    Procedure.l _update_items_( *this._s_WIDGET, *row._s_row, _change_ = 1 )
-      Protected state.b, x.l,y.l
+    Procedure.l _update_items_( *this._s_WIDGET, _change_ = 1 )
+      Protected state.b, x.l,y.l, *row._s_row = *this\row
       
       With *this
         If Not *this\hide
@@ -10878,6 +10879,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             Protected buttonsize = 9
             Protected boxpos = 4
             Protected boxsize = 11
+            ;Protected  *row._s_row = @RowList( *this )
             
             PushListPosition( *row\_s( ))
             ForEach *row\_s( )
@@ -10902,7 +10904,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   EndIf
                   
                   ; drawing item font
-                  _draw_font_item_( *this, *row\_s( ), *row\_s( )\text\change )
+                  draw_font_item_( *this, *row\_s( ), *row\_s( )\text\change )
                   
                   ; draw items height
                   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
@@ -11010,9 +11012,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; SetState( )
           If *this\row\active And 
-             *this\row\active\state\flag & #__s_scroll
-            _tree_items_scroll_y_( *this\scroll\v, *this\row\active\y, *this\row\active\height )
-            *this\row\active\state\flag &~ #__s_scroll
+             *this\scroll\state =- 1 ; *this\row\active\state\flag & #__s_scroll
+            ;row_scroll_y_( *this, FocusedRow( *this ) )
+            bar_scroll_pos_( *this\scroll\v, *this\row\active\index * *this\row\active\height + *this\scroll\v\height / 2, 0 )
+            *this\scroll\state = 1 ; *this\row\active\state\flag &~ #__s_scroll
             *this\scroll\v\change = 0 
           EndIf
           
@@ -11020,9 +11023,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndWith
       
     EndProcedure
-    
-    Procedure.l _update_draws_items_( *this._s_WIDGET, *row._s_row, visible_items_height.l = 0 )
-      Protected state.b, x.l,y.l
+    Procedure.l update_visible_items_( *this._s_WIDGET, visible_items_height.l = 0 )
+      Protected state.b, x.l,y.l, *row._s_row = *this\row
       
       PushListPosition( *row\_s( ))
       
@@ -11032,8 +11034,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; reset draw list
       ClearList( *row\visible\_s( ))
-      *this\row\visible\first = 0
-      *this\row\visible\last = 0
+      *row\visible\first = 0
+      *row\visible\last = 0
       
       ForEach *row\_s( )
         *row\_s( )\visible = Bool( Not *row\_s( )\hide And 
@@ -11055,15 +11057,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
     EndProcedure
     
-    Procedure.l Tree_Draw( *this._s_WIDGET, List *row._s_rows( ))
+    Procedure.l Tree_Draw( *this._S_widget )
       Protected state.b, x.l,y.l, scroll_x, scroll_y
       
       With *this
         If Not \hide
-          _update_items_( *this, *this\row, *this\change )
+          _update_items_( *this, *this\change )
           
           If *this\change < 0
-            _update_draws_items_( *this, *this\row, *this\height[#__c_inner] )
+            update_visible_items_( *this )
           EndIf
           
           ; Draw background
@@ -11082,15 +11084,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;_content_clip_( *this, [#__c_clip2] )
           
           
-          _draw_items_( *this, *row( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
+          draw_items_( *this, *this\row\visible\_s( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
           
           ; Draw scroll bars
-          Area_Draw( *this )
+          bar_area_draw_( *this )
           
           ; Draw frames
           If *this\fs
             draw_mode( #PB_2DDrawing_Outlined )
-            _draw_box_( *this, color\frame, [#__c_frame] )
+            draw_box_( *this, color\frame, [#__c_frame] )
           EndIf
         EndIf
       EndWith
@@ -11104,38 +11106,38 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;With *this
       If *this
         ;{ Генерируем идентификатор
-        If position < 0 Or position > ListSize( *this\row\_s( )) - 1
-          LastElement( *this\row\_s( ))
-          *row = AddElement( *this\row\_s( )) 
+        If position < 0 Or position > ListSize( RowList( *this )) - 1
+          LastElement( RowList( *this ))
+          *row = AddElement( RowList( *this )) 
           
           If position < 0 
-            position = ListIndex( *this\row\_s( ))
+            position = ListIndex( RowList( *this ))
           EndIf
         Else
-          *row = SelectElement( *this\row\_s( ), position )
+          *row = SelectElement( RowList( *this ), position )
           
           ; for the tree( )
-          If sublevel > *this\row\_s( )\sublevel
-            PushListPosition( *this\row\_s( ))
-            If PreviousElement( *this\row\_s( ))
-              *this\row\last_add = *this\row\_s( )
-              ;;NextElement( *this\row\_s( ))
+          If sublevel > RowList( *this )\sublevel
+            PushListPosition( RowList( *this ))
+            If PreviousElement( RowList( *this ))
+              *this\row\last_add = RowList( *this )
+              ;;NextElement( RowList( *this ))
             Else
               last = *this\row\last_add
-              sublevel = *this\row\_s( )\sublevel
+              sublevel = RowList( *this )\sublevel
             EndIf
-            PopListPosition( *this\row\_s( ))
+            PopListPosition( RowList( *this ))
           Else
             last = *this\row\last_add
-            sublevel = *this\row\_s( )\sublevel
+            sublevel = RowList( *this )\sublevel
           EndIf
           
-          *row = InsertElement( *this\row\_s( ))
+          *row = InsertElement( RowList( *this ))
         EndIf
         ;}
         
         If *row
-          ;*row\index = ListIndex( *this\row\_s( ) )
+          ;*row\index = ListIndex( RowList( *this ) )
           
           If sublevel > position
             sublevel = position
@@ -11252,17 +11254,17 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *row\text\edit\string = StringField( Text.s, 2, #LF$ )
           EndIf
           
-          _set_image_( *this, *row\Image, Image )
+          set_image_( *this, *row\Image, Image )
           
           If *this\row\active 
             *this\row\active\color\state = #__s_0
             
-            If *this\row\active\state\flag & #__s_scroll
-              *this\row\active\state\flag &~ #__s_scroll
-            EndIf
+;             If *this\row\active\state\flag & #__s_scroll
+;               *this\row\active\state\flag &~ #__s_scroll
+;             EndIf
             
             *this\row\active = *row 
-            *this\row\active\state\flag | #__s_scroll | #__s_select
+            *this\row\active\state\flag | #__s_select ; | #__s_scroll
             *this\row\active\color\state = #__s_2 + Bool( *this\state\flag & #__s_focus = #False )
             
             PostEventCanvas( *this\root )
@@ -11270,6 +11272,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             _post_repaint_items_( *this )
           EndIf
           
+          If *this\scroll\state = 1
+            *this\scroll\state =- 1
+          EndIf
           *this\count\items + 1
           *this\change = 1
         EndIf
@@ -11314,19 +11319,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     ; select modifiers key
                     If ( keyboard( )\key = #PB_Shortcut_Home Or
                          ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                      SelectElement( *this\row\_s( ), 0 )
+                      SelectElement( RowList( *this ), 0 )
                     Else
-                      _select_prev_item_( *this\row\_s( ), *this\row\active\index )
+                      _select_prev_item_( RowList( *this ), *this\row\active\index )
                     EndIf
                     
-                    If *this\row\active <> *this\row\_s( )
+                    If *this\row\active <> RowList( *this )
                       *this\row\active\color\state = 0
-                      *this\row\active  = *this\row\_s( )
-                      *this\row\_s( )\color\state = 2
-                      *row_selected = *this\row\_s( )
+                      *this\row\active  = RowList( *this )
+                      RowList( *this )\color\state = 2
+                      *row_selected = RowList( *this )
                       
-                      *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\active\y, *this\row\active\height )
-                      Send( #__event_Change, *this, *this\row\_s( )\index )
+                      *this\change =- row_scroll_y_( *this, *this\row\active )
+                      Send( #__event_Change, *this, RowList( *this )\index )
                       result = 1
                     EndIf
                     
@@ -11349,19 +11354,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     ; select modifiers key
                     If ( keyboard( )\key = #PB_Shortcut_End Or
                          ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                      SelectElement( *this\row\_s( ), ( *this\count\items - 1 ))
+                      SelectElement( RowList( *this ), ( *this\count\items - 1 ))
                     Else
-                      _select_next_item_( *this\row\_s( ), *this\row\active\index )
+                      _select_next_item_( RowList( *this ), *this\row\active\index )
                     EndIf
                     
-                    If *this\row\active <> *this\row\_s( )
+                    If *this\row\active <> RowList( *this )
                       *this\row\active\color\state = 0
-                      *this\row\active  = *this\row\_s( )
-                      *this\row\_s( )\color\state = 2
-                      *row_selected = *this\row\_s( )
+                      *this\row\active  = RowList( *this )
+                      RowList( *this )\color\state = 2
+                      *row_selected = RowList( *this )
                       
-                      *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\active\y, *this\row\active\height )
-                      Send( #__event_Change, *this, *this\row\_s( )\index )
+                      *this\change =- row_scroll_y_( *this, *this\row\active )
+                      Send( #__event_Change, *this, RowList( *this )\index )
                       result = 1
                     EndIf
                     
@@ -11455,11 +11460,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
             Else
               ; reset selected items
-              ForEach *this\row\_s( )
-                If *this\row\_s( ) <> EnteredItem( ) And 
-                   *this\row\_s( )\state\flag & #__s_select
-                  *this\row\_s( )\state\flag &~ #__s_select
-                  *this\row\_s( )\color\state = #__s_0
+              ForEach RowList( *this )
+                If RowList( *this ) <> EnteredItem( ) And 
+                   RowList( *this )\state\flag & #__s_select
+                  RowList( *this )\state\flag &~ #__s_select
+                  RowList( *this )\color\state = #__s_0
                 EndIf
               Next
               
@@ -11514,24 +11519,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
          eventtype = #__event_LostFocus
         
         If *this\count\items
-          PushListPosition( *this\row\_s( )) 
-          ForEach *this\row\_s( )
+          PushListPosition( RowList( *this )) 
+          ForEach RowList( *this )
             If eventtype = #__event_Focus
-              If *this\row\_s( )\color\state = #__s_3
-                *this\row\_s( )\color\state = #__s_2
-                *this\row\_s( )\state\flag | #__s_select
+              If RowList( *this )\color\state = #__s_3
+                RowList( *this )\color\state = #__s_2
+                RowList( *this )\state\flag | #__s_select
                 Repaint = #True
               EndIf
               
             ElseIf eventtype = #__event_LostFocus
-              If *this\row\_s( )\color\state = #__s_2
-                *this\row\_s( )\color\state = #__s_3
-                *this\row\_s( )\state\flag &~ #__s_select
+              If RowList( *this )\color\state = #__s_2
+                RowList( *this )\color\state = #__s_3
+                RowList( *this )\state\flag &~ #__s_select
                 Repaint = #True
               EndIf
             EndIf
           Next
-          PopListPosition( *this\row\_s( )) 
+          PopListPosition( RowList( *this )) 
         EndIf
       EndIf
       
@@ -11641,25 +11646,25 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndMacro
     
     Macro _multi_select_items_( _this_ )
-      PushListPosition( *this\row\_s( )) 
-      ForEach *this\row\_s( )
-        If *this\row\_s( )\visible
-          If Bool(( EnteredItem( )\index >= *this\row\_s( )\index And *this\row\active\index <= *this\row\_s( )\index ) Or ; верх
-                  ( *this\row\active\index >= *this\row\_s( )\index And EnteredItem( )\index <= *this\row\_s( )\index ))   ; вниз
+      PushListPosition( RowList( *this )) 
+      ForEach RowList( *this )
+        If RowList( *this )\visible
+          If Bool(( EnteredItem( )\index >= RowList( *this )\index And *this\row\active\index <= RowList( *this )\index ) Or ; верх
+                  ( *this\row\active\index >= RowList( *this )\index And EnteredItem( )\index <= RowList( *this )\index ))   ; вниз
             
-            If *this\row\_s( )\color\state <> #__s_2
-              *this\row\_s( )\color\state = #__s_2
+            If RowList( *this )\color\state <> #__s_2
+              RowList( *this )\color\state = #__s_2
               Repaint | #True
             EndIf
             
           Else
             
-            If *this\row\_s( )\color\state <> #__s_0
-              *this\row\_s( )\color\state = #__s_0
+            If RowList( *this )\color\state <> #__s_0
+              RowList( *this )\color\state = #__s_0
               
               ; example( sel 5;6;7, click 5, no post change )
-              If *this\row\_s( )\state\flag & #__s_select
-                *this\row\_s( )\state\flag &~ #__s_select
+              If RowList( *this )\state\flag & #__s_select
+                RowList( *this )\state\flag &~ #__s_select
               EndIf
               
               Repaint | #True
@@ -11668,7 +11673,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
         EndIf
       Next
-      PopListPosition( *this\row\_s( )) 
+      PopListPosition( RowList( *this )) 
     EndMacro
     
     
@@ -11681,28 +11686,28 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       If eventtype = #__event_Focus
-        PushListPosition( *this\row\_s( )) 
-        ForEach *this\row\_s( )
-          If *this\row\_s( )\color\state = #__s_3
-            *this\row\_s( )\color\state = #__s_2
-            *this\row\_s( )\state\flag | #__s_select
+        PushListPosition( RowList( *this )) 
+        ForEach RowList( *this )
+          If RowList( *this )\color\state = #__s_3
+            RowList( *this )\color\state = #__s_2
+            RowList( *this )\state\flag | #__s_select
           EndIf
         Next
-        PopListPosition( *this\row\_s( )) 
+        PopListPosition( RowList( *this )) 
         
         ; Send( #__event_Focus, *this, WidgetEvent( )\item )
         Repaint | #True
       EndIf
       
       If eventtype = #__event_LostFocus
-        PushListPosition( *this\row\_s( )) 
-        ForEach *this\row\_s( )
-          If *this\row\_s( )\color\state = #__s_2
-            *this\row\_s( )\color\state = #__s_3
-            *this\row\_s( )\state\flag &~ #__s_select
+        PushListPosition( RowList( *this )) 
+        ForEach RowList( *this )
+          If RowList( *this )\color\state = #__s_2
+            RowList( *this )\color\state = #__s_3
+            RowList( *this )\state\flag &~ #__s_select
           EndIf
         Next
-        PopListPosition( *this\row\_s( )) 
+        PopListPosition( RowList( *this )) 
         
         ; Send( #__event_lostFocus, *this, WidgetEvent( )\item )
         Repaint | #True
@@ -11802,33 +11807,33 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   EndIf
                   
                   If *this\row\active
-                    PushListPosition( *this\row\_s( )) 
-                    ForEach *this\row\_s( )
-                      If *this\row\_s( )\visible
-                        If Bool(( EnteredItem( )\index >= *this\row\_s( )\index And *this\row\active\index <= *this\row\_s( )\index ) Or ; верх
-                                ( EnteredItem( )\index <= *this\row\_s( )\index And *this\row\active\index >= *this\row\_s( )\index ))   ; вниз
+                    PushListPosition( RowList( *this )) 
+                    ForEach RowList( *this )
+                      If RowList( *this )\visible
+                        If Bool(( EnteredItem( )\index >= RowList( *this )\index And *this\row\active\index <= RowList( *this )\index ) Or ; верх
+                                ( EnteredItem( )\index <= RowList( *this )\index And *this\row\active\index >= RowList( *this )\index ))   ; вниз
                           
                           If *this\mode\check = #__m_clickselect
                             If EnteredItem( )\state\flag & #__s_select
-                              If *this\row\_s( )\color\state <> #__s_2
-                                *this\row\_s( )\color\state = #__s_2
+                              If RowList( *this )\color\state <> #__s_2
+                                RowList( *this )\color\state = #__s_2
                                 
-                                If *this\row\_s( )\state\flag & #__s_select = #False
+                                If RowList( *this )\state\flag & #__s_select = #False
                                   ; entered to no selected
-                                  Send( #__event_Change, *this, *this\row\_s( )\index )
+                                  Send( #__event_Change, *this, RowList( *this )\index )
                                 EndIf
                                 
                                 Repaint | #True
                               EndIf
                               
-                            ElseIf *this\row\_s( )\state\flag & #__s_enter
-                              If *this\row\_s( )\color\state <> #__s_1
-                                *this\row\_s( )\color\state = #__s_1
+                            ElseIf RowList( *this )\state\flag & #__s_enter
+                              If RowList( *this )\color\state <> #__s_1
+                                RowList( *this )\color\state = #__s_1
                                 
-                                If *this\row\_s( )\state\flag & #__s_select
+                                If RowList( *this )\state\flag & #__s_select
                                   If EnteredItem( )\state\flag & #__s_select = #False
                                     ; entered to selected
-                                    Send( #__event_Change, *this, *this\row\_s( )\index )
+                                    Send( #__event_Change, *this, RowList( *this )\index )
                                   EndIf
                                 EndIf
                                 
@@ -11839,15 +11844,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                           
                           ; multiselect items
                           If *this\mode\check = #__m_multiselect
-                            If *this\row\_s( )\color\state <> #__s_2
-                              *this\row\_s( )\color\state = #__s_2
+                            If RowList( *this )\color\state <> #__s_2
+                              RowList( *this )\color\state = #__s_2
                               Repaint | #True
                               
                               ; reset select before this 
                               ; example( sel 5;6;7, click 7, reset 5;6 )
                             ElseIf eventtype = #__event_LeftButtonDown
-                              If *this\row\active <> *this\row\_s( )
-                                *this\row\_s( )\color\state = #__s_0
+                              If *this\row\active <> RowList( *this )
+                                RowList( *this )\color\state = #__s_0
                                 Repaint | #True
                               EndIf
                             EndIf
@@ -11856,26 +11861,26 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                         Else
                           
                           If *this\mode\check = #__m_clickselect
-                            If *this\row\_s( )\state\flag & #__s_select 
-                              If *this\row\_s( )\color\state <> #__s_2
-                                *this\row\_s( )\color\state = #__s_2
+                            If RowList( *this )\state\flag & #__s_select 
+                              If RowList( *this )\color\state <> #__s_2
+                                RowList( *this )\color\state = #__s_2
                                 
                                 If EnteredItem( )\state\flag & #__s_select = #False
                                   ; leaved from selected
-                                  Send( #__event_Change, *this, *this\row\_s( )\index )
+                                  Send( #__event_Change, *this, RowList( *this )\index )
                                 EndIf
                                 
                                 Repaint | #True
                               EndIf
                               
-                            ElseIf *this\row\_s( )\state\flag & #__s_enter = #False
-                              If *this\row\_s( )\color\state <> #__s_0
-                                *this\row\_s( )\color\state = #__s_0
+                            ElseIf RowList( *this )\state\flag & #__s_enter = #False
+                              If RowList( *this )\color\state <> #__s_0
+                                RowList( *this )\color\state = #__s_0
                                 
                                 If EnteredItem( )\state\flag & #__s_select
-                                  If *this\row\_s( )\state\flag & #__s_select = #False
+                                  If RowList( *this )\state\flag & #__s_select = #False
                                     ; leaved from no selected
-                                    Send( #__event_Change, *this, *this\row\_s( )\index )
+                                    Send( #__event_Change, *this, RowList( *this )\index )
                                   EndIf
                                 EndIf
                                 
@@ -11885,12 +11890,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                           EndIf
                           
                           If *this\mode\check = #__m_multiselect
-                            If *this\row\_s( )\color\state <> #__s_0
-                              *this\row\_s( )\color\state = #__s_0
+                            If RowList( *this )\color\state <> #__s_0
+                              RowList( *this )\color\state = #__s_0
                               
                               ; example( sel 5;6;7, click 5, no post change )
-                              If *this\row\_s( )\state\flag & #__s_select
-                                *this\row\_s( )\state\flag &~ #__s_select
+                              If RowList( *this )\state\flag & #__s_select
+                                RowList( *this )\state\flag &~ #__s_select
                               EndIf
                               
                               Repaint | #True
@@ -11900,7 +11905,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                         EndIf
                       EndIf
                     Next
-                    PopListPosition( *this\row\_s( )) 
+                    PopListPosition( RowList( *this )) 
                   EndIf
                 Else
                   If *this\row\active And
@@ -11911,7 +11916,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   
                   *this\row\visible\_s( )\color\state = #__s_2
                   *this\row\active = *this\row\visible\_s( )
-                  ; *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\active\y, *this\row\active\height )
+                  ; *this\change =- row_scroll_y_( *this, *this\row\active )
                   Repaint | #True
                 EndIf
               EndIf
@@ -12014,19 +12019,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   ; select modifiers key item
                   If ( keyboard( )\key = #PB_Shortcut_Home Or
                        ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                    SelectElement( *this\row\_s( ), 0 )
+                    SelectElement( RowList( *this ), 0 )
                   Else
-                    _select_prev_item_( *this\row\_s( ), *current\index )
+                    _select_prev_item_( RowList( *this ), *current\index )
                   EndIf
                   
-                  If *current <> *this\row\_s( )
+                  If *current <> RowList( *this )
                     If *current 
                       _set_state_list_( *current, #False )
                     EndIf
-                    _set_state_list_( *this\row\_s( ), #True )
+                    _set_state_list_( RowList( *this ), #True )
                     
                     If *this\mode\check <> #__m_clickselect
-                      *this\row\active = *this\row\_s( )
+                      *this\row\active = RowList( *this )
                     EndIf
                     
                     If Not keyboard( )\key[1] & #PB_Canvas_Shift
@@ -12037,8 +12042,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       _multi_select_items_( *this )
                     EndIf
                     
-                    *current = *this\row\_s( )
-                    *this\change =- _tree_items_scroll_y_( *this\scroll\v, *current\y, *current\height )
+                    *current = RowList( *this )
+                    *this\change =- row_scroll_y_( *this, *current )
                     Send( #__event_Change, *this, *current\index )
                     Repaint = 1
                   EndIf
@@ -12062,19 +12067,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   ; select modifiers key item
                   If ( keyboard( )\key = #PB_Shortcut_End Or
                        ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                    SelectElement( *this\row\_s( ), ( *this\count\items - 1 ))
+                    SelectElement( RowList( *this ), ( *this\count\items - 1 ))
                   Else
-                    _select_next_item_( *this\row\_s( ), *current\index )
+                    _select_next_item_( RowList( *this ), *current\index )
                   EndIf
                   
-                  If *current <> *this\row\_s( )
+                  If *current <> RowList( *this )
                     If *current 
                       _set_state_list_( *current, #False )
                     EndIf
-                    _set_state_list_( *this\row\_s( ), #True )
+                    _set_state_list_( RowList( *this ), #True )
                     
                     If *this\mode\check <> #__m_clickselect
-                      *this\row\active = *this\row\_s( )
+                      *this\row\active = RowList( *this )
                     EndIf
                     
                     If Not keyboard( )\key[1] & #PB_Canvas_Shift
@@ -12085,8 +12090,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       _multi_select_items_( *this )
                     EndIf
                     
-                    *current = *this\row\_s( )
-                    *this\change =- _tree_items_scroll_y_( *this\scroll\v, *current\y, *current\height )
+                    *current = RowList( *this )
+                    *this\change =- row_scroll_y_( *this, *current )
                     Send( #__event_Change, *this, *current\index )
                     Repaint = 1
                   EndIf
@@ -12291,10 +12296,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; buttins background
           draw_mode_alpha( #PB_2DDrawing_Default )
-          _draw_box_button_( \caption\button[#__wb_close], color\back )
-          _draw_box_button_( \caption\button[#__wb_maxi], color\back )
-          _draw_box_button_( \caption\button[#__wb_mini], color\back )
-          _draw_box_button_( \caption\button[#__wb_help], color\back )
+          draw_box_button_( \caption\button[#__wb_close], color\back )
+          draw_box_button_( \caption\button[#__wb_maxi], color\back )
+          draw_box_button_( \caption\button[#__wb_mini], color\back )
+          draw_box_button_( \caption\button[#__wb_help], color\back )
           
           ; buttons image
           draw_mode_alpha( #PB_2DDrawing_Outlined )
@@ -12423,10 +12428,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If caption_height
           ; buttins background
           draw_mode_alpha( #PB_2DDrawing_Default )
-          _draw_box_button_( \caption\button[#__wb_close], color\back )
-          _draw_box_button_( \caption\button[#__wb_maxi], color\back )
-          _draw_box_button_( \caption\button[#__wb_mini], color\back )
-          _draw_box_button_( \caption\button[#__wb_help], color\back )
+          draw_box_button_( \caption\button[#__wb_close], color\back )
+          draw_box_button_( \caption\button[#__wb_maxi], color\back )
+          draw_box_button_( \caption\button[#__wb_mini], color\back )
+          draw_box_button_( \caption\button[#__wb_help], color\back )
           
           ; buttons image
           draw_mode_alpha( #PB_2DDrawing_Outlined )
@@ -12813,14 +12818,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               If *this\count\items
                 If *this\flag & #__tree_optionboxes
-                  PushListPosition( *this\row\_s( ))
-                  ForEach *this\row\_s( )
-                    If *this\row\_s( )\_parent And 
-                       *this\row\_s( )\_parent\count\childrens
-                      *this\row\_s( )\sublevel = state
+                  PushListPosition( RowList( *this ))
+                  ForEach RowList( *this )
+                    If RowList( *this )\_parent And 
+                       RowList( *this )\_parent\count\childrens
+                      RowList( *this )\sublevel = state
                     EndIf
                   Next
-                  PopListPosition( *this\row\_s( ))
+                  PopListPosition( RowList( *this ))
                 EndIf
               EndIf
             EndIf
@@ -12853,14 +12858,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               ; set option group
               If *this\count\items
-                PushListPosition( *this\row\_s( ))
-                ForEach *this\row\_s( )
-                  If *this\row\_s( )\_parent
-                    *this\row\_s( )\checkbox\___state = #PB_Checkbox_Unchecked
-                    *this\row\_s( )\option_group = Bool( state ) * GetItem( *this\row\_s( ), 0 ) 
+                PushListPosition( RowList( *this ))
+                ForEach RowList( *this )
+                  If RowList( *this )\_parent
+                    RowList( *this )\checkbox\___state = #PB_Checkbox_Unchecked
+                    RowList( *this )\option_group = Bool( state ) * GetItem( RowList( *this ), 0 ) 
                   EndIf
                 Next
-                PopListPosition( *this\row\_s( ))
+                PopListPosition( RowList( *this ))
               EndIf
             EndIf
             If flag & #__tree_gridlines
@@ -12870,14 +12875,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               *this\mode\collapse = state
               
               If *this\count\items
-                PushListPosition( *this\row\_s( ))
-                ForEach *this\row\_s( )
-                  If *this\row\_s( )\_parent 
-                    *this\row\_s( )\_parent\button\___state = state
-                    *this\row\_s( )\hide = state
+                PushListPosition( RowList( *this ))
+                ForEach RowList( *this )
+                  If RowList( *this )\_parent 
+                    RowList( *this )\_parent\button\___state = state
+                    RowList( *this )\hide = state
                   EndIf
                 Next
-                PopListPosition( *this\row\_s( ))
+                PopListPosition( RowList( *this ))
               EndIf
               
               If *this\root
@@ -12987,7 +12992,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; ;       If *this\type = #__type_tree
       ; ;         If StartDrawing( CanvasOutput( *this\root\canvas\gadget ))
-      ; ;           Tree_Update( *this, *this\row\_s( ))
+      ; ;           Tree_Update( *this, RowList( *this ))
       ; ;           StopDrawing( )
       ; ;         EndIf
       ; ;         
@@ -13061,7 +13066,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       ;*this\change = 1
-      _update_draws_items_( *this, *this\row, *this\height[#__c_inner] )
+      update_visible_items_( *this, *this\height[#__c_inner] )
     EndProcedure
     
     ;- 
@@ -13177,26 +13182,26 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this\type = #__type_Tree Or
          *this\type = #__type_ListView
         
-        If _no_select_item_( *this\row\_s( ), Item )
+        If _no_select_item_( RowList( *this ), Item )
           ProcedureReturn #False
         EndIf
         
-        Protected sublevel = *this\row\_s( )\sublevel
-        Protected *parent._s_rows = *this\row\_s( )\_parent
+        Protected sublevel = RowList( *this )\sublevel
+        Protected *parent._s_rows = RowList( *this )\_parent
         
         ; if is last parent item then change to the prev element of his level
-        If *parent And *parent\last = *this\row\_s( )
-          PushListPosition( *this\row\_s( ))
-          While PreviousElement( *this\row\_s( ))
-            If *parent = *this\row\_s( )\_parent
-              *parent\last = *this\row\_s( )
+        If *parent And *parent\last = RowList( *this )
+          PushListPosition( RowList( *this ))
+          While PreviousElement( RowList( *this ))
+            If *parent = RowList( *this )\_parent
+              *parent\last = RowList( *this )
               Break
             EndIf
           Wend
-          PopListPosition( *this\row\_s( ))
+          PopListPosition( RowList( *this ))
           
           ; if the remove last parent childrens
-          If *parent\last = *this\row\_s( )
+          If *parent\last = RowList( *this )
             *parent\count\childrens = #False
             *parent\last = #Null
           Else
@@ -13205,40 +13210,40 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; before deleting a parent, we delete its children
-        If *this\row\_s( )\count\childrens
-          PushListPosition( *this\row\_s( ))
-          While NextElement( *this\row\_s( ))
-            If *this\row\_s( )\sublevel > sublevel 
-              DeleteElement( *this\row\_s( )) 
+        If RowList( *this )\count\childrens
+          PushListPosition( RowList( *this ))
+          While NextElement( RowList( *this ))
+            If RowList( *this )\sublevel > sublevel 
+              DeleteElement( RowList( *this )) 
               *this\count\items - 1 
               *this\row\count - 1
             Else
               Break
             EndIf
           Wend
-          PopListPosition( *this\row\_s( ))
+          PopListPosition( RowList( *this ))
         EndIf
         
         ; if the item to be removed is selected, 
         ; then we set the next item of its level as selected
-        If *this\row\active = *this\row\_s( )
+        If *this\row\active = RowList( *this )
           *this\row\active\state\flag &~ #__s_select
           
           ; if he is a parent then we find the next item of his level
-          PushListPosition( *this\row\_s( ))
-          While NextElement( *this\row\_s( ))
-            If *this\row\_s( )\sublevel = *this\row\active\sublevel 
+          PushListPosition( RowList( *this ))
+          While NextElement( RowList( *this ))
+            If RowList( *this )\sublevel = *this\row\active\sublevel 
               Break
             EndIf
           Wend
           
           ; if we remove the last selected then 
-          If *this\row\active = *this\row\_s( ) 
-            *this\row\active = PreviousElement( *this\row\_s( ))
+          If *this\row\active = RowList( *this ) 
+            *this\row\active = PreviousElement( RowList( *this ))
           Else
-            *this\row\active = *this\row\_s( ) 
+            *this\row\active = RowList( *this ) 
           EndIf
-          PopListPosition( *this\row\_s( ))
+          PopListPosition( RowList( *this ))
           
           If *this\row\active
             If *this\row\active\_parent And 
@@ -13253,7 +13258,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         *this\change = 1  
         *this\count\items - 1
-        DeleteElement( *this\row\_s( ))
+        DeleteElement( RowList( *this ))
         PostEventCanvas( *this\root )
         result = #True
       EndIf
@@ -13306,7 +13311,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\row\active = 0
           EndIf
           
-          ClearList( *this\row\_s( ))
+          ClearList( RowList( *this ))
           
           PostEventCanvas( *this\root )
           ;           ReDraw( *this )
@@ -13618,11 +13623,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       _add_action_( *this )
       
       If *this\type = #__type_ComboBox
-        If _no_select_item_( *this\row\_s( ), State )
+        If _no_select_item_( RowList( *this ), State )
           ProcedureReturn #False
         EndIf
         
-        If *this\row\active <> *this\row\_s( )
+        If *this\row\active <> RowList( *this )
           
           If *this\row\active
             If *this\row\active\state\flag & #__s_select
@@ -13635,7 +13640,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\row\active\color\state = #__s_0
           EndIf
           
-          *this\row\active = *this\row\_s( )
+          *this\row\active = RowList( *this )
           *this\row\active\state\flag | #__s_select 
           ;           *this\row\active\state\flag | #__s_scroll 
           ;           If *this = FocusedWidget( )
@@ -13805,22 +13810,18 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             EndIf
             
-            If *this\row\active\state\flag & #__s_scroll
-              *this\row\active\state\flag &~ #__s_scroll
-            EndIf
-            
             *this\row\active\color\state = #__s_0
             *this\row\active = #Null
           EndIf
         EndIf
         
         ; 
-        If _no_select_item_( *this\row\_s( ), State )
+        If _no_select_item_( RowList( *this ), State )
           ProcedureReturn #False
         EndIf
         
         If *this\count\items
-          If *this\row\active <> *this\row\_s( )
+          If *this\row\active <> RowList( *this )
             If *this\row\active 
               If *this\row\active\state\flag & #__s_select
                 *this\row\active\state\flag &~ #__s_select
@@ -13830,38 +13831,34 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 EndIf
               EndIf
               
-              If *this\row\active\state\flag & #__s_scroll
-                *this\row\active\state\flag &~ #__s_scroll
-              EndIf
-              
               *this\row\active\color\state = #__s_0
             EndIf
             
             ; click select mode 
             If *this\mode\check = #__m_clickselect
-              If *this\row\_s( )\state\flag & #__s_select 
-                *this\row\_s( )\state\flag &~ #__s_select
-                *this\row\_s( )\color\state = #__s_0
+              If RowList( *this )\state\flag & #__s_select 
+                RowList( *this )\state\flag &~ #__s_select
+                RowList( *this )\color\state = #__s_0
               Else
-                *this\row\_s( )\state\flag | #__s_select
-                *this\row\_s( )\color\state = #__s_3
+                RowList( *this )\state\flag | #__s_select
+                RowList( *this )\color\state = #__s_3
               EndIf
               
-              Send( #__event_Change, *this, *this\row\_s( )\index )
+              Send( #__event_Change, *this, RowList( *this )\index )
             Else
-              If *this\row\_s( )\state\flag & #__s_select = #False
-                *this\row\_s( )\state\flag | #__s_select
+              If RowList( *this )\state\flag & #__s_select = #False
+                RowList( *this )\state\flag | #__s_select
                 ; multi select mode 
                 If *this\mode\check = #__m_multiselect
-                  Send( #__event_Change, *this, *this\row\_s( )\index, 1 )
+                  Send( #__event_Change, *this, RowList( *this )\index, 1 )
                 EndIf
               EndIf
               
-              *this\row\_s( )\color\state = #__s_3
+              RowList( *this )\color\state = #__s_3
             EndIf
             
-            *this\row\_s( )\state\flag | #__s_scroll
-            *this\row\active = *this\row\_s( )
+            *this\scroll\state =- 1 
+            *this\row\active = RowList( *this )
             
             ;_post_repaint_items_( *this )
             
@@ -13912,11 +13909,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         Select Attribute 
           Case #PB_Button_Image
-            _set_image_( *this, *this\image, *value )
-            _set_image_( *this, *this\image[#__img_released], *value )
+            set_image_( *this, *this\image, *value )
+            set_image_( *this, *this\image[#__img_released], *value )
             
           Case #PB_Button_PressedImage
-            _set_image_( *this, *this\image[#__img_pressed], *value )
+            set_image_( *this, *this\image[#__img_pressed], *value )
             
         EndSelect
       EndIf
@@ -13981,7 +13978,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;Text + #LF$
         
         With *this
-          If ListSize( *this\row\_s( ))
+          If ListSize( RowList( *this ))
             ClearItems( *this )
           EndIf
           
@@ -14075,11 +14072,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure   SetImage( *this._s_WIDGET, *image )
-      _set_image_( *this, *this\Image, *image )
+      set_image_( *this, *this\Image, *image )
     EndProcedure
     
     Procedure   SetBackgroundImage( *this._s_WIDGET, *image )
-      _set_image_( *this, *this\Image[#__img_background], *image )
+      set_image_( *this, *this\Image[#__img_background], *image )
     EndProcedure
     
     Procedure   SetData( *this._s_WIDGET, *data )
@@ -15272,21 +15269,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Case #__type_Tree,
                #__type_ListView
             
-            ;             PushListPosition( *this\row\_s( )) 
-            ;             ForEach *this\row\_s( )
-            ;               If *this\row\_s( )\index = Item 
-            ;                 result = *this\row\_s( )\data
-            ;                 ; Debug *this\row\_s( )\text\string
+            ;             PushListPosition( RowList( *this )) 
+            ;             ForEach RowList( *this )
+            ;               If RowList( *this )\index = Item 
+            ;                 result = RowList( *this )\data
+            ;                 ; Debug RowList( *this )\text\string
             ;                 Break
             ;               EndIf
             ;             Next
-            ;             PopListPosition( *this\row\_s( ))
+            ;             PopListPosition( RowList( *this ))
             ; 
-            If _no_select_item_( *this\row\_s( ), item )
+            If _no_select_item_( RowList( *this ), item )
               ProcedureReturn #False
             EndIf
             
-            result = *this\row\_s( )\data
+            result = RowList( *this )\data
         EndSelect
       EndWith
       
@@ -15311,14 +15308,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       If *this\count\items ; row\count
-        If _no_select_item_( *this\row\_s( ), Item ) 
+        If _no_select_item_( RowList( *this ), Item ) 
           ProcedureReturn ""
         EndIf
         
         If *this\type = #__type_property And Column 
-          result = *this\row\_s( )\text\edit\string
+          result = RowList( *this )\text\edit\string
         Else
-          result = *this\row\_s( )\text\string
+          result = RowList( *this )\text\string
         EndIf
       EndIf
       
@@ -15333,11 +15330,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
          *this\type = #__type_ListView Or
          *this\type = #__type_Tree
         
-        If _no_select_item_( *this\row\_s( ), Item ) 
+        If _no_select_item_( RowList( *this ), Item ) 
           ProcedureReturn #PB_Default
         EndIf
         
-        result = *this\row\_s( )\image\img
+        result = RowList( *this )\image\img
       EndIf
       
       ProcedureReturn result
@@ -15351,11 +15348,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
          *this\type = #__type_ListView Or
          *this\type = #__type_Tree
         
-        If _no_select_item_( *this\row\_s( ), Item ) 
+        If _no_select_item_( RowList( *this ), Item ) 
           ProcedureReturn #False
         EndIf
         
-        result = *this\row\_s( )\text\fontID
+        result = RowList( *this )\text\fontID
       EndIf
       
       ProcedureReturn result
@@ -15381,22 +15378,22 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
       ElseIf *this\type = #__type_Tree
-        If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item ) 
-          If *this\row\_s( )\color\state
+        If _is_item_( *this, item ) And SelectElement( RowList( *this ), Item ) 
+          If RowList( *this )\color\state
             result | #__tree_selected
           EndIf
           
-          If *this\row\_s( )\checkbox\___state
+          If RowList( *this )\checkbox\___state
             If *this\mode\threestate And 
-               *this\row\_s( )\checkbox\___state = #PB_Checkbox_Inbetween
+               RowList( *this )\checkbox\___state = #PB_Checkbox_Inbetween
               result | #__tree_Inbetween
             Else
               result | #__tree_checked
             EndIf
           EndIf
           
-          If *this\row\_s( )\count\childrens And
-             *this\row\_s( )\button\___state = 0
+          If RowList( *this )\count\childrens And
+             RowList( *this )\button\___state = 0
             result | #__tree_expanded
           Else
             result | #__tree_collapsed
@@ -15414,12 +15411,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected result, *color._s_color
       
       If *this\type = #__type_Editor
-        If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item )
-          *color = *this\row\_s( )\color
+        If _is_item_( *this, item ) And SelectElement( RowList( *this ), Item )
+          *color = RowList( *this )\color
         EndIf
       ElseIf *this\type = #__type_Tree 
-        If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item )
-          *color = *this\row\_s( )\color
+        If _is_item_( *this, item ) And SelectElement( RowList( *this ), Item )
+          *color = RowList( *this )\color
         EndIf
       Else
         *color = *this\bar\button[Item]\color
@@ -15439,13 +15436,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected result
       
       If *this\type = #__type_Tree
-        If _no_select_item_( *this\row\_s( ), Item )
+        If _no_select_item_( RowList( *this ), Item )
           ProcedureReturn #False
         EndIf
         
         Select Attribute
           Case #__tree_sublevel
-            result = *this\row\_s( )\sublevel
+            result = RowList( *this )\sublevel
         EndSelect
       EndIf
       
@@ -15455,11 +15452,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     ;- 
     Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
       If *this\count\items 
-        If _no_select_item_( *this\row\_s( ), item )
+        If _no_select_item_( RowList( *this ), item )
           ProcedureReturn #False
         EndIf
         
-        *this\row\_s( )\data = *Data
+        RowList( *this )\data = *Data
       EndIf
     EndProcedure
     
@@ -15481,20 +15478,20 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;Item = *this\row\i( Hex( Item ))
         
-        If _no_select_item_( *this\row\_s( ), item )
+        If _no_select_item_( RowList( *this ), item )
           ProcedureReturn #False
         EndIf
         
         Protected row_count = CountString( Text.s, #LF$ )
         
         If Not row_count
-          *this\row\_s( )\text\string = Text.s
+          RowList( *this )\text\string = Text.s
         Else
-          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          RowList( *this )\text\string = StringField( Text.s, 1, #LF$ )
+          RowList( *this )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
-        *this\row\_s( )\text\change = 1
+        RowList( *this )\text\change = 1
         *this\change = 1
         result = #True
         
@@ -15523,9 +15520,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this\type = #__type_Tree Or
          *this\type = #__type_ListView
         
-        If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item )
-          If *this\row\_s( )\image\img <> Image
-            _set_image_( *this, *this\row\_s( )\Image, Image )
+        If _is_item_( *this, item ) And SelectElement( RowList( *this ), Item )
+          If RowList( *this )\image\img <> Image
+            set_image_( *this, RowList( *this )\Image, Image )
             _post_repaint_items_( *this )
             *this\change = 1
             ;;PostEventCanvas( *this\root )
@@ -15545,10 +15542,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
          *this\type = #__type_Tree
         
         If _is_item_( *this, item ) And 
-           SelectElement( *this\row\_s( ), Item ) And 
-           *this\row\_s( )\text\fontID <> FontID
-          *this\row\_s( )\text\fontID = FontID
-          ;       *this\row\_s( )\text\change = 1
+           SelectElement( RowList( *this ), Item ) And 
+           RowList( *this )\text\fontID <> FontID
+          RowList( *this )\text\fontID = FontID
+          ;       RowList( *this )\text\change = 1
           ;       *this\change = 1
           result = #True
         EndIf 
@@ -15558,7 +15555,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
            SelectElement( *this\tab\widget\bar\_s( ), Item ) And 
            *this\tab\widget\bar\_s( )\text\fontID <> FontID
           *this\tab\widget\bar\_s( )\text\fontID = FontID
-          ;       *this\row\_s( )\text\change = 1
+          ;       RowList( *this )\text\change = 1
           ;       *this\change = 1
           result = #True
         EndIf 
@@ -15605,45 +15602,45 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;- widget::tree_set_item_state( )
       ElseIf *this\type = #__type_Tree
         If *this\count\items
-          If _no_select_item_( *this\row\_s( ), Item )
+          If _no_select_item_( RowList( *this ), Item )
             ProcedureReturn #False
           EndIf
           
-          Protected *this_current_row._s_rows = *this\row\_s( )
+          Protected *this_current_row._s_rows = RowList( *this )
           
           If State & #__tree_selected = #__tree_selected
-            If *this\row\active <> *this\row\_s( )
-              *this\row\active = *this\row\_s( )
+            If *this\row\active <> RowList( *this )
+              *this\row\active = RowList( *this )
               *this\row\active\state\flag | #__s_select
               *this\row\active\color\state = #__s_2 + Bool( *this\state\flag & #__s_focus = #False )
             EndIf
           EndIf
           
           If State & #__tree_inbetween = #__tree_inbetween
-            *this\row\_s( )\checkbox\___state = #PB_Checkbox_Inbetween
+            RowList( *this )\checkbox\___state = #PB_Checkbox_Inbetween
           ElseIf State & #__tree_checked = #__tree_checked
-            *this\row\_s( )\checkbox\___state = #PB_Checkbox_Checked
+            RowList( *this )\checkbox\___state = #PB_Checkbox_Checked
           EndIf
           
-          If *this\row\_s( )\count\childrens
+          If RowList( *this )\count\childrens
             If State & #__tree_expanded = #__tree_expanded Or 
                State & #__tree_collapsed = #__tree_collapsed
               
               *this\change = #True
-              *this\row\_s( )\button\___state = Bool( State & #__tree_collapsed )
+              RowList( *this )\button\___state = Bool( State & #__tree_collapsed )
               
-              PushListPosition( *this\row\_s( ))
-              While NextElement( *this\row\_s( ))
-                If *this\row\_s( )\_parent 
-                  *this\row\_s( )\hide = Bool( *this\row\_s( )\_parent\button\___state | *this\row\_s( )\_parent\hide )
+              PushListPosition( RowList( *this ))
+              While NextElement( RowList( *this ))
+                If RowList( *this )\_parent 
+                  RowList( *this )\hide = Bool( RowList( *this )\_parent\button\___state | RowList( *this )\_parent\hide )
                 EndIf
                 
-                If *this\row\_s( )\sublevel = *this_current_row\sublevel 
+                If RowList( *this )\sublevel = *this_current_row\sublevel 
                   PostEventCanvas( *this\root )
                   Break
                 EndIf
               Wend
-              PopListPosition( *this\row\_s( ))
+              PopListPosition( RowList( *this ))
             EndIf
           EndIf
           
@@ -15665,17 +15662,17 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected result, alpha.a
       
       ; 
-      If ListSize( *this\row\_s( ) ) ;*this\type = #__type_Tree Or *this\type = #__type_Editor
+      If ListSize( RowList( *this ) ) ;*this\type = #__type_Tree Or *this\type = #__type_Editor
         If Item = #PB_All
-          PushListPosition( *this\row\_s( )) 
-          ForEach *this\row\_s( )
-            _set_color_( result, *this\row\_s( )\color, ColorType, Color, alpha, [Column] )
+          PushListPosition( RowList( *this )) 
+          ForEach RowList( *this )
+            _set_color_( result, RowList( *this )\color, ColorType, Color, alpha, [Column] )
           Next
-          PopListPosition( *this\row\_s( )) 
+          PopListPosition( RowList( *this )) 
           
         Else
-          If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item )
-            _set_color_( result, *this\row\_s( )\color, ColorType, Color, alpha, [Column] )
+          If _is_item_( *this, item ) And SelectElement( RowList( *this ), Item )
+            _set_color_( result, RowList( *this )\color, ColorType, Color, alpha, [Column] )
           EndIf
         EndIf
       EndIf
@@ -15859,7 +15856,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\flag = Flag
           
           If *this\image\img <> *param_3
-            _set_image_( *this, *this\Image, *param_3 )
+            set_image_( *this, *this\Image, *param_3 )
           EndIf
           
           _set_align_( *this\image, 
@@ -15888,6 +15885,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
            *this\type = #__type_Splitter
           
           *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
           *this\bar\widget = *this ; 
           
           *this\scroll\increment = ScrollStep
@@ -16653,7 +16653,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       _set_text_flag_( *this, *this\flag )
       
-      _set_image_( *this, *this\Image, Image )
+      set_image_( *this, *this\Image, Image )
       
       _set_align_( *this\image, 
                    constants::_check_( *this\flag, #__image_left ),
@@ -16987,7 +16987,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     ;- 
     ;- 
     ;-  DRAWINGs
-    Procedure.l _draw_items_( *this._s_WIDGET, List *row._s_rows( ), _scroll_x_, _scroll_y_ )
+    Procedure.l draw_items_( *this._s_WIDGET, List *row._s_rows( ), _scroll_x_, _scroll_y_ )
       Protected state.b, x.l, y.l, _box_x_.l, _box_y_.l, minus.l = 7
       
       ;
@@ -17013,7 +17013,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           state = *row( )\color\state  
           
           ; init real drawing font
-          _draw_font_item_( *this, *row( ), 0 )
+          draw_font_item_( *this, *row( ), 0 )
           
           ; Draw selector back
           If *row( )\count\childrens And *this\flag & #__tree_property
@@ -17079,7 +17079,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Next
       
       ;           draw_mode_alpha( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
-      ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\row\sublevelsize, *this\height[#__c_inner], *this\row\_s( )\_parent\color\back )
+      ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\row\sublevelsize, *this\height[#__c_inner], RowList( *this )\_parent\color\back )
       
       
       ; Draw plots
@@ -17249,7 +17249,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                  (*row( )\_parent And *row( )\_parent\last And *row( )\_parent\sublevel = *row( )\_parent\last\sublevel)
                 
                 _draw_button_( 0, x, y, *row( )\button\width, *row( )\button\height, 0,2)
-                _draw_box_( *row( )\button, color\frame )
+                draw_box_( *row( )\button, color\frame )
                 
                 Line(x + 2, y + *row( )\button\height/2, *row( )\button\width - 4, 1, $ff000000)
                 If *row( )\button\___state
@@ -17288,7 +17288,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               _draw_gradient_( *this\vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
               draw_mode_alpha( #PB_2DDrawing_Default )
-              _draw_box_( *this, color\back, [#__c_inner])
+              draw_box_( *this, color\back, [#__c_inner])
             EndIf
           EndIf
         EndIf
@@ -17313,15 +17313,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *this\text\string
-          If *this\row And ListSize( *this\row\_s( ) )
-            ForEach *this\row\_s( )
-              DrawRotatedText( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y,
-                               *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
+          If *this\row And ListSize( RowList( *this ) )
+            ForEach RowList( *this )
+              DrawRotatedText( x + RowList( *this )\text\x, y + RowList( *this )\text\y,
+                               RowList( *this )\text\String.s, *this\text\rotate, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] ) ; RowList( *this )\color\font )
               
               If *this\mode\lines
-                Protected i, count = Bool( func::GetFontSize( *this\row\_s( )\text\fontID ) > 13 )
+                Protected i, count = Bool( func::GetFontSize( RowList( *this )\text\fontID ) > 13 )
                 For i = 0 To count
-                  Line( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y + *this\row\_s( )\text\height - count + i - 1, *this\row\_s( )\text\width,1, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] )
+                  Line( x + RowList( *this )\text\x, y + RowList( *this )\text\y + RowList( *this )\text\height - count + i - 1, RowList( *this )\text\width,1, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] )
                 Next
               EndIf
               
@@ -17342,7 +17342,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; update text 
         If *this\change 
           
-          Editor_Update( *this, *this\row\_s( ))
+          Editor_Update( *this, RowList( *this ))
         EndIf
         
         If *this\image\change
@@ -17412,7 +17412,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
               draw_mode_alpha( #PB_2DDrawing_Default )
-              _draw_box_( *this, color\back, [#__c_frame])
+              draw_box_( *this, color\back, [#__c_frame])
             EndIf
           EndIf
         EndIf
@@ -17423,14 +17423,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;Debug *this\text\string
           
           draw_mode_alpha( #PB_2DDrawing_Transparent )
-          ForEach *this\row\_s( )
-            DrawRotatedText( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y,
-                             *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
+          ForEach RowList( *this )
+            DrawRotatedText( x + RowList( *this )\text\x, y + RowList( *this )\text\y,
+                             RowList( *this )\text\String.s, *this\text\rotate, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] ) ; RowList( *this )\color\font )
             
             If *this\mode\lines
-              Protected i, count = Bool( func::GetFontSize( *this\row\_s( )\text\fontID ) > 13 )
+              Protected i, count = Bool( func::GetFontSize( RowList( *this )\text\fontID ) > 13 )
               For i=0 To count
-                Line( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y + *this\row\_s( )\text\height - count + i - 1, *this\row\_s( )\text\width,1, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] )
+                Line( x + RowList( *this )\text\x, y + RowList( *this )\text\y + RowList( *this )\text\height - count + i - 1, RowList( *this )\text\width,1, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] )
               Next
             EndIf
             
@@ -17465,12 +17465,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; area scrollbars draw 
-        Area_Draw( *this )
+        bar_area_draw_( *this )
         
         ; frame draw
         If *this\fs
           draw_mode( #PB_2DDrawing_Outlined )
-          _draw_box_( *this, color\frame, [#__c_frame])
+          draw_box_( *this, color\frame, [#__c_frame])
         EndIf
       EndWith
     EndProcedure
@@ -17521,7 +17521,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         _content_clip_( *this, [#__c_clip] )
         
         ; area scrollbars draw 
-        Area_Draw( *this )
+        bar_area_draw_( *this )
         
         If *this\fs
           draw_mode_alpha( #PB_2DDrawing_Outlined )
@@ -17552,7 +17552,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; area scrollbars draw 
-        Area_Draw( *this )
+        bar_area_draw_( *this )
         ;
         _content_clip2_( *this, [#__c_clip2] )
         
@@ -17600,49 +17600,49 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Macro draw_clip_frame_( _this_ )
       ;         ; TEST  
-      ;         If test_draw_box_clip_type = #PB_All Or 
-      ;            test_draw_box_clip_type = *this\type
+      ;         If testdraw_box_clip_type = #PB_All Or 
+      ;            testdraw_box_clip_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip], $ff0000ff )
       ;         EndIf
       ;         
-      ;         If test_draw_box_clip1_type = #PB_All Or 
-      ;            test_draw_box_clip1_type = *this\type
+      ;         If testdraw_box_clip1_type = #PB_All Or 
+      ;            testdraw_box_clip1_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_clip1], *this\y[#__c_clip1], *this\width[#__c_clip1], *this\height[#__c_clip1], $ffff0000 )
       ;         EndIf
       ;         
-      ;         If test_draw_box_clip2_type = #PB_All Or 
-      ;            test_draw_box_clip2_type = *this\type
+      ;         If testdraw_box_clip2_type = #PB_All Or 
+      ;            testdraw_box_clip2_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2], $ff00ff00 )
       ;         EndIf
       ;         
-      ;         If test_draw_box_screen_type = #PB_All Or 
-      ;            test_draw_box_screen_type = *this\type
+      ;         If testdraw_box_screen_type = #PB_All Or 
+      ;            testdraw_box_screen_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_screen], *this\y[#__c_screen], *this\width[#__c_screen], *this\height[#__c_screen], $ff0000ff )
       ;         EndIf
       ;         
-      ;         If test_draw_box_frame_type = #PB_All Or 
-      ;            test_draw_box_frame_type = *this\type
+      ;         If testdraw_box_frame_type = #PB_All Or 
+      ;            testdraw_box_frame_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff00ff00 )
       ;         EndIf
       ;         
-      ;         If test_draw_box_inner_type = #PB_All Or 
-      ;            test_draw_box_inner_type = *this\type
+      ;         If testdraw_box_inner_type = #PB_All Or 
+      ;            testdraw_box_inner_type = *this\type
       ;           draw_mode( #PB_2DDrawing_Outlined )
       ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ffff0000 )
       ;         EndIf
       ;         
       ;         
       ;         If *this\parent\widget
-      ;           If test_draw_box_clip2_type = *this\parent\widget\type
+      ;           If testdraw_box_clip2_type = *this\parent\widget\type
       ;             draw_mode( #PB_2DDrawing_Outlined )
       ;             Box( *this\parent\widget\x[#__c_clip2], *this\parent\widget\y[#__c_clip2], *this\parent\widget\width[#__c_clip2], *this\parent\widget\height[#__c_clip2], $ff00ff00 )
       ;           EndIf
-      ;           If test_draw_box_inner_type = *this\parent\widget\type
+      ;           If testdraw_box_inner_type = *this\parent\widget\type
       ;             draw_mode( #PB_2DDrawing_Outlined )
       ;             Box( *this\parent\widget\x[#__c_inner], *this\parent\widget\y[#__c_inner], *this\parent\widget\width[#__c_inner], *this\parent\widget\height[#__c_inner], $ffff0000 )
       ;           EndIf
@@ -17723,7 +17723,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ;  first update
           If _this_\change > 0
-            _update_items_( _this_, _this_\row, _this_\change )
+            _update_items_( _this_, _this_\change )
           EndIf
           
           ;
@@ -17737,7 +17737,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           If _this_\state\flag & #__s_collapse
             ; Draw scroll bars
-            Area_Draw( _this_ )
+            bar_area_draw_( _this_ )
             
             _this_\_box_\arrow\direction = 3
           Else
@@ -17767,7 +17767,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Box( _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner], $ffffffff )
           
           ; Draw combo-popup-menu all rows
-          _draw_items_( _this_, _this_\row\visible\_s( ), _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos )
+          draw_items_( _this_, _this_\row\visible\_s( ), _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos )
           
           ; frame draw
           If _this_\fs
@@ -17780,9 +17780,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
         Case #__type_Editor         : Editor_Draw( _this_ )
           
-        Case #__type_Tree           : Tree_Draw( _this_, _this_\row\visible\_s( ))
-        Case #__type_property       : Tree_Draw( _this_, _this_\row\visible\_s( ))
-        Case #__type_ListView       : Tree_Draw( _this_, _this_\row\visible\_s( ))
+        Case #__type_Tree           : Tree_Draw( _this_ )
+        Case #__type_property       : Tree_Draw( _this_ )
+        Case #__type_ListView       : Tree_Draw( _this_ )
           
         Case #__type_Text           : _draw_Button( _this_ )
         Case #__type_Button         : _draw_Button( _this_ )
@@ -18030,7 +18030,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; draw current popup-widget
         If PopupWidget( ) 
           Draw( PopupWidget( ) )
-          ;Tree_Draw( PopupWidget( ), PopupWidget( )\row\visible\_s( ))
+          ;Tree_Draw( PopupWidget( ))
           
         EndIf
         
@@ -18835,7 +18835,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;             If eventtype = #__event_MouseMove
             ;               If Mouse()\y < *this\y
             ;                 If *this\row\visible\first\index - 1 >= 0 And 
-            ;                    _select_prev_item_( *this\row\_s( ), *this\row\visible\first\index )
+            ;                    _select_prev_item_( RowList( *this ), *this\row\visible\first\index )
             ;                   
             ;                   If LeavedItem( ) 
             ;                     LeavedItem( )\state\flag &~ #__s_enter
@@ -18844,7 +18844,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;                       repaint = #True
             ;                     EndIf
             ;                   EndIf
-            ;                   LeavedItem( ) = *this\row\_s( )
+            ;                   LeavedItem( ) = RowList( *this )
             ;                   LeavedItem( )\state\flag | #__s_enter
             ;                   If LeavedItem( )\color\state = #__s_0
             ;                     LeavedItem( )\color\state = #__s_1
@@ -18852,15 +18852,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;                   EndIf 
             ;                   
             ;                   If *this\mode\check = #__m_multiselect
-            ;                     *this\row\_s( )\color\state = #__s_2
-            ;                     *this\row\_s( )\state\flag | #__s_select
+            ;                     RowList( *this )\color\state = #__s_2
+            ;                     RowList( *this )\state\flag | #__s_select
             ;                   EndIf
-            ;                   repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
+            ;                   repaint | row_scroll_y_( *this, RowList( *this ) )
             ;                 EndIf
             ;                 
             ;               ElseIf Mouse()\y > (*this\y + *this\height)
             ;                 If *this\row\visible\last\index + 1 < *this\count\items And 
-            ;                    _select_next_item_( *this\row\_s( ), *this\row\visible\last\index )
+            ;                    _select_next_item_( RowList( *this ), *this\row\visible\last\index )
             ;                   
             ;                   If LeavedItem( ) 
             ;                     LeavedItem( )\state\flag &~ #__s_enter
@@ -18869,7 +18869,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;                       repaint = #True
             ;                     EndIf
             ;                   EndIf
-            ;                   LeavedItem( ) = *this\row\_s( )
+            ;                   LeavedItem( ) = RowList( *this )
             ;                   LeavedItem( )\state\flag | #__s_enter
             ;                   If LeavedItem( )\color\state = #__s_0
             ;                     LeavedItem( )\color\state = #__s_1
@@ -18877,10 +18877,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ;                   EndIf 
             ;                   
             ;                   If *this\mode\check = #__m_multiselect
-            ;                     *this\row\_s( )\color\state = #__s_2
-            ;                     *this\row\_s( )\state\flag | #__s_select
+            ;                     RowList( *this )\color\state = #__s_2
+            ;                     RowList( *this )\state\flag | #__s_select
             ;                   EndIf
-            ;                   repaint | _tree_items_scroll_y_( *this\scroll\v, *this\row\_s( )\y, *this\row\_s( )\height )
+            ;                   repaint | row_scroll_y_( *this, RowList( *this ) )
             ;                 EndIf
             ;               EndIf
             ;             EndIf
@@ -19096,7 +19096,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If eventtype = #__event_statuschange
             ;Debug "expanded"
             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\barheight ) 
-            _update_draws_items_( *this, *this\row, *this\height[#__c_inner] )
+            update_visible_items_( *this, *this\height[#__c_inner] )
             ; ClearList( *this\row\visible\_s( ) )
             
             If *this\row\active
@@ -20118,7 +20118,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn g
     EndProcedure
     
-    Procedure   Object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1  )
+    Procedure   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1  )
       If Not Alpha(Color)
         Color = Color&$FFFFFF | 255<<24
       EndIf
@@ -20240,6 +20240,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
   EndModule
   ;- <<< 
 CompilerEndIf
+
 
 ;- 
 Macro UseLIB( _name_ )
@@ -20565,5 +20566,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +--------f--n--------------------8--------------------------------40--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv-----------------------------------------------------------------------------------------------8t0-+---------------
+; Folding = +---------------------------------------------------------------------------------------------------------------xL-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

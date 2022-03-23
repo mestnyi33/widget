@@ -208,6 +208,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro PressedWidget( ) : Mouse( )\pressed\widget: EndMacro
     Macro FocusedWidget( ) : Keyboard( )\focused\widget: EndMacro ; Returns keyboard focus widget
     
+    Macro LastOpenedWidget( _this_ ) 
+      ;widget::*canvas\closed
+      _this_\parent\last 
+    EndMacro
     Macro OpenedWidget( ) : widget::*canvas\opened: EndMacro
     Macro StickyWindow( ) : widget::*canvas\sticky\window: EndMacro
     Macro PopupWidget( ) : widget::*canvas\sticky\widget: EndMacro
@@ -12433,44 +12437,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i CloseList( )
-      Debug "close - "+OpenedWidget( )\index;text\string
-    
+      Protected *open._s_WIDGET
+      ; Debug "close - "+OpenedWidget( )\index;text\string
+      
       If OpenedWidget( ) And 
          OpenedWidget( )\parent( ) And
          OpenedWidget( )\root\canvas\gadget = Root( )\canvas\gadget 
         
-        If OpenedWidget( )\parent\last
-          OpenedWidget( ) = OpenedWidget( )\parent\last 
+        If LastOpenedWidget( OpenedWidget( ) ) 
+          *open = LastOpenedWidget( OpenedWidget( ) )
+          LastOpenedWidget( OpenedWidget( ) ) = #Null
         Else
           If OpenedWidget( )\parent( )\type = #__type_MDI
-            OpenedWidget( ) = OpenedWidget( )\parent( )\parent( ) 
+            *open = OpenedWidget( )\parent( )\parent( ) 
           Else
             If OpenedWidget( ) = OpenedWidget( )\root
-              OpenedWidget( ) = OpenedWidget( )\root\before\root 
+              *open = OpenedWidget( )\root\before\root 
             Else
-              OpenedWidget( ) = OpenedWidget( )\parent( )
+              *open = OpenedWidget( )\parent( )
             EndIf
           EndIf
         EndIf
       Else
-        OpenedWidget( ) = Root( ) 
+        *open = Root( ) 
       EndIf
       
-      OpenList( OpenedWidget( ) )
-     EndProcedure
+      If OpenedWidget( ) <> *open 
+        OpenedWidget( ) = *open
+        OpenList( OpenedWidget( ) )
+      EndIf
+    EndProcedure
     
     Procedure.i OpenList( *this._S_widget, item.l = 0 )
       Protected result.i = OpenedWidget( )
-      If OpenedWidget( ) = *this
-          ProcedureReturn 
-        EndIf
-        
+      
+      If *this = OpenedWidget( )
+        ProcedureReturn result
+      EndIf
+      
       If *this
-        Debug "open - "+*this\index;text\string
-        If OpenedWidget( ) = *this\parent( )
-        Else
-          *this\parent\last = OpenedWidget( )
-          Debug ""
+        ;Debug "open - "+*this\index;text\string
+        If *this\parent( ) <> OpenedWidget( )
+          LastOpenedWidget( *this ) = OpenedWidget( )
+        ;  Debug ""
         EndIf
         
         If *this\root <> Root( )
@@ -12494,6 +12503,58 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+;     Procedure.i CloseList( )
+;       Protected *last._S_root
+;       
+;       If OpenedWidget( ) And 
+;          OpenedWidget( )\parent( ) And
+;          OpenedWidget( )\root\canvas\gadget = Root( )\canvas\gadget 
+;         
+;         ; Debug "" + OpenedWidget( ) + " - " + OpenedWidget( )\class + " " + OpenedWidget( )\parent( ) + " - " + OpenedWidget( )\parent( )\class
+;         If OpenedWidget( )\parent( )\type = #__type_MDI
+;           OpenList( OpenedWidget( )\parent( )\parent( ) )
+;         Else
+;           If OpenedWidget( ) = OpenedWidget( )\root
+;             
+;             OpenedWidget( ) = OpenedWidget( )\root\before\root 
+;             If OpenedWidget( )
+;               ChangeCurrentRoot(OpenedWidget( )\root\canvas\address )
+;             EndIf
+;             
+;           Else
+;             OpenList( OpenedWidget( )\parent( ) )
+;           EndIf
+;         EndIf
+;       Else
+;         OpenList( Root( ) )
+;       EndIf
+;     EndProcedure
+;     
+;     Procedure.i OpenList( *this._S_widget, item.l = 0 )
+;       Protected result.i = OpenedWidget( )
+;       
+;       If *this
+;         If *this\root <> Root( )
+;           If OpenedWidget( )\root
+;             OpenedWidget( )\root\after\root = *this\root
+;           EndIf
+;           *this\root\before\root = OpenedWidget( )\root
+;           
+;           If *this = *this\root 
+;             ChangeCurrentRoot(*this\root\canvas\address )
+;           EndIf
+;         EndIf
+;         
+;         If *this\tab\widget 
+;           OpenTabIndex( *this\tab\widget ) = item
+;         EndIf
+;         
+;         OpenedWidget( ) = *this
+;       EndIf
+;       
+;       ProcedureReturn result
+;     EndProcedure
+;     
     ;- 
     Procedure   GetWidget( index )
       Protected result
@@ -12629,7 +12690,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           result = thisW( )\last\widget
-          ; Debug "get-last - "+thisW( )\class +" "+ thisW( )\last\widget\class
           PopListPosition( thisW( ) )
         Else
           result = *this\last\widget
@@ -13572,11 +13632,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If *parent\last\widget
-          *last = GetLast( *parent, tabindex )
+          ;*last = GetLast( *parent, tabindex )
+          *last = *parent\last\widget
+           Debug *last\index
+        ; *parent\last\widget = *this
+        EndIf
+        
+        If *last
+          Debug " "+Str(ListIndex( WidgetList( *parent\root ) ) +1)+" "+*this +" "+ *parent\index +" "+ *last\index
+        Else
+          Debug " "+Str(ListIndex( WidgetList( *parent\root ) ) +1)+" "+*this +" "+ *parent\index +" "+ *last
         EndIf
         
         If *this And 
            *this\parent( )
+          
           If *this\parent( ) = *parent
             ProcedureReturn #False
           EndIf
@@ -13632,30 +13702,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ReParent = #True 
           EndIf
           
-        Else
-          If *parent\root
-            If *last
-              ChangeCurrentElement( WidgetList( *parent\root ), *last\address )
-            Else
-              LastElement( WidgetList( *parent\root ) )
-            EndIf
-            
-            AddElement( WidgetList( *parent\root ) ) 
-            WidgetList( *parent\root ) = *this
-            *this\index = ListIndex( WidgetList( *parent\root ) ) 
-            *this\address = @WidgetList( *parent\root )
+            ; position in list
+          If *this\after\widget
+            *this\after\widget\before\widget = *this\before\widget
           EndIf
-        EndIf
-        
-        
-        ; position in list
-        If *this\after\widget
-          *this\after\widget\before\widget = *this\before\widget
-        EndIf
-        If *this\before\widget
-          *this\before\widget\after\widget = *this\after\widget
-        EndIf
-        If *this\parent( )
+          If *this\before\widget
+            *this\before\widget\after\widget = *this\after\widget
+          EndIf
+          
           If *this\parent( )\first\widget = *this
             ;             If *this\after\widget
             *this\parent( )\first\widget = *this\after\widget
@@ -13670,9 +13724,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\parent( )\last\widget = *this\parent( ) ; if last type
             EndIf
           EndIf 
+        
         Else
+          If *parent\root
+            If *last
+              ChangeCurrentElement( WidgetList( *parent\root ), *last\address )
+              Debug WidgetList( *parent\root )\text\string +" "+ Str(ListIndex( WidgetList( *parent\root ) ) +1)
+            Else
+              LastElement( WidgetList( *parent\root ) )
+            EndIf
+            
+            ;InsertElement( WidgetList( *parent\root ) ) 
+            AddElement( WidgetList( *parent\root ) ) 
+            WidgetList( *parent\root ) = *this
+            *this\index = ListIndex( WidgetList( *parent\root ) ) 
+            *this\address = @WidgetList( *parent\root )
+          EndIf
+          
           *this\last\widget = *this ; if last type
         EndIf
+        
         If *parent\last\widget = *parent
           *parent\first\widget = *this
           *parent\last\widget = *this
@@ -19732,31 +19803,31 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenList( *root1 )
   
-  SetText(Container(20, 20, 180, 180, editable), "4") 
-  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "5") 
-  SetText(Container(40, 20, 180, 180, editable), "6")
+  SetText(Container(20, 20, 180, 180, editable), "1") 
+  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "2") 
+  SetText(Container(40, 20, 180, 180, editable), "3")
   Define seven = Container(20, 20, 180, 180, editable)
-  SetText(seven, "      7")
+  SetText(seven, "      4")
   
-  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     8") 
-  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
-  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
+  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     5") 
+  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     6") 
+  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     7") 
   
-  CloseList( ) ; 7
-  CloseList( ) ; 6
-  SetText(Container(10, 45, 70, 180, editable), "11") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
-  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
-  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "14") 
+  CloseList( ) ; 4
+  CloseList( ) ; 3
+  SetText(Container(10, 45, 70, 180, editable), "8") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "9") 
+  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "10") 
+  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "11") 
   
-  SetText(Container(10, 45, 70, 180, editable), "15") 
-  SetText(Container(10, 5, 70, 180, editable), "16") 
-  SetText(Container(10, 5, 70, 180, editable), "17") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
+  SetText(Container(10, 45, 70, 180, editable), "12") 
+  SetText(Container(10, 5, 70, 180, editable), "13") 
+  SetText(Container(10, 5, 70, 180, editable), "14") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "15") 
+  CloseList( ) ; 14
+  CloseList( ) ; 13
+  CloseList( ) ; 12
+  CloseList( ) ; 8
   ;CloseList( ) ; 1
   
    Debug " ---- "+openedwidget()\index;text\string
@@ -19768,5 +19839,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------2-+4Ln-------v-88G7+---8---8-9---------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

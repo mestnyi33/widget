@@ -68,16 +68,16 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEach widget( )
       line = "  "+ widget( )\class +" "
       
-      If widget( )\before
-        line + widget( )\before\class+"_"+widget( )\before\text\string +" <<  "
+      If widget( )\before\widget
+        line + widget( )\before\widget\class+"_"+widget( )\before\widget\text\string +" <<  "
       Else
         line + "-------- <<  " 
       EndIf
       
       line + widget( )\text\string
       
-      If widget( )\after
-        line +"  >> "+ widget( )\after\class+"_"+widget( )\after\text\string
+      If widget( )\after\widget
+        line +"  >> "+ widget( )\after\widget\class+"_"+widget( )\after\widget\text\string
       Else
         line + "  >> --------" 
       EndIf
@@ -91,6 +91,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
    
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

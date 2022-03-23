@@ -73,7 +73,7 @@
       #__splitter_buttonsize = 7;4
     CompilerEndIf
     CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-      #__splitter_buttonsize = 4
+      #__splitter_buttonsize = 4;4
     CompilerEndIf
     #__scroll_buttonsize = 16
     
@@ -746,10 +746,11 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
-      #PB_EventType_MouseStatus
+      ;#PB_EventType_MouseStatus
       #PB_EventType_StatusChangeEdit
       ;       #PB_EventType_TimerStart
       ;       #PB_EventType_TimerStop
+     ;;;; #PB_EventType_ColorChange
     EndEnumeration
     
     #__event_free             = #PB_EventType_Free    

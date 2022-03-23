@@ -19,7 +19,7 @@ Procedure.s GetClassName( handle.i )
   EndIf
 EndProcedure
 
-Procedure GetAtPointWindow( )
+Procedure GetUMWindow( )
   Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
   
   ; get-WindowNumber
@@ -33,7 +33,7 @@ Procedure GetAtPointWindow( )
   ProcedureReturn NSWindow
 EndProcedure
 
-Procedure GetAtPointGadget( NSWindow )
+Procedure GetUMGadget( NSWindow )
   Protected.i handle, superview, ContentView, Point.CGPoint
    
   If NSWindow
@@ -188,27 +188,16 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     SpinGadget(302, 0, 0, 100,20,0,10)                 
     SplitterGadget(#PB_GadgetType_Splitter, 665, 405, 160, 95, 301, 302)
     
-    ;     MDIGadget(#PB_GadgetType_MDI, 665, 505, 160,95); ,#pb_flag_AutoSize)
-    ;     Define *g = AddGadgetItem(#PB_GadgetType_MDI, -1, "form_0")
-    ;     ResizeGadget(*g, #PB_Ignore, 40, 120, 60)
-    ;     
-    ;     CloseGadgetList()
-    ;     ;     OpenList(Root())
-    ;     Button(-1, 10,5,50,35, "butt_1") 
-    ;     
-    ;   ;CompilerEndIf
     InitScintilla()
     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
     CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container )
     
-    ;; CloseGadgetList()
-    
     Define handle
     Repeat
       Define  Event = WaitWindowEvent()
-      handle = GetAtPointGadget( GetAtPointWindow( ) )
+      handle = GetUMGadget( GetUMWindow( ) )
       If handle
         Debug ""+ IDGadget( handle ) +" "+ handle ;+" "+ GetClassName( handle )
       EndIf

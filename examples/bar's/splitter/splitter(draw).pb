@@ -53,11 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
       Splitter_4 = Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
-      SetClass(Splitter_0, "0")
-      SetClass(Splitter_1, "1")
-      SetClass(Splitter_2, "2")
-      SetClass(Splitter_3, "3")
-      SetClass(Splitter_4, "4")
+      SetText(Splitter_0, "0")
+      SetText(Splitter_1, "1")
+      SetText(Splitter_2, "2")
+      SetText(Splitter_3, "3")
+      SetText(Splitter_4, "4")
       
       SetState(Splitter_1, 20)
       ;SetState(Splitter_1, 410-20)
@@ -69,6 +69,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -1,7 +1,8 @@
 ﻿
 ;XIncludeFile "../transform().pbi"
 ;XIncludeFile "../widgets-plus.pbi"
-XIncludeFile "../CE.pb"
+;XIncludeFile "../CE.pb"
+XIncludeFile "../widget-events.pb"
 ; XIncludeFile "../examples/empty5.pb"
 
 ;

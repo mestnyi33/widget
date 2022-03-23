@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "-widgets-editor.pbi"
+XIncludeFile "widgets.pbi"
 
 UseLib(widget)
 

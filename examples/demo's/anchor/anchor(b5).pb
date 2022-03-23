@@ -1,6 +1,7 @@
-﻿ ; XIncludeFile "../../../widgets.pbi" 
- XIncludeFile "../../../CE.pb" 
-; bug scroll area with the anchor_widget 
+﻿  XIncludeFile "../../../widgets.pbi" 
+; XIncludeFile "../../../CE.pb" 
+ ;XIncludeFile "../../../widget-events.pb" 
+ ; bug scroll area with the anchor_widget 
 ; bug then left anchor moveed and width = 0
 	
 	
@@ -9,6 +10,7 @@ Global alpha = 64
 Global alpha1 = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
+;Macro widget( ) : enumWidget( ) : EndMacro
 
 ; --------- Example ---------
 
@@ -55,13 +57,13 @@ SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 ; --- Attachment ---
 ; You can attach an object on another object directly during creation or later with AttachObject
 
-*Object1 = Object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
+*Object1 = a_object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
-*Object2 = Object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
-;*Object2 = Object(50, 170, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
+*Object2 = a_object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
+;*Object2 = a_object(50, 170, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
 SetAttachment( *Object2, *Object1, 0 ) ; Attach object2 directly to object1, the position is then relative to object1
 
-*Object3 = Object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
+*Object3 = a_object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
 SetAttachment( *Object3, *Object1, 1 ) ; Attach object3 to object1 but just the x-position
 
 
@@ -78,17 +80,17 @@ SetFrame(widget(), 2)
 ;AddObjectHandle(#Object4, #Handle_Custom1, CatchImage(#PB_Any, ?resultset_previous), #Alignment_Top | #Alignment_Left, 32, 16) ; This is the handle to swap the frame
 ;AddObjectHandle(#Object4, #Handle_Custom2, CatchImage(#PB_Any, ?resultset_next), #Alignment_Top | #Alignment_Right, -32, 16)   ; This is the handle to swap the frame
 
-;SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(0, 64, 128))
+;SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(0, 64, 128))
 
 ; AddObjectFrame(#Object4, 0, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ; Add some frames and set the view box for their child objects
 ; AddObjectFrame(#Object4, 1, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ;   as well as the inner area size to bound the childs.
 ; AddObjectFrame(#Object4, 2, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32)
 AddItem( *Object4, 0, "panel-item-0" )
-*Object5 = Object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
+*Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
 AddItem( *Object4, 1, "panel-item-1" )
-*Object6 = Object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
+*Object6 = a_object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
 AddItem( *Object4, 2, "panel-item-2" )
-*Object7 = Object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
+*Object7 = a_object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
 CloseList( )
 SetState(*Object4, 2)
 
@@ -110,15 +112,15 @@ SetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
 ; AddObjectHandle(#Object8, #Handle_Custom3, CatchImage(#PB_Any, ?arrow_left), #Alignment_Bottom | #Alignment_Left, 16, -12) ; This is the handle the change the visible area
 ; AddObjectHandle(#Object8, #Handle_Custom4, CatchImage(#PB_Any, ?arrow_right), #Alignment_Bottom | #Alignment_Right, -40, -12) ; This is the handle the change the visible area
 
-; SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(64, 128, 0))
+; SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(64, 128, 0))
 
 ; Attach some objects to #Object8
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
-Object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-Object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
-Object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-Object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
+a_object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 CloseList( )
 
 
@@ -150,17 +152,17 @@ WaitClose( )
 ; ; ; 			Case #Event_Handle
 ; ; ; 				Select CanvasObjectsEventType(#Canvas) ; What type of Events happened on the Handle ?
 ; ; ; 					Case #EventType_LeftMouseClick
-; ; ; 						If EventObject(#Canvas) = #Object4 ; Panel container
+; ; ; 						If Eventa_object(#Canvas) = #Object4 ; Panel container
 ; ; ; 							; Here the currently shown frame is changed.
-; ; ; 							If EventHandle(#Canvas) = #Handle_Custom1 And CountObjectFrames(EventObject(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(EventObject(#Canvas), (VisibleObjectFrame(EventObject(#Canvas))+CountObjectFrames(EventObject(#Canvas))-1) % CountObjectFrames(EventObject(#Canvas)))
+; ; ; 							If EventHandle(#Canvas) = #Handle_Custom1 And CountObjectFrames(Eventa_object(#Canvas)) > 0
+; ; ; 								ShowObjectFrame(Eventa_object(#Canvas), (VisibleObjectFrame(Eventa_object(#Canvas))+CountObjectFrames(Eventa_object(#Canvas))-1) % CountObjectFrames(Eventa_object(#Canvas)))
 ; ; ; 							EndIf
-; ; ; 							If EventHandle(#Canvas) = #Handle_Custom2 And CountObjectFrames(EventObject(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(EventObject(#Canvas), (VisibleObjectFrame(EventObject(#Canvas))+1) % CountObjectFrames(EventObject(#Canvas)))
+; ; ; 							If EventHandle(#Canvas) = #Handle_Custom2 And CountObjectFrames(Eventa_object(#Canvas)) > 0
+; ; ; 								ShowObjectFrame(Eventa_object(#Canvas), (VisibleObjectFrame(Eventa_object(#Canvas))+1) % CountObjectFrames(Eventa_object(#Canvas)))
 ; ; ; 							EndIf
 ; ; ; 						EndIf
 ; ; ; 					Case #EventType_LeftMouseButtonHold
-; ; ; 						If EventObject(#Canvas) = #Object8 ; Scroll area
+; ; ; 						If Eventa_object(#Canvas) = #Object8 ; Scroll area
 ; ; ; 							; Here the current scroll position is changed.
 ; ; ; 							If EventHandle(#Canvas) = #Handle_Custom1
 ; ; ; 								SetObjectFrameInnerOffset(#Object8, 0, 0, -25, #PB_Relative)

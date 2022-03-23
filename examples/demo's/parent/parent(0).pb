@@ -1,4 +1,7 @@
-﻿XIncludeFile "../../../-widgets.pbi" : Uselib(widget)
+﻿;XIncludeFile "../../../-widgets.pbi" 
+XIncludeFile "../../../widget-events.pb" 
+Uselib(widget)
+Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w, *p1,*p2, *ch, *b, *bb._s_widget
 
@@ -138,7 +141,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   
   Bind(#PB_All, @events_widgets())
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose( )
+  ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---

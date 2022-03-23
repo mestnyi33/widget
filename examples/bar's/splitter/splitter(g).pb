@@ -34,9 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-      Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      Button_0 = widget::Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      ; Button_1 = widget::Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+      
       ; Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-      ; Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       
       Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
@@ -62,6 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

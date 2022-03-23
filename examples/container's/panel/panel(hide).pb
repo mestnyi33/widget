@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets-bar.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -34,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If StartEnumerate(*w1);Root())
           If Not hide(widget( )) ;And GetParent(widget()) = *w1
-            Debug " class - " + widget( )\Class +" ("+ widget( )\item +" - parent_item)"
+            Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
           EndIf
           StopEnumerate( )
         EndIf
@@ -73,14 +74,21 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(Button( 5, 30, 55, 22, "show_2"), @_Events())
       
       *c=Container(110,5,150,155, #PB_Container_Flat) 
+      Define *p = Panel(10,5,150,65) 
+      AddItem(*p, -1, "item-1")
       Container(10,5,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
+      Button(10,5,50,25, "butt1") 
+      CloseList()
+      CloseList()
+      AddItem(*p, -1, "item-2")
       Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,45, "butt") 
+      Container(10,5,150,55, #PB_Container_Flat) 
+      Button(10,5,50,25, "butt2") 
       CloseList()
       CloseList()
       CloseList()
-      
+  
       Container(10,75,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
@@ -136,6 +144,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 0-
 ; EnableXP

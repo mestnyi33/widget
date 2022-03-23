@@ -1,6 +1,6 @@
 ﻿IncludePath "../../../"
 ;XIncludeFile "widgets.pbi"
-XIncludeFile "CE-a.pb"
+XIncludeFile "widget-events.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile

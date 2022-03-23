@@ -19,15 +19,17 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       *pressed
       *dragged
       *focused
+      
+      *callback
     EndStructure
     
-    Macro CanvasMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+    Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
       ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
       DesktopMouseX( ) - GadgetX( _canvas_, _mode_ )
       ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )  
     EndMacro
     
-    Macro CanvasMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+    Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
       ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
       DesktopMouseY( ) - GadgetY( _canvas_, _mode_ )
       ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
@@ -45,6 +47,24 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     FocusedGadget( ) =- 1 
     
     Declare.i WaitEvent( *callback, event.i )
+    
+    CompilerIf #PB_Compiler_IsMainFile
+      Macro PB(Function)
+        Function
+      EndMacro
+    CompilerEndIf
+    
+    Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
+      PB(ResizeGadget)(_gadget_,_x_,_y_,_width_,_height_)
+      
+      If *gadget\callback ;And GadgetType( _gadget_ ) = #PB_GadgetType_Canvas
+        CompilerIf #PB_Compiler_IsMainFile
+          Debug "resize - " + _gadget_
+        CompilerEndIf
+        
+        CallCFunctionFast( *gadget\callback, _gadget_, #PB_EventType_Resize )
+      EndIf
+    EndMacro
   EndDeclareModule 
   
   Module events
@@ -71,7 +91,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ProcedureReturn CocoaMessage(0, Handle, "tag")
     EndProcedure
     
-    Procedure GetAtPointWindow( )
+    Procedure GetUMWindow( )
       Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
       
       ; get-WindowNumber
@@ -85,7 +105,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ProcedureReturn NSWindow
     EndProcedure
     
-    Procedure GetAtPointGadget( NSWindow )
+    Procedure GetUMGadget( NSWindow )
       Protected handle, superview
       
       If NSWindow
@@ -210,7 +230,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         If NSWindow
           Protected Point.NSPoint
           event_window = IDWindow( NSWindow )
-          Protected EnteredID = GetAtPointGadget( NSWindow )
+          Protected EnteredID = GetUMGadget( NSWindow )
           If EnteredID
             event_gadget = IDGadget( EnteredID )
             If IsGadget( event_gadget )
@@ -266,6 +286,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       If Not *callback
         ProcedureReturn 0
       EndIf
+      *gadget\callback = *callback
       
       Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY
       Protected MouseMove, MouseX, MouseY, MoveStart
@@ -290,7 +311,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndIf
         
         If MouseDrag >= 0
-          EnteredID = GetAtPointGadget( GetAtPointWindow( ) )
+          EnteredID = GetUMGadget( GetUMWindow( ) )
         EndIf
         
         ;
@@ -299,8 +320,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           ;Debug ""+Canvas +" "+ EnteredID +" "+ NSView(EnteredID) +" "+ CocoaMessage( 0, EnteredID, "superview" ) +" "+ GadgetID(2)
           
           If Canvas >= 0
-            Mousex = CanvasMouseX( Canvas )
-            Mousey = CanvasMouseY( Canvas )
+            Mousex = GadgetMouseX( Canvas )
+            Mousey = GadgetMouseY( Canvas )
           Else
             Mousex =- 1
             Mousey =- 1
@@ -314,8 +335,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         If MouseDrag And
            Mousex =- 1 And Mousey =- 1
           If PressedGadget( ) >= 0
-            Mousex = CanvasMouseX( PressedGadget( ) )
-            Mousey = CanvasMouseY( PressedGadget( ) )
+            Mousex = GadgetMouseX( PressedGadget( ) )
+            Mousey = GadgetMouseY( PressedGadget( ) )
           EndIf
         EndIf
         
@@ -334,12 +355,14 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           If MouseDrag >= 0 And 
              EnteredGadget( ) <> Canvas
             If EnteredGadget( ) >= 0
+              ; Debug ""+777 +" "+ EnteredGadget( )
               CallCFunctionFast( *callback, EnteredGadget( ) , #PB_EventType_MouseLeave )
             EndIf
             
             EnteredGadget( ) = Canvas
             
             If EnteredGadget( ) >= 0
+              ; Debug ""+888 +" "+ EnteredGadget( )
               CallCFunctionFast( *callback, EnteredGadget( ), #PB_EventType_MouseEnter )
             EndIf
           Else
@@ -428,7 +451,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         
         
         If EventType = #PB_EventType_Resize
-          CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Resize )
+          ; CallCFunctionFast( *callback, EventGadget( ), #PB_EventType_Resize )
         EndIf
         CompilerIf Defined( constants, #PB_Module )
           If EventType = #PB_EventType_Repaint
@@ -480,13 +503,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #PB_EventType_DragStart
-        deltax = CanvasMouseX( gadget, #PB_Gadget_WindowCoordinate )
-        deltay = CanvasMouseY( gadget, #PB_Gadget_WindowCoordinate )
+        deltax = GadgetMouseX( gadget, #PB_Gadget_WindowCoordinate )
+        deltay = GadgetMouseY( gadget, #PB_Gadget_WindowCoordinate )
         Debug ""+Gadget + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
         
       Case #PB_EventType_Drop
-        dropx = CanvasMouseX( gadget, #PB_Gadget_ScreenCoordinate )
-        dropy = CanvasMouseY( gadget, #PB_Gadget_ScreenCoordinate )
+        dropx = GadgetMouseX( gadget, #PB_Gadget_ScreenCoordinate )
+        dropy = GadgetMouseY( gadget, #PB_Gadget_ScreenCoordinate )
         Debug ""+Gadget + " #PB_EventType_Drop " + "x="+ dropx +" y="+ dropy
         
       Case #PB_EventType_Focus
@@ -514,6 +537,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+Gadget + " #PB_EventType_MouseLeave " 
         DrawCanvasFrame( gadget, 0 )
         
+      Case #PB_EventType_Resize
+        Debug ""+Gadget + " #PB_EventType_Resize " 
+        
       Case #PB_EventType_MouseMove
         ; Debug ""+Gadget + " #PB_EventType_MouseMove " 
 ;         If DraggedGadget( ) = 1
@@ -526,14 +552,32 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
+  Procedure Resize_2( )
+    Protected canvas = 2
+    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+  EndProcedure
+  
+  Procedure Resize_3( )
+    Protected canvas = 3
+    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+  EndProcedure
+  
+  
   OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
   CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
   CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
   CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
   
-  OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu)
+  
+  OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
                                                         ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+  BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
+  
+  OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
+                                                        ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+  BindEvent( #PB_Event_SizeWindow, @Resize_3(), 3 )
   
 ;   Debug GadgetID(1)
 ;   Debug GadgetID(11)
@@ -541,6 +585,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat 
     event = WaitEvent( @EventHandler( ), WaitWindowEvent( ) )
+    
+;     If event = #PB_Event_SizeWindow
+;       Define canvas = EventWindow()
+;       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+;     EndIf
     
 ;     If event = #PB_Event_Gadget
 ;       ;       If EventType() = #PB_EventType_Focus
@@ -590,5 +639,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------K------
+; Folding = -------nX6-0+8--
 ; EnableXP

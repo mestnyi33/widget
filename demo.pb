@@ -1,4 +1,4 @@
-﻿XIncludeFile "-widgets.pbi"
+﻿XIncludeFile "widget-events.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
@@ -135,6 +135,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
 ; Folding = -
 ; EnableXP

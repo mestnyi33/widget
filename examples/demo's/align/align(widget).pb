@@ -1,6 +1,8 @@
 ﻿
 IncludePath "../../../"
-XIncludeFile "-widgets.pbi"
+XIncludeFile "widget-events.pb"
+
+;XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -114,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlignmentFlag(Widgets(Hex(15)),#__align_bottom|#__align_right)
     
     bind(root(), @events())
-    bind(-1,-1)
+    ;bind(-1,-1)
     
   EndProcedure
   
@@ -158,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlignment(Widgets(Hex(12)), 0,0,1,1, 0)
     
     bind(root(), @events())
-    bind(-1,-1)
+    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
   EndProcedure
   
@@ -201,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     bind(root(), @events())
-    bind(-1,-1)
+    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
   EndProcedure
   
@@ -251,7 +253,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlignment(Widgets(Hex(55)), #__align_full, #__align_full, #__align_full, #__align_full)
     
     bind(root(), @events())
-    bind(-1,-1)
+    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
@@ -302,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlignment(Widgets(Hex(55)), #__align_auto, #__align_auto, #__align_auto, #__align_auto)
     
     bind(root(), @events())
-    bind(-1,-1)
+    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
@@ -323,22 +325,23 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     
-    bind(-1,-1)
+    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,200)
   EndProcedure
   
   example_demo()
-  Repeat
-    gEvent= WaitWindowEvent()
-    
-    Select gEvent
-      Case #PB_Event_CloseWindow
-        gQuit= #True
-        
-    EndSelect
-    
-  Until gQuit
+  WaitClose( )
+;   Repeat
+;     gEvent= WaitWindowEvent()
+;     
+;     Select gEvent
+;       Case #PB_Event_CloseWindow
+;         gQuit= #True
+;         
+;     EndSelect
+;     
+;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +---
+; Folding = ---
 ; EnableXP

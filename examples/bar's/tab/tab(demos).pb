@@ -200,9 +200,9 @@ Procedure UpdateItemAttributes(Position)
     SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, Position))
   EndIf
   
-  SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__s_Disabled))
-  SetGadgetState(#Gadget_ItemSelected, (GetItemState(*tab1, Position)&#__s_Selected))
-  SetGadgetState(#Gadget_ItemChecked, (GetItemState(*tab1, Position)&#__s_Checked))
+  SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__s_Disable))
+  SetGadgetState(#Gadget_ItemSelected, (GetItemState(*tab1, Position)&#__s_Select))
+  SetGadgetState(#Gadget_ItemChecked, (GetItemState(*tab1, Position)&#__s_Check))
   SetGadgetState(#Gadget_ItemCloseButton, GetItemAttribute(*tab1, Position, #__tab_CloseButton))
   SetGadgetState(#Gadget_ItemCheckBox, GetItemAttribute(*tab1, Position, #__tab_CheckBox))
 EndProcedure
@@ -405,11 +405,11 @@ Repeat
         Case #Gadget_ItemText
           SetItemText(*tab1, GetItemGadgetState(), GetGadgetText(#Gadget_ItemText))
         Case #Gadget_ItemDisabled
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled) * #__s_Disabled)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled) * #__s_Disable)
         Case #Gadget_ItemSelected
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemSelected) * #__s_Selected)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemSelected) * #__s_Select)
         Case #Gadget_ItemChecked
-          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemChecked) * #__s_Checked)
+          SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemChecked) * #__s_Check)
         Case #Gadget_ItemCloseButton
           SetItemAttribute(*tab1, GetItemGadgetState(), #__tab_CloseButton, GetGadgetState(#Gadget_ItemCloseButton))
         Case #Gadget_ItemCheckBox
@@ -429,6 +429,6 @@ Repeat
   
 ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

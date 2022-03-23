@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../-widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pb"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -26,6 +27,17 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      LoadFont(5, "Arial", 18)
+      LoadFont(6, "Arial", 25)
+      
+    CompilerElse
+      LoadFont(5, "Arial", 14)
+      LoadFont(6, "Arial", 21)
+      
+    CompilerEndIf
+    
+    
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
     If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -91,16 +103,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(10, 35, 80, 24,"Button 5")
     Button(95, 35, 80, 24,"Button 6")
     CloseList()
-    
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      LoadFont(5, "Arial", 18)
-      LoadFont(6, "Arial", 25)
-      
-    CompilerElse
-      LoadFont(5, "Arial", 14)
-      LoadFont(6, "Arial", 21)
-      
-    CompilerEndIf
     
     SetItemFont(*panel_1, 1, 6)
     SetItemFont(*panel_2, 1, 6)

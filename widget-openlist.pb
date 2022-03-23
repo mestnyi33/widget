@@ -19704,38 +19704,38 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenList( *root1 )
   
-  SetText(Container(20, 20, 180, 180, editable), "4") 
-  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "5") 
-  SetText(Container(40, 20, 180, 180, editable), "6")
+  SetText(Container(20, 20, 180, 180, editable), "1") 
+  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "2") 
+  SetText(Container(40, 20, 180, 180, editable), "3")
   Define seven = Container(20, 20, 180, 180, editable)
-  SetText(seven, "      7")
+  SetText(seven, "      4")
   
-  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     8") 
-  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
-  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
+  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     5") 
+  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     6") 
+  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     7") 
   
-  CloseList( ) ; 7
-  CloseList( ) ; 6
-  SetText(Container(10, 45, 70, 180, editable), "11") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
-  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
-  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "14") 
+  CloseList( ) ; 4
+  CloseList( ) ; 3
+  SetText(Container(10, 45, 70, 180, editable), "8") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "9") 
+  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "10") 
+  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "11") 
   
-  SetText(Container(10, 45, 70, 180, editable), "15") 
-  SetText(Container(10, 5, 70, 180, editable), "16") 
-  SetText(Container(10, 5, 70, 180, editable), "17") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
+  SetText(Container(10, 45, 70, 180, editable), "12") 
+  SetText(Container(10, 5, 70, 180, editable), "13") 
+  SetText(Container(10, 5, 70, 180, editable), "14") 
+  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "15") 
+  CloseList( ) ; 14
+  CloseList( ) ; 13
+  CloseList( ) ; 12
+  CloseList( ) ; 8
   ;CloseList( ) ; 1
   
-   Debug " ---- "+openedwidget()\text\string
+   Debug " ---- "+openedwidget()\index;text\string
   OpenList( seven )
    SetText(Container( -5, 80, 180, 50, #__Flag_NoGadgets|editable), "container-7")
   CloseList( ) ; 7
-   Debug " ---- "+openedwidget()\text\string
+   Debug " ---- "+openedwidget()\index;text\string
 
   WaitClose( )
 CompilerEndIf

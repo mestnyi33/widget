@@ -47,10 +47,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     state
     Structure _S_state
       *flag           ;& normal; entered; selected; disabled
-      press.b
+      
+      hide.b      ; panel childrens real hide state
+      disable.b
+      
       enter.b
-      drag.b
+      press.b
       focus.b
+      drag.b
+      
+      change.b
+      move.b
+      size.b
+      
       ;active.b
       repaint.b
       click.b
@@ -284,7 +293,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       sublevel.w
       sublevelsize.a
       
-      button._S_buttons ; \box[0]\ -> \button\
+          button._S_buttons ;temp \box[0]\ -> \button\
+      collapsebox._S_buttons ; \box[0]\ -> \button\ -> \collapsebox\
                         ;;checkbox._S_buttons ; \box[1]\ -> \checkbox\
       
       *last._S_rows   ; if parent - \last\child ; if child - \parent\last\child
@@ -359,9 +369,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       page._S_page
       area._S_page
       thumb._S_page  
-      button._S_buttons[4]
+      *button._S_buttons[4]
       
       ; tab
+      *pressed._S_rows ; _get_bar_active_item_
       *active._S_rows ; _get_bar_active_item_
       *hover._S_rows  ; _get_bar_active_item_
       
@@ -510,6 +521,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       align._S_align
       ;padding.b
       
+      state.b    ; set state status
+     
       increment.f      ; scrollarea
       *v._S_widget     ; vertical scrollbar
       *h._S_widget     ; horizontal scrollbar

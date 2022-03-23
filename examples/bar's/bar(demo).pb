@@ -32,22 +32,22 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work." ;+ m.s +
  
   Procedure _Events()
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_MouseEnter
-        Debug "post enter - "+this()\widget\index
-        If GetButtons(this()\widget)
-          this()\widget\color\back = $00FF00
+        Debug "post enter - "+EventWidget( )\index
+        If GetButtons(EventWidget( ))
+          EventWidget( )\color\back = $00FF00
         Else
-          this()\widget\color\back = $0000FF
+          EventWidget( )\color\back = $0000FF
         EndIf
         
       Case #PB_EventType_MouseLeave
-        Debug "post leave - "+this()\widget\index
-        this()\widget\color\back = $FF0000
+        Debug "post leave - "+EventWidget( )\index
+        EventWidget( )\color\back = $FF0000
         
       Case #PB_EventType_Repaint
         DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(2,0, Str(this()\widget\index), 0)
+        DrawText(2,0, Str(EventWidget( )\index), 0)
         
     EndSelect
   EndProcedure

@@ -1,12 +1,14 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
-UseLib(widget)
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pb"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-UseModule Widget
+UseLib(widget)
 Global *w._S_widget
 Define i
+Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
+Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
 
 If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
@@ -20,39 +22,42 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     Next
     
     SetGadgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
-    SetGadgetItemColor(0,  3, #PB_Gadget_BackColor,  $00FFFF)
-    SetGadgetItemColor(0,  7, #PB_Gadget_BackColor,  $FFFF00)
+    SetGadgetItemColor(0, 3, #PB_Gadget_BackColor, $00FFFF)
+    SetGadgetItemColor(0, 7, #PB_Gadget_BackColor, $FFFF00)
     
-    SetItemFont(*w,  3, (LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)))
-    SetItemFont(*w,  7, (LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)))
+    SetItemFont(*w, 3, font1)
+    SetItemFont(*w, 7, font2)
+    
+;     ; index-3 item default text-color 
+;     SetItemColor(*w, 3, #__Color_Front, $FF00FF00)
     
     ; index-3 item default frame-color
-    SetItemColor(*w,  3, #__Color_Frame,  $FF0000f0)
+    SetItemColor(*w, 3, #__Color_Frame,  $FF0000f0)
     
     ; index-3 item default frame-color
-    SetItemColor(*w,  3, #__Color_Back,  $FF00FFFF)
+    SetItemColor(*w, 3, #__Color_Back,  $FF00FFFF)
     
     ; index-7 item default back-color
-    SetItemColor(*w,  7, #__Color_Back,  $FFFFFF00)
+    SetItemColor(*w, 7, #__Color_Back,  $FFFFFF00)
     
     ; all default item's text-color 
     SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
     
     ; all selected item's text-color 
-    SetItemColor(*w,  #PB_All, #__Color_Front,  $FF00FFFF, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #__Color_Front,  $FF00FFFF, #__color_state_selected)
     
     ; all selected item's back-color 
-    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3F00F0, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3F00F0, #__color_state_selected)
     
     ; all entered item's back-color
-    SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3Ff0F0, #__color_state_entered)
+    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3Ff0F0, #__color_state_entered)
     
     ; vertical and horizontal line back-color
-    SetItemColor(*w,  #PB_All, #__Color_Line,  $C03AD55A)
+    SetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
     
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

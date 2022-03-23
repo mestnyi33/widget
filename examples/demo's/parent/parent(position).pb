@@ -1,5 +1,6 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿;XIncludeFile "../../../-widgets.pbi" 
+XIncludeFile "../../../widget-events.pb" 
+Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -24,10 +25,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure Widgets_CallBack()
-    Protected EventWidget.i = this()\widget,
-              EventType.i = this()\event,
-              EventItem.i = this()\item, 
-              EventData.i = this()\data
+    Protected EventWidget.i = EventWidget( ),
+              EventType.i = WidgetEvent( )\type,
+              EventItem.i = WidgetEvent( )\item;, EventData.i = WidgetEvent( )\data
     
     Select EventType
       Case #PB_EventType_MouseEnter
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
         EndSelect
         
-        debug_position("re")
+        debug_position(root(), "re")
     
     
     EndSelect
@@ -82,11 +82,11 @@ CompilerIf #PB_Compiler_IsMainFile
     *w = Button(pos_x,10,160,70,"*this") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    debug_position("")
+    debug_position(root(), "")
     
     SetParent(*w, *panel, 1)
     
-    debug_position("container")
+    debug_position(root(), "container")
     
     
     Bind(Root(), @Widgets_CallBack())
@@ -96,6 +96,6 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

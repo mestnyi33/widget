@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If eventtype = #PB_EventType_Focus
       Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
-     ; Debug String.s +" - widget"
+      ; Debug String.s +" - widget"
     EndIf
     
   EndProcedure
@@ -59,6 +59,12 @@ CompilerIf #PB_Compiler_IsMainFile
       gtk_label_set_yalign(*Label.GtkLabel, Yalign.F)
     EndImport
   CompilerEndIf
+  
+  Procedure SetTextWordWrap( gadget,state )
+    CompilerIf Subsystem("qt")
+      QtScript(~"gadget("+gadget+").wordWrap = "+state+"")
+    CompilerEndIf
+  EndProcedure
   
   Procedure SetTextAlignment()
     ; Alignment text

@@ -1,6 +1,8 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" 
+
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
+Uselib(widget)
 
 Procedure a_mode( *this._s_widget, mode.i )
   *this\_a_mode = mode  
@@ -21,11 +23,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
   
   ; Create five different objects
-  *Object1 = Object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
-  *Object2 = Object(20, 140, 200, 100, "", RGBA(192, 64, 128, alpha))
-  *Object3 = Object(20, 260, 200, 100, "", RGBA(128, 192, 64, alpha))
-  *Object4 = Object(240, 20, 200, 100, "", RGBA(192, 128, 64, alpha))
-  *Object5 = Object(240, 140, 200, 100, "", RGBA(128, 64, 192, alpha))
+  *Object1 = a_object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
+  *Object2 = a_object(20, 140, 200, 100, "", RGBA(192, 64, 128, alpha))
+  *Object3 = a_object(20, 260, 200, 100, "", RGBA(128, 192, 64, alpha))
+  *Object4 = a_object(240, 20, 200, 100, "", RGBA(192, 128, 64, alpha))
+  *Object5 = a_object(240, 140, 200, 100, "", RGBA(128, 64, 192, alpha))
   
   ; Define different handles to the objects
   a_mode(*Object1, #__a_width | #__a_position)
@@ -55,6 +57,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
