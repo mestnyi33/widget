@@ -682,7 +682,29 @@
       Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
     EndIf
     
-    
+    ;- _c_cursor
+    Enumeration 
+      #PB_Cursor_Default         ; = 0
+      #PB_Cursor_Cross           ; = 1
+      #PB_Cursor_IBeam           ; = 2
+      #PB_Cursor_Hand            ; = 3
+      #PB_Cursor_Busy            ; = 4
+      #PB_Cursor_Denied          ; = 5
+      #PB_Cursor_Arrows          ; = 6
+      #PB_Cursor_LeftRight       ; = 7
+      #PB_Cursor_UpDown          ; = 8
+      #PB_Cursor_LeftUpRightDown ; = 9
+      #PB_Cursor_LeftDownRightUp ; = 10
+      #PB_Cursor_Invisible       ; = 11
+      #PB_Cursor_Left
+      #PB_Cursor_Right
+      #PB_Cursor_Up
+      #PB_Cursor_Down
+      #PB_Cursor_OpenHand
+      #PB_Cursor_ClosedHand
+      ;       #PB_Cursor_Drag
+;       #PB_Cursor_Drop
+    EndEnumeration
     
     ;- _c_event_type
     Enumeration #PB_Event_FirstCustomValue

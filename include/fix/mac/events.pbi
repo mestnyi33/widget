@@ -120,13 +120,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               handle = CocoaMessage( 0, handle, "superview" ) ; PB_SpinView
               
               Debug " ---- "+ GetClassName( handle )
-          
+              
             Case "NSTableHeaderView" 
               handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
-             
+              
             Case "NSScroller" 
               handle = CocoaMessage( 0, handle, "superview" ) ; NSScrollView , PBScrollView
-                  
+              
               Select GetClassName( handle ) 
                 Case "WebDynamicScrollBarsView"
                   handle = CocoaMessage( 0, handle, "superview" ) ; WebFrameView
@@ -149,29 +149,29 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               handle = CocoaMessage( 0, handle, "superview" ) ; NSClipView
               handle = CocoaMessage( 0, handle, "superview" ) ; NSScrollView
               handle = CocoaMessage( 0, handle, "superview" ) ; PBScintillaView
-            
+              
             Case "NSView" 
               handle = CocoaMessage( 0, handle, "superview" ) ; PB_NSBox
               
             Case "NSTextField", "NSButton"
               handle = CocoaMessage( 0, handle, "superview" ) ; PB_DateView
-          
+              
             Case "WebHTMLView" 
               handle = CocoaMessage( 0, handle, "superview" ) ; WebClipView
               handle = CocoaMessage( 0, handle, "superview" ) ; WebDynamicScrollBarsView
               handle = CocoaMessage( 0, handle, "superview" ) ; WebFrameView
               handle = CocoaMessage( 0, handle, "superview" ) ; PB_WebView
-             
+              
             Case "PB_NSFlippedView" 
               ; container
               handle = CocoaMessage( 0, handle, "superview" ) ; NSClipView
-              ; scrollarea
+                                                              ; scrollarea
               If GetClassName( handle ) = "NSClipView"
                 handle = CocoaMessage( 0, handle, "superview" ) ; PBScrollView
               EndIf
           EndSelect
         EndIf
-       EndIf
+      EndIf
       
       ProcedureReturn handle
     EndProcedure
@@ -226,13 +226,17 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Global event_gadget =- 1
       
       Procedure EventWindowActivate( )
+        Protected Point.NSPoint
+        event_window = EventWindow( )
         Protected NSWindow = WindowID( EventWindow( ) ) 
+        
         If NSWindow
-          Protected Point.NSPoint
-          event_window = IDWindow( NSWindow )
+          ;event_window = IDWindow( NSWindow )
           Protected EnteredID = GetUMGadget( NSWindow )
+          
           If EnteredID
             event_gadget = IDGadget( EnteredID )
+            
             If IsGadget( event_gadget )
               PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
               SetActiveGadget( event_gadget )
@@ -495,6 +499,119 @@ CompilerIf #PB_Compiler_IsMainFile
     StopDrawing( )
   EndProcedure
   
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Windows
+      Import "user32.lib"
+        ShowCursor_(bShow) As "_ShowCursor@4"
+      EndImport
+      
+    CompilerCase #PB_OS_MacOS
+      #kThemeArrowCursor = 0
+      #kThemeCopyArrowCursor = 1
+      #kThemeAliasArrowCursor = 2
+      #kThemeContextualMenuArrowCursor = 3
+      #kThemeIBeamCursor = 4
+      #kThemeCrosshairCursor = 5
+      #kThemePlusCursor = 6
+      #kThemeWatchCursor = 7
+      
+      #kThemeClosedHandCursor = 8
+      #kThemeOpenHandCursor = 9
+      #kThemePointingHandCursor = 10
+      
+      #kThemeCountingUpHandCursor = 11
+      #kThemeCountingDownHandCursor = 12
+      #kThemeCountingUpAndDownHandCursor = 13
+      #kThemeSpinningCursor = 14
+      
+      #kThemeResizeLeftCursor = 15
+      #kThemeResizeRightCursor = 16
+      #kThemeResizeLeftRightCursor = 17
+      
+      #kThemeOperationNotAllowedCursor = 18
+      
+      #kThemeResizeUpCursor = 19
+      #kThemeResizeDownCursor = 20
+      #kThemeResizeUpDownCursor = 21
+      
+      #kThemeiBeamCursorForVerticalLayoutCursor = 22
+      
+      
+      
+      ImportC ""
+        SetThemeCursor(CursorType.i)
+        SetAnimatedThemeCursor(CursorType.i, AnimationStep.i)
+      EndImport
+      
+      Procedure GetSystemCursor( )
+        Protected result;, NSCursor.NSCursor
+                        ; Debug CocoaMessage(0, @NSCursor, "get")
+                        ; Debug NSCursor
+        Debug ""+CocoaMessage(0, 0, "NSCursor currentSystemCursor") +" "+ CocoaMessage(0, 0, "NSCursor currentCursor") ;+" "+ CocoaMessage(0, 0, "NSCursor arrowCursor") 
+        
+        Select CocoaMessage(0, 0, "NSCursor currentCursor")
+          Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #kThemeArrowCursor
+          Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #kThemeCrosshairCursor
+            
+            ;Case CocoaMessage(0, 0, "NSCursor iBeamCursor") : result = #kThemeIBeamCursor
+            ;Case CocoaMessage(0, 0, "NSCursor iBeamCursorForVerticalLayoutCursor") : result = #kThemeiBeamCursorForVerticalLayoutCursor
+            
+          Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #kThemeOpenHandCursor
+          Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #kThemeClosedHandCursor
+          Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #kThemePointingHandCursor
+            
+          Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #kThemeResizeLeftCursor
+          Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #kThemeResizeRightCursor
+          Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #kThemeResizeLeftRightCursor
+            
+          Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #kThemeResizeUpCursor
+          Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #kThemeResizeDownCursor
+          Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #kThemeResizeUpDownCursor
+            
+            ;Case CocoaMessage(0, 0, "NSCursor watchCursor") : result = #kThemeWatchCursor
+          Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #kThemeOperationNotAllowedCursor
+            ;Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #kThemeOperationNotAllowedCursor
+            ;           Default
+            ;             result = #kThemeWatchCursor
+        EndSelect 
+        
+        ProcedureReturn result
+      EndProcedure
+      
+      Procedure GetCursor( )
+        Protected result.i
+        
+        Select CocoaMessage(0, 0, "NSCursor currentCursor")
+          Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Arrows
+          Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #PB_Cursor_Cross
+          Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #PB_Cursor_Hand
+          Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
+          Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #PB_Cursor_UpDown
+        EndSelect 
+        
+        ProcedureReturn result
+      EndProcedure
+      
+      Procedure SetCursor( cursor.i )
+        Protected result
+        
+        Select cursor
+          Case #PB_Cursor_Arrows : result = CocoaMessage(0, 0, "NSCursor arrowCursor")
+          Case #PB_Cursor_Cross : result = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+          Case #PB_Cursor_Hand : result = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #PB_Cursor_LeftRight : result = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+          Case #PB_Cursor_UpDown : result = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+        EndSelect 
+        
+        If result
+          CocoaMessage(0, result, "set")
+        EndIf
+        
+        ProcedureReturn cursor
+      EndProcedure
+      
+  CompilerEndSelect
+  
   
   Procedure EventHandler( gadget, eventtype )
     Protected window = EventWindow()
@@ -533,18 +650,43 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+Gadget + " #PB_EventType_MouseEnter " 
         DrawCanvasFrame( gadget, $2C70F5)
         
+        ;
+        If GetActiveWindow( ) = EventWindow( )
+          SetGadgetAttribute( gadget, #PB_Canvas_Cursor, #PB_Cursor_Hand )
+        Else
+          ;           SetGadgetAttribute( gadget, #PB_Canvas_Cursor, #PB_Cursor_Invisible)
+          ;           If HideCursor
+          ; CocoaMessage(0, 0, "NSCursor hide")
+          ;         Else
+          ;           CocoaMessage(0, 0, "NSCursor unhide")
+          ;         EndIf
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            ; SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
+            SetThemeCursor(#kThemePointingHandCursor)
+          CompilerEndIf
+        EndIf
+        
+        ;Debug GetCursor( )
+        
       Case #PB_EventType_MouseLeave
         Debug ""+Gadget + " #PB_EventType_MouseLeave " 
         DrawCanvasFrame( gadget, 0 )
+        
+        ;
+        If GetActiveWindow( ) <> EventWindow( )
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            SetThemeCursor(#kThemeArrowCursor)
+          CompilerEndIf
+        EndIf
         
       Case #PB_EventType_Resize
         Debug ""+Gadget + " #PB_EventType_Resize " 
         
       Case #PB_EventType_MouseMove
         ; Debug ""+Gadget + " #PB_EventType_MouseMove " 
-;         If DraggedGadget( ) = 1
-;           ResizeGadget( DraggedGadget( ), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
-;         EndIf
+        ;         If DraggedGadget( ) = 1
+        ;           ResizeGadget( DraggedGadget( ), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+        ;         EndIf
         If DraggedGadget( ) = 0
           ResizeGadget( DraggedGadget( ), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
         EndIf
@@ -571,73 +713,76 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
-                                                        ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+                                                                             ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
   BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
   
   OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
-                                                        ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+                                                                             ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
   BindEvent( #PB_Event_SizeWindow, @Resize_3(), 3 )
   
-;   Debug GadgetID(1)
-;   Debug GadgetID(11)
-;   Debug GadgetID(2)
+  ;   Debug GadgetID(1)
+  ;   Debug GadgetID(11)
+  ;   Debug GadgetID(2)
   
   Repeat 
     event = WaitEvent( @EventHandler( ), WaitWindowEvent( ) )
     
-;     If event = #PB_Event_SizeWindow
-;       Define canvas = EventWindow()
-;       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
-;     EndIf
+    ;     If event = #PB_Event_SizeWindow
+    ;       Define canvas = EventWindow()
+    ;       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+    ;     EndIf
     
-;     If event = #PB_Event_Gadget
-;       ;       If EventType() = #PB_EventType_Focus
-;       ;         Debug ""+EventGadget() + " #PB_EventType_Focus "
-;       ;       EndIf
-;       ;       If EventType() = #PB_EventType_LostFocus
-;       ;         Debug "  "+EventGadget() + " #PB_EventType_LostFocus "
-;       ;       EndIf
-;       ;       
-;       ;       If EventType() = #PB_EventType_LeftButtonDown
-;       ;         Debug ""+EventGadget() + " #PB_EventType_LeftButtonDown "
-;       ;       EndIf
-;       ;       If EventType() = #PB_EventType_LeftButtonUp
-;       ;         Debug "  "+EventGadget() + " #PB_EventType_LeftButtonUp "
-;       ;       EndIf
-;       ;       
-;       ;       If EventType() = #PB_EventType_Change
-;       ;         Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
-;       ;       EndIf
-;       ;       If EventType() = #PB_EventType_MouseEnter
-;       ;         Debug ""+EventGadget() + " #PB_EventType_MouseEnter " +EventData() +" "+ GetActiveWindow( )
-;       ;       EndIf
-;       ;       If EventType() = #PB_EventType_MouseLeave
-;       ;         Debug "  "+EventGadget() + " #PB_EventType_MouseLeave "
-;       ;       EndIf
-;     EndIf
-;     
-; ;     If event = #PB_Event_GadgetDrop
-; ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_GadgetDrop "
-; ;     EndIf
-; ;     ;     If event = #PB_Event_Repaint
-; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
-; ;     ;     EndIf
-; ;     ;     If event = #PB_Event_LeftClick
-; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_LeftClick "
-; ;     ;     EndIf
-; ;     ;     If event = #PB_Event_RightClick
-; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_RightClick "
-; ;     ;     EndIf
-; ;     ;     If event = #PB_Event_ActivateWindow
-; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_ActivateWindow "
-; ;     ;     EndIf
-; ;     ;     If event = #PB_Event_DeactivateWindow
-; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_DeactivateWindow "
-; ;     ;     EndIf
+    ;     If event = #PB_Event_Gadget
+    ;       ;       If EventType() = #PB_EventType_Focus
+    ;       ;         Debug ""+EventGadget() + " #PB_EventType_Focus "
+    ;       ;       EndIf
+    ;       ;       If EventType() = #PB_EventType_LostFocus
+    ;       ;         Debug "  "+EventGadget() + " #PB_EventType_LostFocus "
+    ;       ;       EndIf
+    ;       ;       
+    ;       ;       If EventType() = #PB_EventType_LeftButtonDown
+    ;       ;         Debug ""+EventGadget() + " #PB_EventType_LeftButtonDown "
+    ;       ;       EndIf
+    ;       ;       If EventType() = #PB_EventType_LeftButtonUp
+    ;       ;         Debug "  "+EventGadget() + " #PB_EventType_LeftButtonUp "
+    ;       ;       EndIf
+    ;       ;       
+    ;       ;       If EventType() = #PB_EventType_Change
+    ;       ;         Debug ""+EventGadget() + " #PB_EventType_Change " +EventData()
+    ;       ;       EndIf
+    ;       ;       If EventType() = #PB_EventType_MouseEnter
+    ;       ;         Debug ""+EventGadget() + " #PB_EventType_MouseEnter " +EventData() +" "+ GetActiveWindow( )
+    ;       ;       EndIf
+    ;       ;       If EventType() = #PB_EventType_MouseLeave
+    ;       ;         Debug "  "+EventGadget() + " #PB_EventType_MouseLeave "
+    ;       ;       EndIf
+    ;     EndIf
+    ;     
+    ; ;     If event = #PB_Event_GadgetDrop
+    ; ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_GadgetDrop "
+    ; ;     EndIf
+    ; ;     ;     If event = #PB_Event_Repaint
+    ; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_Repaint "
+    ; ;     ;     EndIf
+    ; ;     ;     If event = #PB_Event_LeftClick
+    ; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_LeftClick "
+    ; ;     ;     EndIf
+    ; ;     ;     If event = #PB_Event_RightClick
+    ; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_RightClick "
+    ; ;     ;     EndIf
+    ; ;     ;     If event = #PB_Event_ActivateWindow
+    ; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_ActivateWindow "
+    ; ;     ;     EndIf
+    ; ;     ;     If event = #PB_Event_DeactivateWindow
+    ; ;     ;       Debug ""+EventWindow() +" "+EventGadget() + " #PB_Event_DeactivateWindow "
+    ; ;     ;     EndIf
+    If event =- 1
+      Debug GetCursor( )
+    EndIf
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------nX6-0+8--
+; Folding = ------------------
 ; EnableXP

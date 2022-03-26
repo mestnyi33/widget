@@ -61,7 +61,28 @@ CompilerIf Not Defined(constants, #PB_Module)
     ;- - CONSTANTs
     ;{
     
-    
+    Enumeration 
+      #PB_Cursor_Default         ; = 0
+      #PB_Cursor_Cross           ; = 1
+      #PB_Cursor_IBeam           ; = 2
+      #PB_Cursor_Hand            ; = 3
+      #PB_Cursor_Busy            ; = 4
+      #PB_Cursor_Denied          ; = 5
+      #PB_Cursor_Arrows          ; = 6
+      #PB_Cursor_LeftRight       ; = 7
+      #PB_Cursor_UpDown          ; = 8
+      #PB_Cursor_LeftUpRightDown ; = 9
+      #PB_Cursor_LeftDownRightUp ; = 10
+      #PB_Cursor_Invisible       ; = 11
+      #PB_Cursor_Left
+      #PB_Cursor_Right
+      #PB_Cursor_Up
+      #PB_Cursor_Down
+      #PB_Cursor_OpenHand
+      #PB_Cursor_ClosedHand
+      ;       #PB_Cursor_Drag
+;       #PB_Cursor_Drop
+    EndEnumeration
     
     ; default values 
     #__window_caption_height = 21
@@ -1546,10 +1567,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Bool( _this_ = _this_\root\canvas\container )
     EndMacro
     
-    Macro Splitter_FirstGadget_( _this_ ): _this_\gadget[#__split_1]: EndMacro
-    Macro Splitter_SecondGadget_( _this_ ): _this_\gadget[#__split_2]: EndMacro
-    Macro Splitter_IsFirstGadget_( _this_ ): _this_\index[#__split_1]: EndMacro
-    Macro Splitter_IsSecondGadget_( _this_ ): _this_\index[#__split_2]: EndMacro
+    Macro bar_first_gadget_( _this_ ): _this_\gadget[#__split_1]: EndMacro
+    Macro bar_second_gadget_( _this_ ): _this_\gadget[#__split_2]: EndMacro
+    Macro bar_is_first_gadget_( _this_ ): _this_\index[#__split_1]: EndMacro
+    Macro bar_is_second_gadget_( _this_ ): _this_\index[#__split_2]: EndMacro
     
     Macro is_scrollbars_( _this_ ) 
       Bool( _this_\parent( ) And _this_\parent( )\scroll And ( _this_\parent( )\scroll\v = _this_ Or _this_\parent( )\scroll\h = _this_ )) 
@@ -1865,14 +1886,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *SB3 = *this\bar\button[#__split_3]
       
       ; if there is no first child
-      If Not ( Splitter_IsFirstGadget_( *this ) Or 
-               Splitter_FirstGadget_( *this ) )
+      If Not ( bar_is_first_gadget_( *this ) Or 
+               bar_first_gadget_( *this ) )
         *SB1 = *this\bar\button[#__split_1]
       EndIf
       
       ; if there is no second child
-      If Not ( Splitter_IsSecondGadget_( *this ) Or
-               Splitter_SecondGadget_( *this ) )
+      If Not ( bar_is_second_gadget_( *this ) Or
+               bar_second_gadget_( *this ) )
         *SB2 = *this\bar\button[#__split_2]
       EndIf
       
@@ -1932,6 +1953,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected width = *this\width[#__c_frame]
       Protected height = *this\height[#__c_frame]
       
+      Protected._s_BUTTONS *BB1, *BB2, *BB3
+      
+      *BB1 = *this\bar\button[1]
+      *BB2 = *this\bar\button[2]
+      *BB3 = *this\bar\button[3]
       
       If mode > 0
         ; get area size
@@ -2056,135 +2082,161 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         
-        
-        ;
+        ; Ok
         If *this\type = #__type_Splitter 
-          If *bar\thumb\len 
-            If *this\vertical
-              *bar\button[#__split_3]\x = *this\x[#__c_frame]         
-              *bar\button[#__split_3]\width = *this\width[#__c_frame]  
-              *bar\button[#__split_3]\y = *this\y[#__c_inner_b] + *bar\thumb\pos
-              *bar\button[#__split_3]\height = *bar\thumb\len                              
+          If *BB3\state\enter 
+            ; disable/enable buttons(left&top)-tab(right&bottom)
+            If bar_in_start_( *bar )
+              If *BB1\state\disable = #False
+                *BB1\state\disable = #True
+                If *this\vertical
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB1, #PB_Cursor_Down )
+                Else
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB1, #PB_Cursor_Right )
+                EndIf
+              EndIf 
             Else
-              *bar\button[#__split_3]\y = *this\y[#__c_frame]         
-              *bar\button[#__split_3]\height = *this\height[#__c_frame]
-              *bar\button[#__split_3]\x = *this\x[#__c_inner_b] + *bar\thumb\pos 
-              *bar\button[#__split_3]\width = *bar\thumb\len                                  
+              If *BB1\state\disable = #True 
+                *BB1\state\disable = #False
+                If *this\vertical
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB1, #PB_Cursor_UpDown )
+                Else
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB1, #PB_Cursor_LeftRight )
+                EndIf
+              EndIf
+            EndIf
+            
+            ; disable/enable buttons(right&bottom)-tab(left&top)
+            If bar_in_stop_( *bar ) 
+              If *BB2\state\disable = #False
+                *BB2\state\disable = #True
+                If *this\vertical
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB2, #PB_Cursor_Up )
+                Else
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB2, #PB_Cursor_Left )
+                EndIf
+              EndIf 
+            Else
+              If *BB2\state\disable = #True
+                *BB2\state\disable = #False
+                If *this\vertical
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB2, #PB_Cursor_UpDown )
+                Else
+                  DoEvents( *this, #PB_EventType_StatusChange, *BB2, #PB_Cursor_LeftRight )
+                EndIf
+              EndIf
             EndIf
           EndIf
           
+          ;
           If *this\vertical
-            *bar\button[#__split_1]\width    = *this\width[#__c_frame]
-            *bar\button[#__split_1]\height   = *bar\thumb\pos
+            *BB1\width    = *this\width[#__c_frame]
+            *BB1\height   = *bar\thumb\pos
             
-            *bar\button[#__split_1]\x        = *this\x[#__c_frame]
-            *bar\button[#__split_2]\x        = *this\x[#__c_frame]
+            *BB1\x        = *this\x[#__c_frame]
+            *BB2\x        = *this\x[#__c_frame]
             
-            If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And Splitter_IsFirstGadget_( *this ) And Not *this\parent( ) )
-              *bar\button[#__split_1]\y      = *this\y[#__c_frame] 
-              *bar\button[#__split_2]\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *this\y[#__c_frame] 
+            If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And bar_is_first_gadget_( *this ) And Not *this\parent( ) )
+              *BB1\y      = *this\y[#__c_frame] 
+              *BB2\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *this\y[#__c_frame] 
             Else
-              *bar\button[#__split_1]\y      = *this\height[#__c_frame] - *bar\button[#__split_1]\height
+              *BB1\y      = *this\height[#__c_frame] - *BB1\height
             EndIf
             
-            *bar\button[#__split_2]\height   = *this\height[#__c_frame] - ( *bar\button[#__split_1]\height + *bar\thumb\len )
-            *bar\button[#__split_2]\width    = *this\width[#__c_frame]
+            *BB2\height   = *this\height[#__c_frame] - ( *BB1\height + *bar\thumb\len )
+            *BB2\width    = *this\width[#__c_frame]
+            
+            ; seperatior pos&size
+            If *bar\thumb\len 
+              *BB3\x = *this\x[#__c_frame]        
+              *BB3\width = *this\width[#__c_frame] 
+              *BB3\y = *this\y[#__c_inner_b] + *bar\thumb\pos
+              *BB3\height = *bar\thumb\len                              
+            EndIf
             
           Else
-            *bar\button[#__split_1]\width    = *bar\thumb\pos
-            *bar\button[#__split_1]\height   = *this\height[#__c_frame]
+            *BB1\width    = *bar\thumb\pos
+            *BB1\height   = *this\height[#__c_frame]
             
-            *bar\button[#__split_1]\y        = *this\y[#__c_frame]
-            *bar\button[#__split_2]\y        = *this\y[#__c_frame]
-            *bar\button[#__split_1]\x        = *this\x[#__c_frame]
-            *bar\button[#__split_2]\x        = ( *bar\thumb\pos + *bar\thumb\len ) + *this\x[#__c_frame]
+            *BB1\y        = *this\y[#__c_frame]
+            *BB2\y        = *this\y[#__c_frame]
+            *BB1\x        = *this\x[#__c_frame]
+            *BB2\x        = ( *bar\thumb\pos + *bar\thumb\len ) + *this\x[#__c_frame]
             
-            *bar\button[#__split_2]\width    = *this\width[#__c_frame] - ( *bar\button[#__split_1]\width + *bar\thumb\len )
-            *bar\button[#__split_2]\height   = *this\height[#__c_frame]
+            *BB2\width    = *this\width[#__c_frame] - ( *BB1\width + *bar\thumb\len )
+            *BB2\height   = *this\height[#__c_frame]
             
+            ; seperatior pos&size
+            If *bar\thumb\len 
+              *BB3\y = *this\y[#__c_frame]          
+              *BB3\height = *this\height[#__c_frame]
+              *BB3\x = *this\x[#__c_inner_b] + *bar\thumb\pos 
+              *BB3\width = *bar\thumb\len                                  
+            EndIf
           EndIf
           
-          
-          ; Splitter childrens auto resize       
-          If Splitter_FirstGadget_( *this )
-            If Splitter_IsFirstGadget_( *this )
+          ; Splitter first-child auto resize       
+          If bar_first_gadget_( *this )
+            If bar_is_first_gadget_( *this )
               If *this\root\canvas\container
-                PB(ResizeGadget)( Splitter_FirstGadget_( *this ),
-                                  *bar\button[#__split_1]\x,
-                                  *bar\button[#__split_1]\y,
-                                  *bar\button[#__split_1]\width, *bar\button[#__split_1]\height )
+                PB(ResizeGadget)( bar_first_gadget_( *this ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
               Else
-                PB(ResizeGadget)( Splitter_FirstGadget_( *this ),
-                                  *bar\button[#__split_1]\x + GadgetX( *this\root\canvas\gadget ), 
-                                  *bar\button[#__split_1]\y + GadgetY( *this\root\canvas\gadget ),
-                                  *bar\button[#__split_1]\width, *bar\button[#__split_1]\height )
-                
-; ;                   gtk_window_move_( GadgetID(Splitter_FirstGadget_( *this )),
-; ;                                   *bar\button[#__split_1]\x + GadgetX( *this\root\canvas\gadget ), 
-; ;                                   *bar\button[#__split_1]\y + GadgetY( *this\root\canvas\gadget ) )
-;             
-; ;                   gtk_widget_set_size_request_( GadgetID(Splitter_FirstGadget_( *this )),
-; ;                                   *bar\button[#__split_1]\width, *bar\button[#__split_1]\height )
-;                 
-;                 Protected *first = GadgetID(Splitter_FirstGadget_( *this ))
-;                 Macro gtk_window( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_window_get_type_ ( ) ) : EndMacro
-;      
-;                    gtk_window_set_geometry_hints_ ( GTK_WINDOW ( *first ) , *first , #Null , #GDK_HINT_USER_SIZE | #GDK_HINT_USER_POS ) ;
-;                    gtk_widget_set_size_request_ ( *first ,  *bar\button[#__split_1]\width, *bar\button[#__split_1]\height ) ; 
-	            EndIf
+                PB(ResizeGadget)( bar_first_gadget_( *this ),
+                                  *BB1\x + GadgetX( *this\root\canvas\gadget ), 
+                                  *BB1\y + GadgetY( *this\root\canvas\gadget ),
+                                  *BB1\width, *BB1\height )
+              EndIf
             Else
-              If Splitter_FirstGadget_( *this )\x <> *bar\button[#__split_1]\x Or
-                 Splitter_FirstGadget_( *this )\y <> *bar\button[#__split_1]\y Or
-                 Splitter_FirstGadget_( *this )\width <> *bar\button[#__split_1]\width Or
-                 Splitter_FirstGadget_( *this )\height <> *bar\button[#__split_1]\height
-                ; Debug "splitter_1_resize " + Splitter_FirstGadget_( *this )
+              If bar_first_gadget_( *this )\x <> *BB1\x Or
+                 bar_first_gadget_( *this )\y <> *BB1\y Or
+                 bar_first_gadget_( *this )\width <> *BB1\width Or
+                 bar_first_gadget_( *this )\height <> *BB1\height
+                ; Debug "splitter_1_resize " + bar_first_gadget_( *this )
                 
-                If Splitter_FirstGadget_( *this )\type = #__type_window
-                  Resize( Splitter_FirstGadget_( *this ),
-                          *bar\button[#__split_1]\x - *this\x[#__c_frame],
-                          *bar\button[#__split_1]\y - *this\y[#__c_frame], 
-                          *bar\button[#__split_1]\width - #__window_frame_size*2, *bar\button[#__split_1]\height - #__window_frame_size*2 - #__window_caption_height)
+                If bar_first_gadget_( *this )\type = #__type_window
+                  Resize( bar_first_gadget_( *this ),
+                          *BB1\x - *this\x[#__c_frame],
+                          *BB1\y - *this\y[#__c_frame], 
+                          *BB1\width - #__window_frame_size*2, *BB1\height - #__window_frame_size*2 - #__window_caption_height)
                 Else
-                  Resize( Splitter_FirstGadget_( *this ),
-                          *bar\button[#__split_1]\x - *this\x[#__c_frame],
-                          *bar\button[#__split_1]\y - *this\y[#__c_frame], 
-                          *bar\button[#__split_1]\width, *bar\button[#__split_1]\height )
+                  Resize( bar_first_gadget_( *this ),
+                          *BB1\x - *this\x[#__c_frame],
+                          *BB1\y - *this\y[#__c_frame], 
+                          *BB1\width, *BB1\height )
                 EndIf
                 
               EndIf
             EndIf
           EndIf
           
-          If Splitter_SecondGadget_( *this )
-            If Splitter_IsSecondGadget_( *this )
+          ; Splitter second-child auto resize       
+          If bar_second_gadget_( *this )
+            If bar_is_second_gadget_( *this )
               If *this\root\canvas\container 
-                PB(ResizeGadget)( Splitter_SecondGadget_( *this ),
-                                  *bar\button[#__split_2]\x, 
-                                  *bar\button[#__split_2]\y,
-                                  *bar\button[#__split_2]\width, *bar\button[#__split_2]\height )
+                PB(ResizeGadget)( bar_second_gadget_( *this ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
               Else
-                PB(ResizeGadget)( Splitter_SecondGadget_( *this ), 
-                                  *bar\button[#__split_2]\x + GadgetX( *this\root\canvas\gadget ),
-                                  *bar\button[#__split_2]\y + GadgetY( *this\root\canvas\gadget ),
-                                  *bar\button[#__split_2]\width, *bar\button[#__split_2]\height )
+                PB(ResizeGadget)( bar_second_gadget_( *this ), 
+                                  *BB2\x + GadgetX( *this\root\canvas\gadget ),
+                                  *BB2\y + GadgetY( *this\root\canvas\gadget ),
+                                  *BB2\width, *BB2\height )
               EndIf
             Else
-              If Splitter_SecondGadget_( *this )\x <> *bar\button[#__split_2]\x Or 
-                 Splitter_SecondGadget_( *this )\y <> *bar\button[#__split_2]\y Or
-                 Splitter_SecondGadget_( *this )\width <> *bar\button[#__split_2]\width Or
-                 Splitter_SecondGadget_( *this )\height <> *bar\button[#__split_2]\height 
-                ; Debug "splitter_2_resize " + Splitter_SecondGadget_( *this )
+              If bar_second_gadget_( *this )\x <> *BB2\x Or 
+                 bar_second_gadget_( *this )\y <> *BB2\y Or
+                 bar_second_gadget_( *this )\width <> *BB2\width Or
+                 bar_second_gadget_( *this )\height <> *BB2\height 
+                ; Debug "splitter_2_resize " + bar_second_gadget_( *this )
                 
-                If Splitter_SecondGadget_( *this )\type = #__type_window
-                  Resize( Splitter_SecondGadget_( *this ), 
-                          *bar\button[#__split_2]\x - *this\x[#__c_frame], 
-                          *bar\button[#__split_2]\y - *this\y[#__c_frame], 
-                          *bar\button[#__split_2]\width - #__window_frame_size*2, *bar\button[#__split_2]\height - #__window_frame_size*2 - #__window_caption_height )
+                If bar_second_gadget_( *this )\type = #__type_window
+                  Resize( bar_second_gadget_( *this ), 
+                          *BB2\x - *this\x[#__c_frame], 
+                          *BB2\y - *this\y[#__c_frame], 
+                          *BB2\width - #__window_frame_size*2, *BB2\height - #__window_frame_size*2 - #__window_caption_height )
                 Else
-                  Resize( Splitter_SecondGadget_( *this ), 
-                          *bar\button[#__split_2]\x - *this\x[#__c_frame], 
-                          *bar\button[#__split_2]\y - *this\y[#__c_frame], 
-                          *bar\button[#__split_2]\width, *bar\button[#__split_2]\height )
+                  Resize( bar_second_gadget_( *this ), 
+                          *BB2\x - *this\x[#__c_frame], 
+                          *BB2\y - *this\y[#__c_frame], 
+                          *BB2\width, *BB2\height )
                 EndIf
                 
               EndIf
@@ -2193,7 +2245,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           result = Bool( *this\resize & #__resize_change )
         EndIf
-        
         
         
         ;
@@ -2304,13 +2355,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
               result = Bool( *this\bar\max )
               
             Case #PB_Splitter_FirstGadget
-              Splitter_FirstGadget_( *this ) = *value
-              Splitter_IsFirstGadget_( *this ) = Bool( PB(IsGadget)( *value ))
+              bar_first_gadget_( *this ) = *value
+              bar_is_first_gadget_( *this ) = Bool( PB(IsGadget)( *value ))
               result =- 1
               
             Case #PB_Splitter_SecondGadget
-              Splitter_SecondGadget_( *this ) = *value
-              Splitter_IsSecondGadget_( *this ) = Bool( PB(IsGadget)( *value ))
+              bar_second_gadget_( *this ) = *value
+              bar_is_second_gadget_( *this ) = Bool( PB(IsGadget)( *value ))
               result =- 1
               
           EndSelect
@@ -2334,21 +2385,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If eventtype = #PB_EventType_StatusChange
         Debug "status-change " +*this +" "+ *button +" "+ *data
+        set_cursor_( *this, *data )
         
-        If *button\state\press = 0
-          Debug 666
-          
-          If *Data = 1
-            If *this\vertical
-              set_cursor_( *this, #PB_Cursor_UpDown )
-            Else
-              set_cursor_( *this, #PB_Cursor_LeftRight )
-            EndIf
-          EndIf
-          If *data =- 1
-            set_cursor_( *this, #PB_Cursor_Default )
-          EndIf
-        EndIf
+;         If *button\state\press = 0
+;           Debug 666
+;           
+;           If *Data = 1
+;             If *this\vertical
+;              ; set_cursor_( *this, #PB_Cursor_UpDown )
+;               SetCursor( *this, #PB_Cursor_UpDown )
+;             Else
+;              ; set_cursor_( *this, #PB_Cursor_LeftRight )
+;               SetCursor( *this, #PB_Cursor_LeftRight )
+;             EndIf
+;           EndIf
+;           If *data =- 1
+;             ; set_cursor_( *this, #PB_Cursor_Default )
+;             SetCursor( *this, #PB_Cursor_Default )
+;           EndIf
+;         EndIf
       EndIf
       
 ;       If eventtype = #PB_EventType_MouseEnter
@@ -2566,11 +2621,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; for the splitter childrens
       If *parent\type = #__type_Splitter
-        If Splitter_FirstGadget_( *parent ) = *this
+        If bar_first_gadget_( *parent ) = *this
           _p_x2_ = BB( *parent\bar, #__split_1 )\x + BB( *parent\bar, #__split_1 )\width
           _p_y2_ = BB( *parent\bar, #__split_1 )\y + BB( *parent\bar, #__split_1 )\height
         EndIf
-        If Splitter_SecondGadget_( *parent ) = *this
+        If bar_second_gadget_( *parent ) = *this
           _p_x2_ = BB( *parent\bar, #__split_2 )\x + BB( *parent\bar, #__split_2 )\width
           _p_y2_ = BB( *parent\bar, #__split_2 )\y + BB( *parent\bar, #__split_2 )\height
         EndIf
@@ -2932,8 +2987,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\bar
         If *this\type = #__type_Splitter
           Select Attribute 
-            Case #PB_Splitter_FirstGadget       : result = Splitter_FirstGadget_( *this )
-            Case #PB_Splitter_SecondGadget      : result = Splitter_SecondGadget_( *this )
+            Case #PB_Splitter_FirstGadget       : result = bar_first_gadget_( *this )
+            Case #PB_Splitter_SecondGadget      : result = bar_second_gadget_( *this )
             Case #PB_Splitter_FirstMinimumSize  : result = *this\bar\min[1]
             Case #PB_Splitter_SecondMinimumSize : result = *this\bar\min[2]
           EndSelect
@@ -2954,6 +3009,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;- 
     Procedure   SetCursor( *this._S_widget, *cursor )
       *this\cursor = *cursor
+      
+      If *cursor = #PB_Cursor_UpDown
+        func::SetMouseCursor( func::#CURSOR_UPDOWN )
+      ElseIf *cursor = #PB_Cursor_LeftRight
+        func::SetMouseCursor( func::#CURSOR_LEFTRIGHT )
+      ElseIf *cursor = #PB_Cursor_Default
+        func::SetMouseCursor( func::#CURSOR_ARROW )
+      EndIf
+      
     EndProcedure
     
     
@@ -2968,17 +3032,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ElseIf tabindex
           If *parent\type = #__type_Splitter
             If tabindex%2
-              Splitter_FirstGadget_( *parent ) = *this
-              Splitter_IsFirstGadget_( *parent ) = Bool( PB(IsGadget)( *this ))
+              bar_first_gadget_( *parent ) = *this
+              bar_is_first_gadget_( *parent ) = Bool( PB(IsGadget)( *this ))
               Update( *parent )
-              If Splitter_IsFirstGadget_( *parent )
+              If bar_is_first_gadget_( *parent )
                 ProcedureReturn 0
               EndIf
             Else
-              Splitter_SecondGadget_( *parent ) = *this
-              Splitter_IsSecondGadget_( *parent ) = Bool( PB(IsGadget)( *this ))
+              bar_second_gadget_( *parent ) = *this
+              bar_is_second_gadget_( *parent ) = Bool( PB(IsGadget)( *this ))
               Update( *parent )
-              If Splitter_IsSecondGadget_( *parent )
+              If bar_is_second_gadget_( *parent )
                 ProcedureReturn 0
               EndIf
             EndIf    
@@ -3220,10 +3284,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;;Debug ""+*param_1 +" "+ PB(IsGadget)( *param_1 )
             
             ;*this\container =- *this\type 
-            Splitter_FirstGadget_( *this ) = *param_1
-            Splitter_SecondGadget_( *this ) = *param_2
-            Splitter_IsFirstGadget_( *this ) = Bool( PB(IsGadget)( Splitter_FirstGadget_( *this ) ))
-            Splitter_IsSecondGadget_( *this ) = Bool( PB(IsGadget)( Splitter_SecondGadget_( *this ) ))
+            bar_first_gadget_( *this ) = *param_1
+            bar_second_gadget_( *this ) = *param_2
+            bar_is_first_gadget_( *this ) = Bool( PB(IsGadget)( *param_1 ))
+            bar_is_second_gadget_( *this ) = Bool( PB(IsGadget)( *param_2 ))
             
             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
@@ -3251,12 +3315,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If Splitter_FirstGadget_( *this ) And Not Splitter_IsFirstGadget_( *this )
-          SetParent( Splitter_FirstGadget_( *this ), *this )
+        If bar_first_gadget_( *this ) And Not bar_is_first_gadget_( *this )
+          SetParent( bar_first_gadget_( *this ), *this )
         EndIf
         
-        If Splitter_SecondGadget_( *this ) And Not Splitter_IsSecondGadget_( *this )
-          SetParent( Splitter_SecondGadget_( *this ), *this )
+        If bar_second_gadget_( *this ) And Not bar_is_second_gadget_( *this )
+          SetParent( bar_second_gadget_( *this ), *this )
         EndIf
         
         ;
@@ -3399,7 +3463,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure DoEvent_BarButtons( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
+    Procedure _DoEvent_BarButtons( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
       Protected repaint, *button._S_buttons
       
       
@@ -3513,7 +3577,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          ;Debug ""+*this+" "+*button+" "+EnteredButton( )+" "+eventtype
+          Debug ""+*this+" "+*button+" "+EnteredButton( )+" "+eventtype
           EnteredButton( ) = *button
           
           If EnteredButton( ) 
@@ -3536,6 +3600,191 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *this\state\repaint = #True
         EndIf
+      EndIf
+      
+      ProcedureReturn repaint
+    EndProcedure
+    
+    Procedure DoEvent_BarButtons( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
+      Protected repaint, *button._S_buttons
+      
+      
+      ;
+      ; get at-point-tab address
+      If *this\bar
+        ;
+        ; get at-point-button address
+        If  *this\state\enter
+          If Not ( EnteredButton( ) And 
+                   EnteredButton( )\hide = 0 And 
+                   is_at_point_( EnteredButton( ), mouse_x, mouse_y ))
+            
+            ; search entered button
+            If BB1( )\interact And 
+               is_at_point_( BB1( ), Mouse( )\x, Mouse( )\y )
+              
+              *button = BB1( )
+            ElseIf BB2( )\interact And
+                   is_at_point_( BB2( ), Mouse( )\x, Mouse( )\y )
+              
+              *button = BB2( )
+            ElseIf BB3( )\interact And
+                   is_at_point_( BB3( ), Mouse( )\x, Mouse( )\y, )
+              
+              *button = BB3( )
+            EndIf
+          EndIf
+        Else
+          *button = EnteredButton( )
+        EndIf
+        
+        ;
+        If eventtype = #PB_EventType_LeftButtonDown
+          PressedButton( ) = *button
+          
+          If PressedButton( ) And
+             PressedButton( )\state\disable = #False And 
+             PressedButton( )\state\press = #False
+            
+            PressedButton( )\state\press = #True
+            PressedButton( )\color\state = #__S_2
+            PressedButton( )\color\back[PressedButton( )\color\state] = $FF2C70F5
+            
+            ;
+            If     ( BB2( )\state\press And *this\bar\invert ) Or
+                   ( BB1( )\state\press And Not *this\bar\invert )
+              DoEvents( *this, #PB_EventType_Up, *this\bar, *this\bar\page\pos - *this\scroll\increment )
+            ElseIf ( BB1( )\state\press And *this\bar\invert ) Or
+                   ( BB2( )\state\press And Not *this\bar\invert )
+              DoEvents( *this, #PB_EventType_Down, *this\bar, *this\bar\page\pos + *this\scroll\increment )
+            EndIf
+            
+            *this\state\repaint = #True
+          EndIf
+        EndIf
+        
+        ;
+        If eventtype = #PB_EventType_LeftButtonUp
+          If PressedButton( )
+            If PressedButton( )\state\press = #True
+              PressedButton( )\state\press = #False
+              
+              If PressedButton( )\state\disable = #False
+                If PressedButton( )\state\enter
+                  PressedButton( )\color\state = #__S_1
+                Else
+                  PressedButton( )\color\state = #__S_0
+                EndIf
+                
+                *this\state\repaint = #True
+              EndIf 
+            EndIf
+            
+            If EnteredButton( ) <> PressedButton( )  
+              If *this\type = #__type_Splitter
+                DoEvents( *this, #PB_EventType_StatusChange, PressedButton( ), #PB_Cursor_Default )
+              EndIf
+            EndIf
+          EndIf
+          
+          ; drop
+          If EnteredWidget( )
+            If EnteredWidget( )\type = #__type_Splitter
+              If EnteredButton( )  
+                If EnteredButton( ) <> PressedButton( ) And
+                   EnteredButton( )\state\enter
+                  
+                  If EnteredWidget( )\vertical
+                    DoEvents( EnteredWidget( ), #PB_EventType_StatusChange, EnteredButton( ), #PB_Cursor_UpDown )
+                  Else
+                    DoEvents( EnteredWidget( ), #PB_EventType_StatusChange, EnteredButton( ), #PB_Cursor_LeftRight )
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ; 
+        If *this\state\enter = #False
+          Debug *this
+         ; *button = #Null
+        EndIf
+        
+        ; do buttons events entered & leaved 
+        If EnteredButton( ) <> *button 
+          If EnteredButton( )
+            If EnteredButton( )\state\enter = #True
+              EnteredButton( )\state\enter = #False
+              
+              If EnteredButton( )\color\state = #__S_1
+                EnteredButton( )\color\state = #__S_0
+              EndIf
+            EndIf
+            
+            ;             If *this\state\drag > 0
+            ;               If FocusedButton( )
+            ;                 If FocusedButton( )\state\focus
+            ;                   FocusedButton( )\state\focus = #False
+            ;                   
+            ;                   ;If FocusedButton( )\state\press = #False
+            ;                   FocusedButton( )\color\state = #__S_0
+            ;                   ;EndIf
+            ;                 EndIf
+            ;               EndIf
+            ;             EndIf
+            
+            If Not mouse( )\buttons
+              DoEvents( *this, #PB_EventType_StatusChange, EnteredButton( ), #PB_Cursor_Default )
+            EndIf
+          EndIf
+          
+          ;Debug ""+*button+" "+EnteredButton( )
+          EnteredButton( ) = *button
+          ;           If *this\state\drag > 0 
+          ;             FocusedButton( ) = *button
+          ;           EndIf
+          
+          If EnteredButton( )
+            If *this\state\enter
+              If EnteredButton( )\state\enter = #False
+                EnteredButton( )\state\enter = #True
+                
+                If EnteredButton( )\color\state = #__S_0
+                  EnteredButton( )\color\state = #__S_1
+                EndIf
+              EndIf
+            EndIf
+            
+            ;             If *this\state\drag > 0 
+            ;               If FocusedButton( )
+            ;                 If FocusedButton( )\state\focus = #False
+            ;                   FocusedButton( )\state\focus = #True
+            ;                   
+            ;                   ;If FocusedButton( )\state\press = #False
+            ;                   FocusedButton( )\color\state = #__S_2
+            ;                   ;EndIf
+            ;                   FocusedButton( )\color\back[FocusedButton( )\color\state] = $FF2C70F5
+            ;                 EndIf
+            ;               EndIf
+            ;             EndIf
+            
+            If Not mouse( )\buttons 
+              If EnteredButton( ) = BB3( )
+                If *this\type = #__type_Splitter
+                  If *this\vertical
+                    DoEvents( *this, #PB_EventType_StatusChange, EnteredButton( ), #PB_Cursor_UpDown )
+                  Else
+                    DoEvents( *this, #PB_EventType_StatusChange, EnteredButton( ), #PB_Cursor_LeftRight )
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
+          *this\state\repaint = #True
+        EndIf
+      
       EndIf
       
       ProcedureReturn repaint
@@ -3674,23 +3923,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
              is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_frame] ) And 
              is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_clip] ) 
             
-            ;                   ; enter-widget mouse pos
-            ;                   If is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_inner] )
-            ;                     ; get alpha
-            ;                     If WidgetList( *root )\image[#__img_background]\id And
-            ;                        WidgetList( *root )\image[#__img_background]\depth > 31 And 
-            ;                        StartDrawing( ImageOutput( WidgetList( *root )\image[#__img_background]\img ) )
-            ;                       
-            ;                       drawing_mode_( #PB_2DDrawing_AlphaChannel )
-            ;                       
-            ;                       If Not Alpha( Point( ( Mouse( )\x - WidgetList( *root )\x[#__c_inner] ) - 1, ( Mouse( )\y - WidgetList( *root )\y[#__c_inner] ) - 1 ) )
-            ;                         StopDrawing( )
-            ;                         Continue
-            ;                       EndIf
-            ;                       
-            ;                       StopDrawing( )
-            ;                     EndIf
-            ;                   EndIf
             
             ;
             If PopupWidget( ) And 
@@ -3701,108 +3933,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *widget = WidgetList( *root )
             EndIf
             
-            ; is integral scroll bars
-            If *widget\scroll
-              If *widget\scroll\v And Not *widget\scroll\v\hide And *widget\scroll\v\type And 
-                 is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
-                 is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_clip] ) 
-                *widget = *widget\scroll\v
-              EndIf
-              If *widget\scroll\h And Not *widget\scroll\h\hide And *widget\scroll\h\type And
-                 is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And 
-                 is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_clip] ) 
-                *widget = *widget\scroll\h
-              EndIf
-            EndIf
-            
-            ; is integral tab bar
-            If *widget\tab\widget And Not *widget\tab\widget\hide And *widget\tab\widget\type And 
-               is_at_point_( *widget\tab\widget, mouse_x, mouse_y, [#__c_frame] ) And
-               is_at_point_( *widget\tab\widget, mouse_x, mouse_y, [#__c_clip] ) 
-              *widget = *widget\tab\widget
-            EndIf
-            
-;             ; entered anchor widget
-;             If transform( ) 
-;               If a_at_point( *root\canvas\gadget, @*widget, @*leave )  
-;                 *widget = a_enter_widget( )
-;               EndIf
-;             EndIf
             Break
           EndIf
         Until PreviousElement( WidgetList( *root )) = #False 
-        
         
         ; do events entered & leaved 
         If *leave <> *widget
           EnteredWidget( ) = *widget
           ;
-;           If Not a_is_at_point_( *leave )
-            If *leave And
-               *leave\state\enter <> #False 
-              *leave\state\enter = #False
-              repaint | DoEvents( *leave, #PB_EventType_MouseLeave )
-              
-              If *leave\row = 0 And *leave\bar = 0
-                If Not IsChild( *widget, *leave )
-                  ;
-                  DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
-                  
-                  If *leave\address
-                    ChangeCurrentElement( enumWidget( ), *leave\address )
-                    Repeat                 
-                      If enumWidget( )\count\childrens And enumWidget( )\state\enter <> #False 
-                        If is_at_point_( enumWidget( ), mouse_x, mouse_y, [#__c_clip] ) 
-                          If Not ( *widget And *widget\index > enumWidget( )\index )
-                            Break
-                          EndIf
-                        EndIf
-                        
-                        ;
-                        If IsChild( *leave, enumWidget( )) And
-                           Not IsChild( *widget, enumWidget( ))
-                          enumWidget( )\state\enter = #False
-                          DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, - 1 )
-                        EndIf
-                      EndIf
-                    Until PreviousElement( enumWidget( )) = #False 
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ;
-            If *widget And 
-               *widget\state\enter <> #True
-              *widget\state\enter = #True
-              repaint | DoEvents( *widget, #PB_EventType_MouseEnter )
-              
-              If *widget\row = 0 And *widget\bar = 0
-                If *widget\address And Not *widget\attach 
-                  ForEach enumWidget( ) 
-                    If enumWidget( ) = *widget
-                      Break
-                    EndIf
-                    
-                    If enumWidget( )\state\enter = #False And
-                       enumWidget( )\count\childrens And 
-                       IsChild( *widget, enumWidget( ))
-                      
-                      enumWidget( )\state\enter =- 1
-                      DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, 1 )
-                    EndIf
-                  Next
-                EndIf
-                
-                DoEvents( *widget, #PB_EventType_StatusChange, #Null, 1 )
-              EndIf
-            EndIf
-          ; EndIf
+          If *leave And
+             *leave\state\enter <> #False 
+            *leave\state\enter = #False
+            repaint | DoEvents( *leave, #PB_EventType_MouseLeave )
+          EndIf
+          
+          ;
+          If *widget And 
+             *widget\state\enter <> #True
+            *widget\state\enter = #True
+            repaint | DoEvents( *widget, #PB_EventType_MouseEnter )
+          EndIf
           
           *leave = *widget
         EndIf  
-        ; Debug ""+*leave +" "+ *widget
-        
       EndIf
     EndProcedure
     
@@ -4011,6 +4164,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ElseIf eventtype = #PB_EventType_LostFocus
           ;           Repaint = SetActive( 0 ) 
           
+        ElseIf eventtype = #PB_EventType_MouseEnter 
+        ElseIf eventtype = #PB_EventType_MouseLeave 
+          If Not is_at_point_( Root( ), Mouse()\x, Mouse()\y )
+            Debug "leave root"
+          ; set_cursor_( FocusedWidget( ), #PB_Cursor_Cross )
+          EndIf
+          
         ElseIf eventtype = #PB_EventType_MouseMove 
           If Mouse( )\change > 1
             ; mouse entered-widget move event
@@ -4210,8 +4370,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;             Repaint | DoEvents( EnteredWidget( ), eventtype )
           ;           EndIf
           
-        ElseIf eventtype = #PB_EventType_MouseEnter 
-        ElseIf eventtype = #PB_EventType_MouseLeave 
         ElseIf eventtype = #PB_EventType_RightClick 
         ElseIf eventtype = #PB_EventType_DragStart 
         ElseIf eventtype = #PB_EventType_RightDoubleClick 
@@ -4629,5 +4787,5 @@ EndMacro
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------800---------------------------f-----0------8--------------
+; Folding = -----------------------------------v-0-X---------288---------------------------8-----4-----04--f--------------
 ; EnableXP
