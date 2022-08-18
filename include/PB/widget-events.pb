@@ -12,35 +12,10 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;#path "C:\Users\as\Desktop\Widget_15_08_2020"
 CompilerEndIf
 
-; IncludePath #path
-; 
-; 
-; XIncludeFile "include/modules.pbi"
-; 
-; CompilerIf Not Defined( constants, #PB_Module )
-;   XIncludeFile "include/constants.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( structures, #PB_Module )
-;   XIncludeFile "include/structures.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( func, #PB_Module )
-;   XIncludeFile "include/func.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( colors, #PB_Module )
-;   XIncludeFile "include/colors.pbi"
-; CompilerEndIf
-; 
-; ; fix all (PB) bug's
-; CompilerIf Not Defined( fix, #PB_Module )
-;   XIncludeFile "include/fix.pbi"
-; CompilerEndIf
-; 
-; XIncludeFile "include/events.pbi"
-
 IncludePath #path
+
+
+XIncludeFile "include/modules.pbi"
 
 CompilerIf Not Defined( constants, #PB_Module )
   XIncludeFile "include/constants.pbi"
@@ -58,11 +33,12 @@ CompilerIf Not Defined( colors, #PB_Module )
   XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
+; fix all (PB) bug's
 CompilerIf Not Defined( fix, #PB_Module )
-  ; fix all pb bug's
   XIncludeFile "include/fix.pbi"
 CompilerEndIf
-;XIncludeFile "include/os/mac/cursor.pbi"
+
+XIncludeFile "include/events.pbi"
 
 
 CompilerIf Not Defined( Widget, #PB_Module )
@@ -19931,23 +19907,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Protected PBWindow = PB(EventWindow)( )
       
       If Root( )
-        
         ; ReDraw( Root( ))
         If ListSize( EventList( Root( ) ) )
           ClearList( EventList( Root( ) ) )
         EndIf
-        
-        
-;         PushMapPosition(Root())
-;         ForEach Root()
-;           Debug Root()
-;           ChangeCurrentRoot( GadgetID( Root( )\canvas\gadget ) )
-;           ReDraw( Root( ))
-; ;           Root( )\state\repaint = #True
-; ;           PostEvent( #PB_Event_Gadget, Root( )\canvas\window, Root( )\canvas\gadget, #PB_EventType_Repaint, Root( ) )
-;       
-;         Next
-;         PopMapPosition(Root())
         
         Repeat 
           Select WaitWindowEvent( waittime )
