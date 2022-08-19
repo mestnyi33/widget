@@ -841,7 +841,9 @@ Module events
              EnteredGadget( ) <> Canvas
             If EnteredGadget( ) >= 0 ;And GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
               If cursor::getcursor( ) <> #PB_Cursor_Default
+                Debug " ----start reset cursor---"
                 cursor::SetCursor( GadgetID( EnteredGadget( ) ), #PB_Cursor_Default )
+                Debug " ----end reset cursor---"
               EndIf
               CallCFunctionFast( *UserData, EnteredGadget( ) , #PB_EventType_MouseLeave )
             EndIf
