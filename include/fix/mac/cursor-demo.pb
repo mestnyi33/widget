@@ -307,11 +307,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     change.b
   EndStructure
   
-  Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
-  Macro DraggedGadget( ) : *dragged : EndMacro
+  Global *entered=-1, *pressed=-1;, *dragged=-1, *focused=-1, *setcallback
   Macro EnteredGadget( ) : *entered : EndMacro
-  Macro FocusedGadget( ) : *focused : EndMacro
   Macro PressedGadget( ) : *pressed : EndMacro
+;   Macro DraggedGadget( ) : *dragged : EndMacro
+;   Macro FocusedGadget( ) : *focused : EndMacro
   
   Procedure underGadget(NSWindow)
     If NSWindow
@@ -361,17 +361,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     EndIf
   EndProcedure
   
-  
-  ;   Procedure updateCursor( *cursor.cursor )
-  ;     If *cursor And *cursor\cursor
-  ;       If *cursor\change = 0
-  ;         Debug "e+"
-  ;         CocoaMessage(0, *cursor\windowID, "disableCursorRects")
-  ;         CocoaMessage(0, *cursor\cursor, "set") 
-  ;       EndIf
-  ;     EndIf
-  ;   EndProcedure
-  
   ProcedureC eventTapFunction(proxy, type, event, refcon)
     Static *widget
     Protected Point.CGPoint
@@ -383,7 +372,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     
     If NSEvent
       Protected gadget =- 1
-      Protected NSWindow = CocoaMessage(0, NSEvent, "window")
+      Protected NSWindow = Mouse::Window( ) ; CocoaMessage(0, NSEvent, "window")
+      
       
       If type = #NSLeftMouseDown
         PressedGadget() = underGadget(NSWindow)
@@ -471,17 +461,52 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   EndIf
 CompilerEndIf
 
-OpenWindow(0, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
-CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
-CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+; OpenWindow(0, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
+; CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+; CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
+; CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+; 
+; ButtonGadget(-1, 60,240,60,60,"")
+; Define g1,g2
+; g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+; g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+; SplitterGadget(-1,10,240,60,60, g1,g2)
 
-ButtonGadget(-1, 60,240,60,60,"")
-Define g1,g2
-g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-SplitterGadget(-1,10,240,60,60, g1,g2)
-
+Procedure Resize_2( )
+    Protected canvas = 2
+    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+  EndProcedure
+  
+  Procedure Resize_3( )
+    Protected canvas = 3
+    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+  EndProcedure
+  
+  
+  ;;events::SetCallback( @EventHandler( ) )
+  OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
+  CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+  CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
+  CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+  
+  ButtonGadget(-1, 60,240,60,60,"")
+  Define g1,g2
+  g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+  g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+  SplitterGadget(-1,10,240,60,60, g1,g2)
+  
+  OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
+                                                                             ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+  BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
+  
+  OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
+  
+  ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+  ;cursor::SetCursor( 3, #PB_Cursor_Hand )
+  BindEvent( #PB_Event_SizeWindow, @Resize_3( ), 3 )
+  
 If setCursor(0, #PB_Default, ImageID(0))
   Debug "hand"           
 EndIf       
@@ -522,5 +547,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------
+; Folding = ----0------
 ; EnableXP
