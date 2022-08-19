@@ -297,51 +297,62 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   
   Global eventTap, mask = #MaskMouseEntered | #MaskMouseExited | #MaskMouseMoved | #MaskCursorUpdate |#MaskLeftMouseDown|#MaskLeftMouseUp|#MaskLeftMouseDragged
   
-  Procedure UnderMouse( NSWindow )
-    ;     Protected Point.CGPoint
-    ;     Protected ContentView = CocoaMessage(0,  NSWindow , "contentView")
-    ;     CocoaMessage(@Point,  NSWindow , "mouseLocationOutsideOfEventStream")
-    ;     If ContentView
-    ;       ProcedureReturn CocoaMessage(0, ContentView, "hitTest:@", @Point) 
-    ;     EndIf
-    ProcedureReturn Mouse::Gadget(NSWindow)
-  EndProcedure
-  
   Structure cursor
     index.i
-    *windowID
-    *gadgetID
+    ;*windowID
+    ;*gadgetID
     *cursor
     ;button.b
     ;state.b
     change.b
   EndStructure
+  
   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
   Macro DraggedGadget( ) : *dragged : EndMacro
   Macro EnteredGadget( ) : *entered : EndMacro
   Macro FocusedGadget( ) : *focused : EndMacro
   Macro PressedGadget( ) : *pressed : EndMacro
   
-  Procedure setCursor( gadget, cursor )
+  Procedure underGadget(NSWindow)
+    If NSWindow
+      Protected handle = Mouse::Gadget(NSWindow)
+      If handle
+        ProcedureReturn ID::Gadget(handle)
+      EndIf
+    EndIf
+    
+    ProcedureReturn - 1
+  EndProcedure
+  
+  Procedure setCursor( gadget, cursor, ImageID.i=0 )
     If IsGadget(gadget)
       Protected *cursor.cursor = AllocateStructure(cursor)
+      Protected NSWindow = CocoaMessage( 0, GadgetID(gadget), "window" )
       *cursor\index = cursor
-      *cursor\gadgetID = GadgetID(gadget)
-      *cursor\windowID = CocoaMessage( 0, *cursor\gadgetID, "window" )
       
-      Select cursor
-        Case #PB_Cursor_Default : *cursor\cursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-        Case #PB_Cursor_IBeam : *cursor\cursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-        Case #PB_Cursor_Cross : *cursor\cursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-        Case #PB_Cursor_Hand : *cursor\cursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-        Case #PB_Cursor_LeftRight : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-        Case #PB_Cursor_UpDown : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-      EndSelect 
+      If cursor >= 0
+        Select cursor
+          Case #PB_Cursor_Default : *cursor\cursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+          Case #PB_Cursor_IBeam : *cursor\cursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+          Case #PB_Cursor_Cross : *cursor\cursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+          Case #PB_Cursor_Hand : *cursor\cursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #PB_Cursor_LeftRight : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+          Case #PB_Cursor_UpDown : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+        EndSelect 
+      Else
+        If ImageID
+          Protected Hotspot.NSPoint
+          Hotspot\x = 1
+          Hotspot\y = 1
+          *cursor\cursor = CocoaMessage(0, 0, "NSCursor alloc")
+          CocoaMessage(0, *cursor\cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+        EndIf
+      EndIf
       
       SetGadgetData(gadget, *cursor)
       
-      If *cursor\cursor And *cursor\gadgetID = UnderMouse(*cursor\windowID)
-        CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+      If *cursor\cursor And gadget = underGadget(NSWindow)
+        CocoaMessage(0, NSWindow, "disableCursorRects")
         CocoaMessage(0, *cursor\cursor, "set")
         *cursor\change = 1
         ProcedureReturn #True
@@ -351,27 +362,16 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   EndProcedure
   
   
-  Procedure updateCursor( *cursor.cursor )
-    If *cursor And *cursor\cursor
-      If *cursor\change = 0
-        Debug "e+"
-        CocoaMessage(0, *cursor\windowID, "disableCursorRects")
-        CocoaMessage(0, *cursor\cursor, "set") 
-      EndIf
-    EndIf
-  EndProcedure
+  ;   Procedure updateCursor( *cursor.cursor )
+  ;     If *cursor And *cursor\cursor
+  ;       If *cursor\change = 0
+  ;         Debug "e+"
+  ;         CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+  ;         CocoaMessage(0, *cursor\cursor, "set") 
+  ;       EndIf
+  ;     EndIf
+  ;   EndProcedure
   
-  Procedure underGadget(NSWindow)
-    If NSWindow
-      Protected handle = UnderMouse( NSWindow )
-      If handle
-        ProcedureReturn ID::Gadget(handle)
-      EndIf
-    EndIf
-    
-    ProcedureReturn - 1
-  EndProcedure
-
   ProcedureC eventTapFunction(proxy, type, event, refcon)
     Static *widget
     Protected Point.CGPoint
@@ -391,34 +391,35 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ElseIf type = #NSLeftMouseUp
         gadget = underGadget(NSWindow)
         
-        If gadget >= 0 
-          EnteredGadget() = gadget
-          *cursor.cursor = GetGadgetData(gadget)
-        EndIf
-        
-        If *cursor And
-           *cursor\cursor
-          Debug "p+"
-          CocoaMessage(0, *cursor\windowID, "disableCursorRects")
-          CocoaMessage(0, *cursor\cursor, "set") 
-          *cursor\change = 1
-        Else
-          If PressedGadget() >= 0
-            If GadgetID(PressedGadget()) <> UnderMouse( NSWindow )
-              *cursor.cursor = GetGadgetData(PressedGadget())
-              If *cursor And
-                 *cursor\cursor And 
-                 *cursor\change = 1
-                *cursor\change = 0
-                Debug "p-"
-                CocoaMessage(0, *cursor\windowID, "enableCursorRects")
-                CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
-              EndIf
-            EndIf
-            
-            PressedGadget() =- 1
+        If PressedGadget() >= 0 And 
+           PressedGadget() <> gadget  
+          
+          *cursor.cursor = GetGadgetData(PressedGadget())
+          If *cursor And
+             *cursor\cursor And 
+             *cursor\change = 1
+            *cursor\change = 0
+            Debug "p-"
+            CocoaMessage(0, NSWindow, "enableCursorRects")
+            CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
           EndIf
         EndIf
+        
+        If gadget >= 0 And 
+           gadget <> PressedGadget()
+          
+          EnteredGadget() = gadget
+          *cursor.cursor = GetGadgetData(gadget)
+          If *cursor And
+             *cursor\cursor
+            Debug "p+"
+            CocoaMessage(0, NSWindow, "disableCursorRects")
+            CocoaMessage(0, *cursor\cursor, "set") 
+            *cursor\change = 1
+          EndIf
+        EndIf
+        
+        PressedGadget() =- 1
         
       ElseIf type = #NSMouseMoved
         gadget = underGadget(NSWindow)
@@ -431,7 +432,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                *cursor\change = 1
               *cursor\change = 0
               Debug "e-"
-              CocoaMessage(0, *cursor\windowID, "enableCursorRects")
+              CocoaMessage(0, NSWindow, "enableCursorRects")
               CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
             EndIf
           EndIf
@@ -445,7 +446,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                *cursor\change = 0
               *cursor\change = 1
               Debug "e+"
-              CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+              CocoaMessage(0, NSWindow, "disableCursorRects")
               CocoaMessage(0, *cursor\cursor, "set") 
             EndIf
           EndIf
@@ -481,20 +482,20 @@ g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
 g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
 SplitterGadget(-1,10,240,60,60, g1,g2)
 
-If setCursor(0,#PB_Cursor_Hand)
+If setCursor(0, #PB_Default, ImageID(0))
   Debug "hand"           
 EndIf       
 
-If setCursor(1,#PB_Cursor_LeftRight)
-  Debug "LeftRight"           
+If setCursor(1,#PB_Cursor_Hand)
+  Debug "hand"           
 EndIf       
 
-If setCursor(11,#PB_Cursor_UpDown)
-  Debug "UpDown"           
-EndIf       
-
-If setCursor(g1,#PB_Cursor_Cross)
+If setCursor(11,#PB_Cursor_Cross)
   Debug "cross"           
+EndIf       
+
+If setCursor(g1,#PB_Cursor_IBeam)
+  Debug "IBeam"           
 EndIf       
 
 If setCursor(g2,#PB_Cursor_IBeam)
