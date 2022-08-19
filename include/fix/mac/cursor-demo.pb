@@ -371,8 +371,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     
     
     If NSEvent
-      Protected gadget =- 1
-      Protected NSWindow = Mouse::Window( ) ; CocoaMessage(0, NSEvent, "window")
+      Protected NSWindow, gadget =- 1
+      NSWindow = Mouse::Window( ) 
+      ;NSWindow = CocoaMessage(0, NSEvent, "window")
       
       
       If type = #NSLeftMouseDown
@@ -483,7 +484,7 @@ Procedure Resize_2( )
   EndProcedure
   
   
-  ;;events::SetCallback( @EventHandler( ) )
+ ;;events::SetCallback( @EventHandler( ) )
   OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
   CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
   CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
@@ -496,23 +497,20 @@ Procedure Resize_2( )
   SplitterGadget(-1,10,240,60,60, g1,g2)
   
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  CocoaMessage(0, WindowID(2), "disableCursorRects")
   CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
                                                                              ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
   BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
   
-  OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-  CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
   
-  ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
-  ;cursor::SetCursor( 3, #PB_Cursor_Hand )
-  BindEvent( #PB_Event_SizeWindow, @Resize_3( ), 3 )
   
 If setCursor(0, #PB_Default, ImageID(0))
   Debug "hand"           
 EndIf       
 
 If setCursor(1,#PB_Cursor_Hand)
-  Debug "hand"           
+  Debug "hand"    
+  Debug ""+CocoaMessage(0, 0, "NSCursor currentCursor")
 EndIf       
 
 If setCursor(11,#PB_Cursor_Cross)
@@ -527,9 +525,19 @@ If setCursor(g2,#PB_Cursor_IBeam)
   Debug "IBeam"           
 EndIf       
 
+Define lastcur = CocoaMessage(0, 0, "NSCursor currentCursor")
+OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+CocoaMessage(0, WindowID(3), "disableCursorRects")
+CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
 
-; 
-;         
+; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
+;cursor::SetCursor( 3, #PB_Cursor_Hand )
+BindEvent( #PB_Event_SizeWindow, @Resize_3( ), 3 )
+CocoaMessage(0, lastcur, "set")
+        
+ 
+Debug ""+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
+    
 Repeat
   Select WaitWindowEvent()
     Case #PB_Event_CloseWindow
