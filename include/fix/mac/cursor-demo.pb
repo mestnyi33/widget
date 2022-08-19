@@ -310,8 +310,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   Global *entered=-1, *pressed=-1;, *dragged=-1, *focused=-1, *setcallback
   Macro EnteredGadget( ) : *entered : EndMacro
   Macro PressedGadget( ) : *pressed : EndMacro
-;   Macro DraggedGadget( ) : *dragged : EndMacro
-;   Macro FocusedGadget( ) : *focused : EndMacro
+  ;   Macro DraggedGadget( ) : *dragged : EndMacro
+  ;   Macro FocusedGadget( ) : *focused : EndMacro
   
   Procedure underGadget(NSWindow)
     If NSWindow
@@ -369,12 +369,10 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     Protected *cursor.cursor = #Null
     
-    
     If NSEvent
       Protected NSWindow, gadget =- 1
       NSWindow = Mouse::Window( ) 
       ;NSWindow = CocoaMessage(0, NSEvent, "window")
-      
       
       If type = #NSLeftMouseDown
         PressedGadget() = underGadget(NSWindow)
@@ -462,98 +460,105 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   EndIf
 CompilerEndIf
 
-; OpenWindow(0, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
-; CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-; CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
-; CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-; 
-; ButtonGadget(-1, 60,240,60,60,"")
-; Define g1,g2
-; g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-; g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-; SplitterGadget(-1,10,240,60,60, g1,g2)
-
+;///
+;/// demo
+;///
+Define g1,g2
 Procedure Resize_2( )
-    Protected canvas = 2
-    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
-  EndProcedure
-  
-  Procedure Resize_3( )
-    Protected canvas = 3
-    ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
-  EndProcedure
-  
-  
- ;;events::SetCallback( @EventHandler( ) )
-  OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
-  CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-  CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
-  CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
-  
-  ButtonGadget(-1, 60,240,60,60,"")
-  Define g1,g2
-  g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-  g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-  SplitterGadget(-1,10,240,60,60, g1,g2)
-  
-  OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-  CocoaMessage(0, WindowID(2), "disableCursorRects")
-  CanvasGadget(2, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
-                                                                             ; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
-  BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
-  
-  
-  
-If setCursor(0, #PB_Default, ImageID(0))
-  Debug "hand"           
-EndIf       
+  Protected canvas = 2
+  ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+EndProcedure
 
-If setCursor(1,#PB_Cursor_Hand)
-  Debug "hand"    
-  Debug ""+CocoaMessage(0, 0, "NSCursor currentCursor")
-EndIf       
+Procedure Resize_3( )
+  Protected canvas = 3
+  ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+EndProcedure
 
-If setCursor(11,#PB_Cursor_Cross)
-  Debug "cross"           
+
+;/// first
+OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
+CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus )
+CanvasGadget(11, 110, 110, 200, 200, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
+ButtonGadget(100, 60,240,60,60,"")
+g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+SplitterGadget(111,10,240,60,60, g1,g2)
+
+; If setCursor(111,#PB_Cursor_UpDown)
+;   Debug "updown"           
+; EndIf       
+
+If setCursor(100,#PB_Cursor_Hand)
+  Debug "setCursorHand"           
 EndIf       
 
 If setCursor(g1,#PB_Cursor_IBeam)
-  Debug "IBeam"           
+  Debug "setCursorIBeam"           
 EndIf       
 
 If setCursor(g2,#PB_Cursor_IBeam)
-  Debug "IBeam"           
+  Debug "setCursorIBeam"           
 EndIf       
 
-Define lastcur = CocoaMessage(0, 0, "NSCursor currentCursor")
-OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-CocoaMessage(0, WindowID(3), "disableCursorRects")
-CanvasGadget(3, 10, 10, 200, 200, #PB_Canvas_Keyboard|#PB_Canvas_Container);|#PB_Canvas_DrawFocus)
+If setCursor(0, #PB_Default, ImageID(0))
+  Debug "setCursorImage"           
+EndIf       
 
-; EnableGadgetDrop( 2, #PB_Drop_Private, #PB_Drag_Copy, #PB_Drop_Private )
-;cursor::SetCursor( 3, #PB_Cursor_Hand )
+If setCursor(1,#PB_Cursor_Hand)
+  Debug "setCursorHand - " +CocoaMessage(0, 0, "NSCursor currentCursor")
+EndIf       
+
+If setCursor(11,#PB_Cursor_Cross)
+  Debug "setCursorCross"           
+EndIf       
+
+
+
+;/// second
+OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+g1=StringGadget(-1,0,0,0,0,"")
+g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+SplitterGadget(2, 10, 10, 200, 200, g1,g2)
+BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
+
+If setCursor(g1,#PB_Cursor_IBeam)
+  Debug "setCursorIBeam"           
+EndIf       
+
+If setCursor(g2,#PB_Cursor_IBeam)
+  Debug "setCursorIBeam"           
+EndIf       
+
+
+
+;/// third
+OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+SplitterGadget(3,10, 10, 200, 200, g1,g2)
 BindEvent( #PB_Event_SizeWindow, @Resize_3( ), 3 )
-CocoaMessage(0, lastcur, "set")
-        
- 
-Debug ""+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
-    
+
+If setCursor(g1,#PB_Cursor_IBeam)
+  Debug "setCursorIBeam"           
+EndIf       
+
+If setCursor(g2,#PB_Cursor_IBeam)
+  Debug "setCursorIBeam"           
+EndIf       
+
+
+Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
+
 Repeat
   Select WaitWindowEvent()
     Case #PB_Event_CloseWindow
       Break
     Case #PB_Event_Gadget
       If EventGadget() = 0 And EventType() = #PB_EventType_LeftClick
-        ;         cursor\cursor = ChangeCursorToPNGImage(0, 0)
-        ;         cursor\gadgetID = GadgetID(EventGadget())
-        ;         
-        SetWindowTitle(0, Str(Random(255)))
-        ;*lastcursor = CocoaMessage(0, 0, "NSCursor currentCursor")
-        
-        DisableGadget(0, #True)
       EndIf
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----0------
+; Folding = ------------
 ; EnableXP
