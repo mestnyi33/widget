@@ -296,22 +296,12 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   #MaskEventTypeQuickLook    = 1<<33
   
   Global eventTap, mask = #MaskMouseEntered | #MaskMouseExited | #MaskMouseMoved | #MaskCursorUpdate |#MaskLeftMouseDown|#MaskLeftMouseUp|#MaskLeftMouseDragged
-  
-  Structure cursor
-    index.i
-    ;*windowID
-    ;*gadgetID
-    *cursor
-    ;button.b
-    ;state.b
-    change.b
-  EndStructure
-  
   Global *entered=-1, *pressed=-1;, *dragged=-1, *focused=-1, *setcallback
   Macro EnteredGadget( ) : *entered : EndMacro
   Macro PressedGadget( ) : *pressed : EndMacro
   ;   Macro DraggedGadget( ) : *dragged : EndMacro
   ;   Macro FocusedGadget( ) : *focused : EndMacro
+  
   
   Procedure underGadget(NSWindow)
     If NSWindow
@@ -324,10 +314,34 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     ProcedureReturn - 1
   EndProcedure
   
+  ;-
+  Structure cursor
+    index.i
+    ;*windowID
+    ;*gadgetID
+    *cursor
+    ;button.b
+    ;state.b
+    change.b
+  EndStructure
+  
+  Procedure.i createCursor( ImageID.i, x.l = 0, y.l = 0 )
+    Protected *ic, Hotspot.NSPoint
+    
+    If ImageID
+      Hotspot\x = x
+      Hotspot\y = y
+      *ic = CocoaMessage( 0, 0, "NSCursor alloc" )
+      CocoaMessage( 0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot )
+    EndIf
+    
+    ProcedureReturn *ic
+  EndProcedure
+  
   Procedure setCursor( gadget, cursor, ImageID.i=0 )
     If IsGadget(gadget)
       Protected *cursor.cursor = AllocateStructure(cursor)
-      Protected NSWindow = CocoaMessage( 0, GadgetID(gadget), "window" )
+      Protected NSWindow = ID::GetWindowID(GadgetID(gadget))
       *cursor\index = cursor
       
       If cursor >= 0
@@ -341,11 +355,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndSelect 
       Else
         If ImageID
-          Protected Hotspot.NSPoint
-          Hotspot\x = 1
-          Hotspot\y = 1
-          *cursor\cursor = CocoaMessage(0, 0, "NSCursor alloc")
-          CocoaMessage(0, *cursor\cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+          *cursor\cursor = createCursor(ImageID)
         EndIf
       EndIf
       
@@ -361,6 +371,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     EndIf
   EndProcedure
   
+  ;-
   ProcedureC eventTapFunction(proxy, type, event, refcon)
     Static *widget
     Protected Point.CGPoint
@@ -517,8 +528,8 @@ EndIf
 
 ;/// second
 OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-g1=StringGadget(-1,0,0,0,0,"")
-g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+g1=StringGadget(-1,0,0,0,0,"StringGadget")
+g2=HyperLinkGadget(-1,0,0,0,0,"HyperLinkGadget", 0)
 SplitterGadget(2, 10, 10, 200, 200, g1,g2)
 BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
 
@@ -535,7 +546,7 @@ EndIf
 ;/// third
 OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
 g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
-g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
+g2=StringGadget(-1,0,0,0,0,"StringGadget")
 SplitterGadget(3,10, 10, 200, 200, g1,g2)
 BindEvent( #PB_Event_SizeWindow, @Resize_3( ), 3 )
 

@@ -20,8 +20,44 @@ Module Parent
     EndIf
   EndProcedure
   
+  Procedure IDWindow( handle.i )
+    Protected Window = PB_Window_GetID( handle )
+    ;If IsWindow( Window ) And WindowID( Window ) = handle
+      ProcedureReturn Window
+    ;EndIf
+    ;ProcedureReturn - 1
+  EndProcedure
+  
+  Procedure IDGadget( handle.i )
+    Protected gadget = CocoaMessage( 0, handle, "tag" )
+    ; Debug "id - "+handle +" "+ gadget
+;     If IsGadget( gadget ) And GadgetID( gadget ) = handle
+      ProcedureReturn gadget
+;     EndIf
+;     ProcedureReturn - 1
+  EndProcedure
+  
+  Procedure __NSView( handle.i ) ; Return the handle of the parent from the gadget handle
+    Protected GadgetID
+    Protected WindowID = GetWindowID( handle )
+    
+    While handle 
+      gadgetID = handle
+      handle = CocoaMessage( 0, handle, "superview" )
+      
+      If Not handle 
+        ProcedureReturn 0;WindowID
+      EndIf
+      
+      If IDGadget( handle ) >= 0
+        ProcedureReturn handle
+      EndIf
+    Wend
+  EndProcedure
+  
   Procedure NSView( gadgetID.i )
     Protected handle
+    Debug IDGadget(gadgetID)
     
     Select GetClassName( gadgetID )
       Case "PBEditorgadgetTextView", "PBScintillaView", "PBListViewTableView", "PBTreeOutlineView", 
@@ -39,23 +75,9 @@ Module Parent
         Wend
     EndSelect
     
+    Debug IDGadget(gadgetID)
+    
     ProcedureReturn gadgetID
-  EndProcedure
-  
-  Procedure IDWindow( handle.i )
-    Protected Window = PB_Window_GetID( handle )
-    If IsWindow( Window ) And WindowID( Window ) = handle
-      ProcedureReturn Window
-    EndIf
-    ProcedureReturn - 1
-  EndProcedure
-  
-  Procedure IDgadget( handle.i )
-    Protected gadget = CocoaMessage( 0, handle, "tag" )
-    If IsGadget( gadget ) And GadgetID( gadget ) = handle
-      ProcedureReturn gadget
-    EndIf
-    ProcedureReturn - 1
   EndProcedure
   
   Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
@@ -63,6 +85,39 @@ Module Parent
   EndProcedure
   
   Procedure GetParentID( handle.i ) ; Return the handle of the parent from the gadget handle
+    Protected WindowID = GetWindowID( handle )
+    
+    While handle 
+      handle = CocoaMessage( 0, handle, "superview" )
+      
+      If Not handle 
+        ProcedureReturn WindowID
+      EndIf
+      
+      If IDGadget( handle ) >= 0
+        ProcedureReturn handle
+      EndIf
+    Wend
+  EndProcedure
+  
+  Procedure _GetParentID( handle.i ) ; Return the handle of the parent from the gadget handle
+    Protected WindowID = GetWindowID( handle )
+    Protected contentView = CocoaMessage( 0, WindowID, "contentView" )
+    
+    If WindowID 
+      While handle
+        If contentView = CocoaMessage( 0, handle, "superview" )
+          ProcedureReturn WindowID
+        Else
+          ProcedureReturn CocoaMessage( 0, CocoaMessage( 0, NSView( handle ), "superview" ), "superview" )
+        EndIf
+        
+        handle = CocoaMessage( 0, handle, "superview" )
+      Wend
+    EndIf
+  EndProcedure
+  
+  Procedure __GetParentID( handle.i ) ; Return the handle of the parent from the gadget handle
     Protected gadgetID
     Protected WindowID
     
@@ -74,7 +129,7 @@ Module Parent
         WindowID = GetWindowID( handle )
         
         If WindowID 
-          If CocoaMessage( 0, WindowID, "contentView" ) = handle
+          If handle = CocoaMessage( 0, WindowID, "contentView" )
             ProcedureReturn WindowID
           Else
             ProcedureReturn CocoaMessage( 0, CocoaMessage( 0, NSView( gadgetID ), "superview" ), "superview" )
@@ -346,5 +401,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --v-v--
+; Folding = f4td0f---
 ; EnableXP
