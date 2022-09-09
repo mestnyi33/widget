@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widget-events.pbi" : Uselib(widget)
+;XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
@@ -108,5 +109,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-
+; Folding = --
 ; EnableXP

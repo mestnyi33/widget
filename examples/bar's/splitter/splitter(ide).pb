@@ -1,4 +1,4 @@
-﻿;XIncludeFile "../../../-widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
 XIncludeFile "../../../widget-events.pbi"
 ;XIncludeFile "../../../widgets-splitter.pbi"
 
@@ -95,7 +95,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
   SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
   
-  WaitClose( )
+  ;WaitClose( )
+  Define event
+  Repeat 
+    event = WaitWindowEvent( )
+  Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;   Uselib(widget)

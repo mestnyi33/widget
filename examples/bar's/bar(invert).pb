@@ -1,12 +1,16 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets-bar.pbi"
-
+XIncludeFile "widget-events.pbi"
+;XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets-bar.pbi"
+  
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule widget
   UseModule constants
   
+  #__Bar_Inverted = #__Bar_Invert : #__Bar_NoButtons = #__bar_buttonsize
+ 
   Global.i gEvent, gQuit, g_Canvas
   Global *Bar_0
   
@@ -69,6 +73,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

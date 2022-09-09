@@ -17,14 +17,28 @@ CompilerIf #PB_Compiler_IsMainFile
   Enumeration
     #MyCanvas = 1   ; just to test whether a number different from 0 works now
   EndEnumeration
- 
+  
+  
   Global *this._s_widget  
   
   Global isCurrentItem=#False
   Global currentItemXOffset.i, currentItemYOffset.i
   Global Event.i, x.i, y.i, drag.i, hole.i, Width, Height
   Global NewList Images.canvasitem()
- 
+  
+  ;;;;;;;;;;;;;;;;;;;;
+  Macro EnterButton( )
+    EnteredButton( )
+  EndMacro
+  Macro bar_hide_( )
+    hide
+    ;bar\hide
+  EndMacro
+  #__Bar_Inverted = #__Bar_Invert
+  #__Bar_NoButtons = #__bar_buttonsize
+  ;\bar_hide_() = \bar\bar_hide_()
+  ;;;;;;;;;;;;;;;;;;;
+  
   Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
     If AddElement(Images())
       Images()\img    = img
@@ -52,10 +66,10 @@ CompilerIf #PB_Compiler_IsMainFile
      
       UnclipOutput()
      
-      If Not *this\scroll\v\bar\hide
+      If Not *this\scroll\v\bar_hide_()
         Draw(*this\scroll\v)
       EndIf
-      If Not *this\scroll\h\bar\hide
+      If Not *this\scroll\h\bar_hide_()
         Draw(*this\scroll\h)
       EndIf
      
@@ -165,14 +179,14 @@ CompilerIf #PB_Compiler_IsMainFile
       If ScrollArea_Y<0 : SetState(*this\scroll\v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
       If ScrollArea_X<0 : SetState(*this\scroll\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
      
-      \v\bar\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y + Bool(\h\bar\hide) * \h\height) - \v\y+Bool(Not \h\bar\hide And \v\round And \h\round)*(\v\width/4))
-      \h\bar\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x + Bool(\v\bar\hide) * \v\width) - \h\x+Bool(Not \v\bar\hide And \v\round And \h\round)*(\h\height/4), #PB_Ignore)
+      \v\bar_hide_() = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y + Bool(\h\bar_hide_()) * \h\height) - \v\y+Bool(Not \h\bar_hide_() And \v\round And \h\round)*(\v\width/4))
+      \h\bar_hide_() = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x + Bool(\v\bar_hide_()) * \v\width) - \h\x+Bool(Not \v\bar_hide_() And \v\round And \h\round)*(\h\height/4), #PB_Ignore)
      
-      ;   If *this\scroll\v\bar\hide : *this\scroll\v\bar\page\pos = 0 : Else : *this\scroll\v\bar\page\pos = vPos : *this\scroll\h\width = iWidth+*this\scroll\v\width : EndIf
-      ;   If *this\scroll\h\bar\hide : *this\scroll\h\bar\page\pos = 0 : Else : *this\scroll\h\bar\page\pos = hPos : *this\scroll\v\height = iHeight+*this\scroll\h\height : EndIf
+      ;   If *this\scroll\v\bar_hide_() : *this\scroll\v\bar\page\pos = 0 : Else : *this\scroll\v\bar\page\pos = vPos : *this\scroll\h\width = iWidth+*this\scroll\v\width : EndIf
+      ;   If *this\scroll\h\bar_hide_() : *this\scroll\h\bar\page\pos = 0 : Else : *this\scroll\h\bar\page\pos = hPos : *this\scroll\v\height = iHeight+*this\scroll\h\height : EndIf
      
-      If *this\scroll\v\bar\hide : *this\scroll\v\bar\page\pos = 0 : If vPos : *this\scroll\v\bar\hide = vPos : EndIf : Else : *this\scroll\v\bar\page\pos = vPos : EndIf
-      If *this\scroll\h\bar\hide : *this\scroll\h\bar\page\pos = 0 : If hPos : *this\scroll\h\bar\hide = hPos : EndIf : Else : *this\scroll\h\bar\page\pos = hPos : EndIf
+      If *this\scroll\v\bar_hide_() : *this\scroll\v\bar\page\pos = 0 : If vPos : *this\scroll\v\bar_hide_() = vPos : EndIf : Else : *this\scroll\v\bar\page\pos = vPos : EndIf
+      If *this\scroll\h\bar_hide_() : *this\scroll\h\bar\page\pos = 0 : If hPos : *this\scroll\h\bar_hide_() = hPos : EndIf : Else : *this\scroll\h\bar\page\pos = hPos : EndIf
      
       ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
     EndWith
@@ -250,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect     
    
    
-    If Not GetButtons( 0 ) And EnterButton( ) ;(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
+    If Not GetButtons( 0 ) And EnterButton( ) ; EnterButton( );(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
       Select EventType
         Case #PB_EventType_LeftButtonUp
           Debug "----------Up---------"
@@ -258,15 +272,15 @@ CompilerIf #PB_Compiler_IsMainFile
           ScrollUpdates(*this, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
           ;           Protected iWidth = Width-Width(*this\scroll\v), iHeight = Height-Height(*this\scroll\h)
           ;   
-          ;         Debug ""+*this\scroll\h\bar\hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
-          ;         Debug ""+*this\scroll\v\bar\hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
+          ;         Debug ""+*this\scroll\h\bar_hide_()+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
+          ;         Debug ""+*this\scroll\v\bar_hide_()+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
          
           PushListPosition(Images())
           ForEach Images()
-            ;           If *this\scroll\h\bar\hide And (ScrollWidth-Width)>0 : Images()\X-(ScrollWidth-Width) : EndIf
-            ;           If *this\scroll\v\bar\hide And (ScrollHeight-Height)>0 : Images()\Y-(ScrollHeight-Height) : EndIf
-            If *this\scroll\h\bar\hide>1 : Images()\X-*this\scroll\h\bar\hide : EndIf
-            If *this\scroll\v\bar\hide>1 : Images()\Y-*this\scroll\v\bar\hide : EndIf
+            ;           If *this\scroll\h\bar_hide_() And (ScrollWidth-Width)>0 : Images()\X-(ScrollWidth-Width) : EndIf
+            ;           If *this\scroll\v\bar_hide_() And (ScrollHeight-Height)>0 : Images()\Y-(ScrollHeight-Height) : EndIf
+            If *this\scroll\h\bar_hide_()>1 : Images()\X-*this\scroll\h\bar_hide_() : EndIf
+            If *this\scroll\v\bar_hide_()>1 : Images()\Y-*this\scroll\v\bar_hide_() : EndIf
           Next
           PopListPosition(Images())
          
@@ -343,7 +357,7 @@ CompilerIf #PB_Compiler_IsMainFile
   *this.allocate( widget )
   *this\scroll\v = Scroll( 380, 0,  20, 380, 0, 0, 0, #__Bar_Vertical|#__Bar_Inverted, 9 )
   *this\scroll\h = Scroll( 0, 380, 380,  20, 0, 0, 0, 0, 9 )
-  Bind(*this\scroll\v,  )
+  ;Bind(*this\scroll\v,  )
   
   If GetGadgetState(2)
     SetGadgetState(3, GetAttribute(*this\scroll\v, #__Bar_Inverted))
@@ -394,6 +408,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --f-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = vv-+-v-----
 ; EnableXP

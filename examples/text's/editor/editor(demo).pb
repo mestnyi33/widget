@@ -1,5 +1,7 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets-plus.pbi"
+;XIncludeFile "widgets-plus.pbi"
+;XIncludeFile "-widgets-edit.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)

@@ -2,14 +2,16 @@
 ; example demo resize draw splitter - OS gadgets   -bar
 ; 
 
-XIncludeFile "../../widgets.pbi"
+;XIncludeFile "../../widgets.pbi"
+XIncludeFile "../../widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   #__round = 7
-  
+  #__Bar_Inverted = #__Bar_Invert : #__Bar_NoButtons = #__bar_buttonsize
+ 
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
   CompilerElse

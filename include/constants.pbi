@@ -153,6 +153,9 @@
       #__c
     EndEnumeration
     
+    ;
+    #__c_clip = #__c_draw ; temp
+    #__c_clip2 = #__c_draw2 ; temp
        
     ;#__c_inner2 = #__c_inner
     #__c_rootrestore = 7
@@ -743,7 +746,7 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
-      ;#PB_EventType_MouseStatus
+      #PB_EventType_MouseStatus ; temp
       #PB_EventType_StatusChangeEdit
       ;       #PB_EventType_TimerStart
       ;       #PB_EventType_TimerStop

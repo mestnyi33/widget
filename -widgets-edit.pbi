@@ -11,6 +11,10 @@ CompilerEndIf
 
 IncludePath #path
 
+CompilerIf Not Defined( constants, #PB_Module )
+  XIncludeFile "include/constants.pbi"
+CompilerEndIf
+
 CompilerIf Not Defined( fix, #PB_Module )
   ; fix all pb bug's
   XIncludeFile "include/fix.pbi"
@@ -20,10 +24,6 @@ CompilerIf Not Defined( func, #PB_Module )
   XIncludeFile "include/func.pbi"
 CompilerEndIf
 
-CompilerIf Not Defined( constants, #PB_Module )
-  XIncludeFile "include/constants.pbi"
-CompilerEndIf
-
 CompilerIf Not Defined( structures, #PB_Module )
   XIncludeFile "include/structures.pbi"
 CompilerEndIf
@@ -31,6 +31,8 @@ CompilerEndIf
 CompilerIf Not Defined( colors, #PB_Module )
   XIncludeFile "include/colors.pbi"
 CompilerEndIf
+
+
 
 
 CompilerIf Not Defined( Widget, #PB_Module )
@@ -15259,7 +15261,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\class = class+"-h"
             EndIf
             
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15295,7 +15303,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\color\_alpha = 255
             *this\color\back = $FFFFFFFF
             
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15358,7 +15372,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
             ;;*this\text\change = 1
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15401,7 +15421,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; - Create Track
           If *this\type = #__type_TrackBar
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15442,7 +15468,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; - Create Progress
           If *this\type = #__type_ProgressBar
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15465,7 +15497,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\type = #__type_Splitter
             *this\color\back =- 1
             
-            ;         *this\bar\button[#__b_1]\color = _get_colors_( )
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          ;         *this\bar\button[#__b_1]\color = _get_colors_( )
             ;         *this\bar\button[#__b_2]\color = _get_colors_( )
             ;         *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -19834,5 +19871,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------88W---------------------------------------------------------------------------------------------
 ; EnableXP

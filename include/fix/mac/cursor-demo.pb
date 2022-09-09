@@ -331,8 +331,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     If ImageID
       Hotspot\x = x
       Hotspot\y = y
-      *ic = CocoaMessage( 0, 0, "NSCursor alloc" )
-      CocoaMessage( 0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot )
+      *ic = CocoaMessage(0, 0, "NSCursor alloc")
+      CocoaMessage(0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
     EndIf
     
     ProcedureReturn *ic
@@ -340,18 +340,19 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   
   Procedure setCursor( gadget, cursor, ImageID.i=0 )
     If IsGadget(gadget)
+      Protected GadgetID = GadgetID(gadget)
       Protected *cursor.cursor = AllocateStructure(cursor)
-      Protected NSWindow = ID::GetWindowID(GadgetID(gadget))
-      *cursor\index = cursor
+      Protected WindowID = ID::GetWindowID(GadgetID)
       
+      *cursor\index = cursor
       If cursor >= 0
         Select cursor
-          Case #PB_Cursor_Default : *cursor\cursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-          Case #PB_Cursor_IBeam : *cursor\cursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-          Case #PB_Cursor_Cross : *cursor\cursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-          Case #PB_Cursor_Hand : *cursor\cursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #PB_Cursor_Default   : *cursor\cursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+          Case #PB_Cursor_IBeam     : *cursor\cursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+          Case #PB_Cursor_Cross     : *cursor\cursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+          Case #PB_Cursor_Hand      : *cursor\cursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #PB_Cursor_UpDown    : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
           Case #PB_Cursor_LeftRight : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-          Case #PB_Cursor_UpDown : *cursor\cursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
         EndSelect 
       Else
         If ImageID
@@ -361,13 +362,12 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       
       SetGadgetData(gadget, *cursor)
       
-      If *cursor\cursor And gadget = underGadget(NSWindow)
-        CocoaMessage(0, NSWindow, "disableCursorRects")
+      If *cursor\cursor And GadgetID = mouse::Gadget(WindowID)
+        CocoaMessage(0, WindowID, "disableCursorRects")
         CocoaMessage(0, *cursor\cursor, "set")
         *cursor\change = 1
         ProcedureReturn #True
       EndIf
-      
     EndIf
   EndProcedure
   
@@ -425,7 +425,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         gadget = underGadget(NSWindow)
         
         If EnteredGadget( ) <> gadget
-          If EnteredGadget( ) >= 0 
+         Debug 888888
+         
+         If EnteredGadget( ) >= 0 
             *cursor.cursor = GetGadgetData(EnteredGadget( ))
             If *cursor And 
                *cursor\cursor And 
@@ -571,5 +573,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------
+; Folding = ----0v------
 ; EnableXP

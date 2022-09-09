@@ -2008,7 +2008,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If Color = 0 : Color = $ff808080 : EndIf
         
-        ;If StartDrawing( ImageOutput( ID ))
+        If Drawing( )
+          StopDrawing( )
+          Drawing( ) = 0
+        EndIf
+        
+        If StartDrawing( ImageOutput( ID ))
           DrawingMode_( #PB_2DDrawing_AllChannels )
           ;Box( 0, 0, width, height, BoxColor )
           
@@ -2030,8 +2035,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             x + Steps
           Next
           
-        ;  StopDrawing( )
-        ;EndIf
+         StopDrawing( )
+        EndIf
       EndIf
       
       ProcedureReturn ID
@@ -15181,7 +15186,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\class = class+"-h"
             EndIf
             
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15280,7 +15292,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
             ;;*this\text\change = 1
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+            
+            
+            *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15323,7 +15343,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; - Create Track
           If *this\type = #__type_TrackBar
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+             *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15364,7 +15390,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; - Create Progress
           If *this\type = #__type_ProgressBar
             *this\color\back =- 1 
-            *this\bar\button[#__b_1]\color = _get_colors_( )
+             *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
             ;*this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -15387,7 +15419,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\type = #__type_Splitter
             *this\color\back =- 1
             
-            ;         *this\bar\button[#__b_1]\color = _get_colors_( )
+             *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
+          *this\bar\widget = *this ; 
+          
+          ;         *this\bar\button[#__b_1]\color = _get_colors_( )
             ;         *this\bar\button[#__b_2]\color = _get_colors_( )
             ;         *this\bar\button[#__b_3]\color = _get_colors_( )
             
@@ -19971,5 +20009,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--4vf-t-8------------------------------------------v-------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d8------------------------------------8--f-+04+v-------------------------------------------+------
 ; EnableXP

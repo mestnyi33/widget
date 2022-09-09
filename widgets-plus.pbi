@@ -15100,6 +15100,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\type = #__type_Splitter
           
           *this\bar.allocate( BAR )
+          *this\bar\button.allocate( BUTTONS, [#__b_1] )
+          *this\bar\button.allocate( BUTTONS, [#__b_2] )
+          *this\bar\button.allocate( BUTTONS, [#__b_3] )
           *this\bar\widget = *this ; 
           
           *this\scroll\increment = ScrollStep

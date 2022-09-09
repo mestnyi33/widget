@@ -2073,7 +2073,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Bool( _this_\_a_\transform Or ( is_integral_( _this_ ) And _this_\parent( )\_a_\transform ) )
     EndMacro
     
-    Procedure a_grid_image( Steps = 5, line=0, Color = 0 )
+    Procedure a_grid_image( Steps = 5, line=0, Color = 0, startx = 0, starty = 0 )
       Static ID
       Protected hDC, x,y
       
@@ -2087,30 +2087,36 @@ _this_\type = #PB_GadgetType_ExplorerList )
         
         If Color = 0 : Color = $ff808080 : EndIf
         
-        ;         If StartDrawing( ImageOutput( ID ))
-        drawing_mode_( #PB_2DDrawing_AllChannels )
-        ;Box( 0, 0, width, height, BoxColor )
         
-        For x = 0 To width - 1
+        If Drawing( )
+          StopDrawing( )
+          Drawing( ) = 0
+        EndIf
+        
+        If StartDrawing( ImageOutput( ID ))
+          drawing_mode_( #PB_2DDrawing_AllChannels )
+          ;Box( 0, 0, width, height, BoxColor )
           
-          For y = 0 To height - 1
+          For x = startx To width - 1
             
-            If line
-              Line( x, 0, 1,height, Color )
-              Line( 0, y, width,1, Color )
-            Else
-              Line( x, y, 1,1, Color )
-            EndIf
+            For y = starty To height - 1
+              
+              If line
+                Line( x, 0, 1,height, Color )
+                Line( 0, y, width,1, Color )
+              Else
+                Line( x, y, 1,1, Color )
+              EndIf
+              
+              y + Steps
+            Next
             
-            y + Steps
+            
+            x + Steps
           Next
           
-          
-          x + Steps
-        Next
-        
-        ;           StopDrawing( )
-        ;         EndIf
+          StopDrawing( )
+        EndIf
       EndIf
       
       ProcedureReturn ID
@@ -2755,7 +2761,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           
           transform( )\grid\type = grid_type
           transform( )\grid\size = grid_size + 1
-          transform( )\grid\image = a_grid_image( transform( )\grid\size - 1, transform( )\grid\type, $FF000000 )
+          transform( )\grid\image = a_grid_image( transform( )\grid\size - 1, transform( )\grid\type, $FF000000, *this\bs + *this\fs, *this\bs + *this\fs[2] )
           
           For i = 0 To #__a_count
             transform( )\id[i]\cursor = *Data_Transform_Cursor\cursor[i]
@@ -8973,6 +8979,108 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ; ;         PostEventRepaint( *this\root ) 
       ; ;       EndIf
     EndProcedure
+    Procedure   edit_AddItem1( *this._S_widget, List rows._S_rows( ), position, *text.Character, string_len )
+      Protected *rows._S_rows
+      Protected add_index =- 1, add_y, add_pos, add_height
+      
+      If position < 0 Or position > ListSize( rows( )) - 1
+        LastElement( rows( ))
+        *rows = AddElement( rows( )) 
+        
+        ;If position < 0 
+        position = ListIndex( rows( ))
+        ;EndIf
+        
+      Else
+        
+        *rows = SelectElement( rows( ), position )
+        add_index = rows( )\index
+        add_y = rows( )\y           + Bool( #PB_Compiler_OS = #PB_OS_Windows )
+        add_pos = rows( )\text\pos
+        add_height = rows( )\height + *this\mode\gridlines 
+        *rows = InsertElement( rows( ))
+        
+        PushListPosition( rows( )) 
+        While NextElement( rows( )) 
+          rows( )\index = ListIndex( rows( ) )
+          rows( )\y + add_height 
+          rows( )\text\pos + string_len + Len( #LF$ )
+        Wend
+        PopListPosition(rows( ))
+        
+        
+        ;         *rows = SelectElement( rows( ), position )
+        ;         add_index = rows( )\index
+        ;         add_y = rows( )\y
+        ;         add_pos = rows( )\text\pos
+        ;         add_height = rows( )\height
+        ;         PushListPosition( rows( )) 
+        ;         Repeat 
+        ;           rows( )\index = ListIndex( rows( ) ) + 1 
+        ;           rows( )\y + add_height
+        ;           rows( )\text\pos + string_len + Len( #LF$ )
+        ;         Until Not NextElement( rows( ))
+        ;         PopListPosition(rows( ))
+        ;         *rows = InsertElement( rows( ))
+      EndIf
+      
+      rows( )\index = position
+      rows( )\text\len = string_len
+      rows( )\text\string = PeekS ( *text, string_len )
+      
+      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+      ;         StopDrawing( )
+      ;         StartDrawing( CanvasOutput( *this\root\canvas\gadget ) )
+      ;         DrawingFont( *this\root\text\fontid )
+      ;       CompilerEndIf
+      draw_font_item_( *this, rows( ), rows( )\text\change )
+      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+      ;         StopDrawing( )
+      ;       CompilerEndIf
+      
+      rows( )\height = rows( )\text\height ; + 10
+      rows( )\width = *this\width[#__c_inner]
+      rows( )\color = _get_colors_( )
+      
+      ; make line position
+      If *this\vertical
+      Else ; horizontal
+        If scroll_width_( *this ) < rows( )\text\width + *this\text\padding\x*2
+          scroll_width_( *this ) = rows( )\text\width + *this\text\padding\x*2
+        EndIf
+        
+        If *this\text\rotate = 0
+          If add_index >= 0
+            rows( )\text\pos = add_pos 
+            rows( )\y = add_y                                                                     - *this\text\padding\y
+          Else
+            rows( )\text\pos = *this\text\len 
+            rows( )\y = scroll_height_( *this )                                                   - *this\text\padding\y
+          EndIf
+        ElseIf *this\text\rotate = 180
+          rows( )\y = ( *this\height[#__c_inner] - scroll_height_( *this ) - rows( )\text\height ) + *this\text\padding\y 
+        EndIf
+        
+        scroll_height_( *this ) + rows( )\height + *this\mode\gridlines
+      EndIf
+      
+      *this\count\items + 1
+      *this\text\len + string_len + Len( #LF$ )
+      *this\text\string = InsertString( *this\text\string, rows( )\text\string + #LF$, 1 + rows( )\text\pos )
+      
+      ;       If *this\type = #PB_GadgetType_Editor
+      ;         ; Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\y +" "+ rows( )\width +" "+ rows( )\height
+      ;         ;  Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\text\y +" "+ rows( )\text\width +" "+ rows( )\text\height
+      ;       EndIf
+      ;       
+      ;       
+      *this\text\change = 0
+      *this\change = 0
+      
+      ; ;       If scroll_height_( *this ) > *this\height[#__c_inner]; bar_make_scroll_area( *this )
+      ; ;         PostEventRepaint( *this\root ) 
+      ; ;       EndIf
+    EndProcedure
     
     Procedure   edit_ClearItems( *this._S_widget )
       *this\count\items = 0
@@ -11732,11 +11840,156 @@ _this_\type = #PB_GadgetType_ExplorerList )
     
     
     ;- 
+    Procedure.l x( *this._S_widget, mode.l = #__c_frame )
+      ProcedureReturn ( Bool( Not *this\hide ) * *this\x[mode] )
+    EndProcedure
+    
+    Procedure.l Y( *this._S_widget, mode.l = #__c_frame )
+      ProcedureReturn ( Bool( Not *this\hide ) * *this\y[mode] )
+    EndProcedure
+    
+    Procedure.l Width( *this._S_widget, mode.l = #__c_frame )
+      ProcedureReturn ( Bool( Not *this\hide ) * *this\width[mode] )
+    EndProcedure
+    
+    Procedure.l Height( *this._S_widget, mode.l = #__c_frame )
+      ProcedureReturn ( Bool( Not *this\hide ) * *this\height[mode] )
+    EndProcedure
+    
+    Procedure.b Hide( *this._S_widget, State.b = #PB_Default )
+      If State = #PB_Default
+        ProcedureReturn *this\hide 
+      Else
+        *this\hide = State
+        *this\state\hide = *this\hide
+        
+        If *this\count\childrens
+          HideChildrens( *this )
+        EndIf
+      EndIf
+    EndProcedure
+    
+    Procedure.b Disable( *this._S_widget, State.b = #PB_Default )
+      If State = #PB_Default
+        ProcedureReturn *this\state\disable
+      Else
+        If *this\state\disable = #True
+          *this\state\disable = #False
+          ; *this\color\state = #__S_0
+        Else
+          *this\state\disable = #True
+          ; *this\color\state = #__S_3
+          *this\color\state = #__S_0
+        EndIf
+        
+        If StartEnumerate( *this )
+          enumWidget( )\color\state = #__S_3 
+          StopEnumerate( )
+        EndIf
+        PostEventCanvas(*this\root)
+      EndIf
+    EndProcedure
+    
+    Procedure.b Update( *this._S_widget )
+      Protected result.b, _scroll_pos_.f
+      
+      ; update draw coordinate
+      If *this\type = #__type_Panel
+        result = bar_Update( *this\tab\widget\bar )
+      EndIf  
+      
+      If *this\type = #__type_Window
+        result = Window_Update( *this )
+      EndIf
+      
+      ; ;       If *this\type = #__type_tree
+      ; ;         If StartDrawing( CanvasOutput( *this\root\canvas\gadget ))
+      ; ;           Tree_Update( *this, RowList( *this ))
+      ; ;           StopDrawing( )
+      ; ;         EndIf
+      ; ;         
+      ; ;         result = 1
+      ; ;       EndIf
+      
+      If *this\type = #__type_ScrollBar Or
+         ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ) Or
+         *this\type = #__type_ProgressBar Or
+         *this\type = #__type_TrackBar Or
+         *this\type = #__type_Splitter Or
+         *this\type = #__type_Spin
+        
+        result = bar_Update( *this\bar )
+      Else
+        result = Bool( *this\resize & #__resize_change )
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure.b Change( *this._S_widget, ScrollPos.f )
+      Select *this\type
+        Case #__type_TabBar,#__type_ToolBar,
+             #__type_Spin,
+             #__type_Splitter,
+             #__type_TrackBar,
+             #__type_ScrollBar,
+             #__type_ProgressBar
+          
+          ProcedureReturn bar_Change( *this\bar, ScrollPos )
+      EndSelect
+    EndProcedure
+    
+    Procedure.i Display( *this._S_widget, *display._S_widget, x = #PB_Ignore, y = #PB_Ignore )
+      Protected display_height = 0
+      
+      PopupWidget( ) = *this
+      *this\state\flag | #__S_collapse
+      
+      ForEach RowList( *this )
+        If Not RowList( *this )\hide
+          display_height + RowList( *this )\height
+        EndIf
+        If ( ListIndex(RowList( *this )) + 1 )>= 10;30
+          Break
+        EndIf
+      Next
+      
+      If scroll_height_( *this ) > display_height 
+        Resize( *this, x, y, #PB_Ignore, display_height ) 
+      Else
+        Resize( *this, x, y, #PB_Ignore, scroll_height_( *this ) + *this\barHeight + *this\fs*2 + *this\ToolBarHeight ) 
+      EndIf
+      
+      ;*this\change = 1
+      update_visible_items_( *this )
+    EndProcedure
+    
+    Procedure   IsChild( *this._S_widget, *parent._S_widget )
+      Protected result 
+      
+      If *this And 
+         ; *this <> *parent And 
+        *parent\count\childrens
+        
+        Repeat
+          If *parent = *this\parent( )
+            result = *this
+            Break
+          EndIf
+          
+          *this = *this\parent( )
+        Until *this = *this\root  ; is_root_( *this )
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
     Procedure.b IsContainer( *this._S_widget )
       ProcedureReturn *this\container
     EndProcedure
     
-    Procedure.i GetItem( *this._S_widget, parent_sublevel.l =- 1 )
+    
+    Procedure.i GetItem( *this._S_widget, parent_sublevel.l =- 1 ) ;???
       Protected result
       Protected *rows._S_rows
       Protected *widget._S_widget
@@ -12001,149 +12254,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ProcedureReturn result
     EndProcedure
     
-    Procedure.b Disable( *this._S_widget, State.b = #PB_Default )
-      If State = #PB_Default
-        ProcedureReturn *this\state\disable
-      Else
-        If *this\state\disable = #True
-          *this\state\disable = #False
-          ; *this\color\state = #__S_0
-        Else
-          *this\state\disable = #True
-          ; *this\color\state = #__S_3
-          *this\color\state = #__S_0
-        EndIf
-        
-        If StartEnumerate( *this )
-          enumWidget( )\color\state = #__S_3 
-          StopEnumerate( )
-        EndIf
-        PostEventCanvas(*this\root)
-      EndIf
-    EndProcedure
     
-    Procedure.b Hide( *this._S_widget, State.b = #PB_Default )
-      If State = #PB_Default
-        ProcedureReturn *this\hide 
-      Else
-        *this\hide = State
-        *this\state\hide = *this\hide
-        
-        If *this\count\childrens
-          HideChildrens( *this )
-        EndIf
-      EndIf
-    EndProcedure
-    
-    Procedure   IsChild( *this._S_widget, *parent._S_widget )
-      Protected result 
-      
-      If *this And 
-         ; *this <> *parent And 
-        *parent\count\childrens
-        
-        Repeat
-          If *parent = *this\parent( )
-            result = *this
-            Break
-          EndIf
-          
-          *this = *this\parent( )
-        Until *this = *this\root  ; is_root_( *this )
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
-    
-    Procedure.b Update( *this._S_widget )
-      Protected result.b, _scroll_pos_.f
-      
-      ; update draw coordinate
-      If *this\type = #__type_Panel
-        result = bar_Update( *this\tab\widget\bar )
-      EndIf  
-      
-      If *this\type = #__type_Window
-        result = Window_Update( *this )
-      EndIf
-      
-      ; ;       If *this\type = #__type_tree
-      ; ;         If StartDrawing( CanvasOutput( *this\root\canvas\gadget ))
-      ; ;           Tree_Update( *this, RowList( *this ))
-      ; ;           StopDrawing( )
-      ; ;         EndIf
-      ; ;         
-      ; ;         result = 1
-      ; ;       EndIf
-      
-      If *this\type = #__type_ScrollBar Or
-         ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ) Or
-         *this\type = #__type_ProgressBar Or
-         *this\type = #__type_TrackBar Or
-         *this\type = #__type_Splitter Or
-         *this\type = #__type_Spin
-        
-        result = bar_Update( *this\bar )
-      Else
-        result = Bool( *this\resize & #__resize_change )
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
-    
-    Procedure.b Change( *this._S_widget, ScrollPos.f )
-      Select *this\type
-        Case #__type_TabBar,#__type_ToolBar,
-             #__type_Spin,
-             #__type_Splitter,
-             #__type_TrackBar,
-             #__type_ScrollBar,
-             #__type_ProgressBar
-          
-          ProcedureReturn bar_Change( *this\bar, ScrollPos )
-      EndSelect
-    EndProcedure
-    
-    Procedure.l x( *this._S_widget, mode.l = #__c_frame )
-      ProcedureReturn ( Bool( Not *this\hide ) * *this\x[mode] )
-    EndProcedure
-    
-    Procedure.l Y( *this._S_widget, mode.l = #__c_frame )
-      ProcedureReturn ( Bool( Not *this\hide ) * *this\y[mode] )
-    EndProcedure
-    
-    Procedure.l Width( *this._S_widget, mode.l = #__c_frame )
-      ProcedureReturn ( Bool( Not *this\hide ) * *this\width[mode] )
-    EndProcedure
-    
-    Procedure.l Height( *this._S_widget, mode.l = #__c_frame )
-      ProcedureReturn ( Bool( Not *this\hide ) * *this\height[mode] )
-    EndProcedure
-    
-    Procedure.i Display( *this._S_widget, *display._S_widget, x = #PB_Ignore, y = #PB_Ignore )
-      Protected display_height = 0
-      
-      PopupWidget( ) = *this
-      *this\state\flag | #__S_collapse
-      
-      ForEach RowList( *this )
-        If Not RowList( *this )\hide
-          display_height + RowList( *this )\height
-        EndIf
-        If ( ListIndex(RowList( *this )) + 1 )>= 10;30
-          Break
-        EndIf
-      Next
-      
-      If scroll_height_( *this ) > display_height 
-        Resize( *this, x, y, #PB_Ignore, display_height ) 
-      Else
-        Resize( *this, x, y, #PB_Ignore, scroll_height_( *this ) + *this\barHeight + *this\fs*2 + *this\ToolBarHeight ) 
-      EndIf
-      
-      ;*this\change = 1
-      update_visible_items_( *this )
-    EndProcedure
     
     ;- 
     Procedure.i AddColumn( *this._S_widget, Position.l, Text.s, Width.l, Image.i=-1 )
@@ -12207,7 +12318,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       EndIf
       
       If *this\type = #__type_Editor
-        ProcedureReturn edit_AddItem( *this, RowList( *this ), item, @text, Len(Text) )
+        ProcedureReturn edit_AddItem1( *this, RowList( *this ), item, @text, Len(Text) )
       EndIf
       
       If *this\type = #__type_Tree Or 
@@ -12415,7 +12526,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         *open = Root( ) 
       EndIf
       
-      If OpenedWidget( ) <> *open 
+      If *open And OpenedWidget( ) <> *open 
         OpenedWidget( ) = *open
         OpenList( OpenedWidget( ) )
       EndIf
@@ -19938,16 +20049,16 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
         
         
-;         PushMapPosition(Root())
-;         ForEach Root()
-;           Debug Root()
-;           ChangeCurrentRoot( GadgetID( Root( )\canvas\gadget ) )
-;           ReDraw( Root( ))
-; ;           Root( )\state\repaint = #True
-; ;           PostEvent( #PB_Event_Gadget, Root( )\canvas\window, Root( )\canvas\gadget, #PB_EventType_Repaint, Root( ) )
-;       
-;         Next
-;         PopMapPosition(Root())
+        ;         PushMapPosition(Root())
+        ;         ForEach Root()
+        ;           Debug Root()
+        ;           ChangeCurrentRoot( GadgetID( Root( )\canvas\gadget ) )
+        ;           ReDraw( Root( ))
+        ; ;           Root( )\state\repaint = #True
+        ; ;           PostEvent( #PB_Event_Gadget, Root( )\canvas\window, Root( )\canvas\gadget, #PB_EventType_Repaint, Root( ) )
+        ;       
+        ;         Next
+        ;         PopMapPosition(Root())
         
         Repeat 
           Select WaitWindowEvent( waittime )
@@ -20018,7 +20129,320 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile ;= 100
+  
+  Uselib(widget)
+  UsePNGImageDecoder()
+  Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
+  
+  Define *new
+  ; toolbar buttons
+  Enumeration 
+    #_tb_group_left = 3
+    #_tb_group_right
+    #_tb_group_top
+    #_tb_group_bottom
+    #_tb_group_width
+    #_tb_group_height
+    
+    #_tb_align_left
+    #_tb_align_right
+    #_tb_align_top
+    #_tb_align_bottom
+    #_tb_align_center
+    
+    #_tb_widget_paste
+    #_tb_widget_delete
+    #_tb_widget_copy
+    #_tb_widget_cut
+  EndEnumeration
+  
+  Macro widget_copy()
+    ClearList(*copy())
+    
+    If Transform()\widget\_a_transform = 1
+      AddElement(*copy()) 
+      *copy.allocate(group, ())
+      *copy()\widget = Transform()\widget
+    Else
+      ;       ForEach Transform()\group()
+      ;         AddElement(*copy()) 
+      ;         *copy.allocate(group, ())
+      ;         *copy()\widget = Transform()\group()\widget
+      ;       Next
+      
+      CopyList(Transform()\group(), *copy())
+      
+    EndIf
+    
+    Transform()\id[0]\x = Transform()\grid\size
+    Transform()\id[0]\y = Transform()\grid\size
+  EndMacro
+  
+  Macro widget_delete()
+    If Transform()\widget\_a_transform = 1
+      ;  transform = Transform()\widget\parent\widget
+      
+      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
+      Free(Transform()\widget)
+    Else
+      ;  transform = Transform()\widget
+      
+      ForEach Transform()\group()
+        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
+        Free(Transform()\group()\widget)
+        DeleteElement(Transform()\group())
+      Next
+      
+      ClearList(Transform()\group())
+    EndIf
+    
+    ; a_set(transform)
+  EndMacro
+  
+  Macro widget_paste()
+    If ListSize(*copy())
+      ForEach *copy()
+        ;         widget_add(*copy()\widget\parent\widget, 
+        ;                        *copy()\widget\class, 
+        ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\widget\x[#__c_inner]),
+        ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\widget\y[#__c_inner]), 
+        ;                        *copy()\widget\width[#__c_frame],
+        ;                        *copy()\widget\height[#__c_frame])
+      Next
+      
+      Transform()\id[0]\x + Transform()\grid\size
+      Transform()\id[0]\y + Transform()\grid\size
+      
+      ClearList(Transform()\group())
+      CopyList(*copy(), Transform()\group())
+    EndIf
+    
+    ForEach Transform()\group()
+      Debug " ggg "+Transform()\group()\widget
+    Next
+    
+    ;a_update(Transform()\widget)
+  EndMacro
+  
+  Procedure toolbar_events()
+    Protected *this._s_widget
+    Protected e_type = WidgetEventType( )
+    Protected e_item ;= this()\item
+    Protected e_widget = EventWidget( )
+    
+    Select e_type
+      Case #PB_EventType_LeftClick
+        If e_widget = id_elements_tree
+          Debug "click"
+          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
+        EndIf
+        
+        If getclass(e_widget) = "ToolBar"
+          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
+          Static NewList *copy._s_group()
+          
+          
+          Select toolbarbutton
+            Case 1
+              If Getstate(e_widget)  
+                ; group
+                group_select = e_widget
+                ; SetAtributte(e_widget, #PB_Button_PressedImage)
+              Else
+                ; un group
+                group_select = 0
+              EndIf
+              
+              ForEach Transform()\group()
+                Debug Transform()\group()\widget\x
+                
+              Next
+              
+              
+            Case #_tb_widget_copy
+              widget_copy()
+              
+            Case #_tb_widget_cut
+              widget_copy()
+              widget_delete()
+              
+            Case #_tb_widget_paste
+              widget_paste()
+              
+            Case #_tb_widget_delete
+              If Transform()\widget\_a_transform = 1
+                transform = Transform()\widget\parent\widget
+              Else
+                transform = Transform()\widget
+              EndIf
+              
+              widget_delete()
+              
+              a_set(transform)
+              
+            Case #_tb_group_left,
+                 #_tb_group_right, 
+                 #_tb_group_top, 
+                 #_tb_group_bottom, 
+                 #_tb_group_width, 
+                 #_tb_group_height
+              
+              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
+              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
+              
+              ForEach Transform()\group()
+                Select toolbarbutton
+                  Case #_tb_group_left ; left
+                                       ;Transform()\id[0]\x = 0
+                    Transform()\id[0]\width = 0
+                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_right ; right
+                    Transform()\id[0]\x = 0
+                    Transform()\id[0]\width = 0
+                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_top ; top
+                                      ;Transform()\id[0]\y = 0
+                    Transform()\id[0]\height = 0
+                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_bottom ; bottom
+                    Transform()\id[0]\y = 0
+                    Transform()\id[0]\height = 0
+                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_width ; stretch horizontal
+                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
+                    
+                  Case #_tb_group_height ; stretch vertical
+                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
+                    
+                EndSelect
+              Next
+              
+              a_update(Transform()\widget)
+              
+              ;Redraw(root())
+          EndSelect
+        EndIf
+        
+    EndSelect
+  EndProcedure
+  
+  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
+    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
+    ; #PB_ToolBar_Toggle: the button will act as toggle button
+    
+    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
+    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
+    ;widget()\color = widget()\_parent\color
+    ;widget()\text\padding\x = 0
+    widget()\class = "ToolBar"
+    widget()\data = _button_
+    ;SetData(widget(), _button_)
+    Bind(widget(), @toolbar_events())
+  EndMacro
+  
+  Macro Separator()
+    Text(2+widget()\x+widget()\width, 2,1,30,"")
+    Button(widget()\x+widget()\width, 2+4,1,24,"")
+    SetData(widget(), - MacroExpandedCount)
+    Text(widget()\x+widget()\width, 2,1,30,"")
+  EndMacro
+  
+  
+  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
+  toolbar_design = Container(0,0,600,40) 
+  ;SetAlignmentFlag(widget(), #__align_top)
+  ;ToolBar(toolbar, window, flags)
+  
+  group_select = ToolBarButton(1, - 1, #__button_Toggle)
+  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
+  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+  
+  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
+  Separator()
+  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
+  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
+  Separator()
+  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
+  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
+  Separator()
+  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
+  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
+  
+  Separator()
+  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
+  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
+  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
+  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
+  Separator()
+  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
+  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
+  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
+  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
+  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
+  CloseList()
+  
+  
+  ;Container(0,40,600,600);, #__flag_autosize) 
+  ;SetAlignmentFlag(widget(), #__align_full) 
+  mdi(0,40,600,600, #__mdi_editable)
+  ; a_init(widget()) 
+  
+  
+  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
+  SetColor(widget(), #__color_back, $C0AED8F2)
+  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+  ; ; container(30,30,450-2,450-2)
+  ;;ScrollArea(30,30,450-2,450-2, 0,0)
+  ScrollArea(30,30,450-2,450-2, 250,750, transform()\grid\size)
+  SetColor(widget(), #__color_back, $C0F2AEDA)
+  
+  Panel(30,30,400,400)
+  SetColor(widget(), #__color_back, $C0AEF2D5)
+  AddItem(widget(), -1, "item-1")
+  ;container(30,30,400,400)
+  ComboBox(120,160,115,50)
+  AddItem(widget(), -1, "combo1")
+  SetState(widget(), 0)
+  
+  ;Button(120,160,115,50,"butt1")
+  AddItem(widget()\parent\widget, -1, "item-2")
+  Button(150,180,115,50,"butt2")
+  Button(180,200,115,50,"butt3")
+  Button(120,240,170,40,"butt4")
+  closelist()
+  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
+  closelist()
+  
+  bind(-1,-1)
+  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  
+  DataSection   
+    ; include images
+    ;;IncludePath #path + "ide/include/images" ; macos good windows bad
+    IncludePath #path + "/ide/include/images"
+    
+    widget_delete:    : IncludeBinary "delete1.png"
+    widget_paste:     : IncludeBinary "paste.png"
+    widget_copy:      : IncludeBinary "copy.png"
+    widget_cut:       : IncludeBinary "cut.png"
+    
+    group:            : IncludeBinary "group/group.png"
+    group_un:         : IncludeBinary "group/group_un.png"
+    group_top:        : IncludeBinary "group/group_top.png"
+    group_left:       : IncludeBinary "group/group_left.png"
+    group_right:      : IncludeBinary "group/group_right.png"
+    group_bottom:     : IncludeBinary "group/group_bottom.png"
+    group_width:      : IncludeBinary "group/group_width.png"
+    group_height:     : IncludeBinary "group/group_height.png"
+  EndDataSection
+  
+CompilerEndIf
+CompilerIf #PB_Compiler_IsMainFile =99
   
   EnableExplicit
   UseLIB(widget)
@@ -20353,5 +20777,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = AD9--8--------TA+jPeAAAAAAAAwAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAA5fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAgAAEIIAAAAAAAAODAAAAAAAAAAAAAAAAAAAAAAAAAcOAAAAAAAAAAAwHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA5-------BAAAAAAAAAgAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAIAAGAAYDAAAAA9--A+
 ; EnableXP

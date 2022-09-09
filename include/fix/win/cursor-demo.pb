@@ -216,6 +216,16 @@ Procedure underGadget(NSWindow)
   ProcedureReturn - 1
 EndProcedure
 
+Procedure.i createCursor( ImageID.i, x.l = 0, y.l = 0 )
+  Protected iCursor.ICONINFO
+  iCursor\fIcon = #False
+  iCursor\xHotspot = 1
+  iCursor\yHotspot = 1
+  iCursor\hbmColor = ImageID
+  iCursor\hbmMask = ImageID
+  ProcedureReturn CreateIconIndirect_(iCursor)
+EndProcedure
+
 Procedure setCursor( gadget, cursor, ImageID.i=0 )
   If IsGadget(gadget)
     Protected GadgetID = GadgetID(gadget)
@@ -225,22 +235,16 @@ Procedure setCursor( gadget, cursor, ImageID.i=0 )
     
     If cursor >= 0
       Select cursor
-        Case #PB_Cursor_Default : *cursor\cursor = LoadCursor_(0,#IDC_ARROW)
-        Case #PB_Cursor_IBeam : *cursor\cursor = LoadCursor_(0,#IDC_IBEAM)
-        Case #PB_Cursor_Cross : *cursor\cursor = LoadCursor_(0,#IDC_CROSS)
-        Case #PB_Cursor_Hand : *cursor\cursor = LoadCursor_(0,#IDC_HAND)
+        Case #PB_Cursor_Default   : *cursor\cursor = LoadCursor_(0,#IDC_ARROW)
+        Case #PB_Cursor_IBeam     : *cursor\cursor = LoadCursor_(0,#IDC_IBEAM)
+        Case #PB_Cursor_Cross     : *cursor\cursor = LoadCursor_(0,#IDC_CROSS)
+        Case #PB_Cursor_Hand      : *cursor\cursor = LoadCursor_(0,#IDC_HAND)
+        Case #PB_Cursor_UpDown    : *cursor\cursor = LoadCursor_(0,#IDC_SIZEWE)
         Case #PB_Cursor_LeftRight : *cursor\cursor = LoadCursor_(0,#IDC_SIZENS)
-        Case #PB_Cursor_UpDown : *cursor\cursor = LoadCursor_(0,#IDC_SIZEWE)
       EndSelect 
     Else
       If ImageID
-        Protected iCursor.ICONINFO
-        iCursor\fIcon = #False
-        iCursor\xHotspot = 1
-        iCursor\yHotspot = 1
-        iCursor\hbmColor = ImageID
-        iCursor\hbmMask = ImageID
-        *cursor\cursor = CreateIconIndirect_(iCursor)
+        *cursor\cursor = createCursor(ImageID)
       EndIf
     EndIf
     
@@ -310,7 +314,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
         
         PressedGadget() =- 1
         
-      Case #WM_MOUSEMOVE
+;       Case #WM_MOUSEMOVE
 ;         If PressedGadget() =- 1
 ;           gadget = underGadget(hWnd)
 ;           Debug gadget
@@ -343,7 +347,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
 ;         ; result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
    
   Case #WM_SETCURSOR
-    Debug " -  #WM_SETCURSOR "+#WM_SETCURSOR
+    Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
 ;       If IsGadget(EnteredGadget( ))
 ;         If GadgetType( EnteredGadget( )) = #PB_GadgetType_Splitter
 ;           result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
@@ -404,42 +408,10 @@ EndProcedure
 
 ;-
 Procedure WinCallback(WindowID, Message, WParam, LParam)
-  Static icursor
   Protected Result = #PB_ProcessPureBasicEvents
   
   Select Message
-    Case #WM_NCHITTEST ;= 132
-    Case #WM_NCMOUSEMOVE ; = 160
-      ;Result = Proc(WindowID, #WM_MOUSEMOVE, WParam, LParam)
-      icursor = 1
-      
-    Case #WM_NOTIFY        ; these events are send as notification messages
-      Protected *pnmh.NMHDR = lParam  ; lParam points to a structure with more info
-      
-    Case #WM_MOUSEMOVE
-      icursor = 0
-      
-      ; ok, let's extract the x and y coordinates from the lParam argument.
-      ; the x is in the lower 16bit of the LONG, so we just extraxct them with
-      ; binary and operator. 
-      
-      Protected X = lParam & $FFFF
-      
-      ; the y is in the higher 16bits, so we just shift the bits in the lParam
-      ; right by 16 bits, and we have the value.
-      Protected Y = lParam >> 16
-      
-      
-      Debug "move (API, callback)"
-      ; 		Case #WM_LBUTTONDOWN
-      ; 			Debug "down (API, callback)"
-      ; 		Case #WM_LBUTTONUP
-      ; 		  Debug "up   (API, callback)"
-      ; 		 
-      ;Result = Proc(WindowID, Message, WParam, LParam)
-      
     Case #WM_SETCURSOR ; = 32
-      Debug "#WM_SETCURSOR " + icursor
       Proc(WindowID, Message, WParam, LParam)
       
   EndSelect
@@ -716,8 +688,6 @@ Repeat
       EndIf
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 440
-; FirstLine = 427
-; Folding = -------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ------X------
 ; EnableXP

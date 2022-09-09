@@ -8,8 +8,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;{ 
     ;--     POINT
     Structure _s_POINT
-      y.l
-      x.l
+      y.l[3]
+      x.l[3]
     EndStructure
     ;--     SIZE
     Structure _s_SIZE

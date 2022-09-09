@@ -85,6 +85,10 @@ CompilerEndIf
 
 IncludePath #path
 
+CompilerIf Not Defined( constants, #PB_Module )
+  XIncludeFile "include/constants.pbi"
+CompilerEndIf
+
 CompilerIf Not Defined( fix, #PB_Module )
   ; fix all pb bug's
   XIncludeFile "include/fix.pbi"
@@ -92,10 +96,6 @@ CompilerEndIf
 
 CompilerIf Not Defined( func, #PB_Module )
   XIncludeFile "include/func.pbi"
-CompilerEndIf
-
-CompilerIf Not Defined( constants, #PB_Module )
-  XIncludeFile "include/constants.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined( structures, #PB_Module )

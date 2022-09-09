@@ -1,8 +1,42 @@
 ﻿; IncludePath "../../../": XIncludeFile "-widgets-editor.pbi
-;XIncludeFile "../../../-widgets-edit.pbi"
-XIncludeFile "../../../-widgets.pbi"
+XIncludeFile "../../../-widgets-edit.pbi"
+;XIncludeFile "../../../-widgets.pbi"
+;XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../widget-events.pbi"
  ;XIncludeFile "editor(code).pb"
  ;XIncludeFile "empty.pb"
+
+
+
+; Исчерпан лимит в x32 (4294967296)
+;  - -  Canvas repaint - -  
+; get thumb size - ?????
+; #PB_Event_Repaint
+; 2303
+; 2559
+; 2815
+; 3071
+; 3327
+; 3583
+; 3839
+; 4095
+; 1428 - add widget items time count - 5001
+; #PB_Event_Repaint
+; 2303
+; 2559
+; 2815
+; 3071
+; 3327
+; 3583
+; 3839
+; 4095
+; 6278 - add gadget items time count - 5001
+; EventDeactive( )
+; get thumb size - ?????
+; #PB_Event_Repaint
+
+
+
 UseLib( Widget )
 
 CompilerIf #PB_Compiler_IsMainFile
