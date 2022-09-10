@@ -684,7 +684,7 @@
     EndIf
     
     
-    ;- _c_event_type
+    ;- _c_event
     Enumeration #PB_Event_FirstCustomValue
       #PB_Event_Widget
       
@@ -746,11 +746,13 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
+      
       #PB_EventType_MouseStatus ; temp
       #PB_EventType_StatusChangeEdit
       ;       #PB_EventType_TimerStart
       ;       #PB_EventType_TimerStop
      ;;;; #PB_EventType_ColorChange
+      #PB_EventType_CursorUpdate
       #PB_EventType_CursorChange
     EndEnumeration
     
