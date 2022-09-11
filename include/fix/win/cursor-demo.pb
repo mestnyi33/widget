@@ -407,13 +407,17 @@ EndProcedure
 
 
 ;-
-Procedure WinCallback(WindowID, Message, WParam, LParam)
+Procedure WinCallback(hWnd, uMsg, wParam, lParam)
   Protected Result = #PB_ProcessPureBasicEvents
   
-  Select Message
+  Select hWnd
     Case #WM_SETCURSOR ; = 32
-      Proc(WindowID, Message, WParam, LParam)
-      
+;       If Left(Get::ClassName(hWnd), 6) = "Window"
+          Proc(hWnd, uMsg, wParam, lParam)
+;           ProcedureReturn 1
+;         Else
+;         EndIf
+        
   EndSelect
   
   ProcedureReturn Result  
@@ -643,13 +647,13 @@ g2=HyperLinkGadget(-1,0,0,0,0,"HyperLinkGadget", 0)
 SplitterGadget(2, 10, 10, 200, 200, g1,g2)
 BindEvent( #PB_Event_SizeWindow, @Resize_2(), 2 )
 
-If setCursor(g1,#PB_Cursor_IBeam)
-  Debug "setCursorIBeam"           
-EndIf       
-
-If setCursor(g2,#PB_Cursor_IBeam)
-  Debug "setCursorIBeam"           
-EndIf       
+; If setCursor(g1,#PB_Cursor_IBeam)
+;   Debug "setCursorIBeam"           
+; EndIf       
+; 
+; If setCursor(g2,#PB_Cursor_IBeam)
+;   Debug "setCursorIBeam"           
+; EndIf       
 
 ClipGadgets( UseGadgetList(0) )
 
@@ -665,9 +669,9 @@ If setCursor(g1,#PB_Cursor_IBeam)
   Debug "setCursorIBeam"           
 EndIf       
 
-If setCursor(g2,#PB_Cursor_IBeam)
-  Debug "setCursorIBeam"           
-EndIf       
+; If setCursor(g2,#PB_Cursor_IBeam)
+;   Debug "setCursorIBeam"           
+; EndIf       
 
 ClipGadgets( UseGadgetList(0) )
 
@@ -688,6 +692,8 @@ Repeat
       EndIf
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 418
+; FirstLine = 378
 ; Folding = ------X------
 ; EnableXP
