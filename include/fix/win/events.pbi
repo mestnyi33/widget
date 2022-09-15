@@ -171,6 +171,7 @@ DeclareModule Cursor
 EndDeclareModule
 Module Cursor 
   Procedure   freeCursor(hCursor.i)
+    DestroyCursor_(hCursor)
   EndProcedure
   
   Procedure   isHideCursor()
@@ -178,9 +179,7 @@ Module Cursor
   EndProcedure
   
   Procedure   hideCursor(state.b)
-    If state
-    Else
-    EndIf
+    ProcedureReturn ShowCursor_(state)
   EndProcedure
   
   Procedure   getCurrentCursor()
@@ -242,6 +241,7 @@ Module Cursor
         If *cursor\change 
           Debug "u+"
           SetCursor_( *cursor\hcursor )
+          SetClassLong_(GadgetID(*cursor\gadget), #GCL_HCURSOR, *cursor\hcursor)
         Else
           Debug "u-"
           SetCursor_(LoadCursor_(0,#IDC_ARROW)) 
@@ -844,8 +844,12 @@ Module events
 ;          result = CallWindowProc_(OldGadgetsProc, hWnd, uMsg, wParam, lParam)
         
       Case #WM_SETCURSOR
+        If hWnd <> wParam
+          ProcedureReturn 0
+        EndIf
+        
         Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
-           If PressedGadget() =- 1
+        If PressedGadget() =- 1
           gadget = underGadget(hWnd)
           Debug gadget
           ;
@@ -958,6 +962,17 @@ Module events
 ; ;     }
 ; ;     Return 1;
   EndProcedure
+  
+;   Global prevWndProc;
+;   Procedure mySubClassProc(hWnd, uMsg, wParam, lParam, uIdSubclass, dwRefData)
+;     ProcedureReturn DefSubclassProc(hWnd, uMsg, wParam, lParam);
+;   EndProcedure
+;   Procedure myNewWndProc( hwnd, UINT uMsg, wParam, lParam)
+;     ProcedureReturn CallWindowProc(prevWndProc, hwnd, uMsg, wParam, lParam);
+;   EndProcedure
+;   SetWindowSubclass_(hwnd, @mySubClassProc(), 1, 0);
+;   prevWndProc = SetWindowLongPtr(hwnd, #GWL_WNDPROC, @myNewWndProc());
+  
   Procedure   SetCallBack(*callback)
     *setcallback = *callback
     
@@ -1158,8 +1173,6 @@ CompilerIf #PB_Compiler_IsMainFile
     event = WaitWindowEvent()
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 338
-; FirstLine = 331
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---------------Xv8---
 ; EnableXP

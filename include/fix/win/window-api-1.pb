@@ -22,7 +22,25 @@ wc\hbrBackground = CreateSolidBrush_(GetSysColor_(#COLOR_BTNFACE))
 wc\hCursor = LoadCursor_(0, #IDC_ARROW)
 wc\lpfnWndProc  = @WindowCallback() 
 wc\lpszClassName  = @WindowClass 
+
+
+; wc\style = #CS_HREDRAW | #CS_VREDRAW
+; wc\lpfnWndProc = @WindowCallback()
+; wc\cbClsExtra = 0
+; wc\cbWndExtra = 0
+; wc\hInstance = GetModuleHandle_(#Null)
+; wc\hIcon = LoadIcon_(#Null, #IDI_APPLICATION)
+; wc\hCursor = LoadCursor_(#Null, #IDC_ARROW)
+; wc\hbrBackground = GetStockObject_(#WHITE_BRUSH)
+; wc\lpszMenuName = #Null
+; wc\lpszClassName = @Classname
+
+; WNDCLASSEX wc = { SizeOf(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L,
+;                       GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
+;                       "Tutorial", NULL };
+ 	
 RegisterClassEx_(@wc) 
+
 
 hWnd1  = CreateWindow_( WindowClass, "Window_1", #Style1, 200, 100, 320+6, 320+32, 0, 0, 0, 0) 
 UseGadgetList(hWnd1)
@@ -80,7 +98,6 @@ While GetMessage_(msg.MSG, #Null, 0, 0 )
   TranslateMessage_(msg) 
   DispatchMessage_(msg) 
 Wend 
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 5
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

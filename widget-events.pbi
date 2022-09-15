@@ -19511,6 +19511,18 @@ _this_\type = #PB_GadgetType_ExplorerList )
           SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
           SetWindowPos_( g, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
         CompilerEndIf
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          ; CocoaMessage(0, g, "setBoxType:", #NSBoxCustom)
+          ; CocoaMessage(0, g, "setBorderType:", #NSLineBorder)
+          ; CocoaMessage(0, g, "setBorderType:", #NSGrooveBorder)
+          ; CocoaMessage(0, g, "setBorderType:", #NSBezelBorder)
+          ; CocoaMessage(0, g, "setBorderType:", #NSNoBorder)
+          
+          
+          ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
+          ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
+ 
+        CompilerEndIf
       EndIf
       
       ;       CompilerIf #PB_Compiler_OS = #PB_OS_Linux Or 

@@ -1,6 +1,6 @@
 ﻿;XIncludeFile "../../../widgets.pbi" 
 ;XIncludeFile "../../../CE.pb" 
-XIncludeFile "../../../widget-events.pb" 
+XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5

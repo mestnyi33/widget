@@ -33,8 +33,12 @@ EndModule
 DeclareModule ID
   Declare.i Window(WindowID.i)
   Declare.i Gadget(GadgetID.i)
-  Declare.i IsWindowID(handle.i)
-  Declare.i GetWindowID(handle.i)
+  Declare.i IsWindowID(WindowID.i)
+  Declare.i GetWindowID(GadgetID.i)
+  Macro GetWindow(Gadget)
+    ID::Window(ID::GetWindowID(GadgetID(gadget)))
+    ;PB_Window_GetID(CocoaMessage(0, GadgetID(gadget), "window"))
+  EndMacro
 EndDeclareModule
 Module ID
   ;   XIncludeFile "../import.pbi"
@@ -43,22 +47,19 @@ Module ID
   EndImport
   
   Procedure.s ClassName(handle.i)
-    Protected Result
+    Protected Result 
     CocoaMessage(@Result, CocoaMessage(0, handle, "className"), "UTF8String")
-    
     If Result
       ProcedureReturn PeekS(Result, - 1, #PB_UTF8)
     EndIf
   EndProcedure
   
-  Procedure.i GetWindowID(handle.i) ; Return the handle of the parent window from the handle
-    ProcedureReturn CocoaMessage(0, handle, "window")
+  Procedure.i GetWindowID(GadgetID.i) ; Return the handle of the parent window from the GadgetID
+    ProcedureReturn CocoaMessage(0, GadgetID, "window")
   EndProcedure
   
-  Procedure.i IsWindowID(handle.i)
-    If ClassName(handle) = "PBWindow"
-      ProcedureReturn 1
-    EndIf
+  Procedure.i IsWindowID(WindowID.i)
+    ProcedureReturn Bool(ClassName(WindowID) = "PBWindow")
   EndProcedure
   
   Procedure.i Window(WindowID.i) ; Return the id of the window from the window handle
@@ -75,23 +76,35 @@ DeclareModule Mouse
   Declare.i Gadget(WindowID)
 EndDeclareModule
 Module Mouse
+;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
+;     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
+;   EndMacro
+  
+;   Procedure CocoaNSApp()
+;     ProcedureReturn CocoaMessage(0, 0, "NSApplication sharedApplication")
+;   EndProcedure
+;   
+;   Procedure CocoaWindowNumber(CocoaNSWindow)
+;     ProcedureReturn CocoaMessage(0, CocoaNSWindow, "windowNumber")
+;   EndProcedure
+;   
+;   Procedure CocoaNSWindow(CocoaNSApp, CocoaWindowNumber)
+;     ProcedureReturn CocoaMessage(0, CocoaNSApp, "windowWithWindowNumber:", CocoaWindowNumber)
+;   EndProcedure
+;   
   Procedure Window()
-    Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
+    Protected.i NSApp, WindowID, WindowNumber, Point.CGPoint
     
     ; get-WindowNumber
     CocoaMessage(@Point, 0, "NSEvent mouseLocation")
     WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
     
-    ; get-NSWindow
+    ; get-NS-WindowID
     NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
-    NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+    WindowID = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
     
-    ProcedureReturn NSWindow
+    ProcedureReturn WindowID
   EndProcedure
-  
-  Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
-    CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
-  EndMacro
   
   Procedure Gadget(WindowID)
     Protected.i handle, superview, ContentView, Point.CGPoint
@@ -101,7 +114,7 @@ Module Mouse
       CocoaMessage(@Point,  WindowID , "mouseLocationOutsideOfEventStream")
       
       ;       ;func isMousePoint(_ point: NSPoint, in rect: NSRect) -> Bool
-      ;       Debug GetCocoa(ContentView, "isMousePoint:@", @Point) 
+      ;       Debug GetCocoa(ContentView, "isMousePoint", Point) 
       
       ; func hitTest(_ point: NSPoint) -> NSView? ; Point.NSPoint
       handle = CocoaMessage(0, ContentView, "hitTest:@", @Point) ; hitTest(_:) 
@@ -136,8 +149,8 @@ Module Mouse
             
           Case "NSScroller"                                 ;
                                                             ; PBScrollView
-            handle = CocoaMessage(0, handle, "superview") ; NSScrollView
-            
+            handle = CocoaMessage(0, handle, "superview")   ; NSScrollView
+                                                            ;
             Select Get::ClassName(handle) 
               Case "WebDynamicScrollBarsView"
                 handle = CocoaMessage(0, handle, "superview") ; WebFrameView
@@ -175,9 +188,9 @@ Module Mouse
             
           Case "PB_NSFlippedView"                           ;
                                                             ; container
-            handle = CocoaMessage(0, handle, "superview") ; NSClipView
+            handle = CocoaMessage(0, handle, "superview")   ; NSClipView
                                                             ; scrollarea
-            If Get::ClassName(handle) = "NSClipView"
+            If Get::ClassName(handle) = "NSClipView"        ;
               handle = CocoaMessage(0, handle, "superview") ; PBScrollView
             EndIf
             ;           Default
@@ -357,18 +370,18 @@ Module Cursor
     Protected gadget = *cursor\gadget
     Protected window = *cursor\window
     
-;     PostEvent(#PB_Event_FirstCustomValue, window, gadget)
-;     BindEvent(#PB_Event_FirstCustomValue, @UpdateCursor(), window, gadget)
+    ;     PostEvent(#PB_Event_FirstCustomValue, window, gadget)
+    ;     BindEvent(#PB_Event_FirstCustomValue, @UpdateCursor(), window, gadget)
     
-        If *cursor\change
-          Debug "u+"
-          CocoaMessage(0, WindowID(window), "disableCursorRects")
-          CocoaMessage(0, *cursor\hcursor, "set") 
-        Else
-          Debug "u-"
-          CocoaMessage(0, WindowID(window), "enableCursorRects")
-          CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
-        EndIf
+    If *cursor\change
+      Debug "u+"
+      CocoaMessage(0, WindowID(window), "disableCursorRects")
+      CocoaMessage(0, *cursor\hcursor, "set") 
+    Else
+      Debug "u-"
+      CocoaMessage(0, WindowID(window), "enableCursorRects")
+      CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
+    EndIf
   EndProcedure
   
   Procedure setCursor(handle.i, cursor.i, ImageID.i=0)
@@ -485,12 +498,12 @@ DeclareModule events
   Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
     ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
     DesktopMouseX() - GadgetX(_canvas_, _mode_)
-    ; WindowMouseX(window) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
+    ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
   EndMacro
   Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
     ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
     DesktopMouseY() - GadgetY(_canvas_, _mode_)
-    ; WindowMouseY(window) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
+    ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
   EndMacro
   
   Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
@@ -519,8 +532,8 @@ DeclareModule events
   FocusedGadget() =- 1 
   
   Declare.i WaitEvent(event.i, second.i=0)
-  Declare DrawCanvasFrame(gadget, color)
-  Declare DrawCanvasBack(gadget, color)
+;   Declare DrawCanvasFrame(gadget, color)
+;   Declare DrawCanvasBack(gadget, color)
   Declare SetCallBack(*callback)
 EndDeclareModule
 Module events
@@ -570,45 +583,22 @@ Module events
     CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
   EndImport
   
-  ;       ;
-  ;       ; callback function
-  ;       ;
-  Procedure EventWindowActivate()
-    Protected Point.NSPoint
-    event_window = EventWindow()
-    Protected NSWindow = WindowID(event_window) 
-    
-    If NSWindow
-      Protected EnteredID = Mouse::Gadget(NSWindow)
-      
-      If EnteredID
-        event_gadget = ID::Gadget(EnteredID)
-        
-        If IsGadget(event_gadget)
-          PostEvent(#PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown)
-          SetActiveGadget(event_gadget)
-        EndIf
-      EndIf
-    EndIf
-  EndProcedure
-  
-  ;       Procedure WindowNumber(WindowID)
-  ;         ProcedureReturn CocoaMessage(0, WindowID, "windowNumber")
-  ;       EndProcedure
-  ;       
-  ;       Procedure NSWindow(NSApp, WindowNumber)
-  ;         ProcedureReturn CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
-  ;       EndProcedure
-  
   ProcedureC  eventTapFunction(proxy, eType, event, refcon)
     Protected Point.CGPoint
     Protected *cursor.cursor::_s_cursor = #Null
     Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+    Protected NSenter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     
     If refcon And NSEvent
       Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
       Protected MouseMove, MouseX, MouseY, MoveStart, LeftDoubleClick, EnteredID, gadget =- 1
       
+;       If eType = #NSMouseEntered
+;         Debug "en "+proxy+" "+CocoaMessage(0, CocoaMessage(0, NSEvent, "window"), "contentView") +" "+CocoaMessage(0, NSEvent, "windowNumber")
+;       EndIf
+;       If eType = #NSMouseExited
+;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
+;       EndIf
       If eType = #NSLeftMouseDown
         MouseDrag = 1
       ElseIf eType = #NSLeftMouseUp
@@ -738,7 +728,7 @@ Module events
       ;
       If eType = #NSLeftMouseDown
         PressedGadget() = EnteredGadget() ; EventGadget()
-                                            ;Debug CocoaMessage(0, Mouse::Window(), "focusView")
+                                          ;Debug CocoaMessage(0, Mouse::Window(), "focusView")
         
         If PressedGadget() >= 0
           If FocusedGadget() =- 1
@@ -852,6 +842,50 @@ Module events
     
   EndProcedure
   
+  Procedure.i WaitEvent(event.i, second.i=0)
+    If *setcallback And event = #PB_Event_Gadget
+      CallCFunctionFast(*setcallback, EventGadget(), EventType())
+    EndIf
+    
+    ProcedureReturn event
+  EndProcedure
+  
+  Procedure   SetCallBack(*callback)
+    *setcallback = *callback
+    
+    Protected mask, EventTap
+    mask = #NSMouseMovedMask | #NSScrollWheelMask
+    mask | #NSMouseEnteredMask | #NSMouseExitedMask 
+    mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask 
+    mask | #NSRightMouseDownMask | #NSRightMouseDownMask 
+    mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask   ;| #NSCursorUpdateMask
+    
+    #cghidEventTap = 0              ; Указывает, что отвод события размещается в точке, где системные события HID поступают на оконный сервер.
+    #cgSessionEventTap = 1          ; Указывает, что отвод события размещается в точке, где события системы HID и удаленного управления входят в сеанс входа в систему.
+    #cgAnnotatedSessionEventTap = 2 ; Указывает, что отвод события размещается в точке, где события сеанса были аннотированы для передачи в приложение.
+    
+    #headInsertEventTap = 0         ; Указывает, что новое касание события должно быть вставлено перед любым ранее существовавшим касанием события в том же месте.
+    #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
+    
+    
+    ; GetCurrentProcess(@psn.q): eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction(), *callback)
+    eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
+    
+    If eventTap
+      CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
+    EndIf
+    
+  EndProcedure
+EndModule
+
+;-
+CompilerIf #PB_Compiler_IsMainFile
+  UseModule constants
+  ;UseModule events
+  
+  Define event
+  Define g1,g2
+  
   Procedure   DrawCanvasBack(gadget, color)
     If GadgetType(gadget) = #PB_GadgetType_Canvas
       StartDrawing(CanvasOutput(gadget))
@@ -877,57 +911,6 @@ Module events
       StopDrawing()
     EndIf
   EndProcedure
-  
-  Procedure.i WaitEvent(event.i, second.i=0)
-    Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY
-    Protected MouseMove, MouseX, MouseY, MoveStart
-    Protected EnteredID, Canvas =- 1, EventType =- 1
-    
-    If MouseDrag Or Event() = #PB_Event_Gadget
-      ;             If EventType = #PB_EventType_Repaint
-      CallCFunctionFast(*setcallback, EventGadget(), EventType())
-      ;             EndIf
-      
-    EndIf
-    
-    ProcedureReturn event
-  EndProcedure
-  
-  Procedure   SetCallBack(*callback)
-    *setcallback = *callback
-    
-    Protected mask, EventTap
-    mask = #NSMouseMovedMask | #NSScrollWheelMask
-    mask | #NSMouseEnteredMask | #NSMouseExitedMask 
-    mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask 
-    mask | #NSRightMouseDownMask | #NSRightMouseDownMask 
-    mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask   ;| #NSCursorUpdateMask
-    
-    #cghidEventTap = 0              ; Указывает, что отвод события размещается в точке, где системные события HID поступают на оконный сервер.
-    #cgSessionEventTap = 1          ; Указывает, что отвод события размещается в точке, где события системы HID и удаленного управления входят в сеанс входа в систему.
-    #cgAnnotatedSessionEventTap = 2 ; Указывает, что отвод события размещается в точке, где события сеанса были аннотированы для передачи в приложение.
-    
-    #headInsertEventTap = 0         ; Указывает, что новое касание события должно быть вставлено перед любым ранее существовавшим касанием события в том же месте.
-    #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
-    
-    EventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
-    
-    ;         GetCurrentProcess(@psn.q)
-    ;         eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction(), *callback)
-    
-    If EventTap
-      CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", EventTap, "forMode:$", @"kCFRunLoopDefaultMode")
-    EndIf
-    
-  EndProcedure
-EndModule
-
-CompilerIf #PB_Compiler_IsMainFile
-  UseModule constants
-  ;UseModule events
-  
-  Define event
-  Define g1,g2
   
   Procedure Resize_2()
     Protected canvas = 2
@@ -955,7 +938,7 @@ CompilerIf #PB_Compiler_IsMainFile
         deltax = events::GadgetMouseX(eventobject, #PB_Gadget_WindowCoordinate)
         deltay = events::GadgetMouseY(eventobject, #PB_Gadget_WindowCoordinate)
         Debug ""+eventobject + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
-              
+        
       Case #PB_EventType_Drop
         dropx = events::GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
         dropy = events::GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
@@ -963,12 +946,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_Focus
         Debug ""+eventobject + " #PB_EventType_Focus " 
-        events::DrawCanvasBack(eventobject, $FFA7A4)
-        events::DrawCanvasFrame(eventobject, $2C70F5)
+        DrawCanvasBack(eventobject, $FFA7A4)
+        DrawCanvasFrame(eventobject, $2C70F5)
         
       Case #PB_EventType_LostFocus
         Debug ""+eventobject + " #PB_EventType_LostFocus " 
-        events::DrawCanvasBack(eventobject, $FFFFFF)
+        DrawCanvasBack(eventobject, $FFFFFF)
         
       Case #PB_EventType_LeftButtonDown
         Debug ""+eventobject + " #PB_EventType_LeftButtonDown " 
@@ -984,11 +967,11 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseEnter
         Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
-        events::DrawCanvasFrame(eventobject, $2C70F5)
-       
+        DrawCanvasFrame(eventobject, $2C70F5)
+        
       Case #PB_EventType_MouseLeave
         Debug ""+eventobject + " #PB_EventType_MouseLeave "
-        events::DrawCanvasFrame(eventobject, 0)
+        DrawCanvasFrame(eventobject, 0)
         
       Case #PB_EventType_Resize
         Debug ""+eventobject + " #PB_EventType_Resize " 
@@ -1021,6 +1004,7 @@ CompilerIf #PB_Compiler_IsMainFile
     OpenWindow_(window, x,y,width,height, title, flag)
   EndMacro
   
+  events::SetCallback(@EventHandler())
   ;/// first
   OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
   CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
@@ -1074,17 +1058,17 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(2, 10, 10, 200, 200, g1,g2)
   BindEvent(#PB_Event_SizeWindow, @Resize_2(), 2)
   
-;   If cursor::setCursor(GadgetID(g1),#PB_Cursor_IBeam)
-;     Debug "setCursorIBeam"           
-;   EndIf       
-;   
-;   If cursor::setCursor(GadgetID(g2),#PB_Cursor_Hand)
-;     Debug "setCursorHand"           
-;   EndIf       
-;   
-;   If cursor::setCursor(GadgetID(2),#PB_Cursor_UpDown)
-;     Debug "setCursorHand"           
-;   EndIf       
+  ;   If cursor::setCursor(GadgetID(g1),#PB_Cursor_IBeam)
+  ;     Debug "setCursorIBeam"           
+  ;   EndIf       
+  ;   
+  ;   If cursor::setCursor(GadgetID(g2),#PB_Cursor_Hand)
+  ;     Debug "setCursorHand"           
+  ;   EndIf       
+  ;   
+  ;   If cursor::setCursor(GadgetID(2),#PB_Cursor_UpDown)
+  ;     Debug "setCursorHand"           
+  ;   EndIf       
   
   
   
@@ -1099,18 +1083,18 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "setCursorIBeam"           
   EndIf       
   
-;   If cursor::setCursor(GadgetID(g2),#PB_Cursor_IBeam)
-;     Debug "setCursorIBeam"           
-;   EndIf       
+  ;   If cursor::setCursor(GadgetID(g2),#PB_Cursor_IBeam)
+  ;     Debug "setCursorIBeam"           
+  ;   EndIf       
   
   
   ;Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
-  events::SetCallback(@EventHandler())
+  ;;events::SetCallback(@EventHandler())
   
   Repeat 
     event = WaitWindowEvent()
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --f---------------f------
+; Folding = n2P9-----------------4---
 ; EnableXP
