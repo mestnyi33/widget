@@ -3,7 +3,7 @@
 ;class NSApplication : NSResponder
 ;class NSWindow : NSResponder
 ;class NSView : NSResponder
-
+; func indexOfTabViewItem(_ tabViewItem: NSTabViewItem) -> Int
 ;var currentEvent: NSEvent? { get }    currentEvent = CocoaMessage(0,NSEvent,"currentEvent")
 
 ;func sendEvent(_ event: NSEvent)
@@ -17,7 +17,7 @@
 ;var alphaValue: CGFloat { get set }       CocoaMessage(0, WindowID, "setAlphaValue:@", @alpha) ; alpha.CGFloat = 0.7
 ;var badgeLabel: String? { get set }       CocoaMessage(0, DockTile, "setBadgeLabel:$", @"Pure")
 ;var keyEquivalent: String { get set }     CocoaMessage(0, ButtonID, "setKeyEquivalent:$", @"b")
-
+;var view: NSView? { get set }
 ;func setDocumentEdited(_ dirtyFlag: Bool) ; CocoaMessage(0, WindowID, "setDocumentEdited:", #True)
 
 ; - (ObjectType)objectForKey:(KeyType)aKey;    

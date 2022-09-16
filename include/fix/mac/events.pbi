@@ -123,26 +123,9 @@ Module Mouse
       If handle
         Select Get::ClassName(handle)
           Case "NSStepper" 
-            CompilerIf #PB_Compiler_IsMainFile
-              ;handle = CocoaMessage(0, handle, "superclass") ; NSControl
-              
-              ; handle = CocoaMessage(0, handle, "nextResponder") ; PB_SpinView
-              ;handle = CocoaMessage(0, handle, "superview") ; PB_SpinView
-              
-              ;handle = CocoaMessage(0, handle, "superclass") ; NSView
-              
-              ;;handle = CocoaMessage(0, handle, "contentView") ; 
-              ;Debug  Get::ClassName(CocoaMessage(0, handle, "subviews"));
-              ;Debug  Get::ClassName(CocoaMessage(0, handle, "opaqueAncestor"));
-              ;Debug  Get::ClassName(CocoaMessage(0, handle, "enclosingScrollView"));
-              ;;Debug  Get::ClassName(CocoaMessage(0, handle, "superclass"));
-              ;;handle = CocoaMessage(0, handle, "opaqueAncestor") ; 
-              ;; handle = CocoaMessage(0, handle, "superview") ; PB_SpinView
-              
-              ; handle = CocoaMessage(0, handle, "NSTextView") ; PB_SpinView
-              ; handle = CocoaMessage(0, handle, "NSTextField") ; PB_SpinView
-              Debug  Get::ClassName(handle) 
-            CompilerEndIf
+            handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
+            handle = CocoaMessage(0, handle, "subviews")
+            handle = CocoaMessage(0, handle, "objectAtIndex:", 0)
             
           Case "NSTableHeaderView" 
             handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
@@ -1096,5 +1079,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = n2P9-----------------4---
+; Folding = n0v+-----------------8--
 ; EnableXP

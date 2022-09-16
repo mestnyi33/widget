@@ -44,21 +44,36 @@ Procedure GetUMGadget( NSWindow )
     If handle ; PBContainerView ; NSClipView ; NSTableHeaderView ; NSScroller ; NSStepper ; WebHTMLView ; NSTextField ; NSButton, NSView
               ; Debug  GetClassName( handle ) ; SCIContentView ; _NSRulerContentView
       Select GetClassName( handle )
-        Case "NSStepper" ; PB_NSTextField
-                         ; handle = CocoaMessage( 0, handle, "nextResponder" ) ; PB_SpinView
-          handle = CocoaMessage( 0, handle, "superview" ) ; PB_SpinView
-                                                          ; handle = CocoaMessage(0, handle, "superclass") ; NSView
-                                                          ;handle = CocoaMessage(0, handle, "contentView") ; 
-          
-          ;handle = CocoaMessage( 0, handle, "NSTextView" ) ; PB_SpinView
-          Debug  GetClassName( handle ) 
-          ;  handle = 0
-          
+        Case "NSStepper" 
+          handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
+          handle = CocoaMessage(0, handle, "subviews")
+          handle = CocoaMessage(0, handle, "objectAtIndex:", 0)
+          CompilerIf #PB_Compiler_IsMainFile
+              ;handle = CocoaMessage(0, handle, "superclass") ; NSControl
+              
+              ; handle = CocoaMessage(0, handle, "nextResponder") ; PB_SpinView
+              ;handle = CocoaMessage(0, handle, "superview") ; PB_SpinView
+              
+              ;handle = CocoaMessage(0, handle, "superclass") ; NSView
+              
+              ;;handle = CocoaMessage(0, handle, "contentView") ; 
+              ;Debug  Get::ClassName(CocoaMessage(0, handle, "subviews"));
+              ;Debug  Get::ClassName(CocoaMessage(0, handle, "opaqueAncestor"));
+              ;Debug  Get::ClassName(CocoaMessage(0, handle, "enclosingScrollView"));
+              ;;Debug  Get::ClassName(CocoaMessage(0, handle, "superclass"));
+              ;;handle = CocoaMessage(0, handle, "opaqueAncestor") ; 
+              ;; handle = CocoaMessage(0, handle, "superview") ; PB_SpinView
+              
+              ; handle = CocoaMessage(0, handle, "NSTextView") ; PB_SpinView
+              ; handle = CocoaMessage(0, handle, "NSTextField") ; PB_SpinView
+              Debug  Get::ClassName(handle) 
+            CompilerEndIf
+            
         Case "NSTableHeaderView" 
-          handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
+          handle = CocoaMessage(0, handle, "tableView")       ; PB_NSTableView
           
         Case "NSScroller" 
-          handle = CocoaMessage( 0, handle, "superview" ) ; NSScrollView , PBScrollView
+          handle = CocoaMessage( 0, handle, "superview" )     ; NSScrollView , PBScrollView
           
           Select GetClassName( handle ) 
             Case "WebDynamicScrollBarsView"
@@ -96,7 +111,6 @@ Procedure GetUMGadget( NSWindow )
           handle = CocoaMessage( 0, handle, "superview" ) ; PB_WebView
           
         Case "PB_NSFlippedView"                           ;
-                                                          ; container
           handle = CocoaMessage( 0, handle, "superview" ) ; NSClipView
                                                           ; scrollarea
           If GetClassName( handle ) = "NSClipView"

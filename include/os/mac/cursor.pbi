@@ -87,7 +87,9 @@
       EndSelect 
       
       If result
-        CocoaMessage(0, result, "set")
+        ;CocoaMessage(0, result, "set")
+        CocoaMessage(0, result, "push")
+        ;CocoaMessage(0, result, "pop")
       EndIf
       
       ProcedureReturn cursor

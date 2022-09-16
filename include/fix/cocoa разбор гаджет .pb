@@ -11,6 +11,8 @@
   CocoaMessage(@Result, MutableArray, "componentsJoinedByString:$", @"  -->  ")
   CocoaMessage(@Result, Result, "UTF8String")
   
+  ; CocoaMessage( 0, Object, "nextResponder" )
+  
   ProcedureReturn PeekS(Result, -1, #PB_UTF8)
   
 EndProcedure
@@ -19,8 +21,8 @@ EndProcedure
 If OpenWindow(0, 0, 0, 220, 200, "Object Inheritance", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   ;ButtonGadget(0, 10, 10, 200, 20, "text")  ; PBButtonGadgetView  -->  NSButton  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
-  StringGadget(0, 10, 10, 200, 20, "text")   ; PBStringGadgetTextField  -->  NSTextField  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
-  ;SpinGadget(0, 10, 10, 200, 20, 0,100)     ; PB_NSTextField  -->  NSTextField  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
+  ;StringGadget(0, 10, 10, 200, 20, "text")   ; PBStringGadgetTextField  -->  NSTextField  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
+  SpinGadget(0, 10, 10, 200, 20, 0,100)     ; PB_NSTextField  -->  NSTextField  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
   
   Debug ObjectInheritance(GadgetID(0))
   
