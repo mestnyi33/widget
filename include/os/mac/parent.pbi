@@ -194,17 +194,20 @@ Module Parent
           Case "PBTabView"
             Protected parent = IDgadget(ParentID)
             If item <> #PB_Default 
-              i = GetGadgetState(parent)
-              Protected tabindex = 1, selectedTabViewItem = CocoaMessage(0, GadgetID(parent), "selectedTabViewItem")
-;               Debug CocoaMessage(0, GadgetID(parent), "NSTabViewItem alloc")
-              Debug CocoaMessage(0, GadgetID(parent), "indexOfTabViewItem:@",selectedTabViewItem) ; tabViewItem ; indexOfTabViewItem
-              ;Debug CocoaMessage(0, selectedTabViewItem, "tabViewItem:") ; tabViewItem ; indexOfTabViewItem
-              Debug tabindex
-              ;Debug CocoaMessage(0, selectedTabViewItem, "indexOfTabViewItem")
-              Debug CocoaMessage(0, selectedTabViewItem, "tabView")
-              Debug CocoaMessage(0, selectedTabViewItem, "view")
-              Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "tabView")) ; PBTabView
-              Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "view"))    ; PB_NSFlippedView
+              Protected selectedTabViewItem = CocoaMessage(0, ParentID, "selectedTabViewItem")
+              ; i = GetGadgetState(parent)
+              i = CocoaMessage(0, ParentID, "indexOfTabViewItem:@", @selectedTabViewItem)
+              CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @"2")
+              ; CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @selectedTabViewItem)
+              
+;               ; tabViewItem ; indexOfTabViewItem
+;               ;Debug CocoaMessage(0, selectedTabViewItem, "tabViewItem:") ; tabViewItem ; indexOfTabViewItem
+;               Debug i
+;               ;Debug CocoaMessage(0, selectedTabViewItem, "indexOfTabViewItem")
+;               Debug CocoaMessage(0, selectedTabViewItem, "tabView")
+;               Debug CocoaMessage(0, selectedTabViewItem, "view")
+;               Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "tabView")) ; PBTabView
+;               Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "view"))    ; PB_NSFlippedView
             EndIf
             If i <> item 
               SetGadgetState(parent, item)
@@ -217,7 +220,7 @@ Module Parent
               ;SetGadgetState(parent, i)
               ;                 CocoaMessage(0, gadgetID(parent), "tabView:", i)
               
-                            CocoaMessage(0, GadgetID(parent), "selectTabViewItem:", i)
+                            CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @i)
               ;  CocoaMessage(0, GadgetID(parent), "selectTabViewItem:", i)
             EndIf
           Case "PB_CanvasView"
