@@ -32,7 +32,7 @@ If OpenWindow(0, 0, 0, 908, (height+5)*5+20+110, "Buttons on the canvas", #PB_Wi
 ;     
   
   CocoaMessage(0,GadgetID(*g2),"setAlignment:", #NSRightTextAlignment)
-      CocoaMessage(0,GadgetID(*g3),"setAlignment:", 1)
+      CocoaMessage(0,GadgetID(*g3),"setAlignment:", #NSCenterTextAlignment)
       
 ;      ;*g4 = Splitter(10,10,140*3+10,200, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
 ;      *g4 = SplitterGadget(-1,0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -43,6 +43,6 @@ If OpenWindow(0, 0, 0, 908, (height+5)*5+20+110, "Buttons on the canvas", #PB_Wi
      
      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

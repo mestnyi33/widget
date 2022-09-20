@@ -169,6 +169,288 @@ Module Mouse
   EndProcedure
 EndModule
 ;///
+DeclareModule Cursor
+  Enumeration 
+    #PB_Cursor_Default         ; = 0
+    #PB_Cursor_Cross           ; = 1
+    #PB_Cursor_IBeam           ; = 2
+    #PB_Cursor_Hand            ; = 3
+    #PB_Cursor_Busy            ; = 4
+    #PB_Cursor_Denied          ; = 5
+    #PB_Cursor_Arrows          ; = 6
+    #PB_Cursor_LeftRight       ; = 7
+    #PB_Cursor_UpDown          ; = 8
+    #PB_Cursor_LeftUpRightDown ; = 9
+    #PB_Cursor_LeftDownRightUp ; = 10
+    #PB_Cursor_Invisible       ; = 11
+    #PB_Cursor_Left
+    #PB_Cursor_Right
+    #PB_Cursor_Up
+    #PB_Cursor_Down
+    #PB_Cursor_Grab
+    #PB_Cursor_Grabbing
+    #PB_Cursor_Drag
+    #PB_Cursor_Drop
+    #PB_Cursor_VIBeam
+  EndEnumeration
+  
+  UsePNGImageDecoder()
+  
+  Structure _s_cursor
+    icursor.a
+    *hcursor
+    *window
+    *gadget
+    change.b
+  EndStructure
+  
+  Declare.i createCursor(ImageID.i, x.l = 0, y.l = 0)
+  Declare   freeCursor(hCursor.i)
+  Declare   hideCursor(state.b)
+  Declare   getCursor()
+  Declare   updateCursor()
+  Declare   changeCursor(*cursor._s_cursor)
+  Declare   setCursor(gadget.i, cursor.i, ImageID.i = 0)
+EndDeclareModule
+Module Cursor 
+  #kThemeArrowCursor                   = 0
+  #kThemeCopyArrowCursor               = 1
+  #kThemeAliasArrowCursor              = 2
+  #kThemeContextualMenuArrowCursor     = 3
+  #kThemeIBeamCursor                   = 4
+  #kThemeCrossCursor                   = 5
+  #kThemePlusCursor                    = 6
+  #kThemeWatchCursor                   = 7
+  #kThemeClosedHandCursor              = 8
+  #kThemeOpenHandCursor                = 9
+  #kThemePointingHandCursor            = 10
+  #kThemeCountingUpHandCursor          = 11
+  #kThemeCountingDownHandCursor        = 12
+  #kThemeCountingUpAndDownHandCursor   = 13
+  #kThemeSpinningCursor                = 14
+  #kThemeResizeLeftCursor              = 15
+  #kThemeResizeRightCursor             = 16
+  #kThemeResizeLeftRightCursor         = 17
+  
+  ImportC ""
+    SetAnimatedThemeCursor(CursorType.i, AnimationStep.i)
+    SetThemeCursor(CursorType.i)
+    CGCursorIsVisible()
+  EndImport
+  
+  
+  Procedure   freeCursor(hCursor.i)
+    CocoaMessage(0, hCursor, "release")
+  EndProcedure
+  
+  Procedure   isHideCursor()
+    CGCursorIsVisible()
+  EndProcedure
+  
+  Procedure   hideCursor(state.b)
+    If state
+      CocoaMessage(0, 0, "NSCursor hide")
+    Else
+      CocoaMessage(0, 0, "NSCursor unhide")
+    EndIf
+  EndProcedure
+  
+  Procedure   getCurrentCursor()
+    ;Debug ""+CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
+    ProcedureReturn CocoaMessage(0, 0, "NSCursor currentCursor")
+  EndProcedure
+  
+  Procedure   getCursor()
+    Protected result.i
+    ;Debug ""+CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
+    
+    If CGCursorIsVisible() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
+      Select CocoaMessage(0, 0, "NSCursor currentCursor")
+        Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Default
+        Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #PB_Cursor_IBeam
+          ; Case CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor") : result = #PB_Cursor_VIBeam
+          
+        Case CocoaMessage(0, 0, "NSCursor dragCopyCursor") : result = #PB_Cursor_Drop
+        Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #PB_Cursor_Drag
+        Case CocoaMessage(0, 0, "NSCursor disappearingItemCursor") : result = #PB_Cursor_Denied
+          
+        Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #PB_Cursor_Cross
+        Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #PB_Cursor_Hand
+        Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #PB_Cursor_Grab
+        Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #PB_Cursor_Grabbing
+          
+        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #PB_Cursor_Up
+        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #PB_Cursor_Down
+        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #PB_Cursor_UpDown
+          
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #PB_Cursor_Left
+        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #PB_Cursor_Right
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
+      EndSelect 
+    Else
+      result = #PB_Cursor_Invisible
+    EndIf
+    
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure.i createCursor(ImageID.i, x.l = 0, y.l = 0)
+    Protected *ic, Hotspot.NSPoint
+    
+    If ImageID
+      Hotspot\x = x
+      Hotspot\y = y
+      *ic = CocoaMessage(0, 0, "NSCursor alloc")
+      CocoaMessage(0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+    EndIf
+    
+    ProcedureReturn *ic
+  EndProcedure
+  
+  Procedure updateCursor()
+    Debug "updateCursor"
+    
+    If IsGadget(EventGadget())
+      *cursor.cursor::_s_cursor = GetGadgetData(EventGadget())
+      If *cursor And
+         *cursor\hcursor 
+        If *cursor\change 
+          Debug "u+"
+          CocoaMessage(0, WindowID(EventWindow()), "disableCursorRects")
+          CocoaMessage(0, *cursor\hcursor, "set") 
+        Else
+          Debug "u-"
+          CocoaMessage(0, WindowID(EventWindow()), "enableCursorRects")
+          CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
+        EndIf
+      EndIf
+    EndIf
+    
+    UnbindEvent(#PB_Event_FirstCustomValue, @UpdateCursor(), EventWindow(), EventGadget())
+  EndProcedure
+  
+  Procedure changeCursor(*cursor._s_cursor)
+    Debug "changeCursor"
+    Protected gadget = *cursor\gadget
+    Protected window = *cursor\window
+    
+    ;     PostEvent(#PB_Event_FirstCustomValue, window, gadget)
+    ;     BindEvent(#PB_Event_FirstCustomValue, @UpdateCursor(), window, gadget)
+    
+    If *cursor\change
+      Debug "u+"
+      CocoaMessage(0, WindowID(window), "disableCursorRects")
+      CocoaMessage(0, *cursor\hcursor, "set") 
+    Else
+      Debug "u-"
+      CocoaMessage(0, WindowID(window), "enableCursorRects")
+      CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
+    EndIf
+  EndProcedure
+  
+  Procedure setCursor(handle.i, cursor.i, ImageID.i=0)
+    Protected gadget =-1, WindowID, *cursor._s_cursor
+    
+    If handle
+      Debug "setCursor"
+      ;       If GetCursor() = cursor
+      ;         ProcedureReturn 0
+      ;       EndIf
+      If ID::IsWindowID(handle)
+        window = ID::Window(handle)
+        windowID = handle
+      Else
+        gadget = ID::Gadget(handle)
+        windowID = ID::GetWindowID(handle)
+      EndIf
+      
+      *cursor = AllocateStructure(_s_cursor)
+      *cursor\icursor = cursor
+      *cursor\gadget = gadget
+      *cursor\window = ID::Window(windowID)
+      
+      If cursor >= 0
+        ; if ishidden cursor show cursor
+        If Not CGCursorIsVisible()
+          CocoaMessage(0, 0, "NSCursor unhide")
+        EndIf
+        
+        Select cursor
+            ;           Case #PB_Cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+            ;           Case #PB_Cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+            ;           Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+            ;           Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+            ;           Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            ;           Case #PB_Cursor_LeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+            
+            
+          Case #PB_Cursor_Invisible 
+            CocoaMessage(0, 0, "NSCursor hide")
+            ; SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, cursor)
+            ; Case #PB_Cursor_VIBeam : *cursor\hcursor = CreateCursor(ImageID(CatchImage(#PB_Any, ?cross, ?cross_end-?cross)), -8,-8) ; CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor")
+            ;*cursor\hcursor = CreateCursor(ImageID(CatchImage(#PB_Any, ?hand, ?hand_end-?hand))) ; : 
+            
+          Case #PB_Cursor_Busy 
+            SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
+            
+          Case #PB_Cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+          Case #PB_Cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+            
+          Case #PB_Cursor_Drag      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor")
+          Case #PB_Cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+          Case #PB_Cursor_Denied    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
+            
+          Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+          Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #PB_Cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+          Case #PB_Cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+            
+          Case #PB_Cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+          Case #PB_Cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+          Case #PB_Cursor_LeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+            
+          Case #PB_Cursor_Up        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+          Case #PB_Cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+          Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+        EndSelect 
+      Else
+        If ImageID
+          *cursor\hcursor = createCursor(ImageID)
+        EndIf
+      EndIf
+      
+      If IsGadget(gadget)
+        SetGadgetData(gadget, *cursor)
+      EndIf
+      
+      If *cursor\hcursor And handle = mouse::Gadget(WindowID)
+        *cursor\change = 1
+        changeCursor(*cursor)
+        ProcedureReturn #True
+      EndIf
+    EndIf
+    ; CocoaMessage(0, CocoaMessage(0, GadgetID(gadget), "window"), "discardCursorRects") 
+    ; CocoaMessage(0, CocoaMessage(0, GadgetID(gadget), "window"), "resetCursorRects") ; for the actived-window gadget
+  EndProcedure
+  
+  ;       DataSection
+  ;         cross:
+  ;         ;IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/cross.png"
+  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/cross1.png"
+  ;         cross_end:
+  ;         
+  ;         hand:
+  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/hand2.png"
+  ;         hand_end:
+  ;         
+  ;         move:
+  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/hand1.png"
+  ;         move_end:
+  ;         
+  ;       EndDataSection
+EndModule   
+
+;///
 DeclareModule Parent
   Declare GetParentID(handle.i)
   Declare GetWindowID(handle.i)
@@ -463,7 +745,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             Parent::SetParent(leGadget, GadgetID(315))
           EndIf
           
-          
+          Cursor::setCursor(GadgetID(leGadget), #PB_Cursor_Hand)
           ;Debug ""+ leGadget
         EndIf
       EndIf
@@ -480,5 +762,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------
+; Folding = --v------------
 ; EnableXP

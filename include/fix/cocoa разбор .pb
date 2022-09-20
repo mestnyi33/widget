@@ -10,10 +10,10 @@
 ;func postEvent(_ event: NSEvent, atStart flag: Bool ) 
 ;func mouseEntered(with event: NSEvent) ; https://developer.apple.com/documentation/appkit/nsresponder/1529306-mouseentered
 
-
 ;class NSAttributedString : NSObject    AttributedString = CocoaMessage(0, 0, "NSAttributedString alloc")
 
 ;var enclosingScrollView: NSScrollView? { get }      ScrollView = CocoaMessage(0,GadgetID,"enclosingScrollView")
+;var firstBaselineOffsetFromTop: CGFloat { get }    CocoaMessage(@top, GadgetID(Gadget), "firstBaselineOffsetFromTop")
 ;var alphaValue: CGFloat { get set }       CocoaMessage(0, WindowID, "setAlphaValue:@", @alpha) ; alpha.CGFloat = 0.7
 ;var badgeLabel: String? { get set }       CocoaMessage(0, DockTile, "setBadgeLabel:$", @"Pure")
 ;var keyEquivalent: String { get set }     CocoaMessage(0, ButtonID, "setKeyEquivalent:$", @"b")

@@ -76,22 +76,22 @@ DeclareModule Mouse
   Declare.i Gadget(WindowID)
 EndDeclareModule
 Module Mouse
-;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
-;     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
-;   EndMacro
+  ;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
+  ;     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
+  ;   EndMacro
   
-;   Procedure CocoaNSApp()
-;     ProcedureReturn CocoaMessage(0, 0, "NSApplication sharedApplication")
-;   EndProcedure
-;   
-;   Procedure CocoaWindowNumber(CocoaNSWindow)
-;     ProcedureReturn CocoaMessage(0, CocoaNSWindow, "windowNumber")
-;   EndProcedure
-;   
-;   Procedure CocoaNSWindow(CocoaNSApp, CocoaWindowNumber)
-;     ProcedureReturn CocoaMessage(0, CocoaNSApp, "windowWithWindowNumber:", CocoaWindowNumber)
-;   EndProcedure
-;   
+  ;   Procedure CocoaNSApp()
+  ;     ProcedureReturn CocoaMessage(0, 0, "NSApplication sharedApplication")
+  ;   EndProcedure
+  ;   
+  ;   Procedure CocoaWindowNumber(CocoaNSWindow)
+  ;     ProcedureReturn CocoaMessage(0, CocoaNSWindow, "windowNumber")
+  ;   EndProcedure
+  ;   
+  ;   Procedure CocoaNSWindow(CocoaNSApp, CocoaWindowNumber)
+  ;     ProcedureReturn CocoaMessage(0, CocoaNSApp, "windowWithWindowNumber:", CocoaWindowNumber)
+  ;   EndProcedure
+  ;   
   Procedure Window()
     Protected.i NSApp, WindowID, WindowNumber, Point.CGPoint
     
@@ -330,7 +330,7 @@ Module Cursor
     Debug "updateCursor"
     
     If IsGadget(EventGadget())
-      *cursor.cursor::_s_cursor = GetGadgetData(EventGadget())
+      *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EventGadget()), "__cursor") ; GetGadgetData(EventGadget())
       If *cursor And
          *cursor\hcursor 
         If *cursor\change 
@@ -439,7 +439,7 @@ Module Cursor
       EndIf
       
       If IsGadget(gadget)
-        SetGadgetData(gadget, *cursor)
+        objc_setAssociatedObject_(handle, "__cursor", *cursor, 0) ; SetGadgetData(gadget, *cursor)
       EndIf
       
       If *cursor\hcursor And handle = mouse::Gadget(WindowID)
@@ -515,8 +515,8 @@ DeclareModule events
   FocusedGadget() =- 1 
   
   Declare.i WaitEvent(event.i, second.i=0)
-;   Declare DrawCanvasFrame(gadget, color)
-;   Declare DrawCanvasBack(gadget, color)
+  ;   Declare DrawCanvasFrame(gadget, color)
+  ;   Declare DrawCanvasBack(gadget, color)
   Declare SetCallBack(*callback)
 EndDeclareModule
 Module events
@@ -570,19 +570,20 @@ Module events
     Protected Point.CGPoint
     Protected *cursor.cursor::_s_cursor = #Null
     Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-    Protected NSenter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+    ;Protected NSEnter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     
     If refcon And NSEvent
       Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
       Protected MouseMove, MouseX, MouseY, MoveStart, LeftDoubleClick, EnteredID, gadget =- 1
       
-;       If eType = #NSMouseEntered
-;         Debug "en "+proxy+" "+CocoaMessage(0, CocoaMessage(0, NSEvent, "window"), "contentView") +" "+CocoaMessage(0, NSEvent, "windowNumber")
-;       EndIf
-;       If eType = #NSMouseExited
-;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
-;       EndIf
+      ;       If eType = #NSMouseEntered
+      ;         Debug "en "+proxy+" "+CocoaMessage(0, CocoaMessage(0, NSEvent, "window"), "contentView") +" "+CocoaMessage(0, NSEvent, "windowNumber")
+      ;       EndIf
+      ;       If eType = #NSMouseExited
+      ;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
+      ;       EndIf
       If eType = #NSLeftMouseDown
+        ;Debug CocoaMessage(0, Mouse::Gadget(Mouse::Window()), "pressedMouseButtons")
         MouseDrag = 1
       ElseIf eType = #NSLeftMouseUp
         MouseDrag = 0
@@ -647,7 +648,7 @@ Module events
            EnteredGadget() <> gadget
           If EnteredGadget() >= 0 ;And GadgetType(EnteredGadget()) = #PB_GadgetType_Canvas
             If Not MouseDrag
-              *cursor.cursor::_s_cursor = GetGadgetData(EnteredGadget())
+              *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(EnteredGadget())
               If *cursor And 
                  *cursor\hcursor And 
                  *cursor\change = 1
@@ -665,7 +666,7 @@ Module events
           
           If EnteredGadget() >= 0 ;And GadgetType(EnteredGadget()) = #PB_GadgetType_Canvas
             If Not MouseDrag
-              *cursor.cursor::_s_cursor = GetGadgetData(EnteredGadget())
+              *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(EnteredGadget())
               If *cursor And
                  *cursor\hcursor And 
                  *cursor\change = 0
@@ -737,7 +738,7 @@ Module events
       If eType = #NSLeftMouseUp
         If PressedGadget() >= 0 And 
            PressedGadget() <> gadget  
-          *cursor.cursor::_s_cursor = GetGadgetData(PressedGadget())
+          *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(PressedGadget()), "__cursor") ; GetGadgetData(PressedGadget())
           If *cursor And
              *cursor\hcursor And 
              *cursor\change = 1
@@ -751,7 +752,7 @@ Module events
         If gadget >= 0 And 
            gadget <> PressedGadget()
           EnteredGadget() = gadget
-          *cursor.cursor::_s_cursor = GetGadgetData(gadget)
+          *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(gadget)
           If *cursor And
              *cursor\hcursor
             *cursor\change = 1
@@ -950,7 +951,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseEnter
         Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
-        DrawCanvasFrame(eventobject, $2C70F5)
+        DrawCanvasFrame(eventobject, $00A600)
         
       Case #PB_EventType_MouseLeave
         Debug ""+eventobject + " #PB_EventType_MouseLeave "
@@ -1074,10 +1075,361 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
   ;;events::SetCallback(@EventHandler())
   
+  OpenWindow(#PB_Any, 550, 300, 328, 328, "window_1", #PB_Window_SystemMenu)
+  Canvas_0 = CanvasGadget(#PB_Any, 8, 8, 56, 56)
+  ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
+  left = CanvasGadget(#PB_Any, 8, 136, 24, 56)
+  left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56)
+  ;;Canvas_3 = CanvasGadget(#PB_Any, 8, 200, 56, 56)
+  Canvas_32 = CanvasGadget(#PB_Any, 8, 264, 56, 56)
+  
+  ;   Canvas_4 = CanvasGadget(#PB_Any, 72, 8, 56, 56)
+  lt = CanvasGadget(#PB_Any, 72, 72, 56, 56)
+  l = CanvasGadget(#PB_Any, 72, 136, 56, 56)
+  lb = CanvasGadget(#PB_Any, 72, 200, 56, 56)
+  ;   Canvas_72 = CanvasGadget(#PB_Any, 72, 264, 56, 56)
+  
+  up = CanvasGadget(#PB_Any, 136, 8, 56, 24)
+  up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24)
+  t = CanvasGadget(#PB_Any, 136, 72, 56, 56)
+  c = CanvasGadget(#PB_Any, 136, 136, 56, 56)
+  b = CanvasGadget(#PB_Any, 136, 200, 56, 56)
+  down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24)
+  down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24)
+  
+  ;   Canvas_12 = CanvasGadget(#PB_Any, 200, 8, 56, 56)
+  rt = CanvasGadget(#PB_Any, 200, 72, 56, 56)
+  r = CanvasGadget(#PB_Any, 200, 136, 56, 56)
+  rb = CanvasGadget(#PB_Any, 200, 200, 56, 56)
+  ;   Canvas_152 = CanvasGadget(#PB_Any, 200, 264, 56, 56)
+  
+  Canvas_16 = CanvasGadget(#PB_Any, 264, 8, 56, 56)
+  ;;Canvas_17 = CanvasGadget(#PB_Any, 264, 72, 56, 56)
+  right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56)
+  right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56)
+  ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
+  Canvas_192 = CanvasGadget(#PB_Any, 264, 264, 56, 56)
+  
+  Cursor::SetCursor(GadgetID(left2), Cursor::#PB_Cursor_LeftRight ) 
+  Cursor::SetCursor(GadgetID(right2), Cursor::#PB_Cursor_LeftRight ) 
+  Cursor::SetCursor(GadgetID(lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  Cursor::SetCursor(GadgetID(rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  Cursor::SetCursor(GadgetID(up2), Cursor::#PB_Cursor_UpDown ) 
+  Cursor::SetCursor(GadgetID(down2), Cursor::#PB_Cursor_UpDown ) 
+  Cursor::SetCursor(GadgetID(rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  Cursor::SetCursor(GadgetID(lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  Cursor::SetCursor(GadgetID(left), Cursor::#PB_Cursor_Left ) 
+  Cursor::SetCursor(GadgetID(up), Cursor::#PB_Cursor_Up ) 
+  Cursor::SetCursor(GadgetID(right), Cursor::#PB_Cursor_Right ) 
+  Cursor::SetCursor(GadgetID(down), Cursor::#PB_Cursor_Down ) 
+  Cursor::SetCursor(GadgetID(c), Cursor::#PB_Cursor_Up ) 
+  Cursor::SetCursor(GadgetID(Canvas_16), Cursor::#PB_Cursor_Cross ) 
+  Cursor::SetCursor(GadgetID(Canvas_0), Cursor::#PB_Cursor_Drag ) 
+  Cursor::SetCursor(GadgetID(Canvas_32), Cursor::#PB_Cursor_Denied ) 
+  Cursor::SetCursor(GadgetID(Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  
+  Macro DrawCursorUp(x, y, width, bcolor, fcolor)
+    Line(x+7, y, 2, 1, fcolor)                                                                                       ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+5, y+2, fcolor ) : Line(x+6, y+2, 4, 1, bcolor) : Plot(x+10, y+2, fcolor )                                ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+4, y+3, fcolor ) : Line(x+5, y+3, 6, 1, bcolor) : Plot(x+11, y+3, fcolor )                                ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Line(x+3, y+4, width/3-1, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+width/2+1, y+4, width/3-1 , 1, fcolor) ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+5, fcolor ) : Line(x+7, y+5, 2, 1, bcolor) : Plot(x+width/2+1, y+5, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x, y+6, width/2-1 , 1, fcolor) : Line(x+7, y+6, 2, 1, bcolor) : Line(x+width/2+1, y+6, width/2-1, 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x, y+7, fcolor ) : Line(x+1, y+7, width-2, 1, bcolor) : Plot(x+width-1, y+7, fcolor )                         ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+  EndMacro
+  Macro DrawCursorDown(x, y, width, bcolor, fcolor)
+    Plot(x, y+2, fcolor ) : Line(x+1, y+2, width-2, 1, bcolor) : Plot(x+width-1, y+2, fcolor )                         ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Line(x, y+3, width/2-1, 1, fcolor) : Line(x+7, y+3, 2, 1, bcolor) : Line(x+width/2+1, y+3, width/2-1 , 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+4, fcolor ) : Line(x+7, y+4, 2, 1, bcolor) : Plot(x+width/2+1, y+4, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+3, y+5, width/3-1, 1, fcolor) : Line(x+7, y+5, 2, 1, bcolor) : Line(x+width/2+1, y+5, width/3-1, 1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+4, y+6, fcolor ) : Line(x+5, y+6, 6, 1, bcolor) : Plot(x+11, y+6, fcolor )                                ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Plot(x+5, y+7, fcolor ) : Line(x+6, y+7, 4, 1, bcolor) : Plot(x+10, y+7, fcolor )                                ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+6, y+8, fcolor ) : Line(x+7, y+8, 2, 1, bcolor) : Plot(x+9, y+8, fcolor )                                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+7, y+9, 2, 1, fcolor)                                                                                     ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  EndMacro
+  Macro DrawCursorLeft(x, y, width, bcolor, fcolor)
+    Line(x, y+7, 1, 2, fcolor)                                                                                          ; 0,0,0,0,0,0,0,0,0
+    Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
+    Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+    Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+    Line(x+4, y+3, 1, width/3-1, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, width/3-1, fcolor)  ; 1,0,0,0,0,0,0,0,0
+    Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+    Line(x+6, y , 1, width/2-1, fcolor) : Line(x+6, y+7, 1, 2, bcolor) : Line(x+6, y+width/2+1, 1, width/2-1, fcolor)   ; 1,0,0,0,0,1,1,0,0
+    Plot(x+7, y, fcolor ) : Line(x+7, y+1, 1, width-2, bcolor) : Plot(x+7, y+width-1, fcolor )                          ; 1,1,1,1,1,1,1,1,0
+                                                                                                                        ; 1,1,1,1,1,1,1,1,0
+                                                                                                                        ; 1,0,0,0,0,1,1,0,0
+                                                                                                                        ; 1,0,0,0,0,1,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 0,0,0,0,0,0,0,0,0
+  EndMacro  
+  Macro DrawCursorRight(x, y, width, bcolor, fcolor)
+    Plot(x+2, y, fcolor ) : Line(x+2, y+1, 1, width-2, bcolor) : Plot(x+2, y+width-1, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Line(x+3, y, 1, width/2-1, fcolor) : Line(x+3, y+7, 1, 2, bcolor) : Line(x+3, y+width/2+1, 1, width/2-1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  EndMacro
+  
+  
+  
+  Macro DrawCursorUp1(x, y, width, bcolor, fcolor)
+    Line(x+7, y, 2, 1, fcolor)                                                                                       ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+5, y+2, fcolor ) : Line(x+6, y+2, 4, 1, bcolor) : Plot(x+10, y+2, fcolor )                                ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+4, y+3, fcolor ) : Line(x+5, y+3, 6, 1, bcolor) : Plot(x+11, y+3, fcolor )                                ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Line(x+3, y+4, width/3-1, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+width/2+1, y+4, width/3-1 , 1, fcolor) ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+5, fcolor ) : Line(x+7, y+5, 2, 1, bcolor) : Plot(x+width/2+1, y+5, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+6, fcolor ) : Line(x+7, y+6, 2, 1, bcolor) : Plot(x+width/2+1, y+6, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+7, fcolor ) : Line(x+7, y+7, 2, 1, bcolor) : Plot(x+width/2+1, y+7, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+;     Line(x, y+6, width/2-1 , 1, fcolor) : Line(x+7, y+6, 2, 1, bcolor) : Line(x+width/2+1, y+6, width/2-1, 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+;     Plot(x, y+7, fcolor ) : Line(x+1, y+7, width-2, 1, bcolor) : Plot(x+width-1, y+7, fcolor )                         ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+  EndMacro
+  Macro DrawCursorDown1(x, y, width, bcolor, fcolor)
+;     Plot(x, y+2, fcolor ) : Line(x+1, y+2, width-2, 1, bcolor) : Plot(x+width-1, y+2, fcolor )                         ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+;     Line(x, y+3, width/2-1, 1, fcolor) : Line(x+7, y+3, 2, 1, bcolor) : Line(x+width/2+1, y+3, width/2-1 , 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+2, fcolor ) : Line(x+7, y+2, 2, 1, bcolor) : Plot(x+width/2+1, y+2, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+3, fcolor ) : Line(x+7, y+3, 2, 1, bcolor) : Plot(x+width/2+1, y+3, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+width/2-2, y+4, fcolor ) : Line(x+7, y+4, 2, 1, bcolor) : Plot(x+width/2+1, y+4, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+3, y+5, width/3-1, 1, fcolor) : Line(x+7, y+5, 2, 1, bcolor) : Line(x+width/2+1, y+5, width/3-1, 1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+4, y+6, fcolor ) : Line(x+5, y+6, 6, 1, bcolor) : Plot(x+11, y+6, fcolor )                                ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Plot(x+5, y+7, fcolor ) : Line(x+6, y+7, 4, 1, bcolor) : Plot(x+10, y+7, fcolor )                                ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+6, y+8, fcolor ) : Line(x+7, y+8, 2, 1, bcolor) : Plot(x+9, y+8, fcolor )                                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+7, y+9, 2, 1, fcolor)                                                                                     ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  EndMacro
+  Macro DrawCursorLeft1(x, y, width, bcolor, fcolor)
+    Line(x, y+7, 1, 2, fcolor)                                                                                          ; 0,0,0,0,0,0,0,0,0
+    Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
+    Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+    Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+    Line(x+4, y+3, 1, width/3-1, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, width/3-1, fcolor)  ; 1,0,0,0,0,0,0,0,0
+    Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+    Plot(x+6, y+width/2-2, fcolor ) : Line(x+6, y+7, 1, 2, bcolor) : Plot(x+6, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+    Plot(x+7, y+width/2-2, fcolor ) : Line(x+7, y+7, 1, 2, bcolor) : Plot(x+7, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+;     Line(x+6, y , 1, width/2-1, fcolor) : Line(x+6, y+7, 1, 2, bcolor) : Line(x+6, y+width/2+1, 1, width/2-1, fcolor)   ; 1,0,0,0,0,1,1,0,0
+;     Plot(x+7, y, fcolor ) : Line(x+7, y+1, 1, width-2, bcolor) : Plot(x+7, y+width-1, fcolor )                          ; 1,1,1,1,1,1,1,1,0
+                                                                                                                        ; 1,1,1,1,1,1,1,1,0
+                                                                                                                        ; 1,0,0,0,0,1,1,0,0
+                                                                                                                        ; 1,0,0,0,0,1,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 1,0,0,0,0,0,0,0,0
+                                                                                                                        ; 0,0,0,0,0,0,0,0,0
+  EndMacro  
+  Macro DrawCursorRight1(x, y, width, bcolor, fcolor)
+;     Plot(x+2, y, fcolor ) : Line(x+2, y+1, 1, width-2, bcolor) : Plot(x+2, y+width-1, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+;     Line(x+3, y, 1, width/2-1, fcolor) : Line(x+3, y+7, 1, 2, bcolor) : Line(x+3, y+width/2+1, 1, width/2-1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+2, y+width/2-2, fcolor ) : Line(x+2, y+7, 1, 2, bcolor) : Plot(x+2, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+3, y+width/2-2, fcolor ) : Line(x+3, y+7, 1, 2, bcolor) : Plot(x+3, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  EndMacro
+  fcolor = $FFFFFF
+  bcolor = $000000
+  width = 16
+  height = 7
+  
+  If StartDrawing(CanvasOutput(left))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-height)/2
+    y = (OutputHeight()-width)/2
+    
+    ; left                                                 
+    DrawCursorLeft(x,y,width, bcolor, fcolor )
+    Plot(x+8, y, fcolor ) : Line(x+8, y+1, 1, width-2, bcolor) : Plot(x+8, y+width-1, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Line(x + 9, y, 1, width, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(left2))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    
+    ; left2                                                 
+    DrawCursorLeft(x,y,width, bcolor, fcolor )
+    DrawCursorRight(x+height-1,y,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(right2))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    
+    ; right2                                                 
+    DrawCursorLeft(x,y,width, bcolor, fcolor )
+    DrawCursorRight(x+height-1,y,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(right))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-height)/2
+    y = (OutputHeight()-width)/2
+    
+    ; right                                                 
+    Line(x, y, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    Plot(x+1, y, fcolor ) : Line(x+1, y+1, 1, width-2, bcolor) : Plot(x+1, y+width-1, fcolor )                            ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    DrawCursorRight(x,y,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(c))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    
+    ; down2                                                 
+    Box(x+6,y+5,4,4, fcolor)
+    DrawCursorUp1(x,y-2,width, bcolor, fcolor )
+    DrawCursorDown1(x,y+height-1,width, bcolor, fcolor )
+    
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    
+    ;Box(x+4,y+5,6,6, fcolor)
+    DrawCursorLeft1(x-2,y,width, bcolor, fcolor )
+    DrawCursorRight1(x+height-1,y,width, bcolor, fcolor )
+    Box(x+6,y+7,2,2, bcolor)
+    
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(l))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    ; ver-size
+    DrawCursorLeft1(x-1,y,width, bcolor, fcolor )
+    DrawCursorRight1(x+height-2,y,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(t))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    ; hor-size
+    DrawCursorUp1(x,y-1,width, bcolor, fcolor )
+    DrawCursorDown1(x,y+height-2,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(r))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    
+    ; down2                                                 
+    Box(x+6,y+5,4,4, fcolor)
+;     DrawCursorUp1(x,y-2,width, bcolor, fcolor )
+;     DrawCursorDown1(x,y+height-1,width, bcolor, fcolor )
+    
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    
+    ;Box(x+4,y+5,6,6, fcolor)
+    DrawCursorLeft1(x-2,y,width, bcolor, fcolor )
+    DrawCursorRight1(x+height-1,y,width, bcolor, fcolor )
+    Box(x+6,y+7,2,2, bcolor)
+    
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(b))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    
+    ; down2                                                 
+     Box(x+6,y+5,4,4, fcolor)
+    DrawCursorUp1(x,y-2,width, bcolor, fcolor )
+    DrawCursorDown1(x,y+height-1,width, bcolor, fcolor )
+    
+    x = (OutputWidth()-(height*2))/2
+    y = (OutputHeight()-width)/2
+    
+    ;Box(x+4,y+5,6,6, fcolor)
+;     DrawCursorLeft1(x-2,y,width, bcolor, fcolor )
+;     DrawCursorRight1(x+height-1,y,width, bcolor, fcolor )
+     Box(x+6,y+7,2,2, bcolor)
+    
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(up))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-height)/2
+    
+    ; up                                                 
+    DrawCursorUp(x,y,width, bcolor, fcolor )
+    Plot(x, y+8, fcolor ) : Line(x+1, y+8, width-2, 1, bcolor) : Plot(x+width-1, y+8, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Line(x, y + 9, width , 1, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(up2))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    
+    ; down2                                                 
+    DrawCursorUp(x,y,width, bcolor, fcolor )
+    DrawCursorDown(x,y+height-1,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(down2))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-(height*2))/2
+    
+    ; down2                                                 
+    DrawCursorUp(x,y,width, bcolor, fcolor )
+    DrawCursorDown(x,y+height-1,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(down))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-height)/2
+    
+    ; down                                                 
+    Line(x, y, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    Plot(x, y+1, fcolor ) : Line(x+1, y+1, width-2, 1, bcolor) : Plot(x+width-1, y+1, fcolor )                            ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    DrawCursorDown(x,y,width, bcolor, fcolor )
+    StopDrawing()
+  EndIf
+  
+  
+  If StartDrawing(CanvasOutput(Canvas_16))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    ;       img = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+    ;       ;DrawImage(img, 0,0)
+    width = 13
+    Line(OutputWidth()/2, OutputHeight()/2-width/2, 1, width, 1)
+    Line(OutputWidth()/2-width/2, OutputHeight()/2, width, 1, 1)
+    StopDrawing()
+  EndIf
+  
   Repeat 
     event = WaitWindowEvent()
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = n0v+-----------------8--
+; Folding = -----------------------f5-f9
 ; EnableXP

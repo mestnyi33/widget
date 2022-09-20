@@ -103,30 +103,30 @@ Module Transformation
     CompilerEndIf
   EndProcedure
  
-  Macro MoveTransformation(This)
-    ; Transformation resize
-    If This\ID[1] : ResizeGadget(This\ID[1], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[2] : ResizeGadget(This\ID[2], GadgetX(This\Gadget)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[3] : ResizeGadget(This\ID[3], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[4] : ResizeGadget(This\ID[4], GadgetX(This\Gadget)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[5] : ResizeGadget(This\ID[5], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[6] : ResizeGadget(This\ID[6], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[7] : ResizeGadget(This\ID[7], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[8] : ResizeGadget(This\ID[8], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-    If This\ID[#Arrows] : ResizeGadget(This\ID[#Arrows], GadgetX(This\Gadget)+This\Size, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-  EndMacro
 ;   Macro MoveTransformation(This)
 ;     ; Transformation resize
-;     If This\ID[1] : ResizeGadget(This\ID[1], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[2] : ResizeGadget(This\ID[2], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[3] : ResizeGadget(This\ID[3], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[4] : ResizeGadget(This\ID[4], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[5] : ResizeGadget(This\ID[5], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[6] : ResizeGadget(This\ID[6], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[7] : ResizeGadget(This\ID[7], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[8] : ResizeGadget(This\ID[8], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If This\ID[#Arrows] : ResizeGadget(This\ID[#Arrows], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+This\Size, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[1] : ResizeGadget(This\ID[1], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[2] : ResizeGadget(This\ID[2], GadgetX(This\Gadget)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[3] : ResizeGadget(This\ID[3], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[4] : ResizeGadget(This\ID[4], GadgetX(This\Gadget)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[5] : ResizeGadget(This\ID[5], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[6] : ResizeGadget(This\ID[6], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[7] : ResizeGadget(This\ID[7], GadgetX(This\Gadget)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[8] : ResizeGadget(This\ID[8], GadgetX(This\Gadget)-This\Size+This\Pos, GadgetY(This\Gadget)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+;     If This\ID[#Arrows] : ResizeGadget(This\ID[#Arrows], GadgetX(This\Gadget)+This\Size, GadgetY(This\Gadget)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
 ;   EndMacro
+  Macro MoveTransformation(This)
+    ; Transformation resize
+    If This\ID[1] : ResizeGadget(This\ID[1], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[2] : ResizeGadget(This\ID[2], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[3] : ResizeGadget(This\ID[3], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetHeight(This\Gadget)-This\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[4] : ResizeGadget(This\ID[4], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+(GadgetWidth(This\Gadget)-This\Size)/2, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[5] : ResizeGadget(This\ID[5], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[6] : ResizeGadget(This\ID[6], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[7] : ResizeGadget(This\ID[7], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetWidth(This\Gadget)-This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[8] : ResizeGadget(This\ID[8], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)+GadgetHeight(This\Gadget)-This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+    If This\ID[#Arrows] : ResizeGadget(This\ID[#Arrows], GadgetX(This\Gadget, #PB_Gadget_WindowCoordinate)+This\Size, GadgetY(This\Gadget, #PB_Gadget_WindowCoordinate)-This\Size+This\Pos, #PB_Ignore, #PB_Ignore) : EndIf
+  EndMacro
  
   Procedure Gadget()
     ProcedureReturn ActiveGadget
@@ -240,9 +240,9 @@ Module Transformation
     With *AnChor
       \Gadget = Gadget
       \Grid = Grid
-      \Pos = 3
-      \Size = 6
-     
+      \Size = 26
+     \Pos = 0;\Size/2 ;- \Size/6
+      
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
         Static open
         Protected ParentID = GetParent_(GadgetID(Gadget))
@@ -413,6 +413,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = v-8------
 ; EnableXP

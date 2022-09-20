@@ -7,13 +7,34 @@ Define.i myAppDelegateClass, myAppDelegate
 Define.i myWindowDelegateClass, myWindowDelegate
 Global.i pool
 
+; TOP
+; MacOS: Get menubar height
+
+; #NSApplicationActivateAllWindows = 1 << 0
+; #NSApplicationActivateIgnoringOtherApps = 1 << 1
+; 
+; currentApplication = CocoaMessage(0, 0, "NSRunningApplication currentApplication")
+; CocoaMessage(0, currentApplication, "activateWithOptions:", #NSApplicationActivateAllWindows | #NSApplicationActivateIgnoringOtherApps)
+
+
+Procedure GetMenuBarHeight()
+  Protected NSApp, NSMenu, Value.d
+  
+  NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
+  NSMenu = CocoaMessage(0, NSApp, "mainMenu")
+  CocoaMessage(@Value, NSMenu, "menuBarHeight")
+  ProcedureReturn Value
+EndProcedure
+
+
 ProcedureC winShouldClose(obj.i, sel.i, win.i) ; call 1
 	Define.i app
 	
 	Debug "winShouldClose - " + obj +" "+sel +" - "+win
 	
 	CocoaMessage(0, win, "release")
-	;CocoaMessage(@app, 0, "NSApplication sharedApplication")
+	;CocoaMessage(0, sel, "stop")
+;CocoaMessage(@app, 0, "NSApplication sharedApplication")
 	;CocoaMessage(0, app, "terminate:", app)
 	;CocoaMessage(0, win, "close")
 	ProcedureReturn #YES
@@ -97,11 +118,11 @@ CocoaMessage(0, win, "setReleasedWhenClosed:", #YES)
 CocoaMessage(0, win, "setDelegate:", myWindowDelegate)
 
 CocoaMessage(0, app, "run")
+ Debug "END"
 CocoaMessage(0, pool, "drain")
 
-; Debug "END"
 ; CocoaMessage(0, app, "runModalForWindow:",win)
 ; CocoaMessage(0, app, "terminate:", app)
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

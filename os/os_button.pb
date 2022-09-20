@@ -1386,6 +1386,7 @@ Module ButtonColorGadget
       Else
         nr = id
       EndIf
+      
       *Gadget = IsGadget(nr)
       ;*Gadget = PB_Object_GetObject(PB_Gadget_Objects, nr)
       If *Gadget
@@ -1493,6 +1494,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonColorGadget::Create(0, 10 ,10, 200, 40, "Button 1", #PB_Button_Left)
    
     ButtonColorGadget::Create(1, 10 ,60, 200, 40, "Button 2", #PB_Button_MultiLine)
+    
     SetGadgetColor(1, #PB_Gadget_BackColor, $00FF4040)
     SetGadgetColor(1, #PB_Gadget_FrontColor, $00FFFFFF)
    
@@ -1544,6 +1546,6 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseWindow(#Window)
  
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -z-----------------------------------
 ; EnableXP
