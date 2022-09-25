@@ -750,6 +750,58 @@ _this_\type = #PB_GadgetType_ExplorerList )
     EndMacro      
     
     ;-
+    Macro draw_up_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      ;                                                                                                                                                      ;
+      ;                                                                                                                                                      ;
+      Line(_x_+7, _y_, 2, 1, _frame_color_)                                                                                                                  ; 0,0,0,0,0,0,0,0,0,0
+      Plot(_x_+6, _y_+1, _frame_color_ ) : Line(_x_+7, _y_+1, 2, 1, _back_color_) : Plot(_x_+9, _y_+1, _frame_color_ )                                       ; 0,0,0,0,1,1,0,0,0,0
+      Plot(_x_+5, _y_+2, _frame_color_ ) : Line(_x_+6, _y_+2, 4, 1, _back_color_) : Plot(_x_+10, _y_+2, _frame_color_ )                                      ; 0,0,0,1,1,1,1,0,0,0
+      Plot(_x_+4, _y_+3, _frame_color_ ) : Line(_x_+5, _y_+3, 6, 1, _back_color_) : Plot(_x_+11, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,0,0
+      Line(_x_+3, _y_+4, _size_/3-1, 1, _frame_color_) : Line(_x_+7, _y_+4, 2, 1, _back_color_) : Line(_x_+_size_/2+1, _y_+4, _size_/3-1 , 1, _frame_color_) ; 0,0,0,0,1,1,0,0,0,0
+      Plot(_x_+_size_/2-2, _y_+5, _frame_color_ ) : Line(_x_+7, _y_+5, 2, 1, _back_color_) : Plot(_x_+_size_/2+1, _y_+5, _frame_color_ )                     ; 0,0,0,0,1,1,0,0,0,0
+      ;                                                                                                                                                      ;
+      ;                                                                                                                                                      ;
+    EndMacro
+    Macro draw_down_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      ;                                                                                                                                                      ;
+      ;                                                                                                                                                      ;
+      Plot(_x_+_size_/2-2, _y_+4, _frame_color_ ) : Line(_x_+7, _y_+4, 2, 1, _back_color_) : Plot(_x_+_size_/2+1, _y_+4, _frame_color_ )                     ; 0,0,0,0,1,1,0,0,0,0
+      Line(_x_+3, _y_+5, _size_/3-1, 1, _frame_color_) : Line(_x_+7, _y_+5, 2, 1, _back_color_) : Line(_x_+_size_/2+1, _y_+5, _size_/3-1, 1, _frame_color_)  ; 0,0,0,0,1,1,0,0,0,0
+      Plot(_x_+4, _y_+6, _frame_color_ ) : Line(_x_+5, _y_+6, 6, 1, _back_color_) : Plot(_x_+11, _y_+6, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,0,0
+      Plot(_x_+5, _y_+7, _frame_color_ ) : Line(_x_+6, _y_+7, 4, 1, _back_color_) : Plot(_x_+10, _y_+7, _frame_color_ )                                      ; 0,0,0,1,1,1,1,0,0,0
+      Plot(_x_+6, _y_+8, _frame_color_ ) : Line(_x_+7, _y_+8, 2, 1, _back_color_) : Plot(_x_+9, _y_+8, _frame_color_ )                                       ; 0,0,0,0,1,1,0,0,0,0
+      Line(_x_+7, _y_+9, 2, 1, _frame_color_)                                                                                                                ; 0,0,0,0,0,0,0,0,0,0
+      ;                                                                                                                                                      ;
+      ;                                                                                                                                                      ;
+    EndMacro
+    Macro draw_left_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      Line(_x_, _y_+7, 1, 2, _frame_color_)                                                                                                                  ; 0,0,1,0,0,0
+      Plot(_x_+1, _y_+6, _frame_color_ ) : Line(_x_+1, _y_+7, 1, 2, _back_color_) : Plot(_x_+1, _y_+9, _frame_color_ )                                       ; 0,0,1,1,0,0
+      Plot(_x_+2, _y_+5, _frame_color_ ) : Line(_x_+2, _y_+6, 1, 4, _back_color_) : Plot(_x_+2, _y_+10, _frame_color_ )                                      ; 1,1,1,1,1,0
+      Plot(_x_+3, _y_+4, _frame_color_ ) : Line(_x_+3, _y_+5, 1, 6, _back_color_) : Plot(_x_+3, _y_+11, _frame_color_ )                                      ; 1,1,1,1,1,0
+      Line(_x_+4, _y_+3, 1, _size_/3-1, _frame_color_) : Line(_x_+4, _y_+7, 1, 2, _back_color_) : Line(_x_+4, _y_+_size_/2+1, 1, _size_/3-1, _frame_color_)  ; 0,0,1,1,0,0
+      Plot(_x_+5, _y_+_size_/2-2, _frame_color_ ) : Line(_x_+5, _y_+7, 1, 2, _back_color_) : Plot(_x_+5, _y_+_size_/2+1, _frame_color_ )                     ; 0,0,1,0,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+    EndMacro  
+    Macro draw_right_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      Plot(_x_+4, _y_+_size_/2-2, _frame_color_ ) : Line(_x_+4, _y_+7, 1, 2, _back_color_) : Plot(_x_+4, _y_+_size_/2+1, _frame_color_ )                     ; 0,0,0,1,0,0
+      Line(_x_+5, _y_+3, 1, _size_/3-1, _frame_color_) : Line(_x_+5, _y_+7, 1, 2, _back_color_) : Line(_x_+5, _y_+_size_/2+1, 1, _size_/3-1, _frame_color_)  ; 0,0,1,1,0,0
+      Plot(_x_+6, _y_+4, _frame_color_ ) : Line(_x_+6, _y_+5, 1, 6, _back_color_) : Plot(_x_+6, _y_+11, _frame_color_ )                                      ; 0,1,1,1,1,1
+      Plot(_x_+7, _y_+5, _frame_color_ ) : Line(_x_+7, _y_+6, 1, 4, _back_color_) : Plot(_x_+7, _y_+10, _frame_color_ )                                      ; 0,1,1,1,1,1
+      Plot(_x_+8, _y_+6, _frame_color_ ) : Line(_x_+8, _y_+7, 1, 2, _back_color_) : Plot(_x_+8, _y_+9, _frame_color_ )                                       ; 0,0,1,1,0,0
+      Line(_x_+9, _y_+7, 1, 2, _frame_color_)                                                                                                                ; 0,0,0,1,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+      ;                                                                                                                                                      ; 0,0,0,0,0,0
+    EndMacro
+    
+    Macro draw_size_all_(_x_, _y_, _size_, _back_color_, _frame_color_)
+    EndMacro
+    
     Macro draw_plus_( _address_, _plus_, _size_ = 5 )
       Line(_address_\x+(_address_\width-_size_)/2, _address_\y+(_address_\height-1)/2, _size_, 1, _address_\color\front[_address_\color\state])
       If _plus_
@@ -1381,83 +1433,43 @@ _this_\type = #PB_GadgetType_ExplorerList )
     EndProcedure
     
     Procedure   DrawArrow( x.l, y.l, Direction.l, color.l )
-      
       If Direction = 0
-        ; left                                                 
-        ; 0,0,0,0,0,0,0
-        ; 0,0,0,1,1,1,0
-        ; 0,0,1,1,1,0,0
-        ; 0,1,1,1,0,0,0
-        ; 0,0,1,1,1,0,0
-        ; 0,0,0,1,1,1,0
-        ; 0,0,0,0,0,0,0
-        
-        :                                                           : Plot( x + 3, y + 1, color )                        
-        :                             : Plot( x + 2, y + 2, color ) : Plot( x + 4, y + 1, color )                     
-        :                             : Plot( x + 3, y + 2, color ) : Plot( x + 5, y + 1, color )
-        : Plot( x + 1, y + 3, color ) : Plot( x + 4, y + 2, color )
-        : Plot( x + 2, y + 3, color )                                                                       
-        : Plot( x + 3, y + 3, color ) : Plot( x + 2, y + 4, color )                          
-        :                             : Plot( x + 3, y + 4, color )     
-        :                             : Plot( x + 4, y + 4, color ) : Plot( x + 3, y + 5, color ) 
-        :                                                           : Plot( x + 4, y + 5, color )                       
-        :                                                           : Plot( x + 5, y + 5, color )  
+         ; left                                                                                  ; 0,0,0,0,0,0,0,0
+         Plot( x + 3, y + 1, color ) : Plot( x + 4, y + 1, color ) : Plot( x + 5, y + 1, color ) ; 0,0,0,1,1,1,0,0                    
+         Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0,0 
+         Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) ; 0,1,1,1,0,0,0,0
+         Plot( x + 3, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 4, y + 4, color ) ; 0,0,1,1,1,0,0,0   
+         Plot( x + 3, y + 5, color ) : Plot( x + 4, y + 5, color ) : Plot( x + 5, y + 5, color ) ; 0,0,0,1,1,1,0,0               
+                                                                                                 ; 0,0,0,0,0,0,0,0    
+      EndIf
+      If Direction = 2
+        ; right                                                                                  ; 0,0,0,0,0,0,0,0
+        Plot( x + 1, y + 1, color ) : Plot( x + 2, y + 1, color ) : Plot( x + 3, y + 1, color )  ; 0,0,1,1,1,0,0,0                       
+        Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color )  ; 0,0,0,1,1,1,0,0                    
+        Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )  ; 0,0,0,0,1,1,1,0
+        Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )  ; 0,0,0,1,1,1,0,0                        
+        Plot( x + 1, y + 5, color ) : Plot( x + 2, y + 5, color ) : Plot( x + 3, y + 5, color )  ; 0,0,1,1,1,0,0,0  
+                                                                                                 ; 0,0,0,0,0,0,0,0
       EndIf
       
       If Direction = 1
-        ; up                                                 
-        ; 0,0,0,0,0,0,0
-        ; 0,0,0,1,0,0,0
-        ; 0,0,1,1,1,0,0
-        ; 0,1,1,1,1,1,0
-        ; 0,1,1,0,1,1,0
-        ; 0,1,0,0,0,1,0
-        ; 0,0,0,0,0,0,0
-        
-        :                                                           : Plot( x + 3, y + 1, color ) 
-        :                             : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) 
-        : Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )
-        : Plot( x + 1, y + 4, color ) : Plot( x + 2, y + 4, color )                               : Plot( x + 4, y + 4, color ) : Plot( x + 5, y + 4, color )
-        : Plot( x + 1, y + 5, color )                                                                                           : Plot( x + 5, y + 5, color )
+        ; up                                                                                                                                                  ; 0,0,0,0,0,0,0
+                                                                  : Plot( x + 3, y + 1, color )                                                             ; 0,0,0,1,0,0,0
+                                    : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color )                               ; 0,0,1,1,1,0,0
+        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color ) ; 0,1,1,1,1,1,0
+        Plot( x + 1, y + 4, color ) : Plot( x + 2, y + 4, color )                               : Plot( x + 4, y + 4, color ) : Plot( x + 5, y + 4, color ) ; 0,1,1,0,1,1,0
+        Plot( x + 1, y + 5, color )                                                                                           : Plot( x + 5, y + 5, color ) ; 0,1,0,0,0,1,0    
+                                                                                                                                                              ; 0,0,0,0,0,0,0
+                                                                                                                                                              ; 0,0,0,0,0,0,0
       EndIf
-      
-      If Direction = 2
-        ; right                                                 
-        ; 0,0,0,0,0,0,0
-        ; 0,1,1,1,0,0,0
-        ; 0,0,1,1,1,0,0
-        ; 0,0,0,1,1,1,0
-        ; 0,0,1,1,1,0,0
-        ; 0,1,1,1,0,0,0
-        ; 0,0,0,0,0,0,0
-        
-        : Plot( x + 1, y + 1, color )                        
-        : Plot( x + 2, y + 1, color ) : Plot( x + 2, y + 2, color )                      
-        : Plot( x + 3, y + 1, color ) : Plot( x + 3, y + 2, color ) 
-        :                             : Plot( x + 4, y + 2, color ) : Plot( x + 3, y + 3, color )
-        :                                                           : Plot( x + 4, y + 3, color )                        
-        :                             : Plot( x + 2, y + 4, color ) : Plot( x + 5, y + 3, color )                          
-        :                             : Plot( x + 3, y + 4, color )     
-        : Plot( x + 1, y + 5, color ) : Plot( x + 4, y + 4, color )
-        : Plot( x + 2, y + 5, color )                       
-        : Plot( x + 3, y + 5, color )  
-      EndIf
-      
       If Direction = 3
-        ; down
-        ; 0,0,0,0,0,0,0
-        ; 0,1,0,0,0,1,0
-        ; 0,1,1,0,1,1,0
-        ; 0,1,1,1,1,1,0
-        ; 0,0,1,1,1,0,0
-        ; 0,0,0,1,0,0,0
-        ; 0,0,0,0,0,0,0
-        
-        : Plot( x + 1, y + 1, color )                                                                                           : Plot( x + 5, y + 1, color )
-        : Plot( x + 1, y + 2, color ) : Plot( x + 2, y + 2, color )                               : Plot( x + 4, y + 2, color ) : Plot( x + 5, y + 2, color )
-        : Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )
-        :                             : Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )
-        :                                                           : Plot( x + 3, y + 5, color )
+        ; down                                                                                                                                                ; 0,0,0,0,0,0,0
+        Plot( x + 1, y + 1, color )                                                                                           : Plot( x + 5, y + 1, color )   ; 0,1,0,0,0,1,0
+        Plot( x + 1, y + 2, color ) : Plot( x + 2, y + 2, color )                               : Plot( x + 4, y + 2, color ) : Plot( x + 5, y + 2, color )   ; 0,1,1,0,1,1,0
+        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )   ; 0,1,1,1,1,1,0
+                                    : Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )                                 ; 0,0,1,1,1,0,0
+                                                                  : Plot( x + 3, y + 5, color )                                                               ; 0,0,0,1,0,0,0
+                                                                                                                                                              ; 0,0,0,0,0,0,0
       EndIf
       
       If Direction = 11
@@ -1470,7 +1482,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         ; 1,1,0,0,0,0,0,0,0,1,1
         
         : Plot( x+5, y, color ) 
-        : Plot( x+4, y+1, color ) : Plot( x+5, y+1, color ) : Plot( x+6, y+1, color ) 
+        : Plot( x+4, y+1, color ) : Plot( x+5, y+1, color )         : Plot( x+6, y+1, color ) 
         : Plot( x+3, y+2, color ) : Plot( x+4, y+2, color )         : Plot( x+6, y+2, color ) : Plot( x+7, y+2, color )
         : Plot( x+2, y+3, color ) : Plot( x+3, y+3, color )         : Plot( x+7, y+3, color ) : Plot( x+8, y+3, color )
         : Plot( x+1, y+4, color ) : Plot( x+2, y+4, color )         : Plot( x+8, y+4, color ) : Plot( x+9, y+4, color )
@@ -20789,5 +20801,5 @@ CompilerIf #PB_Compiler_IsMainFile =99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -311,7 +311,7 @@ Module Cursor
     Debug "updateCursor"
     
     If IsGadget(EventGadget())
-      *cursor.cursor::_s_cursor = GetGadgetData(EventGadget())
+      *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EventGadget()), "__cursor") ; GetGadgetData(EventGadget())
       If *cursor And
          *cursor\hcursor 
         If *cursor\change 
@@ -339,7 +339,13 @@ Module Cursor
     
     If *cursor\change
       Debug "u+"
+      ;;CocoaMessage(0, GadgetID(gadget), "disableCursorRects")
+      ;Debug CocoaMessage(0,  WindowID(window), "areCursorRectsEnabled")
+      ;CocoaMessage(0, WindowID(window), "resetCursorRects")
+      ;CocoaMessage(0, WindowID(window), "discardCursorRects")
       CocoaMessage(0, WindowID(window), "disableCursorRects")
+      ; CocoaMessage(0,  GadgetID(gadget), "NSView invalidateCursorRects")
+      ; CocoaMessage(0, *cursor\hcursor, "push") 
       CocoaMessage(0, *cursor\hcursor, "set") 
     Else
       Debug "u-"
@@ -420,7 +426,7 @@ Module Cursor
       EndIf
       
       If IsGadget(gadget)
-        SetGadgetData(gadget, *cursor)
+         objc_setAssociatedObject_(handle, "__cursor", *cursor, 0) ; SetGadgetData(gadget, *cursor)
       EndIf
       
       If *cursor\hcursor And handle = mouse::Gadget(WindowID)
@@ -454,6 +460,10 @@ EndModule
 DeclareModule Parent
   Declare GetParentID(handle.i)
   Declare GetWindowID(handle.i)
+  
+  Declare SetCallBack(*callback)
+  
+  
   
   Declare GetWindow(gadget.i)
   Declare GetParent(gadget.i)
@@ -601,6 +611,326 @@ Module Parent
       ProcedureReturn ParentID
     EndIf
   EndProcedure
+  
+  Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
+  
+  Macro DraggedGadget() : *dragged : EndMacro
+  Macro EnteredGadget() : *entered : EndMacro
+  Macro FocusedGadget() : *focused : EndMacro
+  Macro PressedGadget() : *pressed : EndMacro
+  
+  Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
+    ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
+    DesktopMouseX() - GadgetX(_canvas_, _mode_)
+    ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
+  EndMacro
+  Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
+    ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
+    DesktopMouseY() - GadgetY(_canvas_, _mode_)
+    ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
+  EndMacro
+  
+  
+  DraggedGadget() =- 1 
+  EnteredGadget() =- 1 
+  PressedGadget() =- 1 
+  FocusedGadget() =- 1 
+  
+  ProcedureC  eventTapFunction(proxy, eType, event, refcon)
+    Protected Point.CGPoint
+    Protected *cursor.cursor::_s_cursor = #Null
+    Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+    ;Protected NSEnter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+    
+    If refcon And NSEvent
+      Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
+      Protected MouseMove, MouseX, MouseY, MoveStart, LeftDoubleClick, EnteredID, gadget =- 1
+      
+      ;       If eType = #NSMouseEntered
+      ;         Debug "en "+proxy+" "+CocoaMessage(0, CocoaMessage(0, NSEvent, "window"), "contentView") +" "+CocoaMessage(0, NSEvent, "windowNumber")
+      ;       EndIf
+      ;       If eType = #NSMouseExited
+      ;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
+      ;       EndIf
+      If eType = #NSLeftMouseDown
+        ;Debug CocoaMessage(0, Mouse::Gadget(Mouse::Window()), "pressedMouseButtons")
+        MouseDrag = 1
+      ElseIf eType = #NSLeftMouseUp
+        MouseDrag = 0
+;         If EnteredGadget() >= 0 
+;           If DraggedGadget() >= 0 And DraggedGadget() = PressedGadget() 
+;             CompilerIf Defined(constants::PB_EventType_Drop, #PB_Constant) 
+;               CallCFunctionFast(refcon, EnteredGadget(), constants::#PB_EventType_Drop)
+;             CompilerEndIf
+;           EndIf
+;           
+;           If Not (LeftDoubleClickTime And ElapsedMilliseconds() - LeftDoubleClickTime < DoubleClickTime())
+;             LeftDoubleClickTime = ElapsedMilliseconds() 
+;           Else
+;             LeftDoubleClick = 1
+;           EndIf
+;         EndIf
+      EndIf
+      
+      If MouseDrag >= 0 
+        EnteredID = Mouse::Gadget(Mouse::Window())
+      EndIf
+      
+      ;
+      If EnteredID
+        gadget = ID::Gadget(EnteredID)
+        
+        If gadget >= 0
+          Mousex = GadgetMouseX(gadget)
+          Mousey = GadgetMouseY(gadget)
+        Else
+          Mousex =- 1
+          Mousey =- 1
+        EndIf
+      Else
+        Mousex =- 1
+        Mousey =- 1
+      EndIf
+      
+      ;
+      If MouseDrag And
+         Mousex =- 1 And Mousey =- 1
+        
+        If PressedGadget() >= 0
+          Mousex = GadgetMouseX(PressedGadget())
+          Mousey = GadgetMouseY(PressedGadget())
+        EndIf
+      EndIf
+      
+      If MouseMoveX <> Mousex
+        MouseMoveX = Mousex
+        MouseMove = #True
+      EndIf
+      
+      If MouseMoveY <> Mousey
+        MouseMoveY = Mousey
+        MouseMove = #True
+      EndIf
+      
+      ;
+      If MouseMove 
+        If MouseDrag >= 0 And 
+           EnteredGadget() <> gadget
+          If EnteredGadget() >= 0 ;And GadgetType(EnteredGadget()) = #PB_GadgetType_Canvas
+            If Not MouseDrag
+              *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(EnteredGadget())
+              If *cursor And 
+                 *cursor\hcursor And 
+                 *cursor\change = 1
+                *cursor\change = 0
+                Debug "e-" ;+ NSWindow + " " + ID::Window(NSWindow)
+                
+                Cursor::changeCursor(*cursor)
+              EndIf
+            EndIf
+            
+            CallCFunctionFast(refcon, EnteredGadget() , #PB_EventType_MouseLeave)
+          EndIf
+          
+          EnteredGadget() = gadget
+          
+          If EnteredGadget() >= 0 ;And GadgetType(EnteredGadget()) = #PB_GadgetType_Canvas
+            If Not MouseDrag
+              *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(EnteredGadget())
+              If *cursor And
+                 *cursor\hcursor And 
+                 *cursor\change = 0
+                *cursor\change = 1
+                Debug "e+"
+                
+                Cursor::changeCursor(*cursor)
+              EndIf
+            EndIf
+            
+            CallCFunctionFast(refcon, EnteredGadget(), #PB_EventType_MouseEnter)
+          EndIf
+        Else
+          ; mouse drag start
+          If MouseDrag > 0
+            If EnteredGadget() >= 0 And
+               DraggedGadget() <> PressedGadget()
+              DraggedGadget() = PressedGadget()
+              CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_DragStart)
+              DeltaX = GadgetX(PressedGadget()) 
+              DeltaY = GadgetY(PressedGadget())
+            EndIf
+          EndIf
+          
+          If MouseDrag And EnteredGadget() <> PressedGadget()
+            CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_MouseMove)
+          EndIf
+          
+          If EnteredGadget() >= 0
+            CallCFunctionFast(refcon, EnteredGadget(), #PB_EventType_MouseMove)
+            
+            ; if move gadget x&y position
+            If MouseDrag > 0 And PressedGadget() = EnteredGadget() 
+              If DeltaX <> GadgetX(PressedGadget()) Or 
+                 DeltaY <> GadgetY(PressedGadget())
+                MouseDrag =- 1
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+      
+      ;
+      If eType = #NSLeftMouseDown
+        PressedGadget() = EnteredGadget() ; EventGadget()
+                                          ;Debug CocoaMessage(0, Mouse::Window(), "focusView")
+        
+        If PressedGadget() >= 0
+          If FocusedGadget() =- 1
+            FocusedGadget() = PressedGadget() ; GetActiveGadget()
+            If GadgetType(FocusedGadget()) = #PB_GadgetType_Canvas
+              CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_Focus)
+            EndIf
+          EndIf
+          
+          If FocusedGadget() >= 0 And 
+             FocusedGadget() <> PressedGadget()
+            CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
+            
+            FocusedGadget() = PressedGadget()
+            CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_Focus)
+          EndIf
+          
+          CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftButtonDown)
+        EndIf
+      EndIf
+      
+      ;
+      If eType = #NSLeftMouseUp
+        If PressedGadget() >= 0 And 
+           PressedGadget() <> gadget  
+          *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(PressedGadget()), "__cursor") ; GetGadgetData(PressedGadget())
+          If *cursor And
+             *cursor\hcursor And 
+             *cursor\change = 1
+            *cursor\change = 0
+            ;Debug "p-"
+            
+            Cursor::changeCursor(*cursor)
+          EndIf
+        EndIf
+        
+        If gadget >= 0 And 
+           gadget <> PressedGadget()
+          EnteredGadget() = gadget
+          *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EnteredGadget()), "__cursor") ; GetGadgetData(gadget)
+          If *cursor And
+             *cursor\hcursor
+            *cursor\change = 1
+            ;Debug "p+"
+            
+            Cursor::changeCursor(*cursor)
+          EndIf
+        EndIf
+        
+        If PressedGadget() >= 0 
+          CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftButtonUp)
+          
+          If LeftDoubleClick
+            CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftDoubleClick)
+          Else
+            If PressedGadget() <> DraggedGadget()
+              If PressedGadget() >= 0 And EnteredID = GadgetID(PressedGadget())
+                CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftClick)
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ; PressedGadget() =- 1
+        DraggedGadget() =- 1
+      EndIf
+      
+      ;         ;
+      ;         If eType = #PB_EventType_LeftDoubleClick
+      ;           CallCFunctionFast(refcon, EnteredGadget(), #PB_EventType_LeftDoubleClick)
+      ;         EndIf
+      
+; ;       If eType = #NSScrollWheel
+; ;         ;NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+; ;         
+; ;         If NSEvent
+; ;           Protected scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+; ;           Protected scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+; ;           
+; ;           If scrollX And Not scrollY
+; ;             ; Debug "X - scroll"
+; ;             If EnteredGadget() >= 0
+; ;               CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
+; ;                 CallCFunctionFast(refcon, EnteredGadget(), constants::#PB_EventType_MouseWheelX, scrollX)
+; ;               CompilerEndIf
+; ;             EndIf
+; ;           EndIf
+; ;           
+; ;           If scrollY And Not scrollX
+; ;             ; Debug "Y - scroll"
+; ;             If EnteredGadget() >= 0
+; ;               CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
+; ;                 CallCFunctionFast(refcon, EnteredGadget(), constants::#PB_EventType_MouseWheelY, scrollY)
+; ;               CompilerEndIf
+; ;             EndIf
+; ;           EndIf
+; ;         EndIf
+; ;       EndIf
+      
+      
+      ;           If eType = #PB_EventType_Resize
+      ;             ; CallCFunctionFast(refcon, EventGadget(), #PB_EventType_Resize)
+      ;           EndIf
+      ;           CompilerIf Defined(PB_EventType_Repaint, #PB_Constant) And Defined(constants, #PB_Module)
+      ;             If eType = #PB_EventType_Repaint
+      ;               CallCFunctionFast(refcon, EventGadget(), #PB_EventType_Repaint)
+      ;             EndIf
+      ;           CompilerEndIf
+      ;           
+    EndIf
+    
+  EndProcedure
+  ImportC ""
+    CFRunLoopGetCurrent()
+    CFRunLoopAddCommonMode(rl, mode)
+    
+    GetCurrentProcess(*psn)
+    CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+    CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+  EndImport
+  Procedure   SetCallBack(*callback)
+    *setcallback = *callback
+    
+    Protected mask, EventTap
+    mask = #NSMouseMovedMask | #NSScrollWheelMask
+    mask | #NSMouseEnteredMask | #NSMouseExitedMask 
+    mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask 
+    mask | #NSRightMouseDownMask | #NSRightMouseDownMask 
+    mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask   ;| #NSCursorUpdateMask
+    
+    #cghidEventTap = 0              ; Указывает, что отвод события размещается в точке, где системные события HID поступают на оконный сервер.
+    #cgSessionEventTap = 1          ; Указывает, что отвод события размещается в точке, где события системы HID и удаленного управления входят в сеанс входа в систему.
+    #cgAnnotatedSessionEventTap = 2 ; Указывает, что отвод события размещается в точке, где события сеанса были аннотированы для передачи в приложение.
+    
+    #headInsertEventTap = 0         ; Указывает, что новое касание события должно быть вставлено перед любым ранее существовавшим касанием события в том же месте.
+    #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
+    
+    
+    ; GetCurrentProcess(@psn.q): eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction(), *callback)
+    eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
+    
+    If eventTap
+      CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
+    EndIf
+    
+  EndProcedure
+  
+  ;SetCallBack(0)
 EndModule
 
 
@@ -624,6 +954,61 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndProcedure
   
+  Procedure EventHandler(eventobject, eventtype, eventdata)
+    Protected window = EventWindow()
+    Static parentID, parent =-1, first=-1, second=-1
+    
+    If eventobject <> 315
+      Select eventtype
+        Case #PB_EventType_MouseEnter
+          Debug ""+eventobject + " #PB_EventType_MouseEnter "
+;           parentID = Parent::GetParentID(GadgetID(eventobject))
+;           
+;           If Not ID::IsWindowID(parentID)
+;             parent = ID::Gadget(parentID)
+;           Else
+;             parent=-1
+;           EndIf
+;           
+;           If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
+;             first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
+;             Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
+;             
+;             If first = eventobject
+;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
+;             ElseIf Second = eventobject
+;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
+;             EndIf
+;             Parent::SetParent(eventobject, GadgetID(315))
+;           Else
+;             Parent::SetParent(315, parentID)
+;             ResizeGadget(315, GadgetX(eventobject)-1, GadgetY(eventobject)-1, GadgetWidth(eventobject)+2, GadgetHeight(eventobject)+2)
+;             ResizeGadget(eventobject, 1, 1, #PB_Ignore, #PB_Ignore)
+;             Parent::SetParent(eventobject, GadgetID(315))
+;           EndIf
+;           
+;           Cursor::setCursor(GadgetID(eventobject), #PB_Cursor_Hand)
+           PostEvent(#PB_Event_Gadget, EventWindow(), eventobject, eventtype, eventdata)
+       
+        Case #PB_EventType_MouseLeave
+          Debug ""+eventobject + " #PB_EventType_MouseLeave "
+;             If first = eventobject
+;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
+;               first =- 1
+;             ElseIf Second = eventobject
+;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
+;               Second =- 1
+;             Else
+;               ResizeGadget(eventobject, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
+;               Parent::SetParent(eventobject, parentID)
+; ;              ResizeGadget(Parent, 0,0,0,0)
+;             EndIf
+          PostEvent(#PB_Event_Gadget, EventWindow(), eventobject, eventtype, eventdata)
+      EndSelect
+    EndIf
+  EndProcedure
+  
+  Parent::SetCallBack(@EventHandler())
   
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define WindowID = UseGadgetList(0)
@@ -696,71 +1081,115 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseGadgetList()
     
     Define enGadget=-1,leGadget=-1,parent =-1, first=-1, second=-1
-    Define handle,parentID
+    Define handle,parentID, eventobject=-1
     
-    
+     ;; Cursor::setCursor(GadgetID(1), #PB_Cursor_Hand)
+          
     Repeat
       Define  Event = WaitWindowEvent()
-      handle = Mouse::Gadget( Mouse::Window( ) )
-      If handle
-        enGadget = ID::Gadget( handle )
-        
-        If enGadget >= 0 And leGadget <> enGadget And enGadget <> 315 
-          If leGadget >= 0
-            If first = leGadget
-              SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
-              first =- 1
-            ElseIf Second = leGadget
-              SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
-              Second =- 1
-            Else
-              ResizeGadget(leGadget, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
-              Parent::SetParent(leGadget, parentID)
-            EndIf
-          EndIf
-          
-          leGadget = enGadget
-          
-          parentID = Parent::GetParentID(GadgetID(enGadget))
-          If Not ID::IsWindowID(parentID)
-            parent = ID::Gadget(parentID)
-          Else
-            parent=-1
-          EndIf
-          
-          If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
-            first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
-            Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
-            
-            If first = leGadget
-              SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
-            ElseIf Second = leGadget
-              SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
-            EndIf
-            Parent::SetParent(leGadget, GadgetID(315))
-          Else
-            Parent::SetParent(315, parentID)
-            ResizeGadget(315, GadgetX(leGadget)-1, GadgetY(leGadget)-1, GadgetWidth(leGadget)+2, GadgetHeight(leGadget)+2)
-            ResizeGadget(leGadget, 1, 1, #PB_Ignore, #PB_Ignore)
-            Parent::SetParent(leGadget, GadgetID(315))
-          EndIf
-          
-          Cursor::setCursor(GadgetID(leGadget), #PB_Cursor_Hand)
-          ;Debug ""+ leGadget
-        EndIf
-      EndIf
-      
+;       handle = Mouse::Gadget( Mouse::Window( ) )
+;       If handle
+;         enGadget = ID::Gadget( handle )
+;         
+;         If leGadget <> enGadget
+;           If leGadget >= 0 And leGadget <> 315 
+;             If first = leGadget
+;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
+;               first =- 1
+;             ElseIf Second = leGadget
+;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
+;               Second =- 1
+;             Else
+;               ResizeGadget(leGadget, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
+;               Parent::SetParent(leGadget, parentID)
+;             EndIf
+;           EndIf
+;           
+;           leGadget = enGadget
+;           
+;           If enGadget >= 0  And enGadget <> 315 
+;           parentID = Parent::GetParentID(GadgetID(enGadget))
+;           If Not ID::IsWindowID(parentID)
+;             parent = ID::Gadget(parentID)
+;           Else
+;             parent=-1
+;           EndIf
+;           
+;           If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
+;             first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
+;             Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
+;             
+;             If first = leGadget
+;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
+;             ElseIf Second = leGadget
+;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
+;             EndIf
+;             Parent::SetParent(leGadget, GadgetID(315))
+;           Else
+;             Parent::SetParent(315, parentID)
+;             ResizeGadget(315, GadgetX(leGadget)-1, GadgetY(leGadget)-1, GadgetWidth(leGadget)+2, GadgetHeight(leGadget)+2)
+;             ResizeGadget(leGadget, 1, 1, #PB_Ignore, #PB_Ignore)
+;             Parent::SetParent(leGadget, GadgetID(315))
+;           EndIf
+;           
+;           Cursor::setCursor(GadgetID(leGadget), #PB_Cursor_Hand)
+;         EndIf
+;         ;Debug ""+ leGadget
+;         EndIf
+;       EndIf
+;       
       
       Select event 
         Case #PB_Event_Gadget
-          If EventGadget() = #PB_GadgetType_ScrollBar
-            SetGadgetState(#PB_GadgetType_ProgressBar, GetGadgetState(#PB_GadgetType_ScrollBar))
+          eventobject = EventGadget()
+          If eventobject <> 315
+          If EventType() = #PB_EventType_MouseEnter
+            parentID = Parent::GetParentID(GadgetID(eventobject))
+            
+            If Not ID::IsWindowID(parentID)
+              parent = ID::Gadget(parentID)
+            Else
+              parent=-1
+            EndIf
+            
+            If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
+              first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
+              Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
+              
+              If first = eventobject
+                SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
+              ElseIf Second = eventobject
+                SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
+              EndIf
+              Parent::SetParent(eventobject, GadgetID(315))
+            Else
+              Parent::SetParent(315, parentID)
+              ResizeGadget(315, GadgetX(eventobject)-1, GadgetY(eventobject)-1, GadgetWidth(eventobject)+2, GadgetHeight(eventobject)+2)
+              ResizeGadget(eventobject, 1, 1, #PB_Ignore, #PB_Ignore)
+              Parent::SetParent(eventobject, GadgetID(315))
+            EndIf
+            
+            Cursor::setCursor(GadgetID(eventobject), #PB_Cursor_Cross)
           EndIf
+          If EventType() = #PB_EventType_MouseLeave
+            If first = eventobject
+              SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
+              first =- 1
+            ElseIf Second = eventobject
+              SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
+              Second =- 1
+            Else
+              ResizeGadget(eventobject, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
+              Parent::SetParent(eventobject, parentID)
+              ;              ResizeGadget(Parent, 0,0,0,0)
+            EndIf
+          EndIf
+        EndIf
       EndSelect
     Until Event= #PB_Event_CloseWindow
     
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --v------------
+; Folding = --v--------------------
 ; EnableXP

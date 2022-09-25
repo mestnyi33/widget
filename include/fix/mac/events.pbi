@@ -1133,12 +1133,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Plot(x+5, y+2, fcolor ) : Line(x+6, y+2, 4, 1, bcolor) : Plot(x+10, y+2, fcolor )                                  ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
     Plot(x+4, y+3, fcolor ) : Line(x+5, y+3, 6, 1, bcolor) : Plot(x+11, y+3, fcolor )                                  ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
-    Line(x+3, y+4, size/3-1, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+size/2+1, y+4, size/3-1 , 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+4, y+4, 3, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+size/2+1, y+4, 3 , 1, fcolor)                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Plot(x+size/2-2, y+5, fcolor ) : Line(x+7, y+5, 2, 1, bcolor) : Plot(x+size/2+1, y+5, fcolor )                     ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
   EndMacro
   Macro DrawDown(x, y, size, bcolor, fcolor)
     Plot(x+size/2-2, y+4, fcolor ) : Line(x+7, y+4, 2, 1, bcolor) : Plot(x+size/2+1, y+4, fcolor )                     ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Line(x+3, y+5, size/3-1, 1, fcolor) : Line(x+7, y+5, 2, 1, bcolor) : Line(x+size/2+1, y+5, size/3-1, 1, fcolor)    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+4, y+5, 3, 1, fcolor) : Line(x+7, y+5, 2, 1, bcolor) : Line(x+size/2+1, y+5, 3, 1, fcolor)                  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Plot(x+4, y+6, fcolor ) : Line(x+5, y+6, 6, 1, bcolor) : Plot(x+11, y+6, fcolor )                                  ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
     Plot(x+5, y+7, fcolor ) : Line(x+6, y+7, 4, 1, bcolor) : Plot(x+10, y+7, fcolor )                                  ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
     Plot(x+6, y+8, fcolor ) : Line(x+7, y+8, 2, 1, bcolor) : Plot(x+9, y+8, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
@@ -1149,33 +1149,43 @@ CompilerIf #PB_Compiler_IsMainFile
     Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
     Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
     Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
-    Line(x+4, y+3, 1, width/3-1, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, width/3-1, fcolor)  ; 1,0,0,0,0,0,0,0,0
+    Line(x+4, y+4, 1, 3, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, 3, fcolor)  ; 1,0,0,0,0,0,0,0,0
     Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
   EndMacro  
   Macro DrawRight(x, y, width, bcolor, fcolor)
     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+5, y+4, 1, 3, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, 3, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
   EndMacro
   
-  Macro DrawCursor2(x, y, width, bcolor, fcolor)
-    Line(x, y+7, 1, 2, fcolor)                                                                                          ; 0,0,0,0,0,0,0,0,0
-    Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
-    Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
-    Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
-    Line(x+4, y+3, 1, width/3-1, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, width/3-1, fcolor)  ; 1,0,0,0,0,0,0,0,0
-    Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+  Macro DrawCursor2(x, y, width, height, bcolor, fcolor)
+    DrawUp(x, y, size, bcolor, fcolor)
+    DrawDown(x, y+height-2, size, bcolor, fcolor)
+    
+    LineXY(x,y+1,x+5,y+6,bcolor)
+    LineXY(x+1,y+1,x+5,y+5,bcolor)
+;     Plot(x+1, y+2, bcolor )
+;     Plot(x+2, y+1, bcolor )
+;     
+;     Plot(x+2, y+3, bcolor )
+;     Plot(x+3, y+2, bcolor )
+;     
+;     Plot(x+3, y+4, bcolor )
+;     Plot(x+4, y+3, bcolor )
+;     
+;     Plot(x+4, y+5, bcolor )
+;     Plot(x+5, y+4, bcolor )
   EndMacro  
   Macro DrawCursor6(x, y, width, bcolor, fcolor)
-    Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
-    Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
-    Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+;     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+;     Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+;     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+;     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+;     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+;     Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
   EndMacro
   
   Macro DrawCursorSplitterV(x, y, width, height, bcolor, fcolor)
@@ -1221,6 +1231,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Line(x, y+3, width/2-1, 1, fcolor) : Line(x+7, y+3, 2, 1, bcolor) : Line(x+width/2+1, y+3, width/2-1 , 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
   EndMacro
   Macro DrawCursorSplitterLeft(x, y, width, bcolor, fcolor)
+    Debug width
     DrawLeft(x, y, width, bcolor, fcolor)
     Line(x+6, y , 1, width/2-1, fcolor) : Line(x+6, y+7, 1, 2, bcolor) : Line(x+6, y+width/2+1, 1, width/2-1, fcolor)   ; 1,0,0,0,0,1,1,0,0
     Plot(x+7, y, fcolor ) : Line(x+7, y+1, 1, width-2, bcolor) : Plot(x+7, y+width-1, fcolor )                          ; 1,1,1,1,1,1,1,1,0
@@ -1238,15 +1249,149 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If StartDrawing(CanvasOutput(lt))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
-    x = (OutputWidth()-height)/2
+    x = (OutputWidth()-width)/2
     y = (OutputHeight()-width)/2
+    ; 
+    LineXY(x+3,y+2,x+13,y+12,bcolor)
+    LineXY(x+2,y+2,x+13,y+13,bcolor)
+    LineXY(x+2,y+3,x+12,y+13,bcolor)
     
-    ; left                                                 
-    DrawCursor2(x-1,y,width, bcolor, fcolor )
-    DrawCursor6(x+height-2,y,width, bcolor, fcolor )
+    Plot(x+12,y+10,bcolor)
+    Plot(x+10,y+12,bcolor)
+    Plot(x+5,y+3,bcolor)
+    Plot(x+3,y+5,bcolor)
+    
+    Line(x+2,y+4,1,3,bcolor)
+    Line(x+4,y+2,3,1,bcolor)
+    Line(x+9,y+13,3,1,bcolor)
+    Line(x+13,y+9,1,3,bcolor)
+    
+    ;
+    LineXY(x+6,y+4,x+11,y+9,fcolor)
+    LineXY(x+4,y+6,x+9,y+11,fcolor)
+    
+    LineXY(x+2,y+7,x+3,y+6,fcolor)
+    LineXY(x+7,y+2,x+6,y+3,fcolor)
+    LineXY(x+8,y+13,x+9,y+12,fcolor)
+    LineXY(x+13,y+8,x+12,y+9,fcolor)
+    
+    Line(x+1,y+2,1,6,fcolor)
+    Line(x+14,y+8,1,6,fcolor)
+    Line(x+2,y+1,6,1,fcolor)
+    Line(x+8,y+14,6,1,fcolor)
+    
     StopDrawing()
   EndIf
   
+  If StartDrawing(CanvasOutput(rb))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-width)/2
+    ; 
+    LineXY(x+3,y+2,x+13,y+12,bcolor)
+    LineXY(x+2,y+2,x+13,y+13,bcolor)
+    LineXY(x+2,y+3,x+12,y+13,bcolor)
+    
+    Plot(x+12,y+10,bcolor)
+    Plot(x+10,y+12,bcolor)
+    Plot(x+5,y+3,bcolor)
+    Plot(x+3,y+5,bcolor)
+    
+    Line(x+2,y+4,1,3,bcolor)
+    Line(x+4,y+2,3,1,bcolor)
+    Line(x+9,y+13,3,1,bcolor)
+    Line(x+13,y+9,1,3,bcolor)
+    
+    ;
+    LineXY(x+6,y+4,x+11,y+9,fcolor)
+    LineXY(x+4,y+6,x+9,y+11,fcolor)
+    
+    LineXY(x+2,y+7,x+3,y+6,fcolor)
+    LineXY(x+7,y+2,x+6,y+3,fcolor)
+    LineXY(x+8,y+13,x+9,y+12,fcolor)
+    LineXY(x+13,y+8,x+12,y+9,fcolor)
+    
+    Line(x+1,y+2,1,6,fcolor)
+    Line(x+14,y+8,1,6,fcolor)
+    Line(x+2,y+1,6,1,fcolor)
+    Line(x+8,y+14,6,1,fcolor)
+    
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(rt))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-width)/2
+    ; 
+    LineXY(x+2,y+12,x+12,y+2,bcolor)
+    LineXY(x+2,y+13,x+13,y+2,bcolor)
+    LineXY(x+3,y+13,x+13,y+3,bcolor)
+    
+    Plot(x+3,y+10,bcolor)
+    Plot(x+10,y+3,bcolor)
+    Plot(x+5,y+12,bcolor)
+    Plot(x+12,y+5,bcolor)
+    
+    Line(x+2,y+9,1,3,bcolor)
+    Line(x+9,y+2,3,1,bcolor)
+    Line(x+4,y+13,3,1,bcolor)
+    Line(x+13,y+4,1,3,bcolor)
+    
+    ;
+    LineXY(x+4,y+9,x+9,y+4,fcolor)
+    LineXY(x+6,y+11,x+11,y+6,fcolor)
+    
+    LineXY(x+2,y+8,x+3,y+9,fcolor)
+    LineXY(x+8,y+2,x+9,y+3,fcolor)
+    LineXY(x+6,y+12,x+7,y+13,fcolor)
+    LineXY(x+12,y+6,x+13,y+7,fcolor)
+    
+    Line(x+1,y+8,1,6,fcolor)
+    Line(x+8,y+1,6,1,fcolor)
+    Line(x+2,y+14,6,1,fcolor)
+    Line(x+14,y+2,1,6,fcolor)
+
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(lb))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-width)/2
+    ; 
+    LineXY(x+2,y+12,x+12,y+2,bcolor)
+    LineXY(x+2,y+13,x+13,y+2,bcolor)
+    LineXY(x+3,y+13,x+13,y+3,bcolor)
+    
+    Plot(x+3,y+10,bcolor)
+    Plot(x+10,y+3,bcolor)
+    Plot(x+5,y+12,bcolor)
+    Plot(x+12,y+5,bcolor)
+    
+    Line(x+2,y+9,1,3,bcolor)
+    Line(x+9,y+2,3,1,bcolor)
+    Line(x+4,y+13,3,1,bcolor)
+    Line(x+13,y+4,1,3,bcolor)
+    
+    ;
+    LineXY(x+4,y+9,x+9,y+4,fcolor)
+    LineXY(x+6,y+11,x+11,y+6,fcolor)
+    
+    LineXY(x+2,y+8,x+3,y+9,fcolor)
+    LineXY(x+8,y+2,x+9,y+3,fcolor)
+    LineXY(x+6,y+12,x+7,y+13,fcolor)
+    LineXY(x+12,y+6,x+13,y+7,fcolor)
+    
+    Line(x+1,y+8,1,6,fcolor)
+    Line(x+8,y+1,6,1,fcolor)
+    Line(x+2,y+14,6,1,fcolor)
+    Line(x+14,y+2,1,6,fcolor)
+
+    StopDrawing()
+  EndIf
+  
+  ; splitter
   If StartDrawing(CanvasOutput(left))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     x = (OutputWidth()-height)/2
@@ -1254,11 +1399,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; left                                                 
     DrawCursorSplitterLeft(x,y,width, bcolor, fcolor )
-    Plot(x+8, y, fcolor ) : Line(x+8, y+1, 1, width-2, bcolor) : Plot(x+8, y+width-1, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Plot(x+8, y, fcolor ) : Line(x+8, y+1, 1, width-2, bcolor) : Plot(x+8, y+width-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
     Line(x + 9, y, 1, width, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     StopDrawing()
   EndIf
-  
   If StartDrawing(CanvasOutput(left2))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     x = (OutputWidth()-(height*2))/2
@@ -1269,7 +1413,6 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawCursorSplitterRight(x+height-1,y,width, bcolor, fcolor )
     StopDrawing()
   EndIf
-  
   If StartDrawing(CanvasOutput(right2))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     x = (OutputWidth()-(height*2))/2
@@ -1280,7 +1423,6 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawCursorSplitterRight(x+height-1,y,width, bcolor, fcolor )
     StopDrawing()
   EndIf
-  
   If StartDrawing(CanvasOutput(right))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     x = (OutputWidth()-height)/2
@@ -1303,13 +1445,9 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawCursorUp(x,y-2,width, bcolor, fcolor )
     DrawCursorDown(x,y+height-1,width, bcolor, fcolor )
     
-    x = (OutputWidth()-(height*2))/2
-    y = (OutputHeight()-width)/2
-    
-    ;Box(x+4,y+5,6,6, fcolor)
-    DrawCursorLeft(x-2,y,width, bcolor, fcolor )
-    DrawCursorRight(x+height-1,y,width, bcolor, fcolor )
-    Box(x+6,y+7,2,2, bcolor)
+    DrawCursorLeft(x-1,y-1,width, bcolor, fcolor )
+    DrawCursorRight(x+7,y-1,width, bcolor, fcolor )
+    Box(x+7,y+6,2,2, bcolor)
     
     StopDrawing()
   EndIf
@@ -1437,5 +1575,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------8P5z-
+; Folding = ----------f----------4---8vgf+
 ; EnableXP
