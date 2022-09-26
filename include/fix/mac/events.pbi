@@ -327,18 +327,24 @@ Module Cursor
   EndProcedure
   
   Procedure updateCursor()
-    Debug "updateCursor"
+    CompilerIf #PB_Compiler_IsMainFile
+      Debug "updateCursor"
+    CompilerEndIf
     
     If IsGadget(EventGadget())
       *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EventGadget()), "__cursor") ; GetGadgetData(EventGadget())
       If *cursor And
          *cursor\hcursor 
         If *cursor\change 
-          Debug "u+"
+          CompilerIf #PB_Compiler_IsMainFile
+            Debug "u+"
+          CompilerEndIf
           CocoaMessage(0, WindowID(EventWindow()), "disableCursorRects")
           CocoaMessage(0, *cursor\hcursor, "set") 
         Else
-          Debug "u-"
+          CompilerIf #PB_Compiler_IsMainFile
+            Debug "u-"
+          CompilerEndIf
           CocoaMessage(0, WindowID(EventWindow()), "enableCursorRects")
           CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
         EndIf
@@ -349,7 +355,9 @@ Module Cursor
   EndProcedure
   
   Procedure changeCursor(*cursor._s_cursor)
-    Debug "changeCursor"
+    CompilerIf #PB_Compiler_IsMainFile
+      Debug "changeCursor"
+    CompilerEndIf
     Protected gadget = *cursor\gadget
     Protected window = *cursor\window
     
@@ -357,11 +365,15 @@ Module Cursor
     ;     BindEvent(#PB_Event_FirstCustomValue, @UpdateCursor(), window, gadget)
     
     If *cursor\change
-      Debug "u+"
+      CompilerIf #PB_Compiler_IsMainFile
+        Debug "u+"
+      CompilerEndIf
       CocoaMessage(0, WindowID(window), "disableCursorRects")
       CocoaMessage(0, *cursor\hcursor, "set") 
     Else
-      Debug "u-"
+      CompilerIf #PB_Compiler_IsMainFile
+        Debug "u-"
+      CompilerEndIf
       CocoaMessage(0, WindowID(window), "enableCursorRects")
       CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
     EndIf
@@ -371,7 +383,10 @@ Module Cursor
     Protected gadget =-1, WindowID, *cursor._s_cursor
     
     If handle
-      Debug "setCursor"
+      CompilerIf #PB_Compiler_IsMainFile
+        Debug "setCursor"
+      CompilerEndIf
+      
       ;       If GetCursor() = cursor
       ;         ProcedureReturn 0
       ;       EndIf
@@ -653,7 +668,9 @@ Module events
                  *cursor\hcursor And 
                  *cursor\change = 1
                 *cursor\change = 0
-                Debug "e-" ;+ NSWindow + " " + ID::Window(NSWindow)
+                CompilerIf #PB_Compiler_IsMainFile
+                  Debug "e-" ;+ NSWindow + " " + ID::Window(NSWindow)
+                CompilerEndIf
                 
                 Cursor::changeCursor(*cursor)
               EndIf
@@ -671,7 +688,9 @@ Module events
                  *cursor\hcursor And 
                  *cursor\change = 0
                 *cursor\change = 1
-                Debug "e+"
+                CompilerIf #PB_Compiler_IsMainFile
+                  Debug "e+"
+                CompilerEndIf
                 
                 Cursor::changeCursor(*cursor)
               EndIf
@@ -1149,12 +1168,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
     Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
     Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
-    Line(x+4, y+4, 1, 3, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, 3, fcolor)  ; 1,0,0,0,0,0,0,0,0
+    Line(x+4, y+4, 1, 3, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, 3, fcolor)                  ; 1,0,0,0,0,0,0,0,0
     Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
   EndMacro  
   Macro DrawRight(x, y, width, bcolor, fcolor)
     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-    Line(x+5, y+4, 1, 3, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, 3, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    Line(x+5, y+4, 1, 3, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, 3, fcolor)                  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
@@ -1167,25 +1186,25 @@ CompilerIf #PB_Compiler_IsMainFile
     
     LineXY(x,y+1,x+5,y+6,bcolor)
     LineXY(x+1,y+1,x+5,y+5,bcolor)
-;     Plot(x+1, y+2, bcolor )
-;     Plot(x+2, y+1, bcolor )
-;     
-;     Plot(x+2, y+3, bcolor )
-;     Plot(x+3, y+2, bcolor )
-;     
-;     Plot(x+3, y+4, bcolor )
-;     Plot(x+4, y+3, bcolor )
-;     
-;     Plot(x+4, y+5, bcolor )
-;     Plot(x+5, y+4, bcolor )
+    ;     Plot(x+1, y+2, bcolor )
+    ;     Plot(x+2, y+1, bcolor )
+    ;     
+    ;     Plot(x+2, y+3, bcolor )
+    ;     Plot(x+3, y+2, bcolor )
+    ;     
+    ;     Plot(x+3, y+4, bcolor )
+    ;     Plot(x+4, y+3, bcolor )
+    ;     
+    ;     Plot(x+4, y+5, bcolor )
+    ;     Plot(x+5, y+4, bcolor )
   EndMacro  
   Macro DrawCursor6(x, y, width, bcolor, fcolor)
-;     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-;     Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-;     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
-;     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
-;     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-;     Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ;     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    ;     Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    ;     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+    ;     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+    ;     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    ;     Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
   EndMacro
   
   Macro DrawCursorSplitterV(x, y, width, height, bcolor, fcolor)
@@ -1351,7 +1370,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Line(x+8,y+1,6,1,fcolor)
     Line(x+2,y+14,6,1,fcolor)
     Line(x+14,y+2,1,6,fcolor)
-
+    
     StopDrawing()
   EndIf
   
@@ -1387,7 +1406,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Line(x+8,y+1,6,1,fcolor)
     Line(x+2,y+14,6,1,fcolor)
     Line(x+14,y+2,1,6,fcolor)
-
+    
     StopDrawing()
   EndIf
   
@@ -1430,7 +1449,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; right                                                 
     Line(x, y, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    Plot(x+1, y, fcolor ) : Line(x+1, y+1, 1, width-2, bcolor) : Plot(x+1, y+width-1, fcolor )                            ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Plot(x+1, y, fcolor ) : Line(x+1, y+1, 1, width-2, bcolor) : Plot(x+1, y+width-1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
     DrawCursorSplitterRight(x,y,width, bcolor, fcolor )
     StopDrawing()
   EndIf
@@ -1474,11 +1493,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If StartDrawing(CanvasOutput(r))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
-;     x = (OutputWidth()-width)/2
-;     y = (OutputHeight()-(height*2))/2
-;     
-;     ; down2                                                 
-;     ;Box(x+6,y+5,4,4, fcolor)
+    ;     x = (OutputWidth()-width)/2
+    ;     y = (OutputHeight()-(height*2))/2
+    ;     
+    ;     ; down2                                                 
+    ;     ;Box(x+6,y+5,4,4, fcolor)
     
     x = (OutputWidth()-(height*2))/2
     y = (OutputHeight()-width)/2
@@ -1500,9 +1519,9 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawCursorUp(x,y-1,width, bcolor, fcolor )
     DrawCursorDown(x,y+height-2,width, bcolor, fcolor )
     
-;     x = (OutputWidth()-(height*2))/2
-;     y = (OutputHeight()-width)/2
-;     ;Box(x+6,y+7,2,2, bcolor)
+    ;     x = (OutputWidth()-(height*2))/2
+    ;     y = (OutputHeight()-width)/2
+    ;     ;Box(x+6,y+7,2,2, bcolor)
     
     StopDrawing()
   EndIf
@@ -1516,7 +1535,7 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawUp(x, y, width, bcolor, fcolor)
     DrawCursorSplitterUp(x,y,width, bcolor, fcolor )
     Plot(x, y+8, fcolor ) : Line(x+1, y+8, width-2, 1, bcolor) : Plot(x+width-1, y+8, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-    Line(x, y + 9, width , 1, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    Line(x, y + 9, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     StopDrawing()
   EndIf
   
@@ -1547,7 +1566,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; down                                                 
     Line(x, y, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    Plot(x, y+1, fcolor ) : Line(x+1, y+1, width-2, 1, bcolor) : Plot(x+width-1, y+1, fcolor )                            ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    Plot(x, y+1, fcolor ) : Line(x+1, y+1, width-2, 1, bcolor) : Plot(x+width-1, y+1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
     DrawCursorSplitterDown(x,y,width, bcolor, fcolor )
     DrawDown(x, y, width, bcolor, fcolor)
     StopDrawing()
@@ -1575,5 +1594,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------f----------4---8vgf+
+; Folding = --------------------------------
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿; #__from_mouse_state = 1
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -13,23 +13,23 @@ CompilerIf #PB_Compiler_IsMainFile
     Static _2click
     Protected Space.s
     
-    If this()\widget = w_this
-    ElseIf this()\widget = w_this1
+    If EventWidget( ) = w_this
+    ElseIf EventWidget( ) = w_this1
       Space.s = "   "
     Else
       Space.s = "       "
     EndIf
     
-    Select this()\event
-      Case #PB_EventType_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(this()\widget)) + ">>")
-      Case #PB_EventType_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(this()\widget)) + ">>")
+    Select WidgetEventType( )
+      Case #PB_EventType_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #PB_EventType_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
         
-        If GetText( this()\widget ) = "new"
-          Free( this()\widget )
+        If GetText( EventWidget( ) ) = "new"
+          Free( EventWidget( ) )
         EndIf
         
       Case #PB_EventType_DragStart       : AddItem(w_flag, -1, Space + " drag")
-        DraggedText( "drag" )
+        DragText( "drag" )
         
       Case #PB_EventType_Drop            : AddItem(w_flag, -1, Space + " drop")
         widget::Button( 145, 240, 30, 30, "new" )
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::bind(w_this, @events_widgets(), constants::#PB_EventType_Drop)
       
     w_this1 = widget::Button( 140, 235, 40, 40, "drop here", #__button_multiline );| #__button_toggle) 
-    DroppedEnable( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
+    EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonDown)
     widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonUp)
@@ -84,6 +84,6 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

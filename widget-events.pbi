@@ -308,13 +308,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro _content_clip2_( _address_, _mode_= )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
+      ;CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
         ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
         Clip( _address_, _mode_ )
         
         ; Post( _address_, #PB_EventType_Draw ) 
         
-      CompilerEndIf
+     ; CompilerEndIf
     EndMacro
     
     
@@ -18792,12 +18792,12 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Protected Repaint, mouse_x , mouse_y 
       
       If eventtype = #PB_EventType_MouseEnter
-        If IsGadget( Canvas )
+        If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
         EndIf
       EndIf
       
-      If Root( )
+      If Root( ) And Root( )\canvas\gadget = Canvas
         ;
         Select eventtype
           Case #PB_EventType_MouseEnter,
@@ -20801,5 +20801,5 @@ CompilerIf #PB_Compiler_IsMainFile =99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--0-----------------------------------
 ; EnableXP

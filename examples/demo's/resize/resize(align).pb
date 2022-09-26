@@ -1,9 +1,10 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
-UseLib(widget)
+﻿IncludePath "../../../"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
   
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+UseLib(widget)
   EnableExplicit
   
   Global NewMap Widgets.i()
@@ -15,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-    SetAlignment(*This._S_widget, Mode, Type)
+    SetAlignmentFlag(*This._S_widget, Mode, Type)
   EndProcedure
   
   Procedure Window_0()
@@ -164,6 +165,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

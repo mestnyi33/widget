@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\event
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEventType( )
     Protected EventData ;= *event\data
     Protected EventItem = GetState(EventGadget)
     
@@ -149,6 +149,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -----
 ; EnableXP
