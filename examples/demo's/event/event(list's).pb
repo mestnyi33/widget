@@ -14,7 +14,7 @@
 ; spake post event leftclick
 
 
-XIncludeFile "../../widgets.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Procedure events_gadgets()
@@ -22,7 +22,7 @@ Procedure events_gadgets()
   Select Event()
     Case #PB_Event_GadgetDrop
       Debug ""+ EventGadget() +" - gadget Drop "+GetGadgetState(EventGadget()) ; "drop - "+EventDropText()
-
+      
     Case #PB_Event_Gadget
       Select EventType()
         Case #PB_EventType_DragStart
@@ -30,7 +30,7 @@ Procedure events_gadgets()
           
           ; 
           DragText(GetGadgetItemText(EventGadget(), GetGadgetState(EventGadget())))
-        
+          
         Case #PB_EventType_Change
           Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
           
@@ -48,36 +48,36 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Select this()\event
-  Case #PB_EventType_Drop
-      Debug  ""+GetIndex(this()\widget)+" - widget Drop "+GetState(this()\widget) +" "+ this()\item
+  Select WidgetEventType( )
+    Case #PB_EventType_Drop
+      Debug  ""+GetIndex(EventWidget( ))+" - widget Drop "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-        ;     Case #PB_EventType_Up
-      ;       Debug  ""+GetIndex(this()\widget)+" - widget Up "+GetState(this()\widget)
+      ;     Case #PB_EventType_Up
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
       ;       
       ;     Case #PB_EventType_Down
-      ;       Debug  ""+GetIndex(this()\widget)+" - widget Down "+GetState(this()\widget)
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
       ;       
       ;     Case #PB_EventType_ScrollChange
-      ;       Debug  ""+GetIndex(this()\widget)+" - widget ScrollChange "+GetState(this()\widget) +" "+ this()\item
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       ;       
       ;     Case #PB_EventType_StatusChange
-      ;       Debug  ""+GetIndex(this()\widget)+" - widget StatusChange "+GetState(this()\widget) +" "+ this()\item
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       ;      
     Case #PB_EventType_DragStart
-      Debug  ""+GetIndex(this()\widget)+" - widget DragStart "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #PB_EventType_Change
-      Debug  ""+GetIndex(this()\widget)+" - widget Change "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #PB_EventType_LeftClick
-      Debug  ""+GetIndex(this()\widget)+" - widget LeftClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #PB_EventType_LeftDoubleClick
-      Debug  ""+GetIndex(this()\widget)+" - widget LeftDoubleClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #PB_EventType_RightClick
-      Debug  ""+GetIndex(this()\widget)+" - widget RightClick "+GetState(this()\widget) +" "+ this()\item
+      Debug  ""+GetIndex(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
 EndProcedure
@@ -142,11 +142,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   For a = 0 To 12
     AddItem(GetWidget(2), -1, "Item " + Str(a) +Chr(10)+ " of the Listview") ; define listview content
   Next
-;   Resize(GetWidget(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
-;   Resize(GetWidget(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
-;   SetState(GetWidget(2), 7) ; set (beginning with 0) the tenth item as the active one
-;   SetState(GetWidget(2), 8) ; set (beginning with 0) the tenth item as the active one
-;   SetState(GetWidget(2), 9) ; set (beginning with 0) the tenth item as the active one
+  ;   Resize(GetWidget(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
+  ;   Resize(GetWidget(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
+  ;   SetState(GetWidget(2), 7) ; set (beginning with 0) the tenth item as the active one
+  ;   SetState(GetWidget(2), 8) ; set (beginning with 0) the tenth item as the active one
+  ;   SetState(GetWidget(2), 9) ; set (beginning with 0) the tenth item as the active one
   
   Text(10,170, 250,20, "list")
   Text(10+270,170, 250,20, "tree")
@@ -158,6 +158,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
