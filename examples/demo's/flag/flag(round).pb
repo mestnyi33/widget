@@ -1,28 +1,28 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 EnableExplicit
 Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type
 
 Procedure events_widgets()
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-      Select this()\widget
+      Select EventWidget( )
         Case w_type
           
         Case Button_2
-          this()\widget = Button_1
-          this()\widget\round = GetState(Button_2)
-          this()\widget\bar\button[#__b_1]\round = this()\widget\round
-          this()\widget\bar\button[#__b_2]\round = this()\widget\round
+          EventWidget( ) = Button_1
+          EventWidget( )\round = GetState(Button_2)
+          EventWidget( )\bar\button[#__b_1]\round = EventWidget( )\round
+          EventWidget( )\bar\button[#__b_2]\round = EventWidget( )\round
           
         Case Button_3
           SetState(Button_1, GetState(Button_3))
           
         Case Button_4
-          this()\widget = Button_0
-          this()\widget\round = GetState(Button_4)
-          this()\widget\bar\button[#__b_1]\round = this()\widget\round
-          this()\widget\bar\button[#__b_2]\round = this()\widget\round
+          EventWidget( ) = Button_0
+          EventWidget( )\round = GetState(Button_4)
+          EventWidget( )\bar\button[#__b_1]\round = EventWidget( )\round
+          EventWidget( )\bar\button[#__b_2]\round = EventWidget( )\round
           
         Case Button_5
           SetState(Button_0, GetState(Button_5))
@@ -67,6 +67,6 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   SetState(Splitter_0, 189)
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
