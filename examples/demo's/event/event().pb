@@ -272,14 +272,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     Macro Transform( ) : Mouse( )\_transform: EndMacro
     
+    
     Macro Repaints( )
       PostEventRepaint( Root( ) )
     EndMacro
     
     Macro PostEventRepaint( _address_ ) 
+      ;Debug "-- post --- event -- repaint --1"
+      
       If _address_\root\state\repaint = #False
         _address_\root\state\repaint = #True
-        ;;; Debug "-- post --- event -- repaint --"
+        ;Debug "-- post --- event -- repaint --2"
         PostEvent( #PB_Event_Gadget, _address_\root\canvas\window, _address_\root\canvas\gadget, #PB_EventType_Repaint, _address_\root )
       ElseIf _address_\state\repaint = #False
         _address_\state\repaint = #True
@@ -4087,7 +4090,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
      ; CompilerEndIf
     EndMacro
     
-    
     Procedure  ClipPut( *this._S_widget, x, y, width, height )
       Protected clip_x, clip_y, clip_w, clip_h
       
@@ -4171,19 +4173,20 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Protected _p_y2_
       Protected *parent._S_widget 
       
-      
       If *this\attach 
         *parent = *this\attach\parent( )
       Else
         *parent = *this\parent( )
       EndIf
       
-      Debug "reClip"
+      If *this\root = *this
+        *this\width[#__c_draw] = *this\width;[#__c_frame]
+        *this\height[#__c_draw] = *this\height;[#__c_frame]
+        *this\width[#__c_draw2] = *this\width ;[#__c_frame]
+        *this\height[#__c_draw2] = *this\height;[#__c_frame]
+      EndIf
+      
       If Not *parent
-        *this\width[#__c_draw] = *this\width[#__c_frame]
-        *this\height[#__c_draw] = *this\height[#__c_frame]
-        *this\width[#__c_draw2] = *this\width[#__c_frame]
-        *this\height[#__c_draw2] = *this\height[#__c_frame]
         ProcedureReturn 1
       EndIf
       
@@ -4304,8 +4307,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
     Procedure.b Resize( *this._S_widget, x.l,y.l,width.l,height.l )
       Protected.b result
       Protected.l ix,iy,iwidth,iheight,  Change_x, Change_y, Change_width, Change_height
-      
-      Debug "reSize " + *this\parent( ) 
       
       ; 
       If *this\_a_\transform And transform( )
@@ -4635,6 +4636,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         *this\y[#__c_inner] + *this\fs + ( *this\fs[2] + *this\fs[4] )
       EndIf
       
+      ;-
       ; then move and size parent resize all childrens
       If *this\count\childrens And *this\container
         ; Protected.l x, y, width, height
@@ -4762,7 +4764,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
                   *this\height[#__c_screen], *this\container )
           
           Post( *this, #PB_EventType_Resize, a_enter_index( *this ), *this\resize )
-          
         ElseIf ( *this\container And Not *this\root ) 
           Post( *this, #PB_EventType_Resize, -1, *this\resize )
         ElseIf *this\event And ListSize( *this\event\call( ) ) 
@@ -12006,6 +12007,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
           
           *this = *this\parent( )
+          If Not *this
+            result = 0
+            Break
+          EndIf
         Until *this = *this\root  ; is_root_( *this )
       EndIf
       
@@ -12725,6 +12730,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
             *parent = *this
             Repeat
               *parent = *parent\parent( )
+              If Not *parent
+                ProcedureReturn 0
+              EndIf
               If *parent\after\widget
                 *after = *parent\after\widget 
                 Break
@@ -13662,12 +13670,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Protected ReParent.b, x,y, *last._S_widget, *lastParent._S_widget, NewList *D._S_widget( ), NewList *C._S_widget( )
       
       If *parent
-        Debug "reParent - " + *this
-;         If Not *parent\parent()
-;           ;*parent\parent() = *parent
-;           ;ProcedureReturn 0
-;         EndIf
-        
         ;TODO
         If tabindex < 0 
           If *parent\tab\widget
@@ -16790,7 +16792,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Protected arrow_right
       
       With *this
-        *this\state\repaint = 0
+        If *this\state\repaint = #True
+          *this\state\repaint = #False
+        EndIf
         
         ; init drawing font
         draw_font_( *this )
@@ -16863,8 +16867,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       Drawing( ) = StartDrawing( CanvasOutput( *this\root\canvas\gadget ))
       
-      Debug "reDraw"
-      
       If Drawing( )
         CompilerIf #PB_Compiler_OS = #PB_OS_Linux Or 
                    #PB_Compiler_OS = #PB_OS_Windows
@@ -16877,6 +16879,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         ;
         If Not ( transform( ) And transform( )\grab )
           If is_root_(*this )
+            
             ;If *this\root\canvas\repaint = #True
             CompilerIf  #PB_Compiler_OS = #PB_OS_MacOS
               ; good transparent canvas
@@ -16885,13 +16888,11 @@ _this_\type = #PB_GadgetType_ExplorerList )
               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
             CompilerEndIf
             ; EndIf
-            ;
+            
             Draw( *this\root)
-                
+            
             PushListPosition( enumWidget( ))
             ForEach enumWidget( )
-              Debug " ReDraw - "+enumWidget()\class
-              
               If enumWidget( )\root\canvas\gadget = *this\root\canvas\gadget
                 
                 ; begin draw all widgets
@@ -18524,6 +18525,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           
         Case #PB_EventType_Focus
           *this\state\repaint = #True
+          
           If Not is_root_( *this )
             *this\color\state = 2
           EndIf
@@ -18648,12 +18650,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       ; 
       If *this\state\repaint = #True
-           *this\state\repaint = #False
-           Debug *this\root\state\repaint
-           ; *this\root\state\repaint = 0
-            PostEventRepaint( *this\root )
-           
-         ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint, *this\root )
+        *this\state\repaint = #False
+        ;Debug *this\mouse\interact
+        PostEventRepaint( *this\root )
       EndIf
       
       Post( *this, eventtype, *button, *data ) 
@@ -18731,6 +18730,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         Until PreviousElement( WidgetList( *root )) = #False 
         
+        If *widget = 0
+          *widget = *root
+        EndIf
+            
         ; do events entered & leaved 
         If *leave <> *widget
           ;If Not ( *widget And is_integral_( *widget ) )
@@ -18815,12 +18818,13 @@ _this_\type = #PB_GadgetType_ExplorerList )
         ;         EndIf
         ;         
       EndIf
+      
     EndProcedure
     
     Procedure EventHandler( Canvas =- 1, EventType =- 1 )
       Protected Repaint, mouse_x , mouse_y 
       
-      ;       If eventtype = #PB_EventType_Create
+;       If eventtype = #PB_EventType_Create
 ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
 ;           ChangeCurrentRoot( GadgetID( Canvas ) )
 ;         EndIf
@@ -18837,6 +18841,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
         Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
       EndIf
+      
       
       If Root( ) And Root( )\canvas\gadget = Canvas
         ;
@@ -18996,6 +19001,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
             ; enter&leave mouse events
             GetAtPoint( Root( ), mouse_x, mouse_y )
             
+            
+            
+            
             ; ;             Protected i, *widget._S_WIDGET, *root._S_root = Root( )
             ; ;             Static *leave._s_widget
             ; ;             
@@ -19116,6 +19124,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         ElseIf eventtype = #PB_EventType_MouseEnter 
         ElseIf eventtype = #PB_EventType_MouseLeave 
         ElseIf eventtype = #PB_EventType_MouseMove 
+          
           If Mouse( )\change > 1
             ; mouse entered-widget move event
             If EnteredWidget( ) And EnteredWidget( )\state\enter
@@ -19455,6 +19464,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           w = OpenWindow( Window, x,y,width,height, title$, flag ) : If Window =- 1 : Window = w : w = WindowID( Window ) : EndIf
           x = 0
           y = 0
+          flag | #PB_Canvas_Container
         Else
           Window = GetWindow( Root( ))
           If Not ( IsWindow( Window ) And WidgetList( Root( ) ) = Root( )\canvas\container )
@@ -20186,12 +20196,14 @@ _this_\type = #PB_GadgetType_ExplorerList )
 CompilerEndIf
 
 
+
 ;- 
 Macro UseLIB( _name_ )
   UseModule _name_
   UseModule constants
   UseModule structures
 EndMacro
+
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -20200,7 +20212,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define h = 80
   Define._s_widget *g, *g2, *g3, *g4, *g5, *g6
   
-  If Open(#PB_Any, 0, 0, 380, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(#PB_Any, 0, 0, 380, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
     a_init(Root())
     SetColor(root(), #PB_Gadget_BackColor, $FF00FF)
     *g = Button(30,30,320,h,"")
@@ -20214,5 +20226,5 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------n---4W----4-----8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------0-----------------u+--------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------
 ; EnableXP

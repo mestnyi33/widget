@@ -272,51 +272,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     Macro Transform( ) : Mouse( )\_transform: EndMacro
     
-    Macro _add_action_( _this_ )
-      ;       If thisW( )\action_type <> #PB_Compiler_Procedure 
-      ;         If thisW( )\action_type = "AddItem"
-      ;           If thisW( )\action_widget And thisW( )\action_widget\type = #__type_combobox
-      ;             thisW( )\action_widget\change = 1
-      ;             ;Redraw( thisW( )\action_widget\root )
-      ;           EndIf
-      ;         EndIf
-      ;         
-      ;         If thisW( )\action_type = "Resize"
-      ;           If thisW( )\action_widget
-      ;             DoEvents( thisW( )\action_widget, #PB_EventType_ResizeEnd )
-      ;           EndIf
-      ;         EndIf
-      ;         
-      ;         thisW( )\action_widget = _this_
-      ;         thisW( )\action_type = #PB_Compiler_Procedure 
-      ;       EndIf
-    EndMacro
-    
-    Macro Clip( _address_, _mode_=[#__c_draw] )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-      CompilerEndIf
-    EndMacro
-    Macro UnClip( )
-      PB(UnclipOutput)( )
-    EndMacro
-    
-    Macro _content_clip_( _address_, _mode_= )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-      CompilerEndIf
-    EndMacro
-    
-    Macro _content_clip2_( _address_, _mode_= )
-      ;CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-        Clip( _address_, _mode_ )
-        
-        ; Post( _address_, #PB_EventType_Draw ) 
-        
-     ; CompilerEndIf
-    EndMacro
-    
     
     Macro Repaints( )
       PostEventRepaint( Root( ) )
@@ -4090,6 +4045,51 @@ _this_\type = #PB_GadgetType_ExplorerList )
     EndProcedure
     
     ;-
+    Macro _add_action_( _this_ )
+      ;       If thisW( )\action_type <> #PB_Compiler_Procedure 
+      ;         If thisW( )\action_type = "AddItem"
+      ;           If thisW( )\action_widget And thisW( )\action_widget\type = #__type_combobox
+      ;             thisW( )\action_widget\change = 1
+      ;             ;Redraw( thisW( )\action_widget\root )
+      ;           EndIf
+      ;         EndIf
+      ;         
+      ;         If thisW( )\action_type = "Resize"
+      ;           If thisW( )\action_widget
+      ;             DoEvents( thisW( )\action_widget, #PB_EventType_ResizeEnd )
+      ;           EndIf
+      ;         EndIf
+      ;         
+      ;         thisW( )\action_widget = _this_
+      ;         thisW( )\action_type = #PB_Compiler_Procedure 
+      ;       EndIf
+    EndMacro
+    
+    Macro Clip( _address_, _mode_=[#__c_draw] )
+      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
+        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+      CompilerEndIf
+    EndMacro
+    Macro UnClip( )
+      PB(UnclipOutput)( )
+    EndMacro
+    
+    Macro _content_clip_( _address_, _mode_= )
+      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
+        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+      CompilerEndIf
+    EndMacro
+    
+    Macro _content_clip2_( _address_, _mode_= )
+      ;CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
+        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+        Clip( _address_, _mode_ )
+        
+        ; Post( _address_, #PB_EventType_Draw ) 
+        
+     ; CompilerEndIf
+    EndMacro
+    
     Procedure  ClipPut( *this._S_widget, x, y, width, height )
       Protected clip_x, clip_y, clip_w, clip_h
       
@@ -4179,11 +4179,14 @@ _this_\type = #PB_GadgetType_ExplorerList )
         *parent = *this\parent( )
       EndIf
       
+      If *this\root = *this
+        *this\width[#__c_draw] = *this\width;[#__c_frame]
+        *this\height[#__c_draw] = *this\height;[#__c_frame]
+        *this\width[#__c_draw2] = *this\width ;[#__c_frame]
+        *this\height[#__c_draw2] = *this\height;[#__c_frame]
+      EndIf
+      
       If Not *parent
-        *this\width[#__c_draw] = *this\width[#__c_frame]
-        *this\height[#__c_draw] = *this\height[#__c_frame]
-        *this\width[#__c_draw2] = *this\width[#__c_frame]
-        *this\height[#__c_draw2] = *this\height[#__c_frame]
         ProcedureReturn 1
       EndIf
       
@@ -12004,6 +12007,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
           
           *this = *this\parent( )
+          If Not *this
+            result = 0
+            Break
+          EndIf
         Until *this = *this\root  ; is_root_( *this )
       EndIf
       
@@ -16883,7 +16890,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
             ; EndIf
             
             Draw( *this\root)
-                
+            
             PushListPosition( enumWidget( ))
             ForEach enumWidget( )
               If enumWidget( )\root\canvas\gadget = *this\root\canvas\gadget
@@ -18518,6 +18525,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           
         Case #PB_EventType_Focus
           *this\state\repaint = #True
+          
           If Not is_root_( *this )
             *this\color\state = 2
           EndIf
@@ -18643,6 +18651,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ; 
       If *this\state\repaint = #True
         *this\state\repaint = #False
+        ;Debug *this\mouse\interact
         PostEventRepaint( *this\root )
       EndIf
       
@@ -18721,6 +18730,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         Until PreviousElement( WidgetList( *root )) = #False 
         
+        If *widget = 0
+          *widget = *root
+        EndIf
+            
         ; do events entered & leaved 
         If *leave <> *widget
           ;If Not ( *widget And is_integral_( *widget ) )
@@ -18805,6 +18818,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         ;         EndIf
         ;         
       EndIf
+      
     EndProcedure
     
     Procedure EventHandler( Canvas =- 1, EventType =- 1 )
@@ -18986,6 +19000,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
             
             ; enter&leave mouse events
             GetAtPoint( Root( ), mouse_x, mouse_y )
+            
+            
+            
             
             ; ;             Protected i, *widget._S_WIDGET, *root._S_root = Root( )
             ; ;             Static *leave._s_widget
@@ -19447,6 +19464,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           w = OpenWindow( Window, x,y,width,height, title$, flag ) : If Window =- 1 : Window = w : w = WindowID( Window ) : EndIf
           x = 0
           y = 0
+          flag | #PB_Canvas_Container
         Else
           Window = GetWindow( Root( ))
           If Not ( IsWindow( Window ) And WidgetList( Root( ) ) = Root( )\canvas\container )
@@ -20836,5 +20854,5 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------v--f-----+-8+04f64n---------------------
+; Folding = +------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----4---v-+L-+9--------------------
 ; EnableXP
