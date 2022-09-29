@@ -584,6 +584,7 @@ Module events
   ProcedureC  eventTapFunction(proxy, eType, event, refcon)
     Protected Point.CGPoint
     Protected *cursor.cursor::_s_cursor = #Null
+   ; Debug "eventTapFunction - "+Get::ClassName(event)
     Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     ;Protected NSEnter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     

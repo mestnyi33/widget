@@ -1,4 +1,8 @@
-﻿; ver: 3.0.0.0 ; 
+﻿; XIncludeFile "../../../widgets.pbi" 
+; XIncludeFile "../../../widget-events.pbi" 
+
+
+; ver: 3.0.0.0 ; 
 ; sudo adduser your_username vboxsf
 ; https://linuxrussia.com/sh-ubuntu.html
 ; http://forums.purebasic.com/english/viewtopic.php?p=577957
@@ -716,8 +720,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Plot(_x_+4, _y_+3, _frame_color_ ) : Line(_x_+5, _y_+3, 6, 1, _back_color_) : Plot(_x_+11, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,0,0
       Line(_x_+3, _y_+4, _size_/3-1, 1, _frame_color_) : Line(_x_+7, _y_+4, 2, 1, _back_color_) : Line(_x_+_size_/2+1, _y_+4, _size_/3-1 , 1, _frame_color_) ; 0,0,0,0,1,1,0,0,0,0
       Plot(_x_+_size_/2-2, _y_+5, _frame_color_ ) : Line(_x_+7, _y_+5, 2, 1, _back_color_) : Plot(_x_+_size_/2+1, _y_+5, _frame_color_ )                     ; 0,0,0,0,1,1,0,0,0,0
-      ;                                                                                                                                                      ;
-      ;                                                                                                                                                      ;
+                                                                                                                                                             ;                                                                                                                                                      ;
+                                                                                                                                                             ;                                                                                                                                                      ;
     EndMacro
     Macro draw_down_(_x_, _y_, _size_, _back_color_, _frame_color_)
       ;                                                                                                                                                      ;
@@ -728,8 +732,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Plot(_x_+5, _y_+7, _frame_color_ ) : Line(_x_+6, _y_+7, 4, 1, _back_color_) : Plot(_x_+10, _y_+7, _frame_color_ )                                      ; 0,0,0,1,1,1,1,0,0,0
       Plot(_x_+6, _y_+8, _frame_color_ ) : Line(_x_+7, _y_+8, 2, 1, _back_color_) : Plot(_x_+9, _y_+8, _frame_color_ )                                       ; 0,0,0,0,1,1,0,0,0,0
       Line(_x_+7, _y_+9, 2, 1, _frame_color_)                                                                                                                ; 0,0,0,0,0,0,0,0,0,0
-      ;                                                                                                                                                      ;
-      ;                                                                                                                                                      ;
+                                                                                                                                                             ;                                                                                                                                                      ;
+                                                                                                                                                             ;                                                                                                                                                      ;
     EndMacro
     Macro draw_left_(_x_, _y_, _size_, _back_color_, _frame_color_)
       ;                                                                                                                                                      ; 0,0,0,0,0,0
@@ -740,8 +744,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Plot(_x_+3, _y_+4, _frame_color_ ) : Line(_x_+3, _y_+5, 1, 6, _back_color_) : Plot(_x_+3, _y_+11, _frame_color_ )                                      ; 1,1,1,1,1,0
       Line(_x_+4, _y_+3, 1, _size_/3-1, _frame_color_) : Line(_x_+4, _y_+7, 1, 2, _back_color_) : Line(_x_+4, _y_+_size_/2+1, 1, _size_/3-1, _frame_color_)  ; 0,0,1,1,0,0
       Plot(_x_+5, _y_+_size_/2-2, _frame_color_ ) : Line(_x_+5, _y_+7, 1, 2, _back_color_) : Plot(_x_+5, _y_+_size_/2+1, _frame_color_ )                     ; 0,0,1,0,0,0
-      ;                                                                                                                                                      ; 0,0,0,0,0,0
-      ;                                                                                                                                                      ; 0,0,0,0,0,0
+                                                                                                                                                             ;                                                                                                                                                      ; 0,0,0,0,0,0
+                                                                                                                                                             ;                                                                                                                                                      ; 0,0,0,0,0,0
     EndMacro  
     Macro draw_right_(_x_, _y_, _size_, _back_color_, _frame_color_)
       ;                                                                                                                                                      ; 0,0,0,0,0,0
@@ -752,8 +756,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Plot(_x_+7, _y_+5, _frame_color_ ) : Line(_x_+7, _y_+6, 1, 4, _back_color_) : Plot(_x_+7, _y_+10, _frame_color_ )                                      ; 0,1,1,1,1,1
       Plot(_x_+8, _y_+6, _frame_color_ ) : Line(_x_+8, _y_+7, 1, 2, _back_color_) : Plot(_x_+8, _y_+9, _frame_color_ )                                       ; 0,0,1,1,0,0
       Line(_x_+9, _y_+7, 1, 2, _frame_color_)                                                                                                                ; 0,0,0,1,0,0
-      ;                                                                                                                                                      ; 0,0,0,0,0,0
-      ;                                                                                                                                                      ; 0,0,0,0,0,0
+                                                                                                                                                             ;                                                                                                                                                      ; 0,0,0,0,0,0
+                                                                                                                                                             ;                                                                                                                                                      ; 0,0,0,0,0,0
     EndMacro
     
     Macro draw_size_all_(_x_, _y_, _size_, _back_color_, _frame_color_)
@@ -1391,13 +1395,13 @@ _this_\type = #PB_GadgetType_ExplorerList )
     
     Procedure   DrawArrow( x.l, y.l, Direction.l, color.l )
       If Direction = 0
-         ; left                                                                                  ; 0,0,0,0,0,0,0,0
-         Plot( x + 3, y + 1, color ) : Plot( x + 4, y + 1, color ) : Plot( x + 5, y + 1, color ) ; 0,0,0,1,1,1,0,0                    
-         Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0,0 
-         Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) ; 0,1,1,1,0,0,0,0
-         Plot( x + 3, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 4, y + 4, color ) ; 0,0,1,1,1,0,0,0   
-         Plot( x + 3, y + 5, color ) : Plot( x + 4, y + 5, color ) : Plot( x + 5, y + 5, color ) ; 0,0,0,1,1,1,0,0               
-                                                                                                 ; 0,0,0,0,0,0,0,0    
+        ; left                                                                                  ; 0,0,0,0,0,0,0,0
+        Plot( x + 3, y + 1, color ) : Plot( x + 4, y + 1, color ) : Plot( x + 5, y + 1, color ) ; 0,0,0,1,1,1,0,0                    
+        Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0,0 
+        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) ; 0,1,1,1,0,0,0,0
+        Plot( x + 3, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 4, y + 4, color ) ; 0,0,1,1,1,0,0,0   
+        Plot( x + 3, y + 5, color ) : Plot( x + 4, y + 5, color ) : Plot( x + 5, y + 5, color ) ; 0,0,0,1,1,1,0,0               
+                                                                                                ; 0,0,0,0,0,0,0,0    
       EndIf
       If Direction = 2
         ; right                                                                                  ; 0,0,0,0,0,0,0,0
@@ -1411,21 +1415,21 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       If Direction = 1
         ; up                                                                                                                                                  ; 0,0,0,0,0,0,0
-                                                                  : Plot( x + 3, y + 1, color )                                                             ; 0,0,0,1,0,0,0
-                                    : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color )                               ; 0,0,1,1,1,0,0
+        : Plot( x + 3, y + 1, color )                                                             ; 0,0,0,1,0,0,0
+        : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0
         Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color ) ; 0,1,1,1,1,1,0
         Plot( x + 1, y + 4, color ) : Plot( x + 2, y + 4, color )                               : Plot( x + 4, y + 4, color ) : Plot( x + 5, y + 4, color ) ; 0,1,1,0,1,1,0
         Plot( x + 1, y + 5, color )                                                                                           : Plot( x + 5, y + 5, color ) ; 0,1,0,0,0,1,0    
-                                                                                                                                                              ; 0,0,0,0,0,0,0
-                                                                                                                                                              ; 0,0,0,0,0,0,0
+                                                                                                                                                            ; 0,0,0,0,0,0,0
+                                                                                                                                                            ; 0,0,0,0,0,0,0
       EndIf
       If Direction = 3
         ; down                                                                                                                                                ; 0,0,0,0,0,0,0
         Plot( x + 1, y + 1, color )                                                                                           : Plot( x + 5, y + 1, color )   ; 0,1,0,0,0,1,0
         Plot( x + 1, y + 2, color ) : Plot( x + 2, y + 2, color )                               : Plot( x + 4, y + 2, color ) : Plot( x + 5, y + 2, color )   ; 0,1,1,0,1,1,0
         Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )   ; 0,1,1,1,1,1,0
-                                    : Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )                                 ; 0,0,1,1,1,0,0
-                                                                  : Plot( x + 3, y + 5, color )                                                               ; 0,0,0,1,0,0,0
+        : Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )                                                             ; 0,0,1,1,1,0,0
+        : Plot( x + 3, y + 5, color )                                                                                                                         ; 0,0,0,1,0,0,0
                                                                                                                                                               ; 0,0,0,0,0,0,0
       EndIf
       
@@ -3821,6 +3825,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
     
     Macro set_hide_state_( _this_ )
       _this_\hide = Bool( _this_\state\hide Or _this_\parent( )\hide Or ( _this_\parent( )\type = #__type_Panel And FocusedTabindex( _this_\parent( )\tab\widget ) <> ParentTabIndex( _this_ ) ))
+      _this_\resize | 1<<6
     EndMacro
     
     Macro set_check_state_( _address_, _three_state_ )
@@ -4082,12 +4087,12 @@ _this_\type = #PB_GadgetType_ExplorerList )
     
     Macro _content_clip2_( _address_, _mode_= )
       ;CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-        Clip( _address_, _mode_ )
-        
-        ; Post( _address_, #PB_EventType_Draw ) 
-        
-     ; CompilerEndIf
+      ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+      Clip( _address_, _mode_ )
+      
+      ; Post( _address_, #PB_EventType_Draw ) 
+      
+      ; CompilerEndIf
     EndMacro
     
     Procedure  ClipPut( *this._S_widget, x, y, width, height )
@@ -4180,10 +4185,14 @@ _this_\type = #PB_GadgetType_ExplorerList )
       EndIf
       
       If *this\root = *this
-        *this\width[#__c_draw] = *this\width;[#__c_frame]
-        *this\height[#__c_draw] = *this\height;[#__c_frame]
-        *this\width[#__c_draw2] = *this\width ;[#__c_frame]
-        *this\height[#__c_draw2] = *this\height;[#__c_frame]
+        If *this\width[#__c_draw] <> *this\width
+          *this\width[#__c_draw] = *this\width
+          *this\width[#__c_draw2] = *this\width
+        EndIf
+        If *this\height[#__c_draw] <> *this\height
+          *this\height[#__c_draw] = *this\height
+          *this\height[#__c_draw2] = *this\height
+        EndIf
       EndIf
       
       If Not *parent
@@ -4646,7 +4655,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
         
         If StartEnumerate( *this ) 
           If Not is_scrollbars_( enumWidget( ))
-            
             If enumWidget( )\align
               x2 = enumWidget( )\align\indent\right 
               y2 = enumWidget( )\align\indent\bottom
@@ -4739,12 +4747,15 @@ _this_\type = #PB_GadgetType_ExplorerList )
             Else
               If (Change_x Or Change_y)
                 Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              Else
+                enumWidget( )\resize | 1<<5
               EndIf
             EndIf
           EndIf
           
-          StopEnumerate( )
-        EndIf
+          ;Next
+           StopEnumerate( )
+         EndIf
       EndIf
       
       ;
@@ -16811,8 +16822,15 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
         
         ; draw belowe drawing
-        If Not *this\hide And Reclip( *this )
-          DrawFirst( *this )
+        If Not *this\hide 
+          If *this\resize
+            Reclip( *this )
+          EndIf
+          
+          If *this\width[#__c_draw] > 0 And
+             *this\height[#__c_draw] > 0
+            DrawFirst( *this )
+          EndIf
         EndIf
         
         ;         ; draw above drawing
@@ -16848,6 +16866,10 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         EndIf
         
+        If *this\resize <> 0
+          *this\resize = 0
+        EndIf
+      
         ;         ;
         ;         If *this\event
         ;           If *this\repaint 
@@ -18446,7 +18468,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
         *this\state\repaint = #False
         
         ;; Debug " PostReDraw - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
-        PostEventRepaint( *this\root ) ; ReDraw( *this\root )
+        ;PostEventRepaint( *this\root ) ; ReDraw( *this\root )
+        PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint, *this\root )
       EndIf
       
       ProcedureReturn 1;Repaint
@@ -18650,9 +18673,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       ; 
       If *this\state\repaint = #True
-        *this\state\repaint = #False
         ;Debug *this\mouse\interact
         PostEventRepaint( *this\root )
+        *this\state\repaint = #False
       EndIf
       
       Post( *this, eventtype, *button, *data ) 
@@ -18729,106 +18752,109 @@ _this_\type = #PB_GadgetType_ExplorerList )
             Break
           EndIf
         Until PreviousElement( WidgetList( *root )) = #False 
+      EndIf
+      
+      ; root no enumWidget
+      If *widget = 0 And
+         is_at_point_( *root, mouse_x, mouse_y, [#__c_frame] ) And 
+         is_at_point_( *root, mouse_x, mouse_y, [#__c_draw] ) 
+        *widget = *root
+      EndIf
+      
+      ; do events entered & leaved 
+      If *leave <> *widget
+        ;If Not ( *widget And is_integral_( *widget ) )
+        EnteredWidget( ) = *widget
+        ;EndIf
         
-        If *widget = 0
-          *widget = *root
-        EndIf
+        ;
+        If Not a_is_at_point_( *leave )
+          If *leave And ;Not ( *widget And is_integral_( *widget ) ) And 
+             *leave\state\enter <> #False 
+            *leave\state\enter = #False
+            repaint | DoEvents( *leave, #PB_EventType_MouseLeave )
             
-        ; do events entered & leaved 
-        If *leave <> *widget
-          ;If Not ( *widget And is_integral_( *widget ) )
-          EnteredWidget( ) = *widget
-          ;EndIf
-          
-          ;
-          If Not a_is_at_point_( *leave )
-            If *leave And ;Not ( *widget And is_integral_( *widget ) ) And 
-               *leave\state\enter <> #False 
-              *leave\state\enter = #False
-              repaint | DoEvents( *leave, #PB_EventType_MouseLeave )
-              
-              If Not is_interact_row_( *leave )
-                If Not IsChild( *widget, *leave )
-                  ;
-                  DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
-                  
-                  If *leave\address
-                    ChangeCurrentElement( enumWidget( ), *leave\address )
-                    Repeat                 
-                      If enumWidget( )\count\childrens And enumWidget( )\state\enter <> #False 
-                        If is_at_point_( enumWidget( ), mouse_x, mouse_y, [#__c_draw] ) 
-                          If Not ( *widget And *widget\index > enumWidget( )\index )
-                            Break
-                          EndIf
-                        EndIf
-                        
-                        ;
-                        If Not is_interact_row_( enumWidget( ) ) And
-                           IsChild( *leave, enumWidget( )) And
-                           Not IsChild( *widget, enumWidget( ))
-                          enumWidget( )\state\enter = #False
-                          DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, - 1 )
+            If Not is_interact_row_( *leave )
+              If Not IsChild( *widget, *leave )
+                ;
+                DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
+                
+                If *leave\address
+                  ChangeCurrentElement( enumWidget( ), *leave\address )
+                  Repeat                 
+                    If enumWidget( )\count\childrens And enumWidget( )\state\enter <> #False 
+                      If is_at_point_( enumWidget( ), mouse_x, mouse_y, [#__c_draw] ) 
+                        If Not ( *widget And *widget\index > enumWidget( )\index )
+                          Break
                         EndIf
                       EndIf
-                    Until PreviousElement( enumWidget( )) = #False 
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ;
-            If *widget And 
-               *widget\state\enter <> #True
-              *widget\state\enter = #True
-              repaint | DoEvents( *widget, #PB_EventType_MouseEnter )
-              _DD_event_enter_( repaint, *widget )
-              
-              If Not is_interact_row_( *widget )
-                If *widget\address And Not *widget\attach 
-                  ForEach enumWidget( ) 
-                    If enumWidget( ) = *widget
-                      Break
-                    EndIf
-                    
-                    If enumWidget( )\state\enter = #False And
-                       enumWidget( )\count\childrens And 
-                       Not is_interact_row_( enumWidget( ) ) And
-                       IsChild( *widget, enumWidget( ))
                       
-                      enumWidget( )\state\enter =- 1
-                      DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, 1 )
+                      ;
+                      If Not is_interact_row_( enumWidget( ) ) And
+                         IsChild( *leave, enumWidget( )) And
+                         Not IsChild( *widget, enumWidget( ))
+                        enumWidget( )\state\enter = #False
+                        DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, - 1 )
+                      EndIf
                     EndIf
-                  Next
+                  Until PreviousElement( enumWidget( )) = #False 
                 EndIf
-                
-                DoEvents( *widget, #PB_EventType_StatusChange, #Null, 1 )
               EndIf
             EndIf
           EndIf
           
-          ;If Not ( *widget And is_integral_( *widget ) )
-          *leave = *widget
-          ;EndIf
-        EndIf  
-        ; Debug ""+*leave +" "+ *widget
+          ;
+          If *widget And 
+             *widget\state\enter <> #True
+            *widget\state\enter = #True
+            repaint | DoEvents( *widget, #PB_EventType_MouseEnter )
+            _DD_event_enter_( repaint, *widget )
+            
+            If Not is_interact_row_( *widget )
+              If *widget\address And Not *widget\attach 
+                ForEach enumWidget( ) 
+                  If enumWidget( ) = *widget
+                    Break
+                  EndIf
+                  
+                  If enumWidget( )\state\enter = #False And
+                     enumWidget( )\count\childrens And 
+                     Not is_interact_row_( enumWidget( ) ) And
+                     IsChild( *widget, enumWidget( ))
+                    
+                    enumWidget( )\state\enter =- 1
+                    DoEvents( enumWidget( ), #PB_EventType_StatusChange, #Null, 1 )
+                  EndIf
+                Next
+              EndIf
+              
+              DoEvents( *widget, #PB_EventType_StatusChange, #Null, 1 )
+            EndIf
+          EndIf
+        EndIf
         
-        ;         If a_is_at_point_( a_enter_widget( ) )
-        ;           EnteredWidget( ) = a_enter_widget( )
-        ;           Debug 888
-        ;         EndIf
-        ;         
-      EndIf
+        ;If Not ( *widget And is_integral_( *widget ) )
+        *leave = *widget
+        ;EndIf
+      EndIf  
+      ; Debug ""+*leave +" "+ *widget
+      
+      ;         If a_is_at_point_( a_enter_widget( ) )
+      ;           EnteredWidget( ) = a_enter_widget( )
+      ;           Debug 888
+      ;         EndIf
+      ;         
       
     EndProcedure
     
     Procedure EventHandler( Canvas =- 1, EventType =- 1 )
       Protected Repaint, mouse_x , mouse_y 
       
-;       If eventtype = #PB_EventType_Create
-;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
-;           ChangeCurrentRoot( GadgetID( Canvas ) )
-;         EndIf
-;       EndIf
+      ;       If eventtype = #PB_EventType_Create
+      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
+      ;           ChangeCurrentRoot( GadgetID( Canvas ) )
+      ;         EndIf
+      ;       EndIf
       If eventtype = #PB_EventType_MouseEnter
         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
@@ -19584,7 +19610,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           
           ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
           ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
- 
+          
         CompilerEndIf
       EndIf
       
@@ -20213,18 +20239,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Define._s_widget *g, *g2, *g3, *g4, *g5, *g6
   
   If Open(#PB_Any, 0, 0, 380, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-    a_init(Root())
-    SetColor(root(), #PB_Gadget_BackColor, $FF00FF)
-    *g = Button(30,30,320,h,"")
-    ;Debug *g
-    ;*g6 = Splitter(30,30,320,h, #Null,#Null)
+     a_init(Root())
+     SetColor(root(), #PB_Gadget_BackColor, $FF00FF)
+     Container(30,30,320,h)
+     *g = Button(30,10,220,30,"")
+     *g = Button(30,30,220,30,"")
+     CloseList( )
+;     ;Debug *g
+;     ;*g6 = Splitter(30,30,320,h, #Null,#Null)
     
     
     WaitClose( )
   EndIf
 CompilerEndIf
 
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

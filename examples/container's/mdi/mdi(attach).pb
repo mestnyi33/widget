@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *mdi._s_widget = MDI(x,y,Width, height)
+  Define *mdi._s_widget = MDI(x,y, width,height)
   ;;a_init( *mdi )
   
   Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetClass(widget(), "main") 
@@ -30,6 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g3._s_widget = AddItem(*mdi, -1, "SubChild") : SetClass(widget(), "SubChild") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
+  ;
   Resize(*g0, 50, 50, 400, 400)
   Resize(*g1, X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300)
   Resize(*g2, X(*g0, #__c_container)+Width(*g0, #__c_Frame), Y(*g0, #__c_container), 200, 300)
@@ -42,6 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

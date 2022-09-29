@@ -353,7 +353,7 @@
     ;;#__align_full = 0;#__align_left|#__align_top|#__align_right|#__align_bottom
     
     ;- _c_anchors
-    #__a_size  = 20;7
+    #__a_size  = 7
     #__a_moved = 9
     #__a_count = #__a_moved+4
     ;

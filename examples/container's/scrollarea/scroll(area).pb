@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -155,7 +156,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
         
       Case #PB_EventType_LeftButtonDown
-        If Not (this()\widget And this()\widget\bar\index > 0)
+        If Not (EventWidget( ) And EventWidget( )\bar\index > 0)
           Drag = Bool(HitTest(Images(), Mousex, Mousey))
           If Drag 
             SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)
@@ -212,23 +213,23 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_scrolls()
     Select WidgetEventType( ) ;   this()\event ; 
       Case #PB_EventType_Change
-        If this()\widget\vertical
+        If EventWidget( )\vertical
           PushListPosition(Images())
           ForEach Images()
-            Images()\Y + this()\widget\bar\page\change 
+            Images()\Y + EventWidget( )\bar\page\change 
           Next
           PopListPosition(Images())
           
-          *this\y[#__c_required] =- this()\widget\bar\page\pos + this()\widget\y
+          *this\y[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\y
         Else
           
           PushListPosition(Images())
           ForEach Images()
-            Images()\X + this()\widget\bar\page\change
+            Images()\X + EventWidget( )\bar\page\change
           Next
           PopListPosition(Images())
           
-          *this\x[#__c_required] =- this()\widget\bar\page\pos + this()\widget\x
+          *this\x[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\x
         EndIf
         
         Canvas_Draw(MyCanvas, Images()) 
@@ -256,6 +257,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = 84----
 ; EnableXP

@@ -1,28 +1,30 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global g,*g, b,*b, oc, ic, i, time, Sw = 350, Sh = 300, count;=1000
+  Global g,*g._s_widget, b,*b, oc, ic, i, time, Sw = 350, Sh = 300, count;=1000
   
   Procedure events_gadgets()
     Debug ""+EventGadget()+ " - gadget event - " +EventType()
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_Resize
         Debug 666
-        ResizeGadget(oc, X(this()\widget, #__c_inner), Y(this()\widget, #__c_inner), width(this()\widget, #__c_inner), height(this()\widget, #__c_inner))
+        ResizeGadget(oc, X(EventWidget( ), #__c_inner), Y(EventWidget( ), #__c_inner), width(EventWidget( ), #__c_inner), height(EventWidget( ), #__c_inner))
         
       Case #PB_EventType_ScrollChange
-        ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
+        ResizeGadget(ic, -*g\scroll\h\bar\page\pos, -*g\scroll\v\bar\page\pos, #PB_Ignore, #PB_Ignore)
+       ; ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
     EndSelect
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1")
@@ -35,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; Bind(-1, @events_widgets())
     
-    *g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
     oc = ContainerGadget(#PB_Any, X(*g, #__c_inner), Y(*g, #__c_inner), width(*g, #__c_inner), height(*g, #__c_inner))
     ic = ContainerGadget(#PB_Any, 0, 0, Sw, Sh)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
@@ -130,6 +132,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

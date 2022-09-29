@@ -2,7 +2,7 @@
 ;XIncludeFile "../transform().pbi"
 ;XIncludeFile "../widgets-plus.pbi"
 ;XIncludeFile "../-widgets-edit.pbi"
-;XIncludeFile "../-widgets.pbi"
+;XIncludeFile "../widgets.pbi"
 ;XIncludeFile "../CE.pb"
 XIncludeFile "../widget-events.pbi"
 ; XIncludeFile "../examples/empty5.pb"
@@ -1143,35 +1143,35 @@ CompilerIf #PB_Compiler_IsMainFile
         SetState( id_inspector_tree, 0 )
         widget_add( *window, "button", 10, 130, 100, 30 )
         
-        ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-        ;   Define *container = widget_add( *window, "container", 80, 10 )
-        ;   widget_add( *container, "button", -10, 20 )
-        ;   widget_add( *window, "button", 10, 20 )
-        ;   ;CloseList( )
-        
-            ; example 2
-            ;   ;OpenList( id_design_form )
-            SetState( group_select, 1 ) 
-            
-            Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
-            widget_add( *window, "button", 15, 25, 50, 30 )
-            widget_add( *window, "text", 25, 65, 50, 30 )
-            widget_add( *window, "button", 35, 65+40, 50, 30 )
-            widget_add( *window, "text", 45, 65+40*2, 50, 30 )
-            
-            ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-            Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
-            widget_add( *container, "progress", 15, 25, 30, 30 )
-            widget_add( *container, "text", 25, 65, 50, 30 )
-            widget_add( *container, "button", 35, 65+40, 80, 30 )
-            widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-            
-            Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-            widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-            widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-            widget_add( *container2, "string", 25, 65, 100, 30 )
-            widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
-        
+; ;         ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
+; ;         ;   widget_add( *container, "button", -10, 20 )
+; ;         ;   widget_add( *window, "button", 10, 20 )
+; ;         ;   ;CloseList( )
+; ;         
+; ;             ; example 2
+; ;             ;   ;OpenList( id_design_form )
+; ;             SetState( group_select, 1 ) 
+; ;             
+; ;             Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+; ;             widget_add( *window, "button", 15, 25, 50, 30 )
+; ;             widget_add( *window, "text", 25, 65, 50, 30 )
+; ;             widget_add( *window, "button", 35, 65+40, 50, 30 )
+; ;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+; ;             
+; ;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+; ;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+; ;             widget_add( *container, "progress", 15, 25, 30, 30 )
+; ;             widget_add( *container, "text", 25, 65, 50, 30 )
+; ;             widget_add( *container, "button", 35, 65+40, 80, 30 )
+; ;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+; ;             
+; ;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+; ;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+; ;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+; ;             widget_add( *container2, "string", 25, 65, 100, 30 )
+; ;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
+; ;         
     
     
     

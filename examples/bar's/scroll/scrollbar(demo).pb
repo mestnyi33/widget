@@ -1,4 +1,6 @@
-﻿XIncludeFile "../../../-widgets.pbi" : Uselib(widget)
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
+Uselib(widget)
 
 Procedure events_gadgets()
   ClearDebugOutput()

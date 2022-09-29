@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -8,60 +9,60 @@ CompilerIf #PB_Compiler_IsMainFile
   Global x=200,y=150, width=320, height=320 , focus
   
   Procedure Gadgets_Events()
-;     Select Event
-;       Case #PB_Event_Gadget
-        Select EventGadget()
-          Case 2
-            If GetGadgetState(2)
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
-            Else
-              SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
-            EndIf
-            
-          Case 3
-            If GetGadgetState(2)
-              SetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
-              SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
-            Else
-              SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
-              SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
-            EndIf
-            ; Canvas_Draw(MyCanvas, Images( ))
-            redraw(root())
-            
-          Case 4
-            If GetGadgetState(2)
-              SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
-              SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
-            Else
-              SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
-              SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
-            EndIf
-            ; Canvas_Draw(MyCanvas, Images( ))
-            ;;redraw(root())
-            
-          Case 5
-            ; Canvas_Draw(MyCanvas, Images( ))
-            redraw(root())
-            
-        EndSelect
-;     EndSelect
+    ;     Select Event
+    ;       Case #PB_Event_Gadget
+    Select EventGadget()
+      Case 2
+        If GetGadgetState(2)
+          SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+        Else
+          SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+        EndIf
+        
+      Case 3
+        If GetGadgetState(2)
+          SetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
+          SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
+        Else
+          SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
+          SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
+        EndIf
+        ; Canvas_Draw(MyCanvas, Images( ))
+        redraw(root())
+        
+      Case 4
+        If GetGadgetState(2)
+          SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
+          SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
+        Else
+          SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
+          SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
+        EndIf
+        ; Canvas_Draw(MyCanvas, Images( ))
+        ;;redraw(root())
+        
+      Case 5
+        ; Canvas_Draw(MyCanvas, Images( ))
+        redraw(root())
+        
+    EndSelect
+    ;     EndSelect
     
   EndProcedure
   
   Macro Area_Draw( _this_ )
-;     widget::bar_updates( _this_,
-;                          _this_\scroll\h\x, 
-;                          _this_\scroll\v\y, 
-;                          (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
-;                          (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
-;     
-;     If Not _this_\scroll\v\hide
-;       widget::Draw( _this_\scroll\v )
-;     EndIf
-;     If Not _this_\scroll\h\hide
-;       widget::Draw( _this_\scroll\h )
-;     EndIf
+    ;     widget::bar_updates( _this_,
+    ;                          _this_\scroll\h\x, 
+    ;                          _this_\scroll\v\y, 
+    ;                          (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
+    ;                          (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+    ;     
+    ;     If Not _this_\scroll\v\hide
+    ;       widget::Draw( _this_\scroll\v )
+    ;     EndIf
+    ;     If Not _this_\scroll\h\hide
+    ;       widget::Draw( _this_\scroll\h )
+    ;     EndIf
     
     UnclipOutput( )
     DrawingMode( #PB_2DDrawing_Outlined )
@@ -73,58 +74,69 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Procedure CustomEvents( )
-    Static Drag
+    Static DragWidget
     
     Select WidgetEventType( )
-      Case #PB_EventType_Repaint
-        Debug 5555
-       Area_Draw( *mdi ) ;EventWidget( )\parent )
-       
-     Case #PB_EventType_Draw
+      Case #PB_EventType_LeftButtonUp 
+        DragWidget = #Null
+        
+      Case #PB_EventType_LeftButtonDown
+;         ; get alpha
+;         If EventWidget( )\image[#__img_background]\id And
+;            EventWidget( )\image[#__img_background]\depth > 31 And 
+;            StartDrawing( ImageOutput( EventWidget( )\image[#__img_background]\img ) )
+;           
+;            DrawingMode( #PB_2DDrawing_AlphaChannel )
+;            If Alpha( Point( Mouse( )\x - EventWidget( )\x[#__c_inner], Mouse( )\y - EventWidget( )\y[#__c_inner] ) )
+;              DragWidget = EventWidget( )
+;            EndIf
+;           
+;           StopDrawing( )
+;         Else
+;           DragWidget = EventWidget( )
+;         EndIf
+        DragWidget = EventWidget( )
+        
+      Case #PB_EventType_MouseMove
+        If DragWidget = EventWidget( )
+          Resize( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+        EndIf
+        
+      Case #PB_EventType_Draw
+        
         ; Demo draw on element
         UnclipOutput()
         DrawingMode(#PB_2DDrawing_Outlined)
-        If Eventwidget()\round
-          RoundBox(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, Eventwidget()\round, Eventwidget()\round, $ff00ff00)
+        
+        Protected draw_color 
+        If Eventwidget()\width[#__c_draw] > 0 And
+           Eventwidget()\height[#__c_draw] > 0
+          draw_color = $ff00ff00
         Else
-          Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, $ff00ff00)
+          draw_color = $ff00ffff
         EndIf
         
-        ; demo clip area
-        If GetGadgetState(5)
-          Clip(Eventwidget())
+        If Eventwidget()\round
+          RoundBox(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, Eventwidget()\round, Eventwidget()\round, draw_color)
+        Else
+          Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
         EndIf
         
-;         ; 
-;         DrawingMode(#PB_2DDrawing_AlphaBlend)
-;         Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, $800000ff)
-        
-      Case #PB_EventType_LeftButtonUp 
-        Drag = #False
-        
-      Case #PB_EventType_LeftButtonDown
-        Drag = #True
-        
-      Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-        If Drag = #True
-          If Resize( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
-            ProcedureReturn #PB_EventType_Repaint
-          EndIf
-        EndIf
+        Area_Draw( EventWidget( )\parent( ) )
         
     EndSelect
-   
+    
   EndProcedure
   
   Procedure Canvas_AddImage( *mdi, x, y, img, round=0 )
     Protected *this._s_widget
     
     *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
-    Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     *this\class = "image-"+Str(img)
     *this\cursor = #PB_Cursor_Hand
     *this\round = round
     
+    Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonUp )
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonDown )
@@ -176,12 +188,38 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
   
+  Define round = 50
+  Define hole = CreateImage( #PB_Any,100,100,32 )
+  If StartDrawing( ImageOutput( hole ) )
+    DrawingMode( #PB_2DDrawing_AllChannels )
+    ; transporent back 
+    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
+    
+    Circle( 50,50,round,RGBA( $00,$FF,$FF,$FF ) )
+    Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
+    StopDrawing( )
+  EndIf
+  
+  Define hole2 = CreateImage( #PB_Any,200,60,32 )
+  If StartDrawing( ImageOutput( hole2 ) )
+    DrawingMode( #PB_2DDrawing_AllChannels )
+    ; transporent back 
+    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
+    
+    DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AllChannels )
+    RoundBox( 0,0,OutputWidth(),OutputHeight(),100,100,RGBA(213, 55, 109, 71) )
+    DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AllChannels )
+    RoundBox( 0,0,OutputWidth(),OutputHeight(),100,100,RGBA(213, 55, 109, 218) )
+    
+    StopDrawing( )
+  EndIf
+  
   ;
   MyCanvas = GetGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
   SetColor(root(), #__color_back, $ffffffff)
   
-;   ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
-;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetWindow(Root()), MyCanvas, #PB_EventType_Resize )
+  ;   ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
+  ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetWindow(Root()), MyCanvas, #PB_EventType_Resize )
   
   *mdi = MDI(x,y,width,height);, #__flag_autosize)
                               ;a_init( *mdi )
@@ -202,45 +240,19 @@ CompilerIf #PB_Compiler_IsMainFile
   SetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
   
   ;Debug *mdi\Scroll\v\round
-   vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
-   hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
+  vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
+  hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
   
   Canvas_AddImage( *mdi, -80, -20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
   Canvas_AddImage( *mdi, 100, 120, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
   Canvas_AddImage( *mdi, 210, 250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
   
-  Define round = 50
-  Define hole = CreateImage( #PB_Any,100,100,32 )
-  If StartDrawing( ImageOutput( hole ) )
-    DrawingMode( #PB_2DDrawing_AllChannels )
-    ; transporent back 
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
-    
-    Circle( 50,50,round,RGBA( $00,$FF,$FF,$FF ) )
-    Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
-    StopDrawing( )
-  EndIf
   Canvas_AddImage( *mdi,-70,240,hole, round )
-  
-  round = 100
-  Define hole2 = CreateImage( #PB_Any,200,60,32 )
-  If StartDrawing( ImageOutput( hole2 ) )
-    DrawingMode( #PB_2DDrawing_AllChannels )
-    ; transporent back 
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
-    
-    DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AllChannels )
-    RoundBox( 0,0,OutputWidth(),OutputHeight(),100,100,RGBA(213, 55, 109, 71) )
-    DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AllChannels )
-    RoundBox( 0,0,OutputWidth(),OutputHeight(),100,100,RGBA(213, 55, 109, 218) )
-    
-    StopDrawing( )
-  EndIf
-  Canvas_AddImage( *mdi,90,30,hole2, round )
+  Canvas_AddImage( *mdi,90,30,hole2, 100 )
   
   BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

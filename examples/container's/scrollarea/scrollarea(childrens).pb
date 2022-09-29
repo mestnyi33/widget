@@ -1,9 +1,9 @@
 ﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, gcount=10000, wcount=10000
+  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, gcount=0, wcount=0
   
   Procedure events_gadgets()
     Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (1,  10,  10, 230, 30,"Button 1")
@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30,"Button 1")
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If gcount
       OpenGadgetList(g)
       time = ElapsedMilliseconds()
-      For i=0 To gcount
+      For i=1 To gcount
         If Bool(i>gcount-110)
           ButtonGadget  (#PB_Any, (gcount-i)*2, (gcount-i)*2, 130, 30,"Button"+Str(i))
         Else
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If wcount
       OpenList(*g)
       time = ElapsedMilliseconds()
-      For i=0 To wcount
+      For i=1 To wcount
         If Bool(i>wcount-110)
           Button((wcount-i)*2, (wcount-i)*2, 130, 30,"Button"+Str(i))
         Else
@@ -70,12 +70,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     
-    BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+    BindGadgetEvent(g, @events_gadgets(), #PB_EventType_LeftClick)
+    BindGadgetEvent(g, @events_gadgets(), #PB_EventType_Resize)
+    
+    Bind(*g, @events_widgets(), #PB_EventType_ScrollChange )
+    Bind(*g, @events_widgets(), #PB_EventType_Resize )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
