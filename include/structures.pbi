@@ -574,9 +574,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;- - _s_eventdata
     Structure _s_eventdata
-      *back.pFunc
+      *back.pFunc ; temp
       
       *id
+      
+      *pFunc.pFunc
       ; *widget._s_widget
       *type ; eventType( )
       *item ; eventItem( )
@@ -820,5 +822,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------
+; Folding = --------v-
 ; EnableXP

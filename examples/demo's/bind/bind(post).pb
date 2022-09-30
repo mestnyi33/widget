@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 ; 2097 - time post widget
 ; 65 - time bind widget
@@ -8,8 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, count = 10000
   
   Procedure events_widgets()
-    ;Debug ""+Str(this()\widget\index)+ " - widget event - " +this()\event;;;+ " bar - " +this()\item+ " direction - " +this()\data 
-  EndProcedure
+    ;  Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
+    EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
@@ -70,6 +70,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = v-
 ; EnableXP

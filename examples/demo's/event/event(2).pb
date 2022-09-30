@@ -325,6 +325,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro GetActive( ): Keyboard( )\window: EndMacro   ; Returns activeed window
     Macro GetMouseX( _mode_ = #__c_screen ): Mouse( )\x[_mode_]: EndMacro ; Returns mouse x
     Macro GetMouseY( _mode_ = #__c_screen ): Mouse( )\y[_mode_]: EndMacro ; Returns mouse y
+    Macro Clip( _address_, _mode_=[#__c_draw] )
+      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
+        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+      CompilerEndIf
+    EndMacro
+    Macro UnClip( )
+      PB(UnclipOutput)( )
+    EndMacro
     
     ;-
     Macro scroll_x_( _this_ ): _this_\x[#__c_required]: EndMacro
@@ -982,46 +990,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
     EndMacro
     
     
-    ;-
-    Macro _mdi_update_( _this_,  _x_,_y_, _width_, _height_ )
-      scroll_x_( _this_ ) = _x_
-      scroll_y_( _this_ ) = _y_
-      scroll_width_( _this_ ) = _width_
-      scroll_height_( _this_ ) = _height_
-      
-      If StartEnumerate( _this_ )
-        If enumParent( ) = _this_
-          If scroll_x_( _this_ ) > enumWidget( )\x[#__c_container] 
-            scroll_x_( _this_ ) = enumWidget( )\x[#__c_container] 
-          EndIf
-          If scroll_y_( _this_ ) > enumWidget( )\y[#__c_container] 
-            scroll_y_( _this_ ) = enumWidget( )\y[#__c_container] 
-          EndIf
-        EndIf
-        StopEnumerate( )
-      EndIf
-      
-      If StartEnumerate( _this_ )
-        If enumParent( ) = _this_
-          If scroll_width_( _this_ ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - scroll_x_( _this_ ) 
-            scroll_width_( _this_ ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - scroll_x_( _this_ ) 
-          EndIf
-          If scroll_height_( _this_ ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - scroll_y_( _this_ ) 
-            scroll_height_( _this_ ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - scroll_y_( _this_ ) 
-          EndIf
-        EndIf
-        StopEnumerate( )
-      EndIf
-      
-      If bar_Updates( _this_, 0, 0, _this_\width[#__c_container], _this_\height[#__c_container] )
-        
-        _this_\width[#__c_inner] = _this_\scroll\h\bar\page\len
-        _this_\height[#__c_inner] = _this_\scroll\v\bar\page\len
-        
-      EndIf
-      
-    EndMacro
-    
     ;-  -----------------
     ;-   DECLARE_globals
     ;-  -----------------
@@ -1204,7 +1172,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
     Declare.i OpenList( *this, item.l = 0 )
     
     Declare.i bar_tab_SetState( *this._S_widget, State.l )
-    Declare   bar_Updates( *this, x.l,y.l,width.l,height.l )
+    Declare   mdi_bar_update_( *this, x.l,y.l,width.l,height.l )
     Declare   bar_Resizes( *this, x.l,y.l,width.l,height.l )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
     Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i =- 1 )
@@ -2279,7 +2247,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         transform( )\id[13]\y = (a_focus_widget( )\y[#__c_frame] + a_focus_widget( )\height[#__c_frame]) - transform( )\id[13]\height
         
         If enumRoot( ) And ListSize( enumWidget( ))
-          ;PushListPosition( enumWidget( ))
+          PushListPosition( enumWidget( ))
           ForEach enumWidget( )
             If Not enumWidget( )\hide And enumWidget( )\_a_\transform And
                is_parent_one_( enumWidget( ), a_focus_widget( ))
@@ -2341,7 +2309,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
               EndIf
             EndIf
           Next
-          ;PopListPosition( enumWidget( ))
+          PopListPosition( enumWidget( ))
         EndIf
       EndIf
       
@@ -3495,9 +3463,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         EndIf
         
-        ; 
-        Post( *this, eventtype, EnteredRowIndex( *this ) )
-        
         If eventtype = #PB_EventType_LeftButtonUp
           transform( )\grab = 0
         EndIf
@@ -3951,7 +3916,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         Case "splitter"       : result = #__type_Splitter
         Case "string"         : result = #__type_String
         Case "text"           : result = #__type_Text
-        Case "track"       : result = #__type_TrackBar
+        Case "track"          : result = #__type_TrackBar
         Case "tree"           : result = #__type_Tree
         Case "unknown"        : result = #__type_Unknown
         Case "web"            : result = #__type_Web
@@ -4088,14 +4053,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ;       EndIf
     EndMacro
     
-    Macro Clip( _address_, _mode_=[#__c_draw] )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-      CompilerEndIf
-    EndMacro
-    Macro UnClip( )
-      PB(UnclipOutput)( )
-    EndMacro
     
     Macro _content_clip_( _address_, _mode_= )
       CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
@@ -4108,7 +4065,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
       Clip( _address_, _mode_ )
       
-      ; Post( _address_, #PB_EventType_Draw ) 
       
       ; CompilerEndIf
     EndMacro
@@ -4390,7 +4346,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
             x = ( x/transform( )\grid\size ) * transform( )\grid\size
           EndIf
           If *this\parent( ) And *this\parent( )\container
-            x - *this\parent( )\fs
+           ; x - *this\parent( )\fs
           EndIf
         EndIf
         
@@ -4400,7 +4356,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
             y = ( y/transform( )\grid\size ) * transform( )\grid\size
           EndIf
           If *this\parent( ) And *this\parent( )\container
-            y - *this\parent( )\fs
+           ; y - *this\parent( )\fs
           EndIf
         EndIf
         
@@ -4592,7 +4548,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
          *this\parent( )\scroll\v\bar\page\change = 0 And
          *this\parent( )\scroll\h\bar\page\change = 0
         
-        _mdi_update_( *this\parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
+        mdi_bar_update_( *this\parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
       EndIf
       
       ;
@@ -4778,34 +4734,21 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       ;
       If *this\type = #__type_MDI
-        _mdi_update_( *this, 0,0,0,0 )
+       ; mdi_bar_update_( *this, 0,0,0,0 ) ;? не понял зачем использовал
       EndIf
-      
-      
       
       ; 
       If ( Change_x Or Change_y Or Change_width Or Change_height )
+        *this\state\repaint = #True
+        
         If *this\_a_\transform
           a_move( *this\_a_\id, 
                   *this\x[#__c_screen],
                   *this\y[#__c_screen], 
                   *this\width[#__c_screen], 
                   *this\height[#__c_screen], *this\container )
-          
-          Post( *this, #PB_EventType_Resize, a_enter_index( *this ), *this\resize )
-        ElseIf ( *this\container And Not *this\root ) 
-          Post( *this, #PB_EventType_Resize, -1, *this\resize )
-        ElseIf *this\event And ListSize( *this\event\call( ) ) 
-          ;And *this\event\call( ) = #PB_EventType_resize
-          Protected _check_
-          _check_expression_( _check_, *this\event\call( ), = #PB_EventType_Resize )
-          If _check_
-            
-            Post( *this, #PB_EventType_Resize, -1, *this\resize )
-          EndIf
         EndIf
         
-        ;PostEventCanvas( *this\root )
         ProcedureReturn 1
       EndIf
       
@@ -6209,7 +6152,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       width = *this\width[#__c_frame]
       height = *this\height[#__c_frame]
-      
+      ;Debug ""+height +" "+ *this\class
       
       If mode > 0
         If *this\type = #__type_Spin 
@@ -6347,6 +6290,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
           
           If *bar\page\end
+           ; *bar\percent = ( *bar\thumb\end - *bar\thumb\len-*this\scroll\increment ) / ( *bar\page\end - *bar\min-*this\scroll\increment )
             *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
           Else
             *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\min )
@@ -7188,8 +7132,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
         
         ; thumb move tick steps
-        If *this\type = #__type_trackbar And 
-           *this\flag & #PB_TrackBar_Ticks
+        If ( *this\type = #__type_trackbar And *this\flag & #PB_TrackBar_Ticks )
           ThumbPos = bar_thumb_pos_( *bar, ScrollPos )
           ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
         EndIf
@@ -7392,10 +7335,44 @@ _this_\type = #PB_GadgetType_ExplorerList )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   bar_Updates( *this._S_widget, x.l,y.l,width.l,height.l )
+    Procedure   mdi_bar_update_( *this._S_widget, x.l,y.l,width.l,height.l )
+      scroll_x_( *this ) = x
+      scroll_y_( *this ) = y
+      scroll_width_( *this ) = width
+      scroll_height_( *this ) = height
+      
+      If StartEnumerate( *this )
+        If enumParent( ) = *this
+          If scroll_x_( *this ) > enumWidget( )\x[#__c_container] 
+            scroll_x_( *this ) = enumWidget( )\x[#__c_container] 
+          EndIf
+          If scroll_y_( *this ) > enumWidget( )\y[#__c_container] 
+            scroll_y_( *this ) = enumWidget( )\y[#__c_container] 
+          EndIf
+        EndIf
+        StopEnumerate( )
+      EndIf
+      
+      If StartEnumerate( *this )
+        If enumParent( ) = *this
+          If scroll_width_( *this ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - scroll_x_( *this ) 
+            scroll_width_( *this ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - scroll_x_( *this ) 
+          EndIf
+          If scroll_height_( *this ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - scroll_y_( *this ) 
+            scroll_height_( *this ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - scroll_y_( *this ) 
+          EndIf
+        EndIf
+        StopEnumerate( )
+      EndIf
+      
       Static v_max, h_max
       Protected sx, sy, round
       Protected result
+      
+      x = 0 
+      y = 0
+      width = *this\width[#__c_container]
+      height = *this\height[#__c_container] 
       
       If *this\scroll\v\bar\page\len <> height - Bool( scroll_width_( *this ) > width ) * *this\scroll\h\height
         *this\scroll\v\bar\page\len = height - Bool( scroll_width_( *this ) > width ) * *this\scroll\h\height
@@ -7550,7 +7527,15 @@ _this_\type = #PB_GadgetType_ExplorerList )
         *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len )) 
       EndIf
       
-      ProcedureReturn result
+      If result
+        
+        *this\width[#__c_inner] = *this\scroll\h\bar\page\len
+        *this\height[#__c_inner] = *this\scroll\v\bar\page\len
+        *this\resize | 1<<6
+          
+      EndIf
+      
+     
     EndProcedure
     
     Procedure   _3bar_Resizes( *this._S_widget, x.l,y.l,width.l,height.l )
@@ -7750,6 +7735,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         Else
           If \v\hide <> #True
+            *this\resize | 1<<6
             \v\hide = #True
             ; reset page pos then hide scrollbar
             If \v\bar\page\pos > \v\bar\min
@@ -7767,6 +7753,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         Else
           If \h\hide <> #True
+            *this\resize | 1<<6
             \h\hide = #True
             ; reset page pos then hide scrollbar
             If \h\bar\page\pos > \h\bar\min
@@ -7777,10 +7764,13 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         EndIf
         
+;         If Bool( \v\bar\area\change Or \h\bar\area\change )
+;           *this\resize | 1<<6
+;         EndIf
+        
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
     EndProcedure
-    
     
     Procedure   bar_Events( *this._S_widget, eventtype.l, *button._S_buttons, *data )
       Protected Repaint
@@ -12636,23 +12626,25 @@ _this_\type = #PB_GadgetType_ExplorerList )
       If index =- 1
         ProcedureReturn enumWidget( )
       Else
+        PushListPosition( enumWidget( ) )
         ForEach enumWidget( )
-          If enumWidget( )\index = index +  1
+          If enumWidget( )\index = index ;+  1
             result = enumWidget( )
             Break
           EndIf
         Next
+        PopListPosition( enumWidget( ) )
       EndIf
       
       ProcedureReturn result
     EndProcedure
     
-    Procedure.i Getaddress( *this._S_widget )
-      ProcedureReturn *this\address
+    Procedure.l GetIndex( *this._S_widget )
+      ProcedureReturn *this\index ; - 1
     EndProcedure
     
-    Procedure.l GetIndex( *this._S_widget )
-      ProcedureReturn *this\index - 1
+    Procedure.i GetAddress( *this._S_widget )
+      ProcedureReturn *this\address
     EndProcedure
     
     Procedure.l GetLevel( *this._S_widget )
@@ -16608,8 +16600,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       EndWith
     EndProcedure
     
-    ;-
-    Macro DrawFirst( _this_ )
+    Macro draw_below_( _this_ )
       ; limit drawing boundaries
       _content_clip2_( _this_, [#__c_draw] )
       
@@ -16776,7 +16767,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       EndIf
       
     EndMacro
-    Macro DrawLast( _this_ )
+    Macro draw_above_( _this_ )
       _content_clip2_( _this_, [#__c_draw] )
       
       ; draw keyboard focus widget frame
@@ -16825,9 +16816,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
           *this\state\repaint = #False
         EndIf
         
-        ; init drawing font
-        draw_font_( *this )
-        
         ; we call the event dispatched before the binding 
         If *this\event And 
            *this\count\events = 0 ;And ListSize( *this\event\queue( ))
@@ -16839,6 +16827,9 @@ _this_\type = #PB_GadgetType_ExplorerList )
           ; ClearList( *this\event\queue( ))
         EndIf
         
+        ; init drawing font
+        draw_font_( *this )
+        
         ; draw belowe drawing
         If Not *this\hide 
           If *this\resize
@@ -16847,17 +16838,18 @@ _this_\type = #PB_GadgetType_ExplorerList )
           
           If *this\width[#__c_draw] > 0 And
              *this\height[#__c_draw] > 0
-            DrawFirst( *this )
+            draw_below_( *this )
           EndIf
         EndIf
         
-        ;         ; draw above drawing
-        ;         If Not *this\last\widget 
-        ;           DrawLast( *this )
-        ;         EndIf
-        ;         If *this\position & #PB_List_Last And *this\parent( ) 
-        ;           DrawLast( *this\parent( ) )
-        ;         EndIf
+;         ; draw above drawing
+;         If Not *this\last\widget 
+;           draw_above_( *this )
+;         EndIf
+;         If *this\position & #PB_List_Last And *this\parent( ) 
+;           draw_above_( *this\parent( ) )
+;         EndIf
+        
         If *this\_a_\transform And a_focus_widget( ) And *this <> a_focus_widget( )
           a_draw( *this )
         EndIf
@@ -16884,19 +16876,15 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
         EndIf
         
+      
+        ;
+        Post( *this, #PB_EventType_Draw )
         If *this\resize <> 0
+          If *this\_a_\transform Or (*this\container And Not *this\root) 
+            Post( *this, #PB_EventType_Resize )
+          EndIf
           *this\resize = 0
         EndIf
-      
-        ;         ;
-        ;         If *this\event
-        ;           If *this\repaint 
-        ;             SendEvent( #PB_EventType_Draw, *this )
-        ;             
-        ;             *this\repaint = #False
-        ;           EndIf
-        ;         EndIf
-        
       EndWith
     EndProcedure
     
@@ -17002,8 +16990,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
           *this\root\canvas\postevent = #False
         EndIf
         
-        ; Post( *this\root, #PB_EventType_Repaint ) 
-        
         Drawing( ) = 0
         StopDrawing( )
       EndIf
@@ -17012,12 +16998,19 @@ _this_\type = #PB_GadgetType_ExplorerList )
     ;-
     Procedure.i Post( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
       Protected result
+      Select eventtype
+          Case #PB_EventType_MouseEnter
+            Debug " enter "+*this\class
+          Case #PB_EventType_MouseLeave 
+            Debug " leave "+*this\class
+        EndSelect
+        
       
       If *this = #PB_All
         ; 4)
       Else
         
-        If WidgetEvent( )\back
+        If WidgetEvent( )\pFunc
           
           EventWidget( ) = *this
           WidgetEvent( )\type = eventtype
@@ -17032,9 +17025,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
                 If *this\event\call( )\type = #PB_All Or  
                    *this\event\call( )\type = eventtype
                   
-                  WidgetEvent( )\back = *this\event\call( )\back
-                  
-                  result = WidgetEvent( )\back( )
+                  result = *this\event\call( )\pFunc( )
                   
                   If result
                     Break 
@@ -17052,9 +17043,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
             ;                 If *this\window\event\call( )\type = #PB_All Or  
             ;                    *this\window\event\call( )\type = eventtype
             ;                   
-            ;                   WidgetEvent( )\back = *this\window\event\call( )\back
-            ;                   
-            ;                   result = WidgetEvent( )\back( )
+            ;                   result = *this\window\event\call( )\pFunc( )
             ;                   
             ;                   If result
             ;                     Break 
@@ -17064,23 +17053,23 @@ _this_\type = #PB_GadgetType_ExplorerList )
             ;             EndIf
           EndIf
           
-          ;           ; theard call current-widget-root bind event function
-          ;           If result <> #PB_Ignore And *this\root\event
-          ;             
-          ;             ForEach *this\root\event\call( )
-          ;               If *this\root\event\call( )\type = #PB_All Or  
-          ;                  *this\root\event\call( )\type = eventtype
-          ;                 
-          ;                 WidgetEvent( )\back = *this\root\event\call( )\back
-          ;                 
-          ;                 result = WidgetEvent( )\back( )
-          ;                 
-          ;                 If result
-          ;                   Break 
-          ;                 EndIf
-          ;               EndIf
-          ;             Next
-          ;           EndIf
+          If  is_root_(*this )
+            ; theard call current-widget-root bind event function
+            If result <> #PB_Ignore And *this\root\event
+              
+              ForEach *this\root\event\call( )
+                If *this\root\event\call( )\type = #PB_All Or  
+                   *this\root\event\call( )\type = eventtype
+                  
+                  result = *this\root\event\call( )\pFunc( )
+                  
+                  If result
+                    Break 
+                  EndIf
+                EndIf
+              Next
+            EndIf
+          EndIf
           
           EventWidget( ) = #Null
           WidgetEvent( )\type = #PB_All
@@ -17113,17 +17102,18 @@ _this_\type = #PB_GadgetType_ExplorerList )
         
         ; is bind event callback
         ForEach *this\event\call( )
-          If *this\event\call( )\back = *callback And 
+          If *this\event\call( )\pFunc = *callback And 
              *this\event\call( )\type = eventtype And 
              *this\event\call( )\item = item
             ProcedureReturn *this\event\call( )
           EndIf
         Next
         
+        ;
         LastElement( *this\event\call( ))
         AddElement( *this\event\call( ))
         *this\event\call.allocate( EVENTDATA, ( )) 
-        *this\event\call( )\back = *callback
+        *this\event\call( )\pFunc = *callback
         *this\event\call( )\type = eventtype
         *this\event\call( )\item = item
       EndIf
@@ -17135,7 +17125,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
       Else
         If *this\event
           ForEach *this\event\call( )
-            If *this\event\call( )\back = *callback And 
+            If *this\event\call( )\pFunc = *callback And 
                *this\event\call( )\type = eventtype And 
                *this\event\call( )\item = item
               DeleteElement( *this\event\call( ) )
@@ -17145,6 +17135,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
       EndIf
     EndProcedure
+    
     
     Procedure PBFlag( Type, Flag )
       Protected flags
@@ -17967,532 +17958,6 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
     EndProcedure
     
-    Procedure _DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
-      Protected Repaint, mouse_x.l = Mouse( )\x, mouse_y.l = Mouse( )\y, _wheel_x_.b = 0, _wheel_y_.b = 0
-      Protected *item._S_rows
-      
-      *this\events\type = eventtype
-      *this\events\item = *button
-      *this\events\data = *data
-      
-      If *this\state\drag ; Or eventtype = #PB_EventType_LeftButtonUp \focus
-        If eventtype = #PB_EventType_LeftButtonUp Or
-           eventtype = #PB_EventType_MouseEnter Or
-           eventtype = #PB_EventType_MouseLeave Or
-           eventtype = #PB_EventType_MouseMove
-          
-          ;If bar_in_stop_( *this\scroll\v\bar ) Or bar_in_start_( *this\scroll\v\bar )
-          If eventtype = #PB_EventType_LeftButtonUp Or
-             is_at_point_( *this, Mouse( )\x, Mouse( )\y, [#__c_inner] )
-            
-            If *this\state\press =- 1
-              *this\state\press = 1
-              
-              If *this\row
-                
-                Debug "stop timer - " + EnteredRow( *this )
-                ;                 UnbindEvent( #PB_Event_Timer, @Row_timer_events( ), *this\root\canvas\window );, *this\root\canvas\gadget )
-                ;                 RemoveWindowTimer( *this\root\canvas\window, 99 )
-                
-                If PressedRow( *this ) And *this\text\editable
-                  ChangeCurrentElement( RowList( *this ), PressedRow( *this ) )
-                  DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), 1 )
-                  
-                  If Mouse( )\y < row_y_( *this, PressedRow( *this )) + PressedRow( *this )\height - *this\scroll\v\bar\page\pos 
-                    LastElement( RowList( *this ) )
-                    Repeat
-                      If RowList( *this )\index > PressedRow( *this )\index Or 
-                         Mouse( )\y >= row_y_( *this, RowList( *this )) + RowList( *this )\height - *this\scroll\v\bar\page\pos 
-                        If RowList( *this )\text\edit[2]\width <> 0
-                          If RowList( *this )\state\enter
-                            RowList( *this )\state\enter = #False
-                          EndIf
-                          DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 14 )
-                        EndIf
-                      Else
-                        If Not EnteredRow( *this )
-                          If RowList( *this )\state\enter
-                            RowList( *this )\state\enter = #False
-                          EndIf
-                          FocusedRow( *this ) = RowList( *this )
-                          DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 9 )
-                        EndIf
-                      EndIf
-                    Until Not PreviousElement( RowList( *this ) )
-                    
-                  Else
-                    ForEach RowList( *this )
-                      If RowList( *this )\index < PressedRow( *this )\index Or 
-                         Mouse( )\y <= row_y_( *this, RowList( *this )) - *this\scroll\v\bar\page\pos 
-                        If RowList( *this )\text\edit[2]\width <> 0
-                          If RowList( *this )\state\enter
-                            RowList( *this )\state\enter = #False
-                          EndIf
-                          DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 14 )
-                        EndIf
-                      Else
-                        If Not EnteredRow( *this )
-                          If RowList( *this )\state\enter
-                            RowList( *this )\state\enter = #False
-                          EndIf
-                          FocusedRow( *this ) = RowList( *this )
-                          DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 10 )
-                        EndIf
-                      EndIf
-                    Next
-                  EndIf
-                  
-                  DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), - 1 )
-                EndIf
-                
-              EndIf
-            EndIf
-          Else
-            If *this\state\press = 1
-              *this\state\press =- 1
-              
-              If *this\row
-                
-                Debug "start timer - " ; +LeavedRow( *this )\index +" "+ EnteredRow( *this )
-                                       ;                 AddWindowTimer( *this\root\canvas\window, 99, 100 )
-                                       ;                 BindEvent( #PB_Event_Timer, @Row_timer_events( ), *this\root\canvas\window );, *this\root\canvas\gadget )
-                
-                ;
-                If PressedRow( *this ) And *this\text\editable
-                  ChangeCurrentElement( RowList( *this ), PressedRow( *this ) )
-                  DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), 1 )
-                  
-                  If Mouse( )\y < row_y_( *this, PressedRow( *this )) + PressedRow( *this )\height - *this\scroll\v\bar\page\pos 
-                    While PreviousElement( RowList( *this ) )
-                      If RowList( *this )\state\enter
-                        RowList( *this )\state\enter = #False
-                      EndIf
-                      If RowList( *this )\text\edit[2]\width = 0
-                        DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 9 )
-                      EndIf
-                    Wend
-                  Else
-                    While NextElement( RowList( *this ) )
-                      If RowList( *this )\state\enter
-                        RowList( *this )\state\enter = #False
-                      EndIf
-                      If RowList( *this )\text\edit[2]\width = 0
-                        DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 10 )
-                      EndIf
-                    Wend
-                  EndIf
-                  
-                  FocusedRow( *this ) = RowList( *this )
-                  DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), - 1 )
-                EndIf
-                
-              EndIf
-              
-            EndIf
-          EndIf
-          
-        EndIf
-      EndIf
-      
-      ;       If eventtype = #PB_EventType_LeftButtonUp
-      ;         Debug *this\text\edit[2]\string
-      ;       EndIf
-      
-      ;       ; mouse position inside widget 
-      ;       Select eventtype
-      ;         Case #PB_EventType_MouseMove,
-      ;              #PB_EventType_MouseEnter,
-      ;              #PB_EventType_MouseLeave
-      ;           
-      ;           If *this\state\enter = 1
-      ;             If *this\scroll\h
-      ;               Mouse( )\x[#__c_inner] = Mouse( )\x - *this\x[#__c_inner]    + *this\scroll\h\bar\page\pos
-      ;             Else
-      ;               Mouse( )\x[#__c_inner] = Mouse( )\x - *this\x[#__c_inner]
-      ;             EndIf
-      ;             If *this\scroll\v
-      ;               Mouse( )\y[#__c_inner] = Mouse( )\y - *this\y[#__c_inner]    + *this\scroll\v\bar\page\pos   
-      ;             Else
-      ;               Mouse( )\y[#__c_inner] = Mouse( )\y - *this\y[#__c_inner]
-      ;             EndIf
-      ;           Else
-      ;             Mouse( )\x[#__c_inner] =- 1
-      ;             Mouse( )\y[#__c_inner] =- 1
-      ;           EndIf 
-      ;       EndSelect
-      
-      ;       If eventtype = #PB_EventType_StatusChange
-      ;         Debug Mouse( )\y[#__c_inner]
-      ;       EndIf
-      
-      Select eventtype
-        Case #PB_EventType_MouseMove
-          If *this\bar And *this\state\drag
-            *this\state\repaint = #True
-          EndIf
-          
-        Case #PB_EventType_StatusChange
-          *this\state\repaint = #True
-          
-        Case #PB_EventType_LeftButtonDown,
-             #PB_EventType_KeyDown,
-             #PB_EventType_KeyUp,
-             #PB_EventType_LeftButtonUp,
-             #PB_EventType_MouseEnter,
-             #PB_EventType_MouseLeave,
-             #PB_EventType_ScrollChange,
-             ;           ;; #PB_EventType_Repaint,
-             ;              #PB_EventType_Create,
-             ;              #PB_EventType_Focus,
-             ;              #PB_EventType_LostFocus,
-             ;              #PB_EventType_DragStart,
-             ;              #PB_EventType_Resize,
-          #PB_EventType_Drop
-          
-          *this\state\repaint = #True
-      EndSelect
-      
-      Select eventtype
-        Case #PB_EventType_Create,
-             #PB_EventType_Focus,
-             #PB_EventType_LostFocus,
-             #PB_EventType_DragStart,
-             #PB_EventType_Drop
-          
-          ;  Debug " DoEvent - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
-          ; *this\state\repaint = #True
-      EndSelect
-      
-      ;       If *this\event
-      ;         *this\event\type = eventtype
-      ;       EndIf
-      
-      ;       ;
-      ;       If Not is_widget_( *this )
-      ;         If Not is_root_(*this )
-      ;           Debug "not event widget - " + *this
-      ;         EndIf
-      ;         ProcedureReturn 0
-      ;       EndIf
-      ;       ;Debug Mouse( )\change
-      ;             If eventtype = #PB_EventType_LeftButtonDown Or 
-      ;                eventtype = #PB_EventType_LeftButtonUp 
-      ;             ;  Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
-      ;             *this\repaint = 1
-      ;           EndIf
-      ;             
-      ;             If eventtype = #PB_EventType_MouseEnter Or 
-      ;                eventtype = #PB_EventType_MouseLeave
-      ;             ;;  Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
-      ;             *this\repaint = 1
-      ;         EndIf
-      ;             
-      ;             If eventtype = #PB_EventType_Focus Or 
-      ;                eventtype = #PB_EventType_LostFocus 
-      ;              ; Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
-      ;              *this\repaint = 1
-      ;         EndIf
-      ;       
-      
-      If eventtype = #PB_EventType_MouseLeave
-        If *this\type = #PB_GadgetType_Editor
-          ; Debug ""+edit_caret_pos_( *this ) +" "+ edit_caret_pos_delta_( *this ) +" "+ edit_caret_pos_delta_( *this ) +" "+ edit_caret_pos_( *this )
-        EndIf
-      EndIf
-      ; widget::_events_all( )
-      
-      
-      ; widget::_events_Anchors( )
-      If *this\_a_\transform
-        ;         If eventtype = #PB_EventType_MouseLeave
-        ;           If *this = a_enter_widget( ) 
-        ;             If a_events( *this, eventtype, mouse_x, mouse_y )
-        ;               Repaint = 1
-        ;               *this\state\repaint = #True
-        ;             EndIf
-        ;           EndIf
-        ;         Else
-        If a_events( *this, eventtype, mouse_x, mouse_y )
-          Repaint = 1
-          *this\state\repaint = #True
-        EndIf
-        ;         EndIf
-      EndIf    
-      
-      If Not *this\state\disable          And Not (Transform( ) And a_is_at_point_( *this ))
-        ; widget::_events_Window( )
-        If *this\type = #__type_window
-          Repaint | Window_Events( *this, eventtype, mouse_x, mouse_y )
-        EndIf
-        
-        ; widget::_events_Properties( )
-        If *this\type = #__type_property
-          Repaint | Tree_events( *this, eventtype, mouse_x, mouse_y )
-        EndIf
-        
-        ; widget::_events_Tree( )
-        If *this\type = #__type_Tree
-          Repaint | Tree_events( *this, eventtype, mouse_x, mouse_y )
-        EndIf
-        
-        ; widget::_events_ListView( )
-        If *this\type = #__type_ListView
-          Repaint | ListView_Events( *this, eventtype, *data, *button )
-        EndIf
-        
-        ; widget::_events_Editor( )
-        If *this\type = #__type_Editor 
-          Repaint | Editor_Events( *this, eventtype, *data, *button )
-        EndIf
-        
-        ; widget::_events_String( )
-        If *this\type = #__type_String
-          Repaint | Editor_Events( *this, eventtype, *data, *button )
-        EndIf
-        
-        ;- widget::_events_CheckBox( )
-        If *this\type = #__type_Option Or
-           *this\type = #__type_CheckBox
-          
-          Select eventtype
-            Case #PB_EventType_LeftButtonDown : Repaint = #True
-            Case #PB_EventType_LeftButtonUp   : Repaint = #True
-            Case #PB_EventType_LeftClick
-              If *this\type = #__type_CheckBox
-                Repaint = SetState( *this, Bool( *this\_box_\___state! 1 ))
-              Else
-                Repaint = SetState( *this, 1 )
-              EndIf
-              
-              If Repaint
-                Post( *this, #PB_EventType_LeftClick ) 
-              EndIf
-          EndSelect
-        EndIf
-        
-        ;- widget::_events_ComboBox( )
-        If *this\type = #__type_combobox
-          If eventtype = #PB_EventType_LeftButtonDown 
-            If is_at_point_( *this\_box_, mouse_x, mouse_y )
-              If *this\state\flag & #__S_collapse
-                If Not EnteredRow( *this )
-                  *this\state\flag &~ #__S_collapse
-                EndIf
-              Else
-                *this\state\flag | #__S_collapse
-              EndIf
-              
-              If *this\state\flag & #__S_collapse
-                ;Debug "collapsed"
-                Display( *this, *this\parent( ) );, *this\x[#__c_frame], *this\y[#__c_frame] )+ *this\height[#__c_frame] )
-              EndIf
-              
-              Repaint = #True
-            EndIf
-          EndIf
-          
-          ; combobox-popup-list events
-          If PopupWidget( )
-            Repaint | ListView_events( PopupWidget( ), eventtype, *data, *button )
-          EndIf
-          
-          If eventtype = #PB_EventType_Up Or eventtype = #PB_EventType_Down
-            Debug "expanded"
-            Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\barHeight ) 
-            update_visible_items_( *this )
-            ; ClearList( VisibleRowList( *this ) )
-            
-            If FocusedRow( *this )
-              *this\text\string = FocusedRow( *this )\text\string
-            EndIf
-            Repaint = #True
-          EndIf
-        EndIf
-        
-        ;- widget::_events_Button( )
-        If *this\type = #__type_Button
-          If Not *this\state\flag & #__S_check
-            Select eventtype
-              Case #PB_EventType_MouseLeave     : Repaint = #True 
-                *this\color\state = #__S_0 
-              Case #PB_EventType_LeftButtonDown 
-                ;If *this\state\enter
-                *this\color\state = #__S_2  
-                ;EndIf
-                Repaint = #True 
-              Case #PB_EventType_MouseEnter     : Repaint = #True 
-                If *this\state\press
-                  *this\color\state = #__S_2
-                Else
-                  *this\color\state = #__S_1
-                EndIf
-            EndSelect
-          EndIf
-          
-          If eventtype = #PB_EventType_LeftButtonUp 
-            ;If *this\color\state = #__S_2
-            Repaint = #True
-            ;EndIf
-          EndIf
-          
-          If eventtype = #PB_EventType_LeftClick
-            ;If *this\color\state = #__S_2
-            SetState( *this, Bool( Bool( *this\state\flag & #__S_check ) ! 1 ))
-            
-            ;; Post( *this, eventtype, #PB_All, 0 )
-            ;EndIf
-          EndIf
-          
-          If *this\image[#__img_released]\id Or *this\image[#__img_pressed]\id
-            *this\image = *this\image[1 + Bool( *this\color\state = #__S_2 )]
-          EndIf
-        EndIf
-        
-        ;- widget::_events_Hyper( )
-        If *this\type = #__type_HyperLink
-          If Not Mouse( )\buttons
-            If is_at_point_( *this, mouse_x - *this\x, mouse_y - *this\y, [#__c_required] )
-              If *this\color\state = #__S_0
-                *this\color\state = #__S_1
-                ; set_cursor_( *this, #PB_Cursor_Hand )
-                Repaint = #True
-              EndIf
-            Else 
-              If *this\color\state = #__S_1
-                *this\color\state = #__S_0
-                ; set_cursor_( *this, #PB_Cursor_Default )
-                Repaint = #True
-              EndIf
-            EndIf
-          EndIf
-          
-          ; if mouse enter text
-          If *this\color\state = #__S_1
-            If eventtype = #PB_EventType_LeftClick
-              Post( *this, #PB_EventType_LeftClick, *this )
-            EndIf
-            If eventtype = #PB_EventType_LeftButtonUp
-              ; set_cursor_( *this, #PB_Cursor_Hand )
-              Repaint = #True
-            EndIf
-            If eventtype = #PB_EventType_LeftButtonDown
-              ; set_cursor_( *this, #PB_Cursor_Default )
-              *this\color\state = #__S_0 
-              Repaint = 1
-            EndIf
-          EndIf
-          If eventtype = #PB_EventType_MouseEnter
-            ; set_cursor_( *this, #PB_Cursor_Default )
-          EndIf
-          
-        EndIf
-        
-        ;- widget::_events_Bars( )
-        If *this\type = #__type_Spin Or
-           ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ) Or
-           *this\type = #__type_TrackBar Or
-           *this\type = #__type_ScrollBar Or
-           *this\type = #__type_ProgressBar Or
-           *this\type = #__type_Splitter
-          
-          Repaint | bar_Events( *this, eventtype, *button, *data )
-        EndIf
-        
-        
-        ;;*this\repaint = Repaint
-        
-        ;- widget::_events_Bind( )
-        If *this\event 
-          ;           If *item
-          ;             If *this\row
-          ;               Post( *this, eventtype, *item ) 
-          ;             ElseIf *this\bar
-          ;               Post( *this, eventtype, *item ) 
-          ;             EndIf
-          ;           Else
-          ;; Post( *this, eventtype, *button, *data ) 
-          ;           EndIf
-        EndIf
-      EndIf
-      
-      
-      If *this\state\enter
-        If Mouse( )\buttons
-          *this\color\back = $FF00F7FF
-        Else
-          ;*this\color\back = $FF301DE8
-          *this\color\state = #__S_1
-        EndIf
-        
-      Else
-        If eventtype = #PB_EventType_Repaint
-          If *this\fs
-            *this\color\back = $FFF3F3F3
-          Else
-            *this\color\back = $FF07EAF6
-          EndIf
-        Else
-          ;*this\color\back = $FF13FF00
-          *this\color\state = #__S_0 
-        EndIf
-      EndIf
-      
-      If *this\state\press
-        If *this\state\drag 
-          *this\color\back = $FFFFB1F8
-        Else
-          *this\color\back = $FFFFAA00
-        EndIf
-        
-      ElseIf *this\state\focus
-        *this\color\back = $FFCFCFCF
-        
-      EndIf
-      ;       
-      ;       ;   If *item
-      ;       ;     
-      ;       ;     If *item\state\enter
-      ;       ;       If *this\state\press
-      ;       ;         *item\color\back = $00F7FF
-      ;       ;       Else
-      ;       ;         *item\color\back = $301DE8
-      ;       ;       EndIf
-      ;       ;       
-      ;       ;     Else
-      ;       ;       If eventtype = #PB_EventType_Repaint
-      ;       ;         *item\color\back = $F3F3F3
-      ;       ;       Else
-      ;       ;         *item\color\back = $13FF00
-      ;       ;       EndIf
-      ;       ;     EndIf
-      ;       ;     
-      ;       ;     If *item\state\press
-      ;       ;       If *item\state\drag 
-      ;       ;         *item\color\back = $FFB1F8
-      ;       ;       Else
-      ;       ;         *item\color\back = $FFAA00
-      ;       ;       EndIf
-      ;       ;       
-      ;       ;     ElseIf *item\state\focus
-      ;       ;       *item\color\back = $FF0090
-      ;       ;       
-      ;       ;     EndIf
-      ;       ;     *this\state\repaint = #True
-      ;       ;   EndIf
-      
-      
-      ;
-      If *this\state\repaint = #True
-        *this\state\repaint = #False
-        
-        ;; Debug " PostReDraw - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
-        ;PostEventRepaint( *this\root ) ; ReDraw( *this\root )
-        PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint, *this\root )
-      EndIf
-      
-      ProcedureReturn 1;Repaint
-    EndProcedure
-    
     Procedure DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
       ; ; ;       If Not *this
       ; ; ;         Debug ""+PressedWidget( ) +" - "+ 999999999999
@@ -18567,9 +18032,11 @@ _this_\type = #PB_GadgetType_ExplorerList )
         Case #PB_EventType_Focus
           *this\state\repaint = #True
           
-          If Not is_root_( *this )
-            *this\color\state = 2
-          EndIf
+          CompilerIf #PB_Compiler_IsMainFile
+            If Not is_root_( *this )
+              *this\color\state = 2
+            EndIf
+          CompilerEndIf
           
         Case #PB_EventType_LostFocus
           *this\state\repaint = #True
@@ -18713,23 +18180,21 @@ _this_\type = #PB_GadgetType_ExplorerList )
              is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_frame] ) And 
              is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_draw] ) 
             
-            ;                   ; enter-widget mouse pos
-            ;                   If is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_inner] )
-            ;                     ; get alpha
-            ;                     If WidgetList( *root )\image[#__img_background]\id And
-            ;                        WidgetList( *root )\image[#__img_background]\depth > 31 And 
-            ;                        StartDrawing( ImageOutput( WidgetList( *root )\image[#__img_background]\img ) )
-            ;                       
-            ;                       drawing_mode_( #PB_2DDrawing_AlphaChannel )
-            ;                       
-            ;                       If Not Alpha( Point( ( Mouse( )\x - WidgetList( *root )\x[#__c_inner] ) - 1, ( Mouse( )\y - WidgetList( *root )\y[#__c_inner] ) - 1 ) )
-            ;                         StopDrawing( )
-            ;                         Continue
-            ;                       EndIf
-            ;                       
-            ;                       StopDrawing( )
-            ;                     EndIf
-            ;                   EndIf
+            ; get alpha
+            If WidgetList( *root )\image[#__img_background]\id And
+               WidgetList( *root )\image[#__img_background]\depth > 31 And  
+               is_at_point_( WidgetList( *root ), mouse_x, mouse_y, [#__c_inner] ) And
+               StartDrawing( ImageOutput( WidgetList( *root )\image[#__img_background]\img ) )
+              
+              drawing_mode_( #PB_2DDrawing_AlphaChannel )
+              If Not Alpha( Point( ( Mouse( )\x - WidgetList( *root )\x[#__c_inner] ) - 1,
+                                   ( Mouse( )\y - WidgetList( *root )\y[#__c_inner] ) - 1 ) )
+                StopDrawing( )
+                Continue
+              Else
+                StopDrawing( )
+              EndIf
+            EndIf
             
             ; 
             If PopupWidget( ) And 
@@ -18883,7 +18348,33 @@ _this_\type = #PB_GadgetType_ExplorerList )
         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
         EndIf
-        Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
+        
+        If EventData( ) <> #PB_Ignore
+          WidgetEvent( )\pFunc = 1
+          
+          ForEach enumWidget( )
+            If enumWidget( )\root\canvas\gadget = Canvas 
+              Select EventData( )
+                Case #PB_EventType_Create 
+                  enumWidget( )\state\create = 1
+              EndSelect
+            Else
+              Debug "repaint error enumWidget( )"
+            EndIf
+          Next
+          
+          ReDraw( Root( ) )
+;           PushListPosition(WidgetList(Root()))
+;           mouse_x = CanvasMouseX( Root( )\canvas\gadget )
+;           mouse_y = CanvasMouseY( Root( )\canvas\gadget )
+;           Mouse( )\change = 1<<0
+;           Mouse( )\x = mouse_x
+;           Mouse( )\y = mouse_y
+;           GetAtPoint(Root(), mouse()\x, mouse()\y)
+;           PopListPosition(WidgetList(Root()))
+        EndIf
+        
+        ;Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
       EndIf
       
       
@@ -18941,91 +18432,11 @@ _this_\type = #PB_GadgetType_ExplorerList )
             Mouse( )\interact = 1
             Mouse( )\change = 1<<4
             
-          Case #PB_EventType_Repaint
-            If EventData( ) <> #PB_Ignore
-              PushMapPosition( Root( ) )
-              ChangeCurrentRoot( GadgetID(Canvas) )
-              ;+ ChangeCurrentRoot(GadgetID(PB(EventGadget)( )) )
-              ;+ Canvas.i = Root( )\canvas\gadget
-              ; 
-              Protected result
-              
-              ;               Static repaint_count
-              ;               Debug ""+repaint_count+" ----------- canvas "+ Canvas +" -------------- "
-              ;               repaint_count + 1
-              
-              ForEach enumWidget( )
-                If enumWidget( )\root\canvas\gadget = Canvas 
-                  PushListPosition( enumWidget( ) )
-                  
-                  Select EventData( )
-                    Case #PB_EventType_Create 
-                      enumWidget( )\state\create = 1
-                      
-                      If enumWidget( )\event
-                        If ListSize( enumWidget( )\event\call( ))
-                          WidgetEvent( )\back = enumWidget( )\event\call( )\back
-                        EndIf
-                        
-                        ;                         If ListSize( enumWidget( )\event\queue( ))
-                        ;                           ForEach enumWidget( )\event\queue( )
-                        ;                             ForEach enumWidget( )\event\call( )
-                        ;                               If enumWidget( )\event\call( )\type = #PB_All Or  
-                        ;                                  enumWidget( )\event\call( )\type = enumWidget( )\event\queue( )\type
-                        ;                                 
-                        ;                                 EventWidget( ) = enumWidget( )
-                        ;                                 WidgetEvent( )\type = enumWidget( )\event\queue( )\type
-                        ;                                 WidgetEvent( )\item = enumWidget( )\event\queue( )\item
-                        ;                                 WidgetEvent( )\data = enumWidget( )\event\queue( )\data
-                        ;                                 WidgetEvent( )\back = enumWidget( )\event\call( )\back
-                        ;                                 
-                        ;                                 result = WidgetEvent( )\back( )
-                        ;                                 
-                        ;                                 EventWidget( ) = #Null
-                        ;                                 WidgetEvent( )\type = #PB_All
-                        ;                                 WidgetEvent( )\item = #PB_All
-                        ;                                 WidgetEvent( )\data = #Null
-                        ;                                 
-                        ;                                 If result
-                        ;                                   Break 
-                        ;                                 EndIf
-                        ;                               EndIf
-                        ;                             Next
-                        ;                           Next
-                        ;                           
-                        ;                           ClearList( enumWidget( )\event\queue( ))
-                        ;                         EndIf
-                      EndIf
-                      
-                      ;                       ; DoEvents( enumWidget( ), #PB_EventType_Create )
-                      ;                       If enumWidget( )\state\focus
-                      ;                         enumWidget( )\state\focus = #False
-                      ;                         SetActive( enumWidget( ) ) 
-                      ;                       EndIf
-                      
-                  EndSelect
-                  
-                  enumWidget( )\state\repaint = #False
-                  ; DoEvents( enumWidget( ), eventtype )
-                  PopListPosition( enumWidget( ) )
-                Else
-                  Debug "repaint error enumWidget( )"
-                EndIf
-              Next
-              
-              ;Root( )\canvas\repaint = #True
-              ;;; Debug " ReDraw - " + Canvas +" "+ Root( ) +" #PB_EventType_Repaint"
-              ; DoEvents( Root( ), #PB_EventType_Repaint )
-              
-              ReDraw( Root( ) )
-              PopMapPosition( Root( ) )
-            EndIf
-            
           Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             Protected Width = PB(GadgetWidth)( Canvas )
             Protected Height = PB(GadgetHeight)( Canvas )
             Repaint = Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )  
-            ReDraw( Root( ) ) 
+            ;ReDraw( Root( ) ) 
             Repaint = 1
             
         EndSelect
@@ -19244,7 +18655,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
                   Mouse( )\delta\x = Mouse( )\x - EnteredWidget( )\x[#__c_container]
                   Mouse( )\delta\y = Mouse( )\y - EnteredWidget( )\y[#__c_container]
                   
-                  If Not is_integral_( EnteredWidget( ))
+                  If Not is_integral_( EnteredWidget( )) And EnteredWidget( )\parent( )
                     Mouse( )\delta\x - scroll_x_( EnteredWidget( )\parent( ) )
                     Mouse( )\delta\y - scroll_y_( EnteredWidget( )\parent( ) )
                   EndIf
@@ -19312,6 +18723,13 @@ _this_\type = #PB_GadgetType_ExplorerList )
                     EndIf
                   Else
                     DoEvents( EnteredWidget( ), #PB_EventType_Drop, mouse_x, mouse_y )
+                  EndIf
+                  
+                  ; then drop if create new widget 
+                  If EnteredWidget( ) <> Widget()
+                    ; ReDraw(Root())
+                    Reclip(Widget())
+                    GetAtPoint(Root(), mouse()\x, mouse()\y)
                   EndIf
                 EndIf
                 
@@ -19459,7 +18877,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         EndIf
         
         If ListSize( EventList( Root( ) ) )
-          ; Debug ListSize( EventList( Root( ) ) )
+          ;Debug ListSize( EventList( Root( ) ) )
           ForEach EventList( Root( ) )
             ;If EventList( Root( ) )\type = #PB_EventType_LeftClick 
             ; Debug 333
@@ -19580,6 +18998,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
         Root( )\canvas\gadget = Canvas
         Root( )\canvas\address = g
         
+        enumRoot( ) = Root( ) ; temp
         ;AddWidget( Root( ), Root( ) )
         
         If flag & #PB_Window_NoGadgets = #False
@@ -20248,7 +19667,105 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile ;=99
+CompilerIf #PB_Compiler_IsMainFile =99
+  Uselib(widget)
+  EnableExplicit
+  
+  Global w_this, w_flag
+  Global w_this1, w_flag1
+  
+  Procedure events_widgets()
+    Static _2click
+    Protected Space.s
+    
+    If EventWidget( ) = w_this
+    ElseIf EventWidget( ) = w_this1
+      Space.s = "   "
+    Else
+      Space.s = "       "
+    EndIf
+    
+    Select WidgetEventType( )
+      Case #PB_EventType_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #PB_EventType_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
+        
+        If GetText( EventWidget( ) ) = "new"
+          Free( EventWidget( ) )
+        EndIf
+        
+      Case #PB_EventType_DragStart       : AddItem(w_flag, -1, Space + " drag <<" + Trim(getText(EventWidget( ))) + ">>")
+        DragText( "drag" )
+        
+      Case #PB_EventType_Drop            : AddItem(w_flag, -1, Space + " drop <<" + Trim(getText(EventWidget( ))) + ">>")
+        If w_this1 = EventWidget( )
+          widget::Button( X(EventWidget( ))+5, Y(EventWidget( ))+5, 30, 30, "new" )
+        widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseEnter)
+        widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseLeave)
+        EndIf  
+        
+      Case #PB_EventType_LeftButtonDown
+        If _2click = 2
+          _2click = 0
+          ClearItems(w_flag)
+        EndIf
+        AddItem(w_flag, -1, Space + "down <<" + Trim(getText(EventWidget( ))) + ">>")
+        
+      Case #PB_EventType_LeftButtonUp    : AddItem(w_flag, -1, Space + " up <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #PB_EventType_LeftClick       : AddItem(w_flag, -1, Space + "  click <<" + Trim(getText(EventWidget( ))) + ">>") : _2click + 1
+      Case #PB_EventType_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click <<" + Trim(getText(EventWidget( ))) + ">>") : _2click = 2
+    EndSelect
+    
+    SetState(w_flag, countitems(w_flag) - 1)
+  EndProcedure
+  
+  If Open(OpenWindow(#PB_Any, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    
+    w_flag = widget::Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
+    w_this = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
+    
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonDown)
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftClick)
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseEnter)
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseLeave)
+    
+    widget::bind(w_this, @events_widgets(), #PB_EventType_DragStart)
+    widget::bind(w_this, @events_widgets(), constants::#PB_EventType_Drop)
+      
+    w_this1 = widget::Button( 145, 295, 40, 40, "drop", #__button_multiline );| #__button_toggle) 
+    EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
+    
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonDown)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonUp)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftClick)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseEnter)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseLeave)
+    
+    widget::bind(w_this1, @events_widgets(), #PB_EventType_DragStart)
+    widget::bind(w_this1, @events_widgets(), constants::#PB_EventType_Drop)
+    
+    w_this1 = widget::Button( 195, 295, 40, 40, "drop here", #__button_multiline );| #__button_toggle) 
+    EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
+  
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonDown)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonUp)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftClick)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseEnter)
+    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseLeave)
+    
+    widget::bind(w_this1, @events_widgets(), #PB_EventType_DragStart)
+    widget::bind(w_this1, @events_widgets(), constants::#PB_EventType_Drop)
+      
+    widget::WaitClose()
+  EndIf
+CompilerEndIf
+CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   UseLIB(widget)
@@ -20292,8 +19809,14 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Define i
   Define *w._S_widget, *g._S_widget, editable
   
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  ;\\\\
+  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
   
+  Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
+  BindWidgetEvent( *root, @BindEvents( ) )
+  
+  ;\\\\
+  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetText(*root0, "root0")
   BindWidgetEvent( *root0, @BindEvents( ) )
@@ -20310,7 +19833,9 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetText(*root4, "root4")
   BindWidgetEvent( *root4, @BindEvents( ) )
   
-  
+;   widget::Bind(*root4, @events_widgets(), #PB_EventType_MouseEnter)
+;   widget::Bind(*root4, @events_widgets(), #PB_EventType_MouseLeave)
+;     
   ;
   Define *window._S_widget
   Define i,y = 5
@@ -20326,10 +19851,11 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   
   ; redraw(root())
   ; 
-  WaitClose( )
+  Repeat
+    Until WaitWindowEvent() = #PB_Event_CloseWindow
+    ;WaitClose( )
 CompilerEndIf
 
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--
 ; EnableXP

@@ -29,11 +29,11 @@ CompilerIf #PB_Compiler_IsMainFile
           Free( EventWidget( ) )
         EndIf
         
-      Case #PB_EventType_DragStart       : AddItem(w_flag, -1, Space + " drag")
+      Case #PB_EventType_DragStart       : AddItem(w_flag, -1, Space + " drag <<" + Trim(getText(EventWidget( ))) + ">>")
         DragText( "drag" )
         
-      Case #PB_EventType_Drop            : AddItem(w_flag, -1, Space + " drop")
-        widget::Button( 145, 240, 30, 30, "new" )
+      Case #PB_EventType_Drop            : AddItem(w_flag, -1, Space + " drop <<" + Trim(getText(EventWidget( ))) + ">>")
+        widget::Button( X(EventWidget( ))+5, Y(EventWidget( ))+5, 30, 30, "new" )
         widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseEnter)
         widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseLeave)
     
@@ -42,20 +42,20 @@ CompilerIf #PB_Compiler_IsMainFile
           _2click = 0
           ClearItems(w_flag)
         EndIf
-        AddItem(w_flag, -1, Space + "down")
+        AddItem(w_flag, -1, Space + "down <<" + Trim(getText(EventWidget( ))) + ">>")
         
-      Case #PB_EventType_LeftButtonUp    : AddItem(w_flag, -1, Space + " up")
-      Case #PB_EventType_LeftClick       : AddItem(w_flag, -1, Space + "  click") : _2click + 1
-      Case #PB_EventType_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
+      Case #PB_EventType_LeftButtonUp    : AddItem(w_flag, -1, Space + " up <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #PB_EventType_LeftClick       : AddItem(w_flag, -1, Space + "  click <<" + Trim(getText(EventWidget( ))) + ">>") : _2click + 1
+      Case #PB_EventType_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click <<" + Trim(getText(EventWidget( ))) + ">>") : _2click = 2
     EndSelect
     
     SetState(w_flag, countitems(w_flag) - 1)
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(OpenWindow(#PB_Any, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
-    w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
-    w_this = widget::Button( 10, 220, 180, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
+    w_flag = widget::Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
+    w_this = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
     
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonDown)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::bind(w_this, @events_widgets(), #PB_EventType_DragStart)
     widget::bind(w_this, @events_widgets(), constants::#PB_EventType_Drop)
       
-    w_this1 = widget::Button( 140, 235, 40, 40, "drop here", #__button_multiline );| #__button_toggle) 
+    w_this1 = widget::Button( 195, 295, 40, 40, "drop here", #__button_multiline );| #__button_toggle) 
     EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonDown)

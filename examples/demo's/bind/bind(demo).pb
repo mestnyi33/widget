@@ -1,5 +1,6 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -9,30 +10,42 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_widgets()
-    ClearDebugOutput()
-    Debug ""+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (gadget)"
-    
-    Select this()\event 
-      Case #PB_EventType_LeftClick
-        If GetIndex(this()\widget) = 1
-          ProcedureReturn #PB_Ignore ; no send to (window & root) - event
-        EndIf
-    EndSelect
+    If WidgetEventType() <> #PB_EventType_MouseMove And 
+       WidgetEventType() <> #PB_EventType_Draw And 
+       WidgetEventType() <> #PB_EventType_StatusChange
+      ;ClearDebugOutput()
+      Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
+      
+      Select WidgetEventType() 
+        Case #PB_EventType_LeftClick
+          If GetIndex(EventWidget()) = 1
+            ProcedureReturn #PB_Ignore ; no send to (window & root) - event
+          EndIf
+      EndSelect
+    EndIf
   EndProcedure
   
   Procedure events_windows()
-    Debug "  "+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (window)"
-    
-    Select this()\event 
-      Case #PB_EventType_LeftClick
-        If GetIndex(this()\widget) = 2
-          ProcedureReturn #PB_Ignore ; no send to (root) - event
-        EndIf
-    EndSelect
+    If WidgetEventType() <> #PB_EventType_MouseMove And 
+       WidgetEventType() <> #PB_EventType_Draw And
+       WidgetEventType() <> #PB_EventType_StatusChange
+      Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+      
+      Select WidgetEventType() 
+        Case #PB_EventType_LeftClick
+          If GetIndex(EventWidget()) = 2
+            ProcedureReturn #PB_Ignore ; no send to (root) - event
+          EndIf
+      EndSelect
+    EndIf
   EndProcedure
   
   Procedure events_roots()
-    Debug "    "+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (root)"
+    If WidgetEventType() <> #PB_EventType_MouseMove And 
+       WidgetEventType() <> #PB_EventType_Draw And
+       WidgetEventType() <> #PB_EventType_StatusChange
+      Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+    EndIf
   EndProcedure
   
   
@@ -42,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Open(0, 10,10, 480, 480)
         Bind(#PB_All, @events_roots())
-        Bind(Window(80, 100, 300, 280, "Window_2", Editable), @events_windows())
+        Bind(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
         
         Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
         Bind(Button(10, 100, 280, 80, "post event for to two procedure", Editable), @events_widgets())
@@ -65,6 +78,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

@@ -94,13 +94,13 @@ Module Mouse
   ;   
   Procedure Window()
     Protected.i NSApp, WindowID, WindowNumber, Point.CGPoint
+    NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
     
     ; get-WindowNumber
     CocoaMessage(@Point, 0, "NSEvent mouseLocation")
     WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
     
     ; get-NS-WindowID
-    NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
     WindowID = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
     
     ProcedureReturn WindowID
@@ -585,10 +585,8 @@ Module events
     Protected Point.CGPoint
     Protected *cursor.cursor::_s_cursor = #Null
    ; Debug "eventTapFunction - "+Get::ClassName(event)
-    Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-    ;Protected NSEnter = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
     
-    If refcon And NSEvent
+    If refcon
       Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
       Protected MouseMove, MouseX, MouseY, MoveStart, LeftDoubleClick, EnteredID, gadget =- 1
       
@@ -598,6 +596,7 @@ Module events
       ;       If eType = #NSMouseExited
       ;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
       ;       EndIf
+      
       If eType = #NSLeftMouseDown
         ;Debug CocoaMessage(0, Mouse::Gadget(Mouse::Window()), "pressedMouseButtons")
         MouseDrag = 1
@@ -806,7 +805,7 @@ Module events
       ;         EndIf
       
       If eType = #NSScrollWheel
-        ;NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+        Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
         
         If NSEvent
           Protected scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
@@ -848,7 +847,26 @@ Module events
   
   Procedure.i WaitEvent(event.i, second.i=0)
     If *setcallback And event = #PB_Event_Gadget
-      CallCFunctionFast(*setcallback, EventGadget(), EventType())
+      CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
+        If EventType() = constants::#PB_EventType_Repaint
+          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+        EndIf
+      CompilerEndIf
+      CompilerIf Defined(constants::PB_EventType_Create, #PB_Constant) 
+        If EventType() = constants::#PB_EventType_Create
+          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+        EndIf
+      CompilerEndIf
+      If EventType() = #PB_EventType_MouseEnter
+       ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
+        If Mouse::Window() = WindowID(EventWindow())
+          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+        EndIf
+      EndIf
+      If EventType() = #PB_EventType_MouseLeave
+       ; Debug 888
+       ; CallCFunctionFast(*setcallback, EventGadget(), EventType())
+      EndIf
     EndIf
     
     ProcedureReturn event
@@ -1595,5 +1613,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------
+; Folding = ----------------------0----------
 ; EnableXP

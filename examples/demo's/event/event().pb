@@ -20253,6 +20253,535 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
+
+
+; Procedure _DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
+;       Protected Repaint, mouse_x.l = Mouse( )\x, mouse_y.l = Mouse( )\y, _wheel_x_.b = 0, _wheel_y_.b = 0
+;       Protected *item._S_rows
+;       
+;       *this\events\type = eventtype
+;       *this\events\item = *button
+;       *this\events\data = *data
+;       
+;       If *this\state\drag ; Or eventtype = #PB_EventType_LeftButtonUp \focus
+;         If eventtype = #PB_EventType_LeftButtonUp Or
+;            eventtype = #PB_EventType_MouseEnter Or
+;            eventtype = #PB_EventType_MouseLeave Or
+;            eventtype = #PB_EventType_MouseMove
+;           
+;           ;If bar_in_stop_( *this\scroll\v\bar ) Or bar_in_start_( *this\scroll\v\bar )
+;           If eventtype = #PB_EventType_LeftButtonUp Or
+;              is_at_point_( *this, Mouse( )\x, Mouse( )\y, [#__c_inner] )
+;             
+;             If *this\state\press =- 1
+;               *this\state\press = 1
+;               
+;               If *this\row
+;                 
+;                 Debug "stop timer - " + EnteredRow( *this )
+;                 ;                 UnbindEvent( #PB_Event_Timer, @Row_timer_events( ), *this\root\canvas\window );, *this\root\canvas\gadget )
+;                 ;                 RemoveWindowTimer( *this\root\canvas\window, 99 )
+;                 
+;                 If PressedRow( *this ) And *this\text\editable
+;                   ChangeCurrentElement( RowList( *this ), PressedRow( *this ) )
+;                   DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), 1 )
+;                   
+;                   If Mouse( )\y < row_y_( *this, PressedRow( *this )) + PressedRow( *this )\height - *this\scroll\v\bar\page\pos 
+;                     LastElement( RowList( *this ) )
+;                     Repeat
+;                       If RowList( *this )\index > PressedRow( *this )\index Or 
+;                          Mouse( )\y >= row_y_( *this, RowList( *this )) + RowList( *this )\height - *this\scroll\v\bar\page\pos 
+;                         If RowList( *this )\text\edit[2]\width <> 0
+;                           If RowList( *this )\state\enter
+;                             RowList( *this )\state\enter = #False
+;                           EndIf
+;                           DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 14 )
+;                         EndIf
+;                       Else
+;                         If Not EnteredRow( *this )
+;                           If RowList( *this )\state\enter
+;                             RowList( *this )\state\enter = #False
+;                           EndIf
+;                           FocusedRow( *this ) = RowList( *this )
+;                           DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 9 )
+;                         EndIf
+;                       EndIf
+;                     Until Not PreviousElement( RowList( *this ) )
+;                     
+;                   Else
+;                     ForEach RowList( *this )
+;                       If RowList( *this )\index < PressedRow( *this )\index Or 
+;                          Mouse( )\y <= row_y_( *this, RowList( *this )) - *this\scroll\v\bar\page\pos 
+;                         If RowList( *this )\text\edit[2]\width <> 0
+;                           If RowList( *this )\state\enter
+;                             RowList( *this )\state\enter = #False
+;                           EndIf
+;                           DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 14 )
+;                         EndIf
+;                       Else
+;                         If Not EnteredRow( *this )
+;                           If RowList( *this )\state\enter
+;                             RowList( *this )\state\enter = #False
+;                           EndIf
+;                           FocusedRow( *this ) = RowList( *this )
+;                           DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 10 )
+;                         EndIf
+;                       EndIf
+;                     Next
+;                   EndIf
+;                   
+;                   DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), - 1 )
+;                 EndIf
+;                 
+;               EndIf
+;             EndIf
+;           Else
+;             If *this\state\press = 1
+;               *this\state\press =- 1
+;               
+;               If *this\row
+;                 
+;                 Debug "start timer - " ; +LeavedRow( *this )\index +" "+ EnteredRow( *this )
+;                                        ;                 AddWindowTimer( *this\root\canvas\window, 99, 100 )
+;                                        ;                 BindEvent( #PB_Event_Timer, @Row_timer_events( ), *this\root\canvas\window );, *this\root\canvas\gadget )
+;                 
+;                 ;
+;                 If PressedRow( *this ) And *this\text\editable
+;                   ChangeCurrentElement( RowList( *this ), PressedRow( *this ) )
+;                   DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), 1 )
+;                   
+;                   If Mouse( )\y < row_y_( *this, PressedRow( *this )) + PressedRow( *this )\height - *this\scroll\v\bar\page\pos 
+;                     While PreviousElement( RowList( *this ) )
+;                       If RowList( *this )\state\enter
+;                         RowList( *this )\state\enter = #False
+;                       EndIf
+;                       If RowList( *this )\text\edit[2]\width = 0
+;                         DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 9 )
+;                       EndIf
+;                     Wend
+;                   Else
+;                     While NextElement( RowList( *this ) )
+;                       If RowList( *this )\state\enter
+;                         RowList( *this )\state\enter = #False
+;                       EndIf
+;                       If RowList( *this )\text\edit[2]\width = 0
+;                         DoEventItems_Editore( *this, #PB_EventType_MouseLeave, RowList( *this ), - 10 )
+;                       EndIf
+;                     Wend
+;                   EndIf
+;                   
+;                   FocusedRow( *this ) = RowList( *this )
+;                   DoEventItems_Editore( *this, #PB_EventType_Repaint, FocusedRow( *this ), - 1 )
+;                 EndIf
+;                 
+;               EndIf
+;               
+;             EndIf
+;           EndIf
+;           
+;         EndIf
+;       EndIf
+;       
+;       ;       If eventtype = #PB_EventType_LeftButtonUp
+;       ;         Debug *this\text\edit[2]\string
+;       ;       EndIf
+;       
+;       ;       ; mouse position inside widget 
+;       ;       Select eventtype
+;       ;         Case #PB_EventType_MouseMove,
+;       ;              #PB_EventType_MouseEnter,
+;       ;              #PB_EventType_MouseLeave
+;       ;           
+;       ;           If *this\state\enter = 1
+;       ;             If *this\scroll\h
+;       ;               Mouse( )\x[#__c_inner] = Mouse( )\x - *this\x[#__c_inner]    + *this\scroll\h\bar\page\pos
+;       ;             Else
+;       ;               Mouse( )\x[#__c_inner] = Mouse( )\x - *this\x[#__c_inner]
+;       ;             EndIf
+;       ;             If *this\scroll\v
+;       ;               Mouse( )\y[#__c_inner] = Mouse( )\y - *this\y[#__c_inner]    + *this\scroll\v\bar\page\pos   
+;       ;             Else
+;       ;               Mouse( )\y[#__c_inner] = Mouse( )\y - *this\y[#__c_inner]
+;       ;             EndIf
+;       ;           Else
+;       ;             Mouse( )\x[#__c_inner] =- 1
+;       ;             Mouse( )\y[#__c_inner] =- 1
+;       ;           EndIf 
+;       ;       EndSelect
+;       
+;       ;       If eventtype = #PB_EventType_StatusChange
+;       ;         Debug Mouse( )\y[#__c_inner]
+;       ;       EndIf
+;       
+;       Select eventtype
+;         Case #PB_EventType_MouseMove
+;           If *this\bar And *this\state\drag
+;             *this\state\repaint = #True
+;           EndIf
+;           
+;         Case #PB_EventType_StatusChange
+;           *this\state\repaint = #True
+;           
+;         Case #PB_EventType_LeftButtonDown,
+;              #PB_EventType_KeyDown,
+;              #PB_EventType_KeyUp,
+;              #PB_EventType_LeftButtonUp,
+;              #PB_EventType_MouseEnter,
+;              #PB_EventType_MouseLeave,
+;              #PB_EventType_ScrollChange,
+;              ;           ;; #PB_EventType_Repaint,
+;              ;              #PB_EventType_Create,
+;              ;              #PB_EventType_Focus,
+;              ;              #PB_EventType_LostFocus,
+;              ;              #PB_EventType_DragStart,
+;              ;              #PB_EventType_Resize,
+;           #PB_EventType_Drop
+;           
+;           *this\state\repaint = #True
+;       EndSelect
+;       
+;       Select eventtype
+;         Case #PB_EventType_Create,
+;              #PB_EventType_Focus,
+;              #PB_EventType_LostFocus,
+;              #PB_EventType_DragStart,
+;              #PB_EventType_Drop
+;           
+;           ;  Debug " DoEvent - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
+;           ; *this\state\repaint = #True
+;       EndSelect
+;       
+;       ;       If *this\event
+;       ;         *this\event\type = eventtype
+;       ;       EndIf
+;       
+;       ;       ;
+;       ;       If Not is_widget_( *this )
+;       ;         If Not is_root_(*this )
+;       ;           Debug "not event widget - " + *this
+;       ;         EndIf
+;       ;         ProcedureReturn 0
+;       ;       EndIf
+;       ;       ;Debug Mouse( )\change
+;       ;             If eventtype = #PB_EventType_LeftButtonDown Or 
+;       ;                eventtype = #PB_EventType_LeftButtonUp 
+;       ;             ;  Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
+;       ;             *this\repaint = 1
+;       ;           EndIf
+;       ;             
+;       ;             If eventtype = #PB_EventType_MouseEnter Or 
+;       ;                eventtype = #PB_EventType_MouseLeave
+;       ;             ;;  Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
+;       ;             *this\repaint = 1
+;       ;         EndIf
+;       ;             
+;       ;             If eventtype = #PB_EventType_Focus Or 
+;       ;                eventtype = #PB_EventType_LostFocus 
+;       ;              ; Debug "     "+ eventtype +" "+ *this\class +" "+ *this\text\string
+;       ;              *this\repaint = 1
+;       ;         EndIf
+;       ;       
+;       
+;       If eventtype = #PB_EventType_MouseLeave
+;         If *this\type = #PB_GadgetType_Editor
+;           ; Debug ""+edit_caret_pos_( *this ) +" "+ edit_caret_pos_delta_( *this ) +" "+ edit_caret_pos_delta_( *this ) +" "+ edit_caret_pos_( *this )
+;         EndIf
+;       EndIf
+;       ; widget::_events_all( )
+;       
+;       
+;       ; widget::_events_Anchors( )
+;       If *this\_a_\transform
+;         ;         If eventtype = #PB_EventType_MouseLeave
+;         ;           If *this = a_enter_widget( ) 
+;         ;             If a_events( *this, eventtype, mouse_x, mouse_y )
+;         ;               Repaint = 1
+;         ;               *this\state\repaint = #True
+;         ;             EndIf
+;         ;           EndIf
+;         ;         Else
+;         If a_events( *this, eventtype, mouse_x, mouse_y )
+;           Repaint = 1
+;           *this\state\repaint = #True
+;         EndIf
+;         ;         EndIf
+;       EndIf    
+;       
+;       If Not *this\state\disable          And Not (Transform( ) And a_is_at_point_( *this ))
+;         ; widget::_events_Window( )
+;         If *this\type = #__type_window
+;           Repaint | Window_Events( *this, eventtype, mouse_x, mouse_y )
+;         EndIf
+;         
+;         ; widget::_events_Properties( )
+;         If *this\type = #__type_property
+;           Repaint | Tree_events( *this, eventtype, mouse_x, mouse_y )
+;         EndIf
+;         
+;         ; widget::_events_Tree( )
+;         If *this\type = #__type_Tree
+;           Repaint | Tree_events( *this, eventtype, mouse_x, mouse_y )
+;         EndIf
+;         
+;         ; widget::_events_ListView( )
+;         If *this\type = #__type_ListView
+;           Repaint | ListView_Events( *this, eventtype, *data, *button )
+;         EndIf
+;         
+;         ; widget::_events_Editor( )
+;         If *this\type = #__type_Editor 
+;           Repaint | Editor_Events( *this, eventtype, *data, *button )
+;         EndIf
+;         
+;         ; widget::_events_String( )
+;         If *this\type = #__type_String
+;           Repaint | Editor_Events( *this, eventtype, *data, *button )
+;         EndIf
+;         
+;         ;- widget::_events_CheckBox( )
+;         If *this\type = #__type_Option Or
+;            *this\type = #__type_CheckBox
+;           
+;           Select eventtype
+;             Case #PB_EventType_LeftButtonDown : Repaint = #True
+;             Case #PB_EventType_LeftButtonUp   : Repaint = #True
+;             Case #PB_EventType_LeftClick
+;               If *this\type = #__type_CheckBox
+;                 Repaint = SetState( *this, Bool( *this\_box_\___state! 1 ))
+;               Else
+;                 Repaint = SetState( *this, 1 )
+;               EndIf
+;               
+;               If Repaint
+;                 Post( *this, #PB_EventType_LeftClick ) 
+;               EndIf
+;           EndSelect
+;         EndIf
+;         
+;         ;- widget::_events_ComboBox( )
+;         If *this\type = #__type_combobox
+;           If eventtype = #PB_EventType_LeftButtonDown 
+;             If is_at_point_( *this\_box_, mouse_x, mouse_y )
+;               If *this\state\flag & #__S_collapse
+;                 If Not EnteredRow( *this )
+;                   *this\state\flag &~ #__S_collapse
+;                 EndIf
+;               Else
+;                 *this\state\flag | #__S_collapse
+;               EndIf
+;               
+;               If *this\state\flag & #__S_collapse
+;                 ;Debug "collapsed"
+;                 Display( *this, *this\parent( ) );, *this\x[#__c_frame], *this\y[#__c_frame] )+ *this\height[#__c_frame] )
+;               EndIf
+;               
+;               Repaint = #True
+;             EndIf
+;           EndIf
+;           
+;           ; combobox-popup-list events
+;           If PopupWidget( )
+;             Repaint | ListView_events( PopupWidget( ), eventtype, *data, *button )
+;           EndIf
+;           
+;           If eventtype = #PB_EventType_Up Or eventtype = #PB_EventType_Down
+;             Debug "expanded"
+;             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\barHeight ) 
+;             update_visible_items_( *this )
+;             ; ClearList( VisibleRowList( *this ) )
+;             
+;             If FocusedRow( *this )
+;               *this\text\string = FocusedRow( *this )\text\string
+;             EndIf
+;             Repaint = #True
+;           EndIf
+;         EndIf
+;         
+;         ;- widget::_events_Button( )
+;         If *this\type = #__type_Button
+;           If Not *this\state\flag & #__S_check
+;             Select eventtype
+;               Case #PB_EventType_MouseLeave     : Repaint = #True 
+;                 *this\color\state = #__S_0 
+;               Case #PB_EventType_LeftButtonDown 
+;                 ;If *this\state\enter
+;                 *this\color\state = #__S_2  
+;                 ;EndIf
+;                 Repaint = #True 
+;               Case #PB_EventType_MouseEnter     : Repaint = #True 
+;                 If *this\state\press
+;                   *this\color\state = #__S_2
+;                 Else
+;                   *this\color\state = #__S_1
+;                 EndIf
+;             EndSelect
+;           EndIf
+;           
+;           If eventtype = #PB_EventType_LeftButtonUp 
+;             ;If *this\color\state = #__S_2
+;             Repaint = #True
+;             ;EndIf
+;           EndIf
+;           
+;           If eventtype = #PB_EventType_LeftClick
+;             ;If *this\color\state = #__S_2
+;             SetState( *this, Bool( Bool( *this\state\flag & #__S_check ) ! 1 ))
+;             
+;             ;; Post( *this, eventtype, #PB_All, 0 )
+;             ;EndIf
+;           EndIf
+;           
+;           If *this\image[#__img_released]\id Or *this\image[#__img_pressed]\id
+;             *this\image = *this\image[1 + Bool( *this\color\state = #__S_2 )]
+;           EndIf
+;         EndIf
+;         
+;         ;- widget::_events_Hyper( )
+;         If *this\type = #__type_HyperLink
+;           If Not Mouse( )\buttons
+;             If is_at_point_( *this, mouse_x - *this\x, mouse_y - *this\y, [#__c_required] )
+;               If *this\color\state = #__S_0
+;                 *this\color\state = #__S_1
+;                 ; set_cursor_( *this, #PB_Cursor_Hand )
+;                 Repaint = #True
+;               EndIf
+;             Else 
+;               If *this\color\state = #__S_1
+;                 *this\color\state = #__S_0
+;                 ; set_cursor_( *this, #PB_Cursor_Default )
+;                 Repaint = #True
+;               EndIf
+;             EndIf
+;           EndIf
+;           
+;           ; if mouse enter text
+;           If *this\color\state = #__S_1
+;             If eventtype = #PB_EventType_LeftClick
+;               Post( *this, #PB_EventType_LeftClick, *this )
+;             EndIf
+;             If eventtype = #PB_EventType_LeftButtonUp
+;               ; set_cursor_( *this, #PB_Cursor_Hand )
+;               Repaint = #True
+;             EndIf
+;             If eventtype = #PB_EventType_LeftButtonDown
+;               ; set_cursor_( *this, #PB_Cursor_Default )
+;               *this\color\state = #__S_0 
+;               Repaint = 1
+;             EndIf
+;           EndIf
+;           If eventtype = #PB_EventType_MouseEnter
+;             ; set_cursor_( *this, #PB_Cursor_Default )
+;           EndIf
+;           
+;         EndIf
+;         
+;         ;- widget::_events_Bars( )
+;         If *this\type = #__type_Spin Or
+;            ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ) Or
+;            *this\type = #__type_TrackBar Or
+;            *this\type = #__type_ScrollBar Or
+;            *this\type = #__type_ProgressBar Or
+;            *this\type = #__type_Splitter
+;           
+;           Repaint | bar_Events( *this, eventtype, *button, *data )
+;         EndIf
+;         
+;         
+;         ;;*this\repaint = Repaint
+;         
+;         ;- widget::_events_Bind( )
+;         If *this\event 
+;           ;           If *item
+;           ;             If *this\row
+;           ;               Post( *this, eventtype, *item ) 
+;           ;             ElseIf *this\bar
+;           ;               Post( *this, eventtype, *item ) 
+;           ;             EndIf
+;           ;           Else
+;           ;; Post( *this, eventtype, *button, *data ) 
+;           ;           EndIf
+;         EndIf
+;       EndIf
+;       
+;       
+;       If *this\state\enter
+;         If Mouse( )\buttons
+;           *this\color\back = $FF00F7FF
+;         Else
+;           ;*this\color\back = $FF301DE8
+;           *this\color\state = #__S_1
+;         EndIf
+;         
+;       Else
+;         If eventtype = #PB_EventType_Repaint
+;           If *this\fs
+;             *this\color\back = $FFF3F3F3
+;           Else
+;             *this\color\back = $FF07EAF6
+;           EndIf
+;         Else
+;           ;*this\color\back = $FF13FF00
+;           *this\color\state = #__S_0 
+;         EndIf
+;       EndIf
+;       
+;       If *this\state\press
+;         If *this\state\drag 
+;           *this\color\back = $FFFFB1F8
+;         Else
+;           *this\color\back = $FFFFAA00
+;         EndIf
+;         
+;       ElseIf *this\state\focus
+;         *this\color\back = $FFCFCFCF
+;         
+;       EndIf
+;       ;       
+;       ;       ;   If *item
+;       ;       ;     
+;       ;       ;     If *item\state\enter
+;       ;       ;       If *this\state\press
+;       ;       ;         *item\color\back = $00F7FF
+;       ;       ;       Else
+;       ;       ;         *item\color\back = $301DE8
+;       ;       ;       EndIf
+;       ;       ;       
+;       ;       ;     Else
+;       ;       ;       If eventtype = #PB_EventType_Repaint
+;       ;       ;         *item\color\back = $F3F3F3
+;       ;       ;       Else
+;       ;       ;         *item\color\back = $13FF00
+;       ;       ;       EndIf
+;       ;       ;     EndIf
+;       ;       ;     
+;       ;       ;     If *item\state\press
+;       ;       ;       If *item\state\drag 
+;       ;       ;         *item\color\back = $FFB1F8
+;       ;       ;       Else
+;       ;       ;         *item\color\back = $FFAA00
+;       ;       ;       EndIf
+;       ;       ;       
+;       ;       ;     ElseIf *item\state\focus
+;       ;       ;       *item\color\back = $FF0090
+;       ;       ;       
+;       ;       ;     EndIf
+;       ;       ;     *this\state\repaint = #True
+;       ;       ;   EndIf
+;       
+;       
+;       ;
+;       If *this\state\repaint = #True
+;         *this\state\repaint = #False
+;         
+;         ;; Debug " PostReDraw - " +*this+" "+*this\root +" "+ ClassFromEvent( eventtype )
+;         ;PostEventRepaint( *this\root ) ; ReDraw( *this\root )
+;         PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint, *this\root )
+;       EndIf
+;       
+;       ProcedureReturn 1;Repaint
+;     EndProcedure
+    
+    
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
