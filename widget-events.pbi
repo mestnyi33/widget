@@ -432,20 +432,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
            ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ))
     EndMacro
     
-    Macro  is_interact_row_( _this_ )
-      Bool( _this_\type = #PB_GadgetType_TabBar Or
-            ;;_this_\type = #PB_GadgetType_Button Or
-      _this_\type = #PB_GadgetType_Splitter Or
-_this_\type = #PB_GadgetType_Editor Or
-_this_\type = #PB_GadgetType_IPAddress Or
-_this_\type = #PB_GadgetType_String Or
-_this_\type = #PB_GadgetType_Tree Or
-_this_\type = #PB_GadgetType_ListView Or
-_this_\type = #PB_GadgetType_ListIcon Or
-_this_\type = #PB_GadgetType_ExplorerTree Or
-_this_\type = #PB_GadgetType_ExplorerList )
-    EndMacro
-    
     Macro is_text_gadget_( _this_ )
       Bool( _this_\type = #PB_GadgetType_Editor Or
             _this_\type = #PB_GadgetType_HyperLink Or
@@ -459,6 +445,20 @@ _this_\type = #PB_GadgetType_ExplorerList )
     
     Macro is_list_gadget_( _this_ )
       Bool( _this_\type = #PB_GadgetType_Tree Or
+            _this_\type = #PB_GadgetType_ListView Or
+            _this_\type = #PB_GadgetType_ListIcon Or
+            _this_\type = #PB_GadgetType_ExplorerTree Or
+            _this_\type = #PB_GadgetType_ExplorerList )
+    EndMacro
+    
+    Macro  is_interact_row_( _this_ )
+      Bool( _this_\type = #PB_GadgetType_TabBar Or
+            _this_\type = #PB_GadgetType_Splitter Or
+            _this_\type = #PB_GadgetType_Editor Or
+            _this_\type = #PB_GadgetType_IPAddress Or
+            _this_\type = #PB_GadgetType_String Or
+            _this_\type = #PB_GadgetType_Button Or
+            _this_\type = #PB_GadgetType_Tree Or
             _this_\type = #PB_GadgetType_ListView Or
             _this_\type = #PB_GadgetType_ListIcon Or
             _this_\type = #PB_GadgetType_ExplorerTree Or
@@ -2880,7 +2880,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           EndIf
           
           ;
-          If *this\parent( ) = EnteredWidget( ) And 
+          If *this\parent( ) And *this\parent( ) = EnteredWidget( ) And 
              EnteredWidget( )\_a_\transform And 
              a_enter_widget( ) <> EnteredWidget( )
             a_enter_widget( ) = EnteredWidget( )
@@ -17034,7 +17034,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
             EndIf
           EndIf
           
-          ;If  is_root_(*this )
+          ; If is_root_(*this )
           ; theard call current-widget-root bind event function
           If result <> #PB_Ignore And 
              *this\root\event
@@ -17094,12 +17094,15 @@ _this_\type = #PB_GadgetType_ExplorerList )
         
         ;
         LastElement( *this\event\call( ))
-        AddElement( *this\event\call( ))
-        *this\event\call.allocate( EVENTDATA, ( )) 
-        *this\event\call( )\pFunc = *callback
-        *this\event\call( )\type = eventtype
-        *this\event\call( )\item = item
+        If AddElement( *this\event\call( ))
+          *this\event\call.allocate( EVENTDATA, ( )) 
+          *this\event\call( )\pFunc = *callback
+          *this\event\call( )\type = eventtype
+          *this\event\call( )\item = item
+          ProcedureReturn 1
+        EndIf
       EndIf
+      
     EndProcedure
     
     Procedure.i Unbind( *this._S_widget, *callback, eventtype.l = #PB_All, item.l = #PB_All )
@@ -17238,7 +17241,7 @@ _this_\type = #PB_GadgetType_ExplorerList )
           ;If *this\color\state = #__S_2
           SetState( *this, Bool( Bool( *this\state\flag & #__S_check ) ! 1 ))
           
-          Post( *this, eventtype, #PB_All, 0 )
+          ;Post( *this, eventtype, #PB_All, 0 )
           ;EndIf
         EndIf
         
@@ -17942,139 +17945,81 @@ _this_\type = #PB_GadgetType_ExplorerList )
     EndProcedure
     
     Procedure DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
-      ; ; ;       If Not *this
-      ; ; ;         Debug ""+PressedWidget( ) +" - "+ 999999999999
-      ; ; ;         ProcedureReturn 
-      ; ; ;       EndIf
-      
-      ;       If Not ( eventtype = #PB_EventType_Focus And FocusedWidget( ) <> *this ) And eventtype <> #PB_EventType_MouseMove
-      ;         AddElement( EventList( *this\root ) )
-      ;         *this\root\canvas\events.allocate( eventdata, ( ) )
-      ;         EventList( *this\root )\id = *this
-      ;         EventList( *this\root )\type = eventtype
-      ;         EventList( *this\root )\item = *button
-      ;         EventList( *this\root )\data = *data
-      ;       EndIf
-      
-      ;       Select eventtype
-      ;         Case #PB_EventType_MouseLeave 
-      ;           ; Debug ""+*this\index +" "+ *this\class +" #PB_EventType_MouseLeave "
-      ;           *this\color\state = #__S_0 
-      ;           PostEventRepaint( *this\root )
-      ;         Case #PB_EventType_MouseEnter    
-      ;           ; Debug ""+*this\index +" "+ *this\class +" #PB_EventType_MouseEnter "
-      ;           *this\color\state = #__S_1
-      ;           PostEventRepaint( *this\root )
-      ;       EndSelect
-      
-      ;       ; detect events
-      ;       CompilerIf #PB_Compiler_IsMainFile = 0
-      ;         Select EventType
-      ;             
-      ;           Case #PB_EventType_DragStart
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_DragStart " 
-      ;           Case #PB_EventType_Drop
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_Drop " 
-      ;           Case #PB_EventType_Focus
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_Focus " 
-      ;           Case #PB_EventType_LostFocus
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_LostFocus " 
-      ;           Case #PB_EventType_LeftButtonDown
-      ;             Debug ""
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_LeftButtonDown " 
-      ;           Case #PB_EventType_LeftButtonUp
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_LeftButtonUp " 
-      ;           Case #PB_EventType_LeftClick
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_LeftClick " 
-      ;           Case #PB_EventType_LeftDoubleClick
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_LeftDoubleClick " 
-      ;           Case #PB_EventType_MouseEnter
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_MouseEnter " 
-      ;           Case #PB_EventType_MouseLeave
-      ;             Debug ""+*this\index +" "+ *this\class +" #PB_EventType_MouseLeave " 
-      ;           Case #PB_EventType_MouseMove
-      ;             ; Debug ""+*this\index +" "+ *this\class +" #PB_EventType_MouseMove " 
-      ;             
-      ;         EndSelect
-      ;         
-      ;       CompilerEndIf
-      
-      
-      ; repaint state 
-      Select eventtype
-        Case #PB_EventType_MouseWheelX
-          Debug "wheelX "+ *data
-        Case #PB_EventType_MouseWheelY
-          Debug "wheelY "+ *data
-          
-        Case #PB_EventType_MouseMove
-          If *this\bar And *this\state\drag
-            *this\state\repaint = #True
-          EndIf
-          
-        Case #PB_EventType_Focus
-          *this\state\repaint = #True
-          
-          CompilerIf #PB_Compiler_IsMainFile
-            If Not is_root_( *this )
-              *this\color\state = 2
-            EndIf
-          CompilerEndIf
-          
-        Case #PB_EventType_LostFocus
-          *this\state\repaint = #True
-          
-          ;           If GetActive( )\gadget = *this
-          ;             *this\color\state = 3
-          ;           Else
-          If Not is_root_( *this )
-            *this\color\state = 0
-          EndIf
-          ;           EndIf
-          
-        Case #PB_EventType_CursorChange
-          *this\state\repaint = #True
-          
-        Case #PB_EventType_StatusChange
-          If *this\mouse And *this\mouse\interact
+      ;
+      If Not *this\state\disable 
+        ; repaint state 
+        Select eventtype
+          Case #PB_EventType_MouseWheelX
+            Debug "wheelX "+ *data
+          Case #PB_EventType_MouseWheelY
+            Debug "wheelY "+ *data
+            
+          Case #PB_EventType_CursorChange
             *this\state\repaint = #True
             
+          Case #PB_EventType_MouseMove
+            If *this\bar And *this\state\drag
+              *this\state\repaint = #True
+            EndIf
+            
+          Case #PB_EventType_Focus
+            *this\state\repaint = #True
+            
+            CompilerIf #PB_Compiler_IsMainFile
+              If Not is_root_( *this )
+                *this\color\state = 2
+              EndIf
+            CompilerEndIf
+            
+          Case #PB_EventType_LostFocus
+            *this\state\repaint = #True
+            
+            ;           If GetActive( )\gadget = *this
+            ;             *this\color\state = 3
+            ;           Else
             If Not is_root_( *this )
-              If Not *this\row
-                If *Data > 0
-                  If *this\color\state = 0
-                    *this\color\state = 1
-                  EndIf
-                ElseIf *Data < 0
-                  If *this\state\focus = 0
-                    *this\color\state = 0
+              *this\color\state = 0
+            EndIf
+            ;           EndIf
+            
+          Case #PB_EventType_StatusChange
+            If *this\mouse And *this\mouse\interact
+              *this\state\repaint = #True
+              
+              If Not is_root_( *this )
+                If Not *this\row
+                  If *Data > 0
+                    If *this\color\state = 0
+                      *this\color\state = 1
+                    EndIf
+                  ElseIf *Data < 0
+                    If *this\state\focus = 0
+                      *this\color\state = 0
+                    EndIf
                   EndIf
                 EndIf
               EndIf
             EndIf
-          EndIf
-          
-          
-        Case #PB_EventType_MouseEnter,
-             #PB_EventType_MouseLeave,
-             #PB_EventType_LeftButtonDown,
-             #PB_EventType_LeftButtonUp,
-             #PB_EventType_KeyDown,
-             #PB_EventType_KeyUp,
-             #PB_EventType_Focus,
-             #PB_EventType_LostFocus,
-             #PB_EventType_ScrollChange,
-             ;           ;; #PB_EventType_Repaint,
-             ;              #PB_EventType_Create,
-             ;              #PB_EventType_DragStart,
-             ;              #PB_EventType_Resize,
-          #PB_EventType_Drop
-          
-          *this\state\repaint = #True
-      EndSelect
-      
-      ;
-      If Not *this\state\disable 
+            
+            
+          Case #PB_EventType_MouseEnter,
+               #PB_EventType_MouseLeave,
+               #PB_EventType_LeftButtonDown,
+               #PB_EventType_LeftButtonUp,
+               #PB_EventType_KeyDown,
+               #PB_EventType_KeyUp,
+               #PB_EventType_Focus,
+               #PB_EventType_LostFocus,
+               #PB_EventType_ScrollChange,
+               ;            ; #PB_EventType_Repaint,
+               ;              #PB_EventType_Create,
+               ;              #PB_EventType_DragStart,
+               ;              #PB_EventType_Resize,
+            #PB_EventType_Drop
+            
+            *this\state\repaint = #True
+        EndSelect
+        
         ; items events
         Select eventtype
           Case #PB_EventType_MouseEnter,
@@ -18141,13 +18086,12 @@ _this_\type = #PB_GadgetType_ExplorerList )
       
       ; 
       If *this\state\repaint = #True
-        ;Debug *this\mouse\interact
         PostEventRepaint( *this\root )
         *this\state\repaint = #False
       EndIf
       
+      ;
       Post( *this, eventtype, *button, *data ) 
-      ;_DoEvents( *this, eventtype, *button, *data )
     EndProcedure
     
     Procedure GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
@@ -18273,7 +18217,8 @@ _this_\type = #PB_GadgetType_ExplorerList )
           If *widget And 
              *widget\state\enter <> #True
             *widget\state\enter = #True
-            repaint | DoEvents( *widget, #PB_EventType_MouseEnter )
+            DoEvents( *widget, #PB_EventType_MouseEnter )
+            
             _DD_event_enter_( repaint, *widget )
             
             If Not is_interact_row_( *widget )
@@ -20277,7 +20222,6 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ; 
   WaitClose( )
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------x---fb--3mZ----9urv----+-----------------------------Tv92-vvr--v--9-+t-0-----te--------v-f+--4----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8u--0-f------------------------------------------------------------------------------v----PX6-----------------
+; Folding = --------------------------------------------------------------------------------x---fb--3mZ----9urv----+-----------------------------Tv92-vvr--v--9-+t-0-----te--------v-f+--4----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8u--0-f---------------------------------v0-----------------------------4-rf--+-------f----fuy-----------------
 ; EnableXP

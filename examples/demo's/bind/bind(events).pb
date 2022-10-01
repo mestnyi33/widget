@@ -1,5 +1,7 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
+
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,10 +17,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0( )
-    If Open(OpenWindow(#PB_Any, 0, 0, 380, 180, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
+    If Open(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
       
-      Define *butt = Button(50, 50, 280, 80, "post event for one procedure")
       
+      Define *butt = Button(50, 50, 280, 80, "test-button-events") : Button(350, 50, 80, 80, "Deactivate")
       Bind( *butt, @events_roots( ), #PB_EventType_Change )
       Bind( *butt, @events_roots( ), #PB_EventType_CloseItem )
       Bind( *butt, @events_roots( ), #PB_EventType_Down )

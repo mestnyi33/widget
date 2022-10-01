@@ -56,12 +56,13 @@ CompilerIf #PB_Compiler_IsMainFile
       If Open(0, 10,10, 480, 480)
         Bind(#PB_All, @events_roots())
         Bind(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
+        ;SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
         
         Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
         Bind(Button(10, 100, 280, 80, "post event for to two procedure", Editable), @events_widgets())
         Bind(Button(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
         
-        ReDraw(Root())
+        ;ReDraw(Root())
       EndIf
     EndIf
   EndProcedure

@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -9,20 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_gadgets()
-    Debug ""+Str(this()\widget\index - 1)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (gadget)"
+    Debug ""+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
   EndProcedure
   
   Procedure events_widgets()
     ; ClearDebugOutput()
-    Debug " "+Str(this()\widget\index - 1)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (widget)"
+    Debug " "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
   EndProcedure
   
   Procedure events_windows()
-    Debug "   "+Str(this()\widget\index - 1)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (window)"
+    Debug "   "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
   EndProcedure
   
   Procedure events_roots()
-    Debug "     "+Str(this()\widget\index - 1)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (root)"
+    Debug "     "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
   EndProcedure
   
   
@@ -83,6 +83,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

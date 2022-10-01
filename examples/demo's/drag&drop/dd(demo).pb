@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 EnableExplicit
 Uselib( Widget )
@@ -20,11 +21,36 @@ Global SourceText,
 
 Global i, Event, font = LoadFont( 0, "Aria", 13 )
 
+;
+; Create some images for the image demonstration
+; 
+CreateImage( #ImageSource, 136, 136 )
+If StartDrawing( ImageOutput( #ImageSource ) )
+  DrawingFont( font )
+  
+  Box( 0, 0, 136, 136, $FFFFFF )
+  DrawText( 5, 5, "Drag this image", $000000, $FFFFFF )        
+  For i = 45 To 1 Step -1
+    Circle( 70, 80, i, Random( $FFFFFF ) )
+  Next i        
+  
+  StopDrawing( )
+EndIf  
+
+CreateImage( #ImageTarget, 136, 136 )
+If StartDrawing( ImageOutput( #ImageTarget ) )
+  DrawingFont( font )
+  
+  Box( 0, 0, 136, 136, $FFFFFF )
+  DrawText( 5, 5, "Drop images here", $000000, $FFFFFF )
+  StopDrawing( )
+EndIf  
+
 Procedure Events( )
   Protected EventWidget.i = EventWidget( ),
             EventType.i = WidgetEventType( );,
-            ;EventItem.i = this( )\item, 
-            ;EventData.i = this( )\data
+                                            ;EventItem.i = this( )\item, 
+                                            ;EventData.i = this( )\data
   
   Protected i, Text$, Files$, Count
   
@@ -73,7 +99,7 @@ Procedure Events( )
     Case #PB_EventType_Drop
       Debug  "Drop - " + EventWidget
       ; clearitems(EventWidget)
-           
+      
       Select EventWidget
           
         Case TargetText
@@ -114,40 +140,16 @@ Procedure Events( )
           
       EndSelect
       
-;       If EventWidget = DD_DropPrivate( )
-;         AddItem( DD_DropPrivate( ), -1, "Private type 2 EventDrop" )
-;       EndIf
+      ;       If EventWidget = DD_DropPrivate( )
+      ;         AddItem( DD_DropPrivate( ), -1, "Private type 2 EventDrop" )
+      ;       EndIf
       
   EndSelect
   
 EndProcedure
 
-If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered ), #PB_Default )   
-  ;
-  ; Create some images for the image demonstration
-  ; 
-  CreateImage( #ImageSource, 136, 136 )
-  If StartDrawing( ImageOutput( #ImageSource ) )
-    DrawingFont( font )
-    
-    Box( 0, 0, 136, 136, $FFFFFF )
-    DrawText( 5, 5, "Drag this image", $000000, $FFFFFF )        
-    For i = 45 To 1 Step -1
-      Circle( 70, 80, i, Random( $FFFFFF ) )
-    Next i        
-    
-    StopDrawing( )
-  EndIf  
-  
-  CreateImage( #ImageTarget, 136, 136 )
-  If StartDrawing( ImageOutput( #ImageTarget ) )
-    DrawingFont( font )
-    
-    Box( 0, 0, 136, 136, $FFFFFF )
-    DrawText( 5, 5, "Drop images here", $000000, $FFFFFF )
-    StopDrawing( )
-  EndIf  
-  
+If Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered )   
+  ;Bind(, #PB_Default )
   ; Create and fill the source s
   ;
   SourceText = ListIcon( 10, 10, 140, 140, "Drag Text here", 130 )   
@@ -209,14 +211,14 @@ If Bind( Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   ; main loop
   ;
   WaitClose( )
-;   ReDraw( Root( ) )
-;   
-;   Repeat
-;     Event = WaitWindowEvent( )
-;   Until Event = #PB_Event_CloseWindow
+  ;   ReDraw( Root( ) )
+  ;   
+  ;   Repeat
+  ;     Event = WaitWindowEvent( )
+  ;   Until Event = #PB_Event_CloseWindow
 EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -f+
+; Folding = ---
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -7,19 +7,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure active()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+EventWidget()\index
   EndProcedure
   
   Procedure deactive()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+EventWidget()\index
   EndProcedure
   
   Procedure click()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+EventWidget()\index
   EndProcedure
   
   Procedure events()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+EventWidget()\index
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
@@ -57,6 +57,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 End  
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

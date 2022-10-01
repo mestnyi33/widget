@@ -1,9 +1,10 @@
 ﻿; #__from_mouse_state = 1
 
-XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 
-Define editable = #__flag_anchorsgadget  ; #__flag_flat ; 
+Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
 
 Procedure events_widgets()
   Protected repaint
@@ -14,9 +15,10 @@ Procedure events_widgets()
   EndSelect
   
   If repaint
+    Debug 777
     ; Repaints( )
     ;_post_repaint_canvas_( root( )\canvas )
-    ReDraw( root( ) )
+   ; ReDraw( root( ) )
   EndIf
 EndProcedure
 
@@ -48,6 +50,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 240, 240, "enter&leave demo",
   WaitClose( )
   ;Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
