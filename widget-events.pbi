@@ -2980,7 +2980,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             transform( )\id[0]\color\frame = $BA161616
           EndIf
           
-          If a_focus_widget( ) And a_enter_index( a_focus_widget( ) )
+          If a_focus_widget( ) And a_focus_widget( )\parent( ) And a_focus_widget( )\_a_ And a_enter_index( a_focus_widget( ) ) And a_focus_widget( )\_a_\id[a_enter_index( a_focus_widget( ) )]
             ; set current transform index
             a_focus_widget( )\_a_\id[a_enter_index( a_focus_widget( ) )]\color\state = #__S_2
             
@@ -3084,7 +3084,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;
         If eventtype = #PB_EventType_DragStart 
           
-          If a_enter_index( a_focus_widget( ) ) = #__a_moved And a_focus_widget( )\_a_\id[#__a_moved]
+          If a_focus_widget( ) And a_enter_index( a_focus_widget( ) ) = #__a_moved And a_focus_widget( )\_a_\id[#__a_moved]
             ; set_cursor_( *this, a_focus_widget( )\_a_\id[#__a_moved]\cursor )
           EndIf
           
@@ -4719,7 +4719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\state\repaint = #True
         
-        If *this\_a_ And *this\_a_\transform
+        If *this\_a_ And *this\_a_\id And *this\_a_\transform
           a_move( *this\_a_\id, 
                   *this\x[#__c_screen],
                   *this\y[#__c_screen], 
@@ -14431,20 +14431,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       If *this\bounds\move\x\min <> #PB_Ignore And
-         *this\x[#__c_frame] < *this\bounds\move\x\min
+         *this\bounds\move\x\min > *this\x[#__c_frame]  
         x = *this\bounds\move\x\min
-        If *this\width[#__c_frame] > *this\bounds\move\x\max - x
-          width = *this\bounds\move\x\max - x
+        If *this\width[#__c_frame] > *this\bounds\move\x\max - *this\bounds\move\x\min
+          width = *this\bounds\move\x\max - *this\bounds\move\x\min
         EndIf
       ElseIf *this\bounds\move\x\max <> #PB_Ignore And 
              *this\width[#__c_frame] > ( *this\bounds\move\x\max - *this\x[#__c_frame] )
         width = *this\bounds\move\x\max - *this\x[#__c_frame]
       EndIf
       If *this\bounds\move\y\min <> #PB_Ignore And 
-         *this\y[#__c_frame] < *this\bounds\move\y\min 
+         *this\bounds\move\y\min > *this\y[#__c_frame] 
         y = *this\bounds\move\y\min
-        If *this\height[#__c_frame] > *this\bounds\move\y\max - y
-          height = *this\bounds\move\y\max - y
+        If *this\height[#__c_frame] > *this\bounds\move\y\max - *this\bounds\move\y\min
+          height = *this\bounds\move\y\max - *this\bounds\move\y\min
         EndIf
       ElseIf *this\bounds\move\y\max <> #PB_Ignore And
              *this\height[#__c_frame] > ( *this\bounds\move\y\max - *this\y[#__c_frame] )
@@ -14469,17 +14469,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       If *this\bounds\size\width\min <> #PB_Ignore And
-         *this\width[#__c_frame] < *this\bounds\size\width\min
+         *this\bounds\size\width\min > *this\width[#__c_frame]
         width = *this\bounds\size\width\min
       ElseIf *this\bounds\size\width\max <> #PB_Ignore And
-             *this\width[#__c_frame] > *this\bounds\size\width\max
+             *this\bounds\size\width\max < *this\width[#__c_frame]
         width = *this\bounds\size\width\max
       EndIf
       If *this\bounds\size\height\min <> #PB_Ignore And 
-         *this\height[#__c_frame] < *this\bounds\size\height\min 
+         *this\bounds\size\height\min > *this\height[#__c_frame] 
         height = *this\bounds\size\height\min
       ElseIf *this\bounds\size\height\max <> #PB_Ignore And 
-             *this\height[#__c_frame] > *this\bounds\size\height\max
+             *this\bounds\size\height\max < *this\height[#__c_frame]
         height = *this\bounds\size\height\max
       EndIf
       
