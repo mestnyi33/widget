@@ -303,14 +303,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro GetActive( ): Keyboard( )\window: EndMacro   ; Returns activeed window
     Macro GetMouseX( _mode_ = #__c_screen ): Mouse( )\x[_mode_]: EndMacro ; Returns mouse x
     Macro GetMouseY( _mode_ = #__c_screen ): Mouse( )\y[_mode_]: EndMacro ; Returns mouse y
-    Macro Clip( _address_, _mode_=[#__c_draw] )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
-        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-      CompilerEndIf
-    EndMacro
-    Macro UnClip( )
-      PB(UnclipOutput)( )
-    EndMacro
     
     ;-
     Macro scroll_x_( _this_ ): _this_\x[#__c_required]: EndMacro
@@ -2315,46 +2307,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro a_draw_box( _address_ )
-      drawing_mode_( #PB_2DDrawing_Outlined )
-      
-      If _address_ = a_focus_widget( )\_a_\transform
-        a_draw_line( a_focus_widget( ))
-      Else
-        If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height ,_address_[0]\color\back[_address_[0]\color\state] ) : EndIf
-      EndIf
-      
-      ;If _address_\container 
-      If _address_[#__a_moved] And ( _address_[#__a_moved]\width <> _address_[0]\width And _address_[#__a_moved]\height <> _address_[0]\height  )
-        draw_box_( _address_[#__a_moved]\x, _address_[#__a_moved]\y, _address_[#__a_moved]\width, _address_[#__a_moved]\height, _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] ) 
-      EndIf
-      ;EndIf
-      
-      drawing_mode_alpha_( #PB_2DDrawing_Default )
-      
-      ; draw background anchors
-      If _address_[1] :draw_box_( _address_[1]\x, _address_[1]\y, _address_[1]\width, _address_[1]\height ,_address_[1]\color\back[_address_[1]\color\state] ) : EndIf
-      If _address_[2] :draw_box_( _address_[2]\x, _address_[2]\y, _address_[2]\width, _address_[2]\height ,_address_[2]\color\back[_address_[2]\color\state] ) : EndIf
-      If _address_[3] :draw_box_( _address_[3]\x, _address_[3]\y, _address_[3]\width, _address_[3]\height ,_address_[3]\color\back[_address_[3]\color\state] ) : EndIf
-      If _address_[4] :draw_box_( _address_[4]\x, _address_[4]\y, _address_[4]\width, _address_[4]\height ,_address_[4]\color\back[_address_[4]\color\state] ) : EndIf
-      If _address_[5] :draw_box_( _address_[5]\x, _address_[5]\y, _address_[5]\width, _address_[5]\height ,_address_[5]\color\back[_address_[5]\color\state] ) : EndIf
-      If _address_[6] :draw_box_( _address_[6]\x, _address_[6]\y, _address_[6]\width, _address_[6]\height ,_address_[6]\color\back[_address_[6]\color\state] ) : EndIf
-      If _address_[7] :draw_box_( _address_[7]\x, _address_[7]\y, _address_[7]\width, _address_[7]\height ,_address_[7]\color\back[_address_[7]\color\state] ) : EndIf
-      If _address_[8] :draw_box_( _address_[8]\x, _address_[8]\y, _address_[8]\width, _address_[8]\height ,_address_[8]\color\back[_address_[8]\color\state] ) : EndIf
-      
-      drawing_mode_( #PB_2DDrawing_Outlined )
-      
-      ; draw frame anchors
-      If _address_[1] :draw_box_( _address_[1]\x, _address_[1]\y, _address_[1]\width, _address_[1]\height, _address_[1]\color\frame[_address_[1]\color\state] ) : EndIf
-      If _address_[2] :draw_box_( _address_[2]\x, _address_[2]\y, _address_[2]\width, _address_[2]\height, _address_[2]\color\frame[_address_[2]\color\state] ) : EndIf
-      If _address_[3] :draw_box_( _address_[3]\x, _address_[3]\y, _address_[3]\width, _address_[3]\height, _address_[3]\color\frame[_address_[3]\color\state] ) : EndIf
-      If _address_[4] :draw_box_( _address_[4]\x, _address_[4]\y, _address_[4]\width, _address_[4]\height, _address_[4]\color\frame[_address_[4]\color\state] ) : EndIf
-      If _address_[5] :draw_box_( _address_[5]\x, _address_[5]\y, _address_[5]\width, _address_[5]\height, _address_[5]\color\frame[_address_[5]\color\state] ) : EndIf
-      If _address_[6] :draw_box_( _address_[6]\x, _address_[6]\y, _address_[6]\width, _address_[6]\height, _address_[6]\color\frame[_address_[6]\color\state] ) : EndIf
-      If _address_[7] :draw_box_( _address_[7]\x, _address_[7]\y, _address_[7]\width, _address_[7]\height, _address_[7]\color\frame[_address_[7]\color\state] ) : EndIf
-      If _address_[8] :draw_box_( _address_[8]\x, _address_[8]\y, _address_[8]\width, _address_[8]\height, _address_[8]\color\frame[_address_[8]\color\state] ) : EndIf
-    EndMacro
-    
     Macro a_draw_line( _address_ )
       ; left line
       If transform( )\id[10] 
@@ -2393,6 +2345,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
+    Macro a_draw_box( _address_ )
+      drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+      
+      If _address_ = a_focus_widget( )\_a_\transform
+        a_draw_line( a_focus_widget( ))
+      Else
+        If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height ,_address_[0]\color\back[_address_[0]\color\state] ) : EndIf
+      EndIf
+      
+      ;If _address_\container 
+      If _address_[#__a_moved] And ( _address_[#__a_moved]\width <> _address_[0]\width And _address_[#__a_moved]\height <> _address_[0]\height  )
+        draw_box_( _address_[#__a_moved]\x, _address_[#__a_moved]\y, _address_[#__a_moved]\width, _address_[#__a_moved]\height, _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] ) 
+      EndIf
+      ;EndIf
+      
+      drawing_mode_alpha_( #PB_2DDrawing_Default )
+      
+      ; draw background anchors
+      If _address_[1] :draw_box_( _address_[1]\x, _address_[1]\y, _address_[1]\width, _address_[1]\height ,_address_[1]\color\back[_address_[1]\color\state] ) : EndIf
+      If _address_[2] :draw_box_( _address_[2]\x, _address_[2]\y, _address_[2]\width, _address_[2]\height ,_address_[2]\color\back[_address_[2]\color\state] ) : EndIf
+      If _address_[3] :draw_box_( _address_[3]\x, _address_[3]\y, _address_[3]\width, _address_[3]\height ,_address_[3]\color\back[_address_[3]\color\state] ) : EndIf
+      If _address_[4] :draw_box_( _address_[4]\x, _address_[4]\y, _address_[4]\width, _address_[4]\height ,_address_[4]\color\back[_address_[4]\color\state] ) : EndIf
+      If _address_[5] :draw_box_( _address_[5]\x, _address_[5]\y, _address_[5]\width, _address_[5]\height ,_address_[5]\color\back[_address_[5]\color\state] ) : EndIf
+      If _address_[6] :draw_box_( _address_[6]\x, _address_[6]\y, _address_[6]\width, _address_[6]\height ,_address_[6]\color\back[_address_[6]\color\state] ) : EndIf
+      If _address_[7] :draw_box_( _address_[7]\x, _address_[7]\y, _address_[7]\width, _address_[7]\height ,_address_[7]\color\back[_address_[7]\color\state] ) : EndIf
+      If _address_[8] :draw_box_( _address_[8]\x, _address_[8]\y, _address_[8]\width, _address_[8]\height ,_address_[8]\color\back[_address_[8]\color\state] ) : EndIf
+      
+      drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+      
+      ; draw frame anchors
+      If _address_[1] :draw_box_( _address_[1]\x, _address_[1]\y, _address_[1]\width, _address_[1]\height, _address_[1]\color\frame[_address_[1]\color\state] ) : EndIf
+      If _address_[2] :draw_box_( _address_[2]\x, _address_[2]\y, _address_[2]\width, _address_[2]\height, _address_[2]\color\frame[_address_[2]\color\state] ) : EndIf
+      If _address_[3] :draw_box_( _address_[3]\x, _address_[3]\y, _address_[3]\width, _address_[3]\height, _address_[3]\color\frame[_address_[3]\color\state] ) : EndIf
+      If _address_[4] :draw_box_( _address_[4]\x, _address_[4]\y, _address_[4]\width, _address_[4]\height, _address_[4]\color\frame[_address_[4]\color\state] ) : EndIf
+      If _address_[5] :draw_box_( _address_[5]\x, _address_[5]\y, _address_[5]\width, _address_[5]\height, _address_[5]\color\frame[_address_[5]\color\state] ) : EndIf
+      If _address_[6] :draw_box_( _address_[6]\x, _address_[6]\y, _address_[6]\width, _address_[6]\height, _address_[6]\color\frame[_address_[6]\color\state] ) : EndIf
+      If _address_[7] :draw_box_( _address_[7]\x, _address_[7]\y, _address_[7]\width, _address_[7]\height, _address_[7]\color\frame[_address_[7]\color\state] ) : EndIf
+      If _address_[8] :draw_box_( _address_[8]\x, _address_[8]\y, _address_[8]\width, _address_[8]\height, _address_[8]\color\frame[_address_[8]\color\state] ) : EndIf
+    EndMacro
+    
     Macro a_draw( _address_ )
       drawing_mode_alpha_( #PB_2DDrawing_Default )
       
@@ -2405,7 +2397,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ; clip drawing coordinate
-      ;;_content_clip_( transform( )\main, [#__c_draw2] )
+      ;;Clip( transform( )\main, [#__c_draw2] )
       
       If transform( )\grab
         If transform( )\id[0]\color\back[0]
@@ -2416,11 +2408,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           DrawText( transform( )\id[0]\x + 3, transform( )\id[0]\y + 1, Str( transform( )\id[0]\width ) +"x"+ Str( transform( )\id[0]\height ), transform( )\id[0]\color\front[0], transform( )\id[0]\color\back[0] )
           
           If transform( )\id[0]\color\frame[0]
-            drawing_mode_( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             draw_box_( transform( )\id[0]\x, transform( )\id[0]\y, transform( )\id[0]\width, transform( )\id[0]\height, transform( )\id[0]\color\frame[0] )
           EndIf
         Else
-          drawing_mode_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined ) 
+          drawing_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined ) 
           draw_box_( transform( )\id[0]\x, transform( )\id[0]\y, transform( )\id[0]\width, transform( )\id[0]\height, transform( )\id[0]\color\frame[0] ) 
         EndIf
       Else
@@ -2496,7 +2488,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\_a_\id[_index_]\color\frame[#__S_1] = $ffFF0000
         _this_\_a_\id[_index_]\color\frame[#__S_2] = $ff0000FF
         
-        _this_\_a_\id[_index_]\color\back[#__S_0] = $ffFFFFFF
+        If _index_ = 0 
+          _this_\_a_\id[_index_]\color\back[#__S_0] = $ffFF0000
+        Else
+          _this_\_a_\id[_index_]\color\back[#__S_0] = $ffFFFFFF
+        EndIf
         _this_\_a_\id[_index_]\color\back[#__S_1] = $80FF0000 
         _this_\_a_\id[_index_]\color\back[#__S_2] = $800000FF
       Next _index_
@@ -4032,19 +4028,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     
-    Macro _content_clip_( _address_, _mode_= )
-      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-        ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+    Macro Clip( _address_, _mode_=[#__c_draw] )
+      CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
+        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
       CompilerEndIf
-    EndMacro
-    
-    Macro _content_clip2_( _address_, _mode_= )
-      ;CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fix, #PB_Module ))
-      ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-      Clip( _address_, _mode_ )
-      
-      
-      ; CompilerEndIf
     EndMacro
     
     Procedure  ClipPut( *this._S_widget, x, y, width, height )
@@ -4075,7 +4062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         clip_h = *this\height[#__c_draw]
       EndIf
       
-      ClipOutput( clip_x, clip_y, clip_w, clip_h )
+      PB(ClipOutput)( clip_x, clip_y, clip_w, clip_h )
     EndProcedure
     
     Declare Reclip( *this._S_widget )
@@ -4323,8 +4310,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             x + ( x%transform( )\grid\size ) 
             x = ( x/transform( )\grid\size ) * transform( )\grid\size
           EndIf
-          If *this\parent( ) And *this\parent( )\container
-           ; x - *this\parent( )\fs
+          If *this\parent( ) And *this\parent( )\container And *this\attach
+            x - *this\parent( )\fs
           EndIf
         EndIf
         
@@ -4333,8 +4320,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             y + ( y%transform( )\grid\size ) 
             y = ( y/transform( )\grid\size ) * transform( )\grid\size
           EndIf
-          If *this\parent( ) And *this\parent( )\container
-           ; y - *this\parent( )\fs
+          If *this\parent( ) And *this\parent( )\container And *this\attach
+            y - *this\parent( )\fs
           EndIf
         EndIf
         
@@ -4842,7 +4829,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro bar_area_draw_( _this_ )
       If _this_\scroll
-        ;_content_clip_( _this_, [#__c_draw] )
+        ;Clip( _this_, [#__c_draw] )
         
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
            ( _this_\scroll\v\width[#__c_draw] > 0 And _this_\scroll\v\height[#__c_draw] > 0 )
@@ -10339,7 +10326,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;
-          ;_content_clip_( *this, [#__c_draw2] )
+          ;Clip( *this, [#__c_draw2] )
           
           
           draw_items_( *this, VisibleRowList( *this ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
@@ -11424,7 +11411,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure   _Window_Draw( *this._S_widget )
+    Procedure   Window_Draw( *this._S_widget )
       Protected caption_height = *this\caption\height - *this\fs 
       
       With *this 
@@ -11544,10 +11531,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ;             draw_roundbox_( \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000 )
+            Clip( *this, [#__c_draw] )
           EndIf
         EndIf
         
-        ;_content_clip_( *this, [#__c_draw2] )
+        ;Clip( *this, [#__c_draw2] )
         
         ; background image draw 
         If *this\image[#__img_background]\id
@@ -11557,7 +11545,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
         EndIf
         
-        ;_content_clip_( *this, [#__c_draw] )
+        ;Clip( *this, [#__c_draw] )
         
         ; UnclipOutput( )
         ; drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -11567,7 +11555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure   Window_Draw( *this._S_widget )
+    Procedure   _Window_Draw( *this._S_widget )
       Protected color_inner_line
       Protected window_color_state = *this\color\state
       Protected caption_height = *this\caption\height - *this\fs 
@@ -11597,7 +11585,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           draw_box_( \x[#__c_frame], \y[#__c_frame]+caption_height/2, \width[#__c_frame], \fs[2]-caption_height/2+\fs, \caption\color\back[window_color_state] )
         EndIf
         
-        ; _content_clip2_( *this, [#__c_draw2] )
+        ; Clip( *this, [#__c_draw2] )
         
         If Not ( *this\image[#__img_background]\id And *this\image[#__img_background]\depth > 31 ) ; *this\image[#__img_background]\transparent )
           drawing_mode_alpha_( #PB_2DDrawing_Default )
@@ -11680,7 +11668,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        _content_clip2_( *this, [#__c_draw2] )
+        ; Clip( *this, [#__c_draw] ) ; 2
         
         ; background image draw 
         If *this\image[#__img_background]\id
@@ -14407,7 +14395,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           While *this\attach\parent( )\attach
             *this\attach\parent( ) = *this\attach\parent( )\parent( )
           Wend
-          *this\attach\parent( ) = *this\attach\parent( )\parent( )
+          If *this\attach\parent( )\parent( )
+            *this\attach\parent( ) = *this\attach\parent( )\parent( )
+          Else
+            *this\attach\parent( ) = *parent
+          EndIf
           
           ;AddWidget( *this, *parent )
           SetParent( *this, *parent, #PB_Default )
@@ -15955,7 +15947,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected state.b, x.l, y.l, _box_x_.l, _box_y_.l, minus.l = 7
       
       ;
-      ;_content_clip_( *this, [#__c_draw2] )
+      ; Clip( *this, [#__c_draw2] ) ; 2
       
       PushListPosition( *rows( ))
       Protected bs = Bool( *this\fs )
@@ -16396,7 +16388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; draw text items
         If \text\string.s
-          ;_content_clip_( *this, [#__c_draw1] )
+          ;Clip( *this, [#__c_draw1] )
           ;Debug *this\text\string
           
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
@@ -16413,7 +16405,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
           Next 
           
-          ;_content_clip_( *this, [#__c_draw] )
+          ;Clip( *this, [#__c_draw] )
         EndIf
         
         ; box draw    
@@ -16455,7 +16447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   draw_Container1( *this._S_widget )
       With *this
         ;
-        _content_clip_( *this, [#__c_draw2] )
+        ; Clip( *this, [#__c_draw2] ) ; 2
         
         drawing_mode_alpha_( #PB_2DDrawing_Default )
         ;draw_roundbox_( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
@@ -16495,7 +16487,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        _content_clip_( *this, [#__c_draw] )
+        Clip( *this, [#__c_draw] )
         
         ; area scrollbars draw 
         bar_area_draw_( *this )
@@ -16534,7 +16526,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; area scrollbars draw 
         bar_area_draw_( *this )
         ;
-        _content_clip2_( *this, [#__c_draw] ) ;2
+        ; Clip( *this, [#__c_draw] ) ; 2
         
         drawing_mode_alpha_( #PB_2DDrawing_Default )
         ;draw_roundbox_( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
@@ -16583,7 +16575,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro draw_below_( _this_ )
       ; limit drawing boundaries
-      _content_clip2_( _this_, [#__c_draw] )
+      Clip( _this_, [#__c_draw] ) ; 2
       
       ; draw widgets
       Select _this_\type
@@ -16749,7 +16741,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndMacro
     Macro draw_above_( _this_ )
-      _content_clip2_( _this_, [#__c_draw] )
+      Clip( _this_, [#__c_draw] ) ; 2
       
       ; draw keyboard focus widget frame
       If _this_\state\focus And _this_\type = #__type_window
@@ -16774,11 +16766,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;           drawing_mode_( #PB_2DDrawing_Outlined )
       ;           
       ;           If _this_\_a_\transform = 2
-      ;             _content_clip_( _this_, [#__c_frame] )
+      ;             Clip( _this_, [#__c_frame] )
       ;             ; draw group transform widgets frame
       ;            draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], $ffff00ff )
       ;           Else
-      ;             _content_clip_( _this_, [#__c_inner] )
+      ;             Clip( _this_, [#__c_inner] )
       ;             ; draw clip out transform widgets frame
       ;            draw_box_( _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner], $ff00ffff )
       ;           EndIf
@@ -16911,9 +16903,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
             
             ;
-            Unclip( )
+            UnclipOutput( )
             
-            drawing_mode_( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ForEach enumWidget( )
               If enumWidget( )\root\canvas\gadget = *this\root\canvas\gadget And 
                  Not ( enumWidget( )\hide = 0 And enumWidget( )\width[#__c_draw] > 0 And enumWidget( )\height[#__c_draw] > 0 )
@@ -16953,7 +16945,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_focus_widget( )\root\canvas\gadget = *this\root\canvas\gadget 
             
             ; draw mouse selected widget anchors
-            _content_clip_( transform( )\main, [#__c_draw2] )
+            Clip( transform( )\main, [#__c_draw2] )
             a_draw_box( a_focus_widget( )\_a_\id )
           EndIf
           
@@ -16961,7 +16953,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_focus_widget( )\root\canvas\gadget = *this\root\canvas\gadget 
             
             ; draw mouse selected widget anchors
-            _content_clip_( transform( )\main, [#__c_draw2] )
+            Clip( transform( )\main, [#__c_draw2] )
             a_draw_box( transform( )\id )
           EndIf
         EndIf
@@ -20223,5 +20215,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------x---fb--3mZ----9urv----+-----------------------------Tv92-vvr--v--9-+t-0-----te--------v-f+--4----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8u--0-f---------------------------------v0-----------------------------4-rf--+-------f----fuy-----------------
+; Folding = -------------------------------------------------------------------------------P+---b8-43M8---n4d00---4-----------------------------f7lv+-0d0--0-n-4v0v-----v28--------0-z---+---v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u8-f--4---------------------------------b------------------------------0-74-v--------4----nr9-----------------
 ; EnableXP

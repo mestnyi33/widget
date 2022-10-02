@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -16,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_()
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
+       Case #PB_EventType_LeftClick
         Define flag
         Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
         Define a$ = "Result of the previously requester was: "
@@ -37,10 +38,24 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+      Case #PB_EventType_Draw
+        ; Demo draw on element
+        UnclipOutput()
+        DrawingMode(#PB_2DDrawing_Outlined)
+        
+        Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, $ffff0000)
+        Box(Eventwidget()\x[#__c_draw],Eventwidget()\y[#__c_draw],Eventwidget()\width[#__c_draw],Eventwidget()\height[#__c_draw], $ff0000ff)
+        
+    EndSelect
+  EndProcedure
+  
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ;Define *mdi._s_widget = Container(x,y,Width, height)
-  Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
+  Define *mdi._s_widget = MDI(x,y,Width, height)
+  ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
   a_init( *mdi, 0 )
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
   
@@ -57,10 +72,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g3._s_widget = Window(X(*g2, #__c_container), Y(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100, "SubChild",flag,*g2) : SetClass(widget(), "SubChild") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
-  bind(*g1b, @events_())
+  ;bind(*g1b, @events_())
+  
+  Bind(*g0, @CustomEvents())
+  Bind(*g1, @CustomEvents())
+  Bind(*g2, @CustomEvents())
+  Bind(*g3, @CustomEvents())
   
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 8
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 8-
 ; EnableXP

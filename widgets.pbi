@@ -563,7 +563,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndIf
     EndMacro
     
-    Macro draw_mode_alpha( _mode_ )
+    Macro drawing_mode_alpha_( _mode_ )
       ;       If Widget( )\_draw_alpha <> _mode_
       ;         Widget( )\_draw_alpha = _mode_
       
@@ -573,7 +573,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro _draw_mode_( _this_, _mode_ )
       If _this_\color\alpha And _this_\color\alpha\frame
-        draw_mode_alpha( _mode_ )
+        drawing_mode_alpha_( _mode_ )
       Else
         draw_mode( _mode_ )
       EndIf
@@ -779,7 +779,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro _draw_button_( _type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255 ) 
-      draw_mode_alpha( #PB_2DDrawing_Gradient )
+      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
       LinearGradient( _x_,_y_, _x_, ( _y_ + _height_ ))
       
       If _checked_
@@ -834,7 +834,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       EndIf    
       
-      draw_mode_alpha( #PB_2DDrawing_Outlined )
+      drawing_mode_alpha_( #PB_2DDrawing_Outlined )
       
       If _checked_
         FrontColor( _color_frame2_&$FFFFFF | _alpha_<<24 )
@@ -1859,7 +1859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; if you drag to the widget-dropped
       If _DD_drag_( ) And *this\state\flag & #__s_drop
         
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         
         If _DD_drop_( EnteredWidget( ) ) ; *this\drop 
           If _DD_action_( EnteredWidget( ) )
@@ -2412,7 +2412,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       ;EndIf
       
-      draw_mode_alpha( #PB_2DDrawing_Default )
+      drawing_mode_alpha_( #PB_2DDrawing_Default )
       
       ; draw background anchors
       If _address_[1] : Box( _address_[1]\x, _address_[1]\y, _address_[1]\width, _address_[1]\height ,_address_[1]\color\back[_address_[1]\color\state] ) : EndIf
@@ -2476,7 +2476,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro a_draw( _address_ )
-      draw_mode_alpha( #PB_2DDrawing_Default )
+      drawing_mode_alpha_( #PB_2DDrawing_Default )
       
       ; draw grab background 
       If transform( )\grab
@@ -4729,7 +4729,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If #__draw_scroll_box 
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           ; Scroll area coordinate
           Box( _this_\x[#__c_inner] + _this_\x[#__c_required] + _this_\text\padding\x, _this_\y[#__c_inner] + _this_\y[#__c_required] + _this_\text\padding\y, _this_\width[#__c_required] - _this_\text\padding\x*2, _this_\height[#__c_required] - _this_\text\padding\y*2, $FFFF0000 )
           Box( _this_\x[#__c_inner] + _this_\x[#__c_required], _this_\y[#__c_inner] + _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], $FF0000FF )
@@ -4895,14 +4895,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Macro Tab_draw_item( _vertical_, _address_,_x_, _y_, _fore_color_, _back_color_, _frame_color_, _text_color_, _round_)
       ;Draw back
-      draw_mode_alpha( #PB_2DDrawing_Gradient )
+      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
       _draw_gradient_box_( _vertical_,_x_ + _address_\x,_y_ + _address_\y, _address_\width, _address_\height, _fore_color_, _back_color_, _round_, _address_\color\_alpha )
       ; Draw frame
-      draw_mode_alpha( #PB_2DDrawing_Outlined )
+      drawing_mode_alpha_( #PB_2DDrawing_Outlined )
       draw_box_round( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _frame_color_&$FFFFFF | _address_\color\_alpha<<24 )
       ; Draw items image
       If _address_\image\id
-        draw_mode_alpha( #PB_2DDrawing_Transparent )
+        drawing_mode_alpha_( #PB_2DDrawing_Transparent )
         DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\color\_alpha )
       EndIf
       ; Draw items text
@@ -4996,7 +4996,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If Not \hide And \color\_alpha
           If \color\back <>- 1
             ; Draw scroll bar background
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_round( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\round,\round,\color\back&$FFFFFF | \color\_alpha<<24 )
           EndIf
           
@@ -5130,7 +5130,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           
           
-          ;           draw_mode_alpha( #PB_2DDrawing_Default )
+          ;           drawing_mode_alpha_( #PB_2DDrawing_Default )
           ;                 color = *this\parent\widget\color\frame[0]
           ;                 Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_frame], *this\parent\widget\width[#__c_frame], *this\parent\widget\fs-1, color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
           
@@ -5181,7 +5181,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           
           color = $FF909090
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           
           ; draw lines
           If _get_bar_active_item_( *this )  
@@ -5259,7 +5259,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 Line( x + _get_bar_active_item_( *this )\x + _get_bar_active_item_( *this )\width - 2, y + _get_bar_active_item_( *this )\y +1, 1, _get_bar_active_item_( *this )\height-1, color )
                 ;Line( x + _get_bar_active_item_( *this )\x +1, y + _get_bar_active_item_( *this )\y + _get_bar_active_item_( *this )\height-1, _get_bar_active_item_( *this )\width-2, 1, color )
                 
-                ;;draw_mode_alpha( #PB_2DDrawing_Default )
+                ;;drawing_mode_alpha_( #PB_2DDrawing_Default )
                 color = *this\parent\widget\color\frame[0]
                 ;Box( *this\parent\widget\x[#__c_frame], *this\parent\widget\y[#__c_frame], *this\parent\widget\width[#__c_frame], *this\parent\widget\fs+*this\parent\widget\fs[2], color);*this\color\frame ) ; [Bool( *this\tab\widget\index[#__tab_2]  <>-1 )*2 ] )
                 
@@ -5291,7 +5291,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           
-          draw_mode_alpha( #PB_2DDrawing_Gradient )
+          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
           ResetGradientColors( )
           GradientColor( 0.0, backcolor&$FFFFFF )
           GradientColor( 0.5, backcolor&$FFFFFF | $A0<<24 )
@@ -5368,25 +5368,25 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             ; Draw buttons
             If \bar\button[#__b_2]\color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_( \vertical,\bar\button[#__b_2], \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_round( \bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF | \bar\button[#__b_2]\color\_alpha<<24 )
             EndIf
           EndIf
           If Not \bar\button[#__b_1]\hide 
             ; Draw buttons
             If \bar\button[#__b_1]\color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_( \vertical, \bar\button[#__b_1], \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_round( \bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF | \bar\button[#__b_1]\color\_alpha<<24 )
             EndIf
           EndIf
           
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           
           ; Draw buttons frame
           If Not \bar\button[#__b_1]\hide 
@@ -5423,7 +5423,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If *this\color\_alpha
           ; Draw scroll bar background
           If *this\color\back <>- 1
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_(*this, color\back, [#__c_frame])
           EndIf
           
@@ -5431,24 +5431,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; background buttons draw
           If Not*this\bar\button[#__b_1]\hide
             If *this\bar\button[#__b_1]\color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_(*this\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_(*this\bar\button[#__b_1], color\back)
             EndIf
           EndIf
           If Not*this\bar\button[#__b_2]\hide
             If *this\bar\button[#__b_2]\color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_(*this\vertical,\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_(*this\bar\button[#__b_2], color\back)
             EndIf
           EndIf
           
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           
           If *this\type = #__type_ScrollBar
             If *this\vertical
@@ -5483,12 +5483,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           If *this\bar\thumb\len And*this\type <> #__type_ProgressBar
             ; Draw thumb
-            draw_mode_alpha( #PB_2DDrawing_Gradient )
+            drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             _draw_gradient_(*this\vertical,\bar\button[#__b_3],*this\bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\back[\bar\button[#__b_3]\color\state])
             
             If *this\bar\button[#__b_3]\arrow\type ;*this\type = #__type_ScrollBar
               If *this\bar\button[#__b_3]\arrow\size
-                draw_mode_alpha( #PB_2DDrawing_Default )
+                drawing_mode_alpha_( #PB_2DDrawing_Default )
                 ;                 Arrow(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y + (*this\bar\button[#__b_3]\height -*this\bar\button[#__b_3]\arrow\size )/2, 
                 ;                       *this\bar\button[#__b_3]\arrow\size,*this\bar\button[#__b_3]\arrow\direction,*this\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\bar\button[#__b_3]\color\_alpha<<24,*this\bar\button[#__b_3]\arrow\type )
                 
@@ -5496,7 +5496,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             Else
               ; Draw thumb lines
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               If *this\vertical
                 Line(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y +*this\bar\button[#__b_3]\height/2 - 3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\color\_alpha<<24 )
                 Line(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y +*this\bar\button[#__b_3]\height/2,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\color\_alpha<<24 )
@@ -5509,7 +5509,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ; Draw thumb frame
-            draw_mode_alpha( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             draw_box_(\bar\button[#__b_3], color\frame)
           EndIf
           
@@ -5567,7 +5567,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;   ;   Next
         
         If _gradient_
-          draw_mode_alpha( #PB_2DDrawing_Gradient )
+          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
           If _vertical_
             LinearGradient(*this\x[#__c_frame],*this\y[#__c_frame], (*this\x[#__c_frame] + *this\width[#__c_frame]), *this\y[#__c_frame])
           Else
@@ -5777,14 +5777,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; Draw string
         If *this\text And *this\text\string And ( *this\height > *this\text\height )
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawRotatedText( *this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\bar\button[#__b_3]\color\frame[*this\bar\button[#__b_3]\color\state] )
         EndIf
       EndWith
     EndProcedure
     
     Procedure.i Spin_Draw( *this._s_WIDGET ) 
-      draw_mode_alpha( #PB_2DDrawing_Gradient )
+      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
       _draw_gradient_(*this\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[*this\bar\button[#__b_1]\color\state],*this\bar\button[#__b_1]\color\back[*this\bar\button[#__b_1]\color\state] )
       _draw_gradient_(*this\vertical,*this\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[*this\bar\button[#__b_2]\color\state],*this\bar\button[#__b_2]\color\back[*this\bar\button[#__b_2]\color\state] )
       
@@ -5852,7 +5852,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; Draw string
       If *this\text And *this\text\string
-        draw_mode_alpha( #PB_2DDrawing_Transparent )
+        drawing_mode_alpha_( #PB_2DDrawing_Transparent )
         DrawRotatedText( *this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0] ) ; *this\color\state] )
       EndIf
     EndProcedure
@@ -5899,7 +5899,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Procedure.b Splitter_Draw( *this._s_WIDGET )
       With *this
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         
         ; draw the splitter background
         Box(  *this\bar\button[#__split_b3]\x, *this\bar\button[#__split_b3]\y, *this\bar\button[#__split_b3]\width, *this\bar\button[#__split_b3]\height, *this\color\back[*this\bar\button[#__split_b3]\color\state]&$ffffff|210<<24 )
@@ -9680,7 +9680,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;           draw_mode( #PB_2DDrawing_Gradient )
           ;           _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[\color\state], [#__c_frame] )
           ;         Else
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_round( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\round,\round,\color\back[\color\state] )
           ;         EndIf
           
@@ -9693,7 +9693,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ; Draw margin
-            draw_mode_alpha( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
+            drawing_mode_alpha_( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
             Box( \row\margin\x, \row\margin\y, \row\margin\width, \row\margin\height, \row\margin\color\back )
           EndIf
           
@@ -9740,7 +9740,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   ; Если для итема установили задный 
                   ; фон отличный от заднего фона едитора
                   If RowList( *this )\color\back  
-                    draw_mode_alpha( #PB_2DDrawing_Default )
+                    drawing_mode_alpha_( #PB_2DDrawing_Default )
                     draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\back[0] )
                     
                     If *this\color\back And 
@@ -9748,7 +9748,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       ; Draw margin back color
                       If *this\row\margin\width > 0
                         ; то рисуем вертикальную линию на границе поля нумерации и начало итема
-                        draw_mode_alpha( #PB_2DDrawing_Default )
+                        drawing_mode_alpha_( #PB_2DDrawing_Default )
                         Box( *this\row\margin\x, RowList( *this )\y, *this\row\margin\width, RowList( *this )\height, *this\row\margin\color\back )
                         Line( *this\x[#__c_inner] + *this\row\margin\width, RowList( *this )\y, 1, RowList( *this )\height, *this\color\back ) ; $FF000000 );
                       EndIf
@@ -9758,12 +9758,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   ; Draw entered selection
                   If text_state ; RowList( *this )\index = *this\index[1] ; \color\state;
                     If RowList( *this )\color\back[text_state] <>- 1              ; no draw transparent
-                      draw_mode_alpha( #PB_2DDrawing_Default )
+                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                       draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\back[text_state] )
                     EndIf
                     
                     If RowList( *this )\color\frame[text_state] <>- 1 ; no draw transparent
-                      draw_mode_alpha( #PB_2DDrawing_Outlined )
+                      drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                       draw_box_round( sel_x,Y,sel_width ,RowList( *this )\height, RowList( *this )\round,RowList( *this )\round, RowList( *this )\color\frame[text_state] )
                     EndIf
                   EndIf
@@ -9777,16 +9777,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                     If \row\_s( )\text\string.s
-                      draw_mode_alpha( #PB_2DDrawing_Transparent )
+                      drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                       DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
                     EndIf
                     
                     If \row\_s( )\text\edit[2]\width
-                      draw_mode_alpha( #PB_2DDrawing_Default )
+                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                       Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
                     EndIf
                     
-                    draw_mode_alpha( #PB_2DDrawing_Transparent )
+                    drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                     
                     ; to right select
                     If ( *this\index[#__s_1] > *this\index[#__s_2] Or 
@@ -9809,11 +9809,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     
                   CompilerElse
                     If \row\_s( )\text\edit[2]\width
-                      draw_mode_alpha( #PB_2DDrawing_Default )
+                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                       Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
                     EndIf
                     
-                    draw_mode_alpha( #PB_2DDrawing_Transparent )
+                    drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                     
                     If \row\_s( )\text\edit[1]\string.s
                       DrawRotatedText( sel_text_x1, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
@@ -9828,7 +9828,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   
                 Else
                   If RowList( *this )\text\edit[2]\width
-                    draw_mode_alpha( #PB_2DDrawing_Default )
+                    drawing_mode_alpha_( #PB_2DDrawing_Default )
                     Box( sel_text_x2, Y, text_sel_width, RowList( *this )\height, $FFFBD9B7 );RowList( *this )\color\back[2] )
                   EndIf
                   
@@ -9853,7 +9853,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 If *this\mode\GridLines And
                    RowList( *this )\color\line And 
                    RowList( *this )\color\line <> RowList( *this )\color\back 
-                  draw_mode_alpha( #PB_2DDrawing_Default )
+                  drawing_mode_alpha_( #PB_2DDrawing_Default )
                   Box( RowList( *this )\x, ( RowList( *this )\y + RowList( *this )\height + Bool( *this\mode\gridlines>1 )) + *this\y[#__c_required], RowList( *this )\width, 1, *this\color\line )
                 EndIf
               EndIf
@@ -10785,7 +10785,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             DrawingFont( \text\fontID ) 
           EndIf
           
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           Box( 0,1,\width,\height - 2, *color\back[*color\state] )
           draw_mode( #PB_2DDrawing_Transparent )
           DrawText( \text\x, \text\y, \text\string, *color\front[*color\state] )
@@ -11083,13 +11083,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Draw background
           If *this\color\_alpha
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_round( *this\x[#__c_inner],*this\y[#__c_inner], *this\width[#__c_inner],*this\height[#__c_inner], *this\round,*this\round,*this\color\back[*this\color\state] )
           EndIf
           
           ; Draw background image
           If *this\image\id
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
           EndIf
           
@@ -12240,13 +12240,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; Draw back
         If \color\back[\interact * \color\state]
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_round( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], round,round,\color\back[\interact * \color\state] )
         EndIf
         
         ; draw frame back
         If \fs
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           If \fs = 1 
             For i = 1 To \caption\round
               Line( \x[#__c_frame] + i - 1,\y[#__c_frame] + caption_height - 1,1,Bool( \round )*( i - \round ),\caption\color\back[\color\state] )
@@ -12282,17 +12282,17 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If caption_height
           ; Draw caption back
           If \caption\color\back 
-            draw_mode_alpha( #PB_2DDrawing_Gradient )
+            drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             _draw_gradient_( 0, \caption, \caption\color\fore[\color\state], \caption\color\back[\color\state] )
           EndIf
           
           ; Draw caption frame
           If \fs
-            draw_mode_alpha( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             draw_box_round( \caption\x, \caption\y, \caption\width, caption_height - 1,\caption\round,\caption\round,\color\frame[\color\state] )
             
             ; erase the bottom edge of the frame
-            draw_mode_alpha( #PB_2DDrawing_Gradient )
+            drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             BackColor( \caption\color\fore[\color\state] )
             FrontColor( \caption\color\back[\color\state] )
             
@@ -12302,20 +12302,20 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             Next
             
             ; two edges of the frame
-            draw_mode_alpha( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             Line( \x[#__c_frame],\y[#__c_frame] + \caption\round/2 + 2,1,caption_height - \caption\round/2,\color\frame[\color\state] )
             Line( \x[#__c_frame] + \width[#__c_frame] - 1,\y[#__c_frame] + \caption\round/2 + 2,1,caption_height - \caption\round/2,\color\frame[\color\state] )
           EndIf
           
           ; buttins background
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_button_( \caption\button[#__wb_close], color\back )
           draw_box_button_( \caption\button[#__wb_maxi], color\back )
           draw_box_button_( \caption\button[#__wb_mini], color\back )
           draw_box_button_( \caption\button[#__wb_help], color\back )
           
           ; buttons image
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           _draw_close_button_( \caption\button[#__wb_close], 6 )
           _draw_maximize_button_( \caption\button[#__wb_maxi], 4 )
           _draw_minimize_button_( \caption\button[#__wb_mini], 4 )
@@ -12323,7 +12323,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Draw image
           If \image\id
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( \image\id,
                             *this\x[#__c_frame] + *this\bs + *this\x[#__c_required] + \image\x,
                             *this\y[#__c_frame] + *this\bs + *this\y[#__c_required] + \image\y - 2, \color\_alpha )
@@ -12342,10 +12342,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               \caption\text\y = \caption\y[#__c_inner] + ( \caption\height[#__c_inner] - TextHeight( "A" ))/2
             EndIf
             
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( \caption\text\x, \caption\text\y, \caption\text\string, \color\front[\color\state]&$FFFFFF | \color\_alpha<<24 )
             
-            ;             draw_mode_alpha( #PB_2DDrawing_Outlined )
+            ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ;             draw_box_round( \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000 )
           EndIf
         EndIf
@@ -12354,7 +12354,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; background image draw 
         If *this\image[#__img_background]\id
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image[#__img_background]\id,
                           *this\x[#__c_inner] + *this\image[#__img_background]\x, 
                           *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
@@ -12363,7 +12363,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;_content_clip_( *this, [#__c_clip] )
         
         ; UnclipOutput()
-        ; draw_mode_alpha( #PB_2DDrawing_Outlined )
+        ; drawing_mode_alpha_( #PB_2DDrawing_Outlined )
         ; draw_box_round( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame], round,round,$ff000000 )
         ; draw_box_round( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], round,round,$ff000000 )
         
@@ -12388,14 +12388,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         FrontColor(_back_color1_)
         
         If \fs[2] 
-          draw_mode_alpha( #PB_2DDrawing_Gradient )
+          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
           draw_box_round(*this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], caption_height, _round_,_round_)
           
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           draw_box_round( \x[#__c_frame], \y[#__c_frame], caption_height, caption_height, _round_,_round_, \caption\color\frame[window_color_state] )
           draw_box_round( \x[#__c_frame]+\width[#__c_frame]-caption_height, \y[#__c_frame], caption_height, caption_height, _round_,_round_, \caption\color\frame[window_color_state] )
           
-          draw_mode_alpha( #PB_2DDrawing_Gradient )
+          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
           draw_box_round(*this\x[#__c_frame]+1, *this\y[#__c_frame]+1, *this\width[#__c_frame]-2, caption_height, _round_,_round_)
           Box( \x[#__c_frame], \y[#__c_frame]+caption_height/2, \width[#__c_frame], \fs[2]-caption_height/2+\fs, \caption\color\back[window_color_state] )
         EndIf
@@ -12403,7 +12403,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; _content_clip2_( *this, [#__c_clip2] )
         
         If Not ( *this\image[#__img_background]\id And *this\image[#__img_background]\depth > 31 ) ; *this\image[#__img_background]\transparent )
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           Box( \x[#__c_inner] - 1, \y[#__c_inner] - 1, \width[#__c_inner] + 2, \height[#__c_inner] + 2, \color\back[0] )
         EndIf
         
@@ -12418,14 +12418,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               color_inner_line = \color\frame[window_color_state]
             EndIf
             
-            draw_mode_alpha( #PB_2DDrawing_Gradient )
+            drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             draw_box_round( \x[#__c_frame], \y[#__c_inner] - \fs, \width[#__c_frame], \fs, \round,\round, \caption\color\back[window_color_state] )
             draw_box_round( \x[#__c_frame], \y[#__c_inner] - \fs, \fs, \height[#__c_frame], \round,\round, \caption\color\back[window_color_state] )
             draw_box_round( \x[#__c_frame]+\width[#__c_frame]-\fs, \y[#__c_inner] - \fs, \fs, \height[#__c_frame], \round,\round, \caption\color\back[window_color_state] )
             draw_box_round( \x[#__c_frame], \y[#__c_frame]+\height[#__c_frame] - \fs, \width[#__c_frame], \fs, \round,\round, \caption\color\back[window_color_state] )
             
             ; draw inner frame 
-            draw_mode_alpha( #PB_2DDrawing_Outlined )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             draw_box_round( \x[#__c_inner] - 1, \y[#__c_inner] - 1, \width[#__c_inner] + 2, \height[#__c_inner] + 2, round, round, color_inner_line )
             
             ; draw out frame
@@ -12440,14 +12440,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         If caption_height
           ; buttins background
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_button_( \caption\button[#__wb_close], color\back )
           draw_box_button_( \caption\button[#__wb_maxi], color\back )
           draw_box_button_( \caption\button[#__wb_mini], color\back )
           draw_box_button_( \caption\button[#__wb_help], color\back )
           
           ; buttons image
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           _draw_close_button_( \caption\button[#__wb_close], 6 )
           _draw_maximize_button_( \caption\button[#__wb_maxi], 4 )
           _draw_minimize_button_( \caption\button[#__wb_mini], 4 )
@@ -12455,7 +12455,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; draw caption image
           If \image\id
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( \image\id,
                             *this\x[#__c_frame] + *this\bs + *this\x[#__c_required] + \image\x,
                             *this\y[#__c_frame] + *this\bs + *this\y[#__c_required] + \image\y - 2, \color\_alpha )
@@ -12475,10 +12475,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               \caption\text\y = \caption\y[#__c_inner] + ( \caption\height[#__c_inner] - TextHeight( "A" ))/2
             EndIf
             
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( \caption\text\x, \caption\text\y, \caption\text\string, \color\front[window_color_state]&$FFFFFF | \color\_alpha<<24 )
             
-            ;             draw_mode_alpha( #PB_2DDrawing_Outlined )
+            ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ;             draw_box_round( \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000 )
           EndIf
         EndIf
@@ -12487,7 +12487,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; background image draw 
         If *this\image[#__img_background]\id
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           DrawAlphaImage( *this\image[#__img_background]\id,
                           *this\x[#__c_inner] + *this\image[#__img_background]\x, 
                           *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
@@ -17030,14 +17030,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Draw selector back
           If *row( )\count\childrens And *this\flag & #__tree_property
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_round( *row( )\x, y, *this\width[#__c_inner],*row( )\height,*row( )\round,*row( )\round,*row( )\color\back )
             ;draw_box_round( *this\x[#__c_inner] + *this\row\sublevelsize,Y,*this\width[#__c_inner] - *this\row\sublevelsize,*row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
             Line( *row( )\x + *this\row\sublevelsize, y + *row( )\height, *this\width[#__c_inner] - *this\row\sublevelsize, 1, $FFACACAC )
             
           Else
             If *row( )\color\back[state]
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_round( *row( )\x, y, *row( )\width, *row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
             EndIf
           EndIf
@@ -17048,7 +17048,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;                  *row( )\state\flag & #__s_enter And 
           ;                  Not _is_selected_( *this )
           ;                 
-          ;                 draw_mode_alpha( #PB_2DDrawing_Default )
+          ;                 drawing_mode_alpha_( #PB_2DDrawing_Default )
           ;                 If (y + *row( )\height/2) > mouse( )\y 
           ;                   Line( *row( )\x, y - *this\mode\gridlines, *row( )\width, 1, $ff000000 )
           ;                 Else
@@ -17058,7 +17058,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Draw items image
           If *row( )\image\id
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *row( )\image\id, x + *row( )\image\x, y + *row( )\image\y, *row( )\color\_alpha )
           EndIf
           
@@ -17085,19 +17085,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; Horizontal line
           If *this\mode\GridLines And *row( )\color\line <> *row( )\color\back
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             Box( *row( )\x, y + *row( )\height + Bool( *this\mode\gridlines>1 ) , *row( )\width, 1, *this\color\line )
           EndIf
         EndIf
       Next
       
-      ;           draw_mode_alpha( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
+      ;           drawing_mode_alpha_( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
       ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\row\sublevelsize, *this\height[#__c_inner], RowList( *this )\_parent\color\back )
       
       
       ; Draw plots
       If *this\mode\lines ;= 1
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ; draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
         
         ForEach *row( )
@@ -17126,7 +17126,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
       ElseIf *this\mode\lines = 2
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ; draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
         
         ForEach *row( )
@@ -17153,7 +17153,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         Next
         
       ElseIf *this\mode\lines = 3
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ; draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
         ; for the tree item first vertical line
         If *this\row\first And *this\row\last
@@ -17190,7 +17190,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf    
         Next
       ElseIf *this\mode\lines ;= 4
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ; draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
         
         ; for the tree item first vertical line
@@ -17297,10 +17297,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           If *this\color\back <>- 1
             If *this\color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_( *this\vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_( *this, color\back, [#__c_inner])
             EndIf
           EndIf
@@ -17308,7 +17308,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ;
         If *this\image\id Or *this\image[#__img_background]\id Or *this\text\string
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
         EndIf
         
         ; background image draw 
@@ -17416,15 +17416,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; background draw
         If *this\image[#__img_background]\id
           ; background image draw 
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image[#__img_background]\id, x + *this\image[#__img_background]\x, x + *this\image[#__img_background]\y, *this\color\_alpha )
         Else
           If *this\color\back <>- 1
             If \color\fore <>- 1
-              draw_mode_alpha( #PB_2DDrawing_Gradient )
+              drawing_mode_alpha_( #PB_2DDrawing_Gradient )
               _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
-              draw_mode_alpha( #PB_2DDrawing_Default )
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_( *this, color\back, [#__c_frame])
             EndIf
           EndIf
@@ -17435,7 +17435,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;_content_clip_( *this, [#__c_clip1] )
           ;Debug *this\text\string
           
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           ForEach RowList( *this )
             DrawRotatedText( x + RowList( *this )\text\x, y + RowList( *this )\text\y,
                              RowList( *this )\text\String.s, *this\text\rotate, *this\color\front[Bool( *this\__state & #__ss_front ) * *this\color\state] ) ; RowList( *this )\color\font )
@@ -17463,7 +17463,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; image draw
         If \image\id
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( \image\id, x + \image\x, y + \image\y, \color\_alpha )
         EndIf
         
@@ -17493,7 +17493,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;
         _content_clip_( *this, [#__c_clip2] )
         
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ;draw_box_round( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
         ;draw_box_round( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner]+2,*this\height[#__c_inner]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
         draw_box_round( *this\x[#__c_inner],*this\y[#__c_inner],*this\width[#__c_inner],*this\height[#__c_inner], *this\round, *this\round, *this\color\back[*this\color\state] )
@@ -17506,7 +17506,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\image\change = 0
           EndIf
           
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           
           ; background image draw 
           If *this\image[#__img_background]\id
@@ -17524,7 +17524,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If \text\string
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawText( *this\x[#__c_inner] + *this\x[#__c_required] + \text\x, 
                     *this\y[#__c_inner] + *this\y[#__c_required] + \text\y, 
                     \text\string, \color\front[\color\state]&$FFFFFF | \color\_alpha<<24 )
@@ -17537,7 +17537,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         bar_area_draw_( *this )
         
         If *this\fs
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           Protected i
           For i=0 To *this\fs
             draw_box_round( *this\x[#__c_frame]+i,*this\y[#__c_frame]+i,*this\width[#__c_frame]-i*2,*this\height[#__c_frame]-i*2, *this\round, *this\round, *this\color\frame[*this\color\state] )
@@ -17554,7 +17554,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       With *this
         
         If *this\fs
-          draw_mode_alpha( #PB_2DDrawing_Outlined )
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           Protected i
           For i=0 To *this\fs
             draw_box_round( *this\x[#__c_frame]+i,*this\y[#__c_frame]+i,*this\width[#__c_frame]-i*2,*this\height[#__c_frame]-i*2, *this\round, *this\round, *this\color\frame[*this\color\state] )
@@ -17569,7 +17569,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;
         _content_clip2_( *this, [#__c_clip2] )
         
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         ;draw_box_round( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
         ;draw_box_round( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner]+2,*this\height[#__c_inner]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
         draw_box_round( *this\x[#__c_inner],*this\y[#__c_inner],*this\width[#__c_inner],*this\height[#__c_inner], *this\round, *this\round, *this\color\back[*this\color\state] )
@@ -17582,7 +17582,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\image\change = 0
           EndIf
           
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           
           ; background image draw 
           If *this\image[#__img_background]\id
@@ -17600,7 +17600,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If \text\string
-          draw_mode_alpha( #PB_2DDrawing_Transparent )
+          drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawText( *this\x[#__c_inner] + *this\x[#__c_required] + \text\x, 
                     *this\y[#__c_inner] + *this\y[#__c_required] + \text\y, 
                     \text\string, \color\front[\color\state]&$FFFFFF | \color\_alpha<<24 )
@@ -17680,7 +17680,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ;- widget::_draw_Panel( )
         Case #__type_Panel         
           ;             If _this_\tab\widget And _this_\tab\widget\count\items
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           Box( _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner], _this_\color\back[0] )
           
           If _this_\fs > 1
@@ -17691,10 +17691,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ;             Else
-          ;               draw_mode_alpha( #PB_2DDrawing_Default )
+          ;               drawing_mode_alpha_( #PB_2DDrawing_Default )
           ;               Box( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\color\back[0] )
           ;               
-          ;               draw_mode_alpha( #PB_2DDrawing_Outlined )
+          ;               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           ;               Box( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\color\frame[Bool( _this_\tab\widget\index[#__tab_2] <>- 1 )*2 ] )
           ;             EndIf
           
@@ -17741,10 +17741,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ;
           If *this\text\editable
-            draw_mode_alpha( #PB_2DDrawing_Default )
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             Box( _this_\x[#__c_inner], _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_inner], _this_\barheight, $ffffffff )
           Else
-            draw_mode_alpha( #PB_2DDrawing_Gradient )
+            drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             _draw_gradient_( _this_\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[Bool( _this_\__state & #__ss_back ) * _this_\color\state], [#__c_frame] )
           EndIf
           
@@ -17758,14 +17758,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           If _this_\text\string
-            draw_mode_alpha( #PB_2DDrawing_Transparent )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( _this_\x[#__c_frame] + _this_\text\x, 
                       _this_\y[#__c_frame] + _this_\text\y, 
                       _this_\text\string, _this_\color\front[_this_\color\state]&$FFFFFF | _this_\color\_alpha<<24 )
           EndIf
           
           ;
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           If arrow_right
             Arrow( _this_\_box_\x + ( _this_\_box_\width - _this_\_box_\arrow\size*2 - 4 ),
                    _this_\_box_\y + ( _this_\_box_\height - _this_\_box_\arrow\size )/2, _this_\_box_\arrow\size, _this_\_box_\arrow\direction, 
@@ -17776,7 +17776,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           
           ; Draw combo-popup-menu backcolor
-          draw_mode_alpha( #PB_2DDrawing_Default )
+          drawing_mode_alpha_( #PB_2DDrawing_Default )
           Box( _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner], $ffffffff )
           
           ; Draw combo-popup-menu all rows
@@ -17821,7 +17821,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; draw disable state
       If _this_\state\flag & #__s_disable
-        draw_mode_alpha( #PB_2DDrawing_Default )
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
         Box( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], $80f0f0f0 )
       EndIf
       
@@ -17837,7 +17837,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; draw keyboard focus widget frame
       If _is_focused_( _this_ ) And _this_\type = #__type_window
-        ;         draw_mode_alpha( #PB_2DDrawing_Outlined )
+        ;         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
         ;         If _this_\round
         ;           RoundBox( _this_\x[#__c_frame]-1, _this_\y[#__c_frame]-1, _this_\width[#__c_frame]+2, _this_\height[#__c_frame]+2, _this_\round, _this_\round, $ffff0000 )
         ;           RoundBox( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\round, _this_\round, $ffff0000 )
@@ -17980,7 +17980,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   *this\image\change = 0
                 EndIf
                 
-                draw_mode_alpha( #PB_2DDrawing_Default )
+                drawing_mode_alpha_( #PB_2DDrawing_Default )
                 
                 ; background image draw 
                 If *this\image[#__img_background]\id
@@ -20912,5 +20912,5 @@ CompilerEndIf
 ;   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-------------------------------------------------------------------------------------78-------------------------5l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = +-------------------------------------------------------------------------------------78-------------------------5l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+---------------------------------------------------------------
 ; EnableXP
