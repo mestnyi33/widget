@@ -46,6 +46,37 @@
       #_b_tool
     EndEnumeration
     
+    ;- _c_anchors
+    #__a_size  = 7
+    #__a_moved = 9
+    #__a_count = #__a_moved+4
+    
+    #__a_left = 1
+    #__a_right = 3
+    #__a_top = 2
+    #__a_bottom = 4
+    #__a_left_top = 5
+    #__a_left_bottom = 8
+    #__a_right_top = 6
+    #__a_right_bottom = 7
+    
+    #__a_line_left = 10
+    #__a_line_right = 11
+    #__a_line_top = 12
+    #__a_line_bottom = 13
+    
+    
+    ; a_mode_
+    EnumerationBinary 1
+      #__a_position
+      #__a_width
+      #__a_height
+      #__a_corner
+    EndEnumeration
+    #__a_edge = #__a_width | #__a_height
+    #__a_full  = #__a_position | #__a_corner | #__a_edge
+    
+    
     ; list mode
     #__m_checkselect = 1
     #__m_clickselect = 2
@@ -352,19 +383,6 @@
     
     ;;#__align_full = 0;#__align_left|#__align_top|#__align_right|#__align_bottom
     
-    ;- _c_anchors
-    #__a_size  = 7
-    #__a_moved = 9
-    #__a_count = #__a_moved+4
-    ;
-    EnumerationBinary 1
-      #__a_position
-      #__a_width
-      #__a_height
-      #__a_corner
-    EndEnumeration
-    #__a_edge = #__a_width | #__a_height
-    #__a_full  = #__a_position | #__a_corner | #__a_edge
     
     ;-
     ;- _c_bar
