@@ -82,7 +82,7 @@
       row = 0
       line_len=32
       
-      Restore data_img_arrow
+      Restore data_img_2_6
       For i=0 To 511
         Read.b a
         
@@ -669,7 +669,6 @@ DataSection
   Data.b 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
   Data.b 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
 EndDataSection
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

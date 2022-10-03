@@ -50,8 +50,11 @@ Procedure thickLineXY (start_x,start_y,end_x,end_y,whatcolor,thickness)
     
     ; modified to place a circle at the pixel location to get a thick line
     
-    ;Plot(start_x,start_y,whatcolor)     
-    Circle(start_x,start_y,thickness,whatcolor)     
+    If thickness < 2
+      Plot(start_x,start_y,whatcolor)     
+    Else
+      Circle(start_x,start_y,thickness-1,whatcolor)     
+    EndIf
     
     err_x = err_x + delta_x
     err_y = err_y + delta_y
@@ -85,34 +88,34 @@ Procedure redrawCanvas()
   Shared canvas, lining, currentLine, lines()
   Protected thickness = 2
   
-;     ; 2d drawing
-;     If StartDrawing(CanvasOutput(canvas))
-;       DrawingMode(#PB_2DDrawing_AllChannels)
-;       Box(0, 0, OutputWidth(), OutputHeight(), $00ffffff)
-;       DrawingMode(#PB_2DDrawing_AlphaBlend)
-;       thickLineXY(currentLine\x1, currentLine\y1, currentLine\x2, currentLine\y2, $66660000, thickness)
-;       ForEach lines()
-;         thickLineXY(lines()\x1, lines()\y1, lines()\x2, lines()\y2, $66000066, thickness)
-;       Next
-;       StopDrawing()
-;     EndIf
-;   
-  ; vector drawing
-  If StartVectorDrawing(CanvasVectorOutput(canvas))
-    VectorSourceColor($ffffffff)
-    FillVectorOutput()
-    
-    If lining
-      line_xy( currentLine\x1, currentLine\y1, currentLine\x2, currentLine\y2, $66ff0000, thickness )
+    ; 2d drawing
+    If StartDrawing(CanvasOutput(canvas))
+      DrawingMode(#PB_2DDrawing_AllChannels)
+      Box(0, 0, OutputWidth(), OutputHeight(), $00ffffff)
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
+      thickLineXY(currentLine\x1, currentLine\y1, currentLine\x2, currentLine\y2, $66660000, thickness)
+      ForEach lines()
+        thickLineXY(lines()\x1, lines()\y1, lines()\x2, lines()\y2, $66000066, thickness)
+      Next
+      StopDrawing()
     EndIf
-    
-    ;VectorSourceColor($660000ff)
-    ForEach lines()
-      line_xy( lines()\x1, lines()\y1, lines()\x2, lines()\y2, $660000ff, thickness )
-    Next
-    
-    StopVectorDrawing()
-  EndIf
+  
+;   ; vector drawing
+;   If StartVectorDrawing(CanvasVectorOutput(canvas))
+;     VectorSourceColor($ffffffff)
+;     FillVectorOutput()
+;     
+;     If lining
+;       line_xy( currentLine\x1, currentLine\y1, currentLine\x2, currentLine\y2, $66ff0000, thickness )
+;     EndIf
+;     
+;     ;VectorSourceColor($660000ff)
+;     ForEach lines()
+;       line_xy( lines()\x1, lines()\y1, lines()\x2, lines()\y2, $660000ff, thickness )
+;     Next
+;     
+;     StopVectorDrawing()
+;   EndIf
   
 EndProcedure
 
@@ -178,6 +181,6 @@ Repeat
   redrawCanvas()
   
 Until quit
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

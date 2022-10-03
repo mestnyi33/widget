@@ -13,18 +13,18 @@ CompilerIf #PB_Compiler_IsMainFile
         UnclipOutput()
         DrawingMode(#PB_2DDrawing_Outlined)
         
-        If Eventwidget()\bounds\size
-          Box(Eventwidget()\bounds\size\width\min+1,
-              Eventwidget()\bounds\size\height\min+1,
-              Eventwidget()\bounds\size\width\max-Eventwidget()\bounds\size\width\min,
-              Eventwidget()\bounds\size\height\max-Eventwidget()\bounds\size\height\min, $ffff0000)
+        If Eventwidget()\bounds\move
+          Box(Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\min\y,
+              Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
         EndIf
         
-        If Eventwidget()\bounds\move
-          Box(Eventwidget()\bounds\move\x\min+1,
-              Eventwidget()\bounds\move\y\min+1,
-              Eventwidget()\bounds\move\x\max-Eventwidget()\bounds\move\x\min,
-              Eventwidget()\bounds\move\y\max-Eventwidget()\bounds\move\y\min, $ff0000ff)
+        If Eventwidget()\bounds\size
+          Box(Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\min\height,
+              Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
         EndIf
         
         ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)

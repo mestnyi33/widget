@@ -593,11 +593,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;- - _s_event
     Structure _s_event ; extends _s_eventdata
-      List *post._s_eventdata( )
-      
       List *call._s_eventdata( )
-      List *_call._s_eventbind( )
       List *queue._s_eventdata( )
+      
+      List *post._s_eventdata( ) ; TEMP
+      List *_call._s_eventbind( ) ; TEMP
     EndStructure
     
     ;- - _s_TAB_widget
@@ -605,22 +605,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       index.i ; parent-tab item index
     EndStructure
     
-    ;--      bound
-    Structure _s_boundvalue
-      min.i
-      max.i
+    ;- -  _s_bounds
+    Structure _s_BOUNDMOVE
+      min._s_POINT
+      max._s_POINT
     EndStructure
-    Structure _s_boundmove
-      x._s_boundvalue
-      y._s_boundvalue
+    Structure _s_BOUNDSIZE
+      min._s_SIZE
+      max._s_SIZE
     EndStructure
-    Structure _s_boundsize
-      width._s_boundvalue
-      height._s_boundvalue
-    EndStructure
-    Structure _s_bounds
-      *move._s_boundmove
-      *size._s_boundsize
+    Structure _s_BOUNDS
+      *move._s_BOUNDMOVE
+      *size._s_BOUNDSIZE
     EndStructure
     ;- - _s_attach
     Structure _s_attach Extends _s_coordinate
@@ -822,5 +818,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------v-
+; Folding = --------4-
 ; EnableXP

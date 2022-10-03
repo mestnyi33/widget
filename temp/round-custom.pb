@@ -29,7 +29,6 @@ Repeat
          Quit = 1
   EndSelect
 Until Quit = 1
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

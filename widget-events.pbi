@@ -3117,21 +3117,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If a_enter_index( a_focus_widget( ) ) = #__a_moved   
                     ; move boundaries
                     If a_focus_widget( )\bounds\move
-                      If a_focus_widget( )\bounds\move\x\min <> #PB_Ignore And
-                         mouse_x <= a_focus_widget( )\bounds\move\x\min
-                        mouse_x = a_focus_widget( )\bounds\move\x\min
+                      If a_focus_widget( )\bounds\move\min\x <> #PB_Ignore And
+                         mouse_x <= a_focus_widget( )\bounds\move\min\x
+                        mouse_x = a_focus_widget( )\bounds\move\min\x
                       EndIf
-                      If a_focus_widget( )\bounds\move\x\max <> #PB_Ignore And
-                         mouse_x >= a_focus_widget( )\bounds\move\x\max - a_focus_widget( )\width[#__c_frame]
-                        mouse_x = a_focus_widget( )\bounds\move\x\max - a_focus_widget( )\width[#__c_frame]
+                      If a_focus_widget( )\bounds\move\max\x <> #PB_Ignore And
+                         mouse_x >= a_focus_widget( )\bounds\move\max\x - a_focus_widget( )\width[#__c_frame]
+                        mouse_x = a_focus_widget( )\bounds\move\max\x - a_focus_widget( )\width[#__c_frame]
                       EndIf
-                      If a_focus_widget( )\bounds\move\y\min <> #PB_Ignore And 
-                         mouse_y <= a_focus_widget( )\bounds\move\y\min
-                        mouse_y = a_focus_widget( )\bounds\move\y\min
+                      If a_focus_widget( )\bounds\move\min\y <> #PB_Ignore And 
+                         mouse_y <= a_focus_widget( )\bounds\move\min\y
+                        mouse_y = a_focus_widget( )\bounds\move\min\y
                       EndIf
-                      If a_focus_widget( )\bounds\move\y\max <> #PB_Ignore And
-                         mouse_y >= a_focus_widget( )\bounds\move\y\max - a_focus_widget( )\height[#__c_frame]
-                        mouse_y = a_focus_widget( )\bounds\move\y\max - a_focus_widget( )\height[#__c_frame]
+                      If a_focus_widget( )\bounds\move\max\y <> #PB_Ignore And
+                         mouse_y >= a_focus_widget( )\bounds\move\max\y - a_focus_widget( )\height[#__c_frame]
+                        mouse_y = a_focus_widget( )\bounds\move\max\y - a_focus_widget( )\height[#__c_frame]
                       EndIf
                     EndIf
                     
@@ -3141,9 +3141,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Case 1, 5, 8 ; left
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move
-                          If a_focus_widget( )\bounds\move\x\min <> #PB_Ignore And
-                             mouse_x <= a_focus_widget( )\bounds\move\x\min
-                            mouse_x = a_focus_widget( )\bounds\move\x\min
+                          If a_focus_widget( )\bounds\move\min\x <> #PB_Ignore And
+                             mouse_x <= a_focus_widget( )\bounds\move\min\x
+                            mouse_x = a_focus_widget( )\bounds\move\min\x
                           EndIf
                         EndIf
                         mw = ( a_focus_widget( )\x[#__c_container] - mouse_x ) + a_focus_widget( )\width[#__c_frame] + (a_focus_widget( )\parent( )\fs); - a_focus_widget( )\fs[1])
@@ -3155,9 +3155,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Case 3, 6, 7 ; right
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move And 
-                           a_focus_widget( )\bounds\move\x\max <> #PB_Ignore And
-                           mouse_x >= a_focus_widget( )\bounds\move\x\max 
-                          mouse_x = a_focus_widget( )\bounds\move\x\max
+                           a_focus_widget( )\bounds\move\max\x <> #PB_Ignore And
+                           mouse_x >= a_focus_widget( )\bounds\move\max\x 
+                          mouse_x = a_focus_widget( )\bounds\move\max\x
                         EndIf
                         mw = ( mouse_x - a_focus_widget( )\x[#__c_container] ) + IsGrid
                     EndSelect
@@ -3167,9 +3167,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Case 2, 5, 6 ; top
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move
-                          If a_focus_widget( )\bounds\move\y\min <> #PB_Ignore And
-                             mouse_y <= a_focus_widget( )\bounds\move\y\min
-                            mouse_y = a_focus_widget( )\bounds\move\y\min
+                          If a_focus_widget( )\bounds\move\min\y <> #PB_Ignore And
+                             mouse_y <= a_focus_widget( )\bounds\move\min\y
+                            mouse_y = a_focus_widget( )\bounds\move\min\y
                           EndIf
                         EndIf
                         mh = ( a_focus_widget( )\y[#__c_container] - mouse_y ) + a_focus_widget( )\height[#__c_frame] + (a_focus_widget( )\parent( )\fs); - a_focus_widget( )\fs[2])
@@ -3181,9 +3181,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Case 4, 8, 7 ; bottom 
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move And 
-                           a_focus_widget( )\bounds\move\y\max <> #PB_Ignore And
-                           mouse_y >= a_focus_widget( )\bounds\move\y\max 
-                          mouse_y = a_focus_widget( )\bounds\move\y\max
+                           a_focus_widget( )\bounds\move\max\y <> #PB_Ignore And
+                           mouse_y >= a_focus_widget( )\bounds\move\max\y 
+                          mouse_y = a_focus_widget( )\bounds\move\max\y
                         EndIf
                         mh = ( mouse_y - a_focus_widget( )\y[#__c_container] ) + IsGrid
                     EndSelect
@@ -3200,14 +3200,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     
                     If a_focus_widget( )\bounds\size 
                       ; size boundaries
-                      If (( a_focus_widget( )\bounds\size\width\min <> #PB_Ignore And mw <= a_focus_widget( )\bounds\size\width\min ) Or
-                          ( a_focus_widget( )\bounds\size\width\max <> #PB_Ignore And mw >= a_focus_widget( )\bounds\size\width\max ))
+                      If (( a_focus_widget( )\bounds\size\min\width <> #PB_Ignore And mw <= a_focus_widget( )\bounds\size\min\width ) Or
+                          ( a_focus_widget( )\bounds\size\max\width <> #PB_Ignore And mw >= a_focus_widget( )\bounds\size\max\width ))
                         mw = #PB_Ignore
                         mouse_x = #PB_Ignore
                       EndIf
                       ; size boundaries
-                      If (( a_focus_widget( )\bounds\size\height\min <> #PB_Ignore And mh <= a_focus_widget( )\bounds\size\height\min ) Or
-                          ( a_focus_widget( )\bounds\size\height\max <> #PB_Ignore And mh >= a_focus_widget( )\bounds\size\height\max ))
+                      If (( a_focus_widget( )\bounds\size\min\height <> #PB_Ignore And mh <= a_focus_widget( )\bounds\size\min\height ) Or
+                          ( a_focus_widget( )\bounds\size\max\height <> #PB_Ignore And mh >= a_focus_widget( )\bounds\size\max\height ))
                         mh = #PB_Ignore
                         mouse_y = #PB_Ignore
                       EndIf
@@ -11433,8 +11433,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         draw_roundbox_( \x[#__c_inner]-*this\fs,\y[#__c_inner]-*this\fs,\width[#__c_inner]+*this\fs*2,\height[#__c_inner]+*this\fs*2, round,round,\color\frame[\color\state] )
         
-        
-        If caption_height
+        ; then caption
+        If *this\fs[2]
           ; Draw caption back
           If \caption\color\back 
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -11452,9 +11452,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             FrontColor( \caption\color\back[\color\state] )
             
             ;Protected i
-            For i = 0 To *this\fs
-              Line( \x[#__c_inner] - *this\fs + 1,\y[#__c_frame] + *this\fs[2] + i - 2,\width[#__c_frame]-2,1, \caption\color\back[\color\state] )
+            For i = 0 To \caption\round
+              Line( \x[#__c_inner] - *this\fs + 1,\y[#__c_frame] + (*this\fs+*this\fs[2]-\caption\round) + i - 2,\width[#__c_frame]-2,1, \caption\color\back[\color\state] )
             Next
+            
+            ; two edges of the frame
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+            Line( \x[#__c_frame],\y[#__c_frame] + \caption\round/2 + 2,1,caption_height - \caption\round/2,\color\frame[\color\state] )
+            Line( \x[#__c_frame] + \width[#__c_frame] - 1,\y[#__c_frame] + \caption\round/2 + 2,1,caption_height - \caption\round/2,\color\frame[\color\state] )
           EndIf
           
           ; buttins background
@@ -11521,7 +11526,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure   Window_Draw2( *this._S_widget )
+    Procedure   Window_Draw1( *this._S_widget )
       Protected caption_height = *this\caption\height - *this\fs 
       
       With *this 
@@ -11665,7 +11670,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure   Window_Draw1( *this._S_widget )
+    Procedure   Window_Draw2( *this._S_widget )
       Protected color_inner_line
       Protected window_color_state = *this\color\state
       Protected caption_height = *this\caption\height - *this\fs 
@@ -14525,32 +14530,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\bounds\move.allocate(BOUNDMove)
       
-      *this\bounds\move\x\min = MinimumX
-      *this\bounds\move\x\max = MaximumX
+      *this\bounds\move\min\x = MinimumX
+      *this\bounds\move\max\x = MaximumX
       
-      *this\bounds\move\y\min = MinimumY
-      *this\bounds\move\y\max = MaximumY
+      *this\bounds\move\min\y = MinimumY
+      *this\bounds\move\max\y = MaximumY
       
       ;
-      If *this\bounds\move\x\min <> #PB_Ignore And
-         *this\bounds\move\x\min > *this\x[#__c_frame]  
-        x = *this\bounds\move\x\min
-        If *this\width[#__c_frame] > *this\bounds\move\x\max - *this\bounds\move\x\min
-          width = *this\bounds\move\x\max - *this\bounds\move\x\min
+      If *this\bounds\move\min\x <> #PB_Ignore And
+         *this\bounds\move\min\x > *this\x[#__c_frame]  
+        x = *this\bounds\move\min\x
+        If *this\width[#__c_frame] > *this\bounds\move\max\x - *this\bounds\move\min\x
+          width = *this\bounds\move\max\x - *this\bounds\move\min\x
         EndIf
-      ElseIf *this\bounds\move\x\max <> #PB_Ignore And 
-             *this\width[#__c_frame] > ( *this\bounds\move\x\max - *this\x[#__c_frame] )
-        width = *this\bounds\move\x\max - *this\x[#__c_frame]
+      ElseIf *this\bounds\move\max\x <> #PB_Ignore And 
+             *this\width[#__c_frame] > ( *this\bounds\move\max\x - *this\x[#__c_frame] )
+        width = *this\bounds\move\max\x - *this\x[#__c_frame]
       EndIf
-      If *this\bounds\move\y\min <> #PB_Ignore And 
-         *this\bounds\move\y\min > *this\y[#__c_frame] 
-        y = *this\bounds\move\y\min
-        If *this\height[#__c_frame] > *this\bounds\move\y\max - *this\bounds\move\y\min
-          height = *this\bounds\move\y\max - *this\bounds\move\y\min
+      If *this\bounds\move\min\y <> #PB_Ignore And 
+         *this\bounds\move\min\y > *this\y[#__c_frame] 
+        y = *this\bounds\move\min\y
+        If *this\height[#__c_frame] > *this\bounds\move\max\y - *this\bounds\move\min\y
+          height = *this\bounds\move\max\y - *this\bounds\move\min\y
         EndIf
-      ElseIf *this\bounds\move\y\max <> #PB_Ignore And
-             *this\height[#__c_frame] > ( *this\bounds\move\y\max - *this\y[#__c_frame] )
-        height = *this\bounds\move\y\max - *this\y[#__c_frame]
+      ElseIf *this\bounds\move\max\y <> #PB_Ignore And
+             *this\height[#__c_frame] > ( *this\bounds\move\max\y - *this\y[#__c_frame] )
+        height = *this\bounds\move\max\y - *this\y[#__c_frame]
       EndIf
       
       ProcedureReturn Resize( *this, x, y, width, height )
@@ -14563,26 +14568,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\bounds\size.allocate(BOUNDSize)
       
-      *this\bounds\size\width\min = MinimumWidth
-      *this\bounds\size\width\max = MaximumWidth
+      *this\bounds\size\min\width = MinimumWidth
+      *this\bounds\size\max\width = MaximumWidth
       
-      *this\bounds\size\height\min = MinimumHeight
-      *this\bounds\size\height\max = MaximumHeight
+      *this\bounds\size\min\height = MinimumHeight
+      *this\bounds\size\max\height = MaximumHeight
       
       ;
-      If *this\bounds\size\width\min <> #PB_Ignore And
-         *this\bounds\size\width\min > *this\width[#__c_frame]
-        width = *this\bounds\size\width\min
-      ElseIf *this\bounds\size\width\max <> #PB_Ignore And
-             *this\bounds\size\width\max < *this\width[#__c_frame]
-        width = *this\bounds\size\width\max
+      If *this\bounds\size\min\width <> #PB_Ignore And
+         *this\bounds\size\min\width > *this\width[#__c_frame]
+        width = *this\bounds\size\min\width
+      ElseIf *this\bounds\size\max\width <> #PB_Ignore And
+             *this\bounds\size\max\width < *this\width[#__c_frame]
+        width = *this\bounds\size\max\width
       EndIf
-      If *this\bounds\size\height\min <> #PB_Ignore And 
-         *this\bounds\size\height\min > *this\height[#__c_frame] 
-        height = *this\bounds\size\height\min
-      ElseIf *this\bounds\size\height\max <> #PB_Ignore And 
-             *this\bounds\size\height\max < *this\height[#__c_frame]
-        height = *this\bounds\size\height\max
+      If *this\bounds\size\min\height <> #PB_Ignore And 
+         *this\bounds\size\min\height > *this\height[#__c_frame] 
+        height = *this\bounds\size\min\height
+      ElseIf *this\bounds\size\max\height <> #PB_Ignore And 
+             *this\bounds\size\max\height < *this\height[#__c_frame]
+        height = *this\bounds\size\max\height
       EndIf
       
       ProcedureReturn Resize( *this, x, y, width, height )
@@ -20326,5 +20331,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------nfAA--v-t--0-0-----f-------0-----P+---b8-43M8---n4d00---4-----------------------------f7lv+-0d0--0-n-4v0v-----v28--------0-z---+---v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f40-v--8---------------------------------b------------------------------0-74-v--------4----nr9-----------------
+; Folding = ----------------------------------------------nfAA--v-t--0---------------0-----P+---8r-43M8---n4d00---4-----------------------------f7lv+-0d0--0-n-4v0v-----v28--------0-z---+---v-----------------------------------------------------------------------------------------f----+---------------------------------------------------------------------------------8-------------f40-v--8---------------------------------b------------------------------0-74-v--------4----nr9-----------------
 ; EnableXP

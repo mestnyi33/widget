@@ -1,1 +1,0 @@
-﻿#NeedFunctionPrototypes = 1

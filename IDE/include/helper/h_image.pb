@@ -39,7 +39,7 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
   
   ;W_IH = GetWindow(Open(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
   ;W_IH = 
-  Window(10, 10, 386+#__bsize*2, 201+#__window_frame, "ImageHelper", Flag, ParentID)                                               
+  Window(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
   ;G_IH_ScrollArea_0 = ScrollArea(5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
   G_IH_View = Image(5, 5, 291, 191, -1)    
   ;CloseList()
@@ -107,6 +107,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Wend
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = v--
 ; EnableXP
