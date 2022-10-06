@@ -1,7 +1,7 @@
 ﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
-Macro widget( ) : enumwidget( ) : EndMacro
+;Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 

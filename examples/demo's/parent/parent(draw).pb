@@ -1,7 +1,7 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 ;Uselib(widget)
-Macro widget( ) : enumwidget( ) : EndMacro
+;Macro widget( ) : enumwidget( ) : EndMacro
 ;XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile

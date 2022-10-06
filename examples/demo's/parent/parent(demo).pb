@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "-widgets.pbi"
+; XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -7,10 +8,10 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   
   Global  pos_x = 10
-  Global *w._S_widget, *combo
-  Global *window_1._S_widget, *window_2._S_widget, *panel._S_widget, *container._S_widget, *scrollarea._S_widget
-  Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
-  Global *pb_0, *pb_1, *pb_2, *pb_3
+  Global *w._S_widget
+  Global *window_10._S_widget, *window_20._S_widget
+  Global *_6, *_60, *_61, *_62, *_7, *_8, *_11
+  Global ParentID, *PANEL._S_widget, *PANEL0._S_widget, *PANEL1._S_widget, *PANEL2._S_widget, *CONTAINER._S_widget, *SCROLLAREA._S_widget, *CHILD._S_widget, *RETURN._S_widget, *COMBO._S_widget, *DESKTOP._S_widget, *CANVASCONTAINER._S_widget
   
   UsePNGImageDecoder()
   
@@ -29,283 +30,182 @@ CompilerIf #PB_Compiler_IsMainFile
               EventItem.i = WidgetEventItem(), 
               EventData.i = WidgetEventData()
     
-    Select EventType
-      Case #PB_EventType_MouseEnter
-        ; bug in mac os
-        If GetActiveGadget() <> EventGadget()
-          SetActiveGadget(EventGadget())
-          Debug 555
-        EndIf
-        
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
-        
-        Select EventWidget
-          Case *d_0, *pb_3 : SetParent(*w, GetRoot(EventWidget))
+   Select EventType
+        Case #PB_EventType_LeftClick, #PB_EventType_Change
+          Select EventWidget
+            Case  *DESKTOP:  SetParent(*CHILD, 0)
+            Case  *_6:  SetParent(*CHILD, *window_10)
+            Case *_60, *PANEL0:  SetParent(*CHILD, *PANEL, 0)
+            Case *_61, *PANEL1:  SetParent(*CHILD, *PANEL, 1)
+            Case *_62, *PANEL2:  SetParent(*CHILD, *PANEL, 2)
+            Case  *_7:  SetParent(*CHILD, *CONTAINER)
+            Case  *_8:  SetParent(*CHILD, *SCROLLAREA)
+            Case *_11:  SetParent(*CHILD,  *CANVASCONTAINER)
+            Case  *RETURN:  SetParent(*CHILD, *window_20)
+              
+            Case *COMBO
+              Select EventType()
+                Case #PB_EventType_Change
+                  ParentID = GetParent(*CHILD)
+                  
+                  Select GetState(*COMBO)
+                    Case  1: *CHILD = Button(30,20,150,30,"Button") 
+                    Case  2: *CHILD = String(30,20,150,30,"String") 
+                    Case  3: *CHILD = Text(30,20,150,30,"Text", #PB_Text_Border) 
+                    Case  4: *CHILD = Option(30,20,150,30,"Option") 
+                    Case  5: *CHILD = CheckBox(30,20,150,30,"CheckBox") 
+                    Case  6: *CHILD = ListView(30,20,150,30) 
+                    Case  7: *CHILD = Frame(30,20,150,30,"Frame") 
+                    Case  8: *CHILD = ComboBox(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
+                    Case  9: *CHILD = Image(30,20,150,30,0,#PB_Image_Border) 
+                    Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
+                    Case 11: *CHILD = Container(30,20,150,30,#PB_Container_Flat): Button(0,0,80,20,"Button"): CloseList() ; Container
+                    Case 12: *CHILD = ListIcon(30,20,150,30,"",88) 
+                    ;Case 13: *CHILD = IPAddress(30,20,150,30) 
+                    ;Case 14: *CHILD = ProgressBar(30,20,150,30,0,5)
+                    ;Case 15: *CHILD = ScrollBar(30,20,150,30,5,335,9)
+                    Case 16: *CHILD = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): Button(0,0,80,20,"Button"): CloseList()
+                    ;Case 17: *CHILD = TrackBar(30,20,150,30,0,5)
+                    ;Case 18: *CHILD = Web(30,20,150,30,"") ; bug 531 linux
+                    Case 19: *CHILD = ButtonImage(30,20,150,30,0)
+                    ;Case 20: *CHILD = Calendar(30,20,150,30) 
+                    ;Case 21: *CHILD = Date(30,20,150,30)
+                    Case 22: *CHILD = Editor(30,20,150,30):  AddItem(*CHILD,-1,"Editor")
+                    ;Case 23: *CHILD = ExplorerList(30,20,150,30,"")
+                    ;Case 24: *CHILD = ExplorerTree(30,20,150,30,"")
+                    ;Case 25: *CHILD = ExplorerCombo(30,20,150,30,"")
+                    Case 26: *CHILD = Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
+                    Case 27: *CHILD = Tree(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1)
+                    Case 28: *CHILD = Panel(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseList()
+                    Case 29 
+                      Button(0,0,30,30,"1")
+                      Button(0,0,30,30,"2")
+                      *CHILD = Splitter(30,20,150,30,201,202)
+                      
+                    Case 30: *CHILD = MDI(30,10,150,70)
+                    ; Case 31: *CHILD = Scintilla(30,10,150,70,0)
+                    ; Case 32: *CHILD = Shortcut(30,10,150,70,0)
+                    ; Case 33: *CHILD = Canvas(30,10,150,70) 
+                  EndSelect
+                  
+                  Resize(*CHILD,30,10,150,70)
+                  SetParent(*CHILD, ParentID) 
+                  
+              EndSelect
+          EndSelect
+          
+          If (EventWidget <> *CHILD)
+            Define Parent = GetParent(*CHILD)
             
-          Case *w_0        : SetParent(*w, *window_1)
-          Case *p_0, *pb_0 : SetParent(*w, *panel, 0)
-          Case *p_1, *pb_1 : SetParent(*w, *panel, 1)
-          Case *p_2, *pb_2 : SetParent(*w, *panel, 2)
-          Case *c_0        : SetParent(*w, *container)
-          Case *s_0        : SetParent(*w, *scrollarea)
-          Case *b_0, *b_1  : SetParent(*w, *window_2)
-            
-          Case *combo
-            Select EventType
-              Case #PB_EventType_Change   : Debug "Combo change " + GetState( *combo )
-                Define i, ParentID = GetParent( *w )
-                
-                ; If GetState( *combo ) >- 1
-                Free(*w)  
-                ; EndIf
-                
-                Select GetState( *combo )
-                  Case 1  : *w = Button(0,0,0,0, "Button") 
-                  Case 2  : *w = String(0,0,0,0, "String") 
-                  Case 3  : *w = Text(0,0,0,0, "Text", #__Text_Border) 
-                  Case 4  : *w = Option(0,0,0,0, "Option") 
-                  Case 5  : *w = CheckBox(0,0,0,0, "CheckBox") 
-                  Case 6  
-                    *w = ListView(0,0,0,0) 
-                    For i = 0 To 10 
-                      AddItem(*w, -1,"ListView_"+Str(i)) 
-                    Next 
-                    SetState(*w,5)
-                    
-                  Case 7  : *w = Frame(0,0,0,0, "Frame") 
-                    ;                   Case 8  : *w = ComboBox(0,0,0,0) : For i = 0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
-                  Case 9  : *w = Image(0,0,0,0, 0,#PB_Image_Border) 
-                  Case 10 : *w = HyperLink(0,0,0,0, "HyperLink", $FF00FF, #PB_HyperLink_Underline) 
-                  Case 11 
-                    *w = Container(0,0,0,0,  #PB_Container_Flat) 
-                    Button(0,0,80,20,"Button") 
-                    CloseList() ; Container
-                                                                                                                          ;                   Case 13 : *w = IPAddress(0,0,0,0) 
-                  Case 14 : *w = Progress(0,0,0,0, 0,5)
-                  Case 15 : *w = Scroll(0,0,0,0, 5,335,9)
-                  Case 16 
-                    *w = ScrollArea(0,0,0,0, 305,305,9,#PB_ScrollArea_Flat) 
-                    Button(0,0,80,20,"Button") 
-                    CloseList()
-                    
-                  Case 17 : *w = Track(0,0,0,0, 0,5)
-                    ;                     ; Case 18 : *w = Web(0,0,0,0, "") 
-                  Case 19 : *w = Button(0,0,0,0,  "", 0, 0)
-                    ;                     ;Case 20 : *w = Calendar(0,0,0,0) 
-                    ;                     ;Case 21 : *w = Date(0,0,0,0)
-                  Case 22 : *w = Editor(0,0,0,0) : AddItem(20,-1,"Editor")
-                    ;                   Case 23 : *w = ExplorerList(0,0,0,0, "")
-                    ;                     ;                     Case 24 : *w = ExplorerTree(0,0,0,0, "")
-                    ;                     ;                     Case 25 : *w = ExplorerCombo(0,0,0,0, "")
-                  Case 26 : *w = Spin(0,0,0,0, 0,5,#PB_Spin_Numeric)
-                  Case 27 
-                    *w = Tree(0,0,0,0) 
-                    For i = 0 To 10 
-                      AddItem(*w,-1,"Tree_"+Str(i), -1, Bool(i = 1 Or i = 3 Or i = 5 Or i = 7 Or i = 9)) 
-                    Next
-                    
-                  Case 28 
-                    *w = Panel(0,0,0,0) 
-                    For i = 0 To 10 
-                      AddItem(*w,-1,"Panel_"+Str(i)) 
-                    Next 
-                    CloseList()
-                    
-                  Case 29 : *w = Splitter(0,0,0,0,  Button(0,0,0,0, "1"), Button(0,0,0,0, "2"))
-                EndSelect
-                
-                ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                ;                     Select GetState( *combo )
-                ;                       Case 30 : MDI(pos_x,10,160,70,0,0)
-                ;                       Case 31 : InitScintilla() :Scintilla(pos_x,10,160,70,0)
-                ;                       Case 32 : Shortcut(pos_x,10,160,70,0)
-                ;                       Case 33 : Canvas(pos_x,10,160,70) 
-                ;                     EndSelect
-                ;                   CompilerElse
-                ;                     Select GetState( *combo )
-                ;                       Case 30 : InitScintilla() :Scintilla(pos_x,10,160,70,0)
-                ;                       Case 31 : Shortcut(pos_x,10,160,70,0)
-                ;                       Case 32 : Canvas(pos_x,10,160,70) 
-                ;                     EndSelect
-                ;                   CompilerEndIf
-                
-                
-                Resize(*w,pos_x,10,160,70)
-                SetParent(*w, ParentID)
-                
-            EndSelect
-            
-        EndSelect
-        
-        Debug " add - "
-        ForEach widget( ) 
-          If widget( )\before\widget And widget( )\after\widget
-            Debug " add - "+ widget( )\before\widget\class +" "+ widget( )\class +" "+ widget( )\after\widget\class
-          ElseIf widget( )\after\widget
-            Debug " add - none "+ widget( )\class +" "+ widget( )\after\widget\class
-          ElseIf widget( )\before\widget
-            Debug " add - "+ widget( )\before\widget\class +" "+ widget( )\class +" none"
-          Else
-            Debug " add - none "+ widget( )\class  +" none"
+;             If Is(Parent)
+;               Debug "parent -  (" + Parent + ")"
+;             Else
+;               Debug "parent - window (" + GetWindow(*CHILD) + ")"
+;             EndIf
           EndIf
-        Next
-        Debug ""
-        
-        If GetParent(*w) = GetParent(*b_0)
-          Disable(*b_0, 1)
-        Else
-          Disable(*b_0, 0)
-        EndIf
-        
-        If GetParent(*w) = GetParent(*pb_0) 
-          Disable(*pb_0, 0)
-        Else
-          Disable(*pb_0, 1)
-        EndIf
-        ;         If (EventWidget<>*w)
-        ;           SetText(*window_1, Class(GetType(GetParent(*w))) +" - parent class & parent item ("+Str(GetParentItem(*w))+")")
-        ;         EndIf
-    EndSelect
-    
+      EndSelect 
   EndProcedure
   
-  Define X,Y,Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered ;| #PB_Window_BorderLess
-  OpenWindow(10, 0, 0, 633, 342, "demo set  new parent", Flags )
+  Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
+  OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
+  Open(10)
+  ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
+  *window_10 = Container(0, 0, 425, 350)
   
-  ; Create desktop for the widgets
-  If Open(10): bind(-1,-1)
-    Root()\class = "root_0"
-    *d_0 = Button(pos_x,90,160,30,">>(Desktop)") : SetClass(widget(), GetText(widget())) 
-    *pb_0 = Button(10,90+40,180,20,">>(Panel to hide item (0))") : SetClass(widget(), GetText(widget())) : Disable(*pb_0, 1)
-    *pb_1 = Button(10,90+65,180,20,">>(Panel to hide item (1))") : SetClass(widget(), GetText(widget())) 
-    *pb_2 = Button(10,90+90,180,20,">>(Panel to hide item (2))") : SetClass(widget(), GetText(widget())) 
-    
-    
-    *window_1 = Window(202, 0, 430, 314, "demo set  new parent", Flags )          ;   +(#__border_size + #__caption_height)
-    *w_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
-    
-    *container = Container(215,10,200,130,#PB_Container_Flat) 
-    *c_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget()))
-    CloseList()
-    
-    *panel = Panel(10,145,200,160) 
-    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,70,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
-    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,80,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
-    AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
-    CloseList()
-    
-    *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) 
-    ;Debug ""+widget()\x[#__c_draw]+" "+widget()\x[#__c_container]+" "+widget()\x[#__c_required]
-    *s_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
-    CloseList()
-    
-    Bind(Root(), @Widgets_CallBack())
-  EndIf
-
-  ResizeWindow(10, WindowX( 10 )-100, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_BorderLess
-  X = WindowX( 10 )+5+WindowWidth( 10 )
-  Y = WindowY( 10 )
+  *_6 = Button(30,90,160,25,"Button >>(Window)")
   
-  OpenWindow(20, X, Y, 185, 346, "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))   ;     +(#__caption_height)
-  *window_2 = Open(20): bind(-1,-1)
-  Root()\class = "root_1"
+  *PANEL0 = Button(30,120,160,20,"Button >>(Panel (0))") 
+  *PANEL1 = Button(30,140,160,20,"Button >>(Panel (1))") 
+  *PANEL2 = Button(30,160,160,20,"Button >>(Panel (2))") 
   
-  *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
+  *PANEL = Panel(10,180,200,160) 
+  AddItem(*PANEL,-1,"Panel") 
+  *_60 = Button(30,90,160,30,"Button >>(Panel (0))") 
+  AddItem(*PANEL,-1,"First") 
+  *_61 = Button(35,90,160,30,"Button >>(Panel (1))") 
+  AddItem(*PANEL,-1,"Second") 
+  *_62 = Button(40,90,160,30,"Button >>(Panel (2))") 
+  CloseList()
   
+  *CONTAINER = Container(215,10,200,160,#PB_Container_Flat) 
+  *_7 = Button(30,90,160,30,"Button >>(Container)") 
+  CloseList()
   
-;   *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
-;   SetClass(widget(), "scrollarea_0")
-;   Button(0,0,80,20,"disable")
-;   Disable(widget(), 1) 
-;   SetClass(widget(), "scrollarea_0_butt_"+GetText(widget()))
-;   
-;   SetClass(Button(30,30,80,20,"Button2"), "scrollarea_0_butt_2") 
-;   
-;   ScrollArea(50,5,160,70, 305,305,9,#PB_ScrollArea_Flat) 
-;   SetClass(widget(), "scrollarea_1")
-;   Button(0,0,80,20,"hide")
-;   Hide(widget(), 1) 
-;   SetClass(widget(), "scrollarea_1_butt_"+GetText(widget()))
-;   
-;   SetClass(Button(30,30,80,20,"Button4"), "scrollarea_1_butt_4") 
-;   CloseList()
-;   CloseList()
-;   
+  *SCROLLAREA = ScrollArea(215,180,200,160,200,160,10,#PB_ScrollArea_Flat) 
+  *_8 = Button(30,90,160,30,"Button >>(ScrollArea)") 
+  CloseList()
   
-;   *w = MDI(pos_x,10,160,70);, #__flag_autosize)
-;   
-;   Define *g0 = AddItem(*w, -1, "form_0")
-;   Button(10,10,80,80,"button_0")
-;   
-;   Define *g1 = AddItem(*w, -1, "form_1")
-;   Button(10,10,80,80,"button_1")
-;   
-;   Define *g2 = AddItem(*w, -1, "form_2")
-;   Button(10,10,80,80,"button_2")
-;   
-;   ; use window list
-;   OpenList(*window_2)
-;   ;CloseList()
-  
-  *w = Button(pos_x,10,160,70,"current") : SetClass(widget(), GetText(widget())) 
-  *b_0 = Button(10,90,160,30,">>(Back)") : SetClass(widget(), GetText(widget())) : Disable(*b_0, 1)
-  Bind(*b_0, @Widgets_CallBack())
   
   ;
-  *combo = ListView( 10,90+40,160,230 - 30 ) 
-  If *combo
-    AddItem( *combo, -1, "Selected  to move")
-    AddItem( *combo, -1, "Button")
-    AddItem( *combo, -1, "String")
-    AddItem( *combo, -1, "Text")
-    AddItem( *combo, -1, "Option")
-    AddItem( *combo, -1, "CheckBox")
-    AddItem( *combo, -1, "ListView")
-    AddItem( *combo, -1, "Frame")
-    AddItem( *combo, -1, "ComboBox")
-    AddItem( *combo, -1, "Image")
-    AddItem( *combo, -1, "HyperLink")
-    AddItem( *combo, -1, "Container")
-    AddItem( *combo, -1, "ListIcon")
-    AddItem( *combo, -1, "IPAddress")
-    AddItem( *combo, -1, "ProgressBar")
-    AddItem( *combo, -1, "ScrollBar")
-    AddItem( *combo, -1, "ScrollArea")
-    AddItem( *combo, -1, "TrackBar")
-    AddItem( *combo, -1, "Web")
-    AddItem( *combo, -1, "ButtonImage")
-    AddItem( *combo, -1, "Calendar")
-    AddItem( *combo, -1, "Date")       
-    AddItem( *combo, -1, "Editor")
-    AddItem( *combo, -1, "ExplorerList")
-    AddItem( *combo, -1, "ExplorerTree")
-    AddItem( *combo, -1, "ExplorerCombo")
-    AddItem( *combo, -1, "Spin")        
-    AddItem( *combo, -1, "Tree")         
-    AddItem( *combo, -1, "Panel")        
-    AddItem( *combo, -1, "Splitter")    
-    AddItem( *combo, -1, "MDI") 
-    AddItem( *combo, -1, "Scintilla") 
-    AddItem( *combo, -1, "Shortcut")  
-    AddItem( *combo, -1, "Canvas")   
-    
-    SetState( *combo, #PB_GadgetType_Button)
-    Bind(*combo, @Widgets_CallBack())
-  EndIf
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
+  OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
+  Open(20)
+  ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
+  *window_20 = Container(0,0, 425, 350)
   
-  HideWindow(GetWindow(GetRoot(*window_1)),0)
-  HideWindow(GetWindow(GetRoot(*window_2)),0)
+  *CHILD = Button(30,10,160,70,"Button") 
+  *RETURN = Button(30,90,160,25,"Button <<(Return)") 
   
-  ReDraw(GetRoot(*window_1))
-  ReDraw(GetRoot(*window_2))
+  *COMBO = ComboBox(30,120,160,25) 
+  AddItem(*COMBO, -1, "Selected  to move")
+  AddItem(*COMBO, -1, "Button")
+  AddItem(*COMBO, -1, "String")
+  AddItem(*COMBO, -1, "Text")
+  AddItem(*COMBO, -1, "CheckBox")
+  AddItem(*COMBO, -1, "Option")
+  AddItem(*COMBO, -1, "ListView")
+  AddItem(*COMBO, -1, "Frame")
+  AddItem(*COMBO, -1, "ComboBox")
+  AddItem(*COMBO, -1, "Image")
+  AddItem(*COMBO, -1, "HyperLink")
+  AddItem(*COMBO, -1, "Container")
+  AddItem(*COMBO, -1, "ListIcon")
+  AddItem(*COMBO, -1, "IPAddress")
+  AddItem(*COMBO, -1, "ProgressBar")
+  AddItem(*COMBO, -1, "ScrollBar")
+  AddItem(*COMBO, -1, "ScrollArea")
+  AddItem(*COMBO, -1, "TrackBar")
+  AddItem(*COMBO, -1, "Web")
+  AddItem(*COMBO, -1, "ButtonImage")
+  AddItem(*COMBO, -1, "Calendar")
+  AddItem(*COMBO, -1, "Date")
+  AddItem(*COMBO, -1, "Editor")
+  AddItem(*COMBO, -1, "ExplorerList")
+  AddItem(*COMBO, -1, "ExplorerTree")
+  AddItem(*COMBO, -1, "ExplorerCombo")
+  AddItem(*COMBO, -1, "Spin")        
+  AddItem(*COMBO, -1, "Tree")         
+  AddItem(*COMBO, -1, "Panel")        
+  AddItem(*COMBO, -1, "Splitter")    
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    AddItem(*COMBO, -1, "MDI") 
+  CompilerEndIf
+  AddItem(*COMBO, -1, "Scintilla") 
+  AddItem(*COMBO, -1, "Shortcut")  
+  AddItem(*COMBO, -1, "Canvas")    
   
+  SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #PB_EventType_Change)
   
+  *DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
+  *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #__color_back, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 
+  *_11 = Button(30,90,160,30,"Button >>(Canvas)") 
+  CloseList()
+  
+  HideWindow(GetWindow(GetRoot(*window_10)),0)
+  HideWindow(GetWindow(GetRoot(*window_20)),0)
+  
+;   ReDraw(GetRoot(*window_10))
+;   ReDraw(GetRoot(*window_20))
+  
+  Bind(GetRoot(*window_10), @Widgets_CallBack())
+  Bind(GetRoot(*window_20), @Widgets_CallBack())
+  
+  Define Event
   Repeat
-    Define Event = WaitWindowEvent()
+     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -6-
+; Folding = --
 ; EnableXP

@@ -124,7 +124,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       pos.l
       len.l
       *end
-      change.f
+      change.w
     EndStructure
     
     ;- - _s_caret
@@ -637,7 +637,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       _a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._s_buttons[constants::#__a_moved+1]
       _a_._s_a
-      
+      transform.b
       
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
       bs.a    ; border size
@@ -818,5 +818,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------4-
+; Folding = ----------
 ; EnableXP

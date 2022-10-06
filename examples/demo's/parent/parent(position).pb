@@ -1,6 +1,6 @@
 ﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
-Macro widget( ) : enumwidget( ) : EndMacro
+XIncludeFile "../../../widget-events.pbi" 
+;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType
       Case #PB_EventType_MouseEnter
         ; bug in mac os
-        If GetActiveGadget() <> EventGadget()
+        If IsGadget(EventGadget()) And GetActiveGadget() <> EventGadget()
           SetActiveGadget(EventGadget())
           Debug 555
         EndIf

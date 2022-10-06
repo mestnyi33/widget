@@ -3051,21 +3051,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   If transform( )\index = #__a_moved   
                     ; move boundaries
                     If a_focus_widget( )\bounds\move
-                      If a_focus_widget( )\bounds\move\x\min <> #PB_Ignore And
-                         mouse_x <= a_focus_widget( )\bounds\move\x\min
-                        mouse_x = a_focus_widget( )\bounds\move\x\min
+                      If a_focus_widget( )\bounds\move\min\x <> #PB_Ignore And
+                         mouse_x <= a_focus_widget( )\bounds\move\min\x
+                        mouse_x = a_focus_widget( )\bounds\move\min\x
                       EndIf
-                      If a_focus_widget( )\bounds\move\x\max <> #PB_Ignore And
-                         mouse_x >= a_focus_widget( )\bounds\move\x\max - a_focus_widget( )\width[#__c_frame]
-                        mouse_x = a_focus_widget( )\bounds\move\x\max - a_focus_widget( )\width[#__c_frame]
+                      If a_focus_widget( )\bounds\move\max\x <> #PB_Ignore And
+                         mouse_x >= a_focus_widget( )\bounds\move\max\x - a_focus_widget( )\width[#__c_frame]
+                        mouse_x = a_focus_widget( )\bounds\move\max\x - a_focus_widget( )\width[#__c_frame]
                       EndIf
-                      If a_focus_widget( )\bounds\move\y\min <> #PB_Ignore And 
-                         mouse_y <= a_focus_widget( )\bounds\move\y\min
-                        mouse_y = a_focus_widget( )\bounds\move\y\min
+                      If a_focus_widget( )\bounds\move\min\y <> #PB_Ignore And 
+                         mouse_y <= a_focus_widget( )\bounds\move\min\y
+                        mouse_y = a_focus_widget( )\bounds\move\min\y
                       EndIf
-                      If a_focus_widget( )\bounds\move\y\max <> #PB_Ignore And
-                         mouse_y >= a_focus_widget( )\bounds\move\y\max - a_focus_widget( )\height[#__c_frame]
-                        mouse_y = a_focus_widget( )\bounds\move\y\max - a_focus_widget( )\height[#__c_frame]
+                      If a_focus_widget( )\bounds\move\max\y <> #PB_Ignore And
+                         mouse_y >= a_focus_widget( )\bounds\move\max\y - a_focus_widget( )\height[#__c_frame]
+                        mouse_y = a_focus_widget( )\bounds\move\max\y - a_focus_widget( )\height[#__c_frame]
                       EndIf
                     EndIf
                     
@@ -3075,9 +3075,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       Case 1, 5, 8 ; left
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move
-                          If a_focus_widget( )\bounds\move\x\min <> #PB_Ignore And
-                             mouse_x <= a_focus_widget( )\bounds\move\x\min
-                            mouse_x = a_focus_widget( )\bounds\move\x\min
+                          If a_focus_widget( )\bounds\move\min\x <> #PB_Ignore And
+                             mouse_x <= a_focus_widget( )\bounds\move\min\x
+                            mouse_x = a_focus_widget( )\bounds\move\min\x
                           EndIf
                         EndIf
                         mw = ( a_focus_widget( )\x[#__c_container] - mouse_x ) + a_focus_widget( )\width[#__c_frame] + (a_focus_widget( )\parent\widget\fs); - a_focus_widget( )\fs[1])
@@ -3089,9 +3089,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       Case 3, 6, 7 ; right
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move And 
-                           a_focus_widget( )\bounds\move\x\max <> #PB_Ignore And
-                           mouse_x >= a_focus_widget( )\bounds\move\x\max 
-                          mouse_x = a_focus_widget( )\bounds\move\x\max
+                           a_focus_widget( )\bounds\move\max\x <> #PB_Ignore And
+                           mouse_x >= a_focus_widget( )\bounds\move\max\x 
+                          mouse_x = a_focus_widget( )\bounds\move\max\x
                         EndIf
                         mw = ( mouse_x - a_focus_widget( )\x[#__c_container] ) + IsGrid 
                     EndSelect
@@ -3101,9 +3101,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       Case 2, 5, 6 ; top
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move
-                          If a_focus_widget( )\bounds\move\y\min <> #PB_Ignore And
-                             mouse_y <= a_focus_widget( )\bounds\move\y\min
-                            mouse_y = a_focus_widget( )\bounds\move\y\min
+                          If a_focus_widget( )\bounds\move\min\y <> #PB_Ignore And
+                             mouse_y <= a_focus_widget( )\bounds\move\min\y
+                            mouse_y = a_focus_widget( )\bounds\move\min\y
                           EndIf
                         EndIf
                         mh = ( a_focus_widget( )\y[#__c_container] - mouse_y ) + a_focus_widget( )\height[#__c_frame] + (a_focus_widget( )\parent\widget\fs); - a_focus_widget( )\fs[2])
@@ -3115,9 +3115,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                       Case 4, 8, 7 ; bottom 
                                    ; move boundaries
                         If a_focus_widget( )\bounds\move And 
-                           a_focus_widget( )\bounds\move\y\max <> #PB_Ignore And
-                           mouse_y >= a_focus_widget( )\bounds\move\y\max 
-                          mouse_y = a_focus_widget( )\bounds\move\y\max
+                           a_focus_widget( )\bounds\move\max\y <> #PB_Ignore And
+                           mouse_y >= a_focus_widget( )\bounds\move\max\y 
+                          mouse_y = a_focus_widget( )\bounds\move\max\y
                         EndIf
                         mh = ( mouse_y - a_focus_widget( )\y[#__c_container] ) + IsGrid
                     EndSelect
@@ -3134,14 +3134,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     
                     If a_focus_widget( )\bounds\size 
                       ; size boundaries
-                      If (( a_focus_widget( )\bounds\size\width\min <> #PB_Ignore And mw <= a_focus_widget( )\bounds\size\width\min ) Or
-                          ( a_focus_widget( )\bounds\size\width\max <> #PB_Ignore And mw >= a_focus_widget( )\bounds\size\width\max ))
+                      If (( a_focus_widget( )\bounds\size\min\width <> #PB_Ignore And mw <= a_focus_widget( )\bounds\size\min\width ) Or
+                          ( a_focus_widget( )\bounds\size\max\width <> #PB_Ignore And mw >= a_focus_widget( )\bounds\size\max\width ))
                         mw = #PB_Ignore
                         mouse_x = #PB_Ignore
                       EndIf
                       ; size boundaries
-                      If (( a_focus_widget( )\bounds\size\height\min <> #PB_Ignore And mh <= a_focus_widget( )\bounds\size\height\min ) Or
-                          ( a_focus_widget( )\bounds\size\height\max <> #PB_Ignore And mh >= a_focus_widget( )\bounds\size\height\max ))
+                      If (( a_focus_widget( )\bounds\size\min\height <> #PB_Ignore And mh <= a_focus_widget( )\bounds\size\min\height ) Or
+                          ( a_focus_widget( )\bounds\size\max\height <> #PB_Ignore And mh >= a_focus_widget( )\bounds\size\max\height ))
                         mh = #PB_Ignore
                         mouse_y = #PB_Ignore
                       EndIf
@@ -6905,7 +6905,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn 1;Bar_Resize( *bar )  
     EndProcedure
     
-    Procedure.b Bar_Change( *bar._s_BAR, ScrollPos.f )
+    Procedure.b Bar_Change( *bar._s_BAR, ScrollPos.l )
       With *this
         ;Debug ""+ScrollPos +" "+ *bar\page\end
         
@@ -7120,7 +7120,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               Bar_Update( *this\bar )
               ProcedureReturn Bar_Resize( *this\bar )  
             Case #__bar_ScrollStep 
-              \scroll\increment = *value
+              \scroll\increment = Int(*value)
               
           EndSelect
         EndIf
@@ -13961,7 +13961,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
           Case #PB_ScrollArea_ScrollStep      
-            *this\scroll\increment = *value
+            *this\scroll\increment = Int(*value)
             
         EndSelect
       EndIf
@@ -15209,32 +15209,32 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       *this\bounds\move.allocate(BOUNDMove)
       
-      *this\bounds\move\x\min = MinimumX
-      *this\bounds\move\x\max = MaximumX
+      *this\bounds\move\min\x = MinimumX
+      *this\bounds\move\max\x = MaximumX
       
-      *this\bounds\move\y\min = MinimumY
-      *this\bounds\move\y\max = MaximumY
+      *this\bounds\move\min\y = MinimumY
+      *this\bounds\move\max\y = MaximumY
       
       ;
-      If *this\bounds\move\x\min <> #PB_Ignore And
-         *this\x[#__c_frame] < *this\bounds\move\x\min
-        x = *this\bounds\move\x\min
-        If *this\width[#__c_frame] > *this\bounds\move\x\max - x
-          width = *this\bounds\move\x\max - x
+      If *this\bounds\move\min\x <> #PB_Ignore And
+         *this\x[#__c_frame] < *this\bounds\move\min\x
+        x = *this\bounds\move\min\x
+        If *this\width[#__c_frame] > *this\bounds\move\max\x - x
+          width = *this\bounds\move\max\x - x
         EndIf
-      ElseIf *this\bounds\move\x\max <> #PB_Ignore And 
-             *this\width[#__c_frame] > ( *this\bounds\move\x\max - *this\x[#__c_frame] )
-        width = *this\bounds\move\x\max - *this\x[#__c_frame]
+      ElseIf *this\bounds\move\max\x <> #PB_Ignore And 
+             *this\width[#__c_frame] > ( *this\bounds\move\max\x - *this\x[#__c_frame] )
+        width = *this\bounds\move\max\x - *this\x[#__c_frame]
       EndIf
-      If *this\bounds\move\y\min <> #PB_Ignore And 
-         *this\y[#__c_frame] < *this\bounds\move\y\min 
-        y = *this\bounds\move\y\min
-        If *this\height[#__c_frame] > *this\bounds\move\y\max - y
-          height = *this\bounds\move\y\max - y
+      If *this\bounds\move\min\y <> #PB_Ignore And 
+         *this\y[#__c_frame] < *this\bounds\move\min\y 
+        y = *this\bounds\move\min\y
+        If *this\height[#__c_frame] > *this\bounds\move\max\y - y
+          height = *this\bounds\move\max\y - y
         EndIf
-      ElseIf *this\bounds\move\y\max <> #PB_Ignore And
-             *this\height[#__c_frame] > ( *this\bounds\move\y\max - *this\y[#__c_frame] )
-        height = *this\bounds\move\y\max - *this\y[#__c_frame]
+      ElseIf *this\bounds\move\max\y <> #PB_Ignore And
+             *this\height[#__c_frame] > ( *this\bounds\move\max\y - *this\y[#__c_frame] )
+        height = *this\bounds\move\max\y - *this\y[#__c_frame]
       EndIf
       
       ProcedureReturn Resize( *this, x, y, width, height )
@@ -15247,26 +15247,26 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       *this\bounds\size.allocate(BOUNDSize)
       
-      *this\bounds\size\width\min = MinimumWidth
-      *this\bounds\size\width\max = MaximumWidth
+      *this\bounds\size\min\width = MinimumWidth
+      *this\bounds\size\max\width = MaximumWidth
       
-      *this\bounds\size\height\min = MinimumHeight
-      *this\bounds\size\height\max = MaximumHeight
+      *this\bounds\size\min\height = MinimumHeight
+      *this\bounds\size\max\height = MaximumHeight
       
       ;
-      If *this\bounds\size\width\min <> #PB_Ignore And
-         *this\width[#__c_frame] < *this\bounds\size\width\min
-        width = *this\bounds\size\width\min
-      ElseIf *this\bounds\size\width\max <> #PB_Ignore And
-             *this\width[#__c_frame] > *this\bounds\size\width\max
-        width = *this\bounds\size\width\max
+      If *this\bounds\size\min\width <> #PB_Ignore And
+         *this\width[#__c_frame] < *this\bounds\size\min\width
+        width = *this\bounds\size\min\width
+      ElseIf *this\bounds\size\max\width <> #PB_Ignore And
+             *this\width[#__c_frame] > *this\bounds\size\max\width
+        width = *this\bounds\size\max\width
       EndIf
-      If *this\bounds\size\height\min <> #PB_Ignore And 
-         *this\height[#__c_frame] < *this\bounds\size\height\min 
-        height = *this\bounds\size\height\min
-      ElseIf *this\bounds\size\height\max <> #PB_Ignore And 
-             *this\height[#__c_frame] > *this\bounds\size\height\max
-        height = *this\bounds\size\height\max
+      If *this\bounds\size\min\height <> #PB_Ignore And 
+         *this\height[#__c_frame] < *this\bounds\size\min\height 
+        height = *this\bounds\size\min\height
+      ElseIf *this\bounds\size\max\height <> #PB_Ignore And 
+             *this\height[#__c_frame] > *this\bounds\size\max\height
+        height = *this\bounds\size\max\height
       EndIf
       
       ProcedureReturn Resize( *this, x, y, width, height )
@@ -20911,6 +20911,6 @@ CompilerEndIf
 ;   EndDataSection
 ;   
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = +-------------------------------------------------------------------------------------78-------------------------5l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+---------------------------------------------------------------
 ; EnableXP

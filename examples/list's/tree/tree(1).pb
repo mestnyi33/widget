@@ -1,5 +1,6 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../"
+; XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -31,16 +32,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Static text.s
     
-    If this()\widget\transform
+    If EventWidget()\_a_transform
       
-      Select this()\event
+      Select WidgetEventType()
         Case #PB_EventType_LeftButtonDown
           
           
         Case #PB_EventType_StatusChange
-          Debug "status - id " + GetData(this()\widget)
+          Debug "status - id " + GetData(EventWidget())
           
-          SetItemState(*g, GetData(this()\widget), #PB_Tree_Selected)
+          SetItemState(*g, GetData(EventWidget()), #PB_Tree_Selected)
         Case #PB_EventType_Focus
           Debug "focus"
           
@@ -53,9 +54,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
     Else
-      Select this()\widget
+      Select EventWidget()
         Case *g
-          Select this()\event
+          Select WidgetEventType()
             Case #PB_EventType_Change
               text.s = "button"
           EndSelect
@@ -98,6 +99,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

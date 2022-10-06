@@ -2,8 +2,8 @@
 ;XIncludeFile "../transform().pbi"
 ;XIncludeFile "../widgets-plus.pbi"
 ;XIncludeFile "../-widgets-edit.pbi"
-;XIncludeFile "../widgets.pbi"
 ;XIncludeFile "../CE.pb"
+;XIncludeFile "../widgets.pbi"
 XIncludeFile "../widget-events.pbi"
 ; XIncludeFile "../examples/empty5.pb"
 
@@ -591,25 +591,29 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events( )
-    Protected e_type = WidgetEventType( )
     Protected EventWidget = EventWidget( )
     
-    If IsContainer( EventWidget )
-      Select e_type 
-        Case #PB_EventType_DragStart
+    Select WidgetEventType( ) 
+      Case #PB_EventType_DragStart
+        If IsContainer( EventWidget )
+          Debug 77
           DragPrivate( #_drag_private_type )
-          
-        Case #PB_EventType_Drop
+        EndIf
+        
+      Case #PB_EventType_Drop
+        If IsContainer( EventWidget )
           widget_add( EventWidget, GetText( id_elements_tree ), EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
           
           ; no create new 
           SetState( id_elements_tree, 0 )
           ; Debug "drop - " + " xy=("+ EventDropX( ) +","+ EventDropY( ) +")" +" wh=("+ EventDropWidth( ) +","+ EventDropHeight( ) +")"
           ;; Debug "drop widget"
-          
-        Case #PB_EventType_LeftButtonUp
-          
-          If transform( ) And transform( )\widget And transform( )\widget\_a_transform <> 1
+        EndIf
+        
+      Case #PB_EventType_LeftButtonUp
+        ; then group select
+        If IsContainer( EventWidget )
+          If transform( ) And a_enter_widget( ) And a_enter_widget( )\_a_transform =- 1
             SetState( id_inspector_tree, -1 )
             If IsGadget( id_design_code )
               SetGadgetState( id_design_code, -1 )
@@ -622,9 +626,10 @@ CompilerIf #PB_Compiler_IsMainFile
               EndIf
             Next
           EndIf
-          
-          
-        Case #PB_EventType_LeftButtonDown
+        EndIf
+        
+      Case #PB_EventType_LeftButtonDown
+        If IsContainer( EventWidget )
           If transform( )\type > 0 Or group_select
             ;transform( )\grab = 1
             If group_select 
@@ -632,48 +637,42 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
           EndIf
           
-          ;           If transform( )\widget\transform <> 1
+          ;           If a_enter_widget( )\transform <> 1
           ;             ForEach transform( )\group( )
           ;               SetItemState( id_inspector_tree, GetData( transform( )\group( )\widget ), 0 )
           ;             Next
           ;           EndIf
-          
-          
-        Case #PB_EventType_MouseEnter
+        EndIf
+        
+      Case #PB_EventType_MouseEnter
+        If IsContainer( EventWidget )
           If transform( )
-            Debug "enter widget " + transform( )\type
+            ;Debug "enter widget " + transform( )\type
             If transform( )\type > 0
               SetCursor( EventWidget, #PB_Cursor_Cross )
             EndIf
           EndIf
-          
-        Case #PB_EventType_MouseLeave
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        If IsContainer( EventWidget )
           If transform( ) And transform( )\type > 0 
             If Not Mouse( )\buttons
               SetCursor( EventWidget, #PB_Cursor_Default )
             EndIf
           EndIf
-          
-          
-      EndSelect
-    EndIf
-    
-    Select e_type 
-      Case #PB_EventType_MouseMove
-      Case #PB_EventType_LeftButtonUp
-        
-        
-      Case #PB_EventType_StatusChange
-        ;If GetState( id_inspector_tree ) <> GetData( EventWidget )
-        SetState( id_inspector_tree, GetData( EventWidget ) )
-        ;EndIf
-        If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, GetData( EventWidget ) )
         EndIf
-        properties_update( id_properties_tree, EventWidget )
         
       Case #PB_EventType_Resize
         properties_update_coordinate( id_properties_tree, EventWidget )
+        
+      Case #PB_EventType_StatusChange
+        If IsGadget( id_design_code )
+          SetGadgetState( id_design_code, GetData( EventWidget ) )
+        EndIf
+         SetState( id_inspector_tree, GetData( EventWidget ) )
+         properties_update( id_properties_tree, EventWidget )
+        
         
     EndSelect
     
@@ -683,10 +682,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Macro widget_copy( )
     ClearList( *copy( ) )
     
-    If transform( )\widget\_a_transform = 1
+    If a_enter_widget( )\_a_transform = 1
       AddElement( *copy( ) ) 
       *copy.allocate( GROUP, ( ) )
-      *copy( )\widget = transform( )\widget
+      *copy( )\widget = a_enter_widget( )
     Else
       ;       ForEach transform( )\group( )
       ;         AddElement( *copy( ) ) 
@@ -703,10 +702,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro widget_delete( )
-    If transform( )\widget\_a_transform = 1
-      RemoveItem( id_inspector_tree, GetData( transform( )\widget ) )
+    If a_enter_widget( )\_a_transform = 1
+      RemoveItem( id_inspector_tree, GetData( a_enter_widget( ) ) )
       
-      Free( transform( )\widget )
+      Free( a_enter_widget( ) )
       
       If a_Set( GetItemData( id_inspector_tree, GetState( id_inspector_tree ) ) )
         a_reset( )
@@ -746,7 +745,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug " ggg "+transform( )\group( )\widget
     Next
     
-    ;a_update( transform( )\widget )
+    ;a_update( a_enter_widget( ) )
   EndMacro
   
   
@@ -798,7 +797,9 @@ CompilerIf #PB_Compiler_IsMainFile
           If e_item = -1
             ;SetText( id_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
           Else
-            SetText( id_help_text, GetItemText( EventWidget, e_item ) )
+           ; If EventWidget = id_elements_tree
+              SetText( id_help_text, GetItemText( EventWidget, e_item ) )
+           ; EndIf
           EndIf
         EndIf
         
@@ -836,7 +837,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 findstring = Mid( EventWidget( )\text\string, startpos, stoppos - startpos )
                 
                 If countstring = 4
-                  SetText( transform( )\widget, findstring )
+                  SetText( a_enter_widget( ), findstring )
                 Else
                   If countstring = 0
                     x = Val( findstring )
@@ -848,7 +849,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     height = Val( findstring )
                   EndIf
                   
-                  Resize( transform( )\widget, x, y, width, height)
+                  Resize( a_enter_widget( ), x, y, width, height)
                 EndIf
                 
               EndIf
@@ -932,8 +933,8 @@ CompilerIf #PB_Compiler_IsMainFile
                  #_tb_group_width, 
                  #_tb_group_height
               
-              move_x = transform( )\id[0]\x - transform( )\widget\x[#__c_inner]
-              move_y = transform( )\id[0]\y - transform( )\widget\y[#__c_inner]
+              move_x = transform( )\id[0]\x - a_enter_widget( )\x[#__c_inner]
+              move_y = transform( )\id[0]\y - a_enter_widget( )\y[#__c_inner]
               
               ForEach transform( )\group( )
                 Select toolbarbutton
@@ -966,7 +967,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndSelect
               Next
               
-              a_update( transform( )\widget )
+              a_update( a_enter_widget( ) )
               
               ;Redraw( Root() )
           EndSelect
@@ -1125,55 +1126,77 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
     
-    ; example 1
-    ;   ;OpenList( id_design_form )
-    Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
-        Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
-        widget_add( *container, "button", 10, 20, 30, 30 )
-        widget_add( *window, "button", 10, 20, 100, 30 )
+;     ; example 1
+;     ;   ;OpenList( id_design_form )
+;     Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
+;         Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+;         widget_add( *container, "button", 10, 20, 30, 30 )
+;         widget_add( *window, "button", 10, 20, 100, 30 )
+;         
+;         Define item = 1
+;         SetState( id_inspector_tree, item )
+;         If IsGadget( id_design_code )
+;           SetGadgetState( id_design_code, item )
+;         EndIf
+;         Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+;         widget_add( *container2, "button", 10, 20, 30, 30 )
+;         
+;         SetState( id_inspector_tree, 0 )
+;         widget_add( *window, "button", 10, 130, 100, 30 )
+;         
+; ; ;         ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+; ; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
+; ; ;         ;   widget_add( *container, "button", -10, 20 )
+; ; ;         ;   widget_add( *window, "button", 10, 20 )
+; ; ;         ;   ;CloseList( )
+; ; ;         
+;             ; example 2
+;             ;   ;OpenList( id_design_form )
+;             SetState( group_select, 1 ) 
+;             
+;             Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+;             widget_add( *window, "button", 15, 25, 50, 30 )
+;             widget_add( *window, "text", 25, 65, 50, 30 )
+;             widget_add( *window, "button", 35, 65+40, 50, 30 )
+;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+;             
+;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+;             widget_add( *container, "progress", 15, 25, 30, 30 )
+;             widget_add( *container, "text", 25, 65, 50, 30 )
+;             widget_add( *container, "button", 35, 65+40, 80, 30 )
+;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+;             
+;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+;             widget_add( *container2, "string", 25, 65, 100, 30 )
+;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
         
-        Define item = 1
-        SetState( id_inspector_tree, item )
-        If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, item )
-        EndIf
-        Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-        widget_add( *container2, "button", 10, 20, 30, 30 )
-        
-        SetState( id_inspector_tree, 0 )
-        widget_add( *window, "button", 10, 130, 100, 30 )
-        
-; ;         ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
-; ;         ;   widget_add( *container, "button", -10, 20 )
-; ;         ;   widget_add( *window, "button", 10, 20 )
-; ;         ;   ;CloseList( )
-; ;         
-; ;             ; example 2
-; ;             ;   ;OpenList( id_design_form )
-; ;             SetState( group_select, 1 ) 
-; ;             
-; ;             Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
-; ;             widget_add( *window, "button", 15, 25, 50, 30 )
-; ;             widget_add( *window, "text", 25, 65, 50, 30 )
-; ;             widget_add( *window, "button", 35, 65+40, 50, 30 )
-; ;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
-; ;             
-; ;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-; ;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
-; ;             widget_add( *container, "progress", 15, 25, 30, 30 )
-; ;             widget_add( *container, "text", 25, 65, 50, 30 )
-; ;             widget_add( *container, "button", 35, 65+40, 80, 30 )
-; ;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-; ;             
-; ;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-; ;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-; ;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-; ;             widget_add( *container2, "string", 25, 65, 100, 30 )
-; ;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
-; ;         
     
+    ; example 3
+    ;   ;OpenList(id_design_form)
+    SetState(group_select, 1) 
     
+    Define *window = widget_add(id_design_form, "window", 30, 30, 400, 250)
+    widget_add(*window, "button", 15, 25, 50, 30)
+    widget_add(*window, "text", 25, 65, 50, 30)
+    widget_add(*window, "button", 35, 65+40, 50, 30)
+    widget_add(*window, "text", 45, 65+40*2, 50, 30)
+    
+    Define *container = widget_add(*window, "container", 100, 25, 265, 170)
+    widget_add(*container, "button", 15, 25, 30, 30)
+    widget_add(*container, "text", 25, 65, 50, 30)
+    widget_add(*container, "button", 35, 65+40, 80, 30)
+    widget_add(*container, "text", 45, 65+40*2, 50, 30)
+    
+    Define *container2 = widget_add(*window, "container", 100+140, 25+45, 165, 140)
+    widget_add(*container2, "button", 75, 25, 30, 30)
+    widget_add(*container2, "text", 25, 65, 50, 30)
+    widget_add(*container2, "button", 15, 65+40, 80, 30)
+    widget_add(*container2, "text", 45, 65+40*2, 50, 30)
+    
+     
     
     
     ; ; ; ;   Open( OpenWindow( #PB_Any, 150, 150, 200, 200, "PB ( window_1 )", #PB_Window_SizeGadget | #PB_Window_SystemMenu ) )
@@ -1224,5 +1247,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------
+; Folding = -----------f-v-f----
 ; EnableXP

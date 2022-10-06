@@ -1,7 +1,7 @@
 ﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
-Macro widget( ) : enumwidget( ) : EndMacro
+;Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 
@@ -49,7 +49,7 @@ EndProcedure
       Debug  ""+widget()\root +" "+ *p2\root +" - "+ widget()\text\string
     Next
             
-    Bind(#PB_All, @events_widgets())
+    Bind(root(), @events_widgets())
    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

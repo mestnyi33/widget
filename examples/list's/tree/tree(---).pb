@@ -59,7 +59,7 @@
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  #path = "/Users/as/Documents/GitHub/widget/"
+  #path = "";/Users/As/Documents/GitHub/widget/"
   IncludePath #path
   XIncludeFile "include/fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
@@ -17414,6 +17414,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

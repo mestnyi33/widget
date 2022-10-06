@@ -1,7 +1,7 @@
 ﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
-Macro widget( ) : enumwidget( ) : EndMacro
+;Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w, *p1,*p2, *ch, *b, *bb._s_widget
 
@@ -73,9 +73,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
         last = "  "
       EndIf
       
-      parent = Str( Widget()\parent\widget\data )
-      parentfirst = Str( Widget()\parent\widget\first\widget\data )
-      parentlast = Str( Widget()\parent\widget\last\widget\data )
+      parent = Str( Widget()\parent()\data )
+      parentfirst = Str( Widget()\parent()\first\widget\data )
+      parentlast = Str( Widget()\parent()\last\widget\data )
       
     
     If Widget()\first\widget
