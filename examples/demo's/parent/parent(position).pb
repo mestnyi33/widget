@@ -8,10 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   
   Global  pos_x = 10
-  Global *w._S_widget, *combo
-  Global *window_1._S_widget, *window_2._S_widget, *panel._S_widget, *container._S_widget, *scrollarea._S_widget
-  Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
-  Global *pb_0, *pb_1, *pb_2, *pb_3
+  Global._S_widget *PANEL, *WINDOW, *CONTAINER, *SCROLLAREA, *CONTAINER_0, *SCROLLAREA_0
+  Global._S_widget *CHILD, *WINDOW_0, *PANEL0, *PANEL1, *PANEL2, *PANEL_0, *PANEL_1, *PANEL_2
   
   UsePNGImageDecoder()
   
@@ -40,16 +38,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftClick, #PB_EventType_Change
         
         Select EventWidget
-          Case *d_0, *pb_3 : SetParent(*w, GetRoot(EventWidget))
-            
-          Case *w_0        : SetParent(*w, *window_1)
-          Case *p_0, *pb_0 : SetParent(*w, *panel, 0)
-          Case *p_1, *pb_1 : SetParent(*w, *panel, 1)
-          Case *p_2, *pb_2 : SetParent(*w, *panel, 2)
-          Case *c_0        : SetParent(*w, *container)
-          Case *s_0        : SetParent(*w, *scrollarea)
-          Case *b_0, *b_1  : SetParent(*w, *window_2)
-            
+          Case *WINDOW_0        : SetParent(*CHILD, *WINDOW)
+          Case *PANEL0 : SetParent(*CHILD, *PANEL, 0) : SetState(*PANEL, 0)
+          Case *PANEL1 : SetParent(*CHILD, *PANEL, 1) : SetState(*PANEL, 1)
+          Case *PANEL2 : SetParent(*CHILD, *PANEL, 2) : SetState(*PANEL, 2)
+          Case *PANEL_0 : SetParent(*CHILD, *PANEL, 0)
+          Case *PANEL_1 : SetParent(*CHILD, *PANEL, 1)
+          Case *PANEL_2 : SetParent(*CHILD, *PANEL, 2)
+          Case *CONTAINER_0        : SetParent(*CHILD, *CONTAINER)
+          Case *SCROLLAREA_0        : SetParent(*CHILD, *SCROLLAREA)
         EndSelect
         
         debug_position(root(), "re")
@@ -64,27 +61,32 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Create desktop for the widgets
   If Open(10)
-    *window_1 = Root()
-    *w_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
+    *WINDOW = Root()
+    *WINDOW = Container(0,0,0,0,#__flag_autosize) : SetClass(widget(), "root") 
     
-    *container = Container(215,10,200,130,#PB_Container_Flat) : SetClass(widget(), "container") 
-    *c_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget())) 
+    *WINDOW_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
+    *PANEL0 = Button(12,126,56,20,">>(0)") 
+    *PANEL1 = Button(20+50,126,56,20,">>(1)") 
+    *PANEL2 = Button(30+98,126,56,20,">>(2)") 
+    
+    *PANEL = Panel(10,145,200,160) 
+    AddItem(*PANEL, -1, "item (0)") : *PANEL_0 = Button(pos_x,90,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
+    AddItem(*PANEL, -1, "item (1)") : *PANEL_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
+    AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    *panel = Panel(10,145,200,160) 
-    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,90,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
-    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
-    AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
+    *CONTAINER = Container(215,10,200,130,#PB_Container_Flat) : SetClass(widget(), "container") 
+    *CONTAINER_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(widget(), "scrollarea") 
-    *s_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
-    *w = Button(pos_x,10,160,70,"*this") : SetClass(widget(), GetText(widget())) 
+    *SCROLLAREA = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(widget(), "scrollarea") 
+    *SCROLLAREA_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
+    *CHILD = Button(pos_x,10,160,70,"*this") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     debug_position(root(), "")
     
-    SetParent(*w, *panel, 1)
+    SetParent(*CHILD, *PANEL, 1)
     
     debug_position(root(), "container")
     
