@@ -55,10 +55,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     OBJECTTYPE
     Structure _s_OBJECTTYPE
-      *root._s_root
+      *root._s_ROOT
       *row._s_rowS
-      *last._s_widget
-      *widget._s_widget
+      *widget._s_WIDGET
       *button._s_BUTTONS
     EndStructure
     ;--     MOUSE
@@ -84,7 +83,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     KEYBOARD
     Structure _s_KEYBOARD ; Ok
-      *window._s_widget          ; active window element ; GetActive( )\
+      *window._s_WIDGET          ; active window element ; GetActive( )\
       focused._s_objecttype      ; keyboard focus element
       change.b
       input.c
@@ -340,7 +339,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      *widget._s_widget
+      *widget._s_WIDGET
       
       fixed.l ; splitter fixed button index  
               ;;mode.i ;;; temp
@@ -403,14 +402,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ; multi group
     Structure _s_group Extends _s_coordinate
-      *widget._s_widget
+      *widget._s_WIDGET
     EndStructure
     
     ;- - _s_anchors
     Structure _s_transform
-      *main._s_widget
-      *widget._s_widget
-      *_a_widget._s_widget
+      *main._s_WIDGET
+      *widget._s_WIDGET
+      *_a_widget._s_WIDGET
       List *group._s_group( )
       
       *type
@@ -514,8 +513,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       state.b    ; set state status
      
       increment.f      ; scrollarea
-      *v._s_widget     ; vertical scrollbar
-      *h._s_widget     ; horizontal scrollbar
+      *v._s_WIDGET     ; vertical scrollbar
+      *h._s_WIDGET     ; horizontal scrollbar
     EndStructure
     
     ;- - _s_popup
@@ -523,7 +522,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       gadget.i
       window.i
       
-      ; *widget._s_widget
+      ; *widget._s_WIDGET
     EndStructure
     
     
@@ -579,7 +578,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *id
       
       *pFunc.pFunc
-      ; *widget._s_widget
+      ; *widget._s_WIDGET
       *type ; eventType( )
       *item ; eventItem( )
       *data ; eventdata( )
@@ -600,9 +599,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *_call._s_eventbind( ) ; TEMP
     EndStructure
     
-    ;- - _s_TAB_widget
-    Structure _s_objecttype_ex Extends _s_objecttype
-      index.i ; parent-tab item index
+    ;- - _s_TAB
+    Structure _s_TAB
+      *widget._s_WIDGET
+      index.i 
+      opened.i
+    EndStructure
+    ;- - _s_PARENT
+    Structure _s_PARENT
+      ;*row._s_rowS
+      
+      *root._s_ROOT     ; this parent root
+      *window._s_WIDGET ; this parent window 
+      *widget._s_WIDGET
+      
+      tab._s_tab
     EndStructure
     
     ;- -  _s_bounds
@@ -624,8 +635,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       parent._s_objecttype
     EndStructure
     
-    ;- - _s_widget
-    Structure _s_widget
+    ;- - _s_WIDGET
+    Structure _s_WIDGET
       *mouse._s_mouse
       state._s_state
       
@@ -663,8 +674,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       after._s_objecttype
       before._s_objecttype
       
-      parent._s_objecttype_ex
-      tab._s_objecttype_ex
+      parent._s_PARENT
+      *bar._s_bar
       
       ; 
       *position ; ;#PB_List_First; #PB_List_Last
@@ -678,23 +689,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; \index[2] - tab selected item index
       
       *address          ; widgets list address
-      *root._s_root     ; this root
-      *window._s_widget ; this parent window       ; root( )\active\window
       
       
       *container        ; 
       count._s_count
       
       ;StructureUnion
-        *_owner._s_widget; this window owner parent
-        *_group._s_widget; = option( ) groupbar gadget  
+        *_owner._s_WIDGET; this window owner parent
+        *_group._s_WIDGET; = option( ) groupbar gadget  
       ;EndStructureUnion
       
       *_tt._s_tt          ; notification = уведомление
-      *_popup._s_widget   ; combobox( ) list-view gadget
+      *_popup._s_WIDGET   ; combobox( ) list-view gadget
       scroll._s_scroll    ; vertical & horizontal scrollbars
       
-      *gadget._s_widget[3] 
+      *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
       ; \gadget[0] - window active child gadget 
       ; \gadget[1] - splitter( ) first gadget
@@ -735,11 +744,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       text._s_text 
       
-      *bar._s_bar
       *row._s_row ; multi-text; buttons; lists; - gadgets
       *_box_._s_buttons ; checkbox; optionbox
       
-      *combo_list._s_widget
+      *combo_list._s_WIDGET
       
       *align._s_align
       
@@ -766,46 +774,46 @@ CompilerIf Not Defined(Structures, #PB_Module)
       postevent.b         ; post evet canvas repaint
       bindevent.b         ; bind canvas event
       
-      List *child._s_widget( )    ; widget( )\
+      List *child._s_WIDGET( )    ; widget( )\
       event._s_eventdata   ; 
       List *events._s_eventdata( )    ; 
     EndStructure
     
     ;- - _s_sticky
     Structure _s_sticky
-      *widget._s_widget  ; popup gadget element
-      *window._s_widget  ; top level window element
-      *message._s_widget ; message window element
-      *tooltip._s_widget ; tool tip element
+      *widget._s_WIDGET  ; popup gadget element
+      *window._s_WIDGET  ; top level window element
+      *message._s_WIDGET ; message window element
+      *tooltip._s_WIDGET ; tool tip element
     EndStructure
     
-    ;- - _s_root
-    Structure _s_root Extends _s_widget
+    ;- - _s_ROOT
+    Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
     EndStructure
     
     ;--      struct
     Structure _s_struct 
       *drawing
-      *action_widget._s_widget
+      *action_widget._s_WIDGET
       action_type.s
        
-      *opened._s_widget             ; last list opened element
-      *closed._s_widget             ; last list opened element
+      *opened._s_WIDGET             ; last list opened element
+      *closed._s_WIDGET             ; last list opened element
        
-      *root._s_root       ; 
-      Map *roots._s_root( )         ; 
+      *root._s_ROOT       ; 
+      Map *roots._s_ROOT( )         ; 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; sticky( )\
       
-      *widget._s_widget             ; eventwidget( )\ 
+      *widget._s_WIDGET             ; eventwidget( )\ 
       event._s_eventdata            ; widgetevent( )\ ; \type ; \item ; \data
       
       
       ; для совместимости
-      List *_root._s_root( )        ; 
-      List *_address._s_widget( )   ; widget( )\
+      List *_root._s_ROOT( )        ; 
+      List *_address._s_WIDGET( )   ; widget( )\
     EndStructure
     
     ;Global *event._s_events = Allocatestructure(_s_events)

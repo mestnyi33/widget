@@ -56,7 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     w_flag = widget::Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
     w_this = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
-    
+    ;EnableDrop( w_this, #PB_Drop_Text, #PB_Drag_Copy )
+  
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonDown)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftClick)

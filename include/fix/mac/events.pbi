@@ -784,15 +784,15 @@ Module events
         If PressedGadget() >= 0 
           CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftButtonUp)
           
-          If LeftDoubleClick
-            CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftDoubleClick)
-          Else
-            If PressedGadget() <> DraggedGadget()
-              If PressedGadget() >= 0 And EnteredID = GadgetID(PressedGadget())
-                CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftClick)
-              EndIf
-            EndIf
-          EndIf
+;           If LeftDoubleClick
+;             CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftDoubleClick)
+;           Else
+;             If PressedGadget() <> DraggedGadget()
+;               If PressedGadget() >= 0 And EnteredID = GadgetID(PressedGadget())
+;                 CallCFunctionFast(refcon, PressedGadget(), #PB_EventType_LeftClick)
+;               EndIf
+;             EndIf
+;           EndIf
         EndIf
         
         ; PressedGadget() =- 1
@@ -1613,5 +1613,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------8--0----------
+; Folding = ------------------f-------------
 ; EnableXP

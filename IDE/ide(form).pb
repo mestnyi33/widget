@@ -333,6 +333,76 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   Declare widget_events( )
   
+  ;-
+  Macro widget_copy( )
+    ClearList( *copy( ) )
+    
+    If a_enter_widget( )\_a_transform = 1
+      AddElement( *copy( ) ) 
+      *copy.allocate( GROUP, ( ) )
+      *copy( )\widget = a_enter_widget( )
+    Else
+      ;       ForEach transform( )\group( )
+      ;         AddElement( *copy( ) ) 
+      ;         *copy.allocate( GROUP, ( ) )
+      ;         *copy( )\widget = transform( )\group( )\widget
+      ;       Next
+      
+      CopyList( transform( )\group( ), *copy( ) )
+      
+    EndIf
+    
+    transform( )\id[0]\x = transform( )\grid\size
+    transform( )\id[0]\y = transform( )\grid\size
+  EndMacro
+  
+  Macro widget_delete( )
+    If a_enter_widget( )\_a_transform = 1
+      RemoveItem( id_inspector_tree, GetData( a_enter_widget( ) ) )
+      
+      Free( a_enter_widget( ) )
+      
+      If a_Set( GetItemData( id_inspector_tree, GetState( id_inspector_tree ) ) )
+        a_reset( )
+      EndIf
+    Else
+      ForEach transform( )\group( )
+        RemoveItem( id_inspector_tree, GetData( transform( )\group( )\widget ) )
+        Free( transform( )\group( )\widget )
+        DeleteElement( transform( )\group( ) )
+      Next
+      
+      ClearList( transform( )\group( ) )
+    EndIf
+    
+    ; a_set( transform )
+  EndMacro
+  
+  Macro widget_paste( )
+    If ListSize( *copy( ) )
+      ForEach *copy( )
+        widget_add( *copy( )\widget\parent, 
+                    *copy( )\widget\class, 
+                    *copy( )\widget\x[#__c_container] + ( transform( )\id[0]\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+                    *copy( )\widget\y[#__c_container] + ( transform( )\id[0]\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+                    *copy( )\widget\width[#__c_frame],
+                    *copy( )\widget\height[#__c_frame] )
+      Next
+      
+      transform( )\id[0]\x + transform( )\grid\size
+      transform( )\id[0]\y + transform( )\grid\size
+      
+      ClearList( transform( )\group( ) )
+      CopyList( *copy( ), transform( )\group( ) )
+    EndIf
+    
+    ForEach transform( )\group( )
+      Debug " group "+transform( )\group( )\widget
+    Next
+    
+    ;a_update( a_enter_widget( ) )
+  EndMacro
+  
   Procedure.i widget_images( *id, Directory$ )
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
@@ -530,18 +600,20 @@ CompilerIf #PB_Compiler_IsMainFile
         Class.s = GetClass( *new )+"_"+GetCount( *new )
         SetText( *new, class )
         
-        Protected countitems = CountItems( id_inspector_tree )
-        Protected i, sublevel, position = GetData( *parent ) 
-        
-        ; get childrens position and sublevel
+        ; get new add position & sublevel
+        Protected i, countitems, sublevel, position = GetData( *parent ) 
+        countitems = CountItems( id_inspector_tree )
         For i = 0 To countitems - 1
-          If *parent = GetItemData( id_inspector_tree, i )
-            sublevel = GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel ) + 1
-            position = ( i+1 )
+          Position = ( i+1 )
+          
+          If *parent = GetItemData( id_inspector_tree, i ) 
+            SubLevel = GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel ) + 1
+            Continue
           EndIf
           
-          If sublevel <= GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel )
-            position = ( i+1 )
+          If SubLevel > GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel )
+            Position = i
+            Break
           EndIf
         Next 
         
@@ -555,10 +627,8 @@ CompilerIf #PB_Compiler_IsMainFile
           Next 
         EndIf
         
-        ; img = GetItemData( id_elements_tree, transform( )\type )
-        countitems = CountItems( id_elements_tree )
-        
         Protected img =- 1
+        countitems = CountItems( id_elements_tree )
         For i = 0 To countitems - 1
           If LCase(StringField( Class, 1, "_" )) = LCase(GetItemText( id_elements_tree, i ))
             img = GetItemData( id_elements_tree, i )
@@ -573,7 +643,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetState( id_inspector_tree, position )
         
         If IsGadget( id_design_code )
-          AddGadgetItem( id_design_code, position, Class.s, 0, SubLevel )
+          AddGadgetItem( id_design_code, position, Class.s, ImageID(img), SubLevel )
           SetGadgetItemData( id_design_code, position, *new )
           ; SetGadgetItemState( id_design_code, position, #PB_tree_selected )
           SetGadgetState( id_design_code, position ) ; Bug
@@ -596,18 +666,22 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart
         If IsContainer( EventWidget )
-          Debug 77
           DragPrivate( #_drag_private_type )
+          SetCursor( EventWidget, #PB_Cursor_Cross )
         EndIf
         
       Case #PB_EventType_Drop
         If IsContainer( EventWidget )
-          widget_add( EventWidget, GetText( id_elements_tree ), EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
-          
-          ; no create new 
-          SetState( id_elements_tree, 0 )
-          ; Debug "drop - " + " xy=("+ EventDropX( ) +","+ EventDropY( ) +")" +" wh=("+ EventDropWidth( ) +","+ EventDropHeight( ) +")"
-          ;; Debug "drop widget"
+           ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEventType( ) 
+          If GetState( id_elements_tree) <> 0 
+            Debug "create - drop"
+            widget_add( EventWidget, GetText( id_elements_tree ), 
+                        EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+            
+            ; end new create 
+            SetState( id_elements_tree, 0 )
+          EndIf
+          ;Debug "  DROP "+EventWidget( )\class +" "+ WidgetEventType( ) 
         EndIf
         
       Case #PB_EventType_LeftButtonUp
@@ -670,83 +744,13 @@ CompilerIf #PB_Compiler_IsMainFile
         If IsGadget( id_design_code )
           SetGadgetState( id_design_code, GetData( EventWidget ) )
         EndIf
-         SetState( id_inspector_tree, GetData( EventWidget ) )
-         properties_update( id_properties_tree, EventWidget )
+        SetState( id_inspector_tree, GetData( EventWidget ) )
+        properties_update( id_properties_tree, EventWidget )
         
         
     EndSelect
     
   EndProcedure
-  
-  ;-
-  Macro widget_copy( )
-    ClearList( *copy( ) )
-    
-    If a_enter_widget( )\_a_transform = 1
-      AddElement( *copy( ) ) 
-      *copy.allocate( GROUP, ( ) )
-      *copy( )\widget = a_enter_widget( )
-    Else
-      ;       ForEach transform( )\group( )
-      ;         AddElement( *copy( ) ) 
-      ;         *copy.allocate( GROUP, ( ) )
-      ;         *copy( )\widget = transform( )\group( )\widget
-      ;       Next
-      
-      CopyList( transform( )\group( ), *copy( ) )
-      
-    EndIf
-    
-    transform( )\id[0]\x = transform( )\grid\size
-    transform( )\id[0]\y = transform( )\grid\size
-  EndMacro
-  
-  Macro widget_delete( )
-    If a_enter_widget( )\_a_transform = 1
-      RemoveItem( id_inspector_tree, GetData( a_enter_widget( ) ) )
-      
-      Free( a_enter_widget( ) )
-      
-      If a_Set( GetItemData( id_inspector_tree, GetState( id_inspector_tree ) ) )
-        a_reset( )
-      EndIf
-    Else
-      ForEach transform( )\group( )
-        RemoveItem( id_inspector_tree, GetData( transform( )\group( )\widget ) )
-        Free( transform( )\group( )\widget )
-        DeleteElement( transform( )\group( ) )
-      Next
-      
-      ClearList( transform( )\group( ) )
-    EndIf
-    
-    ; a_set( transform )
-  EndMacro
-  
-  Macro widget_paste( )
-    If ListSize( *copy( ) )
-      ForEach *copy( )
-        widget_add( *copy( )\widget\parent, 
-                    *copy( )\widget\class, 
-                    *copy( )\widget\x[#__c_container] + ( transform( )\id[0]\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-                    *copy( )\widget\y[#__c_container] + ( transform( )\id[0]\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
-                    *copy( )\widget\width[#__c_frame],
-                    *copy( )\widget\height[#__c_frame] )
-      Next
-      
-      transform( )\id[0]\x + transform( )\grid\size
-      transform( )\id[0]\y + transform( )\grid\size
-      
-      ClearList( transform( )\group( ) )
-      CopyList( *copy( ), transform( )\group( ) )
-    EndIf
-    
-    ForEach transform( )\group( )
-      Debug " ggg "+transform( )\group( )\widget
-    Next
-    
-    ;a_update( a_enter_widget( ) )
-  EndMacro
   
   
   
@@ -782,12 +786,17 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select e_type
       Case #PB_EventType_DragStart
-        Debug "drag - "
-        ;         DD_EventDragWidth( ) 
-        ;         DD_EventDragHeight( )
-        
-        transform( )\type = 0
-        DragPrivate( #_drag_private_type )
+        If EventWidget = id_elements_tree
+          Debug "drag - "
+          ;         DD_EventDragWidth( ) 
+          ;         DD_EventDragHeight( )
+          
+          transform( )\type = 0
+          DragPrivate( #_drag_private_type )
+          Protected imgID = ImageID(GetItemData( EventWidget, GetState( EventWidget ) )) 
+          SetCursor( EventWidget( ), imgID)
+          
+        EndIf
         
       Case #PB_EventType_StatusChange
         If EventWidget = listview_debug
@@ -797,9 +806,9 @@ CompilerIf #PB_Compiler_IsMainFile
           If e_item = -1
             ;SetText( id_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
           Else
-           ; If EventWidget = id_elements_tree
-              SetText( id_help_text, GetItemText( EventWidget, e_item ) )
-           ; EndIf
+            ; If EventWidget = id_elements_tree
+            SetText( id_help_text, GetItemText( EventWidget, e_item ) )
+            ; EndIf
           EndIf
         EndIf
         
@@ -1126,53 +1135,53 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
     
-;     ; example 1
-;     ;   ;OpenList( id_design_form )
-;     Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
-;         Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
-;         widget_add( *container, "button", 10, 20, 30, 30 )
-;         widget_add( *window, "button", 10, 20, 100, 30 )
-;         
-;         Define item = 1
-;         SetState( id_inspector_tree, item )
-;         If IsGadget( id_design_code )
-;           SetGadgetState( id_design_code, item )
-;         EndIf
-;         Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-;         widget_add( *container2, "button", 10, 20, 30, 30 )
-;         
-;         SetState( id_inspector_tree, 0 )
-;         widget_add( *window, "button", 10, 130, 100, 30 )
-;         
-; ; ;         ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
-; ; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
-; ; ;         ;   widget_add( *container, "button", -10, 20 )
-; ; ;         ;   widget_add( *window, "button", 10, 20 )
-; ; ;         ;   ;CloseList( )
-; ; ;         
-;             ; example 2
-;             ;   ;OpenList( id_design_form )
-;             SetState( group_select, 1 ) 
-;             
-;             Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
-;             widget_add( *window, "button", 15, 25, 50, 30 )
-;             widget_add( *window, "text", 25, 65, 50, 30 )
-;             widget_add( *window, "button", 35, 65+40, 50, 30 )
-;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
-;             
-;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
-;             widget_add( *container, "progress", 15, 25, 30, 30 )
-;             widget_add( *container, "text", 25, 65, 50, 30 )
-;             widget_add( *container, "button", 35, 65+40, 80, 30 )
-;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-;             
-;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-;             widget_add( *container2, "string", 25, 65, 100, 30 )
-;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
-        
+    ;     ; example 1
+    ;     ;   ;OpenList( id_design_form )
+    ;     Define *window = widget_add( id_design_form, "window", 10, 10, 350, 200 )
+    ;         Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+    ;         widget_add( *container, "button", 10, 20, 30, 30 )
+    ;         widget_add( *window, "button", 10, 20, 100, 30 )
+    ;         
+    ;         Define item = 1
+    ;         SetState( id_inspector_tree, item )
+    ;         If IsGadget( id_design_code )
+    ;           SetGadgetState( id_design_code, item )
+    ;         EndIf
+    ;         Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+    ;         widget_add( *container2, "button", 10, 20, 30, 30 )
+    ;         
+    ;         SetState( id_inspector_tree, 0 )
+    ;         widget_add( *window, "button", 10, 130, 100, 30 )
+    ;         
+    ; ; ;         ;   Define *window = widget_add( id_design_form, "window", 10, 10 )
+    ; ; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
+    ; ; ;         ;   widget_add( *container, "button", -10, 20 )
+    ; ; ;         ;   widget_add( *window, "button", 10, 20 )
+    ; ; ;         ;   ;CloseList( )
+    ; ; ;         
+    ;             ; example 2
+    ;             ;   ;OpenList( id_design_form )
+    ;             SetState( group_select, 1 ) 
+    ;             
+    ;             Define *window = widget_add( id_design_form, "window", 30, 30, 400, 250 )
+    ;             widget_add( *window, "button", 15, 25, 50, 30 )
+    ;             widget_add( *window, "text", 25, 65, 50, 30 )
+    ;             widget_add( *window, "button", 35, 65+40, 50, 30 )
+    ;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+    ;             
+    ;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+    ;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+    ;             widget_add( *container, "progress", 15, 25, 30, 30 )
+    ;             widget_add( *container, "text", 25, 65, 50, 30 )
+    ;             widget_add( *container, "button", 35, 65+40, 80, 30 )
+    ;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
+    ;             
+    ;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+    ;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
+    ;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
+    ;             widget_add( *container2, "string", 25, 65, 100, 30 )
+    ;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
+    
     
     ; example 3
     ;   ;OpenList(id_design_form)
@@ -1196,7 +1205,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget_add(*container2, "button", 15, 65+40, 80, 30)
     widget_add(*container2, "text", 45, 65+40*2, 50, 30)
     
-     
+    
     
     
     ; ; ; ;   Open( OpenWindow( #PB_Any, 150, 150, 200, 200, "PB ( window_1 )", #PB_Window_SizeGadget | #PB_Window_SystemMenu ) )
@@ -1212,8 +1221,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
     ; ; ; ;   CloseGadgetList( )
     
-   ;; WaitClose( )
-;     Bind( Root(), #PB_Default )
+    ;; WaitClose( )
+    ;     Bind( Root(), #PB_Default )
     Repeat 
       event = WaitWindowEvent( ) 
       
@@ -1247,5 +1256,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------f-v-f----
+; Folding = ------8-------------
 ; EnableXP
