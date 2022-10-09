@@ -1027,7 +1027,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
     ; gadgets
-    id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
+    id_inspector_tree = Tree( 0,0,0,0);, #__flag_gridlines )
     EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     
     listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 

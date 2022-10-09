@@ -53,6 +53,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       create.b
     EndStructure
+    ;--     COUNT
+    Structure _s_COUNT
+      index.l
+      type.l
+      items.l
+      events.l
+      parents.l
+      childrens.l
+    EndStructure
+    
     ;--     OBJECTTYPE
     Structure _s_OBJECTTYPE
       *root._s_ROOT
@@ -89,8 +99,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       input.c
       key.i[2]
     EndStructure
-    ;- - _s_color
-    Structure _s_color
+    ;--     COLOR
+    Structure _s_COLOR
       state.b ; entered; selected; disabled;
       front.i[4]
       line.i[4]
@@ -101,7 +111,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *alpha._s_color
     EndStructure
     
-    ;- - _s_align
+    ;--     align
     Structure _s_align 
       width.l
       height.l
@@ -111,14 +121,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       indent._s_position
     EndStructure
     
-    ;- - _s_arrow
+    ;--     arrow
     Structure _s_ARROW
       size.a
       type.b
       direction.b
     EndStructure
     
-    ;- - _s_page
+    ;--     page
     Structure _s_page
       pos.l
       len.l
@@ -126,7 +136,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       change.w
     EndStructure
     
-    ;- - _s_caret
+    ;--     caret
     Structure _s_caret Extends _s_coordinate
       direction.b
       
@@ -138,7 +148,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       change.b
     EndStructure
     
-    ;- - _s_edit
+    ;--     edit
     Structure _s_edit Extends _s_coordinate
       pos.l
       len.l
@@ -149,12 +159,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *color._s_color
     EndStructure
     
-    ;- - _s_syntax
+    ;--     syntax
     Structure _s_syntax
       List *word._s_edit( )
     EndStructure
     
-    ;- - _s_text
+    ;--     text
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
       *fontID ; .i[2]
@@ -184,7 +194,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       padding._s_point
     EndStructure
     
-    ;- - _s_image
+    ;--     image
     Structure _s_image Extends _s_coordinate
       *id  ; - ImageID( ) 
       *img ; - Image( )
@@ -204,13 +214,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;       *background._s_image
     EndStructure
     
-    ;     ;- - _s_anchor
+    ;     ;--     anchor
     ;     structure _s_anchor extends _s_coordinate
     ;       round.a
     ;       *cursor
     ;       color._s_color;[4]
     ;     Endstructure
-    ;- - _s_buttons
+    ;--     buttons
     Structure _s_BUTTONS Extends _s_coordinate 
       state._s_state
        index.l ; - anchors
@@ -229,20 +239,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
-    ;     ;- - _s_button
+    ;     ;--     button
     ;     structure _s_button 
     ;       pushed.l
     ;       entered.l
     ;       id._s_buttons[3]
     ;     Endstructure
     
-    ;- - _s_margin
+    ;--     margin
     Structure _s_margin Extends _s_coordinate
       color._s_color
       hide.b
     EndStructure
     
-    ;- - _s_tabs
+    ;--     tabs
     Structure _s_TABS ;extends _s_coordinate
       state._s_state
       
@@ -264,17 +274,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       checkbox._s_buttons ; \box[1]\ -> \checkbox\
     EndStructure
     
-    ;- - _s_count
-    Structure _s_count
-      index.l
-      type.l
-      items.l
-      events.l
-      parents.b
-      childrens.l
-    EndStructure
-    
-    ;- - _s_rows
+    ;--     rows
     Structure _s_rowS Extends _s_TABS
       ;;state._s_state
       count._s_count
@@ -304,7 +304,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *last._s_rows            ; last draw-elemnt in the list 
       List *_s._s_rows( )      ; all draw-elements
     EndStructure
-    ;- - _s_row
+    ;--     row
     Structure _s_row
       sublevel.w
       sublevelsize.a
@@ -327,17 +327,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       margin._s_margin
       
       count.l
-      ;index.l
       box._s_buttons           ; editor - edit rectangle
       
     EndStructure
     
-    ;- - _s_column
+    ;--     column
     Structure _s_column Extends _s_coordinate
       
     EndStructure
     
-    ;- - _s_bar
+    ;--     bar
     Structure _s_bar
       *widget._s_WIDGET
       
@@ -346,12 +345,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       max.l
       min.l[3]
-      ; hide.b
       
-      ;; change.b ;????
       percent.f
-      ;; scroll\increment.f
-      ; vertical.b
       invert.b
       direction.l
       
@@ -360,31 +355,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       thumb._s_page  
       *button._s_buttons[4]
       
-      ; tab
-      *pressed._s_rows ; _get_bar_active_item_
-      *active._s_rows ; _get_bar_active_item_
-      *hover._s_rows  ; _get_bar_active_item_
-      
-      change_tab_items.b ; tab items to redraw
-      
-      ;;*selected._s_tabs     ;???????????????   ; at point pushed item
-      ; *leaved._s_tabs         ; pushed last entered item
-      ; *entered._s_tabs         ; pushed last entered item
-      
       List *_s._s_tabs( )
       List *draws._s_tabs( )
-      
-      
-      index.i
     EndStructure
     
-    ;     ;- - _s_tab
-    ;     structure _s_tab
-    ;       bar._s_bar
-    ;       ;List *_s._s_tabs( )
-    ;     Endstructure
-    
-    ;- - _s_dotted
+    ;--     dotted
     Structure _s_dotted
       ;draw.b
       dot.l
@@ -392,20 +367,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       space.l
     EndStructure
     
-    ;- - _s_grid
+    ;--     grid
     Structure _s_grid
       *widget
       *image
       size.l
       type.l
     EndStructure
-    
     ; multi group
     Structure _s_group Extends _s_coordinate
       *widget._s_WIDGET
     EndStructure
-    
-    ;- - _s_anchors
+    ;--     anchors
     Structure _s_transform
       *main._s_WIDGET
       *widget._s_WIDGET
@@ -423,7 +396,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       dotted._s_dotted
       id._s_buttons[constants::#__a_count+1]
     EndStructure
-    
     Structure _s_a
       pos.l
       size.l
@@ -434,7 +406,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *id._s_buttons[constants::#__a_moved+1]
     EndStructure
     
-    ;- - _s_mode
+    ;--     mode
     Structure _s_mode
       ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
       ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
@@ -469,7 +441,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
     EndStructure
     
-    ;- - _s_caption
+    ;--     caption
     Structure _s_caption
       y.l[5]
       x.l[5]
@@ -487,13 +459,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       _padding.b
     EndStructure
     
-    ;- - _s_line_
+    ;--     line_
     Structure _s_line_
       v._s_coordinate
       h._s_coordinate
     EndStructure
     
-    ;- - _s_tt
+    ;--     tt
     Structure _s_tt Extends _s_coordinate
       window.i
       gadget.i
@@ -505,7 +477,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;- - _s_scroll
+    ;--     scroll
     Structure _s_scroll Extends _s_coordinate
       align._s_align
       ;padding.b
@@ -517,7 +489,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *h._s_WIDGET     ; horizontal scrollbar
     EndStructure
     
-    ;- - _s_popup
+    ;--     popup
     Structure _s_popup
       gadget.i
       window.i
@@ -526,7 +498,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     
     
-    ;     ;- - _s_items
+    ;     ;--     items
     ;     structure _s_items extends _s_coordinate
     ;       index.l
     ;       *parent._s_items
@@ -548,7 +520,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;       *data      ; set/get item data
     ;     Endstructure
     ;     
-    ;- - _s_dd
+    ;--     dd
     Structure _s_Drop
       privatetype.i
       format.i
@@ -565,13 +537,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       string.s
     EndStructure
     
-    ;- - _s_drag
+    ;--     drag
     Structure _s_drag
       start.b
       *address._s_dd
     EndStructure
     
-    ;- - _s_eventdata
+    ;--     eventdata
     Structure _s_eventdata
       *back.pFunc ; temp
       
@@ -584,13 +556,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *data ; eventdata( )
     EndStructure
     
-    ;- - _s_BIND 
+    ;--     BIND 
     Structure _s_eventbind 
       *func.pFunc
       List *type( )
     EndStructure
     
-    ;- - _s_event
+    ;--     event
     Structure _s_event ; extends _s_eventdata
       List *call._s_eventdata( )
       List *queue._s_eventdata( )
@@ -599,13 +571,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *_call._s_eventbind( ) ; TEMP
     EndStructure
     
-    ;- - _s_TAB
+    ;--     TAB
     Structure _s_TAB
-      *widget._s_WIDGET
       index.i 
-      opened.i
+      *widget._s_WIDGET
+      
+      ; tab
+      *pressed._s_rows ; _get_bar_active_item_
+      *active._s_rows ; _get_bar_active_item_
+      *entered._s_rows  ; _get_bar_active_item_
+      
+      change.b
     EndStructure
-    ;- - _s_PARENT
+    
+    ;--     PARENT
     Structure _s_PARENT
       ;*row._s_rowS
       
@@ -613,10 +592,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *window._s_WIDGET ; this parent window 
       *widget._s_WIDGET
       
-      tab._s_tab
     EndStructure
     
-    ;- -  _s_bounds
+    ;--     BOUNDS
     Structure _s_BOUNDMOVE
       min._s_POINT
       max._s_POINT
@@ -629,14 +607,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *move._s_BOUNDMOVE
       *size._s_BOUNDSIZE
     EndStructure
-    ;- - _s_attach
+    ;--     attach
     Structure _s_attach Extends _s_coordinate
       mode.a
       parent._s_objecttype
     EndStructure
     
-    ;- - _s_WIDGET
+    ;--     WIDGET
     Structure _s_WIDGET
+      *root._s_ROOT     ; TEMP
+      *window._s_WIDGET ; TEMP
+      
+      tab._s_TAB        
+      
       *mouse._s_mouse
       state._s_state
       
@@ -760,8 +743,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       List *column._s_column( )
     EndStructure
-    ;- - _s_canvas
-    Structure _s_canvas
+    ;--     CANVAS
+    Structure _s_CANVAS
       *cursor             ; current visible cursor
       *fontID             ; current drawing fontid
       *address            ; root list address
@@ -779,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *events._s_eventdata( )    ; 
     EndStructure
     
-    ;- - _s_sticky
+    ;--     sticky
     Structure _s_sticky
       *widget._s_WIDGET  ; popup gadget element
       *window._s_WIDGET  ; top level window element
@@ -787,12 +770,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *tooltip._s_WIDGET ; tool tip element
     EndStructure
     
-    ;- - _s_ROOT
+    ;--     ROOT
     Structure _s_ROOT Extends _s_WIDGET
       canvas._s_canvas
     EndStructure
     
-    ;--      struct
+    ;--     struct
     Structure _s_struct 
       *drawing
       *action_widget._s_WIDGET

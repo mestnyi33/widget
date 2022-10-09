@@ -189,6 +189,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro WidgetEventItem( ) : WidgetEvent( )\item: EndMacro
     Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
     
+    ;-
+    Macro TabIndex( ): tab\index: EndMacro ; bar\index
+    Macro OpenedTabIndex( ): index[#__tab_1]: EndMacro      ; parent\
+    Macro ChangeTabIndex( ): tab\change: EndMacro ; bar\change_tab_items
+    
     Macro Transform( ) : mouse( )\_transform: EndMacro
     
     Macro _add_action_( _this_ )
@@ -337,8 +342,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;-
-    Macro _get_bar_enter_item_( _this_ ): _this_\bar\hover: EndMacro ; Returns mouse entered widget
-    Macro _get_bar_active_item_( _this_ ): _this_\bar\active: EndMacro ; Returns mouse entered widget
+;     Macro _get_bar_enter_item_( _this_ ): _this_\bar\entered: EndMacro ; Returns mouse entered widget
+;     Macro _get_bar_active_item_( _this_ ): _this_\bar\active: EndMacro ; Returns mouse entered widget
+    Macro _get_bar_enter_item_( _this_ ): _this_\tab\entered: EndMacro ; Returns mouse entered widget
+    Macro _get_bar_active_item_( _this_ ): _this_\tab\active: EndMacro ; Returns mouse entered widget
     
     Macro GetActive( ): keyboard( )\window: EndMacro   ; Returns activeed window
     Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
@@ -4502,7 +4509,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
            *this\type = #__type_Splitter
           
           If ( Change_width Or Change_height )
-            *this\bar\change_tab_items =- 1
+            *this\ChangeTabIndex( ) =- 1
             Bar_Update( *this\bar )
           EndIf
           Bar_Resize( *this\bar )  
@@ -4759,7 +4766,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If *this\index[#__tab_2] <> State 
         *this\index[#__tab_2] = State
-        *this\bar\change_tab_items = #True
+        *this\ChangeTabIndex( ) = #True
         ;;Debug " - - - "
         
         If _is_child_integral_( *this ) ; *this\parent\widget\tab\widget = *this 
@@ -4788,7 +4795,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       With *this
         ; 
-        *this\bar\change_tab_items = #True
+        *this\ChangeTabIndex( ) = #True
         
         If ( Item =- 1 Or Item > ListSize( \bar\_s( )) - 1 )
           LastElement( \bar\_s( ))
@@ -4823,7 +4830,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; tab last opened item 
-        *this\bar\index = Item
+        *this\OpenedTabIndex( ) = Item
         
         ;
         *this\bar\_s.allocate( TABS, ( ))
@@ -4846,7 +4853,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Procedure.i Tab_removeItem( *this._s_WIDGET, Item.l )
       If SelectElement( *this\bar\_s( ), item )
-        *this\bar\change_tab_items = #True
+        *this\ChangeTabIndex( ) = #True
         
         If *this\index[#__tab_2] = *this\bar\_s( )\index
           *this\index[#__tab_2] = item - 1
@@ -4868,7 +4875,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     Procedure   Tab_clearItems( *this._s_WIDGET ) ; Ok
       If *this\count\items <> 0
         
-        *this\bar\change_tab_items = #True
+        *this\ChangeTabIndex( ) = #True
         ClearList( *this\bar\_s( ))
         
         If *this\parent\widget\tab\widget = *this
@@ -5001,7 +5008,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ;- widget::Tab_Update( )
-          If *this\bar\change_tab_items
+          If *this\ChangeTabIndex( )
             *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
             Debug " --- widget::Tab_Update( ) - "+*this\image\x
             
@@ -5111,7 +5118,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             Bar_Resize( *this\bar )
             
-            *this\bar\change_tab_items = #False
+            *this\ChangeTabIndex( ) = #False
           EndIf
           
           ; 
@@ -13366,7 +13373,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this
         If *this\tab\widget And 
            *this\tab\widget\type = #__type_TabBar
-          *this\tab\widget\bar\index = item
+          *this\tab\widget\OpenedTabIndex( ) = item
         EndIf
         
         OpenedWidget( ) = *this
@@ -14422,7 +14429,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If tabindex < 0 
           If *parent\tab\widget And 
              *parent\tab\widget\type = #__type_TabBar
-            tabindex = *parent\tab\widget\bar\index 
+            tabindex = *parent\tab\widget\OpenedTabIndex( ) 
           Else
             tabindex = 0
           EndIf
@@ -15481,7 +15488,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ProcedureReturn #False
         EndIf
         
-        *this\bar\change_tab_items = #True
+        *this\ChangeTabIndex( ) = #True
         *this\bar\_s( )\text\string = Text.s
         PostEventCanvas( *this\root )
       EndIf
@@ -20911,6 +20918,6 @@ CompilerEndIf
 ;   EndDataSection
 ;   
 ; CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; Folding = +-------------------------------------------------------------------------------------78-------------------------5l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+---------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = +-------------------------------------------------------------------------------------Xf-------------------------Hv9-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------3---------------------------------------------------------------
 ; EnableXP
