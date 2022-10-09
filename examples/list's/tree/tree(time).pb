@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -24,6 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
+    ; ReDraw( Root( ) )
       
     ; ListViewGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)
     TreeGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)

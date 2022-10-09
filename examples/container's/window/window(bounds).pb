@@ -1,10 +1,29 @@
 ﻿;XIncludeFile "../../../widgets.pbi"
 XIncludeFile "../../../widget-events.pbi"
-Uselib(widget)
 
 ;-
 ; Bounds window example
 CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  Uselib(widget)
+  
+  Define object
+  Declare CustomEvents( )
+  
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 0)
+  
+  object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  ; object = Container(150, 150, 300, 300) : CloseList()
+  
+  SizeBounds(object, 200, 200, 400, 400)
+  
+  ;MoveBounds(object, 200, 200, 400, 400)
+  MoveBounds(object, 100, 100, 500, 500)
+  
+  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  WaitClose( )
+  
   Procedure CustomEvents( )
     Select WidgetEventType( )
       Case #PB_EventType_Draw
@@ -32,19 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
   EndProcedure
-  
-  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  a_init(root(), 0)
-  
-  Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  ;Container(150, 150, 300, 300) : CloseList()
-  SizeBounds(widget(), 200, 200, 400, 400)
-  ;MoveBounds(widget(), 200, 200, 400, 400)
-  MoveBounds(widget(), 100, 100, 500, 500)
-  Bind( widget(), @CustomEvents(), #PB_EventType_Draw )
-    
-  WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = 0
 ; EnableXP

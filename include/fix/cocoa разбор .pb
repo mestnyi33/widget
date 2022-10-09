@@ -19,6 +19,7 @@
 ;var keyEquivalent: String { get set }     CocoaMessage(0, ButtonID, "setKeyEquivalent:$", @"b")
 ;var view: NSView? { get set }
 ;func setDocumentEdited(_ dirtyFlag: Bool) ; CocoaMessage(0, WindowID, "setDocumentEdited:", #True)
+;func stop(_ sender: Any?)
 
 ; - (ObjectType)objectForKey:(KeyType)aKey;    
 ;      LanguageCode = CocoaMessage(0, CurrentLocale, "objectForKey:$", @"kCFLocaleLanguageCodeKey")

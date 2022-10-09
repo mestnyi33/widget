@@ -157,12 +157,12 @@ If Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
   SourcePrivate = ListIcon( 610, 10, 140, 140, "Drag private stuff here", 260 )
   
-  ;
-  ;
-  SetCursor( SourceText, #PB_Cursor_Hand )
-  SetCursor( SourceImage, #PB_Cursor_Hand )
-  SetCursor( SourceFiles, #PB_Cursor_Hand )
-  SetCursor( SourcePrivate, #PB_Cursor_Hand )
+;   ;
+;   ;
+   SetCursor( SourceText, #PB_Cursor_Hand )
+;   SetCursor( SourceImage, #PB_Cursor_Hand )
+;   SetCursor( SourceFiles, #PB_Cursor_Hand )
+;   SetCursor( SourcePrivate, #PB_Cursor_Hand )
   
   ;
   AddItem( SourceText, -1, "hello world" )

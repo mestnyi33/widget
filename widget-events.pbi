@@ -154,11 +154,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro EventDropText( ): DD_DropText( ): EndMacro
     Macro EventDropImage( Image = -1, Depth = 24 ): DD_DropImage( Image, Depth ): EndMacro
     
-    Macro DragItem( Row, Actions = #PB_Drag_Copy ): DD_EventDragItem( Row, Actions ): EndMacro
-    Macro DragText( Text, Actions = #PB_Drag_Copy ): DD_EventDragText( Text, Actions ): EndMacro
-    Macro DragImage( Image, Actions = #PB_Drag_Copy ): DD_EventDragImage( Image, Actions ): EndMacro
-    Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DD_EventDragFiles( Files, Actions ): EndMacro
-    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DD_EventDragPrivate( PrivateType, Actions ): EndMacro
+    Macro DragItem( Row, Actions = #PB_Drag_Copy ): DD_DragItem( Row, Actions ): EndMacro
+    Macro DragText( Text, Actions = #PB_Drag_Copy ): DD_DragText( Text, Actions ): EndMacro
+    Macro DragImage( Image, Actions = #PB_Drag_Copy ): DD_DragImage( Image, Actions ): EndMacro
+    Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DD_DragFiles( Files, Actions ): EndMacro
+    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DD_DragPrivate( PrivateType, Actions ): EndMacro
     
     Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Widget, Format, Actions, PrivateType ) : EndMacro
     Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Gadget, Format, Actions, PrivateType ) : EndMacro
@@ -176,10 +176,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i DD_DropPrivate( )
     Declare.i DD_DropImage( Image.i = -1, Depth.i = 24 )
     
-    Declare.i DD_EventDragText( Text.S, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_EventDragImage( Image.i, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_EventDragPrivate( Type.i, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_EventDragFiles( Files.s, Actions.i = #PB_Drag_Copy )
+    Declare.i DD_DragText( Text.S, Actions.i = #PB_Drag_Copy )
+    Declare.i DD_DragImage( Image.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DD_DragPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DD_DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
     
     Declare.i DD_DropEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
     
@@ -267,14 +267,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro PostEventRepaint( _address_ ) 
-      ;Debug "-- post --- event -- repaint --1"
-      
-      If _address_\_root( )\state\repaint = #False
-        _address_\_root( )\state\repaint = #True
-        ;Debug "-- post --- event -- repaint --2"
+      ; Debug "-- post --- event -- repaint --1"
+      If _address_\_root( )\canvas\repaint = #False
+        _address_\_root( )\canvas\repaint = #True
+        ; Debug "-- post --- event -- repaint --2"
         PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _address_\_root( ) )
-;       ElseIf _address_\state\repaint = #False
-;         _address_\state\repaint = #True
       EndIf
     EndMacro
     
@@ -1603,9 +1600,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If _DD_drag_( ) 
         If _DD_action_( EnteredWidget( ) )
-          DD_cursor( _this_, #PB_Cursor_Drop )
+          DD_Cursor( _this_, #PB_Cursor_Drop )
         Else
-          DD_cursor( _this_, #PB_Cursor_Drag )
+          DD_Cursor( _this_, #PB_Cursor_Drag )
         EndIf
         
         _result_ = #True
@@ -1618,7 +1615,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;         _this_\state\flag &~ #__S_drop
       ;         
       ;         If _DD_drag_( ) 
-      ;           DD_cursor( _this_, #PB_Cursor_Drag )
+      ;           DD_Cursor( _this_, #PB_Cursor_Drag )
       ;           _result_ = #True
       ;         EndIf
       ;       EndIf
@@ -1631,7 +1628,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;         DoEvents( _this_, #PB_EventType_DragStart )
       ;         
       ;         If _DD_drag_( ) And Not _this_\container
-      ;           DD_cursor( _this_, #PB_Cursor_Drag )
+      ;           DD_Cursor( _this_, #PB_Cursor_Drag )
       ;           
       ;           _result_ = #True
       ;         Else
@@ -1652,7 +1649,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     ;
-    Procedure.i DD_cursor( *this._S_widget, type )
+    Procedure.i DD_Cursor( *this._S_widget, type )
       Protected x = 2, y = 2, cursor
       UsePNGImageDecoder( )
       
@@ -1662,14 +1659,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         cursor = CatchImage( #PB_Any, ?copy, 530 )
       EndIf
       
-      ;       set_cursor_( *this, CreateCursor( ImageID( cursor ), x, y ))
-      ;       
-      ;       ;       If cursor
-      ;       ;         If *this\_root( )\canvas\cursor <> cursor
-      ;       ;           *this\_root( )\canvas\cursor = cursor
-      ;       ;           SetGadgetAttribute( *this\_root( )\canvas\gadget, #PB_Canvas_CustomCursor, func::CreateCursor( ImageID( cursor ), x, y ))
-      ;       ;         EndIf
-      ;       ;       EndIf
+      ;SetCursor( *this, CreateCursor( ImageID( cursor ), x, y ))
+      SetCursor( *this, ImageID( cursor ))
+      
       
       DataSection
         add: ; memory_size - ( 601 )
@@ -1902,7 +1894,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     
-    Procedure.i DD_EventDragItem( *rows, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragItem( *rows, Actions.i = #PB_Drag_Copy )
       Debug "  drag Item - " + *rows
       
       If *rows
@@ -1913,7 +1905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_EventDragText( Text.s, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragText( Text.s, Actions.i = #PB_Drag_Copy )
       Debug "  drag text - " + Text
       
       If Text
@@ -1924,7 +1916,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_EventDragImage( Image.i, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragImage( Image.i, Actions.i = #PB_Drag_Copy )
       Debug "  drag image - " + Image
       
       If IsImage( Image )
@@ -1937,7 +1929,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_EventDragFiles( Files.s, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
       Debug "  drag files - " + Files
       
       If Files
@@ -1948,7 +1940,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_EventDragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
       Debug "  drag private - " + PrivateType
       
       If PrivateType
@@ -16888,7 +16880,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Drawing( ) = StartDrawing( CanvasOutput( *this\_root( )\canvas\gadget ))
       
       If Drawing( )
-        *this\_root( )\state\repaint = 1
         CompilerIf #PB_Compiler_OS = #PB_OS_Linux Or 
                    #PB_Compiler_OS = #PB_OS_Windows
           ; difference in system behavior
@@ -16901,14 +16892,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Not ( transform( ) And transform( )\grab )
           If is_root_(*this )
             
-            ;If *this\_root( )\canvas\repaint = #True
             CompilerIf  #PB_Compiler_OS = #PB_OS_MacOS
               ; good transparent canvas
               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
             CompilerElse
               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
             CompilerEndIf
-            ; EndIf
             
             Draw( *this\_root( ))
             
@@ -16988,7 +16977,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        *this\_root( )\state\repaint = 0
         Drawing( ) = 0
         StopDrawing( )
       EndIf
@@ -18107,14 +18095,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf    
       
-      ; 
-      If *this\state\repaint = #True
-        PostEventRepaint( *this\_root( ) )
-        *this\state\repaint = #False
-      EndIf
       
       ;
       Post( *this, eventtype, *button, *data ) 
+      
+      ; 
+      If *this\state\repaint = #True
+        *this\state\repaint = #False
+        PostEventRepaint( *this )
+      EndIf
     EndProcedure
     
     Procedure GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
@@ -18299,8 +18288,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
           
-          If EventData( ) <> #PB_Ignore
-            
+          ;
+          If Root( )\canvas\repaint = #True
+            Root( )\canvas\repaint = #False
             ReDraw( Root( ) )
           EndIf
           
@@ -18989,6 +18979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+    ;-
     Procedure   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
@@ -19075,6 +19066,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Root( )\canvas\window = Window
         Root( )\canvas\gadget = Canvas
         Root( )\canvas\address = g
+        Root( )\canvas\repaint = #True
         
         ;; AddWidget( Root( ), Root( ) )
         ; SetParent( Root( ), Root( ), #PB_Default )
@@ -19434,39 +19426,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure EventMessageHandler( )
+    Procedure message_events( )
       Protected result
       Protected *widget._S_widget = EnteredWidget( )
+      ;Debug WidgetEventType( )
       
-      If *widget And *widget\_window( ) And *widget\_window( )\class = "Message"
-        ;Debug *widget\events\type
-        
-        If *widget\events\type = #PB_EventType_LeftClick And *widget\type = #PB_GadgetType_Button
-          
-          Select *widget\text\string
+      Select WidgetEventType( )
+        Case #PB_EventType_MouseEnter
+          ReDraw(Root())
+        Case #PB_EventType_LeftButtonDown
+          ReDraw(Root())
+        Case #PB_EventType_LeftClick
+          Select EventWidget( )\text\string
             Case "Yes" : result = #PB_MessageRequester_Yes    ; yes
             Case "No" : result = #PB_MessageRequester_No      ; no
             Case "Cancel" : result = #PB_MessageRequester_Cancel ; cancel
           EndSelect
-          
-          WidgetEventData( ) = result
-          PostEvent( #PB_Event_CloseWindow, EventWindow( ), *widget\_window( ) )
-        EndIf
-      EndIf
+        EndSelect
       
+        If result
+          EventWidget( )\_window( )\data = result
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "stop:", *widget)
+          CompilerEndIf
+        EndIf
+        
       ProcedureReturn result
     EndProcedure
     
+    Procedure WaitMessageEvents( *this._s_WIDGET )
+      
+    EndProcedure
+    
     Procedure Message( Title.s, Text.s, Flag.i = #Null )
-      ;       Procedure DoEvents( )
-      ;         msg.MSG
-      ;         If PeekMessage_(@msg,0,0,0,1)
-      ;           TranslateMessage_(@msg)
-      ;           DispatchMessage_(@msg)
-      ;         Else
-      ;           Sleep_(1)
-      ;         EndIf
-      ;       EndProcedure
       Protected result
       Protected img =- 1, f1 =- 1, f2=8, width = 400, height = 120
       Protected bw = 85, bh = 25, iw = height-bh-f1 - f2*4 - 2-1
@@ -19477,11 +19469,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       Protected y = ( root( )\height-height )/2
       Protected *parent;._S_widget = EventWidget( )\_window( ) ; OpenedWidget( )
       
-      Protected Window = Window( x,y, width, height, Title, #__window_titlebar, *parent)
-      SetClass( Window, #PB_Compiler_Procedure )
+      Protected *message._s_WIDGET = Window( x,y, width, height, Title, #__window_titlebar, *parent)
+      SetClass( *message, #PB_Compiler_Procedure )
       ;SetAlignmentFlag( Window, #__align_center )
-      ;Bind( Window, @message_events( ))
-      Sticky( Window, #True )
       
       
       If Flag & #PB_MessageRequester_Info
@@ -19627,30 +19617,60 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Text( f2+iw+f2, f2, width - iw, iw, Text, #__text_center | #__text_left )
       CloseList( )
       
-      Define *ok._S_widget = Button( width-bw-f2,height-bh-f2,bw,bh,"Ok", #__button_default )
-      SetAlignmentFlag( *ok, #__align_bottom | #__align_right )
+      Protected._S_widget *ok, *no, *cancel
+      
+      *ok = Button( width-bw-f2,height-bh-f2,bw,bh,"Ok");, #__button_default )
+      SetAlignment( *ok, 0,0,1,1, 0 )
       
       If Flag & #PB_MessageRequester_YesNo Or 
          Flag & #PB_MessageRequester_YesNoCancel
-        SetText( enumWidget( ), "Yes" )
-        Define *no._S_widget = Button( width-( bw+f2 )*2-f2,height-bh-f2,bw,bh,"No" )
-        SetAlignmentFlag( *no, #__align_bottom | #__align_right )
+        SetText( *ok, "Yes" )
+        *no = Button( width-( bw+f2 )*2-f2,height-bh-f2,bw,bh,"No" )
+        SetAlignment( *no, 0,0,1,1, 0 )
       EndIf
       
       If Flag & #PB_MessageRequester_YesNoCancel
-        Define *cancel._S_widget = Button( width-( bw+f2 )*3-f2*2,height-bh-f2,bw,bh,"Cancel" )
-        SetAlignmentFlag( *cancel, #__align_bottom | #__align_right )
+        *cancel = Button( width-( bw+f2 )*3-f2*2,height-bh-f2,bw,bh,"Cancel" )
+        SetAlignment( *cancel, 0,0,1,1, 0 )
       EndIf
       
+      ;
+      Bind( *message, @message_events( ))
       
       ;
-      WaitClose( Window )
-      result = WidgetEventData( )
+      Sticky( *message, #True )
+      ReDraw(*message\_root())
       
-      ;; Sticky( window, #False )
-      ;; result = GetData( Window )
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "run")
+      CompilerElse
+        Protected msg.MSG
+;         If PeekMessage_(@msg,0,0,0,1)
+;           TranslateMessage_(@msg)
+;           DispatchMessage_(@msg)
+;         Else
+;           Sleep_(1)
+;         EndIf
+        
+        While GetMessage_(@msg, #Null, 0, 0 )
+          TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
+          DispatchMessage_(msg)  ;  посылает сообщение в функцию WindowProc.
+          
+          Debug ""+msg\message +" "+ msg\hwnd +" "+ msg\lParam +" "+ msg\wParam
+          ;   If msg\wParam = #WM_QUIT
+          ;     Debug "#WM_QUIT "
+          ;   EndIf
+        Wend
+      CompilerEndIf
+      
+      Sticky( *message, #False )
+      ReDraw(*message\_root())
+      result = GetData( *message )
+      ; close
+      hide( EventWidget( )\_window( ), 1 )
+          
       ProcedureReturn result
-    EndProcedure
+    EndProcedure 
     
     Procedure   WaitClose( *this._S_widget = #PB_Any, waittime.l = 0 )
       Protected result 
@@ -20393,5 +20413,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------------04v-tX-----------------------------0---------------------------------------------------4----------------------
+; Folding = -------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------------04v-tX-----------------------------0---------------------------------------------------4------8-v-----f2-v----
 ; EnableXP

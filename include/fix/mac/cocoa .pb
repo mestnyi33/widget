@@ -243,8 +243,55 @@ If win
     EndIf
 EndIf
 
+
+Procedure EventClose( )
+  Debug 77777
+  
+EndProcedure
+BindEvent(#PB_Event_CloseWindow, @EventClose( ) )
+
+ProcedureC  eventTapFunction(proxy, eType, event, refcon)
+  Debug 44444
+EndProcedure
+
+ ImportC ""
+    CFRunLoopGetCurrent()
+    CFRunLoopAddCommonMode(rl, mode)
+    
+    GetCurrentProcess(*psn)
+    CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+    CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+  EndImport
+  
+  Procedure   SetCallBack(*callback)
+    ;*setcallback = *callback
+    
+    Protected mask, EventTap
+    mask = #NSMouseMovedMask | #NSScrollWheelMask
+    mask | #NSMouseEnteredMask | #NSMouseExitedMask 
+    mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask 
+    mask | #NSRightMouseDownMask | #NSRightMouseDownMask 
+    mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask   ;| #NSCursorUpdateMask
+    
+    #cghidEventTap = 0              ; Указывает, что отвод события размещается в точке, где системные события HID поступают на оконный сервер.
+    #cgSessionEventTap = 1          ; Указывает, что отвод события размещается в точке, где события системы HID и удаленного управления входят в сеанс входа в систему.
+    #cgAnnotatedSessionEventTap = 2 ; Указывает, что отвод события размещается в точке, где события сеанса были аннотированы для передачи в приложение.
+    
+    #headInsertEventTap = 0         ; Указывает, что новое касание события должно быть вставлено перед любым ранее существовавшим касанием события в том же месте.
+    #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
+    
+    
+    ; GetCurrentProcess(@psn.q): eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction(), *callback)
+    eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
+    
+    If eventTap
+      CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
+    EndIf
+    
+  EndProcedure
+  
+SetCallBack(@EventClose( ))
 CocoaMessage(0,App(),"run")
-Debug 6666
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -------
 ; EnableXP

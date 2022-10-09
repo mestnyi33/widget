@@ -1,6 +1,6 @@
 ﻿EnableExplicit
 
-Define.i app, win, appDelegate, appDelegateClass
+Global.i app, win, appDelegate, appDelegateClass
 Define.NSSize size
 Define.NSRect rect
 Define.i myAppDelegateClass, myAppDelegate
@@ -28,12 +28,12 @@ EndProcedure
 
 
 ProcedureC winShouldClose(obj.i, sel.i, win.i) ; call 1
-	Define.i app
+	;Protected.i app
 	
 	Debug "winShouldClose - " + obj +" "+sel +" - "+win
 	
 	CocoaMessage(0, win, "release")
-	;CocoaMessage(0, sel, "stop")
+	CocoaMessage(0, app, "stop:", win)
 ;CocoaMessage(@app, 0, "NSApplication sharedApplication")
 	;CocoaMessage(0, app, "terminate:", app)
 	;CocoaMessage(0, win, "close")
@@ -53,9 +53,9 @@ ProcedureC appShouldTerminate(obj.i, sel.i, app.i) ; call 3
 EndProcedure
 
 ProcedureC appWillTerminate(obj.i, sel.i, ntn.i) ; call 4
-	Debug "appWillTerminate - " + obj +" - "+sel +" - "+ntn
-	
-	End
+  Debug "appWillTerminate - " + obj +" - "+sel +" - "+ntn
+  
+  End
 	ProcedureReturn #YES
 EndProcedure
 
@@ -118,8 +118,9 @@ CocoaMessage(0, win, "setReleasedWhenClosed:", #YES)
 CocoaMessage(0, win, "setDelegate:", myWindowDelegate)
 
 CocoaMessage(0, app, "run")
- Debug "END"
-CocoaMessage(0, pool, "drain")
+exit:
+Debug "END"
+;CocoaMessage(0, pool, "drain")
 
 ; CocoaMessage(0, app, "runModalForWindow:",win)
 ; CocoaMessage(0, app, "terminate:", app)

@@ -756,24 +756,19 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;-
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-    ; #PB_ToolBar_Normal: the button will act as standard button ( Default )
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
-    
-    ;ButtonImage( 2 + ( ( Bool( MacroExpandedCount>1 ) * 32 ) * ( MacroExpandedCount-1 ) ), 2,30,30,_image_ )
-    ButtonImage( 2+( ( widget( )\x+widget( )\width ) * Bool( MacroExpandedCount - 1 ) ), 2,30,30,_image_, _mode_ )
-    ;widget( )\color = widget( )\parent\color
-    ;widget( )\text\padding\x = 0
+    ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+    ;widget( )\color = widget( )\_parent( )\color
     widget( )\class = "ToolBar"
     widget( )\data = _button_
-    ;SetData( widget( ), _button_ )
+    
     Bind( widget( ), @ide_events( ) )
   EndMacro
   
   Macro Separator( )
-    Text( 2+widget( )\x+widget( )\width, 2,1,30,"" )
-    Button( widget( )\x+widget( )\width, 2+4,1,24,"" )
-    SetData( widget( ), - MacroExpandedCount )
-    Text( widget( )\x+widget( )\width, 2,1,30,"" )
+    Text( widget( )\x+widget( )\width, 5,1,30,"" )
+    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
+    ; SetData( widget( ), - MacroExpandedCount )
+    Text( widget( )\x+widget( )\width, 5,1,30,"" )
   EndMacro
   
   

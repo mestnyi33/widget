@@ -14,13 +14,15 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure events_()
+  Procedure CustomEvents( )
     
     Select WidgetEventType( )
-       Case #PB_EventType_LeftClick
-        Define flag
+      Case #PB_EventType_LeftClick
+        Debug "open - Title"
         Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
-        Define a$ = "Result of the previously requester was: "
+        Debug " close - Title " + Result
+        
+        Define flag, a$ = "Result of the previously requester was: "
         
         If Result = #PB_MessageRequester_Yes       ; pressed Yes button
           flag = #PB_MessageRequester_Ok|#PB_MessageRequester_Info
@@ -33,13 +35,10 @@ CompilerIf #PB_Compiler_IsMainFile
           a$ +#LF$+ "Cancel"
         EndIf
         
-        Message("Information", a$, flag)
-  
-    EndSelect
-  EndProcedure
-  
-  Procedure CustomEvents( )
-    Select WidgetEventType( )
+        Debug "open - Information"
+        Result = Message("Information", a$, flag)
+        Debug "close - Information "+Result
+        
       Case #PB_EventType_Draw
         ; Demo draw on element
         UnclipOutput()
@@ -56,8 +55,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi._s_widget = Container(x,y,Width, height)
   Define *mdi._s_widget = MDI(x,y,Width, height)
   ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
-  a_init( *mdi, 0 )
+  
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
+  ;a_init( *mdi, 0 )
   
   Define *g0._s_widget = Window(50, 50, 400, 400, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
@@ -72,15 +72,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g3._s_widget = Window(X(*g2, #__c_container), Y(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100, "SubChild",flag,*g2) : SetClass(widget(), "SubChild") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
-  ;bind(*g1b, @events_())
+  Bind(*g1b, @CustomEvents(), #PB_EventType_LeftClick )
   
-  Bind(*g0, @CustomEvents())
-  Bind(*g1, @CustomEvents())
-  Bind(*g2, @CustomEvents())
-  Bind(*g3, @CustomEvents())
+;   Bind(*g0, @CustomEvents(), #PB_EventType_Draw)
+;   Bind(*g1, @CustomEvents(), #PB_EventType_Draw)
+;   Bind(*g2, @CustomEvents(), #PB_EventType_Draw)
+;   Bind(*g3, @CustomEvents(), #PB_EventType_Draw)
   
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 8-
+; Folding = -
 ; EnableXP
