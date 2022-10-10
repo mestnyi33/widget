@@ -131,7 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     EndIf
     
-    Repaints()
+    ;Repaints()
   EndProcedure  
   
   If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -195,6 +195,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

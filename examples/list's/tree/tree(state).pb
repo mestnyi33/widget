@@ -3,7 +3,7 @@
 ;
 IncludePath "../../../"
 ;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pb"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

@@ -256,9 +256,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro WidgetEventItem( ) : WidgetEvent( )\item: EndMacro
     Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
     
+    ;-
+    Macro WindowEvent(  )
+      events::WaitEvent( PB(WindowEvent)( ) ) ; @EventHandler( ), 
+    EndMacro
     Macro WaitWindowEvent( waittime = )
       events::WaitEvent( PB(WaitWindowEvent)( waittime ) ) ; @EventHandler( ), 
     EndMacro
+    
     
     
     ;-
@@ -266,12 +271,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       FindMapElement( Root( ), Str( _canvas_gadget_address_ ) )
     EndMacro
     
-    Macro PostEventRepaint( _address_ ) 
+    Macro PostEventRepaint( _address_, _data_ = #Null ) 
       ; Debug "-- post --- event -- repaint --1"
       If _address_\_root( )\canvas\repaint = #False
         _address_\_root( )\canvas\repaint = #True
         ; Debug "-- post --- event -- repaint --2"
-        PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _address_\_root( ) )
+        If _data_ = #Null
+          PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _address_\_root( ) )
+        Else
+          PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _data_ )
+        EndIf
       EndIf
     EndMacro
     
@@ -471,18 +480,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Break
         EndIf
       Next
-    EndMacro
-    
-    Macro _post_repaint_items_( _this_ )
-      If _this_\count\items = 0 Or 
-         ( Not _this_\hide And _this_\row\count And 
-           ( _this_\count\items % _this_\row\count ) = 0 )
-        
-        Debug #PB_Compiler_Procedure
-        _this_\change = 1
-        _this_\row\count = _this_\count\items
-        PostEventRepaint( _this_\_root( ) )
-      EndIf  
     EndMacro
     
     Macro text_rotate_( _address_ )
@@ -10398,9 +10395,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedRow( )\state\flag | #__S_select
             *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
             
-            PostEventRepaint( *this\_root( ) )
-          Else
-            _post_repaint_items_( *this )
+;             PostEventRepaint( *this\_root( ) )
           EndIf
           
           If *this\scroll\state = #True
@@ -13099,8 +13094,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedRow( ) = *this\_rows( )
             *this\scroll\state =- 1
             
-            ;_post_repaint_items_( *this )
-            
             ;*this\change = 1
             ProcedureReturn #True
           EndIf
@@ -14682,7 +14675,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If is_item_( *this, item ) And SelectElement( *this\_rows( ), Item )
           If *this\_rows( )\image\img <> Image
             set_image_( *this, *this\_rows( )\Image, Image )
-            _post_repaint_items_( *this )
             *this\change = 1
             ;;PostEventRepaint( *this\_root( ) )
           EndIf
@@ -18993,7 +18985,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Root( )\canvas\window = Window
         Root( )\canvas\gadget = Canvas
         Root( )\canvas\address = g
-        Root( )\canvas\repaint = #True
         
         ;; AddWidget( Root( ), Root( ) )
         ; SetParent( Root( ), Root( ), #PB_Default )
@@ -19017,7 +19008,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Resize( Root( ), #PB_Ignore,#PB_Ignore,width,height ) ;??
         
         ; post repaint canvas event
-        PostEvent( #PB_Event_Gadget, Window, Canvas, #PB_EventType_Repaint, #PB_EventType_Create )
+        PostEventRepaint( Root( ), #PB_EventType_Create)
+        
         ; BindGadgetEvent( Canvas, @EventCanvas( ))
       EndIf
       
@@ -19605,23 +19597,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected PBWindow = PB(EventWindow)( )
       
       If Root( )
-        
-        ; ReDraw( Root( ))
+        ;
         If ListSize( Root( )\_events( ) )
           ClearList( Root( )\_events( ) )
         EndIf
         
-        
-        ;         PushMapPosition(Root())
-        ;         ForEach Root()
-        ;           Debug Root()
-        ;           ChangeCurrentRoot( GadgetID( Root( )\canvas\gadget ) )
-        ;           ReDraw( Root( ))
-        ; ;           Root( )\state\repaint = #True
-        ; ;           PostEvent( #PB_Event_Gadget, Root( )\canvas\window, Root( )\canvas\gadget, #PB_EventType_Repaint, Root( ) )
-        ;       
-        ;         Next
-        ;         PopMapPosition(Root())
+        ;
+        PushMapPosition(Root( ))
+        ForEach Root( )
+          PostEventRepaint( Root( ) )
+        Next
+        PopMapPosition(Root( ))
         
         Repeat 
           Select WaitWindowEvent( waittime )
