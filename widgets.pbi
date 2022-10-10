@@ -1695,7 +1695,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro _DD_drag_( )
-      mouse()\_drag
+      mouse()\drag
     EndMacro
     
     Macro _DD_action_( _address_ )

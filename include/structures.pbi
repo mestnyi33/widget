@@ -8,8 +8,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;{ 
     ;--     POINT
     Structure _s_POINT
-      y.l[3]
-      x.l[3]
+      y.l
+      x.l
     EndStructure
     ;--     SIZE
     Structure _s_SIZE
@@ -17,14 +17,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       height.l
     EndStructure
     ;--     COORDINATE
-    Structure _s_coordinate 
+    Structure _s_COORDINATE Extends _s_SIZE
       y.l
       x.l
-      width.l
-      height.l
     EndStructure
     ;--     POSITION
-    Structure _s_position
+    Structure _s_POSITION
       *left
       *top
       *right
@@ -32,22 +30,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     STATE
     Structure _s_STATE
-      *flag           ;& normal; entered; selected; disabled
-      hide.b      ; panel childrens real hide state
-      
+      *flag           ; & normal; entered; selected; disabled
+      hide.b          ; panel childrens real hide state
       disable.b
       
       enter.b
       press.b
       focus.b
       drag.b
-      ;;;;drop.b ; enable drop
       
       change.b
       move.b
       size.b
       
-      ;active.b
       repaint.b
       click.b
       
@@ -62,39 +57,49 @@ CompilerIf Not Defined(Structures, #PB_Module)
       parents.l
       childrens.l
     EndStructure
-    
     ;--     OBJECTTYPE
     Structure _s_OBJECTTYPE
       *root._s_ROOT
-      *row._s_rowS
+      *row._s_ROWS
       *widget._s_WIDGET
       *button._s_BUTTONS
     EndStructure
-    ;--     MOUSE
-    Structure _s_mouse Extends _s_POINT
-      cursor.l
-       area._s_coordinate         ; cursor tracking area - область отслеживания курсора
+    ;--     D&D
+    Structure _s_DD Extends _s_COORDINATE
+      format.i
+      actions.i
+      privatetype.i
       
+      *value
+      string.s
+    EndStructure
+    ;--     MOUSE
+    Structure _s_MOUSE ; Extends _s_POINT
+      y.l[3]
+      x.l[3]
+      
+      change.b                   ; if moved mouse this value #true
       buttons.l                  ; 
       
-      entered._s_objecttype      ; mouse entered element
-      pressed._s_objecttype      ; mouse button's pushed element
-      leaved._s_objecttype       ; mouse leaved element
+      wheel._s_POINT
+      delta._s_POINT
       
-      wheel._s_point
-      delta._s_point
+      entered._s_OBJECTTYPE      ; mouse entered element
+      pressed._s_OBJECTTYPE      ; mouse button's pushed element
+      leaved._s_OBJECTTYPE       ; mouse leaved element
       
-      *_drag._s_dd
+      *drag._s_DD
       *_transform._s_transform
       
-      *grid
-      change.b                   ; if moved mouse this value #true
-      interact.b                 ; determines the behavior of the mouse in a clamped (pushed) state
+      
+      cursor.l                   ; ????????????
+      ;area._s_COORDINATE         ; cursor tracking area - область отслеживания курсора
+      interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
     EndStructure
     ;--     KEYBOARD
     Structure _s_KEYBOARD ; Ok
       *window._s_WIDGET          ; active window element ; GetActive( )\
-      focused._s_objecttype      ; keyboard focus element
+      focused._s_OBJECTTYPE      ; keyboard focus element
       change.b
       input.c
       key.i[2]
@@ -520,29 +525,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;       *data      ; set/get item data
     ;     Endstructure
     ;     
-    ;--     dd
-    Structure _s_Drop
-      privatetype.i
-      format.i
-      actions.i
-    EndStructure
-    
-    Structure _s_dd Extends _s_Drop
-      y.l
-      x.l
-      width.l
-      height.l
-      
-      *value
-      string.s
-    EndStructure
-    
-    ;--     drag
-    Structure _s_drag
-      start.b
-      *address._s_dd
-    EndStructure
-    
     ;--     eventdata
     Structure _s_eventdata
       *back.pFunc ; temp
