@@ -1,4 +1,4 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
 XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 ;Macro widget( ) : enumwidget( ) : EndMacro
@@ -52,12 +52,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   Define parentlast.s = "  "
   Define parentfirst.s = "  "
   
-  ChangeCurrentRoot( Root( )\root\canvas\address )
+  ;ChangeCurrentRoot( Root( )\canvas\address )
   Debug "after " + *bb\after\widget
   
   Debug ""
   ForEach Widget()
-    If Widget()\parent\widget
+    If Widget()\_parent( )
       If Widget()\before\widget
         before = Str( Widget()\before\widget\data )
       EndIf
@@ -73,16 +73,19 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
         last = "  "
       EndIf
       
-      parent = Str( Widget()\parent()\data )
-      parentfirst = Str( Widget()\parent()\first\widget\data )
-      parentlast = Str( Widget()\parent()\last\widget\data )
-      
+      parent = Str( Widget()\_parent( )\data )
+      If Widget()\_parent( )\first\widget
+        parentfirst = Str( Widget()\_parent( )\first\widget\data )
+      EndIf
+      If Widget()\_parent( )\last\widget
+        parentlast = Str( Widget()\_parent( )\last\widget\data )
+      EndIf
     
     If Widget()\first\widget
       first = Str( Widget()\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Widget()\root\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
       Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
     EndIf
@@ -102,12 +105,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   Define parentlast.s = "  "
   Define parentfirst.s = "  "
   
-  ChangeCurrentRoot( Root( )\root\canvas\address )
+ ; ChangeCurrentRoot( Root( )\canvas\address )
   Debug "after " + *bb\after\widget
   
   Debug ""
   ForEach Widget()
-    If Widget()\parent\widget
+    If Widget()\_parent( )
       If Widget()\before\widget
         before = Str( Widget()\before\widget\data )
       EndIf
@@ -123,27 +126,30 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
         last = "  "
       EndIf
       
-      parent = Str( Widget()\parent\widget\data )
-      parentfirst = Str( Widget()\parent\widget\first\widget\data )
-      parentlast = Str( Widget()\parent\widget\last\widget\data )
-      
+      parent = Str( Widget()\_parent( )\data )
+      If Widget()\_parent( )\first\widget
+      parentfirst = Str( Widget()\_parent( )\first\widget\data )
+    EndIf
+    If Widget()\_parent( )\last\widget
+      parentlast = Str( Widget()\_parent( )\last\widget\data )
+    EndIf 
     
     If Widget()\first\widget
       first = Str( Widget()\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Widget()\root\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
       Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
     EndIf
      
   Next
   
-  Bind(#PB_All, @events_widgets())
+  Bind(*b, @events_widgets())
   
   WaitClose( )
   ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

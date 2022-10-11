@@ -1,7 +1,5 @@
 ﻿DeclareModule Parent
   Declare GetParentID(handle.i)
-  Declare _GetParentID(handle.i)
-  Declare __GetParentID(handle.i)
   Declare GetWindowID(handle.i)
   
   Declare GetWindow(gadget.i)
@@ -39,27 +37,6 @@ Module Parent
 ;     ProcedureReturn - 1
   EndProcedure
   
-  Procedure NSView(gadget.i) ; Return the handle of the parent from the gadget handle
-    If IsGadget(gadget)
-      Protected handle = GadgetID(gadget)
-      Select GadgetType(gadget)
-        Case #PB_GadgetType_ListView,                     ; PBListViewTableView
-             #PB_GadgetType_Editor,                       ; PBEditorGadgetTextView
-             #PB_GadgetType_ListIcon,                     ; PB_NSTableView
-             #PB_GadgetType_ExplorerList,                 ; PB_NSTableView
-             #PB_GadgetType_ExplorerTree,                 ; PB_NSOutlineView
-             #PB_GadgetType_Tree,                         ; PBTreeOutlineView
-             #PB_GadgetType_Web                           ; PB_WebView
-          handle = CocoaMessage(0, handle, "superview") ; NSClipView
-          handle = CocoaMessage(0, handle, "superview") ; real - NSScrollView ; PBTreeScrollView ; PBWebScrollView
-        Case #PB_GadgetType_Spin,                         ; PB_NSTextField
-             #PB_GadgetType_Scintilla                     ; PBScintillaView
-          handle = CocoaMessage(0, handle, "superview") ; real - PB_SpinView ; NSBox
-      EndSelect
-      ProcedureReturn handle ; CocoaMessage(0, handle, "superview") ; PBFlippedWindowView
-    EndIf
-  EndProcedure
-  
   Procedure GetWindowID(handle.i) ; Return the handle of the parent window from the handle
     ProcedureReturn CocoaMessage(0, handle, "window")
   EndProcedure
@@ -70,51 +47,16 @@ Module Parent
     While handle 
       handle = CocoaMessage(0, handle, "superview")
       
-      If Not handle 
+      If handle 
+        If IDGadget(handle) >= 0
+          ProcedureReturn handle
+        EndIf
+        If Not CocoaMessage( 0, handle, "window" )
+         ; Debug CocoaMessage(0, handle, "superview")
+          Debug " - panel "+handle
+        EndIf
+      Else
         ProcedureReturn WindowID
-      EndIf
-      
-      If IDGadget(handle) >= 0
-        ProcedureReturn handle
-      EndIf
-    Wend
-  EndProcedure
-  
-  Procedure _GetParentID(handle.i) ; Return the handle of the parent from the gadget handle
-    Protected WindowID = GetWindowID(handle)
-    Protected contentView = CocoaMessage(0, WindowID, "contentView")
-    
-    If WindowID 
-      While handle
-        If contentView = CocoaMessage(0, handle, "superview")
-          ProcedureReturn WindowID
-        Else
-          ProcedureReturn CocoaMessage(0, CocoaMessage(0, NSView(IDGadget(handle)), "superview"), "superview")
-        EndIf
-        
-        handle = CocoaMessage(0, handle, "superview")
-      Wend
-    EndIf
-  EndProcedure
-  
-  Procedure __GetParentID(handle.i) ; Return the handle of the parent from the gadget handle
-    Protected gadgetID
-    Protected WindowID
-    
-    While handle
-      gadgetID = handle
-      handle = CocoaMessage(0, handle, "superview")
-      
-      If handle
-        WindowID = GetWindowID(handle)
-        
-        If WindowID 
-          If handle = CocoaMessage(0, WindowID, "contentView")
-            ProcedureReturn WindowID
-          Else
-            ProcedureReturn CocoaMessage(0, CocoaMessage(0, NSView(IDGadget(gadgetID)), "superview"), "superview")
-          EndIf
-        EndIf
       EndIf
     Wend
   EndProcedure
@@ -129,9 +71,8 @@ Module Parent
     If IsGadget(gadget)
       Protected gadgetID = GadgetID(gadget)  
       Protected handle = GetParentID(gadgetID)
-      Protected WindowID = GetWindowID(gadgetID)
       
-      If WindowID = handle
+      If handle = GetWindowID(gadgetID)
         ProcedureReturn - 1 ; IDWindow(handle)
       Else
         ProcedureReturn IDgadget(handle)
@@ -144,7 +85,7 @@ Module Parent
       Protected i = item
       Protected GadgetID = GadgetID(gadget)
       
-      If ParentID
+      If ParentID ; And ParentID <> GetParentID( GadgetID )
         Select GadgetType(gadget)
           Case #PB_GadgetType_ListView,                               ; PBListViewTableView    -> NSClipView -> NSScrollView
                #PB_GadgetType_Editor,                                 ; PBEditorGadgetTextView -> NSClipView -> NSScrollView
@@ -160,76 +101,35 @@ Module Parent
             GadgetID = CocoaMessage(0, GadgetID, "superview")       
         EndSelect
         
-;         Protected parent = IDGadget(ParentID)
-;         
-;         If IsGadget(parent)
-;           Select GadgetType(parent)
-;             Case #PB_GadgetType_Container,                            ; PBContainerView        -> PB_NSFlippedView
-;                  #PB_GadgetType_ScrollArea                            ; PBScrollView           -> NSClipView
-;               ParentID = CocoaMessage(0, ParentID, "contentView") 
-;             Case #PB_GadgetType_Canvas                                ; PB_CanvasView          -> PB_NSFlippedView
-;               ParentID = CocoaMessage(0, ParentID, "subviews")        ; __NSArrayM
-;               ParentID = CocoaMessage(0, ParentID, "objectAtIndex:", CocoaMessage(0, ParentID, "count") - 1)  
-;             Case #PB_GadgetType_Panel                                 ; PBTabView              -> PB_NSFlippedView
-;               If item <> #PB_Default
-;                 i = GetGadgetState(parent)
-;               EndIf
-;               If i <> item 
-;                 SetGadgetState(parent, item)
-;               EndIf
-;               ParentID = CocoaMessage(0, ParentID, "subviews")        ; __NSArrayM
-;               ParentID = CocoaMessage(0, ParentID, "objectAtIndex:", CocoaMessage(0, ParentID, "count") - 1)  
-;               If i <> item 
-;                 SetGadgetState(parent, i)
-;               EndIf
-;             Default
-;               ParentID = CocoaMessage(0, GetWindowID(ParentID), "contentView")
-;           EndSelect
-;         Else
-;           ParentID = CocoaMessage(0, ParentID, "contentView")
-;         EndIf
-        
-        
-        Select GetClassName(ParentID)
-          Case "PBTabView"
-            Protected parent = IDgadget(ParentID)
-            If item <> #PB_Default 
-              Protected selectedTabViewItem = CocoaMessage(0, ParentID, "selectedTabViewItem")
-              ; i = GetGadgetState(parent)
+        Select GetClassName( ParentID )
+          Case "PBTabView"        ;             Case #PB_GadgetType_Panel                                 ; PBTabView              -> PB_NSFlippedView
+            Protected selectedTabViewItem = CocoaMessage(0, ParentID, "selectedTabViewItem")
+            If item <> #PB_Default
               i = CocoaMessage(0, ParentID, "indexOfTabViewItem:@", @selectedTabViewItem)
-              CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @"2")
-              ; CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @selectedTabViewItem)
-              
-;               ; tabViewItem ; indexOfTabViewItem
-;               ;Debug CocoaMessage(0, selectedTabViewItem, "tabViewItem:") ; tabViewItem ; indexOfTabViewItem
-;               Debug i
-;               ;Debug CocoaMessage(0, selectedTabViewItem, "indexOfTabViewItem")
-;               Debug CocoaMessage(0, selectedTabViewItem, "tabView")
-;               Debug CocoaMessage(0, selectedTabViewItem, "view")
-;               Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "tabView")) ; PBTabView
-;               Debug GetClassName(CocoaMessage(0, selectedTabViewItem, "view"))    ; PB_NSFlippedView
             EndIf
             If i <> item 
-              SetGadgetState(parent, item)
-              ;;CocoaMessage(0, GadgetID(parent), "selectTabViewItem:", item)
+              CocoaMessage(0, ParentID, "selectTabViewItemAtIndex:", item)
             EndIf
-            ParentID = CocoaMessage(0, ParentID, "subviews")
-            ParentID = CocoaMessage(0, ParentID, "objectAtIndex:", CocoaMessage(0, ParentID, "count") - 1)
+            ParentID = CocoaMessage( 0, ParentID, "subviews" )
+            ParentID = CocoaMessage( 0, ParentID, "objectAtIndex:", CocoaMessage( 0, ParentID, "count" ) - 1 )
             If i <> item 
-              ;;Debug  CocoaMessage(0, gadgetID(parent), "selectedItem")
-              ;SetGadgetState(parent, i)
-              ;                 CocoaMessage(0, gadgetID(parent), "tabView:", i)
-              
-                            CocoaMessage(0, GadgetID(parent), "selectTabViewItem:@", @i)
-              ;  CocoaMessage(0, GadgetID(parent), "selectTabViewItem:", i)
+              CocoaMessage(0, CocoaMessage(0, selectedTabViewItem, "tabView"), "selectTabViewItemAtIndex:", i)
             EndIf
-          Case "PB_CanvasView"
-            ParentID = CocoaMessage(0, ParentID, "subviews")
-            ParentID = CocoaMessage(0, ParentID, "objectAtIndex:", CocoaMessage(0, ParentID, "count") - 1)
+            
+          Case "PB_CanvasView"    ;             Case #PB_GadgetType_Canvas                                ; PB_CanvasView          -> PB_NSFlippedView
+            ParentID = CocoaMessage( 0, ParentID, "subviews" )
+            ParentID = CocoaMessage( 0, ParentID, "objectAtIndex:", CocoaMessage( 0, ParentID, "count" ) - 1 )
+            
+          Case "PBContainerView", ;             Case #PB_GadgetType_Container,                            ; PBContainerView        -> PB_NSFlippedView
+               "PBScrollView"     ;                  #PB_GadgetType_ScrollArea                            ; PBScrollView           -> NSClipView
+            ParentID = CocoaMessage(0, ParentID, "contentView") 
+            
           Default
-            ParentID = CocoaMessage(0, ParentID, "contentView")
+            ParentID = CocoaMessage( 0, ParentID, "contentView" )
+            ;ParentID = CocoaMessage(0, GetWindowID(ParentID), "contentView")
         EndSelect
-        
+
+        ; 
         CocoaMessage (0, ParentID, "addSubview:", GadgetID) 
       Else
         ; to desktop move
@@ -243,6 +143,36 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Parent
+  
+  Procedure GadgetIDType( GadgetID )
+    If GadgetID
+      CompilerSelect #PB_Compiler_OS 
+        CompilerCase #PB_OS_Windows
+          Protected Class$ = Space( 16 )
+          GetClassName_( GadgetID, @Class$, Len( Class$ ) )
+          
+          Select Class$
+            Case "PureContainer":  ProcedureReturn #PB_GadgetType_Container
+            Case "PureScrollArea":  ProcedureReturn #PB_GadgetType_ScrollArea
+            Case "SysTabControl32":  ProcedureReturn #PB_GadgetType_Panel
+          EndSelect 
+          
+        CompilerCase #PB_OS_Linux
+          Protected *notebook.GtkNotebook = GadgetID
+          If *notebook\children
+            If *notebook\first_tab = *notebook\children
+              ProcedureReturn #PB_GadgetType_Panel
+            ElseIf *notebook\packed_flags
+              ProcedureReturn - 1
+            Else
+              ProcedureReturn #PB_GadgetType_ScrollArea
+            EndIf
+          Else
+            ProcedureReturn #PB_GadgetType_Container
+          EndIf
+      CompilerEndSelect
+    EndIf
+  EndProcedure 
   
   Enumeration 21
     #CANVAS
@@ -287,8 +217,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
-  OpenWindow(20, WindowX(10)-210, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_ScreenCentered 
+  OpenWindow(20, 0, 0, 240, 350, "old parent", Flags, WindowID(10))
   
   ButtonGadget(#CHILD,30,10,160,70,"Buttongadget") 
   ButtonGadget(#RETURN, 30,90,160,25,"Button <<(Return)") 
@@ -340,6 +270,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
   CompilerEndIf
   
+  
+  ResizeWindow(20, WindowX(20)-WindowWidth(20), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  ResizeWindow(10, WindowX(10)+WindowWidth(20)/2, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   ;
   HideWindow(10,0)
   HideWindow(20,0)
@@ -422,13 +355,15 @@ CompilerIf #PB_Compiler_IsMainFile
               EndSelect
           EndSelect
           
-          If (EventGadget() <> #CHILD)
-            Define Parent = GetParent(#CHILD)
-            
-            If IsGadget(Parent)
-              Debug "parent - gadget (" + Parent + ")"
-            Else
-              Debug "parent - window (" + GetWindow(#CHILD) + ")"
+          If EventType() = #PB_EventType_LeftClick
+            If (EventGadget() <> #CHILD)
+              Define Parent = GetParent(#CHILD)
+              
+              If IsGadget(Parent)
+                Debug "parent - gadget (" + Parent + ")"
+              Else
+                Debug "parent - window (" + GetWindow(#CHILD) + ")"
+              EndIf
             EndIf
           EndIf
       EndSelect
@@ -437,5 +372,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------
+; Folding = ------9-
 ; EnableXP

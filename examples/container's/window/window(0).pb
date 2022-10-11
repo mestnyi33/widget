@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -11,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Events_widgets()
-    Debug "ww "+ this()\event +" "+ this()\widget\index
+    Debug "ww "+ WidgetEventType( ) +" "+ EventWidget( )\index
   EndProcedure
   
   Open(OpenWindow(#PB_Any, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
@@ -37,6 +38,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(Root(), @Events_widgets())
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

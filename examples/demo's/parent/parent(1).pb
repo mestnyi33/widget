@@ -1,4 +1,4 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
 XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 ;Macro widget( ) : enumwidget( ) : EndMacro
@@ -33,7 +33,7 @@ EndProcedure
     CloseList()
     CloseList()
     
-    Button(10,430, 200, 30, "change parent", #__Button_Toggle)
+    Define change = Button(10,430, 200, 30, "change parent", #__Button_Toggle)
     
     i = 1
     SetParent(*w, *p2)
@@ -47,7 +47,7 @@ EndProcedure
       Debug  ""+widget()\root +" "+ *p2\root +" - "+ widget()\text\string
     Next
             
-    Bind(#PB_All, @events_widgets())
+    Bind(change, @events_widgets())
     
     WaitClose( )
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

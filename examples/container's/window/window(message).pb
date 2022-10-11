@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -6,7 +7,10 @@ CompilerIf #PB_Compiler_IsMainFile
   UsePNGImageDecoder()
   
   Procedure ShowMessage(  )
+    Debug "open - Title"
     Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
+    Debug " close - Title " + Result
+    
     Define flag, a$ = "Result of the previously requester was: "
     
     If Result = #PB_MessageRequester_Yes       ; pressed Yes button
@@ -20,7 +24,10 @@ CompilerIf #PB_Compiler_IsMainFile
       a$ +#LF$+ "Cancel"
     EndIf
     
-    Message( "Information", a$, flag )
+    Debug "open - Information"
+    Result = Message("Information", a$, flag)
+    Debug "close - Information "+Result
+    
   EndProcedure
   
   Procedure EventClick( )

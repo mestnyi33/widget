@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
         EndIf
         
-        Area_Draw( EventWidget( )\parent( ) )
+        Area_Draw( EventWidget( )\_parent( ) )
         
     EndSelect
     

@@ -1136,8 +1136,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  Window = -1, *CallBack = #Null )
     Declare   Free( *this )
     ;}
-    
-    events::SetCallback( @EventHandler( ) )
   EndDeclareModule
   
   Module Widget
@@ -3668,7 +3666,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _this_\hide = Bool( _this_\state\hide Or 
                           _this_\_parent( )\hide Or
                           ( _this_\_parent( )\TabWidget( ) And _this_\_parent( )\TabWidget( )\SelectedTabIndex( ) <> _this_\TabIndex( ) ))
-      _this_\resize | 1<<6
+      _this_\resize | #__resize_change
     EndMacro
     
     Macro set_check_state_( _address_, _three_state_ )
@@ -4573,7 +4571,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If (Change_x Or Change_y)
                 Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
-                enumWidget( )\resize | 1<<5
+                enumWidget( )\resize | #__resize_change
               EndIf
             EndIf
           EndIf
@@ -7383,7 +7381,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         *this\width[#__c_inner] = *this\scroll\h\bar\page\len
         *this\height[#__c_inner] = *this\scroll\v\bar\page\len
-        *this\resize | 1<<6
+        *this\resize | #__resize_change
         
       EndIf
       
@@ -7587,7 +7585,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         Else
           If \v\hide <> #True
-            *this\resize | 1<<6
+            *this\resize | #__resize_change
             \v\hide = #True
             ; reset page pos then hide scrollbar
             If \v\bar\page\pos > \v\bar\min
@@ -7605,7 +7603,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         Else
           If \h\hide <> #True
-            *this\resize | 1<<6
+            *this\resize | #__resize_change
             \h\hide = #True
             ; reset page pos then hide scrollbar
             If \h\bar\page\pos > \h\bar\min
@@ -7617,7 +7615,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;         If Bool( \v\bar\area\change Or \h\bar\area\change )
-        ;           *this\resize | 1<<6
+        ;           *this\resize | #__resize_change
         ;         EndIf
         
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
@@ -7631,7 +7629,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\type = #__type_Splitter
           If mouse( )\cursor <> *data
             ; Debug "cursor-change " + *data +" "+ *this\_root( )\canvas\gadget
-            Cursor::SetCursor( GadgetID(*this\_root( )\canvas\gadget), *data )
+            SetCursor( *this, *data )
             mouse( )\cursor = *data
           EndIf
         EndIf
@@ -9619,7 +9617,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If *this\text\change : *this\text\change = 0 : EndIf
           If *this\change : *this\change = 0 : EndIf
-          If *this\resize : *this\resize = 0 : EndIf
+          ;;;If *this\resize : *this\resize = 0 : EndIf
         EndWith
       EndIf
       
@@ -11693,6 +11691,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   Window_SetState( *this._S_widget, state.l )
       Protected.b result
       
+      ; close state
+      If state = #__Window_Close
+        If Not Post( *this, #PB_EventType_CloseWindow )
+          Free( *this )
+          
+          If is_root_(*this )
+            PostEvent( #PB_Event_CloseWindow, *this\_root( )\canvas\window, *this )
+          EndIf
+          
+          result = #True
+        EndIf
+      EndIf
+      
       ; restore state
       If state = #__Window_Normal
         If Not Post( *this, #PB_EventType_restoreWindow )
@@ -11711,6 +11722,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If is_root_(*this )
             PostEvent( #PB_Event_RestoreWindow, *this\_root( )\canvas\window, *this )
           EndIf
+          
+          result = #True
         EndIf
       EndIf
       
@@ -11765,53 +11778,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result 
     EndProcedure
     
-    Procedure   Window_Close( *this._S_widget )
-      Protected.b result
-      
-      ; close window
-      If Not Post( *this, #PB_EventType_closeWindow )
-        Free( *this )
-        
-        If is_root_(*this )
-          PostEvent( #PB_Event_CloseWindow, *this\_root( )\canvas\window, *this )
-        EndIf
-        
-        result = #True
-      EndIf
-    EndProcedure
-    
     Procedure   Window_Events( *this._S_widget, eventtype.l, mouse_x.l, mouse_y.l )
       Protected Repaint
-      
-      If eventtype = #PB_EventType_Focus
-        *this\color\state = #__S_2
-        Post( *this, eventtype )
-        Repaint = #True
-      EndIf
-      
-      If eventtype = #PB_EventType_LostFocus
-        *this\color\state = #__S_3
-        Post( *this, eventtype )
-        Repaint = #True
-      EndIf
-      
-      If eventtype = #PB_EventType_MouseEnter
-        Repaint = #True
-      EndIf
-      
-      If eventtype = #PB_EventType_MouseMove
-        ;         If *this\state\press
-        ;           ;           If *this\container = #__type_root
-        ;           ;             ResizeWindow(*this\_root( )\canvas\window, (DesktopMouseX( ) - *this\_root( )\mouse\delta\x), (DesktopMouseY( ) - *this\_root( )\mouse\delta\y), #PB_Ignore, #PB_Ignore)
-        ;           ;           Else
-        ;           Repaint = Resize(*this, (mouse_x - mouse( )\delta\x), (mouse_y - mouse( )\delta\y), #PB_Ignore, #PB_Ignore)
-        ;           ;           EndIf
-        ;         EndIf
-      EndIf
-      
-      If eventtype = #PB_EventType_MouseLeave
-        Repaint = #True
-      EndIf
+      mouse_x = mouse( )\x
+      mouse_y = mouse( )\y
       
       ;       If eventtype = #PB_EventType_MouseMove
       ;         If *this\state\press
@@ -11827,10 +11797,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\type = #__type_Window
           *this\caption\interact = is_at_point_( *this\caption, mouse_x, mouse_y, [2] )
           ;*this\color\state = 2
-          
+            
+          Debug ""+mouse_x +" "+ *this\caption\button[#__wb_close]\x
           ; close button
           If is_at_point_( *this\caption\button[#__wb_close], mouse_x, mouse_y )
-            ProcedureReturn Window_close( *this )
+            ProcedureReturn Window_SetState( *this, #__Window_Close )
           EndIf
           
           ; maximize button
@@ -12818,11 +12789,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;- 
     Procedure   SetCursor( *this._S_widget, *cursor )
-      If *cursor < 65535
-        ProcedureReturn Cursor::SetCursor( *this\_root( )\canvas\address, *cursor )
-      Else
-        ProcedureReturn Cursor::SetCursor( *this\_root( )\canvas\address, -1, *cursor )
-      EndIf
+      ProcedureReturn Cursor::Set( *this\_root( )\canvas\gadget, *cursor )
     EndProcedure
     
     Procedure   SetFrame( *this._S_widget, size.a, mode.i = 0 )
@@ -13318,6 +13285,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If GetActive( ) <> *this\_window( ) 
         If GetActive( )\state\focus = #True
           GetActive( )\state\focus = #False
+          GetActive( )\color\state = #__S_3
           result | DoEvents( GetActive( ), #PB_EventType_LostFocus )
         EndIf
       EndIf
@@ -13327,6 +13295,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If GetActive( )\gadget And 
          GetActive( )\gadget\state\focus = #True 
         GetActive( )\gadget\state\focus = #False
+        GetActive( )\gadget\color\state = #__S_3
         result | DoEvents( GetActive( )\gadget, #PB_EventType_LostFocus )
         
         ; is integral scroll bars
@@ -13337,6 +13306,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If GetActive( )\gadget\scroll\v\state\focus = #True
               GetActive( )\gadget\scroll\v\state\focus = #False
+              GetActive( )\gadget\scroll\v\color\state = #__S_3
               result | DoEvents( GetActive( )\gadget\scroll\v, #PB_EventType_LostFocus )
             EndIf
           EndIf
@@ -13346,6 +13316,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If GetActive( )\gadget\scroll\h\state\focus = #True
               GetActive( )\gadget\scroll\h\state\focus = #False
+              GetActive( )\gadget\scroll\h\color\state = #__S_3
               result | DoEvents( GetActive( )\gadget\scroll\h, #PB_EventType_LostFocus )
             EndIf
           EndIf
@@ -13358,6 +13329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If GetActive( )\gadget\TabWidget( )\state\focus = #True
             GetActive( )\gadget\TabWidget( )\state\focus = #False
+            GetActive( )\gadget\color\state = #__S_3
             result | DoEvents( GetActive( )\gadget\TabWidget( ), #PB_EventType_LostFocus )
           EndIf
         EndIf
@@ -13381,6 +13353,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;                 If IsChild( *active, *active\_widgets( ))
         ;                   If *active\_widgets( )\state\focus = #True
         ;                     *active\_widgets( )\state\focus = #False
+        ;                     *active\_widgets( )\color\state = 0
         ;                   ;;  result | DoEvents( *active\_widgets( ), #PB_EventType_LostFocus )
         ;                   EndIf
         ;                 EndIf
@@ -13416,6 +13389,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;               If IsChild( *this, *this\_widgets( )) ;And *this\_widgets( )\container
             ;                 If *this\_widgets( )\state\focus = #False
             ;                   *this\_widgets( )\state\focus = #True
+            ;                   *this\_widgets( )\color\state = #__S_2
             ;                   result | DoEvents( *this\_widgets( ), #PB_EventType_Focus )
             ;                 EndIf
             ;               EndIf
@@ -13440,10 +13414,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; first we activate its parent window
           If GetActive( )\state\focus = #False
             GetActive( )\state\focus = #True
+            GetActive( )\color\state = #__S_2
             result | DoEvents( GetActive( ), #PB_EventType_Focus )
           EndIf
           
           ; 
+          *this\color\state = #__S_2
           result | DoEvents( *this, #PB_EventType_Focus )
           
           ; when we activate the window
@@ -13451,6 +13427,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If GetActive( )\gadget 
             If GetActive( )\gadget\state\focus = #False
               GetActive( )\gadget\state\focus = #True
+              GetActive( )\gadget\color\state = #__S_2
               result | DoEvents( GetActive( )\gadget, #PB_EventType_Focus )
             EndIf
           EndIf
@@ -13469,6 +13446,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       result = #True
       ProcedureReturn result
     EndProcedure
+    
     
     Procedure   SetPosition( *this._S_widget, position.l, *widget._S_widget = #Null ) ; Ok
       If *widget = #Null
@@ -16741,7 +16719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; draw belowe drawing
         If Not *this\hide 
-          If *this\resize
+          If *this\resize & #__resize_change
             Reclip( *this )
           EndIf
           
@@ -17009,6 +16987,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       WidgetEvent( )\pFunc = 1
       
       If *this = #PB_All
+        
+        PushMapPosition(Root( ))
+        ForEach Root( )
+          Bind( Root( ), *callback, eventtype, item )
+        Next
+        PopMapPosition(Root( ))
+        
         ; 4)
       Else
         If Not *this\event
@@ -17988,6 +17973,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; widgets events
         Select *this\type
+          Case #PB_GadgetType_Window
+            Window_events( *this, eventtype, mouse_x, mouse_y )
+            
           Case #PB_GadgetType_Button
             Button_events( *this, eventtype, mouse_x, mouse_y )
             
@@ -18905,6 +18893,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
+      ; init 
+      If Not MapSize(Root( ))
+        events::SetCallback( @EventHandler( ) )
+      EndIf
+      
+      
       If width = #PB_Ignore And
          height = #PB_Ignore
         flag | #PB_Canvas_Container
@@ -18964,6 +18958,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         UseGadgetList( UseGadgetList )
       EndIf
       
+        
       ;
       If Not ChangeCurrentRoot(g) 
         result = AddMapElement( Root( ), Str( g ) )
@@ -19068,11 +19063,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       With *this
         Static pos_x.l, pos_y.l
-        ;
-        set_align_flag_( *this, *parent, flag )
-        ; AddWidget( *this, *parent )
-        SetParent( *this, *parent, #PB_Default )
+        If x = #PB_Ignore : If transform( ) : x = pos_x + transform( )\grid\size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
+        If y = #PB_Ignore : If transform( ) : y = pos_y + transform( )\grid\size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
         
+        ; open root list
+        If Not MapSize( Root( ))
+          events::SetCallback( @EventHandler( ) )
+          Protected Root = Open( OpenWindow( #PB_Any, x,y,width + *this\fs*2,height + *this\fs*2 + *this\barHeight, "", #PB_Window_BorderLess, *parent ))
+          Flag | #__flag_autosize
+          x = 0
+          y = 0
+          Root( )\width[#__c_inner] = width
+          Root( )\height[#__c_inner] = height
+        EndIf
+        If Not *parent
+          ;*parent = Root( )
+        EndIf
+        ;Debug *parent
+        ;
+        If *parent
+          set_align_flag_( *this, *parent, flag )
+          ; AddWidget( *this, *parent )
+          SetParent( *this, *parent, #PB_Default )
+        EndIf
+       
         *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__window_frame_size
         *this\child = Bool( Flag & #__window_child = #__window_child )
         
@@ -19140,19 +19154,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *this\caption\text\padding\x = 5
           *this\caption\text\string = Text
-        EndIf
-        
-        If x = #PB_Ignore : If transform( ) : x = pos_x + transform( )\grid\size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
-        If y = #PB_Ignore : If transform( ) : y = pos_y + transform( )\grid\size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
-        
-        ; open root list
-        If Not MapSize( Root( ))
-          Protected Root = Open( OpenWindow( #PB_Any, x,y,width + *this\fs*2,height + *this\fs*2 + *this\barHeight, "", #PB_Window_BorderLess, *parent ))
-          Flag | #__flag_autosize
-          x = 0
-          y = 0
-          Root( )\width[#__c_inner] = width
-          Root( )\height[#__c_inner] = height
         EndIf
         
         If *parent
@@ -19345,39 +19346,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure Message_events( )
-      Protected result
-      Protected *widget._S_widget = EnteredWidget( )
-      ; Debug WidgetEventType( )
-      
-      Select WidgetEventType( )
-        Case #PB_EventType_MouseEnter
-          ReDraw(Root())
-        Case #PB_EventType_LeftButtonDown
-          ReDraw(Root())
-        Case #PB_EventType_LeftClick
-          Select EventWidget( )\text\string
-            Case "Yes" : result = #PB_MessageRequester_Yes    ; yes
-            Case "No" : result = #PB_MessageRequester_No      ; no
-            Case "Cancel" : result = #PB_MessageRequester_Cancel ; cancel
-          EndSelect
-      EndSelect
-      
-      If result
-        EventWidget( )\_window( )\data = result
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "stop:", *widget)
-        CompilerEndIf
+    Procedure   WaitEvents( *this._s_WIDGET )
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "run")
+      CompilerElse
+        Protected msg.MSG
+        ;         If PeekMessage_(@msg,0,0,0,1)
+        ;           TranslateMessage_(@msg)
+        ;           DispatchMessage_(@msg)
+        ;         Else
+        ;           Sleep_(1)
+        ;         EndIf
+        
+        While GetMessage_(@msg, #Null, 0, 0 )
+          TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
+          DispatchMessage_(msg)  ;  посылает сообщение в функцию WindowProc.
+          
+          Debug ""+msg\message +" "+ msg\hwnd +" "+ msg\lParam +" "+ msg\wParam
+          ;   If msg\wParam = #WM_QUIT
+          ;     Debug "#WM_QUIT "
+          ;   EndIf
+        Wend
+      CompilerEndIf
+    EndProcedure
+    
+    Procedure   MessageEvents( )
+      If EventWidget( )
+        Protected *this = EventWidget( )
+        Protected *message = EventWidget( )\_window( )
+        
+        Select WidgetEventType( )
+          Case #PB_EventType_MouseEnter
+            ReDraw(Root())
+          Case #PB_EventType_LeftButtonDown
+            ReDraw(Root())
+          Case #PB_EventType_LeftClick
+            Select GetText( *this )
+              Case "No"     : SetData( *message, #PB_MessageRequester_No )     ; no
+              Case "Yes"    : SetData( *message, #PB_MessageRequester_Yes )    ; yes
+              Case "Cancel" : SetData( *message, #PB_MessageRequester_Cancel ) ; cancel
+            EndSelect
+            
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "stop:", *this)
+            CompilerEndIf
+        EndSelect
       EndIf
-      
-      ProcedureReturn result
+      ProcedureReturn #PB_Ignore
     EndProcedure
     
-    Procedure WaitMessageEvents( *this._s_WIDGET )
-      
-    EndProcedure
-    
-    Procedure Message( Title.s, Text.s, Flag.i = #Null )
+    Procedure   Message( Title.s, Text.s, Flag.i = #Null )
       Protected result
       Protected img =- 1, f1 =- 1, f2=8, width = 400, height = 120
       Protected bw = 85, bh = 25, iw = height-bh-f1 - f2*4 - 2-1
@@ -19554,49 +19572,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;
-      Bind( *message, @message_events( ))
+      Bind( *message, @MessageEvents( ))
       
       ;
       Sticky( *message, #True )
       ReDraw(*message\_root())
       
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "run")
-      CompilerElse
-        Protected msg.MSG
-        ;         If PeekMessage_(@msg,0,0,0,1)
-        ;           TranslateMessage_(@msg)
-        ;           DispatchMessage_(@msg)
-        ;         Else
-        ;           Sleep_(1)
-        ;         EndIf
-        
-        While GetMessage_(@msg, #Null, 0, 0 )
-          TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
-          DispatchMessage_(msg)  ;  посылает сообщение в функцию WindowProc.
-          
-          Debug ""+msg\message +" "+ msg\hwnd +" "+ msg\lParam +" "+ msg\wParam
-          ;   If msg\wParam = #WM_QUIT
-          ;     Debug "#WM_QUIT "
-          ;   EndIf
-        Wend
-      CompilerEndIf
+      WaitEvents( *message )
       
       Sticky( *message, #False )
       ReDraw(*message\_root())
       result = GetData( *message )
       ; close
-      hide( EventWidget( )\_window( ), 1 )
+      hide( *message, 1 )
       
       ProcedureReturn result
     EndProcedure 
     
-    Procedure   WaitClose( *this._S_widget = #PB_Any, waittime.l = 0 )
+    Procedure   WaitClose( *this._S_widget = #PB_Any, waitTime.l = 0 )
       Protected result 
-      Protected *window._S_widget = *this;\_window( )
+      Protected *window._S_widget
       Protected PBWindow = PB(EventWindow)( )
       
       If Root( )
+        If *this = #PB_Any
+          *window = Root( )\_window( )
+        Else
+          *window = *this\_window( )
+        EndIf
+        
         ;
         If ListSize( Root( )\_events( ) )
           ClearList( Root( )\_events( ) )
@@ -20326,5 +20330,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------v------------+q+0-----
 ; EnableXP

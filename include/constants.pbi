@@ -181,7 +181,8 @@
       #__c_draw2     = 7 ; clip inner 
       
       #__c_window    = 8 ; window ; pos
-      #__c
+     #__c_rootrestore = 9
+     #__c
     EndEnumeration
     
     ;
@@ -189,7 +190,6 @@
     #__c_clip2 = #__c_draw2 ; temp
        
     ;#__c_inner2 = #__c_inner
-    #__c_rootrestore = 7
     ;     #__ci_frame = #__c_draw
     ;     #__ci_container = #__c_draw
     #__c_inner_b = #__c_inner
@@ -517,7 +517,6 @@
     ;- _c_mdi
     #__mdi_editable = #__flag_anchorsgadget
     
-    
     ;- _c_window
     ;     #__window_nogadgets = #__flag_nobuttons
     ;     #__window_borderless = #__flag_borderless
@@ -528,6 +527,7 @@
     #__window_child          = #__flag_child
     #__Window_Normal         = #PB_Window_Normal
     #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+    #__Window_Close          = #__Window_SystemMenu
     #__Window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
     #__Window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
                                                          ; (MacOS only ; #PB_Window_SizeGadget will be also automatically added).
