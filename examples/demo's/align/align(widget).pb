@@ -1,6 +1,6 @@
 ﻿
 IncludePath "../../../"
-XIncludeFile "widget-events.pb"
+XIncludeFile "widget-events.pbi"
 
 ;XIncludeFile "widgets.pbi"
 

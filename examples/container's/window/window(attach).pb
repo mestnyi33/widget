@@ -2,7 +2,7 @@
 XIncludeFile "../../../widget-events.pbi"
 ; надо исправить scroll\v draw width
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile 
   Uselib(widget)
   
   EnableExplicit
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
   
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
-  ;a_init( *mdi, 0 )
+  a_init( *mdi, 0 )
   
   Define *g0._s_widget = Window(50, 50, 400, 400, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 

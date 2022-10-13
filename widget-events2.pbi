@@ -345,7 +345,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro is_root_container_( _this_ )
-      Bool( _this_\_root( ) And _this_ = _this_\_root( )\canvas\container )
+      Bool( _this_ = _this_\_root( )\canvas\container )
     EndMacro
     
     Macro bar_first_gadget_( _this_ ): _this_\gadget[#__split_1]: EndMacro
@@ -4170,13 +4170,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\align\anchor\right = 125 And
          *this\align\anchor\bottom = 125
         
-        x = 0
-        Y = 0
+        x = *this\bs
+        Y = *this\bs
         width = *this\_parent( )\width[#__c_inner] 
-        height = *this\_parent( )\height[#__c_inner] 
+        height = *this\_parent( )\height[#__c_inner]
         
-        ;
-        If *this\type = #__type_window
+        If is_root_(*this\_parent( ) )
           width - *this\fs*2 - *this\fs[1]
           height - *this\fs*2 - *this\fs[2]
         EndIf
@@ -4195,12 +4194,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             x + ( x%transform( )\grid\size ) 
             x = ( x/transform( )\grid\size ) * transform( )\grid\size
           EndIf
+          If *this\_parent( ) And *this\_parent( )\container And *this\attach
+            x - *this\_parent( )\fs
+          EndIf
         EndIf
         
         If y <> #PB_Ignore 
           If transform( )\grid\size > 1
             y + ( y%transform( )\grid\size ) 
             y = ( y/transform( )\grid\size ) * transform( )\grid\size
+          EndIf
+          If *this\_parent( ) And *this\_parent( )\container And *this\attach
+            y - *this\_parent( )\fs
           EndIf
         EndIf
         
@@ -4230,6 +4235,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\x[#__c_container] = x
         EndIf 
       EndIf  
+      
       If y = #PB_Ignore 
         y = *this\y[#__c_container] 
       Else
@@ -4241,22 +4247,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf 
       EndIf  
       
-      ;
-      If *this\_parent( ) And *this <> *this\_parent( )                       
-        If Not ( *this\attach And *this\attach\mode = 2 )
-          x + *this\_parent( )\x[#__c_inner]
-        EndIf
-        If Not ( *this\attach And *this\attach\mode = 1 )
-          y + *this\_parent( )\y[#__c_inner]
-        EndIf
-        
-        If *this\attach
-          y - *this\_parent( )\fs
-          x - *this\_parent( )\fs
-        EndIf
-      EndIf
-      
-      ;
       If width = #PB_Ignore 
         If *this\type = #__type_window And Not *this\_a_\transform
           width = *this\width[#__c_container] + *this\fs*2 + ( *this\fs[1] + *this\fs[3] )
@@ -4271,6 +4261,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If width < 0 
         width = 0 
       EndIf
+      
       If height = #PB_Ignore 
         If *this\type = #__type_window And Not *this\_a_\transform 
           height = *this\height[#__c_container] + *this\fs*2 + ( *this\fs[2] + *this\fs[4] )
@@ -4284,6 +4275,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       If Height < 0 
         Height = 0 
+      EndIf
+      
+      ;
+      If *this\_parent( ) And *this <> *this\_parent( )                       
+        ;           If *this\attach 
+        ;             x + *this\_parent( )\x[#__c_frame]
+        ;             y + *this\_parent( )\y[#__c_frame]
+        ;           Else
+        If Not ( *this\attach And *this\attach\mode = 2 )
+          x + *this\_parent( )\x[#__c_inner]
+        EndIf
+        If Not ( *this\attach And *this\attach\mode = 1 )
+          y + *this\_parent( )\y[#__c_inner]
+        EndIf
+        ;           EndIf
       EndIf
       
       ;
@@ -14846,9 +14852,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected color, image
       Protected ScrollBars, *this.allocate( Widget )
       
-      *this\type = type
-      *this\flag = Flag
-      
       If *parent
         If Bool( Flag & #__flag_child = #__flag_child )
           *this\child = 1
@@ -14861,7 +14864,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;;Debug  ""+ *this\class+" "+*this\scroll\increment
           
         Else
-          set_align_flag_( *this, *parent, *this\flag )
+          set_align_flag_( *this, *parent, flag )
           
           ; AddWidget( *this, *parent )
           SetParent( *this, *parent, #PB_Default )
@@ -14872,8 +14875,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\state\create = #True
         *this\state\repaint = #True
         
+        *this\flag = Flag
+        
         *this\x[#__c_inner] =- 2147483648
         *this\y[#__c_inner] =- 2147483648
+        *this\type = type
         *this\round = round
         *this\class = class
         
@@ -15713,16 +15719,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected *this.allocate( Widget ) 
       Protected *parent._S_widget = OpenedWidget( )
       
-      If *this\flag & #PB_ComboBox_Editable
-        *this\flag &~ #PB_ComboBox_Editable
-      Else
-        *this\flag | #__text_readonly
-      EndIf
-      
-      *this\flag = Flag
-      *this\type = #__type_ComboBox
-      *this\class = #PB_Compiler_Procedure
-      
       set_align_flag_( *this, *parent, *this\flag )
       ; AddWidget( *this, *parent )
       SetParent( *this, *parent, #PB_Default )
@@ -15733,11 +15729,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\x[#__c_inner] =- 2147483648
       *this\y[#__c_inner] =- 2147483648
       
+      *this\type = #__type_ComboBox
+      *this\class = #PB_Compiler_Procedure
       
       *this\fs = 1 
       *this\bs = *this\fs
+      *this\flag = Flag
       
       *this\row.allocate( ROW )
+      
+      If *this\flag & #PB_ComboBox_Editable
+        *this\flag &~ #PB_ComboBox_Editable
+      Else
+        *this\flag | #__text_readonly
+      EndIf
       
       set_text_flag_( *this, *this\flag | #__text_center | ( Bool( Not *this\flag & #__text_center ) * #__text_left ))
       
@@ -15795,10 +15800,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected Size = 16, *this.allocate( Widget ) 
       ;set_last_parameters_( *this, #__type_Frame, Flag, OpenedWidget( ))
       Protected *parent._S_widget = OpenedWidget( )
-      
-      *this\flag = Flag
-      *this\type = #__type_Frame
-      *this\class = #PB_Compiler_Procedure
       
       set_align_flag_( *this, *parent, flag )
       ; AddWidget( *this, *parent )
@@ -19044,11 +19045,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       With *this
         Static pos_x.l, pos_y.l
+        If x = #PB_Ignore : If transform( ) : x = pos_x + transform( )\grid\size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
+        If y = #PB_Ignore : If transform( ) : y = pos_y + transform( )\grid\size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
+        
+        ; open root list
+        If Not MapSize( Root( ))
+          events::SetCallback( @EventHandler( ) )
+          Protected Root = Open( OpenWindow( #PB_Any, x,y,width + *this\fs*2,height + *this\fs*2 + *this\barHeight, "", #PB_Window_BorderLess, *parent ))
+          Flag | #__flag_autosize
+          x = 0
+          y = 0
+          Root( )\width[#__c_inner] = width
+          Root( )\height[#__c_inner] = height
+        EndIf
+        If Not *parent
+          ;*parent = Root( )
+        EndIf
+        ;Debug *parent
+        ;
+        If *parent
+          set_align_flag_( *this, *parent, flag )
+          ; AddWidget( *this, *parent )
+          SetParent( *this, *parent, #PB_Default )
+        EndIf
+       
+        *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__window_frame_size
+        *this\child = Bool( Flag & #__window_child = #__window_child )
+        
+        *this\x[#__c_inner] =- 2147483648
+        *this\y[#__c_inner] =- 2147483648
         
         *this\type = #__type_window
         *this\class = #PB_Compiler_Procedure
-        *this\flag = Flag
+        *this\container = *this\type
         
+        *this\color = _get_colors_( )
+        *this\color\back = $FFF9F9F9
+        
+        ; Background image
+        *this\image\img =- 1
         
         *this\caption\round = 4
         *this\caption\_padding = *this\caption\round
@@ -19103,38 +19138,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\caption\text\string = Text
         EndIf
         
-        *this\child = Bool( Flag & #__window_child = #__window_child )
-        *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__window_frame_size
-        
-        
-        If x = #PB_Ignore : If transform( ) : x = pos_x + transform( )\grid\size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
-        If y = #PB_Ignore : If transform( ) : y = pos_y + transform( )\grid\size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
-        
-        ; open root list
-        If Not MapSize( Root( ))
-          events::SetCallback( @EventHandler( ) )
-          Protected Root = Open( OpenWindow( #PB_Any, x,y,width + *this\fs*2,height + *this\fs*2 + *this\barHeight, "", #PB_Window_BorderLess, *parent ))
-          Flag | #__flag_autosize
-          x = 0
-          y = 0
-          Root( )\width[#__c_inner] = width
-          Root( )\height[#__c_inner] = height
-        EndIf
-        If Not *parent
-          ;*parent = Root( )
-        EndIf
-        ;Debug *parent
-        ;
         If *parent
           If Root( ) = *parent 
             Root( )\_parent( ) = *this
-          EndIf
-          
-          set_align_flag_( *this, *parent, *this\flag )
-          
-          If *this\child 
-            ; AddWidget( *this, *parent )
-            SetParent( *this, *parent, #PB_Default )
           EndIf
         Else
           If Root( )\canvas\container > 1
@@ -19144,32 +19150,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If *parent 
-          set_align_flag_( *this, *parent, *this\flag )
-          If *this\child = 0 And 
-             SetAttachment( *this, *parent, 0 )
-            x - *parent\x[#__c_container] - *parent\fs[1]
-            y - *parent\y[#__c_container] - *parent\fs[2] 
-          EndIf
-        EndIf
-        
-        
-        
-        *this\x[#__c_inner] =- 2147483648
-        *this\y[#__c_inner] =- 2147483648
-        
-        *this\container = *this\type
-        
-        *this\color = _get_colors_( )
-        *this\color\back = $FFF9F9F9
-        
-        ; Background image
-        *this\image\img =- 1
-        
         If Root
           Root( )\canvas\container = *this
         EndIf
         
+        If *parent And
+           *this\child = 0 And 
+           SetAttachment( *this, *parent, 0 )
+          x - *parent\x[#__c_container] - *parent\fs[1]
+          y - *parent\y[#__c_container] - *parent\fs[2] 
+        EndIf
         Resize( *this, x,y,width,height )
         
         If flag & #__Window_NoGadgets = #False
@@ -20322,5 +20312,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------P0-f40----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

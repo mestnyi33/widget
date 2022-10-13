@@ -1,6 +1,7 @@
 ﻿DeclareModule constants
   Enumeration #PB_EventType_FirstCustomValue
     #PB_EventType_Drop
+    #PB_EventType_CursorChange
     #PB_EventType_MouseWheelX
     #PB_EventType_MouseWheelY
   EndEnumeration
@@ -1185,9 +1186,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define EnteredGadget =- 1
   Define LeavedGadget =- 1 
   Define buttons = 0
-  Enumeration #PB_EventType_FirstCustomValue
-    #PB_EventType_CursorChange
-  EndEnumeration
+  
   Repeat 
     event = WaitWindowEvent()
     EnteredGadget = ID::Gadget(Mouse::Gadget(Mouse::Window()))
