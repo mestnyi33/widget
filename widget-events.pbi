@@ -892,7 +892,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         FrontColor( _color_frame_&$FFFFFF | _alpha_<<24 )
       EndIf
       
-      draw_roundbox_( _x_,_y_,_width_,_height_, _round_,_round_ );, _color_frame_&$FFFFFF | _alpha_<<24 )
+      draw_roundbox_( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame_&$FFFFFF | _alpha_<<24 )
     EndMacro
     
     
@@ -1285,6 +1285,62 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       EndDataSection
     EndProcedure
+    
+    Macro DrawArrow2( _x_, _y_, _direction_, _back_color_, _frame_color_)
+      If _direction_ = 0 ; left
+        If _frame_color_ <> _back_color_
+          Line(_x_+8, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+          Plot(_x_+7, _y_-1, _frame_color_ ) : Plot(_x_+7, _y_+7, _frame_color_ ) 
+          Plot(_x_+6, _y_+0, _frame_color_ ) : Plot(_x_+6, _y_+6, _frame_color_ )                                      
+          Plot(_x_+5, _y_+1, _frame_color_ ) : Plot(_x_+5, _y_+5, _frame_color_ )                                      
+          Plot(_x_+4, _y_+2, _frame_color_ ) : Plot(_x_+4, _y_+4, _frame_color_ )                                       
+          Plot(_x_+3, _y_+3, _frame_color_)                                       
+        EndIf
+        Line(_x_+7, _y_+0, 1, 7, _back_color_) 
+        Line(_x_+6, _y_+1, 1, 5, _back_color_) 
+        Line(_x_+5, _y_+2, 1, 3, _back_color_) 
+        Plot(_x_+4, _y_+3, _back_color_)       
+      ElseIf _direction_ = 1 ; up
+        If _frame_color_ <> _back_color_
+          Line(_x_- 1, _y_+7, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+          Plot(_x_+0, _y_+6, _frame_color_ ) : Plot(_x_+8, _y_+6, _frame_color_ )                                      
+          Plot(_x_+1, _y_+5, _frame_color_ ) : Plot(_x_+7, _y_+5, _frame_color_ )                                      
+          Plot(_x_+2, _y_+4, _frame_color_ ) : Plot(_x_+6, _y_+4, _frame_color_ )                                       
+          Plot(_x_+3, _y_+3, _frame_color_ ) : Plot(_x_+5, _y_+3, _frame_color_ )                                       
+          Plot(_x_+4, _y_+2, _frame_color_)                                        
+        EndIf
+        Line(_x_+1, _y_+6, 7, 1, _back_color_) 
+        Line(_x_+2, _y_+5, 5, 1, _back_color_) 
+        Line(_x_+3, _y_+4, 3, 1, _back_color_) 
+        Plot(_x_+4, _y_+3, _back_color_)       
+      ElseIf _direction_ = 2 ; right
+        If _frame_color_ <> _back_color_
+          Line(_x_+3, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+          Plot(_x_+4, _y_-1, _frame_color_ ) : Plot(_x_+4, _y_+7, _frame_color_ ) 
+          Plot(_x_+5, _y_+0, _frame_color_ ) : Plot(_x_+5, _y_+6, _frame_color_ )                                      
+          Plot(_x_+6, _y_+1, _frame_color_ ) : Plot(_x_+6, _y_+5, _frame_color_ )                                      
+          Plot(_x_+7, _y_+2, _frame_color_ ) : Plot(_x_+7, _y_+4, _frame_color_ )                                       
+          Plot(_x_+8, _y_+3, _frame_color_)                                       
+        EndIf
+        Line(_x_+4, _y_+0, 1, 7, _back_color_) 
+        Line(_x_+5, _y_+1, 1, 5, _back_color_) 
+        Line(_x_+6, _y_+2, 1, 3, _back_color_) 
+        Plot(_x_+7, _y_+3, _back_color_)       
+      ElseIf _direction_ = 3 ; down
+        If _frame_color_ <> _back_color_
+          Line(_x_- 1, _y_+2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+          Plot(_x_+0, _y_+3, _frame_color_ ) : Plot(_x_+8, _y_+3, _frame_color_ )                                      
+          Plot(_x_+1, _y_+4, _frame_color_ ) : Plot(_x_+7, _y_+4, _frame_color_ )                                      
+          Plot(_x_+2, _y_+5, _frame_color_ ) : Plot(_x_+6, _y_+5, _frame_color_ )                                       
+          Plot(_x_+3, _y_+6, _frame_color_ ) : Plot(_x_+5, _y_+6, _frame_color_ )                                       
+          Plot(_x_+4, _y_+7, _frame_color_)                                        
+        EndIf
+        Line(_x_+1, _y_+3, 7, 1, _back_color_) 
+        Line(_x_+2, _y_+4, 5, 1, _back_color_) 
+        Line(_x_+3, _y_+5, 3, 1, _back_color_) 
+        Plot(_x_+4, _y_+6, _back_color_)       
+      EndIf
+    EndMacro
     
     Procedure   DrawArrow( x.l, y.l, Direction.l, color.l )
       If Direction = 0
@@ -16018,12 +16074,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
               draw_button_( 1, x, y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\___state , 4 );, \color )
             Else                                                                                                        ;If Not ( *this\mode\buttons And *rows( )\count\childrens And *this\mode\check = #__m_optionselect )
                                                                                                                         ; check
-              draw_button_( 3, x, y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\___state , 2 );, \color )
+              draw_button_( 3, x, y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\___state , 2 )
             EndIf
           EndIf    
         Next
         
-        drawing_mode_( #PB_2DDrawing_Outlined); | #PB_2DDrawing_AlphaBlend )
+        ;drawing_mode_alpha_( #PB_2DDrawing_Outlined ); | #PB_2DDrawing_AlphaBlend )
                                               ; Draw buttons ( expanded&collapsed )
         ForEach *rows( )
           If *rows( )\visible And Not *rows( )\hide 
@@ -16048,66 +16104,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
               Else
                 
-                Protected _x_ = x 
-                Protected _y_ = y
-                Protected _frame_color_ = $ffffffff
-                Protected _back_color_ = $ff000000
-                
-                If *ibox\___state ; >
-                  If *rows( )\color\state 
-                    _frame_color_ = $ffffffff
-                  Line(_x_+3, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-                  Plot(_x_+4, _y_-1, _frame_color_ ) 
-                  Plot(_x_+4, _y_+7, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
-                  Plot(_x_+5, _y_+0, _frame_color_ ) 
-                  Plot(_x_+5, _y_+6, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
-                  Plot(_x_+6, _y_+1, _frame_color_ ) 
-                  Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
-                  Plot(_x_+7, _y_+2, _frame_color_ ) 
-                  Plot(_x_+7, _y_+4, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
-                  Plot(_x_+8, _y_+3, _frame_color_)                                        ; 0,0,0,0,0,0,0,0,0,0,0
+                If *rows( )\color\state 
+                  DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000, $ffffffff)
+                Else
+                  DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000, $ff000000)
                 EndIf
                 
-                  Line(_x_+4, _y_+0, 1, 7, _back_color_) 
-                  Line(_x_+5, _y_+1, 1, 5, _back_color_) 
-                  Line(_x_+6, _y_+2, 1, 3, _back_color_) 
-                  Plot(_x_+7, _y_+3, _back_color_)       
-                Else ; v
-;                   _frame_color_ = $ff000000
-;                   Line(_x_- 1, _y_+2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-;                   Plot(_x_+0, _y_+3, _frame_color_ ) 
-;                   Plot(_x_+8, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
-;                   Plot(_x_+1, _y_+4, _frame_color_ ) 
-;                   Plot(_x_+7, _y_+4, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
-;                   Plot(_x_+2, _y_+5, _frame_color_ ) 
-;                   Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
-;                   Plot(_x_+3, _y_+6, _frame_color_ ) 
-;                   Plot(_x_+5, _y_+6, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
-;                   Plot(_x_+4, _y_+7, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
-                  
-                  Line(_x_+1, _y_+3, 7, 1, _back_color_) 
-                  Line(_x_+2, _y_+4, 5, 1, _back_color_) 
-                  Line(_x_+3, _y_+5, 3, 1, _back_color_) 
-                  Plot(_x_+4, _y_+6, _back_color_)       
-                EndIf
-                
-;                 If *ibox\___state ; >
-;                   _frame_color_ = $ffffffff
-;                   Line(_x_+3, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-;                   Plot(_x_+4, _y_-1, _frame_color_ ) : Line(_x_+4, _y_+0, 1, 7, _back_color_) : Plot(_x_+4, _y_+7, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
-;                   Plot(_x_+5, _y_+0, _frame_color_ ) : Line(_x_+5, _y_+1, 1, 5, _back_color_) : Plot(_x_+5, _y_+6, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
-;                   Plot(_x_+6, _y_+1, _frame_color_ ) : Line(_x_+6, _y_+2, 1, 3, _back_color_) : Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
-;                   Plot(_x_+7, _y_+2, _frame_color_ ) : Plot(_x_+7, _y_+3, _back_color_)       : Plot(_x_+7, _y_+4, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
-;                   Plot(_x_+8, _y_+3, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
-;                 Else ; v
-;                   _frame_color_ = $ff000000
-;                   Line(_x_- 1, _y_+2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-;                   Plot(_x_+0, _y_+3, _frame_color_ ) : Line(_x_+1, _y_+3, 7, 1, _back_color_) : Plot(_x_+8, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
-;                   Plot(_x_+1, _y_+4, _frame_color_ ) : Line(_x_+2, _y_+4, 5, 1, _back_color_) : Plot(_x_+7, _y_+4, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
-;                   Plot(_x_+2, _y_+5, _frame_color_ ) : Line(_x_+3, _y_+5, 3, 1, _back_color_) : Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
-;                   Plot(_x_+3, _y_+6, _frame_color_ ) : Plot(_x_+4, _y_+6, _back_color_)       : Plot(_x_+5, _y_+6, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
-;                   Plot(_x_+4, _y_+7, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
-;                 EndIf
               EndIf
               
             EndIf
@@ -19972,5 +19974,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------8---------------v---------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------8---------------v---------------------------------------------
 ; EnableXP
