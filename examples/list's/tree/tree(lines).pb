@@ -1,4 +1,5 @@
-﻿; ver: 3.0.0.0 ; 
+﻿
+; ver: 3.0.0.0 ; 
 ; sudo adduser your_username vboxsf
 ; https://linuxrussia.com/sh-ubuntu.html
 ; http://forums.purebasic.com/english/viewtopic.php?p=577957
@@ -2448,10 +2449,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.i a_set( *this._S_widget, size.l = #PB_Ignore, position.l = #PB_Ignore )
       Protected value, result.i, i
       Static *before._S_widget
-      If is_integral_( *this )
-        *this = *this\_parent( )
-      EndIf
-      
       ; 
       If *this = a_transform( )\main And a_focus_widget( )
         *this = a_transform( )\main\first\widget
@@ -10060,7 +10057,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\mode\check = #__m_optionselect
                     *this\_rows( )\collapsebox\x = *this\_rows( )\sublevelsize - 10
                   Else
-                    *this\_rows( )\collapsebox\x = *this\_rows( )\sublevelsize - (( buttonpos + buttonsize ) - 4)
+                    *this\_rows( )\collapsebox\x = *this\_rows( )\sublevelsize - (( buttonpos + buttonsize ) - 4) + *this\row\sublevelsize
                   EndIf
                   
                   *this\_rows( )\collapsebox\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\collapsebox\height )/2
@@ -12201,7 +12198,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And
                Not ( *this\flag & #__tree_property Or *this\flag & #__tree_optionboxes )
-              *this\row\sublevelsize = 6;18 
+              *this\row\sublevelsize =6;18 
             Else
               *this\row\sublevelsize = 0
             EndIf
@@ -13365,7 +13362,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected result.i, *active._S_widget
       
       If *this 
-        If a_transform_( *this )
+        If *this\_a_\transform
           ProcedureReturn 0
         EndIf
         
@@ -15964,7 +15961,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected._S_buttons *ibox, *l_ibox
       
       ; Draw plots
-      If *this\mode\lines 
+      If *this\mode\lines ;= 1
         drawing_mode_alpha_( #PB_2DDrawing_Default )
         ; drawing_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
         
@@ -15972,7 +15969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *rows( )\visible And Not *rows( )\hide 
             *ibox = *rows()\collapsebox
             *l_ibox = *rows()\last\collapsebox
-            X = row_x_( *this, *rows( ) ) + scroll_x_( *this )
+            X = row_x_( *this, *rows( ) ) + scroll_x_( *this ) - *this\row\sublevelsize
             Y = row_y_( *this, *rows( ) ) + scroll_y_( *this )
             
             ; for the tree vertical line
@@ -15987,10 +15984,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not (*this\mode\buttons And *rows( )\count\childrens)
               Line((x + *ibox\x + *ibox\width / 2), (y + *rows( )\height/2), 7, 1, *rows( )\color\line )
             Else
+              Line((x + *ibox\x + *ibox\width/2), (y + *rows( )\height/2), 7, 1, *rows( )\color\line )
               If Bool( Not *ibox\___state)
-              ;  LineXY((x + *l_ibox\x+2), (y + 9), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
-                LineXY((x + *l_ibox\x-1), (y + 10), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
-              ;  LineXY((x + *l_ibox\x-2), (y + 12), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
+                Line((x + *l_ibox\x + *l_ibox\width / 2), (y + *rows( )\height/2), 1, *rows( )\height/2, *rows( )\color\line )
               EndIf
             EndIf
           EndIf    
@@ -15998,8 +15994,116 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; for the tree item first vertical line
         If *this\row\first And *this\row\last
-          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x + *this\row\first\collapsebox\width/2+1) - _scroll_x_, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
+          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x - *this\row\sublevelsize + *this\row\first\collapsebox\width/2+1) - _scroll_x_, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
         EndIf
+        
+      ElseIf *this\mode\lines = 2
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
+        ; drawing_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
+        
+        ForEach *rows( )
+          If *rows( )\visible And Not *rows( )\hide 
+            *ibox = *rows()\collapsebox
+            *l_ibox = *rows()\last\collapsebox
+            
+            X = row_x_( *this, *rows( ) ) + scroll_x_( *this ) - Bool(*rows( )\parent\row Or *rows( )\count\childrens) * *this\row\sublevelsize
+            Y = row_y_( *this, *rows( ) ) + scroll_y_( *this )
+            
+            If *rows( )\last And Not *rows( )\last\hide And *rows( )\last\sublevel
+              Line((x + *l_ibox\x+*ibox\width/2), (y+*rows( )\height/2), 1, (*rows( )\last\y-*rows( )\y), *rows( )\color\line )
+            EndIf
+            If *rows( )\parent\row And Not *rows( )\parent\row\visible And *rows( )\parent\row\last = *rows( ) And *rows( )\sublevel
+              Line((x + *ibox\x+*ibox\width/2), (*rows( )\parent\row\y+*rows( )\parent\row\height/2) - _scroll_y_, 1, (*rows( )\y-*rows( )\parent\row\y), *rows( )\parent\row\color\line )
+            EndIf
+            
+            ; for the tree horizontal line
+            If *rows( )\parent\row
+              Line((x + *ibox\x+*ibox\width/2), (y+*rows( )\height/2), 7, 1, *rows( )\color\line )
+            EndIf
+            
+            If (Not *this\mode\buttons And *rows( )\count\childrens)
+              Line((x + *ibox\x+*ibox\width/2) + *this\row\sublevelsize-3, (y+*rows( )\height/2), 3, 1, *rows( )\color\line )
+            EndIf
+          EndIf    
+        Next
+        
+      ElseIf *this\mode\lines = 3
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
+        ; drawing_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
+        ; for the tree item first vertical line
+        If *this\row\first And *this\row\last
+          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x + *this\row\first\collapsebox\width/2) - _scroll_x_ - minus, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
+        EndIf
+        
+        
+        ForEach *rows( )
+          If *rows( )\visible And Not *rows( )\hide 
+            *ibox = *rows()\collapsebox
+            *l_ibox = *rows()\last\collapsebox
+            X = row_x_( *this, *rows( ) ) + scroll_x_( *this ) - Bool(*rows( )\parent\row Or *rows( )\count\childrens) * *this\row\sublevelsize
+            Y = row_y_( *this, *rows( ) ) + scroll_y_( *this )
+            
+            ; for the tree vertical line
+            If *rows( )\last And Not *rows( )\last\hide And *rows( )\last\sublevel
+              Line((x + *l_ibox\x+*ibox\width/2), (y+*rows( )\height/2), 1, (*rows( )\last\y-*rows( )\y), *rows( )\color\line )
+            EndIf
+            If *rows( )\parent\row And Not *rows( )\parent\row\visible And *rows( )\parent\row\last = *rows( ) And *rows( )\sublevel
+              Line((x + *ibox\x+*ibox\width/2), (*rows( )\parent\row\y+*rows( )\parent\row\height/2) - _scroll_y_, 1, (*rows( )\y-*rows( )\parent\row\y), *rows( )\parent\row\color\line )
+            EndIf
+            
+            ; for the tree horizontal line
+            If (Not *this\mode\buttons And *rows( )\count\childrens) 
+              If *rows( )\last\sublevel > 1 Or minus
+                Line((x + *ibox\x+*ibox\width/2) + *this\row\sublevelsize-4-Bool(minus And *rows( )\last\sublevel < 2)*3, (y+*rows( )\height/2), 4+Bool(minus And *rows( )\last\sublevel < 2)*3, 1, *rows( )\color\line )
+              EndIf
+            ElseIf *rows( )\parent\row
+              Line((x + *ibox\x+*ibox\width/2), (y+*rows( )\height/2), 5, 1, *rows( )\color\line )
+            ElseIf Not (*this\mode\buttons And *rows( )\count\childrens) Or *rows( ) = *this\row\first Or *rows( ) = *this\row\last
+              If *rows( ) = *this\row\first Or *rows( ) = *this\row\last
+                x + Bool(*rows( )\parent\row Or *rows( )\count\childrens) * *this\row\sublevelsize
+              EndIf
+              Line((x + *ibox\x+*ibox\width/2) - minus, (y+*rows( )\height/2), 7, 1, *rows( )\color\line )
+            EndIf
+          EndIf    
+        Next
+      ElseIf *this\mode\lines = 4
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
+        ; drawing_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
+        
+        ; for the tree item first vertical line
+        If *this\row\first And *this\row\last
+          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x + *this\row\first\collapsebox\width/2) - _scroll_x_, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
+        EndIf
+        
+        ForEach *rows( )
+          If *rows( )\visible And Not *rows( )\hide 
+            *ibox = *rows()\collapsebox
+            *l_ibox = *rows()\last\collapsebox
+            X = row_x_( *this, *rows( ) ) + scroll_x_( *this ) - Bool(*rows( )\parent\row Or *rows( )\count\childrens) * *this\row\sublevelsize
+            Y = row_y_( *this, *rows( ) ) + scroll_y_( *this )
+            
+            ; for the tree vertical line
+            If *rows( )\last And Not *rows( )\last\hide And *rows( )\last\sublevel
+              Line((x + *l_ibox\x+*ibox\width/2), (y+*rows( )\height/2), 1, (*rows( )\last\y-*rows( )\y), *rows( )\color\line )
+            EndIf
+            If *rows( )\parent\row And Not *rows( )\parent\row\visible And *rows( )\parent\row\last = *rows( ) And *rows( )\sublevel
+              Line((x + *ibox\x+*ibox\width/2), (*rows( )\parent\row\y+*rows( )\parent\row\height/2) - _scroll_y_, 1, (*rows( )\y-*rows( )\parent\row\y), *rows( )\parent\row\color\line )
+            EndIf
+            
+            ; for the tree horizontal line
+            If (Not *this\mode\buttons And *rows( )\count\childrens) And *rows( )\sublevel
+              Line((x + *ibox\x+*ibox\width/2) + *this\row\sublevelsize, (y+*rows( )\height/2), 5, 1, *rows( )\color\line )
+            EndIf
+            
+            If *rows( ) = *this\row\first Or *rows( ) = *this\row\last Or (*rows( )\count\childrens And *rows( )\sublevel = 0)
+              x + Bool(*rows( )\parent\row Or *rows( )\count\childrens) * *this\row\sublevelsize
+            EndIf
+            
+            If Not ( *this\mode\buttons And *rows( )\count\childrens And *rows( )\sublevel = 0 )
+              Line((x + *ibox\x+*ibox\width/2), (y+*rows( )\height/2), 5, 1, *rows( )\color\line )
+            EndIf
+          EndIf    
+        Next
       EndIf
       
       ; Draw buttons
@@ -16351,7 +16455,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         drawing_mode_alpha_( #PB_2DDrawing_Default )
         ;draw_roundbox_( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
         ;draw_roundbox_( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner]+2,*this\height[#__c_inner]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
-        draw_roundbox_( *this\x[#__c_inner],*this\y[#__c_inner],*this\width[#__c_inner],*this\height[#__c_inner], *this\round, *this\round, *this\color\back[*this\color\state] )
+        draw_roundbox_( *this\x[#__c_inner],*this\y[#__c_inner],*this\width[#__c_inner],*this\height[#__c_inner], *this\round, *this\round, *this\color\back[Bool(*this<>*this\_root())**this\color\state] )
         
         
         If \image\id Or *this\image[#__img_background]\id
@@ -17824,11 +17928,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Case #PB_EventType_Focus
             *this\state\repaint = #True
             
-            CompilerIf #PB_Compiler_IsMainFile
               If Not is_root_( *this )
-                *this\color\state = 2
+              ;  *this\color\state = 2
               EndIf
-            CompilerEndIf
             
           Case #PB_EventType_LostFocus
             *this\state\repaint = #True
@@ -18053,7 +18155,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *leave\state\enter = #False
             repaint | DoEvents( *leave, #PB_EventType_MouseLeave )
             
-            If Not is_interact_row_( *leave ) And Not a_transform_( *leave ) 
+            If Not is_interact_row_( *leave ) And Not *leave\_a_\transform
               If Not IsChild( *widget, *leave )
                 ;
                 DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
@@ -18090,14 +18192,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             DoEvents( *widget, #PB_EventType_MouseEnter )
             DD_Cursor( *widget )
             
-            If Not is_interact_row_( *widget ) And Not a_transform_( *widget )
+            If Not is_interact_row_( *widget ) And Not *widget\_a_\transform
               If *widget\address And Not *widget\attach 
                 ForEach *widget\_widgets( ) 
                   If *widget\_widgets( ) = *widget
                     Break
                   EndIf
                   
-                  If *widget\_widgets( )\state\enter = #False And a_transform_( *widget\_widgets( ) ) And 
+                  If *widget\_widgets( )\state\enter = #False And *widget\_widgets( )\_a_\transform And 
                      *widget\_widgets( )\count\childrens And 
                      Not is_interact_row_( *widget\_widgets( ) ) And
                      IsChild( *widget, *widget\_widgets( ))
@@ -18338,7 +18440,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; do events all
         If eventtype = #PB_EventType_Focus
-          ;           If FocusedWidget( )                          And Not FocusedWidget( )\_a_\transform ; a_transform_( *leave )
+          ;           If FocusedWidget( )                          And Not FocusedWidget( )\_a_\transform 
           ;             Repaint | SetActive( FocusedWidget( ) ) 
           ;           Else
           ;             If GetActive( ) 
@@ -19579,341 +19681,336 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
+; ; IncludePath "../../../"
+; ; ;XIncludeFile "gadget/gadgets.pbi"
+; ; ;XIncludeFile "widgets.pbi"
+; ; XIncludeFile "widget-events.pbi"
 
-CompilerIf #PB_Compiler_IsMainFile ;=99
+
+CompilerIf #PB_Compiler_IsMainFile
+ UseLib(widget)
+ 
+ Global Canvas_0, g_Canvas
+  Define i, a, g = 1
+  Global *g._S_widget
+  Global *g0._S_widget
+  Global *g1._S_widget
+  Global *g2._S_widget
+  Global *g3._S_widget
+  Global *g4._S_widget
+  Global *g5._S_widget
+  Global *g6._S_widget
+  Global *g7._S_widget
+  Global *g8._S_widget
+  Global *g9._S_widget
   
-  EnableExplicit
-  UseLIB(widget)
   
-  Enumeration 
-    #window_0
-    #window
-  EndEnumeration
+  UsePNGImageDecoder()
   
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+    End
+  EndIf
   
-  ; Shows using of several panels...
-  Procedure BindEvents( )
-    Protected *this._S_widget = EventWidget( )
-    Protected eventtype = WidgetEventType( )
+  Global img = ImageID( 0 )
+  
+  Procedure events_tree_gadget()
+    ;Debug " gadget - "+EventGadget()+" "+EventType()
+    Protected EventGadget = EventGadget()
+    Protected EventType = EventType()
+    Protected EventData = EventData()
+    Protected EventItem = GetGadgetState(EventGadget)
     
-    Select eventtype
-        ;       Case #PB_EventType_Draw          : Debug "draw"         
-      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
-      Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
-      Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
-      Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
-      Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
-      Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
-      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
-      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
-      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
-      Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
-      Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
-      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
-      Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
-      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
+    Select EventType
+      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
-  
-  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-  
-  Define i
-  Define *w._S_widget, *g._S_widget, editable
-  Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
-  
-  ;BindWidgetEvent( *root, @BindEvents( ) )
-  Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-  view = Container(10, 10, 406, 238, #PB_Container_Flat)
-  SetColor(view, #PB_Gadget_BackColor,RGB(213,213,213))
-  ;a_enable( widget( ), 15 )
-  a_init( view, 15 )
-  
-  ;Define *a1._s_widget = image( 5+170,5+140,60,60, -1 )
-  Define *a1._s_widget = Panel( 5+170,5+140,160,160, #__flag_nogadgets )
-  ;Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-  Define *a2._s_widget = ScrollArea( 50,45,135,95, 300,300, 1, #__flag_nogadgets )
-  Define *a3._s_widget = image( 150,110,60,60, -1 )
-  
-  ; a_init( *a, 15 )
-  a_set( *a1, #__a_size )
-  
-  CloseList()
-  size_value = Track(56, 262, 240, 26, 0, 30)
-  pos_value = Track(56, 292, 240, 26, 0, 30)
-  grid_value = Track(56, 320, 240, 26, 0, 30)
-  back_color = Button(304, 264, 112, 32, "BackColor")
-  frame_color = Button(304, 304, 112, 32, "FrameColor")
-  size_text = Text(8, 256, 40, 24, "0")
-  pos_text = Text(8, 288, 40, 24, "0")
-  grid_text = Text(8, 320, 40, 24, "0")
-  
-  SetState( size_value, 7 )
-  SetState( pos_value, 3 )
-  SetState( grid_value, 6 )
-  
-  ;;Bind( *root, @WidgetEventHandler( ) )
-  
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  
-  
-  ;{ OpenRoot0
-  Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  Define Text.s, m.s=#LF$, a
-  *g = Editor(10, 10, 200+60, 200, #__flag_gridlines);, #__flag_autosize) 
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "I have to write the text in the box or not." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work."
-  
-  SetText(*g, Text.s) 
-  For a = 0 To 2
-    AddItem(*g, a, "Line "+Str(a))
-  Next
-  AddItem(*g, 7+a, "_")
-  For a = 4 To 6
-    AddItem(*g, a, "Line "+Str(a))
-  Next 
-  
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #__string_password|#__string_right)
-  
-  
-  Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")
-  ;BindWidgetEvent( *root1, @BindEvents( ) )
-  
-  
-  Define *root2._S_widget = Open(#window,10,300,300-20,300-20): *root2\class = "root2": SetText(*root2, "root2")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  HyperLink( 10,10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-  String( 60,20, 60, 40, "String" )
-  *w = ComboBox( 108,20, 152,40)
-  For i=1 To 100;0000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  
-  
-  Define *root3._S_widget = Open(#window,300,300,300-20,300-20): *root3\class = "root3": SetText(*root3, "root3")
-  ;BindWidgetEvent( *root3, @BindEvents( ) )
-  
-  Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetText(*root4, "root4")
-  ;BindWidgetEvent( *root4, @BindEvents( ) )
-  
-  
-  
-  Define count = 2;0000
-  #st = 1
-  Global  mx=#st,my=#st
-  
-  Define time = ElapsedMilliseconds( )
-  
-  Global *c, *panel._S_widget
-  Procedure do_Events()
-    Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
+  Procedure events_tree_widget()
+    With structures::*event
+      ;Debug " widget - "+this()\widget+" "+this()\event
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEventType( )
+    Protected EventData = EventWidget( )\data
+    Protected EventItem = GetState(EventGadget)
+    
+    Select EventType
+      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+        DragText(GetItemText(EventGadget, EventItem))
         
-        Select GetText( EventWidget( ) )
-          Case "hide_2"
-            hide(*c, 1)
-            ; Disable(*c, 1)
-            
-          Case "show_2" 
-            hide(*c, 0)
-            
-        EndSelect
+      Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
+        Debug EventDropText()
         
-        ;         ;Case #PB_EventType_LeftButtonUp
-        ;         ClearDebugOutput( )
-        ;         
-        ;         If StartEnumerate(*panel);Root())
-        ;           If Not hide(widget( )) ;And GetParent(widget()) = *panel
-        ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-        ;           EndIf
-        ;           StopEnumerate( )
-        ;         EndIf
-        
+      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
+    EndWith
   EndProcedure
   
-  OpenList( *root1 )
-  *panel = Panel(20, 20, 180+40, 180+60, editable) : SetText(*panel, "1")
-  AddItem( *panel, -1, "item_1" )
-  Button( 20,20, 80,80, "item_1")
-  AddItem( *panel, -1, "item_2" )
-  ; Button( 10,10, 80,80, "item_2")
-  Bind(Button( 5, 5, 55, 22, "hide_2"), @do_Events())
-  Bind(Button( 5, 30, 55, 22, "show_2"), @do_Events())
-  
-  *c=Container(110,5,150,155, #PB_Container_Flat) 
-  Define *p = Panel(10,5,150,65) 
-  AddItem(*p, -1, "item-1")
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,25, "butt1") 
-  CloseList()
-  CloseList()
-  AddItem(*p, -1, "item-2")
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,25, "butt2") 
-  CloseList()
-  CloseList()
-  CloseList()
-  
-  Container(10,75,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,45, "butt1") 
-  CloseList()
-  CloseList()
-  CloseList()
-  CloseList()
-  
-  AddItem( *panel, -1, "item_3" )
-  
-  SetText(Container(20, 20, 180, 180, editable), "4") 
-  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "5") 
-  SetText(Container(40, 20, 180, 180, editable), "6")
-  Define seven = Container(20, 20, 180, 180, editable)
-  SetText(seven, "      7")
-  
-  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     8") 
-  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
-  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
-  
-  CloseList( ) ; 7
-  CloseList( ) ; 6
-  SetText(Container(10, 45, 70, 180, editable), "11") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
-  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
-  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "14") 
-  
-  SetText(Container(10, 45, 70, 180, editable), "15") 
-  SetText(Container(10, 5, 70, 180, editable), "16") 
-  SetText(Container(10, 5, 70, 180, editable), "17") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
-  CloseList( ) ; 1
-  
-  OpenList( seven )
-  ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-  ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1") 
-  SetText(Container( -5, 80, 180, 50, #__Flag_NoGadgets|editable), "container-7")
-  CloseList( ) ; 7
-               ;OpenList( *panel )
-  
-  AddItem( *panel, -1, "item_4" )
-  Button( 30,30, 80,80, "item_4")
-  AddItem( *panel, -1, "item_5" )
-  Button( 40,40, 80,80, "item_5")
-  CloseList( ) ; *panel
-  CloseList( ) ; *root1
-  SetState( *panel, 2 )
-  ;
-  OpenList( *root2 )
-  SetText(*root2, "*root2" )
-  ;   ;Define *p3._S_widget = Container( 80,80, 150,150 )
-  ;   Define *p3._S_widget = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-  ;   SetText(*p3, "12" )
-  ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-  ;   
-  ;   Define *p2._S_widget = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-  ;   SetText(Container( 5,5, 70,70 ), "5" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-  ;   CloseList( )
-  ;   Define *c1._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-  ;   CloseList( )
-  ;   
-  ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-  ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-  ;   CloseList( )
-  ;   CloseList( )
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-  ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-  ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-  ;   Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  
-  
-  Button_2 = ComboBox( 20,20, 150,40)
-  For i=1 To 100;0000
-    AddItem(Button_2, i, "text-"+Str(i))
-  Next
-  
-  ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-  Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-  Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-  Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-  Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-  Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-  Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = widget::Splitter(10, 70, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-  SetState(Splitter_5, 50)
-  SetState(Splitter_4, 50)
-  SetState(Splitter_3, 40)
-  SetState(Splitter_1, 50)
-  
-  OpenList( *root3 )
-  *w = Tree( 10,20, 150,200, #__tree_multiselect)
-  For i=1 To 100;0000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  Container( 70,180, 80,80): CloseList( )
-  
-  *w = Tree( 100,30, 100,260-20+300, #__flag_borderless)
-  SetColor( *w, #__color_back, $FF07EAF6 )
-  For i=1 To 10;00000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  
-  *w = Tree( 180,40, 100,260-20+300, #__tree_checkboxes )
-  For i=1 To 100;0000
-    If (i & 5)
-      AddItem(*w, i, "text-"+Str(i), -1, 1 )
-    Else
-      AddItem(*w, i, "text-"+Str(i))
-    EndIf
-  Next
-  
-  Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
-  
-  
-  ;
-  Define *window._S_widget
-  Define i,y = 5
-  OpenList( *root4 )
-  For i = 1 To 4
-    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-    Container(5, 5, 120+2,85+2)                                                                           ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
-    Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                      ; Gadget(i+10,
-    Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                      ; Gadget(i+20,
-    CloseList( )                                                                                          ; Gadget
-    y + 130
-  Next
-  
-  ; redraw(root())
-  ; 
-  WaitClose( )
+  Define item = 2
+  Define sublevel = 2
+  Define th = 300
+  If OpenWindow(0, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    ;{
+    TreeGadget(g, 10, 10, 210, th, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
+    ; 1_example
+    AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
+    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
+    AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
+    AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
+    AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
+    AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
+    AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
+    AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
+    AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+    ; RemoveGadgetItem(g,1)
+    ;SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    ;BindGadgetEvent(g, @Events())
+    
+    ;SetActiveGadget(g)
+    ;SetGadgetState(g, 1)
+    ;     Debug "g "+ GetGadgetText(g)
+    
+    g = 2
+    ; 2_example
+    TreeGadget(g, 230, 10, 103, th, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoButtons)                                         
+    AddGadgetItem(g, 0, "Tree_0",0 )
+    AddGadgetItem(g, 1, "Tree_1",0, 0) 
+    AddGadgetItem(g, 2, "Tree_2",0, 0) 
+    AddGadgetItem(g, 3, "Tree_3",0, 0) 
+    AddGadgetItem(g, 0, "Tree_0 (NoButtons)",0 )
+    AddGadgetItem(g, 1, "Tree_1",0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_1",0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_2",0, 2) 
+    For i = 0 To 10
+      AddGadgetItem(g, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
+      AddGadgetItem(g, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddGadgetItem(g, -1, "Sub-Item 2", 0, 1)
+      AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
+      AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)
+      AddGadgetItem(g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+    Next
+    
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    SetGadgetItemImage(g, 0, ImageID(0))
+    
+    g = 3
+    ;  3_example
+    TreeGadget(g, 230+107, 10, 103, th, #PB_Tree_AlwaysShowSelection)                                         
+    AddGadgetItem(g, 0, "Tree_1", 0, 1) 
+    AddGadgetItem(g, 0, "Tree_2_1", 0, 2) 
+    AddGadgetItem(g, 0, "Tree_2_2", 0, 3) 
+    For i = 0 To 24
+      If i % 5 = 0
+        AddGadgetItem(g, -1, "Directory" + Str(i), 0, 0)
+      Else
+        AddGadgetItem(g, -1, "Item" + Str(i), 0, 1)
+      EndIf
+    Next i
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+;     Define Indentation = 50  
+;     ; ----- Read current indentation and set TrackBar to that value
+;     ;CocoaMessage(@Indentation, GadgetID(g), "indentationPerLevel")
+;     CocoaMessage(0, GadgetID(g), "setIndentationPerLevel:@", @Indentation)
+    
+    
+    SplitterGadget(#PB_Any, 230, 10, 210, th, 3,2, #PB_Splitter_Vertical)                                         
+    
+    g = 4
+    ; 4_example
+    TreeGadget(g, 450, 10, 210, th, #PB_Tree_AlwaysShowSelection)                                         
+    AddGadgetItem(g, 0, "Tree_0", 0 )
+    AddGadgetItem(g, 1, "Tree_1", img, 1) 
+    AddGadgetItem(g, 2, "Tree_2", 0, 2) 
+    AddGadgetItem(g, 3, "Tree_3", 0, 3) 
+    AddGadgetItem(g, 4, "Tree_4", 0, 2) 
+    AddGadgetItem(g, 5, "Tree_5", 0, 2) 
+    AddGadgetItem(g, 6, "Tree_6", 0, 3) 
+    AddGadgetItem(g, 7, "Tree_7_hhhhhhhhhhhhh_", 0, 4) 
+    AddGadgetItem(g, 8, "Tree_8", 0, 3) 
+    AddGadgetItem(g, 9, "Tree_9",0,1 )
+    AddGadgetItem(g, 10, "Tree_10", 0 )
+    AddGadgetItem(g, 11, "Tree_11" )
+    AddGadgetItem(g, 12, "Tree_12", 0 )
+    AddGadgetItem(g, 13, "Tree_13", 0 )
+    AddGadgetItem(g, 14, "Tree_14", 0 )
+    AddGadgetItem(g, 15, "Tree_15", 0 )
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+    g = 5
+    ; 5_example
+    TreeGadget(g, 670, 10, 210, th, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoLines)                                         
+    AddGadgetItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", 0 )
+    AddGadgetItem(g, 1, "Tree_1", 0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
+    AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
+    AddGadgetItem(g, 3, "Tree_3_1", 0, 1) 
+    AddGadgetItem(g, 3, "Tree_3_2", 0, 2) 
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+    g = 6
+    ;  6_example
+    TreeGadget(g, 890, 10, 210, th, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons | #PB_Tree_ThreeState)                                      
+    AddGadgetItem(g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)",ImageID(0)) 
+    For i=1 To 20
+      If i=5
+        AddGadgetItem(g, -1, "Tree_"+Str(i), 0) 
+      Else
+        AddGadgetItem(g, -1, "Tree_"+Str(i), ImageID(0)) 
+      EndIf
+    Next
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    SetGadgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetGadgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    BindGadgetEvent(g, @events_tree_gadget())
+    
+    ;}
+    
+    Open(0, 0, 225+90, 1110, 425-90)
+    g_Canvas = GetGadget(root())
+    g = 10
+    
+    *g = Tree(10, 20, 210, th, #__tree_CheckBoxes)                                         
+    
+    
+    ; 1_example
+    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 2", -1, 11)
+    AddItem (*g, -1, "Sub-Item 3", -1, 1)
+    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 5", -1, 11)
+    AddItem (*g, -1, "Sub-Item 6", -1, 1)
+    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    
+    ;{  3_example
+    *g5 = Tree(230, 20, 103, th, #__Tree_NoButtons|#__tree_Collapse)                                         
+    AddItem(*g5, 0, "Tree_0", -1 )
+    AddItem(*g5, 1, "Tree_1", -1, 0) 
+    AddItem(*g5, 2, "Tree_2", -1, 0) 
+    AddItem(*g5, 3, "Tree_3", -1, 0) 
+    AddItem(*g5, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g5, 1, "Tree_1", -1, 1) 
+    AddItem(*g5, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g5, 2, "Tree_2_2", -1, 2) 
+    For i = 0 To 10
+      AddItem(*g5, -1, "Normal Item "+Str(i), -1, 0) 
+      AddItem(*g5, -1, "Node "+Str(i), -1, 0)        
+      AddItem(*g5, -1, "Sub-Item 1", -1, 1)         
+      AddItem(*g5, -1, "Sub-Item 2", -1, 1)
+      AddItem(*g5, -1, "Sub-Item 3", -1, 1)
+      AddItem(*g5, -1, "Sub-Item 4", -1, 1)
+      AddItem(*g5, -1, "File "+Str(i), -1, 0) 
+    Next
+    ;}
+    
+    ;{  6_example
+    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__tree_Collapsed)                                         
+    AddItem(*g6, 0, "Tree_1", -1, 1) 
+    AddItem(*g6, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g6, 0, "Tree_2_2", -1, 3) 
+    For i = 0 To 24
+      If i % 5 = 0
+        AddItem(*g6, -1, "Directory" + Str(i), -1, 0)
+      Else
+        AddItem(*g6, -1, "Item" + Str(i), -1, 1)
+      EndIf
+    Next i
+    ;}
+    
+    
+    splitter(230, 20, 210, th, *g6,*g5, #PB_Splitter_Vertical)                                         
+    
+    
+       ;  2_example
+    *g = Tree(450, 20, 210, th, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+    AddItem(*g, 0, "Tree_0", -1 )
+    AddItem(*g, 1, "Tree_1", 0, 1) 
+    AddItem(*g, 2, "Tree_2", -1, 2) 
+    AddItem(*g, 3, "Tree_3", -1, 3) 
+    AddItem(*g, 4, "Tree_4", -1, 2) 
+    AddItem(*g, 5, "Tree_5", -1, 2) 
+    AddItem(*g, 6, "Tree_6", -1, 3) 
+    AddItem(*g, 7, "Tree_7_hhhhhhhhhhhhh_", -1, 4) 
+    AddItem(*g, 8, "Tree_8", -1, 3) 
+    AddItem(*g, 9, "Tree_9",-1,1 )
+    AddItem(*g, 10, "Tree_10", -1 )
+    AddItem(*g, 11, "Tree_11", -1 )
+    AddItem(*g, 12, "Tree_12", -1 )
+    AddItem(*g, 13, "Tree_13", -1 )
+    AddItem(*g, 14, "Tree_14", -1 )
+    AddItem(*g, 15, "Tree_15", -1 )
+; ;     ;Bind(*g, @events_tree_widget())
+; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+    
+    
+ ;{  4_example
+    *g = Tree(670, 20, 210, th, #__list_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+;         AddItem(*g, 1, "Tree_1", -1, 1) 
+;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
+;         AddItem(*g, 2, "Tree_2_1", -1, 1) 
+;         AddItem(*g, 3, "Tree_3_1", -1, 1) 
+;         AddItem(*g, 3, "Tree_3_2", -1, 2) 
+;         For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
+    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
+    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
+    AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
+    AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+    AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
+                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
+    AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
+    AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
+    
+    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
+    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
+    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1, 1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_WindowCentered", -1, 1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
+    ;}                                                    ;
+    
+    ;{  3_example
+    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__list_nolines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+    For i=1 To 20
+      If i=5 Or i=6 Or i=7
+        AddItem(*g, -1, "Tree_"+Str(i), -1, 0) 
+      Else
+        AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
+      EndIf
+    Next 
+    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    LoadFont(5, "Arial", 16)
+    SetItemFont(*g, 3, 5)
+    SetItemText(*g, 3, "16_font and text change")
+    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
+    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
+    SetItemText(*g, 5, "backcolor and text change")
+    LoadFont(6, "Arial", 25)
+    SetItemFont(*g, 4, 6)
+    SetItemText(*g, 4, "25_font and text change")
+    SetItemFont(*g, 14, 6)
+    SetItemText(*g, 14, "25_font and text change")
+    ;Bind(*g, @events_tree_widget())
+    ;}
+    
+    WaitClose( )
+  EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------+---------------8---------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------096-----------------------------------------------------------------------------------------
 ; EnableXP

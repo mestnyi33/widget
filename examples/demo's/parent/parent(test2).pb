@@ -242,17 +242,17 @@ CompilerIf #PB_Compiler_IsMainFile
         *param3 = 5
       EndIf
       
-      If transform( ) And transform( )\grid\size
-        x = ( x/transform( )\grid\size ) * transform( )\grid\size
-        y = ( y/transform( )\grid\size ) * transform( )\grid\size
-        width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
-        height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
+      If a_transform( ) And a_transform( )\grid\size
+        x = ( x/a_transform( )\grid\size ) * a_transform( )\grid\size
+        y = ( y/a_transform( )\grid\size ) * a_transform( )\grid\size
+        width = ( width/a_transform( )\grid\size ) * a_transform( )\grid\size + 1
+        height = ( height/a_transform( )\grid\size ) * a_transform( )\grid\size + 1
         
-        ;Debug ( transform( )\pos + #__window_frame_size )
+        ;Debug ( a_transform( )\pos + #__window_frame_size )
         
         If class = "window"
-          width + ( #__window_frame_size * 2 )%transform( )\grid\size
-          height + ( #__window_frame_size * 2 + #__window_caption_height )%transform( )\grid\size
+          width + ( #__window_frame_size * 2 )%a_transform( )\grid\size
+          height + ( #__window_frame_size * 2 + #__window_caption_height )%a_transform( )\grid\size
         EndIf
       EndIf
       
@@ -293,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
           EndIf
           
-          ;  SetBackgroundImage( *new, Points( transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+          ;  SetBackgroundImage( *new, Points( a_transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_drag_private_type )
         EndIf
         
@@ -411,7 +411,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragWidth( ) 
           ;         DD_EventDragHeight( )
           
-          transform( )\type = 0
+          a_transform( )\type = 0
           DragPrivate( #_drag_private_type )
           SetCursor( EventWidget( ), ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
         EndIf
@@ -422,9 +422,8 @@ CompilerIf #PB_Compiler_IsMainFile
           ClearDebugOutput()
           
           *this = GetItemData( EventWidget, GetState( EventWidget ) )
-          Debug 99999
+          
           If a_set( *this )
-            a_reset( )
           EndIf
           
           ;;SetActive( *this )
