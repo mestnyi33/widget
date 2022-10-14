@@ -2712,7 +2712,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure a_show_( *this._S_widget, state )
       Protected Repaint, i 
       
-      If Not mouse()\drag
+      If Not ( a_focus_widget( ) And a_focus_widget( )\state\drag )
         If is_integral_( *this )
           *this = *this\_parent( )
         EndIf
@@ -4289,9 +4289,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             y + *this\_parent( )\y[#__c_inner]
           EndIf
           
-          If *this\attach Or (*this\_a_\transform And *this\_parent( )\container > 0 And *this\_parent( )\type <> #__type_MDI)
-            y - *this\_parent( )\fs
-            x - *this\_parent( )\fs
+          If *this\_a_\transform 
+            If *this\_parent( )\container > 0 And 
+               *this\_parent( )\type <> #__type_MDI
+              y - *this\_parent( )\fs
+              x - *this\_parent( )\fs
+            EndIf
           EndIf
         EndIf
         
@@ -4462,13 +4465,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\y[#__c_inner] + *this\fs + ( *this\fs[2] + *this\fs[4] )
       EndIf
       
-      ;-
+      ;- resize childrens
       ; then move and size parent resize all childrens
       If *this\count\childrens And *this\container
-        ; Protected.l x, y, width, height
-        Protected x2,y2,pw,ph, pwd,phd, frame = #__c_frame
-        
-        Protected delta_width, delta_height
+        Protected x2,y2,pw,ph, pwd,phd, delta_width, delta_height, frame = #__c_frame
         
         If StartEnumerate( *this ) 
           If Not is_scrollbars_( enumWidget( ))
@@ -19054,10 +19054,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\caption\color = _get_colors_( )
         
         ;\caption\hide = constants::_check_( flag, #__flag_borderless )
-        *this\caption\hide = constants::_check_( flag, #__Window_titleBar, #False )
-        *this\caption\button[#__wb_close]\hide = constants::_check_( flag, #__Window_SystemMenu, #False )
-        *this\caption\button[#__wb_maxi]\hide = constants::_check_( flag, #__Window_MaximizeGadget, #False )
-        *this\caption\button[#__wb_mini]\hide = constants::_check_( flag, #__Window_MinimizeGadget, #False )
+        *this\caption\hide = constants::_check_( *this\flag, #__Window_titleBar, #False )
+        *this\caption\button[#__wb_close]\hide = constants::_check_( *this\flag, #__Window_SystemMenu, #False )
+        *this\caption\button[#__wb_maxi]\hide = constants::_check_( *this\flag, #__Window_MaximizeGadget, #False )
+        *this\caption\button[#__wb_mini]\hide = constants::_check_( *this\flag, #__Window_MinimizeGadget, #False )
         *this\caption\button[#__wb_help]\hide = 1
         
         *this\caption\button[#__wb_close]\color = colors::*this\red
@@ -19095,15 +19095,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If Not \caption\hide 
-          *this\barHeight = constants::_check_( flag, #__flag_borderless, #False ) * ( #__window_caption_height ); + #__window_frame_size )
+          *this\barHeight = constants::_check_( *this\flag, #__flag_borderless, #False ) * ( #__window_caption_height ); + #__window_frame_size )
           *this\round = 7
           
           *this\caption\text\padding\x = 5
           *this\caption\text\string = Text
         EndIf
         
-        *this\child = Bool( Flag & #__window_child = #__window_child )
-        *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__window_frame_size
+        *this\child = Bool( *this\Flag & #__window_child = #__window_child )
+        *this\fs = constants::_check_( *this\flag, #__flag_borderless, #False ) * #__window_frame_size
         
         
         If x = #PB_Ignore : If transform( ) : x = pos_x + transform( )\grid\size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
@@ -19119,6 +19119,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Root( )\width[#__c_inner] = width
           Root( )\height[#__c_inner] = height
         EndIf
+        
+        
+        *this\x[#__c_inner] =- 2147483648
+        *this\y[#__c_inner] =- 2147483648
+        
+        *this\container = *this\type
+        
+        *this\color = _get_colors_( )
+        *this\color\back = $FFF9F9F9
+        
+        ; Background image
+        *this\image\img =- 1
+        
+        If Root
+          Root( )\canvas\container = *this
+        EndIf
+        
         If Not *parent
           ;*parent = Root( )
         EndIf
@@ -19137,7 +19154,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         Else
           If Root( )\canvas\container > 1
-            *parent = Root( )\canvas\container 
+            *parent = Root( );\canvas\container 
           Else
             *parent = Root( )
           EndIf
@@ -19145,37 +19162,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *parent 
           set_align_flag_( *this, *parent, *this\flag )
+          
           If *this\child = 0 And 
              SetAttachment( *this, *parent, 0 )
-            x - *parent\x[#__c_container] - *parent\fs[1]
-            y - *parent\y[#__c_container] - *parent\fs[2] 
+            x - *parent\x[#__c_container] - (*parent\fs + (*parent\fs[1] + *parent\fs[3]))
+            y - *parent\y[#__c_container] - (*parent\fs + (*parent\fs[2] + *parent\fs[4]))
           EndIf
         EndIf
         
-        
-        
-        *this\x[#__c_inner] =- 2147483648
-        *this\y[#__c_inner] =- 2147483648
-        
-        *this\container = *this\type
-        
-        *this\color = _get_colors_( )
-        *this\color\back = $FFF9F9F9
-        
-        ; Background image
-        *this\image\img =- 1
-        
-        If Root
-          Root( )\canvas\container = *this
-        EndIf
-        
+        ;
         Resize( *this, x,y,width,height )
         
-        If flag & #__Window_NoGadgets = #False
+        If *this\flag & #__Window_NoGadgets = #False
           OpenList( *this )
         EndIf
         
-        If flag & #__Window_NoActivate = #False And Not *this\_a_\transform
+        If *this\flag & #__Window_NoActivate = #False And Not *this\_a_\transform
           SetActive( *this )
         EndIf 
       EndWith
@@ -20007,5 +20009,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------+--------------7--44---------------------t2------v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

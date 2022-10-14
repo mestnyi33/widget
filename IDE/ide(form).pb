@@ -1128,7 +1128,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget_add(*window, "button", 35, 65+40, 50, 30)
     widget_add(*window, "text", 45, 65+40*2, 50, 30)
     
-    Define *container = widget_add(*window, "container", 100, 25, 265, 170)
+    ;Define *container = widget_add(*window, "container", 100, 25, 265, 170)
+    Define *container = widget_add(*window, "scrollarea", 100, 25, 265, 170)
+    ;Define *container = widget_add(*window, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
     widget_add(*container, "button", 15, 25, 30, 30)
     widget_add(*container, "text", 25, 65, 50, 30)
     widget_add(*container, "button", 35, 65+40, 80, 30)

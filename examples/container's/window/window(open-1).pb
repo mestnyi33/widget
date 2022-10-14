@@ -1,9 +1,11 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿; XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  ; Shows possible flags of ButtonGadget in action...
+ ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
-  
+  Uselib(widget)
+ 
   Procedure Events_windows()
     Debug "gw "+Event() +" "+ EventType() +" "+ EventWindow()
   EndProcedure
