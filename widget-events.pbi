@@ -2448,6 +2448,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.i a_set( *this._S_widget, size.l = #PB_Ignore, position.l = #PB_Ignore )
       Protected value, result.i, i
       Static *before._S_widget
+      
       If is_integral_( *this )
         *this = *this\_parent( )
       EndIf
@@ -15998,7 +15999,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; for the tree item first vertical line
         If *this\row\first And *this\row\last
-          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x + *this\row\first\collapsebox\width/2+1) - _scroll_x_, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
+          Line((*this\x[#__c_inner] + *this\row\first\collapsebox\x + *this\row\first\collapsebox\width/2) - _scroll_x_, (row_y_( *this, *this\row\first ) + *this\row\first\height/2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), *this\row\first\color\line )
         EndIf
       EndIf
       
@@ -16047,10 +16048,66 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
               Else
                 
-                Arrow( x + ( *ibox\width - 4 )/2+Bool(*ibox\___state),
-                       y + ( *ibox\height - 4 )/2+Bool( Not *ibox\___state), 4, 
-                       Bool( Not *ibox\___state) + 2, *rows( )\color\front[0] ,0,0 ) 
+                Protected _x_ = x 
+                Protected _y_ = y
+                Protected _frame_color_ = $ffffffff
+                Protected _back_color_ = $ff000000
                 
+                If *ibox\___state ; >
+                  If *rows( )\color\state 
+                    _frame_color_ = $ffffffff
+                  Line(_x_+3, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+                  Plot(_x_+4, _y_-1, _frame_color_ ) 
+                  Plot(_x_+4, _y_+7, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
+                  Plot(_x_+5, _y_+0, _frame_color_ ) 
+                  Plot(_x_+5, _y_+6, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
+                  Plot(_x_+6, _y_+1, _frame_color_ ) 
+                  Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
+                  Plot(_x_+7, _y_+2, _frame_color_ ) 
+                  Plot(_x_+7, _y_+4, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
+                  Plot(_x_+8, _y_+3, _frame_color_)                                        ; 0,0,0,0,0,0,0,0,0,0,0
+                EndIf
+                
+                  Line(_x_+4, _y_+0, 1, 7, _back_color_) 
+                  Line(_x_+5, _y_+1, 1, 5, _back_color_) 
+                  Line(_x_+6, _y_+2, 1, 3, _back_color_) 
+                  Plot(_x_+7, _y_+3, _back_color_)       
+                Else ; v
+;                   _frame_color_ = $ff000000
+;                   Line(_x_- 1, _y_+2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+;                   Plot(_x_+0, _y_+3, _frame_color_ ) 
+;                   Plot(_x_+8, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
+;                   Plot(_x_+1, _y_+4, _frame_color_ ) 
+;                   Plot(_x_+7, _y_+4, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
+;                   Plot(_x_+2, _y_+5, _frame_color_ ) 
+;                   Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
+;                   Plot(_x_+3, _y_+6, _frame_color_ ) 
+;                   Plot(_x_+5, _y_+6, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
+;                   Plot(_x_+4, _y_+7, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
+                  
+                  Line(_x_+1, _y_+3, 7, 1, _back_color_) 
+                  Line(_x_+2, _y_+4, 5, 1, _back_color_) 
+                  Line(_x_+3, _y_+5, 3, 1, _back_color_) 
+                  Plot(_x_+4, _y_+6, _back_color_)       
+                EndIf
+                
+;                 If *ibox\___state ; >
+;                   _frame_color_ = $ffffffff
+;                   Line(_x_+3, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+;                   Plot(_x_+4, _y_-1, _frame_color_ ) : Line(_x_+4, _y_+0, 1, 7, _back_color_) : Plot(_x_+4, _y_+7, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
+;                   Plot(_x_+5, _y_+0, _frame_color_ ) : Line(_x_+5, _y_+1, 1, 5, _back_color_) : Plot(_x_+5, _y_+6, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
+;                   Plot(_x_+6, _y_+1, _frame_color_ ) : Line(_x_+6, _y_+2, 1, 3, _back_color_) : Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
+;                   Plot(_x_+7, _y_+2, _frame_color_ ) : Plot(_x_+7, _y_+3, _back_color_)       : Plot(_x_+7, _y_+4, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
+;                   Plot(_x_+8, _y_+3, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
+;                 Else ; v
+;                   _frame_color_ = $ff000000
+;                   Line(_x_- 1, _y_+2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
+;                   Plot(_x_+0, _y_+3, _frame_color_ ) : Line(_x_+1, _y_+3, 7, 1, _back_color_) : Plot(_x_+8, _y_+3, _frame_color_ )                                      ; 0,0,1,1,1,1,1,1,1,0,0
+;                   Plot(_x_+1, _y_+4, _frame_color_ ) : Line(_x_+2, _y_+4, 5, 1, _back_color_) : Plot(_x_+7, _y_+4, _frame_color_ )                                      ; 0,0,0,1,1,1,1,1,0,0,0
+;                   Plot(_x_+2, _y_+5, _frame_color_ ) : Line(_x_+3, _y_+5, 3, 1, _back_color_) : Plot(_x_+6, _y_+5, _frame_color_ )                                       ; 0,0,0,0,1,1,1,0,0,0,0
+;                   Plot(_x_+3, _y_+6, _frame_color_ ) : Plot(_x_+4, _y_+6, _back_color_)       : Plot(_x_+5, _y_+6, _frame_color_ )                                       ; 0,0,0,0,0,1,0,0,0,0,0
+;                   Plot(_x_+4, _y_+7, _frame_color_)                                                                                                                      ; 0,0,0,0,0,0,0,0,0,0,0
+;                 EndIf
               EndIf
               
             EndIf
@@ -19915,5 +19972,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------+---------------8---------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------8---------------v---------------------------------------------
 ; EnableXP
