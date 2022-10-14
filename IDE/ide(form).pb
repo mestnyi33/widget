@@ -91,6 +91,11 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   ;- PUBLICs
   ;-
+  Macro TransWidget( )
+    ; a_enter_widget( )
+    a_focus_widget( )
+  EndMacro
+  
   Macro properties_update_id( _gadget_, _value_ )
     SetItemText( _gadget_, #_pi_id,      GetItemText( _gadget_, #_pi_id )      +Chr( 10 )+Str( _value_ ) )
   EndMacro
@@ -279,10 +284,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Macro widget_copy( )
     ClearList( *copy( ) )
     
-    If a_enter_widget( )\_a_transform = 1
+    If TransWidget( )\_a_transform = 1
       AddElement( *copy( ) ) 
       *copy.allocate( GROUP, ( ) )
-      *copy( )\widget = a_enter_widget( )
+      *copy( )\widget = TransWidget( )
     Else
       ;       ForEach transform( )\group( )
       ;         AddElement( *copy( ) ) 
@@ -299,14 +304,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro widget_delete( )
-    If a_enter_widget( )\_a_transform = 1
-      RemoveItem( id_i_view_tree, GetData( a_enter_widget( ) ) )
+    If TransWidget( )\_a_transform = 1
+      RemoveItem( id_i_view_tree, GetData( TransWidget( ) ) )
       
-      Free( a_enter_widget( ) )
+      Free( TransWidget( ) )
       
-      If a_Set( GetItemData( id_i_view_tree, GetState( id_i_view_tree ) ) )
-        a_reset( )
-      EndIf
+      a_Set( GetItemData( id_i_view_tree, GetState( id_i_view_tree ) ) )
     Else
       ForEach transform( )\group( )
         RemoveItem( id_i_view_tree, GetData( transform( )\group( )\widget ) )
@@ -342,7 +345,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug " group "+transform( )\group( )\widget
     Next
     
-    ;a_update( a_enter_widget( ) )
+    ;a_update( TransWidget( ) )
   EndMacro
   
   Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, height.l=#PB_Ignore )
@@ -379,21 +382,6 @@ CompilerIf #PB_Compiler_IsMainFile
           height = 30
         EndIf
       EndIf
-      
-      
-;       If transform( ) And transform( )\grid\size
-;         x = ( x/transform( )\grid\size ) * transform( )\grid\size
-;         y = ( y/transform( )\grid\size ) * transform( )\grid\size
-;         width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
-;         height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
-;         
-;         ;Debug ( transform( )\pos + #__window_frame_size )
-;         
-;         If class = "window"
-;           width + ( #__window_frame_size * 2 )%transform( )\grid\size
-;           height + ( #__window_frame_size * 2 + #__window_caption_height )%transform( )\grid\size
-;         EndIf
-;       EndIf
       
       ; create elements
       Select class
@@ -529,7 +517,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
           EndIf
           
-          ;           If a_enter_widget( )\transform <> 1
+          ;           If TransWidget( )\transform <> 1
           ;             ForEach transform( )\group( )
           ;               SetItemState( id_i_view_tree, GetData( transform( )\group( )\widget ), 0 )
           ;             Next
@@ -539,7 +527,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonUp
         ; then group select
         If IsContainer( EventWidget )
-          If transform( ) And a_enter_widget( ) And a_enter_widget( )\_a_transform =- 1
+          If transform( ) And TransWidget( ) And TransWidget( )\_a_transform =- 1
             SetState( id_i_view_tree, -1 )
             If IsGadget( id_design_code )
               SetGadgetState( id_design_code, -1 )
@@ -761,7 +749,7 @@ CompilerIf #PB_Compiler_IsMainFile
           *this = GetItemData( EventWidget, GetState( EventWidget ) )
           
           If a_set( *this )
-            a_reset( )
+           
           EndIf
           
           ;;SetActive( *this )
@@ -799,7 +787,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 findstring = Mid( EventWidget( )\text\string, startpos, stoppos - startpos )
                 
                 If countstring = 4
-                  SetText( a_enter_widget( ), findstring )
+                  SetText( TransWidget( ), findstring )
                 Else
                   If countstring = 0
                     x = Val( findstring )
@@ -811,7 +799,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     height = Val( findstring )
                   EndIf
                   
-                  Resize( a_enter_widget( ), x, y, width, height)
+                  Resize( TransWidget( ), x, y, width, height)
                 EndIf
                 
               EndIf
@@ -881,8 +869,8 @@ CompilerIf #PB_Compiler_IsMainFile
                  #_tb_group_width, 
                  #_tb_group_height
               
-              move_x = transform( )\id[0]\x - a_enter_widget( )\x[#__c_inner]
-              move_y = transform( )\id[0]\y - a_enter_widget( )\y[#__c_inner]
+              move_x = transform( )\id[0]\x - TransWidget( )\x[#__c_inner]
+              move_y = transform( )\id[0]\y - TransWidget( )\y[#__c_inner]
               
               ForEach transform( )\group( )
                 Select toolbarbutton
@@ -915,7 +903,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndSelect
               Next
               
-              a_update( a_enter_widget( ) )
+              a_update( TransWidget( ) )
               
               ;Redraw( Root() )
           EndSelect
@@ -941,7 +929,6 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
     SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
     
-    ;ToolBarButton( 2, CatchImage( #PB_Any,?group_un ) )
     Separator( )
     ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
     ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
@@ -976,14 +963,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;id_design_code = Editor( 0,0,0,0 ) ; bug then move anchors window
     CloseList( )
     
-    
-;     ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
-;     id_design_form = MDI( 0,0,0,0, #__mdi_editable ) 
-;     ;id_design_form = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
-;     ; a_init(id_design_form)
-;     id_design_panel = id_design_form
-;     ;id_design_code = listview_debug
-    
+    ;
     listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
                                        
     
@@ -1061,8 +1041,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ; set splitters dafault positions
     widget::SetState( Splitter_ide, widget::width( Splitter_ide )-220 )
     widget::SetState( splitter_help, widget::height( splitter_help )-80 )
-    widget::SetState( splitter_debug, widget::height( splitter_debug )-150 )
-    widget::SetState( Splitter_inspector, 150 )
+    widget::SetState( splitter_debug, widget::height( splitter_debug )-200 )
+    widget::SetState( Splitter_inspector, 230 )
     widget::SetState( Splitter_design, 42 )
     
     ;
@@ -1147,12 +1127,12 @@ CompilerIf #PB_Compiler_IsMainFile
     widget_add(*window, "text", 25, 65, 50, 30)
     widget_add(*window, "button", 35, 65+40, 50, 30)
     widget_add(*window, "text", 45, 65+40*2, 50, 30)
-;     
-;     Define *container = widget_add(*window, "container", 100, 25, 265, 170)
-;     widget_add(*container, "button", 15, 25, 30, 30)
-;     widget_add(*container, "text", 25, 65, 50, 30)
-;     widget_add(*container, "button", 35, 65+40, 80, 30)
-;     widget_add(*container, "text", 45, 65+40*2, 50, 30)
+    
+    Define *container = widget_add(*window, "container", 100, 25, 265, 170)
+    widget_add(*container, "button", 15, 25, 30, 30)
+    widget_add(*container, "text", 25, 65, 50, 30)
+    widget_add(*container, "button", 35, 65+40, 80, 30)
+    widget_add(*container, "text", 45, 65+40*2, 50, 30)
 ;     
 ;     Define *container2 = widget_add(*window, "container", 100+140, 25+45, 165, 140)
 ;     widget_add(*container2, "button", 75, 25, 30, 30)
@@ -1211,5 +1191,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f---------v-f9
+; Folding = ------+-----------5
 ; EnableXP

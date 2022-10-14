@@ -597,6 +597,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     WIDGET
     Structure _s_WIDGET
+      autosize.b
       *root._s_ROOT     ; TEMP
       *window._s_WIDGET ; TEMP
       

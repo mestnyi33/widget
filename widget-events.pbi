@@ -64,7 +64,6 @@ CompilerIf Not Defined( fix, #PB_Module )
 CompilerEndIf
 ;XIncludeFile "include/os/mac/cursor.pbi"
 
-
 CompilerIf Not Defined( Widget, #PB_Module )
   ;-  >>>
   DeclareModule Widget
@@ -410,36 +409,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro is_text_gadget_( _this_ )
-      Bool( _this_\type = #PB_GadgetType_Editor Or
-            _this_\type = #PB_GadgetType_HyperLink Or
-            _this_\type = #PB_GadgetType_IPAddress Or
-            _this_\type = #PB_GadgetType_CheckBox Or
-            _this_\type = #PB_GadgetType_Option Or
-            _this_\type = #PB_GadgetType_Button Or
-            _this_\type = #PB_GadgetType_String Or
-            _this_\type = #PB_GadgetType_Text )
+      Bool( _this_\type = #__Type_Editor Or
+            _this_\type = #__Type_HyperLink Or
+            _this_\type = #__Type_IPAddress Or
+            _this_\type = #__Type_CheckBox Or
+            _this_\type = #__Type_Option Or
+            _this_\type = #__Type_Button Or
+            _this_\type = #__Type_String Or
+            _this_\type = #__Type_Text )
     EndMacro
     
     Macro is_list_gadget_( _this_ )
-      Bool( _this_\type = #PB_GadgetType_Tree Or
-            _this_\type = #PB_GadgetType_ListView Or
-            _this_\type = #PB_GadgetType_ListIcon Or
-            _this_\type = #PB_GadgetType_ExplorerTree Or
-            _this_\type = #PB_GadgetType_ExplorerList )
+      Bool( _this_\type = #__Type_Tree Or
+            _this_\type = #__Type_ListView Or
+            _this_\type = #__Type_ListIcon Or
+            _this_\type = #__Type_ExplorerTree Or
+            _this_\type = #__Type_ExplorerList )
     EndMacro
     
     Macro  is_interact_row_( _this_ )
-      Bool( _this_\type = #PB_GadgetType_TabBar Or
-            _this_\type = #PB_GadgetType_Splitter Or
-            _this_\type = #PB_GadgetType_Editor Or
-            _this_\type = #PB_GadgetType_IPAddress Or
-            _this_\type = #PB_GadgetType_String Or
-            _this_\type = #PB_GadgetType_Button Or
-            _this_\type = #PB_GadgetType_Tree Or
-            _this_\type = #PB_GadgetType_ListView Or
-            _this_\type = #PB_GadgetType_ListIcon Or
-            _this_\type = #PB_GadgetType_ExplorerTree Or
-            _this_\type = #PB_GadgetType_ExplorerList )
+      Bool( _this_\type = #__Type_TabBar Or
+            _this_\type = #__Type_Splitter Or
+            _this_\type = #__Type_Editor Or
+            _this_\type = #__Type_IPAddress Or
+            _this_\type = #__Type_String Or
+            _this_\type = #__Type_Button Or
+            _this_\type = #__Type_Tree Or
+            _this_\type = #__Type_ListView Or
+            _this_\type = #__Type_ListIcon Or
+            _this_\type = #__Type_ExplorerTree Or
+            _this_\type = #__Type_ExplorerList )
     EndMacro
     
     Macro is_no_select_item_( _list_, _item_ )
@@ -527,45 +526,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _this_\_a_\index
     EndMacro
     
-    Macro a_set_transform_state_( _this_, _state_ )
-      _this_\_a_\transform = _state_
-      
-      ; is integral scrol bar's
-      If _this_\scroll
-        If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\type 
-          _this_\scroll\v\_a_\transform = _this_\_a_\transform
-        EndIf
-        If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\type 
-          _this_\scroll\h\_a_\transform = _this_\_a_\transform
-        EndIf
-      EndIf
-      
-      ; is integral tab bar
-      If _this_\TabWidget( ) And Not _this_\TabWidget( )\hide And _this_\TabWidget( )\type 
-        _this_\TabWidget( )\_a_\transform = _this_\_a_\transform
-      EndIf
-    EndMacro
     
-    Macro a_reset( )
-      ; reset multi group
-      If ListSize( transform( )\group( ))
-        ForEach transform( )\group( )
-          ;           transform( )\group( )\widget\_a_\transform = 1
-          ;           transform( )\group( )\widget\_root( )\_a_\transform = 1
-          ;           transform( )\group( )\widget\_parent( )\_a_\transform = 1
-          
-          a_set_transform_state_( transform( )\group( )\widget, 1 )
-          a_set_transform_state_( transform( )\group( )\widget\_root( ), 1 )
-          a_set_transform_state_( transform( )\group( )\widget\_parent( ), 1 )
-        Next
-        
-        transform( )\id[0]\x = 0
-        transform( )\id[0]\y = 0
-        transform( )\id[0]\width = 0
-        transform( )\id[0]\height = 0
-        ClearList( transform( )\group( ))
-      EndIf
-    EndMacro
     
     ;-
     Macro MidF(_string_, _start_pos_, _length_=-1)
@@ -954,7 +915,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i Tree_properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
     
     Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
-    Declare a_set( *this, size.l = #__a_size, position.l = #PB_Ignore )
+    Declare a_set( *this, size.l = #PB_Ignore, position.l = #PB_Ignore )
     Declare a_update( *parent )
     
     Declare.i SetAttachment( *this, *parent, mode.a )
@@ -1807,7 +1768,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If Not *this\drop
-        Debug "Enable dropped - " + *this
+        Debug "Enable dropped - " + *this\class
         *this\drop.allocate( DD )
       EndIf
       
@@ -1910,7 +1871,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Bool( _this_\_a_\transform Or ( is_integral_( _this_ ) And _this_\_parent( )\_a_\transform ) )
     EndMacro
     
+    Macro a_set_transform_state_( _this_, _state_ )
+      _this_\_a_\transform = _state_
+      
+      ; is integral scrol bar's
+      If _this_\scroll
+        If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\type 
+          _this_\scroll\v\_a_\transform = _this_\_a_\transform
+        EndIf
+        If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\type 
+          _this_\scroll\h\_a_\transform = _this_\_a_\transform
+        EndIf
+      EndIf
+      
+      ; is integral tab bar
+      If _this_\TabWidget( ) And Not _this_\TabWidget( )\hide And _this_\TabWidget( )\type 
+        _this_\TabWidget( )\_a_\transform = _this_\_a_\transform
+      EndIf
+    EndMacro
+    
+    Macro a_is_at_point_( _this_ )
+      Bool( _this_ And a_enter_index( _this_ ) And (( a_enter_index( _this_ ) <> #__a_moved ) Or ( _this_\container And a_enter_index( _this_ ) = #__a_moved )))
+      ; Bool( _this_ And _this_\_a_\id And a_enter_index( _this_ ) And a_enter_index( _this_ ) <> #__a_moved )
+    EndMacro
+    
     Procedure a_grid_image( Steps = 5, line=0, Color = 0, startx = 0, starty = 0 )
+      Macro a_grid_change( _this_, _redraw_ = #False )
+        If transform( )\grid\widget <> _this_
+          If transform( )\grid\size > 1 And transform( )\grid\widget
+            SetBackgroundImage( transform( )\grid\widget, #PB_Default )
+          EndIf
+          transform( )\grid\widget = _this_
+          
+          If _this_\container > 0 And _this_\type <> #__type_MDI
+            _this_\image[#__img_background]\x =- _this_\fs
+            _this_\image[#__img_background]\y =- _this_\fs
+          EndIf
+        
+          If transform( )\grid\size > 1
+            SetBackgroundImage( transform( )\grid\widget, transform( )\grid\image )
+          EndIf
+          
+          If _redraw_
+            ReDraw( _this_\_root( ) )
+          EndIf
+        EndIf
+      EndMacro
+    
       Static ID
       Protected hDC, x,y
       startx = 0
@@ -1959,28 +1966,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ProcedureReturn ID
     EndProcedure
-    
-    Macro a_grid_change( _this_, _redraw_ = #False )
-      If transform( )\grid\widget <> _this_
-        If transform( )\grid\size > 1 And transform( )\grid\widget
-          SetBackgroundImage( transform( )\grid\widget, #PB_Default )
-        EndIf
-        transform( )\grid\widget = _this_
-        
-        If transform( )\grid\size > 1
-          SetBackgroundImage( transform( )\grid\widget, transform( )\grid\image )
-        EndIf
-        
-        If _redraw_
-          ReDraw( _this_\_root( ) )
-        EndIf
-      EndIf
-    EndMacro
-    
-    Macro a_is_at_point_( _this_ )
-      Bool( _this_ And a_enter_index( _this_ ) And (( a_enter_index( _this_ ) <> #__a_moved ) Or ( _this_\container And a_enter_index( _this_ ) = #__a_moved )))
-      ; Bool( _this_ And _this_\_a_\id And a_enter_index( _this_ ) And a_enter_index( _this_ ) <> #__a_moved )
-    EndMacro
     
     Macro a_set_size( _address_, _size_ )
       If _address_[1] ; left
@@ -2068,8 +2053,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If _a_moved_type_
           _address_[#__a_moved]\x = _x_
           _address_[#__a_moved]\y = _y_
-          _address_[#__a_moved]\width = transform( )\size * 2
-          _address_[#__a_moved]\height = transform( )\size * 2
+          _address_[#__a_moved]\width = a_focus_widget( )\_a_\size * 2
+          _address_[#__a_moved]\height = a_focus_widget( )\_a_\size * 2
         Else
           _address_[#__a_moved]\x = _x_ + a_pos( a_enter_widget( ) ) ; transform( )\pos
           _address_[#__a_moved]\y = _y_ + a_pos( a_enter_widget( ) ) ; transform( )\pos
@@ -2184,28 +2169,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
     EndMacro 
-    
-    Macro a_size_auto( _this_, _size_ )
-      ; auto size
-      transform( )\size = _size_
-      _this_\_a_\size = _size_
-      
-      ;_this_\bs = _this_\fs + transform( )\pos
-      If _this_\container And _this_\fs > 1 : transform( )\size + _this_\fs : EndIf
-      ;
-      a_set_size( _this_\_a_\id, transform( )\size )
-    EndMacro
-    
-    Macro a_resize( _this_, _size_ )
-      If _this_\_a_\transform
-        a_size_auto( _this_, _size_ )
-        a_move( _this_\_a_\id,
-                _this_\x[#__c_screen],
-                _this_\y[#__c_screen], 
-                _this_\width[#__c_screen], 
-                _this_\height[#__c_screen], _this_\container )
-      EndIf
-    EndMacro
     
     Macro a_draw( _address_ )
       drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -2482,7 +2445,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn a_is_at_point_( *a_ew )
     EndProcedure
     
-    Procedure.i a_set( *this._S_widget, size.l = #__a_size, position.l = #PB_Ignore )
+    Procedure.i a_set( *this._S_widget, size.l = #PB_Ignore, position.l = #PB_Ignore )
       Protected value, result.i, i
       Static *before._S_widget
       ; 
@@ -2516,21 +2479,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
         a_grid_change( *this\_parent( ) )
         
         
-        If position = #PB_Ignore
-          position = size - size / 3 - 2
-        EndIf
-        
-        ;transform( )\pos = position
-        
-        *this\_a_\pos = position
-        *this\bs = position + *this\fs
-        
         result = a_focus_widget( )
         a_focus_widget( ) = *this
         FocusedWidget( ) = *this
         a_enter_widget( ) = *this
         
-        a_resize( *this, size )
+        ; a_resize( *this, size )
+        If size <> #PB_Ignore
+          ;_this_\bs = _this_\fs + transform( )\pos
+          If *this\container And *this\fs > 1 
+            *this\_a_\size = size + *this\fs 
+          Else
+            *this\_a_\size = size
+          EndIf
+          
+          If position = #PB_Ignore
+            position = size - size / 3 - 2
+          EndIf
+          
+          *this\_a_\pos = position
+          *this\bs = position + *this\fs
+        EndIf
+        
+          ;
+          a_set_size( *this\_a_\id, *this\_a_\size )
+          a_move( *this\_a_\id,
+                  *this\x[#__c_screen],
+                  *this\y[#__c_screen], 
+                  *this\width[#__c_screen], 
+                  *this\height[#__c_screen], *this\container )
         
         ; get transform index
         ;a_index( value, *this\_a_\id, i )
@@ -2561,6 +2538,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Not result
           result =- 1
         EndIf
+      EndIf
+      
+      If result
+        ; reset multi group
+        If ListSize( transform( )\group( ))
+          ForEach transform( )\group( )
+            ;           transform( )\group( )\widget\_a_\transform = 1
+            ;           transform( )\group( )\widget\_root( )\_a_\transform = 1
+            ;           transform( )\group( )\widget\_parent( )\_a_\transform = 1
+            
+            a_set_transform_state_( transform( )\group( )\widget, 1 )
+            a_set_transform_state_( transform( )\group( )\widget\_root( ), 1 )
+            a_set_transform_state_( transform( )\group( )\widget\_parent( ), 1 )
+          Next
+          
+          transform( )\id[0]\x = 0
+          transform( )\id[0]\y = 0
+          transform( )\id[0]\width = 0
+          transform( )\id[0]\height = 0
+          ClearList( transform( )\group( ))
+        EndIf
+        
       EndIf
       
       ProcedureReturn result
@@ -2701,7 +2700,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf   
       
       ;
-      a_set_size( transform( )\id, transform( )\size )
+      a_set_size( transform( )\id, 7);transform( )\size )
       a_move( transform( )\id, 
               transform( )\id[0]\x - transform( )\pos, 
               transform( )\id[0]\y - transform( )\pos, 
@@ -2713,68 +2712,90 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure a_show_( *this._S_widget, state )
       Protected Repaint, i 
       
-      If is_integral_( *this )
-        *this = *this\_parent( )
-      EndIf
-      
-      If state
-        If a_enter_widget( ) <> *this 
-          ;
-          If a_enter_widget( ) And 
-             *this\_parent( ) = a_enter_widget( ) And 
-             a_focus_widget( ) <> a_enter_widget( ) 
-            
-            ;;Debug " a---#PB_EventType_MouseLeave"
-            
-            a_remove( a_enter_widget( ), i )
-          EndIf
-          
-          a_enter_widget( ) = *this
-          
-          ;; Debug " a-#PB_EventType_MouseEnter"
-          
-          If a_focus_widget( ) <> *this 
-            a_add( *this, i )
-            a_resize( *this, *this\_a_\size )
-            a_at_point( *this\_root( )\canvas\gadget )
-            
-            If *this\_a_\id[0]\color\state <> #__S_1
-              *this\_a_\id[0]\color\state = #__S_1
-            EndIf
-            
-            Repaint = #True
-          EndIf
+      If Not mouse()\drag
+        If is_integral_( *this )
+          *this = *this\_parent( )
         EndIf
         
-      Else
-        If a_enter_widget( ) = *this 
-          ; Debug " a-#PB_EventType_MouseLeave"
-          
-          If a_focus_widget( ) <> *this 
-            a_remove( *this, i )
-            a_enter_widget( ) = #Null
-            Repaint = #True
-          EndIf
-          
-          ;
-          If *this\_parent( ) And *this\_parent( ) = EnteredWidget( ) And 
-             EnteredWidget( )\_a_\transform And 
-             a_enter_widget( ) <> EnteredWidget( )
-            a_enter_widget( ) = EnteredWidget( )
+        If state
+          If a_enter_widget( ) <> *this 
+            ;
+            If a_enter_widget( ) And 
+               *this\_parent( ) = a_enter_widget( ) And 
+               a_focus_widget( ) <> a_enter_widget( ) 
+              
+              ;;Debug " a---#PB_EventType_MouseLeave"
+              
+              a_remove( a_enter_widget( ), i )
+            EndIf
             
-            If a_focus_widget( ) <> EnteredWidget( ) 
-              ;;Debug " a---#PB_EventType_MouseEnter"
+            a_enter_widget( ) = *this
+            
+            ;; Debug " a-#PB_EventType_MouseEnter"
+            
+            If a_focus_widget( ) <> *this 
+              a_add( *this, i )
               
-              a_add( EnteredWidget( ), i )
-              a_resize( EnteredWidget( ), EnteredWidget( )\_a_\size )
-              a_at_point( EnteredWidget( )\_root( )\canvas\gadget )
-              
-              If EnteredWidget( )\_a_\id[0]\color\state <> #__S_1
-                EnteredWidget( )\_a_\id[0]\color\state = #__S_1
+              ; a_resize( *this, *this\_a_\size )
+              If *this\_a_\transform
+                a_set_size( *this\_a_\id, *this\_a_\size )
+                a_move( *this\_a_\id,
+                        *this\x[#__c_screen],
+                        *this\y[#__c_screen], 
+                        *this\width[#__c_screen], 
+                        *this\height[#__c_screen], *this\container )
               EndIf
-              ;               EnteredWidget( )\state\repaint = 1
+              
+              a_at_point( *this\_root( )\canvas\gadget )
+              
+              If *this\_a_\id[0]\color\state <> #__S_1
+                *this\_a_\id[0]\color\state = #__S_1
+              EndIf
               
               Repaint = #True
+            EndIf
+          EndIf
+          
+        Else
+          If a_enter_widget( ) = *this 
+            ; Debug " a-#PB_EventType_MouseLeave"
+            
+            If a_focus_widget( ) <> *this 
+              a_remove( *this, i )
+              a_enter_widget( ) = #Null
+              Repaint = #True
+            EndIf
+            
+            ;
+            If *this\_parent( ) And *this\_parent( ) = EnteredWidget( ) And 
+               EnteredWidget( )\_a_\transform And 
+               a_enter_widget( ) <> EnteredWidget( )
+              a_enter_widget( ) = EnteredWidget( )
+              
+              If a_focus_widget( ) <> EnteredWidget( ) 
+                ;;Debug " a---#PB_EventType_MouseEnter"
+                
+                a_add( EnteredWidget( ), i )
+                
+                ; a_resize( EnteredWidget( ), EnteredWidget( )\_a_\size )
+                If EnteredWidget( )\_a_\transform
+                  a_set_size( EnteredWidget( )\_a_\id, EnteredWidget( )\_a_\size )
+                  a_move( EnteredWidget( )\_a_\id,
+                          EnteredWidget( )\x[#__c_screen],
+                          EnteredWidget( )\y[#__c_screen], 
+                          EnteredWidget( )\width[#__c_screen], 
+                          EnteredWidget( )\height[#__c_screen], EnteredWidget( )\container )
+                EndIf
+              
+                a_at_point( EnteredWidget( )\_root( )\canvas\gadget )
+                
+                If EnteredWidget( )\_a_\id[0]\color\state <> #__S_1
+                  EnteredWidget( )\_a_\id[0]\color\state = #__S_1
+                EndIf
+                ;               EnteredWidget( )\state\repaint = 1
+                
+                Repaint = #True
+              EndIf
             EndIf
           EndIf
         EndIf
@@ -2841,8 +2862,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             
             ; set current transformer
-            If a_set( *this, *this\_a_\size )
-              a_reset( )
+            If a_set( *this, #__a_size )
               Repaint = #True
             EndIf
           EndIf
@@ -2894,7 +2914,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   mouse( )\delta\x - a_pos( a_focus_widget( ) ) - a_focus_widget( )\_parent( )\fs
                   
                 Case 3, 6, 7 ; right
-                  mouse( )\delta\x - ( transform( )\size-a_pos( a_focus_widget( ) ) )
+                  mouse( )\delta\x - ( a_focus_widget( )\_a_\size-a_pos( a_focus_widget( ) ) )
               EndSelect
               
               ; vertical
@@ -2903,7 +2923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   mouse( )\delta\y - a_pos( a_focus_widget( ) ) - a_focus_widget( )\_parent( )\fs
                   
                 Case 4, 8, 7 ; bottom
-                  mouse( )\delta\y - ( transform( )\size-a_pos( a_focus_widget( ) ) ) 
+                  mouse( )\delta\y - ( a_focus_widget( )\_a_\size-a_pos( a_focus_widget( ) ) ) 
               EndSelect
             EndIf
             
@@ -3132,9 +3152,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       transform( )\id[0]\height = ( mouse_y - transform( )\id[0]\y ) + IsGrid
                   EndSelect
                   
-                  ;;a_resize_( Repaint, transform( )\id[0]\x,transform( )\id[0]\y,transform( )\id[0]\width,transform( )\id[0]\height )
+                  ;
+                  ;\\\ multi resize
+                  ;
                   
-                  ; multi resize
                   ;                   transform( )\id[0]\x = _x_
                   ;                   transform( )\id[0]\y = _y_
                   ;                   
@@ -3451,12 +3472,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro set_align_flag_( _this_, _parent_, _flag_ )
-      If _flag_ & #__flag_autosize = #__flag_autosize
-        _this_\align.allocate( ALIGN )
-        _this_\align\anchor\left = 125
-        _this_\align\anchor\top = 125
-        _this_\align\anchor\right = 125
-        _this_\align\anchor\bottom = 125
+      If _flag_ & #__flag_autosize = #__flag_autosize And
+         _parent_ And Not is_root_container_( _this_ ) And 
+         _parent_\type <> #__type_Splitter 
+        _this_\autosize = 1
         
         
         If _parent_
@@ -4132,13 +4151,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      
       ProcedureReturn Bool( *this\width[#__c_draw] > 0 And *this\height[#__c_draw] > 0 )
     EndProcedure
     
     Procedure.b Resize( *this._S_widget, x.l,y.l,width.l,height.l )
       Protected.b result
       Protected.l ix,iy,iwidth,iheight,  Change_x, Change_y, Change_width, Change_height
+      ; Debug " resize - "+*this\class
+      
+;       If *this\resize & #__resize_start = #False
+;         *this\resize | #__resize_start
+;         Debug "resize - start "+*this\class
+;       EndIf
       
       ; 
       If *this\_a_\transform And transform( )
@@ -4161,133 +4185,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ; #__flag_autoSize
-      If *this\align And 
-         *this\_parent( ) And Not is_root_container_( *this ) And 
-         *this\_parent( )\type <> #__type_Splitter And
-         *this\align\anchor\left = 125 And 
-         *this\align\anchor\top = 125 And 
-         *this\align\anchor\right = 125 And
-         *this\align\anchor\bottom = 125
-        
-        x = 0
-        Y = 0
-        width = *this\_parent( )\width[#__c_inner] 
-        height = *this\_parent( )\height[#__c_inner] 
-        
-        ;
-        If *this\type = #__type_window
-          width - *this\fs*2 - *this\fs[1]
-          height - *this\fs*2 - *this\fs[2]
-        EndIf
-      EndIf
-      
-      ; Debug " resize - "+*this\class
-      
       ;
-      If transform( ) And 
-         transform( )\grid\size And
-         *this = a_focus_widget( ) And 
-         *this <> transform( )\main ;And 1=3
-        
-        If x <> #PB_Ignore 
-          If transform( )\grid\size > 1
-            x + ( x%transform( )\grid\size ) 
-            x = ( x/transform( )\grid\size ) * transform( )\grid\size
-          EndIf
+      If *this\autosize
+        If *this\_parent( )
+          x = *this\_parent( )\x[#__c_inner]
+          Y = *this\_parent( )\y[#__c_inner]
+          width = *this\_parent( )\width[#__c_inner] 
+          height = *this\_parent( )\height[#__c_inner] 
         EndIf
         
-        If y <> #PB_Ignore 
-          If transform( )\grid\size > 1
-            y + ( y%transform( )\grid\size ) 
-            y = ( y/transform( )\grid\size ) * transform( )\grid\size
-          EndIf
-        EndIf
-        
-        If width <> #PB_Ignore 
-          If transform( )\grid\size > 1
-            width + ( width%transform( )\grid\size ) 
-            width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1 
-          EndIf
-        EndIf
-        
-        If height <> #PB_Ignore
-          If transform( )\grid\size > 1
-            height + ( height%transform( )\grid\size ) 
-            height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1 
-          EndIf
-        EndIf
-      EndIf
-      
-      ;
-      If x = #PB_Ignore 
-        x = *this\x[#__c_container]
-      Else
-        If *this\_parent( ) 
-          If Not is_integral_( *this )
-            x + scroll_x_( *this\_parent( ) ) 
-          EndIf 
-          *this\x[#__c_container] = x
-        EndIf 
-      EndIf  
-      If y = #PB_Ignore 
-        y = *this\y[#__c_container] 
-      Else
-        If *this\_parent( ) 
-          If Not is_integral_( *this )
-            y + scroll_y_( *this\_parent( ) ) 
-          EndIf 
-          *this\y[#__c_container] = y
-        EndIf 
-      EndIf  
-      
-      ;
-      If *this\_parent( ) And *this <> *this\_parent( )                       
-        If Not ( *this\attach And *this\attach\mode = 2 )
-          x + *this\_parent( )\x[#__c_inner]
-        EndIf
-        If Not ( *this\attach And *this\attach\mode = 1 )
-          y + *this\_parent( )\y[#__c_inner]
-        EndIf
-        
-        If *this\attach
-          y - *this\_parent( )\fs
-          x - *this\_parent( )\fs
-        EndIf
-      EndIf
-      
-      ;
-      If width = #PB_Ignore 
-        If *this\type = #__type_window And Not *this\_a_\transform
-          width = *this\width[#__c_container] + *this\fs*2 + ( *this\fs[1] + *this\fs[3] )
-        Else
-          width = *this\width[#__c_frame] 
-        EndIf
-      Else
-        If *this\type = #__type_window And Not *this\_a_\transform
-          width + *this\fs*2 + ( *this\fs[1] + *this\fs[3] )
-        EndIf
-      EndIf  
-      If width < 0 
-        width = 0 
-      EndIf
-      If height = #PB_Ignore 
-        If *this\type = #__type_window And Not *this\_a_\transform 
-          height = *this\height[#__c_container] + *this\fs*2 + ( *this\fs[2] + *this\fs[4] )
-        Else
-          height = *this\height[#__c_frame]
-        EndIf
-      Else
-        If *this\type = #__type_window And Not *this\_a_\transform 
-          height + *this\fs*2 + ( *this\fs[2] + *this\fs[4] )
-        EndIf
-      EndIf
-      If Height < 0 
-        Height = 0 
-      EndIf
-      
-      ;
-      If is_root_container_( *this )
+      ElseIf is_root_container_( *this ) ;??????
         ResizeWindow( *this\_root( )\canvas\window, #PB_Ignore,#PB_Ignore,width,height )
         PB(ResizeGadget)( *this\_root( )\canvas\gadget, #PB_Ignore,#PB_Ignore,width,height )
         
@@ -4300,6 +4207,99 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\y[#__c_frame] = #PB_Ignore
         ;           *this\width[#__c_frame] = #PB_Ignore
         ;           *this\height[#__c_frame] = #PB_Ignore
+      Else
+        If transform( ) And 
+           transform( )\grid\size > 1 And
+           *this = a_focus_widget( ) And 
+           *this <> transform( )\main 
+          
+          If x <> #PB_Ignore 
+            x + ( x%transform( )\grid\size ) 
+            x = ( x/transform( )\grid\size ) * transform( )\grid\size
+          EndIf
+          
+          If y <> #PB_Ignore 
+            y + ( y%transform( )\grid\size ) 
+            y = ( y/transform( )\grid\size ) * transform( )\grid\size
+          EndIf
+          
+          If width <> #PB_Ignore 
+            width + ( width%transform( )\grid\size ) 
+            width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1 
+          EndIf
+          
+          If height <> #PB_Ignore
+            height + ( height%transform( )\grid\size ) 
+            height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1 
+          EndIf
+        EndIf
+        
+        ;
+        If x = #PB_Ignore 
+          x = *this\x[#__c_container]
+        Else
+          If *this\_parent( ) 
+            If Not is_integral_( *this )
+              x + scroll_x_( *this\_parent( ) ) 
+            EndIf 
+            *this\x[#__c_container] = x
+          EndIf 
+        EndIf  
+        If y = #PB_Ignore 
+          y = *this\y[#__c_container] 
+        Else
+          If *this\_parent( ) 
+            If Not is_integral_( *this )
+              y + scroll_y_( *this\_parent( ) ) 
+            EndIf 
+            *this\y[#__c_container] = y
+          EndIf 
+        EndIf  
+        
+        ;
+        If width = #PB_Ignore 
+          If *this\type = #__type_window ;And Not *this\_a_\transform
+            width = *this\width[#__c_container]
+          Else
+            width = *this\width[#__c_frame] 
+          EndIf
+        EndIf  
+        If height = #PB_Ignore 
+          If *this\type = #__type_window ;And Not *this\_a_\transform 
+            height = *this\height[#__c_container] 
+          Else
+            height = *this\height[#__c_frame]
+          EndIf
+        EndIf
+        
+        ;
+        If width < 0 
+          width = 0 
+        EndIf
+        If Height < 0 
+          Height = 0 
+        EndIf
+        
+        ;
+        If *this\_parent( ) And *this <> *this\_parent( )                       
+          If Not ( *this\attach And *this\attach\mode = 2 )
+            x + *this\_parent( )\x[#__c_inner]
+          EndIf
+          If Not ( *this\attach And *this\attach\mode = 1 )
+            y + *this\_parent( )\y[#__c_inner]
+          EndIf
+          
+          If *this\attach Or (*this\_a_\transform And *this\_parent( )\container > 0 And *this\_parent( )\type <> #__type_MDI)
+            y - *this\_parent( )\fs
+            x - *this\_parent( )\fs
+          EndIf
+        EndIf
+        
+        ; 
+        If *this\type = #__type_window 
+          width + *this\fs*2 + ( *this\fs[1] + *this\fs[3] )
+          Height + *this\fs*2 + ( *this\fs[2] + *this\fs[4] )
+        EndIf
       EndIf
       
       ; inner x&y position
@@ -4935,7 +4935,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         Protected typ = 0
         Protected pos = 1
-        If *this\_parent( ) And *this\_parent( )\type = #PB_GadgetType_Panel
+        If *this\_parent( ) And *this\_parent( )\type = #__Type_Panel
           pos = 2
         EndIf
         
@@ -8230,7 +8230,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           set_align_y_( *this\text, *this\_rows( )\text, - 1, *this\text\rotate )
           set_align_x_( *this\text, *this\_rows( )\text, scroll_width_( *this ), *this\text\rotate )
           
-          ;           If *this\type = #PB_GadgetType_String
+          ;           If *this\type = #__Type_String
           ;             Debug *this\_rows( )\text\string
           ;           EndIf
         EndIf
@@ -8858,7 +8858,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\text\len + string_len + Len( #LF$ )
       *this\text\string = InsertString( *this\text\string, rows( )\text\string + #LF$, 1 + rows( )\text\pos )
       
-      ;       If *this\type = #PB_GadgetType_Editor
+      ;       If *this\type = #__Type_Editor
       ;         ; Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\y +" "+ rows( )\width +" "+ rows( )\height
       ;         ;  Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\text\y +" "+ rows( )\text\width +" "+ rows( )\text\height
       ;       EndIf
@@ -8960,7 +8960,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\text\len + string_len + Len( #LF$ )
       *this\text\string = InsertString( *this\text\string, rows( )\text\string + #LF$, 1 + rows( )\text\pos )
       
-      ;       If *this\type = #PB_GadgetType_Editor
+      ;       If *this\type = #__Type_Editor
       ;         ; Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\y +" "+ rows( )\width +" "+ rows( )\height
       ;         ;  Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\text\y +" "+ rows( )\text\width +" "+ rows( )\text\height
       ;       EndIf
@@ -10387,7 +10387,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedRow( )\state\flag | #__S_select
             *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
             
-;             PostEventRepaint( *this\_root( ) )
+            ;             PostEventRepaint( *this\_root( ) )
           EndIf
           
           If *this\scroll\state = #True
@@ -11791,7 +11791,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\type = #__type_Window
           *this\caption\interact = is_at_point_( *this\caption, mouse_x, mouse_y, [2] )
           ;*this\color\state = 2
-            
+          
           Debug ""+mouse_x +" "+ *this\caption\button[#__wb_close]\x
           ; close button
           If is_at_point_( *this\caption\button[#__wb_close], mouse_x, mouse_y )
@@ -12793,7 +12793,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\fs = size
         
         If *this\_a_\transform
-          a_size_auto( *this, *this\_a_\size )
+          a_set_size( *this\_a_\id, *this\_a_\size )
         EndIf
         ;;
         If mode =- 1 ; auto pos
@@ -13379,7 +13379,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\address
             ;             ChangeCurrentElement( *this\_widgets( ), *this\address )
             ;             While PreviousElement( *this\_widgets( ))
-            ;               ;If *this\_widgets( )\type = #PB_GadgetType_Window
+            ;               ;If *this\_widgets( )\type = #__Type_Window
             ;               If IsChild( *this, *this\_widgets( )) ;And *this\_widgets( )\container
             ;                 If *this\_widgets( )\state\focus = #False
             ;                   *this\_widgets( )\state\focus = #True
@@ -13747,13 +13747,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             typecount( Hex( *parent ) + "_" + Hex( *this\type )) + 1
           EndIf
         EndIf
+        
         ; set transformation for the child
         If Not *this\_a_\transform And *parent\_a_\transform 
-          ; *this\_a_\transform = Bool( *parent\_a_\transform )
           a_set_transform_state_( *this, Bool( *parent\_a_\transform ) )
           
           *this\_a_\mode = #__a_full | #__a_position
-          a_set( *this )
+          a_set( *this, #__a_size )
         EndIf
         
         ;
@@ -14848,17 +14848,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\type = type
       *this\flag = Flag
+      *this\child = Bool( Flag & #__flag_child = #__flag_child )
       
       If *parent
-        If Bool( Flag & #__flag_child = #__flag_child )
-          *this\child = 1
+        If *this\child
           *this\_parent( ) = *parent
           *this\_root( ) = *parent\_root( )
           *this\_window( ) = *parent\_window( )
           ; 
-          *this\index = *parent\index
+          *this\index = *parent\index 
           *this\address = *parent\address
-          ;;Debug  ""+ *this\class+" "+*this\scroll\increment
+         Debug  "Create(child) "+ *this\type;+" "+*this\scroll\increment
           
         Else
           set_align_flag_( *this, *parent, *this\flag )
@@ -17906,7 +17906,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *data = mouse( )\x|mouse( )\y 
               EndIf
             EndIf
-          
+            
           Case #PB_EventType_CursorChange
             *this\state\repaint = #True
             
@@ -17970,7 +17970,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_ScrollChange,
                ;            ; #PB_EventType_Repaint,
                ;              #PB_EventType_Create,
-;              #PB_EventType_Resize,
+               ;              #PB_EventType_Resize,
             #PB_EventType_DragStart
             
             
@@ -18009,18 +18009,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; widgets events
         Select *this\type
-          Case #PB_GadgetType_Window
+          Case #__Type_Window
             Window_events( *this, eventtype, mouse_x, mouse_y )
             
-          Case #PB_GadgetType_Button
+          Case #__Type_Button
             Button_events( *this, eventtype, mouse_x, mouse_y )
             
-          Case #PB_GadgetType_Tree
+          Case #__Type_Tree
             Tree_events( *this, eventtype, mouse_x, mouse_y )
             
-          Case #PB_GadgetType_HyperLink
+          Case #__Type_HyperLink
             
-          Case #PB_GadgetType_Editor
+          Case #__Type_Editor
             Editor_events( *this, eventtype, mouse( )\x, mouse( )\y )
             
           Case #__type_TabBar, 
@@ -18225,18 +18225,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected Repaint, mouse_x , mouse_y 
       
       ;       If eventtype = #PB_EventType_Create
-      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
+      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
       ;           ChangeCurrentRoot( GadgetID( Canvas ) )
       ;         EndIf
       ;       EndIf
       If eventtype = #PB_EventType_MouseEnter
-        If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
+        If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
         EndIf
       EndIf
       
       If eventtype = #PB_EventType_Repaint ; = 262150
-        If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
+        If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
           
           ;
@@ -18928,7 +18928,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       Else
         If MapSize( Root( ) )
-          Root( )\container = #__type_root
+          Root( )\container = #__type_Root
         EndIf
         g = CanvasGadget( Canvas, x, y, width, height, Flag | #PB_Canvas_Keyboard ) 
         If Canvas =- 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
@@ -18939,13 +18939,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         UseGadgetList( UseGadgetList )
       EndIf
       
-        
       ;
       If Not ChangeCurrentRoot(g) 
         result = AddMapElement( Root( ), Str( g ) )
         Root( ) = AllocateStructure( _S_root )
-        Root( )\type = #PB_GadgetType_Container
-        Root( )\container = #PB_GadgetType_Container
+        Root( )\type = #__Type_Container
+        Root( )\container = #__Type_Container
         
         Root( )\class = "Root"
         Root( )\_root( ) = Root( )
@@ -19665,7 +19664,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
   ;- <<< 
 CompilerEndIf
 
-
 ;- 
 Macro UseLIB( _name_ )
   UseModule _name_
@@ -19674,319 +19672,6 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile = 100
-  
-  Uselib(widget)
-  UsePNGImageDecoder()
-  Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
-  
-  Define *new
-  ; toolbar buttons
-  Enumeration 
-    #_tb_group_left = 3
-    #_tb_group_right
-    #_tb_group_top
-    #_tb_group_bottom
-    #_tb_group_width
-    #_tb_group_height
-    
-    #_tb_align_left
-    #_tb_align_right
-    #_tb_align_top
-    #_tb_align_bottom
-    #_tb_align_center
-    
-    #_tb_widget_paste
-    #_tb_widget_delete
-    #_tb_widget_copy
-    #_tb_widget_cut
-  EndEnumeration
-  
-  Macro widget_copy()
-    ClearList(*copy())
-    
-    If Transform()\widget\_a_transform = 1
-      AddElement(*copy()) 
-      *copy.allocate(group, ())
-      *copy()\widget = Transform()\widget
-    Else
-      ;       ForEach Transform()\group()
-      ;         AddElement(*copy()) 
-      ;         *copy.allocate(group, ())
-      ;         *copy()\widget = Transform()\group()\widget
-      ;       Next
-      
-      CopyList(Transform()\group(), *copy())
-      
-    EndIf
-    
-    Transform()\id[0]\x = Transform()\grid\size
-    Transform()\id[0]\y = Transform()\grid\size
-  EndMacro
-  
-  Macro widget_delete()
-    If Transform()\widget\_a_transform = 1
-      ;  transform = Transform()\widget\parent\widget
-      
-      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
-      Free(Transform()\widget)
-    Else
-      ;  transform = Transform()\widget
-      
-      ForEach Transform()\group()
-        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
-        Free(Transform()\group()\widget)
-        DeleteElement(Transform()\group())
-      Next
-      
-      ClearList(Transform()\group())
-    EndIf
-    
-    ; a_set(transform)
-  EndMacro
-  
-  Macro widget_paste()
-    If ListSize(*copy())
-      ForEach *copy()
-        ;         widget_add(*copy()\widget\parent\widget, 
-        ;                        *copy()\widget\class, 
-        ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\widget\x[#__c_inner]),
-        ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\widget\y[#__c_inner]), 
-        ;                        *copy()\widget\width[#__c_frame],
-        ;                        *copy()\widget\height[#__c_frame])
-      Next
-      
-      Transform()\id[0]\x + Transform()\grid\size
-      Transform()\id[0]\y + Transform()\grid\size
-      
-      ClearList(Transform()\group())
-      CopyList(*copy(), Transform()\group())
-    EndIf
-    
-    ForEach Transform()\group()
-      Debug " ggg "+Transform()\group()\widget
-    Next
-    
-    ;a_update(Transform()\widget)
-  EndMacro
-  
-  Procedure toolbar_events()
-    Protected *this._s_widget
-    Protected e_type = WidgetEventType( )
-    Protected e_item ;= this()\item
-    Protected e_widget = EventWidget( )
-    
-    Select e_type
-      Case #PB_EventType_LeftClick
-        If e_widget = id_elements_tree
-          Debug "click"
-          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
-        EndIf
-        
-        If getclass(e_widget) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
-          Static NewList *copy._s_group()
-          
-          
-          Select toolbarbutton
-            Case 1
-              If Getstate(e_widget)  
-                ; group
-                group_select = e_widget
-                ; SetAtributte(e_widget, #PB_Button_PressedImage)
-              Else
-                ; un group
-                group_select = 0
-              EndIf
-              
-              ForEach Transform()\group()
-                Debug Transform()\group()\widget\x
-                
-              Next
-              
-              
-            Case #_tb_widget_copy
-              widget_copy()
-              
-            Case #_tb_widget_cut
-              widget_copy()
-              widget_delete()
-              
-            Case #_tb_widget_paste
-              widget_paste()
-              
-            Case #_tb_widget_delete
-              If Transform()\widget\_a_transform = 1
-                transform = Transform()\widget\parent\widget
-              Else
-                transform = Transform()\widget
-              EndIf
-              
-              widget_delete()
-              
-              a_set(transform)
-              
-            Case #_tb_group_left,
-                 #_tb_group_right, 
-                 #_tb_group_top, 
-                 #_tb_group_bottom, 
-                 #_tb_group_width, 
-                 #_tb_group_height
-              
-              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
-              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
-              
-              ForEach Transform()\group()
-                Select toolbarbutton
-                  Case #_tb_group_left ; left
-                                       ;Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_right ; right
-                    Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_top ; top
-                                      ;Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_bottom ; bottom
-                    Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_width ; stretch horizontal
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
-                    
-                  Case #_tb_group_height ; stretch vertical
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
-                    
-                EndSelect
-              Next
-              
-              a_update(Transform()\widget)
-              
-              ;Redraw(root())
-          EndSelect
-        EndIf
-        
-    EndSelect
-  EndProcedure
-  
-  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
-    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
-    
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
-    ;widget()\color = widget()\_parent\color
-    ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
-    widget()\data = _button_
-    ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
-  EndMacro
-  
-  Macro Separator()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
-    SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
-  EndMacro
-  
-  
-  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
-  toolbar_design = Container(0,0,600,40) 
-  ;SetAlignmentFlag(widget(), #__align_top)
-  ;ToolBar(toolbar, window, flags)
-  
-  group_select = ToolBarButton(1, - 1, #__button_Toggle)
-  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
-  
-  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-  Separator()
-  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-  Separator()
-  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator()
-  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
-  
-  Separator()
-  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator()
-  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-  CloseList()
-  
-  
-  ;Container(0,40,600,600);, #__flag_autosize) 
-  ;SetAlignmentFlag(widget(), #__align_full) 
-  mdi(0,40,600,600, #__mdi_editable)
-  ; a_init(widget()) 
-  
-  
-  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
-  ; ; container(30,30,450-2,450-2)
-  ;;ScrollArea(30,30,450-2,450-2, 0,0)
-  ScrollArea(30,30,450-2,450-2, 250,750, transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
-  
-  Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
-  AddItem(widget(), -1, "item-1")
-  ;container(30,30,400,400)
-  ComboBox(120,160,115,50)
-  AddItem(widget(), -1, "combo1")
-  SetState(widget(), 0)
-  
-  ;Button(120,160,115,50,"butt1")
-  AddItem(widget()\parent\widget, -1, "item-2")
-  Button(150,180,115,50,"butt2")
-  Button(180,200,115,50,"butt3")
-  Button(120,240,170,40,"butt4")
-  closelist()
-  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
-  closelist()
-  
-  bind(-1,-1)
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  
-  DataSection   
-    ; include images
-    ;;IncludePath #path + "ide/include/images" ; macos good windows bad
-    IncludePath #path + "/ide/include/images"
-    
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
-    
-    group:            : IncludeBinary "group/group.png"
-    group_un:         : IncludeBinary "group/group_un.png"
-    group_top:        : IncludeBinary "group/group_top.png"
-    group_left:       : IncludeBinary "group/group_left.png"
-    group_right:      : IncludeBinary "group/group_right.png"
-    group_bottom:     : IncludeBinary "group/group_bottom.png"
-    group_width:      : IncludeBinary "group/group_width.png"
-    group_height:     : IncludeBinary "group/group_height.png"
-  EndDataSection
-  
-CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile ;=99
   
   EnableExplicit
@@ -20044,7 +19729,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Define *a3._s_widget = image( 150,110,60,60, -1 )
   
   ; a_init( *a, 15 )
-  a_set( *a1 )
+  a_set( *a1, #__a_size )
   
   CloseList()
   size_value = Track(56, 262, 240, 26, 0, 30)
@@ -20322,5 +20007,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------P0-f40----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------+--------------7--44---------------------t2------v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

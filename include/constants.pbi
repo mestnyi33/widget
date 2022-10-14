@@ -42,31 +42,32 @@
     
     Enumeration 
       #_b_caption
-      #_b_menu
+      #_b_Menu
       #_b_tool
     EndEnumeration
     
-    ;- _c_anchors
-    #__a_size  = 7
-    #__a_moved = 9
-    #__a_count = #__a_moved+4
+    ; list mode
+    #__M_checkselect = 1
+    #__M_clickselect = 2
+    #__M_Multiselect = 3
+    #__M_optionselect = 4
     
-    #__a_left = 1
-    #__a_right = 3
+    ;- _c_anchors
+    #__a_Left = 1
+    #__a_Right = 3
     #__a_top = 2
     #__a_bottom = 4
-    #__a_left_top = 5
-    #__a_left_bottom = 8
-    #__a_right_top = 6
-    #__a_right_bottom = 7
+    #__a_Left_top = 5
+    #__a_Left_bottom = 8
+    #__a_Right_top = 6
+    #__a_Right_bottom = 7
     
-    #__a_line_left = 10
-    #__a_line_right = 11
-    #__a_line_top = 12
-    #__a_line_bottom = 13
+    #__a_Line_Left = 10
+    #__a_Line_Right = 11
+    #__a_Line_top = 12
+    #__a_Line_bottom = 13
     
-    
-    ; a_mode_
+    ; a_Mode_
     EnumerationBinary 1
       #__a_position
       #__a_width
@@ -76,24 +77,23 @@
     #__a_edge = #__a_width | #__a_height
     #__a_full  = #__a_position | #__a_corner | #__a_edge
     
+    #__a_size  = 7
+    #__a_Moved = 9
+    #__a_count = #__a_Moved+4
     
-    ; list mode
-    #__m_checkselect = 1
-    #__m_clickselect = 2
-    #__m_multiselect = 3
-    #__m_optionselect = 4
-    
+    ;
     ; default values 
-    #__window_caption_height = 21
+    ;
     #__window_frame_size = 4 
+    #__window_caption_height = 24
     #__border_scroll = 10
     
     #__panel_height = 24 ;+ 4
     #__panel_width = 85
     
-    #__menu_height = 25
+    #__Menu_height = 25
     
-    #__from_mouse_state = 0
+    #__from_Mouse_state = 0
     #__focus_state = 1
     
     ;#__splitter_buttonsize = 9
@@ -113,7 +113,7 @@
     
     #__sOC = SizeOf(Character)
     
-    #__bar_minus = 1
+    #__bar_Minus = 1
     
     #__tab_0 = 0
     ; splitter 
@@ -136,18 +136,18 @@
     #__option_1 = 2
     
     
-    #__tree_linesize = 5
+    #__tree_Linesize = 5
     
     ; errors
     Enumeration 1
       #__error_text_input
       #__error_text_back
-      #__error_text_return
+      #__error_text_Return
     EndEnumeration
     
     ;images
     Enumeration
-      #__img_released = 1
+      #__img_Released = 1
       #__img_pressed = 2
       #__img_background = 3
     EndEnumeration
@@ -162,8 +162,8 @@
     ;window bar buttons
     Enumeration
       #__wb_close
-      #__wb_maxi
-      #__wb_mini
+      #__wb_Maxi
+      #__wb_Mini
       #__wb_help
     EndEnumeration
     
@@ -174,21 +174,21 @@
       #__c_frame     = 1 ; frame screen
       #__c_inner     = 2 ; inner screen
       #__c_container = 3 ; container
-      #__c_required  = 4 ; required
+      #__c_Required  = 4 ; required
       
       #__c_draw      = 5 ; clip screen
       #__c_draw1     = 6 ; clip frame 
       #__c_draw2     = 7 ; clip inner 
       
       #__c_window    = 8 ; window ; pos
-     #__c_rootrestore = 9
-     #__c
+      #__c_Rootrestore = 9
+      #__c
     EndEnumeration
     
     ;
     #__c_clip = #__c_draw ; temp
     #__c_clip2 = #__c_draw2 ; temp
-       
+    
     ;#__c_inner2 = #__c_inner
     ;     #__ci_frame = #__c_draw
     ;     #__ci_container = #__c_draw
@@ -227,7 +227,7 @@
       #__ss_back
       #__ss_frame
       #__ss_fore
-      #__ss_line
+      #__ss_Line
     EndEnumeration
     
     ;color state
@@ -242,7 +242,7 @@
     Enumeration 1
       #__color_front
       #__color_back
-      #__color_line
+      #__color_Line
       #__color_titlefront
       #__color_titleback
       #__color_graytext 
@@ -264,27 +264,28 @@
     ;   #PB_flag = 1<<15
     ;   #PB_State = 1<<16
     
-    ;- _c_resize
+    ;- _c_Resize
     EnumerationBinary 
-      #__resize_x
-      #__resize_y
-      #__resize_width
-      #__resize_height
+      #__Resize_x
+      #__Resize_y
+      #__Resize_width
+      #__Resize_height
       
-      #__resize_change
+      #__Resize_change
       
-      #__resize_restore
-      #__resize_minimize
-      #__resize_maximize
+      #__Resize_Restore
+      #__Resize_Minimize
+      #__Resize_Maximize
+      #__Resize_start
     EndEnumeration
     
     ;- _c_flag
     EnumerationBinary _c_align 8 ; 2
       #__flag_vertical           ;= 1
       
-      #__flag_left
+      #__flag_Left
       #__flag_top
-      #__flag_right
+      #__flag_Right
       #__flag_bottom
       #__flag_center
       
@@ -293,12 +294,12 @@
       
       
       #__flag_numeric
-      #__flag_readonly
-      #__flag_lowercase 
+      #__flag_Readonly
+      #__flag_Lowercase 
       #__flag_uppercase
       #__flag_password
       #__flag_wordwrap
-      #__flag_multiline 
+      #__flag_Multiline 
       
       #__flag_fullselection
       #__flag_nolines
@@ -325,23 +326,23 @@
       #__flag_borderless
       ;#__flag_flat
       ;#__flag_double
-      ;#__flag_raised
+      ;#__flag_Raised
       ;#__flag_single
       
       
       #__flag_transparent
       #__flag_anchorsgadget
-      #__flag_limit
+      #__flag_Limit
     EndEnumeration
     
     ;#__flag_checkboxes = #__flag_clickselect
     #__flag_nogadgets = #__flag_nobuttons
-    ;#__flag_multiselect = #__flag_multiline
+    ;#__flag_Multiselect = #__flag_Multiline
     
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
-    #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
+    #__flag_alwaysselection = #__flag_Lowercase|#__flag_uppercase
     
-    #__flag_autoright = #__flag_autosize|#__flag_right
+    #__flag_autoright = #__flag_autosize|#__flag_Right
     #__flag_autobottom = #__flag_autosize|#__flag_bottom
     
     
@@ -352,9 +353,9 @@
     #__align_image                   = 3
     
     #__align_none                    = #False
-    #__align_left                    = #__flag_left
+    #__align_Left                    = #__flag_Left
     #__align_top                     = #__flag_top  
-    #__align_right                   = #__flag_right
+    #__align_Right                   = #__flag_Right
     #__align_bottom                  = #__flag_bottom
     #__align_center                  = #__flag_center
     
@@ -364,30 +365,30 @@
     #__align_proportional_vertical   = #__flag_vertical
     
     
-    #__align_full_left = #__align_left | #__align_top | #__align_bottom
-    #__align_full_right = #__align_right | #__align_top | #__align_bottom
-    #__align_full_top = #__align_top | #__align_left | #__align_right
-    #__align_full_bottom = #__align_bottom | #__align_left | #__align_right
+    #__align_full_Left = #__align_Left | #__align_top | #__align_bottom
+    #__align_full_Right = #__align_Right | #__align_top | #__align_bottom
+    #__align_full_top = #__align_top | #__align_Left | #__align_Right
+    #__align_full_bottom = #__align_bottom | #__align_Left | #__align_Right
     
     
-    #__align_left_proportional       = #__align_left   |#__align_proportional_horizontal
+    #__align_Left_proportional       = #__align_Left   |#__align_proportional_horizontal
     #__align_top_proportional        = #__align_top    |#__align_proportional_vertical
-    #__align_right_proportional      = #__align_right  |#__align_proportional_horizontal
+    #__align_Right_proportional      = #__align_Right  |#__align_proportional_horizontal
     #__align_bottom_proportional     = #__align_bottom |#__align_proportional_vertical
     
-    #__align_left_right_proportional = #__align_left   |#__align_right  |#__align_proportional_horizontal
+    #__align_Left_Right_proportional = #__align_Left   |#__align_Right  |#__align_proportional_horizontal
     #__align_top_bottom_proportional = #__align_top    |#__align_bottom |#__align_proportional_vertical
     
     
     #__align_proportional = 3
     
-    ;;#__align_full = 0;#__align_left|#__align_top|#__align_right|#__align_bottom
+    ;;#__align_full = 0;#__align_Left|#__align_top|#__align_Right|#__align_bottom
     
     
     ;-
     ;- _c_bar
-    #__bar_minimum = 1
-    #__bar_maximum = 2
+    #__bar_Minimum = 1
+    #__bar_Maximum = 2
     #__bar_pagelength = 3
     #__bar_scrollstep = 5
     
@@ -396,7 +397,7 @@
       #__bar_direction 
       
       ;#__bar_arrowSize 
-      ;#__bar_reverse
+      ;#__bar_Reverse
       ;#__bar_ticks
       
       #__bar_vertical ;= #__flag_vertical
@@ -410,26 +411,26 @@
     
     EnumerationBinary #__alignFlagValue
       ;EnumerationBinary 64
-      #__align_text_left 
+      #__align_text_Left 
       #__align_text_top
       #__align_text_center
-      #__align_text_right 
+      #__align_text_Right 
       #__align_text_bottom 
       
-      #__align_image_left 
+      #__align_image_Left 
       #__align_image_top
       #__align_image_center
-      #__align_image_right 
+      #__align_image_Right 
       #__align_image_bottom 
       #__align_image_full
       
       #__align_image_proportional
       #__align_image_proportional_vertical
       
-      #__align_widget_left 
+      #__align_widget_Left 
       #__align_widget_top
       #__align_widget_center
-      #__align_widget_right 
+      #__align_widget_Right 
       #__align_widget_bottom 
       #__align_widget_auto
       #__align_widget_full
@@ -456,13 +457,13 @@
       #__text_invert 
       
       #__text_InLine 
-      #__text_multiline 
+      #__text_Multiline 
       #__text_wordwrap 
       
       #__text_password 
-      #__text_readonly 
+      #__text_Readonly 
       #__text_uppercase 
-      #__text_lowercase 
+      #__text_Lowercase 
       #__text_numeric 
     EndEnumeration
     
@@ -490,32 +491,32 @@
     
     #__text_border = #__flag_borderless;#PB_text_border
     
-    #__text_left = #__align_text_left
+    #__text_Left = #__align_text_Left
     #__text_top = #__align_text_top
     #__text_center = #__align_text_center
-    #__text_right = #__align_text_right
+    #__text_Right = #__align_text_Right
     #__text_bottom = #__align_text_bottom
-    #__text_middle = #__text_center
+    #__text_Middle = #__text_center
     
     ;     #__text_invert = #__flag_invert
     ;     #__text_vertical = #__flag_vertical
     ;     
-    ;     #__text_multiline = #__flag_multiline
+    ;     #__text_Multiline = #__flag_Multiline
     ;     #__text_wordwrap = #__flag_wordwrap
     ;     #__text_numeric = #__flag_numeric
     ;     #__text_password = #__flag_password
-    ;     #__text_readonly = #__flag_readonly
-    ;     #__text_lowercase = #__flag_lowercase
+    ;     #__text_Readonly = #__flag_Readonly
+    ;     #__text_Lowercase = #__flag_Lowercase
     ;     #__text_uppercase = #__flag_uppercase
     
-    #__image_left = #__text_left
+    #__image_Left = #__text_Left
     #__image_top = #__text_top
     #__image_center = #__text_center
-    #__image_right = #__text_right
+    #__image_Right = #__text_Right
     #__image_bottom = #__text_bottom
     
-    ;- _c_mdi
-    #__mdi_editable = #__flag_anchorsgadget
+    ;- _c_Mdi
+    #__Mdi_editable = #__flag_anchorsgadget
     
     ;- _c_window
     ;     #__window_nogadgets = #__flag_nobuttons
@@ -551,8 +552,8 @@
     #__spin_padding_text = 3
     #__spin_buttonsize = #__scroll_buttonsize + 3
     
-    #__spin_left = #__text_left
-    #__spin_right = #__text_right
+    #__spin_Left = #__text_Left
+    #__spin_Right = #__text_Right
     #__spin_center = #__text_center
     #__spin_numeric = #__text_numeric
     #__spin_vertical = #__bar_vertical
@@ -594,21 +595,21 @@
     #__ListFlagValue = 2147483648 >> ( #__ListFlagCount - 1 )
     
     EnumerationBinary #__ListFlagValue
-      #__list_vertical   
-      #__list_NoLines    
-      #__list_SubLevel   
-      #__list_NoButtons  
-      #__list_CheckBoxes 
-      #__list_ThreeState 
+      #__List_vertical   
+      #__List_NoLines    
+      #__List_SubLevel   
+      #__List_NoButtons  
+      #__List_CheckBoxes 
+      #__List_ThreeState 
       
-      #__list_ClickSelect
-      #__list_MultiSelect
+      #__List_ClickSelect
+      #__List_MultiSelect
       
-      #__list_Collapsed  
-      #__list_Expanded   
-      ;       #__list_Checked    
-      ;       #__list_Selected   
-      ;       #__list_Inbetween 
+      #__List_Collapsed  
+      #__List_Expanded   
+      ;       #__List_Checked    
+      ;       #__List_Selected   
+      ;       #__List_Inbetween 
     EndEnumeration
     
     ;- _c_tree
@@ -623,12 +624,12 @@
     #__tree_threestate = #PB_Tree_ThreeState ; #__flag_threeState
     #__tree_optionboxes = #PB_Tree_OptionBoxes ; #__flag_optionboxes
     #__tree_gridlines = #PB_Tree_GridLines     ; #__flag_gridLines
-    #__tree_multiselect = #__flag_multiline
+    #__tree_Multiselect = #__flag_Multiline
     #__tree_clickselect = #__flag_clickselect
     #__tree_collapse = #PB_Tree_Collapse
     
     #__tree_property = #__flag_numeric
-    #__tree_listview = #__flag_readonly
+    #__tree_Listview = #__flag_Readonly
     #__tree_toolbar = #__flag_password
     
     ; tree attribute
@@ -661,83 +662,48 @@
                                             ;   #PB_tree_collapse = #__tree_collapse
                                             ;   #PB_tree_GridLines = #__tree_GridLines
     
-    ;- _c_listview
-    #__listview_clickselect = #__tree_clickselect
-    #__listview_multiselect = #__tree_multiselect
+    ;- _c_Listview
+    #__Listview_clickselect = #__tree_clickselect
+    #__Listview_Multiselect = #__tree_Multiselect
     
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
-    #__editor_readonly = #__text_readonly
+    #__editor_Readonly = #__text_Readonly
     #__editor_wordwrap = #__text_wordwrap
     #__editor_nomultiline = #__flag_nolines
-    #__editor_numeric = #__flag_numeric|#__text_multiline
+    #__editor_numeric = #__flag_numeric|#__text_Multiline
     #__editor_fullselection = #__flag_fullselection
     #__editor_alwaysselection = #__flag_alwaysselection
     #__editor_gridlines = #__flag_gridLines
     #__editor_borderless = #__flag_borderless
     
     ;- _c_string
-    #__string_right = #__text_right
+    #__string_Right = #__text_Right
     #__string_center = #__text_center
     #__string_numeric = #__text_numeric
     #__string_password = #__text_password
-    #__string_readonly = #__text_readonly
+    #__string_Readonly = #__text_Readonly
     #__string_uppercase = #__text_uppercase
-    #__string_lowercase = #__text_lowercase
+    #__string_Lowercase = #__text_Lowercase
     #__string_borderless = #__flag_borderless
-    #__string_multiline = #__text_multiline
+    #__string_Multiline = #__text_Multiline
     
     ;- _c_button
-    #__button_left = #__text_left
-    #__button_right = #__text_right
+    #__button_Left = #__text_Left
+    #__button_Right = #__text_Right
     #__button_toggle = #__flag_threeState ; #__flag_collapsed
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
     ;#__button_invert = #__flag_invert
-    #__button_multiline = #__text_wordwrap
+    #__button_Multiline = #__text_wordwrap
     
     
-    If (#__flag_limit>>1) > 2147483647 ; 8589934592
-      Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
+    If (#__flag_Limit>>1) > 2147483647 ; 8589934592
+      Debug "Исчерпан лимит в x32 ("+Str(#__flag_Limit>>1)+")"
     EndIf
     
     
-    ;- _c_event
-    Enumeration #PB_Event_FirstCustomValue
-      #PB_Event_Widget
-      
-      #PB_Event_Resize
-      #PB_Event_ResizeEnd
-      
-      #PB_Event_Free         
-      #PB_Event_Create
-      #PB_Event_Drop
-      
-      #PB_Event_ReturnKey
-      #PB_Event_ScrollChange
-      
-      ;;#PB_Event_ActivateWindow
-      ;;#PB_Event_DeactivateWindow
-      ;;#PB_Event_Gadget
-      ;;#PB_Event_GadgetDrop
-      ;;#PB_Event_LeftClick
-      ;;#PB_Event_LeftDoubleClick
-      ;;#PB_Event_Menu
-      
-      ;;#PB_Event_MoveWindow
-      ;;#PB_Event_SizeWindow
-      ;;#PB_Event_SysTray
-      ;;#PB_Event_Timer
-      ;;#PB_Event_WindowDrop
-      ;;#PB_Event_RightClick
-      
-      ;;#PB_Event_Repaint
-      ;;#PB_Event_CloseWindow
-      ;;#PB_Event_MaximizeWindow
-      ;;#PB_Event_MinimizeWindow
-      ;;#PB_Event_RestoreWindow
-    EndEnumeration
-    
+    ;- Constant event-type
     Enumeration #PB_EventType_FirstCustomValue
       CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
         #PB_EventType_Resize
@@ -769,128 +735,119 @@
       #PB_EventType_StatusChangeEdit
       ;       #PB_EventType_TimerStart
       ;       #PB_EventType_TimerStop
-     ;;;; #PB_EventType_ColorChange
+      ;;;; #PB_EventType_ColorChange
       #PB_EventType_CursorUpdate
       #PB_EventType_CursorChange
     EndEnumeration
     
-    #__event_free             = #PB_EventType_Free    
-    #__event_drop             = #PB_EventType_Drop
-    #__event_create           = #PB_EventType_Create
-    #__event_sizeitem         = #PB_EventType_SizeItem
+    #__event_Free             = #PB_EventType_Free    
+    #__event_Drop             = #PB_EventType_Drop
+    #__event_Create           = #PB_EventType_Create
+    #__event_Sizeitem         = #PB_EventType_SizeItem
     
-    #__event_repaint          = #PB_EventType_Repaint
-    #__event_resizeend        = #PB_EventType_ResizeEnd
-    #__event_scrollchange     = #PB_EventType_ScrollChange
+    #__event_Repaint          = #PB_EventType_Repaint
+    #__event_ResizeEnd        = #PB_EventType_ResizeEnd
+    #__event_ScrollChange     = #PB_EventType_ScrollChange
     
-    #__event_closewindow      = #PB_EventType_CloseWindow
-    #__event_maximizewindow   = #PB_EventType_MaximizeWindow
-    #__event_minimizewindow   = #PB_EventType_MinimizeWindow
-    #__event_restorewindow    = #PB_EventType_RestoreWindow
+    #__event_CloseWindow      = #PB_EventType_CloseWindow
+    #__event_Maximizewindow   = #PB_EventType_MaximizeWindow
+    #__event_Minimizewindow   = #PB_EventType_MinimizeWindow
+    #__event_Restorewindow    = #PB_EventType_RestoreWindow
     
-    #__event_mouseenter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
-    #__event_mouseleave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
-    #__event_mousemove        = #PB_EventType_MouseMove        ; The mouse cursor moved
-    #__event_mousewheel       = #PB_EventType_MouseWheel       ; The mouse wheel was moved
-    #__event_leftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
-    #__event_leftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
-    #__event_leftclick        = #PB_EventType_LeftClick        ; A click With the left mouse button
-    #__event_leftdoubleclick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__event_rightbuttondown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
-    #__event_rightbuttonup    = #PB_EventType_RightButtonUp    ; The right mouse button was released
-    #__event_rightclick       = #PB_EventType_RightClick       ; A click With the right mouse button
-    #__event_rightdoubleclick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__event_middlebuttondown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
-    #__event_middlebuttonup   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
-    #__event_focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
-    #__event_lostfocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
-    #__event_keydown          = #PB_EventType_KeyDown          ; A key was pressed
-    #__event_keyup            = #PB_EventType_KeyUp            ; A key was released
-    #__event_input            = #PB_EventType_Input            ; Text input was generated
-    #__event_resize           = #PB_EventType_Resize           ; The gadget has been resized
-    #__event_statuschange     = #PB_EventType_StatusChange
-    #__event_titlechange      = #PB_EventType_TitleChange
-    #__event_change           = #PB_EventType_Change
-    #__event_dragstart        = #PB_EventType_DragStart
-    #__event_returnkey        = #PB_EventType_ReturnKey
-    #__event_closeitem        = #PB_EventType_CloseItem
+    #__event_MouseEnter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
+    #__event_MouseLeave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
+    #__event_MouseMove        = #PB_EventType_MouseMove        ; The mouse cursor moved
+    #__event_MouseWheel       = #PB_EventType_MouseWheel       ; The mouse wheel was moved
+    #__event_LeftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
+    #__event_LeftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
+    #__event_LeftClick        = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__event_LeftDoubleClick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
+    #__event_RightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
+    #__event_RightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
+    #__event_RightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__event_RightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
+    #__event_MiddleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
+    #__event_MiddleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
+    #__event_Focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
+    #__event_LostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
+    #__event_KeyDown          = #PB_EventType_KeyDown          ; A key was pressed
+    #__event_KeyUp            = #PB_EventType_KeyUp            ; A key was released
+    #__event_Input            = #PB_EventType_Input            ; Text input was generated
+    #__event_Resize           = #PB_EventType_Resize           ; The gadget has been resized
+    #__event_StatusChange     = #PB_EventType_StatusChange
+    #__event_TitleChange      = #PB_EventType_TitleChange
+    #__event_Change           = #PB_EventType_Change
+    #__event_DragStart        = #PB_EventType_DragStart
+    #__event_ReturnKey        = #PB_EventType_ReturnKey
+    #__event_CloseItem        = #PB_EventType_CloseItem
     
-    #__event_down             = #PB_EventType_Down
-    #__event_up               = #PB_EventType_Up
+    #__event_Down             = #PB_EventType_Down
+    #__event_Up               = #PB_EventType_Up
     
-    #__event_mousewheelX = #PB_EventType_MouseWheelX
-    #__event_mousewheelY = #PB_EventType_MouseWheelY
+    #__event_MouseWheelX      = #PB_EventType_MouseWheelX
+    #__event_MouseWheelY      = #PB_EventType_MouseWheelY
     
-    #__event_draw = #PB_EventType_Draw
+    #__event_Draw             = #PB_EventType_Draw
     
     
-    ;- _c_object_type
-    #PB_GadgetType_All       = -1     
-    #PB_GadgetType_Window    = -2       
-    #PB_GadgetType_Toolbar   = -3      
-    #PB_GadgetType_Menu      = -4       
-    #PB_GadgetType_Root      = -5
-    #PB_GadgetType_StatusBar = -6
-    #PB_GadgetType_PopupMenu = -7
-    #PB_GadgetType_Message   = -8
-    #PB_GadgetType_Hiasm     = -9
-    Enumeration 50
-      #PB_GadgetType_TabBar
-      #PB_GadgetType_Toggled
-      #PB_GadgetType_Property 
-      #PB_GadgetType_ImageButton
-      #PB_GadgetType_StringButton
+    ;- Constant create-type
+    Enumeration -8
+      #__Type_Message   = -8
+      #__Type_PopupMenu = -7
+      #__Type_StatusBar = -6
+      #__Type_Root      = -5
+      #__Type_Menu      = -4       
+      #__Type_Toolbar   = -3      
+      #__Type_Window    = -2       
+      #__Type_All       = -1     
+      
+      #__type_unknown       = #PB_GadgetType_Unknown       ; 0
+      #__type_Button        = #PB_GadgetType_Button        ; 1
+      #__type_String        = #PB_GadgetType_String        ; 2
+      #__type_Text          = #PB_GadgetType_Text          ; 3
+      #__type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
+      #__type_Option        = #PB_GadgetType_Option        ; 5
+      #__type_ListView      = #PB_GadgetType_ListView      ; 6
+      #__type_Frame         = #PB_GadgetType_Frame         ; 7
+      #__type_ComboBox      = #PB_GadgetType_ComboBox      ; 8
+      #__type_Image         = #PB_GadgetType_Image         ; 9
+      #__type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
+      #__type_Container     = #PB_GadgetType_Container     ; 11
+      #__type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
+      #__type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
+      #__type_ProgressBar   = #PB_GadgetType_ProgressBar   ; 14
+      #__type_ScrollBar     = #PB_GadgetType_ScrollBar     ; 15
+      #__type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
+      #__type_TrackBar      = #PB_GadgetType_TrackBar      ; 17
+      #__type_Web           = #PB_GadgetType_Web           ; 18
+      #__type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
+      #__type_Calendar      = #PB_GadgetType_Calendar      ; 20
+      #__type_Date          = #PB_GadgetType_Date          ; 21
+      #__type_Editor        = #PB_GadgetType_Editor        ; 22
+      #__type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
+      #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
+      #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
+      #__type_Spin          = #PB_GadgetType_Spin          ; 26
+      #__type_Tree          = #PB_GadgetType_Tree          ; 27
+      #__type_Panel         = #PB_GadgetType_Panel         ; 28
+      #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
+      #__type_MDI           = #PB_GadgetType_MDI           ; 30
+      #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
+      #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
+      #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
+      #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+      
+      #__Type_TabBar        = 50
+      #__Type_Toggled
+      #__Type_Property 
+      #__Type_ImageButton
+      #__Type_StringButton
+      #__Type_Hiasm     
     EndEnumeration
-    #__type_hiasm         = #PB_GadgetType_Hiasm
-    #__type_message       = #PB_GadgetType_Message
-    #__type_popupmenu     = #PB_GadgetType_PopupMenu
-    #__type_root          = #PB_GadgetType_Root
-    #__type_statusbar     = #PB_GadgetType_StatusBar
-    #__type_menu          = #PB_GadgetType_Menu
-    #__type_toolbar       = #PB_GadgetType_Toolbar
-    #__type_window        = #PB_GadgetType_Window
-    #__type_tabbar        = #PB_GadgetType_TabBar
-    #__type_toggled       = #PB_GadgetType_Toggled
-    #__type_property      = #PB_GadgetType_Property 
     
-    #__type_unknown       = #PB_GadgetType_Unknown  ;
-    #__type_button        = #PB_GadgetType_Button
-    #__type_buttonimage   = #PB_GadgetType_ButtonImage
-    #__type_calendar      = #PB_GadgetType_Calendar
-    #__type_canvas        = #PB_GadgetType_Canvas
-    #__type_checkbox      = #PB_GadgetType_CheckBox
-    #__type_combobox      = #PB_GadgetType_ComboBox
-    #__type_container     = #PB_GadgetType_Container
-    #__type_date          = #PB_GadgetType_Date
-    #__type_editor        = #PB_GadgetType_Editor
-    #__type_explorercombo = #PB_GadgetType_ExplorerCombo
-    #__type_explorerlist  = #PB_GadgetType_ExplorerList
-    #__type_explorertree  = #PB_GadgetType_ExplorerTree
-    #__type_frame         = #PB_GadgetType_Frame
-    #__type_hyperlink     = #PB_GadgetType_HyperLink
-    #__type_image         = #PB_GadgetType_Image
-    #__type_ipaddress     = #PB_GadgetType_IPAddress
-    #__type_listicon      = #PB_GadgetType_ListIcon
-    #__type_listview      = #PB_GadgetType_ListView
-    #__type_mdi           = #PB_GadgetType_MDI
-    #__type_option        = #PB_GadgetType_Option
-    #__type_panel         = #PB_GadgetType_Panel
-    #__type_progressbar   = #PB_GadgetType_ProgressBar
-    #__type_scintilla     = #PB_GadgetType_Scintilla
-    #__type_scrollarea    = #PB_GadgetType_ScrollArea
-    #__type_scrollbar     = #PB_GadgetType_ScrollBar
-    #__type_shortcut      = #PB_GadgetType_Shortcut
-    #__type_spin          = #PB_GadgetType_Spin
-    #__type_splitter      = #PB_GadgetType_Splitter
-    #__type_string        = #PB_GadgetType_String
-    #__type_text          = #PB_GadgetType_Text
-    #__type_trackbar      = #PB_GadgetType_TrackBar
-    #__type_tree          = #PB_GadgetType_Tree
-    #__type_web           = #PB_GadgetType_Web
-    #__type_opengl        = #PB_GadgetType_OpenGL
     ;}
     
-    
+    Debug #__type_Button
     
     
     
@@ -925,8 +882,8 @@
     #__test_scrollbar_size = 0
     
     #debug_update_text = 0
-    #debug_multiline = 0
-    #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
+    #debug_Multiline = 0
+    #debug_Repaint = 0 ; Debug " - -  Canvas repaint - -  "
                        ;-
                        ;- GLOBAL
                        ;-
@@ -939,17 +896,17 @@
     Global test_draw_box_inner_type  ;= #PB_All
     Global test_draw_box_frame_type  ;= #PB_All
     
-    ;     test_draw_box_clip_type = #__type_listview
-    ;     test_draw_box_clip1_type = #__type_listview
-    ;     test_draw_box_clip2_type = #__type_listview
+    ;     test_draw_box_clip_type = #__type_Listview
+    ;     test_draw_box_clip1_type = #__type_Listview
+    ;     test_draw_box_clip2_type = #__type_Listview
     
     ;     test_draw_box_clip_type = #__type_tree
     ;     test_draw_box_clip1_type = #__type_tree
     ;     test_draw_box_clip2_type = #__type_tree
     ;     
-    ;     test_draw_box_clip_type = #__type_mdi
-    ;     test_draw_box_clip1_type = #__type_mdi
-    ;     test_draw_box_clip2_type = #__type_mdi
+    ;     test_draw_box_clip_type = #__type_Mdi
+    ;     test_draw_box_clip1_type = #__type_Mdi
+    ;     test_draw_box_clip2_type = #__type_Mdi
     
     ;     test_draw_box_clip_type = #__type_scrollarea
     ;     test_draw_box_clip1_type = #__type_scrollarea
@@ -1052,7 +1009,7 @@
     ; ;       #__DrawFocus
     ; ;       
     ; ;       ;;;;;;;;;;;
-    ; ;       #__flag_limit
+    ; ;       #__flag_Limit
     ; ;       
     ; ;       
     ; ;     EndEnumeration
@@ -1070,9 +1027,9 @@
     ; ;     
     ; ;     #__UpDown = #__DrawFocus
     ; ;     
-    ; ;     Debug #__flag_limit>>1
-    ; ;     If (#__flag_limit>>1) > 2147483647 ; 8589934592
-    ; ;       Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
+    ; ;     Debug #__flag_Limit>>1
+    ; ;     If (#__flag_Limit>>1) > 2147483647 ; 8589934592
+    ; ;       Debug "Исчерпан лимит в x32 ("+Str(#__flag_Limit>>1)+")"
     ; ;     EndIf
     
     
