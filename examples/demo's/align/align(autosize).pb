@@ -18,11 +18,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;ScrollArea(50,50,500,300, 800,500)
     ;Panel(50,50,500,300) : AddItem(widget(), -1, "panel")
     ;a_init(widget())
+    SetColor(widget( ), #__color_back, $ff00ff00 )
     
     ;
-    ;Button(0,0,0,0,"", #__flag_autosize)
-    Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
+    ;String(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
+    Button(0,0,0,0,"", #__flag_autosize)
+    ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
+    ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize|#__flag_child, widget())
     ;MDI(0,0,0,0, #__flag_autosize)
+    ;SetColor(widget( ), #__color_back, -1 )
     
     WaitClose( )
   EndIf

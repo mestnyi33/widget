@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi": UseLib( widget )
+﻿XIncludeFile "../../../widget-events.pbi": UseLib( widget )
 ;XIncludeFile "../../s.pbi" : UseModule 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -29,6 +29,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

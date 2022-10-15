@@ -279,7 +279,7 @@
       #__Resize_start
     EndEnumeration
     
-    ;- _c_flag
+    ;- Constant create-flags
     EnumerationBinary _c_align 8 ; 2
       #__flag_vertical           ;= 1
       
@@ -846,9 +846,6 @@
     EndEnumeration
     
     ;}
-    
-    Debug #__type_Button
-    
     
     
     

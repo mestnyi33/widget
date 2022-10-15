@@ -1286,7 +1286,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndDataSection
     EndProcedure
     
-    Macro DrawArrow2( _x_, _y_, _direction_, _back_color_, _frame_color_)
+    Macro DrawArrow2( _x_, _y_, _direction_, _frame_color_ = $ffffffff, _back_color_ = $ff000000)
       If _direction_ = 0 ; left
         If _frame_color_ <> _back_color_
           Line(_x_+8, _y_-2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
@@ -3971,27 +3971,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Macro _add_action_( _this_ )
-      ;       If _this_\_widgets( )\action_type <> #PB_Compiler_Procedure 
-      ;         If  _this_\_widgets( )\action_type = "AddItem"
-      ;           If  _this_\_widgets( )\action_widget And  _this_\_widgets( )\action_widget\type = #__type_combobox
-      ;              _this_\_widgets( )\action_widget\change = 1
-      ;             ;Redraw(  _this_\_widgets( )\action_widget\_root( ) )
-      ;           EndIf
-      ;         EndIf
-      ;         
-      ;         If  _this_\_widgets( )\action_type = "Resize"
-      ;           If  _this_\_widgets( )\action_widget
-      ;             DoEvents(  _this_\_widgets( )\action_widget, #PB_EventType_ResizeEnd )
-      ;           EndIf
-      ;         EndIf
-      ;         
-      ;          _this_\_widgets( )\action_widget = _this_
-      ;          _this_\_widgets( )\action_type = #PB_Compiler_Procedure 
-      ;       EndIf
-    EndMacro
-    
-    
     Macro Clip( _address_, _mode_=[#__c_draw] )
       CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
         PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
@@ -4098,11 +4077,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      If Not *parent
-        ProcedureReturn 1
-      EndIf
+;       If Not *parent
+;         ProcedureReturn 1
+;       EndIf
       
-      _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
+      If *parent
+        _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
       _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_inner]
       
       ; for the splitter childrens
@@ -4136,7 +4116,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _p_y2_ = *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
         EndIf
       EndIf
-      
+      EndIf
       
       ; then move and size parent set clip coordinate
       ; x&y - clip screen coordinate  
@@ -4178,7 +4158,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
       
       ; width&height - clip inner coordinate
-      If scroll_width_( *this ) And scroll_width_( *this ) < *this\width[#__c_inner]  
+      If *parent
+        If scroll_width_( *this ) And scroll_width_( *this ) < *this\width[#__c_inner]  
         _clip_width_( *this, *parent, *this\x[#__c_inner] + scroll_width_( *this ), _p_x2_, [#__c_draw2] )
       Else
         _clip_width_( *this, *parent, *this\x[#__c_inner] + *this\width[#__c_inner], _p_x2_, [#__c_draw2] )
@@ -4188,7 +4169,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         _clip_height_( *this, *parent, *this\y[#__c_inner] + *this\height[#__c_inner], _p_y2_, [#__c_draw2] )
       EndIf
-      
+    EndIf
+    
       ;       
       ; clip child bar
       If *this\TabWidget( ) 
@@ -4490,18 +4472,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; resize vertical&horizontal scrollbars
         
         If ( Change_x Or Change_y )
-          If Not *this\scroll\v\hide
-            Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize, #PB_Ignore )
-          EndIf
-          If Not *this\scroll\h\hide
-            Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize )
-          EndIf
+;           If Not *this\scroll\v\hide
+;             *this\scroll\v\width[#__c_frame] = #__scroll_buttonsize 
+;             *this\scroll\v\width[#__c_container] = #__scroll_buttonsize
+;             *this\scroll\v\width[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\v\bs*2 - *this\scroll\v\fs*2 ) 
+;             If *this\scroll\v\width[#__c_container] < 0 
+;               *this\scroll\v\width[#__c_container] = 0 
+;             EndIf
+;             *this\scroll\v\width[#__c_inner] = *this\scroll\v\width[#__c_container]
+;           EndIf
+;           If Not *this\scroll\h\hide
+;             *this\scroll\h\height[#__c_frame] = #__scroll_buttonsize 
+;             *this\scroll\h\height[#__c_container] = #__scroll_buttonsize
+;             *this\scroll\h\height[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\h\bs*2 - *this\scroll\h\fs*2 )
+;             If *this\scroll\h\height[#__c_container] < 0 
+;               *this\scroll\h\height[#__c_container] = 0 
+;             EndIf
+;             *this\scroll\h\height[#__c_inner] = *this\scroll\h\height[#__c_container]
+;           EndIf
         EndIf
         
         If ( Change_width Or Change_height )
           bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
         EndIf
-        
+         
         *this\width[#__c_inner] = *this\scroll\h\bar\page\len
         *this\height[#__c_inner] = *this\scroll\v\bar\page\len
       EndIf
@@ -4626,7 +4620,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If (Change_x Or Change_y)
                 Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
-                enumWidget( )\resize | #__resize_change
+                If enumWidget( )\autosize
+                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Else
+                  enumWidget( )\resize | #__resize_change
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -12317,8 +12315,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   AddItem( *this._S_widget, Item.l, Text.s, Image.i =- 1, flag.i = 0 )
       Protected result
       
-      _add_action_( *this )
-      
       If *this\type = #__type_MDI
         *this\count\items + 1
         ;         Static pos_x, pos_y
@@ -12875,8 +12871,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure.b SetState( *this._S_widget, state.f )
       Protected result
-      
-      _add_action_( *this )
       
       If *this\type = #__type_ComboBox
         If is_no_select_item_( *this\_rows( ), State )
@@ -14909,7 +14903,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-  CREATEs
     Procedure.i Create( *parent._S_widget, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.i = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
       Protected color, image
-      Protected ScrollBars, *this.allocate( Widget )
+      Protected ScrollBars;, *this.allocate( Widget )
+      
+      Protected *this._S_widget
+      If Flag & #__flag_autosize = #__flag_autosize And
+         Not ListSize(EnumWidget())
+        *this._S_widget = Root( )
+        *parent = #Null
+      Else
+        *this.allocate( Widget )
+      EndIf
       
       *this\type = type
       *this\flag = Flag
@@ -14923,10 +14926,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; 
           *this\index = *parent\index 
           *this\address = *parent\address
-         Debug  "Create(child) "+ *this\type;+" "+*this\scroll\increment
+         ; Debug  "Create(child) "+ *this\type;+" "+*this\scroll\increment
           
         Else
-          set_align_flag_( *this, *parent, *this\flag )
           
           ; AddWidget( *this, *parent )
           SetParent( *this, *parent, #PB_Default )
@@ -15631,7 +15633,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If *this\child = 0
+        If *this\child 
+          
+          If *this\type = #__type_ScrollBar
+            If *this\vertical
+              *this\width[#__c_frame] = width 
+              *this\width[#__c_container] = width
+              *this\width[#__c_screen] = width + ( *this\bs*2 - *this\fs*2 ) 
+              If *this\width[#__c_container] < 0 
+                *this\width[#__c_container] = 0 
+              EndIf
+              *this\width[#__c_inner] = *this\width[#__c_container]
+            Else
+              *this\height[#__c_frame] = height 
+              *this\height[#__c_container] = height
+              *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+              If *this\height[#__c_container] < 0 
+                *this\height[#__c_container] = 0 
+              EndIf
+              *this\height[#__c_inner] = *this\height[#__c_container]
+            EndIf
+          EndIf
+
+        Else  
           ; splitter 
           If *this\type = #__type_Splitter
             If bar_first_gadget_( *this ) And Not bar_is_first_gadget_( *this )
@@ -15670,6 +15694,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;
+          set_align_flag_( *this, *parent, *this\flag )
           Resize( *this, x,y,width,height )
           If Text.s
             SetText( *this, Text.s )
@@ -15788,11 +15813,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\type = #__type_ComboBox
       *this\class = #PB_Compiler_Procedure
       
-      set_align_flag_( *this, *parent, *this\flag )
-      ; AddWidget( *this, *parent )
       SetParent( *this, *parent, #PB_Default )
       
-      _add_action_( *this )
       
       
       *this\x[#__c_inner] =- 2147483648
@@ -15865,8 +15887,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\type = #__type_Frame
       *this\class = #PB_Compiler_Procedure
       
-      set_align_flag_( *this, *parent, flag )
-      ; AddWidget( *this, *parent )
       SetParent( *this, *parent, #PB_Default )
       
       With *this
@@ -16104,11 +16124,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
               Else
                 
-                If *rows( )\color\state 
-                  DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000, $ffffffff)
-                Else
-                  DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000, $ff000000)
-                EndIf
+                
+                  If *rows( )\color\state 
+                    DrawArrow2(x,y, 3-Bool(*ibox\___state))
+                  Else
+                    DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000)
+                  EndIf
                 
               EndIf
               
@@ -18224,6 +18245,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Root( ) And Root( )\canvas\gadget = Canvas
         ;
         Select eventtype
+          Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            Resize( Root( ), 0, 0, PB(GadgetWidth)( Canvas ), PB(GadgetHeight)( Canvas ) )  
+            ;PostEventRepaint( Root( ) )
+            ReDraw( Root( ) ) 
+            Repaint = 1
+            
           Case #PB_EventType_MouseEnter,
                #PB_EventType_MouseLeave,
                #PB_EventType_MouseMove
@@ -18273,13 +18300,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_MiddleButtonUp
             
             mouse( )\change = 1<<4
-            
-          Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            Protected Width = PB(GadgetWidth)( Canvas )
-            Protected Height = PB(GadgetHeight)( Canvas )
-            Repaint = Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )  
-            ;ReDraw( Root( ) ) 
-            Repaint = 1
             
         EndSelect
         
@@ -18757,8 +18777,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure EventResize( )
       Protected canvas = GetWindowData( EventWindow( ))
-      ; Protected *this._S_widget = GetGadgetData( Canvas )
-      ;PostEventRepaint( *this\_root( ) ) 
       
       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
       ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
@@ -18954,7 +18972,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If g
-        ;SetGadgetData( Canvas, result ) ;@*canvas\_root( ))
         SetWindowData( Window, Canvas )
         
         If flag & #PB_Canvas_Container = #PB_Canvas_Container
@@ -19111,9 +19128,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Root( )\_parent( ) = *this
           EndIf
           
-          set_align_flag_( *this, *parent, *this\flag )
-          
           If *this\child 
+            Debug 4444
             ; AddWidget( *this, *parent )
             SetParent( *this, *parent, #PB_Default )
           EndIf
@@ -19126,7 +19142,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If *parent 
-          set_align_flag_( *this, *parent, *this\flag )
           
           If *this\child = 0 And 
              SetAttachment( *this, *parent, 0 )
@@ -19136,6 +19151,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
+        set_align_flag_( *this, *parent, *this\flag )
         Resize( *this, x,y,width,height )
         
         If *this\flag & #__Window_NoGadgets = #False
@@ -19177,7 +19193,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         g = GadgetID( Gadget )
       EndIf
-      ; SetGadgetData( Gadget, *this )
       
       EnteredWidget( ) = *this
       
@@ -19974,5 +19989,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------8---------------v---------------------------------------------
+; Folding = -------------------------------------------------------------------------------H--P-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-----bI-------0--------------------------+---------------8------------------------------f--------------
 ; EnableXP

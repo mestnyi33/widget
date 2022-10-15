@@ -1,9 +1,11 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
-UseLib(widget)
+﻿IncludePath "../../../"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  EnableExplicit
+  UseLib(widget)
+ CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure GadgetsClipCallBack( GadgetID, lParam )
       If GadgetID
         Protected Gadget = GetProp_( GadgetID, "PB_ID" )
@@ -203,9 +205,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\event
-    Protected EventData = *event\data
+    Protected EventGadget = eventwidget()
+    Protected EventType = widgeteventtype()
+    Protected EventData = widgeteventdata()
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -254,9 +256,12 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
      
-    Gadget(#PB_GadgetType_Tree, #w_tree, 0, 0, 0, 0)
-    g = GetGadgetData(#w_tree)
-    
+;     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
+;     g = Tree(0,0,0,0, #__flag_autosize)
+     Gadget(#PB_GadgetType_Tree, #w_tree, 0, 0, 0, 0)
+     g = GetGadgetData(#w_tree)
+     If Not g : g = Root( ) : EndIf
+     
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -298,6 +303,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 0f8--0-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 0f8--0--
 ; EnableXP

@@ -763,6 +763,12 @@ Module events
     
   EndProcedure
   
+  Procedure ResizeEvent( )
+    If EventType() = #PB_EventType_Resize
+      CallCFunctionFast(*setcallback, EventGadget(), EventType())
+    EndIf
+  EndProcedure
+  
   Procedure.i WaitEvent(event.i, second.i=0)
     If *setcallback And event = #PB_Event_Gadget
       CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
@@ -780,10 +786,6 @@ Module events
         If Mouse::Window() = WindowID(EventWindow())
           CallCFunctionFast(*setcallback, EventGadget(), EventType())
         EndIf
-      EndIf
-      If EventType() = #PB_EventType_MouseLeave
-        ; Debug 888
-        ; CallCFunctionFast(*setcallback, EventGadget(), EventType())
       EndIf
     EndIf
     
@@ -815,6 +817,7 @@ Module events
       CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
     EndIf
     
+    BindEvent(#PB_Event_Gadget, @ResizeEvent( ))
   EndProcedure
 EndModule
 

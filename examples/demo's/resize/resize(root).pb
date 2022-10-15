@@ -1,5 +1,4 @@
-﻿
-; ver: 3.0.0.0 ; 
+﻿; ver: 3.0.0.0 ; 
 ; sudo adduser your_username vboxsf
 ; https://linuxrussia.com/sh-ubuntu.html
 ; http://forums.purebasic.com/english/viewtopic.php?p=577957
@@ -4078,11 +4077,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      If Not *parent
-        ProcedureReturn 1
-      EndIf
+;       If Not *parent
+;         ProcedureReturn 1
+;       EndIf
       
-      _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
+      If *parent
+        _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
       _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_inner]
       
       ; for the splitter childrens
@@ -4116,7 +4116,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _p_y2_ = *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
         EndIf
       EndIf
-      
+      EndIf
       
       ; then move and size parent set clip coordinate
       ; x&y - clip screen coordinate  
@@ -4158,7 +4158,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
       
       ; width&height - clip inner coordinate
-      If scroll_width_( *this ) And scroll_width_( *this ) < *this\width[#__c_inner]  
+      If *parent
+        If scroll_width_( *this ) And scroll_width_( *this ) < *this\width[#__c_inner]  
         _clip_width_( *this, *parent, *this\x[#__c_inner] + scroll_width_( *this ), _p_x2_, [#__c_draw2] )
       Else
         _clip_width_( *this, *parent, *this\x[#__c_inner] + *this\width[#__c_inner], _p_x2_, [#__c_draw2] )
@@ -4168,7 +4169,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         _clip_height_( *this, *parent, *this\y[#__c_inner] + *this\height[#__c_inner], _p_y2_, [#__c_draw2] )
       EndIf
-      
+    EndIf
+    
       ;       
       ; clip child bar
       If *this\TabWidget( ) 
@@ -4198,7 +4200,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.b Resize( *this._S_widget, x.l,y.l,width.l,height.l )
       Protected.b result
       Protected.l ix,iy,iwidth,iheight,  Change_x, Change_y, Change_width, Change_height
-       Debug " resize - "+*this\class
+      ; Debug " resize - "+*this\class
       
 ;       If *this\resize & #__resize_start = #False
 ;         *this\resize | #__resize_start
@@ -4470,35 +4472,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; resize vertical&horizontal scrollbars
         
         If ( Change_x Or Change_y )
-          If Not *this\scroll\v\hide
-            ; Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize, #PB_Ignore )
-            *this\scroll\v\resize | #__resize_width | #__resize_change
-            *this\scroll\v\width[#__c_frame] = #__scroll_buttonsize 
-            *this\scroll\v\width[#__c_container] = #__scroll_buttonsize
-            *this\scroll\v\width[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\v\bs*2 - *this\scroll\v\fs*2 ) 
-            If *this\scroll\v\width[#__c_container] < 0 
-              *this\scroll\v\width[#__c_container] = 0 
-            EndIf
-            *this\scroll\v\width[#__c_inner] = *this\scroll\v\width[#__c_container]
-            
-          EndIf
-          If Not *this\scroll\h\hide
-            ; Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize )
-            *this\scroll\h\resize | #__resize_height | #__resize_change
-            *this\scroll\h\height[#__c_frame] = #__scroll_buttonsize 
-            *this\scroll\h\height[#__c_container] = #__scroll_buttonsize
-            *this\scroll\h\height[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\h\bs*2 - *this\scroll\h\fs*2 )
-            If *this\scroll\h\height[#__c_container] < 0 
-              *this\scroll\h\height[#__c_container] = 0 
-            EndIf
-            *this\scroll\h\height[#__c_inner] = *this\scroll\h\height[#__c_container]
-          EndIf
+;           If Not *this\scroll\v\hide
+;             *this\scroll\v\width[#__c_frame] = #__scroll_buttonsize 
+;             *this\scroll\v\width[#__c_container] = #__scroll_buttonsize
+;             *this\scroll\v\width[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\v\bs*2 - *this\scroll\v\fs*2 ) 
+;             If *this\scroll\v\width[#__c_container] < 0 
+;               *this\scroll\v\width[#__c_container] = 0 
+;             EndIf
+;             *this\scroll\v\width[#__c_inner] = *this\scroll\v\width[#__c_container]
+;           EndIf
+;           If Not *this\scroll\h\hide
+;             *this\scroll\h\height[#__c_frame] = #__scroll_buttonsize 
+;             *this\scroll\h\height[#__c_container] = #__scroll_buttonsize
+;             *this\scroll\h\height[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\h\bs*2 - *this\scroll\h\fs*2 )
+;             If *this\scroll\h\height[#__c_container] < 0 
+;               *this\scroll\h\height[#__c_container] = 0 
+;             EndIf
+;             *this\scroll\h\height[#__c_inner] = *this\scroll\h\height[#__c_container]
+;           EndIf
         EndIf
         
         If ( Change_width Or Change_height )
           bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
         EndIf
-        
+         
         *this\width[#__c_inner] = *this\scroll\h\bar\page\len
         *this\height[#__c_inner] = *this\scroll\v\bar\page\len
       EndIf
@@ -4623,7 +4620,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If (Change_x Or Change_y)
                 Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
-                enumWidget( )\resize | #__resize_change
+                If enumWidget( )\autosize
+                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Else
+                  enumWidget( )\resize | #__resize_change
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -4761,6 +4762,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro bar_area_( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True )
       _parent_\scroll\v = Create( _parent_, _parent_\class+"-"+_parent_\index+"-vertical", #__type_ScrollBar, 0,0,#__scroll_buttonsize,0, #Null$, #__flag_child | #__bar_vertical,  0,_area_height_,_height_, #__scroll_buttonsize, 7, _scroll_step_ )
       _parent_\scroll\h = Create( _parent_, _parent_\class+"-"+_parent_\index+"-horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize, #Null$, #__flag_child,  0,_area_width_,_width_, Bool( _mode_ )*#__scroll_buttonsize, 7, _scroll_step_ )
+      
+;       _parent_\scroll\v\width[#__c_frame] = #__scroll_buttonsize 
+;       _parent_\scroll\v\width[#__c_container] = #__scroll_buttonsize
+;       _parent_\scroll\v\width[#__c_screen] = #__scroll_buttonsize + ( _parent_\scroll\v\bs*2 - _parent_\scroll\v\fs*2 ) 
+;       If _parent_\scroll\v\width[#__c_container] < 0 
+;         _parent_\scroll\v\width[#__c_container] = 0 
+;       EndIf
+;       _parent_\scroll\v\width[#__c_inner] = _parent_\scroll\v\width[#__c_container]
+;       
+;       _parent_\scroll\h\height[#__c_frame] = #__scroll_buttonsize 
+;       _parent_\scroll\h\height[#__c_container] = #__scroll_buttonsize
+;       _parent_\scroll\h\height[#__c_screen] = #__scroll_buttonsize + ( _parent_\scroll\h\bs*2 - _parent_\scroll\h\fs*2 )
+;       If _parent_\scroll\h\height[#__c_container] < 0 
+;         _parent_\scroll\h\height[#__c_container] = 0 
+;       EndIf
+;       _parent_\scroll\h\height[#__c_inner] = _parent_\scroll\h\height[#__c_container]
     EndMacro                                                  
     
     Macro bar_area_draw_( _this_ )
@@ -14902,7 +14919,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-  CREATEs
     Procedure.i Create( *parent._S_widget, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.i = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
       Protected color, image
-      Protected ScrollBars, *this.allocate( Widget )
+      Protected ScrollBars;, *this.allocate( Widget )
+      
+      Protected *this._S_widget
+      If Flag & #__flag_autosize = #__flag_autosize And
+         Not ListSize(EnumWidget())
+        *this._S_widget = Root( )
+        *parent = #Null
+      Else
+        *this.allocate( Widget )
+      EndIf
       
       *this\type = type
       *this\flag = Flag
@@ -15623,7 +15649,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If *this\child = 0
+        If *this\child 
+          
+          If *this\vertical
+            *this\width[#__c_frame] = width 
+            *this\width[#__c_container] = width
+            *this\width[#__c_screen] = width + ( *this\bs*2 - *this\fs*2 ) 
+            If *this\width[#__c_container] < 0 
+              *this\width[#__c_container] = 0 
+            EndIf
+            *this\width[#__c_inner] = *this\width[#__c_container]
+          Else
+            *this\height[#__c_frame] = height 
+            *this\height[#__c_container] = height
+            *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+            If *this\height[#__c_container] < 0 
+              *this\height[#__c_container] = 0 
+            EndIf
+            *this\height[#__c_inner] = *this\height[#__c_container]
+          EndIf
+
+        Else  
           ; splitter 
           If *this\type = #__type_Splitter
             If bar_first_gadget_( *this ) And Not bar_is_first_gadget_( *this )
@@ -15663,9 +15709,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;
           set_align_flag_( *this, *parent, *this\flag )
-          Debug "start - resize"
           Resize( *this, x,y,width,height )
-          Debug "stop - resize"
           If Text.s
             SetText( *this, Text.s )
           EndIf
@@ -18214,6 +18258,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Root( ) And Root( )\canvas\gadget = Canvas
         ;
         Select eventtype
+          Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            Resize( Root( ), 0, 0, PB(GadgetWidth)( Canvas ), PB(GadgetHeight)( Canvas ) )  
+            ;PostEventRepaint( Root( ) )
+            ReDraw( Root( ) ) 
+            Repaint = 1
+            
           Case #PB_EventType_MouseEnter,
                #PB_EventType_MouseLeave,
                #PB_EventType_MouseMove
@@ -18263,13 +18313,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_MiddleButtonUp
             
             mouse( )\change = 1<<4
-            
-          Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            Protected Width = PB(GadgetWidth)( Canvas )
-            Protected Height = PB(GadgetHeight)( Canvas )
-            Repaint = Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )  
-            ;ReDraw( Root( ) ) 
-            Repaint = 1
             
         EndSelect
         
@@ -18747,8 +18790,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure EventResize( )
       Protected canvas = GetWindowData( EventWindow( ))
-      ; Protected *this._S_widget = GetGadgetData( Canvas )
-      ;PostEventRepaint( *this\_root( ) ) 
       
       ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
       ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
@@ -18944,7 +18985,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If g
-        ;SetGadgetData( Canvas, result ) ;@*canvas\_root( ))
         SetWindowData( Window, Canvas )
         
         If flag & #PB_Canvas_Container = #PB_Canvas_Container
@@ -19166,7 +19206,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         g = GadgetID( Gadget )
       EndIf
-      ; SetGadgetData( Gadget, *this )
       
       EnteredWidget( ) = *this
       
@@ -19627,67 +19666,108 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
-
-; ;XIncludeFile "../../../widgets.pbi" 
-; XIncludeFile "../../../widget-events.pbi" 
+; IncludePath "../../../"
+; ;XIncludeFile "widgets.pbi"
+; XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib( WIDGET )
+  UseLib(widget)
   
-  Procedure CreateWidget( *type )
-    Protected result, x=50, y=50, width = 400, height = 300, flags
+  Enumeration 
+    #g_tree 
+    #w_tree
+    #g_splitter
+    #g_splitter2
+  EndEnumeration
+  
+  Global g_Canvas
+  
+  Procedure ResizeCallBack()
+    ResizeGadget(#g_splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     
-    Select *type
-      Case  1: result = Button(x,y,width,height,"Button") 
-      Case  2: result = String(x,y,width,height,"String") 
-      Case  3: result = Text(x,y,width,height,"Text", #PB_Text_Border) 
-      Case  4: result = Option(x,y,width,height,"Option") 
-      Case  5: result = CheckBox(x,y,width,height,"CheckBox") 
-      Case  6: result = ListView(x,y,width,height) 
-      Case  7: result = Frame(x,y,width,height,"Frame") 
-      Case  8: result = ComboBox(x,y,width,height): AddItem(result,-1,"ComboBox"): SetState(result,0)
-      Case  9: result = Image(x,y,width,height,0,#PB_Image_Border) 
-      Case 10: result = HyperLink(x,y,width,height,"HyperLink",0) 
-      Case 11: result = Container(x,y,width,height,#PB_Container_Flat): Button(0,0,80,y,"Button"): CloseList() ; Container
-      Case 12: result = ListIcon(x,y,width,height,"",88) 
-        ;Case 13: result = IPAddress(x,y,width,height) 
-        ;Case 14: result = ProgressBar(x,y,width,height,0,5)
-        ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
-      Case 16: result = ScrollArea(x,y,width,height,width*2,height*2,9,#PB_ScrollArea_Flat): Button(0,0,80,30,"Button"): CloseList()
-        ;Case 17: result = TrackBar(x,y,width,height,0,5)
-        ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
-      Case 19: result = ButtonImage(x,y,width,height,0)
-        ;Case 20: result = Calendar(x,y,width,height) 
-        ;Case 21: result = Date(x,y,width,height)
-      Case 22: result = Editor(x,y,width,height):  AddItem(result,-1,"Editor")
-        ;Case 23: result = ExplorerList(x,y,width,height,"")
-        ;Case 24: result = ExplorerTree(x,y,width,height,"")
-        ;Case 25: result = ExplorerCombo(x,y,width,height,"")
-      Case 26: result = Spin(x,y,width,height,0,5,#PB_Spin_Numeric)
-      Case 27: result = Tree(x,y,width,height) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
-      Case 28: result = Panel(x,y,width,height): AddItem(result,-1,"Panel"): CloseList()
-      Case 29 
-        result = Splitter(x,y,width,height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"))
-        
-      Case height: result = MDI(x,y,width,height)
-        ; Case 31: result = Scintilla(x,y,width,height,0)
-        ; Case 32: result = Shortcut(x,y,width,height,0)
-        ; Case 33: result = Canvas(x,y,width,height) 
-    EndSelect
-    
-    ProcedureReturn result
+    CompilerIf #PB_Compiler_Version =< 546
+      PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
+    CompilerEndIf
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+  Procedure SplitterCallBack()
+    PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
+  EndProcedure
+  
+  If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    Define i,a,g
     
-    CreateWidget( #PB_GadgetType_Tree )
-    ;CreateWidget( #PB_GadgetType_Editor )
+    TreeGadget(#g_tree, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
+    g = #g_tree
     
-    WaitClose( )
+    ; 3_example
+    AddGadgetItem(g, 0, "Tree_0", 0 )
+    AddGadgetItem(g, 1, "Tree_1_1", 0, 1) 
+    AddGadgetItem(g, 4, "Tree_1_1_1", 0, 2) 
+    AddGadgetItem(g, 5, "Tree_1_1_2", 0, 2) 
+    AddGadgetItem(g, 6, "Tree_1_1_2_1", 0, 3) 
+    AddGadgetItem(g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", 0, 4) 
+    AddGadgetItem(g, 7, "Tree_1_1_2_2 980980_", 0, 3) 
+    AddGadgetItem(g, 2, "Tree_1_2", 0, 1) 
+    AddGadgetItem(g, 3, "Tree_1_3", 0, 1) 
+    AddGadgetItem(g, 9, "Tree_2" )
+    AddGadgetItem(g, 10, "Tree_3", 0 )
+    AddGadgetItem(g, 11, "Tree_4" )
+    AddGadgetItem(g, 12, "Tree_5", 0 )
+    AddGadgetItem(g, 13, "Tree_6", 0 )
+    
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    
+    
+    ;CanvasGadget(#w_tree,0,0,0,0)
+    
+     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
+;     g_Canvas = #w_tree ; GetGadget(Root( ))
+;     
+;      g = Tree(0,0,0,0, #__flag_autosize)
+; ;     ;     Gadget(#PB_GadgetType_Tree, #w_tree, 0, 0, 0, 0)
+; ;     ;     g = GetGadgetData(#w_tree)
+; ;     
+; ;     ;  3_example
+;      AddItem(g, 0, "Tree_0", -1 )
+;     AddItem(g, 1, "Tree_1_1", -1, 1) 
+;     AddItem(g, 4, "Tree_1_1_1", -1, 2) 
+;     AddItem(g, 5, "Tree_1_1_2", -1, 2) 
+;     AddItem(g, 6, "Tree_1_1_2_1", -1, 3) 
+;     AddItem(g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
+;     AddItem(g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
+;     AddItem(g, 2, "Tree_1_2", -1, 1) 
+;     AddItem(g, 3, "Tree_1_3", -1, 1) 
+;     AddItem(g, 9, "Tree_2",-1 )
+;     AddItem(g, 10, "Tree_3", -1 )
+;     AddItem(g, 11, "Tree_4", -1 )
+;     AddItem(g, 12, "Tree_5", -1 )
+;     AddItem(g, 13, "Tree_6", -1 )
+    
+    
+    ;SplitterGadget(#g_splitter,8, 8, 306, 491-16, #g_tree, #w_tree)
+    SplitterGadget(#g_splitter2, 0,0,0,0, #g_tree, #w_tree)
+    SplitterGadget(#g_splitter, 8, 8, 300-16, 491-16, TextGadget(#PB_Any,0,0,0,0,""),#g_splitter2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    ;SetGadgetState(#g_splitter, 0)
+    
+    
+    CompilerIf #PB_Compiler_Version =< 546
+      BindGadgetEvent(#g_splitter, @SplitterCallBack())
+    CompilerEndIf
+    
+    ;PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
+    ;BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
+    
+    Repeat
+      Select WaitWindowEvent()   
+        Case #PB_Event_CloseWindow
+          CloseWindow(EventWindow()) 
+          Break
+      EndSelect
+    ForEver
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----8v+-----------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
