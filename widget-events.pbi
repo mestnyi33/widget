@@ -4206,7 +4206,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;         *this\resize | #__resize_start
 ;         Debug "resize - start "+*this\class
 ;       EndIf
-      
       ; 
       If *this\_a_\transform And a_transform( )
         If *this\bs < *this\fs + a_pos( *this )
@@ -4408,8 +4407,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\height[#__c_inner] = *this\height[#__c_container]
       EndIf
       
-      ;
-      If Change_height Or Change_width
+      If ( Change_width Or Change_height )
         If *this\type = #__type_Image Or
            *this\type = #__type_ButtonImage
           *this\image\change = 1
@@ -4424,6 +4422,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\type <> #__type_Tree
             *this\change | #__resize_width
           EndIf
+        EndIf
+        
+        ; if the integral scroll bars 
+        ; resize vertical&horizontal scrollbars
+        If *this\scroll And *this\scroll\v And *this\scroll\h
+          bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+          
+          ; update inner coordinate
+          *this\width[#__c_inner] = *this\scroll\h\bar\page\len
+          *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         EndIf
       EndIf
       
@@ -4466,39 +4474,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;         If *this\type = #__type_Spin
       ;         ;  *this\width[#__c_inner] = *this\width[#__c_container] - *this\bs*2 - BB3( )\size
       ;         EndIf
-      
-      ; if the integral scroll bars
-      If ( *this\scroll And *this\scroll\v And *this\scroll\h )
-        ; resize vertical&horizontal scrollbars
-        
-        If ( Change_x Or Change_y )
-;           If Not *this\scroll\v\hide
-;             *this\scroll\v\width[#__c_frame] = #__scroll_buttonsize 
-;             *this\scroll\v\width[#__c_container] = #__scroll_buttonsize
-;             *this\scroll\v\width[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\v\bs*2 - *this\scroll\v\fs*2 ) 
-;             If *this\scroll\v\width[#__c_container] < 0 
-;               *this\scroll\v\width[#__c_container] = 0 
-;             EndIf
-;             *this\scroll\v\width[#__c_inner] = *this\scroll\v\width[#__c_container]
-;           EndIf
-;           If Not *this\scroll\h\hide
-;             *this\scroll\h\height[#__c_frame] = #__scroll_buttonsize 
-;             *this\scroll\h\height[#__c_container] = #__scroll_buttonsize
-;             *this\scroll\h\height[#__c_screen] = #__scroll_buttonsize + ( *this\scroll\h\bs*2 - *this\scroll\h\fs*2 )
-;             If *this\scroll\h\height[#__c_container] < 0 
-;               *this\scroll\h\height[#__c_container] = 0 
-;             EndIf
-;             *this\scroll\h\height[#__c_inner] = *this\scroll\h\height[#__c_container]
-;           EndIf
-        EndIf
-        
-        If ( Change_width Or Change_height )
-          bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-        EndIf
-         
-        *this\width[#__c_inner] = *this\scroll\h\bar\page\len
-        *this\height[#__c_inner] = *this\scroll\v\bar\page\len
-      EndIf
       
       ; if the integral tab bar 
       If *this\TabWidget( ) And is_integral_( *this\TabWidget( ) )
@@ -4643,6 +4618,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\state\repaint = #True
         
+        If *this\_root( )\FuncClass <> #PB_Compiler_Procedure
+          Debug "  start - resize"
+          *this\_root( )\FuncClass = #PB_Compiler_Procedure
+        EndIf
+        
         If *this\_a_ And *this\_a_\id And *this\_a_\transform
           a_move( *this\_a_\id, 
                   *this\x[#__c_screen],
@@ -4651,6 +4631,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\height[#__c_screen], *this\container )
         EndIf
         
+      
         ProcedureReturn 1
       EndIf
       
@@ -14908,11 +14889,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected *this._S_widget
       If Flag & #__flag_autosize = #__flag_autosize And
          Not ListSize(EnumWidget())
-        *this._S_widget = Root( )
+        *this = Root( )
+        ;*this\_parent( ) = Root( )
+        x = 0
+        y = 0
+        width = Root( )\width
+        height = Root( )\height
+        *this\autosize = 1
         *parent = #Null
       Else
         *this.allocate( Widget )
       EndIf
+      
+      If Root( )\FuncClass = "Resize"
+        Debug "   end - resize "
+      EndIf
+      Root( )\FuncClass = #PB_Compiler_Procedure
       
       *this\type = type
       *this\flag = Flag
@@ -17854,6 +17846,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
+;       If *this\_root( )\FuncClass = "Resize"
+;         Debug "   end - resize "
+;       EndIf
+;       *this\_root( )\FuncClass = #PB_Compiler_Procedure
+      
       ;
       If Not *this\state\disable 
         ; repaint state 
@@ -18215,6 +18212,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;           ChangeCurrentRoot( GadgetID( Canvas ) )
       ;         EndIf
       ;       EndIf
+      If eventtype = #PB_EventType_LeftButtonUp
+        If Root( )
+          If Root( )\FuncClass = "Resize"
+            Debug "   end - resize "
+          EndIf
+          Root( )\FuncClass = "LeftButtonUp"
+        EndIf   
+      EndIf
+      
       If eventtype = #PB_EventType_MouseEnter
         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
           ChangeCurrentRoot( GadgetID( Canvas ) )
@@ -18230,12 +18236,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Root( )\canvas\repaint = #False
             ReDraw( Root( ) )
           EndIf
-          
+          If EventData() = #PB_EventType_Create
+            If Root( )\FuncClass = "Resize"
+              Debug "   end - resize "
+            EndIf
+            Root( )\FuncClass = "Repaint"
+          EndIf
+        
           ; 
           If EnteredGadget( ) >= 0 And 
              EnteredGadget( ) <> Canvas
             ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
+;             If Root( )\FuncClass = "Resize"
+;               Debug "   end - resize "
+;             EndIf
+;             Root( )\FuncClass = "Repaint"
           EndIf
+          
         EndIf
         
         ;Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
@@ -18857,9 +18874,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
+      
       ; init 
       If Not MapSize(Root( ))
         events::SetCallback( @EventHandler( ) )
+      Else
+        If Root( )
+          If Root( )\FuncClass = "Resize"
+            Debug "   end - resize "
+          EndIf
+          Root( )\FuncClass = "Close"
+        EndIf
       EndIf
       
       
@@ -19989,5 +20014,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------H--P-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-----bI-------0--------------------------+---------------8------------------------------f--------------
+; Folding = -------------------------------------------------------------------------------H--P-------vq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-----bI-------0----------0---------------+---------------8--------------------------------+-------------
 ; EnableXP
