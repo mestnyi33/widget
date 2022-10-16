@@ -1963,7 +1963,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\image[#__img_background]\x =- _this_\fs
             _this_\image[#__img_background]\y =- _this_\fs
           EndIf
-        
+          
           If a_transform( )\grid\size > 1
             SetBackgroundImage( a_transform( )\grid\widget, a_transform( )\grid\image )
           EndIf
@@ -1973,7 +1973,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
       EndMacro
-    
+      
       Static ID
       Protected hDC, x,y
       startx = 0
@@ -2562,13 +2562,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\bs = position + *this\fs
         EndIf
         
-          ;
-          a_set_size( *this\_a_\id, *this\_a_\size )
-          a_move( *this\_a_\id,
-                  *this\x[#__c_screen],
-                  *this\y[#__c_screen], 
-                  *this\width[#__c_screen], 
-                  *this\height[#__c_screen], *this\container )
+        ;
+        a_set_size( *this\_a_\id, *this\_a_\size )
+        a_move( *this\_a_\id,
+                *this\x[#__c_screen],
+                *this\y[#__c_screen], 
+                *this\width[#__c_screen], 
+                *this\height[#__c_screen], *this\container )
         
         ; get transform index
         ;a_index( value, *this\_a_\id, i )
@@ -2847,7 +2847,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           EnteredWidget( )\width[#__c_screen], 
                           EnteredWidget( )\height[#__c_screen], EnteredWidget( )\container )
                 EndIf
-              
+                
                 a_at_point( EnteredWidget( )\_root( )\canvas\gadget )
                 
                 If EnteredWidget( )\_a_\id[0]\color\state <> #__S_1
@@ -4077,45 +4077,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-;       If Not *parent
-;         ProcedureReturn 1
-;       EndIf
+      ;       If Not *parent
+      ;         ProcedureReturn 1
+      ;       EndIf
       
       If *parent
         _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_inner]
-      _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_inner]
-      
-      ; for the splitter childrens
-      If *parent\type = #__type_Splitter
-        If bar_first_gadget_( *parent ) = *this
-          _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
-          _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
-        EndIf
-        If bar_second_gadget_( *parent ) = *this
-          _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
-          _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
-        EndIf
-      EndIf
-      
-      If is_integral_( *this ) And Not *this\attach
-        If *this\type = #__type_TabBar Or 
-           *this\type = #__type_ToolBar Or 
-           *this\type = #__type_ScrollBar 
-          _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_container]
-          _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_container]
+        _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_inner]
+        
+        ; for the splitter childrens
+        If *parent\type = #__type_Splitter
+          If bar_first_gadget_( *parent ) = *this
+            _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
+            _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+          EndIf
+          If bar_second_gadget_( *parent ) = *this
+            _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
+            _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+          EndIf
         EndIf
         
-        ; for the scrollarea childrens except scrollbars
-      Else   
-        If scroll_width_( *parent ) And
-           _p_x2_ > *parent\x[#__c_inner] + scroll_x_( *parent ) + scroll_width_( *parent )
-          _p_x2_ = *parent\x[#__c_inner] + scroll_x_( *parent ) + scroll_width_( *parent )
+        If is_integral_( *this ) And Not *this\attach
+          If *this\type = #__type_TabBar Or 
+             *this\type = #__type_ToolBar Or 
+             *this\type = #__type_ScrollBar 
+            _p_x2_ = *parent\x[#__c_inner] + *parent\width[#__c_container]
+            _p_y2_ = *parent\y[#__c_inner] + *parent\height[#__c_container]
+          EndIf
+          
+          ; for the scrollarea childrens except scrollbars
+        Else   
+          If scroll_width_( *parent ) And
+             _p_x2_ > *parent\x[#__c_inner] + scroll_x_( *parent ) + scroll_width_( *parent )
+            _p_x2_ = *parent\x[#__c_inner] + scroll_x_( *parent ) + scroll_width_( *parent )
+          EndIf
+          If scroll_height_( *parent ) And 
+             _p_y2_ > *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
+            _p_y2_ = *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
+          EndIf
         EndIf
-        If scroll_height_( *parent ) And 
-           _p_y2_ > *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
-          _p_y2_ = *parent\y[#__c_inner] + scroll_y_( *parent ) + scroll_height_( *parent )
-        EndIf
-      EndIf
       EndIf
       
       ; then move and size parent set clip coordinate
@@ -4160,17 +4160,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; width&height - clip inner coordinate
       If *parent
         If scroll_width_( *this ) And scroll_width_( *this ) < *this\width[#__c_inner]  
-        _clip_width_( *this, *parent, *this\x[#__c_inner] + scroll_width_( *this ), _p_x2_, [#__c_draw2] )
-      Else
-        _clip_width_( *this, *parent, *this\x[#__c_inner] + *this\width[#__c_inner], _p_x2_, [#__c_draw2] )
+          _clip_width_( *this, *parent, *this\x[#__c_inner] + scroll_width_( *this ), _p_x2_, [#__c_draw2] )
+        Else
+          _clip_width_( *this, *parent, *this\x[#__c_inner] + *this\width[#__c_inner], _p_x2_, [#__c_draw2] )
+        EndIf
+        If scroll_height_( *this ) And scroll_height_( *this ) < *this\height[#__c_inner]
+          _clip_height_( *this, *parent, *this\y[#__c_inner] + scroll_height_( *this ), _p_y2_, [#__c_draw2] )
+        Else
+          _clip_height_( *this, *parent, *this\y[#__c_inner] + *this\height[#__c_inner], _p_y2_, [#__c_draw2] )
+        EndIf
       EndIf
-      If scroll_height_( *this ) And scroll_height_( *this ) < *this\height[#__c_inner]
-        _clip_height_( *this, *parent, *this\y[#__c_inner] + scroll_height_( *this ), _p_y2_, [#__c_draw2] )
-      Else
-        _clip_height_( *this, *parent, *this\y[#__c_inner] + *this\height[#__c_inner], _p_y2_, [#__c_draw2] )
-      EndIf
-    EndIf
-    
+      
       ;       
       ; clip child bar
       If *this\TabWidget( ) 
@@ -4202,10 +4202,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected.l ix,iy,iwidth,iheight,  Change_x, Change_y, Change_width, Change_height
       ; Debug " resize - "+*this\class
       
-;       If *this\resize & #__resize_start = #False
-;         *this\resize | #__resize_start
-;         Debug "resize - start "+*this\class
-;       EndIf
+      ;       If *this\resize & #__resize_start = #False
+      ;         *this\resize | #__resize_start
+      ;         Debug "resize - start "+*this\class
+      ;       EndIf
       ; 
       If *this\_a_\transform And a_transform( )
         If *this\bs < *this\fs + a_pos( *this )
@@ -4405,6 +4405,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\height[#__c_container] = 0 
         EndIf
         *this\height[#__c_inner] = *this\height[#__c_container]
+      EndIf
+      
+      If ( Change_x Or Change_y Or Change_width Or Change_height )
+        *this\state\repaint = #True
+        
+        If *this\_root( )\canvas\ResizeBeginWidget = #Null
+          ;Debug "  start - resize"
+          *this\_root( )\canvas\ResizeBeginWidget = *this
+          Post( *this, #PB_EventType_ResizeBegin )
+        EndIf
+        
+        If *this\_a_ And *this\_a_\id And *this\_a_\transform
+          a_move( *this\_a_\id, 
+                  *this\x[#__c_screen],
+                  *this\y[#__c_screen], 
+                  *this\width[#__c_screen], 
+                  *this\height[#__c_screen], *this\container )
+        EndIf
+        
+        If *this\_a_\transform Or *this\container 
+          Post( *this, #PB_EventType_Resize )
+        EndIf
       EndIf
       
       If ( Change_width Or Change_height )
@@ -4609,33 +4631,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ;
-      If *this\type = #__type_MDI
-        ; mdi_bar_update_( *this, 0,0,0,0 ) ;? не понял зачем использовал
-      EndIf
-      
       ; 
-      If ( Change_x Or Change_y Or Change_width Or Change_height )
-        *this\state\repaint = #True
-        
-        If *this\_root( )\canvas\ResizeBeginWidget = #Null
-          Debug "  start - resize"
-          *this\_root( )\canvas\ResizeBeginWidget = *this
-          Post( *this, #PB_EventType_ResizeBegin )
-        EndIf
-        
-        If *this\_a_ And *this\_a_\id And *this\_a_\transform
-          a_move( *this\_a_\id, 
-                  *this\x[#__c_screen],
-                  *this\y[#__c_screen], 
-                  *this\width[#__c_screen], 
-                  *this\height[#__c_screen], *this\container )
-        EndIf
-        
-      
-        ProcedureReturn 1
-      EndIf
-      
+      ProcedureReturn *this\state\repaint
     EndProcedure
     
     ;-
@@ -13817,12 +13814,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           Resize( *this, x - scroll_x_( *parent ), y - scroll_y_( *parent ), #PB_Ignore, #PB_Ignore )
           
-            If Root( )\canvas\ResizeBeginWidget
-            Debug "   end - resize " + #PB_Compiler_Procedure
-            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
-            Root( )\canvas\ResizeBeginWidget = #Null
+          If *this\_root( )\canvas\ResizeBeginWidget
+            ; Debug "   end - resize " + #PB_Compiler_Procedure
+            Post( *this\_root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
+            *this\_root( )\canvas\ResizeBeginWidget = #Null
           EndIf
-        
+          
           PostEventRepaint( *parent )
           PostEventRepaint( *lastParent )
           
@@ -14908,12 +14905,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this.allocate( Widget )
       EndIf
       
-        If Root( )\canvas\ResizeBeginWidget
-            Debug "   end - resize " + #PB_Compiler_Procedure
-            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
-            Root( )\canvas\ResizeBeginWidget = #Null
-          EndIf
-        
+      If Root( )\canvas\ResizeBeginWidget
+        ; Debug "   end - resize " + #PB_Compiler_Procedure
+        Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
+        Root( )\canvas\ResizeBeginWidget = #Null
+      EndIf
+      
       *this\type = type
       *this\flag = Flag
       *this\child = Bool( Flag & #__flag_child = #__flag_child )
@@ -14926,7 +14923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; 
           *this\index = *parent\index 
           *this\address = *parent\address
-         ; Debug  "Create(child) "+ *this\type;+" "+*this\scroll\increment
+          ; Debug  "Create(child) "+ *this\type;+" "+*this\scroll\increment
           
         Else
           
@@ -15654,7 +15651,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\height[#__c_inner] = *this\height[#__c_container]
             EndIf
           EndIf
-
+          
         Else  
           ; splitter 
           If *this\type = #__type_Splitter
@@ -16065,9 +16062,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Line((x + *ibox\x + *ibox\width / 2), (y + *rows( )\height/2), 7, 1, *rows( )\color\line )
             Else
               If Bool( Not *ibox\___state)
-              ;  LineXY((x + *l_ibox\x+2), (y + 9), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
+                ;  LineXY((x + *l_ibox\x+2), (y + 9), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
                 LineXY((x + *l_ibox\x-1), (y + 10), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
-              ;  LineXY((x + *l_ibox\x-2), (y + 12), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
+                ;  LineXY((x + *l_ibox\x-2), (y + 12), (x + *l_ibox\x + *l_ibox\width / 2-1), y + *rows( )\height-1, *rows( )\color\line )
               EndIf
             EndIf
           EndIf    
@@ -16100,7 +16097,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Next
         
         ;drawing_mode_alpha_( #PB_2DDrawing_Outlined ); | #PB_2DDrawing_AlphaBlend )
-                                              ; Draw buttons ( expanded&collapsed )
+        ; Draw buttons ( expanded&collapsed )
         ForEach *rows( )
           If *rows( )\visible And Not *rows( )\hide 
             *ibox = *rows()\collapsebox
@@ -16125,11 +16122,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Else
                 
                 
-                  If *rows( )\color\state 
-                    DrawArrow2(x,y, 3-Bool(*ibox\___state))
-                  Else
-                    DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000)
-                  EndIf
+                If *rows( )\color\state 
+                  DrawArrow2(x,y, 3-Bool(*ibox\___state))
+                Else
+                  DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000)
+                EndIf
                 
               EndIf
               
@@ -16752,14 +16749,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;
         Post( *this, #PB_EventType_Draw )
         If *this\resize <> 0
-          If *this\_a_\transform Or *this\container 
-            Post( *this, #PB_EventType_Resize )
-          EndIf
-          If *this = *this\_root( )\canvas\ResizeEndWidget
-            Post( *this\_root( )\canvas\ResizeEndWidget, #PB_EventType_ResizeEnd )
-            *this\_root( )\canvas\ResizeEndWidget = #Null
-          EndIf
-        *this\resize = 0
+          ;            Debug 88888884
+          ;           If *this\_a_\transform Or *this\container 
+          ;            ;  Post( *this, #PB_EventType_Resize )
+          ;           EndIf
+          ;           If *this ;= *this\_root( )\canvas\ResizeEndWidget
+          ;             Debug 8888888
+          ;              Post( *this, #PB_EventType_Resize )
+          ;              If *this\_root( )\canvas\ResizeEndWidget
+          ;             Debug 88888883333
+          ;                Post( *this\_root( )\canvas\ResizeEndWidget, #PB_EventType_ResizeEnd )
+          ;             *this\_root( )\canvas\ResizeEndWidget = #Null
+          ;           EndIf
+          ;         EndIf
+          *this\resize = 0
         EndIf
       EndWith
     EndProcedure
@@ -18222,8 +18225,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If eventtype = #PB_EventType_LeftButtonUp
         If Root( )
           If Root( )\canvas\ResizeBeginWidget
-            Debug "   end - resize " + #PB_Compiler_Procedure
-            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            ; Debug "   end - resize " + #PB_Compiler_Procedure
+            Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
             Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
         EndIf   
@@ -18244,8 +18247,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If EventData() = #PB_EventType_Create
               If Root( )\canvas\ResizeBeginWidget
-                Debug "   end - resize " + #PB_Compiler_Procedure
-                Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+                ; Debug "   end - resize " + #PB_Compiler_Procedure
+                Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
                 Root( )\canvas\ResizeBeginWidget = #Null
               EndIf
             EndIf
@@ -18888,8 +18891,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         If Root( )
           If Root( )\canvas\ResizeBeginWidget
-            Debug "   end - resize " + #PB_Compiler_Procedure
-            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            ; Debug "   end - resize " + #PB_Compiler_Procedure
+            Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
             Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
         EndIf
@@ -19162,7 +19165,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\child 
-            Debug 4444
             ; AddWidget( *this, *parent )
             SetParent( *this, *parent, #PB_Default )
           EndIf
@@ -20022,5 +20024,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------H--P-------vq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------+----4Q+------8--------------------------8---------------v--------------------------------8-----------8-
+; Folding = ------------------------------------------------------------------------------------------------++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
