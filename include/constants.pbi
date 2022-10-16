@@ -712,6 +712,7 @@
         #PB_EventType_ReturnKey
       CompilerEndIf
       
+      #PB_EventType_ResizeBegin
       #PB_EventType_ResizeEnd
       
       #PB_EventType_Draw

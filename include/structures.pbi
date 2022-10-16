@@ -597,7 +597,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     WIDGET
     Structure _s_WIDGET
-      FuncClass.s
       autosize.b
       *root._s_ROOT     ; TEMP
       *window._s_WIDGET ; TEMP
@@ -729,6 +728,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     CANVAS
     Structure _s_CANVAS
+      *ResizeBeginWidget._s_WIDGET
+      *ResizeEndWidget._s_WIDGET
+      
       *cursor             ; current visible cursor
       *fontID             ; current drawing fontid
       *address            ; root list address
@@ -793,5 +795,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------
+; Folding = --------8-
 ; EnableXP

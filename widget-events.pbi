@@ -4618,9 +4618,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\state\repaint = #True
         
-        If *this\_root( )\FuncClass <> #PB_Compiler_Procedure
+        If *this\_root( )\canvas\ResizeBeginWidget = #Null
           Debug "  start - resize"
-          *this\_root( )\FuncClass = #PB_Compiler_Procedure
+          *this\_root( )\canvas\ResizeBeginWidget = *this
+          Post( *this, #PB_EventType_ResizeBegin )
         EndIf
         
         If *this\_a_ And *this\_a_\id And *this\_a_\transform
@@ -13816,6 +13817,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           Resize( *this, x - scroll_x_( *parent ), y - scroll_y_( *parent ), #PB_Ignore, #PB_Ignore )
           
+            If Root( )\canvas\ResizeBeginWidget
+            Debug "   end - resize " + #PB_Compiler_Procedure
+            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            Root( )\canvas\ResizeBeginWidget = #Null
+          EndIf
+        
           PostEventRepaint( *parent )
           PostEventRepaint( *lastParent )
           
@@ -14901,11 +14908,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this.allocate( Widget )
       EndIf
       
-      If Root( )\FuncClass = "Resize"
-        Debug "   end - resize "
-      EndIf
-      Root( )\FuncClass = #PB_Compiler_Procedure
-      
+        If Root( )\canvas\ResizeBeginWidget
+            Debug "   end - resize " + #PB_Compiler_Procedure
+            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            Root( )\canvas\ResizeBeginWidget = #Null
+          EndIf
+        
       *this\type = type
       *this\flag = Flag
       *this\child = Bool( Flag & #__flag_child = #__flag_child )
@@ -16744,10 +16752,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;
         Post( *this, #PB_EventType_Draw )
         If *this\resize <> 0
-          If *this\_a_\transform Or (*this\container And Not *this\_root( )) 
+          If *this\_a_\transform Or *this\container 
             Post( *this, #PB_EventType_Resize )
           EndIf
-          *this\resize = 0
+          If *this = *this\_root( )\canvas\ResizeEndWidget
+            Post( *this\_root( )\canvas\ResizeEndWidget, #PB_EventType_ResizeEnd )
+            *this\_root( )\canvas\ResizeEndWidget = #Null
+          EndIf
+        *this\resize = 0
         EndIf
       EndWith
     EndProcedure
@@ -17846,11 +17858,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
-;       If *this\_root( )\FuncClass = "Resize"
-;         Debug "   end - resize "
-;       EndIf
-;       *this\_root( )\FuncClass = #PB_Compiler_Procedure
-      
       ;
       If Not *this\state\disable 
         ; repaint state 
@@ -18214,10 +18221,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndIf
       If eventtype = #PB_EventType_LeftButtonUp
         If Root( )
-          If Root( )\FuncClass = "Resize"
-            Debug "   end - resize "
+          If Root( )\canvas\ResizeBeginWidget
+            Debug "   end - resize " + #PB_Compiler_Procedure
+            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
-          Root( )\FuncClass = "LeftButtonUp"
         EndIf   
       EndIf
       
@@ -18233,24 +18241,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;
           If Root( )\canvas\repaint = #True
-            Root( )\canvas\repaint = #False
-            ReDraw( Root( ) )
-          EndIf
-          If EventData() = #PB_EventType_Create
-            If Root( )\FuncClass = "Resize"
-              Debug "   end - resize "
+            
+            If EventData() = #PB_EventType_Create
+              If Root( )\canvas\ResizeBeginWidget
+                Debug "   end - resize " + #PB_Compiler_Procedure
+                Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+                Root( )\canvas\ResizeBeginWidget = #Null
+              EndIf
             EndIf
-            Root( )\FuncClass = "Repaint"
+            
+            ReDraw( Root( ) )
+            Root( )\canvas\repaint = #False
           EndIf
-        
+          
           ; 
           If EnteredGadget( ) >= 0 And 
              EnteredGadget( ) <> Canvas
             ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-;             If Root( )\FuncClass = "Resize"
-;               Debug "   end - resize "
-;             EndIf
-;             Root( )\FuncClass = "Repaint"
           EndIf
           
         EndIf
@@ -18880,10 +18887,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         events::SetCallback( @EventHandler( ) )
       Else
         If Root( )
-          If Root( )\FuncClass = "Resize"
-            Debug "   end - resize "
+          If Root( )\canvas\ResizeBeginWidget
+            Debug "   end - resize " + #PB_Compiler_Procedure
+            Root( )\canvas\ResizeEndWidget = Root( )\canvas\ResizeBeginWidget
+            Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
-          Root( )\FuncClass = "Close"
         EndIf
       EndIf
       
@@ -20014,5 +20022,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------H--P-------vq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-----bI-------0----------0---------------+---------------8--------------------------------+-------------
+; Folding = -------------------------------------------------------------------------------H--P-------vq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------+----4Q+------8--------------------------8---------------v--------------------------------8-----------8-
 ; EnableXP
