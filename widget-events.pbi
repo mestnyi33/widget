@@ -194,13 +194,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro _rows( ): row\_s( ): EndMacro
     Macro _tabs( ): bar\_s( ): EndMacro
     
+    Macro enumWidget( ): Root( )\_widgets( ): EndMacro       ; temp 
+    
     Macro PB( _pb_function_name_ ) : _pb_function_name_: EndMacro
     Macro Root( ) : widget::*canvas\roots( ): EndMacro
     Macro mouse( ) : widget::*canvas\mouse: EndMacro
     Macro Keyboard( ) : widget::*canvas\keyboard: EndMacro
     Macro Drawing( ): widget::*canvas\drawing : EndMacro
     Macro widget( ): Root( )\_widgets( ): EndMacro ; Returns last created widget 
-    Macro enumWidget( ): widget( ): EndMacro       ; Returns enumerate widget 
     
     ;-
     
@@ -12374,25 +12375,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         Protected sublevel = *this\_rows( )\sublevel
-        Protected *parent._S_rows = *this\_rows( )\parent\row
+        Protected *parent_row._S_rows = *this\_rows( )\parent\row
         
         ; if is last parent item then change to the prev element of his level
-        If *parent And *parent\last = *this\_rows( )
+        If *parent_row And *parent_row\last = *this\_rows( )
           PushListPosition( *this\_rows( ))
           While PreviousElement( *this\_rows( ))
-            If *parent = *this\_rows( )\parent\row
-              *parent\last = *this\_rows( )
+            If *parent_row = *this\_rows( )\parent\row
+              *parent_row\last = *this\_rows( )
               Break
             EndIf
           Wend
           PopListPosition( *this\_rows( ))
           
           ; if the remove last parent childrens
-          If *parent\last = *this\_rows( )
-            *parent\count\childrens = #False
-            *parent\last = #Null
+          If *parent_row\last = *this\_rows( )
+            *parent_row\count\childrens = #False
+            *parent_row\last = #Null
           Else
-            *parent\count\childrens = #True
+            *parent_row\count\childrens = #True
           EndIf
         EndIf
         
@@ -13762,6 +13763,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         
         ;           
+        *parent\count\childrens + 1
+        If *parent <> *parent\_root( )
+          *parent\_root( )\count\childrens + 1
+        EndIf
+        
+        ;
         *this\_root( ) = *parent\_root( )
         If is_window_( *parent ) 
           *this\_window( ) = *parent
@@ -13769,9 +13776,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\_window( ) = *parent\_window( )
         EndIf
         *this\_parent( ) = *parent
+        
+        ;
         *this\level = *parent\level + 1
-        *this\_parent( )\count\childrens + 1
         *this\count\parents = *parent\count\parents + 1
+        
         
         ; TODO
         If *this\_window( )
@@ -19255,20 +19264,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.i Free( *this._S_widget )
       Protected result.i
       
-      With *this
-        If *this
-          If \scroll
-            If \scroll\v : FreeStructure( \scroll\v ) : \scroll\v = 0 : EndIf
-            If \scroll\h : FreeStructure( \scroll\h )  : \scroll\h = 0 : EndIf
-            ; *this\scroll = 0
-          EndIf
-          
-          If \type = #__type_Splitter
-            If bar_first_gadget_( *this ) : FreeStructure( bar_first_gadget_( *this ) ) : bar_first_gadget_( *this ) = 0 : EndIf
-            If bar_second_gadget_( *this ) : FreeStructure( bar_second_gadget_( *this ) ) : bar_second_gadget_( *this ) = 0 : EndIf
-          EndIf
-          
-          If *this\_parent( ) 
+      If *this
+        If *this\scroll
+          If *this\scroll\v : FreeStructure( *this\scroll\v ) : *this\scroll\v = 0 : EndIf
+          If *this\scroll\h : FreeStructure( *this\scroll\h )  : *this\scroll\h = 0 : EndIf
+        EndIf
+        
+        If *this\type = #__type_Splitter
+          If bar_first_gadget_( *this ) : FreeStructure( bar_first_gadget_( *this ) ) : bar_first_gadget_( *this ) = 0 : EndIf
+          If bar_second_gadget_( *this ) : FreeStructure( bar_second_gadget_( *this ) ) : bar_second_gadget_( *this ) = 0 : EndIf
+        EndIf
+        
+        If *this\_parent( ) 
+          If *this\_parent( )\scroll
             If *this\_parent( )\scroll\v = *this
               FreeStructure( *this\_parent( )\scroll\v ) 
               *this\_parent( )\scroll\v = 0
@@ -19277,78 +19285,61 @@ CompilerIf Not Defined( Widget, #PB_Module )
               FreeStructure( *this\_parent( )\scroll\h )  
               *this\_parent( )\scroll\h = 0
             EndIf
-            
-            If *this\_parent( )\type = #__type_Splitter
-              If bar_first_gadget_( *this\_parent( ) ) = *this
-                FreeStructure( bar_first_gadget_( *this\_parent( ) ) ) 
-                bar_first_gadget_( *this\_parent( ) ) = 0
-              EndIf
-              If bar_second_gadget_( *this\_parent( ) ) = *this
-                FreeStructure( bar_second_gadget_( *this\_parent( ) ) )  
-                bar_second_gadget_( *this\_parent( ) ) = 0
-              EndIf
+          EndIf
+          
+          If *this\_parent( )\type = #__type_Splitter
+            If bar_first_gadget_( *this\_parent( ) ) = *this
+              FreeStructure( bar_first_gadget_( *this\_parent( ) ) ) 
+              bar_first_gadget_( *this\_parent( ) ) = 0
+            EndIf
+            If bar_second_gadget_( *this\_parent( ) ) = *this
+              FreeStructure( bar_second_gadget_( *this\_parent( ) ) )  
+              bar_second_gadget_( *this\_parent( ) ) = 0
             EndIf
           EndIf
-          
-          
-          Debug  " free - " + ListSize(  *this\_widgets( ))  + " " +  *this\_root( )\count\childrens  + " " +  *this\_parent( )\count\childrens
-          If *this\_parent( ) And
-             *this\_parent( )\count\childrens 
-            
-            
-            LastElement(  *this\_widgets( ))
-            Repeat
-              If  *this\_widgets( ) = *this Or IsChild(  *this\_widgets( ), *this )
+        EndIf
+        
+        ;
+        If *this\_parent( )\count\childrens
+          LastElement(*this\_widgets( ))
+          Repeat
+            If  *this\_widgets( ) = *this Or IsChild(  *this\_widgets( ), *this )
+              If  *this\_widgets( )\_root( )\count\childrens > 0 
+                *this\_widgets( )\_root( )\count\childrens - 1
                 
-                If  *this\_widgets( )\_root( )\count\childrens > 0 
-                  *this\_widgets( )\_root( )\count\childrens - 1
-                  If  *this\_widgets( )\_parent( ) <>  *this\_widgets( )\_root( )
-                    *this\_widgets( )\_parent( )\count\childrens - 1
-                  EndIf
-                  If StickyWindow( ) =  *this\_widgets( )
-                    StickyWindow( ) = #Null
-                  EndIf
-                  ;  Debug 88888
-                  DeleteElement(  *this\_widgets( ), 1 )
+                If  *this\_widgets( )\_parent( ) <>  *this\_widgets( )\_root( )
+                  *this\_widgets( )\_parent( )\count\childrens - 1
                 EndIf
                 
-                If Not *this\_root( )\count\childrens
-                  Break
+                If StickyWindow( ) =  *this\_widgets( )
+                  StickyWindow( ) = #Null
                 EndIf
-              ElseIf PreviousElement(  *this\_widgets( )) = 0
+                
+                Debug " free - " +*this\_widgets( )\class
+                DeleteElement(  *this\_widgets( ), 1 )
+              EndIf
+              
+              
+              If Not *this\_root( )\count\childrens
                 Break
               EndIf
-            ForEver
-          EndIf
-          Debug  "   free - " + ListSize(  *this\_widgets( ))  + " " +  *this\_root( )\count\childrens  + " " +  *this\_parent( )\count\childrens
-          
-          
-          If EnteredWidget( ) = *this
-            EnteredWidget( ) = *this\_parent( )
-          EndIf
-          If FocusedWidget( ) = *this
-            FocusedWidget( ) = *this\_parent( )
-          EndIf
-          
-          ; *this = 0
-          ;ClearStructure( *this, _S_widget )
+            ElseIf PreviousElement(  *this\_widgets( )) = 0
+              Break
+            EndIf
+          ForEver
+        Else ; if it's root
         EndIf
-      EndWith
-      
-      
-      ;       Debug " free - "
-      ;       ForEach  *this\_widgets( ) 
-      ;         If  *this\_widgets( )\before\widget And  *this\_widgets( )\after\widget
-      ;           Debug " free - "+  *this\_widgets( )\before\widget\class +" "+  *this\_widgets( )\class +" "+  *this\_widgets( )\after\widget\class
-      ;         ElseIf  *this\_widgets( )\after\widget
-      ;           Debug " free - none "+  *this\_widgets( )\class +" "+  *this\_widgets( )\after\widget\class
-      ;         ElseIf  *this\_widgets( )\before\widget
-      ;           Debug " free - "+  *this\_widgets( )\before\widget\class +" "+  *this\_widgets( )\class +" none"
-      ;         Else
-      ;           Debug " free - "+  *this\_widgets( )\class 
-      ;         EndIf
-      ;       Next
-      ;       Debug ""
+        
+        If EnteredWidget( ) = *this
+          EnteredWidget( ) = *this\_parent( )
+        EndIf
+        If FocusedWidget( ) = *this
+          FocusedWidget( ) = *this\_parent( )
+        EndIf
+        
+        PostEventRepaint( *this\_parent( ) )
+        ;ClearStructure( *this, _S_widget )
+      EndIf
       
       ProcedureReturn result
     EndProcedure
@@ -19586,13 +19577,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Sticky( *message, #True )
       ReDraw(*message\_root())
       
+      ;
       WaitEvents( *message )
       
       Sticky( *message, #False )
       ReDraw(*message\_root())
       result = GetData( *message )
       ; close
-      hide( *message, 1 )
+      Free( *message )
       
       ProcedureReturn result
     EndProcedure 
@@ -20024,5 +20016,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r+---
 ; EnableXP
