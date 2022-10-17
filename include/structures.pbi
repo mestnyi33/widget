@@ -729,7 +729,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     CANVAS
     Structure _s_CANVAS
       *ResizeBeginWidget._s_WIDGET
-      *ResizeEndWidget._s_WIDGET
       
       *cursor             ; current visible cursor
       *fontID             ; current drawing fontid
