@@ -1,6 +1,6 @@
 ﻿IncludePath "../../../"
 ;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pb"
+XIncludeFile "widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *c, *s
   Global ._s_widget *w,*w1,*w2 ;
   
-  Procedure _Events()
+  Procedure Events()
     Select WidgetEventType( )
       Case #PB_EventType_LeftClick
         
@@ -70,8 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       AddItem(*w1, -1, "Под-Панель 2")
-      Bind(Button( 5, 5, 55, 22, "hide_2"), @_Events())
-      Bind(Button( 5, 30, 55, 22, "show_2"), @_Events())
+      Bind(Button( 5, 5, 55, 22, "hide_2"), @Events())
+      Bind(Button( 5, 30, 55, 22, "show_2"), @Events())
       
       *c=Container(110,5,150,155, #PB_Container_Flat) 
       Define *p = Panel(10,5,150,65) 
@@ -131,9 +131,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(95, 15, 80, 24,"Кнопка 2")
       CloseList()
       
-      ;       Bind(@_Events(), *w)
-      ;       Bind(@_Events(), *w1)
-      ;       Bind(@_Events(), *w2)
+      ;       Bind(@Events(), *w)
+      ;       Bind(@Events(), *w1)
+      ;       Bind(@Events(), *w2)
       SetState(*w1, 3)
       
       ReDraw(Root())

@@ -143,7 +143,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     caret
     Structure _s_caret Extends _s_coordinate
-      direction.b
+      mode.i
+      ;direction.b
       
       pos.l[4]
       time.l

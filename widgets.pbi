@@ -7904,6 +7904,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       
       If _scroll_
+        Debug ""+_line_+" "+*this\index[#__s_1]+" "+*this\index[#__s_2]
         
         PushListPosition( RowList( *this )) 
         ForEach RowList( *this )
@@ -9785,12 +9786,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                     If \row\_s( )\text\string.s
                       drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                      DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
+                      DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\string.s, *this\text\rotate, RowList( *this )\color\front[0] )
                     EndIf
                     
                     If \row\_s( )\text\edit[2]\width
                       drawing_mode_alpha_( #PB_2DDrawing_Default )
-                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
+                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[2] )
                     EndIf
                     
                     drawing_mode_alpha_( #PB_2DDrawing_Transparent )
@@ -9800,36 +9801,36 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                          ( *this\index[#__s_1] = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2] ))
                       
                       If \row\_s( )\text\edit[2]\string.s
-                        DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
+                        DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[2] )
                       EndIf
                       
                       ; to left select
                     Else
                       If \row\_s( )\text\edit[2]\string.s
-                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s + \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
+                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s + \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[2] )
                       EndIf
                       
                       If \row\_s( )\text\edit[1]\string.s
-                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
+                        DrawRotatedText( Text_x, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[0] )
                       EndIf
                     EndIf
                     
                   CompilerElse
                     If \row\_s( )\text\edit[2]\width
                       drawing_mode_alpha_( #PB_2DDrawing_Default )
-                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[text_sel_state] )
+                      Box( sel_text_x2, Y, text_sel_width, \row\_s( )\height, RowList( *this )\color\back[2] )
                     EndIf
                     
                     drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                     
                     If \row\_s( )\text\edit[1]\string.s
-                      DrawRotatedText( sel_text_x1, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
+                      DrawRotatedText( sel_text_x1, Text_Y, \row\_s( )\text\edit[1]\string.s, *this\text\rotate, RowList( *this )\color\front[0] )
                     EndIf
                     If \row\_s( )\text\edit[2]\string.s
-                      DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[text_sel_state] )
+                      DrawRotatedText( sel_text_x2, Text_Y, \row\_s( )\text\edit[2]\string.s, *this\text\rotate, RowList( *this )\color\front[2] )
                     EndIf
                     If \row\_s( )\text\edit[3]\string.s
-                      DrawRotatedText( sel_text_x3, Text_Y, \row\_s( )\text\edit[3]\string.s, *this\text\rotate, RowList( *this )\color\front[RowList( *this )\color\state] )
+                      DrawRotatedText( sel_text_x3, Text_Y, \row\_s( )\text\edit[3]\string.s, *this\text\rotate, RowList( *this )\color\front[0] )
                     EndIf
                   CompilerEndIf
                   
@@ -16356,7 +16357,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\mode\check = #__m_multiselect ; multiselect
         *this\mode\fullselection = constants::_check_( Flag, #__flag_fullselection, #False )*7
         *this\mode\alwaysselection = constants::_check_( Flag, #__flag_alwaysselection )
-        *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines )
+        *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines ) * 10
         
         *this\row\margin\hide = constants::_check_( Flag, #__text_numeric, #False )
         *this\row\margin\color\front = $C8000000 ; \color\back[0] 
@@ -16529,7 +16530,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *this\mode\check = #__m_multiselect ; multiselect
         *this\mode\fullselection = constants::_check_( Flag, #__flag_fullselection, #False )*7
         *this\mode\alwaysselection = constants::_check_( Flag, #__flag_alwaysselection )
-        *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines )
+        *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines ) * 10
         
         *this\row\margin\hide = constants::_check_( Flag, #__text_numeric, #False )
         *this\row\margin\color\front = $C8000000 ; \color\back[0] 
@@ -20919,5 +20920,5 @@ CompilerEndIf
 ;   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
+; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6------------------------------------------------------8--f--86+-----------------------------------------------------8-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
 ; EnableXP

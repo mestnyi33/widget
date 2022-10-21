@@ -459,14 +459,14 @@ DeclareModule events
   
   Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
     PB(ResizeGadget)(_gadget_,_x_,_y_,_width_,_height_)
-    
-    If *setcallback ;And GadgetType(_gadget_) = #PB_GadgetType_Canvas
-      CompilerIf #PB_Compiler_IsMainFile
-        Debug "resize - " + _gadget_
-      CompilerEndIf
-      
-      CallCFunctionFast(*setcallback, _gadget_, #PB_EventType_Resize)
-    EndIf
+;     
+;     If *setcallback ;And GadgetType(_gadget_) = #PB_GadgetType_Canvas
+;       CompilerIf #PB_Compiler_IsMainFile
+;        ; Debug "resize - " + _gadget_
+;       CompilerEndIf
+;       
+;       CallCFunctionFast(*setcallback, _gadget_, #PB_EventType_Resize)
+;     EndIf
   EndMacro
   
   
@@ -771,21 +771,28 @@ Module events
   
   Procedure.i WaitEvent(event.i, second.i=0)
     If *setcallback And event = #PB_Event_Gadget
+      Protected EventType = EventType()
+      Protected EventGadget = EventGadget()
       CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
-        If EventType() = constants::#PB_EventType_Repaint
-          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+        If EventType = constants::#PB_EventType_Repaint
+          CallCFunctionFast(*setcallback, EventGadget, EventType)
         EndIf
       CompilerEndIf
       CompilerIf Defined(constants::PB_EventType_Create, #PB_Constant) 
-        If EventType() = constants::#PB_EventType_Create
-          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+        If EventType = constants::#PB_EventType_Create
+          CallCFunctionFast(*setcallback, EventGadget, EventType)
         EndIf
       CompilerEndIf
-      If EventType() = #PB_EventType_MouseEnter
+      If EventType = #PB_EventType_MouseEnter
         ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
         If Mouse::Window() = WindowID(EventWindow())
-          CallCFunctionFast(*setcallback, EventGadget(), EventType())
+          CallCFunctionFast(*setcallback, EventGadget, EventType)
         EndIf
+      EndIf
+      If EventType = #PB_EventType_KeyDown Or
+         EventType = #PB_EventType_KeyUp Or
+         EventType = #PB_EventType_Input
+        CallCFunctionFast(*setcallback, EventGadget, EventType)
       EndIf
     EndIf
     
@@ -810,8 +817,10 @@ Module events
     #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
     
     
-    ; GetCurrentProcess(@psn.q): eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction(), *callback)
-    eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
+     GetCurrentProcess(@psn): eventTap = CGEventTapCreateForPSN(@psn, #headInsertEventTap, 1, mask, @eventTapFunction( ), *callback)
+     
+     ; с ним mousemove не происходит если приложение не активно
+     ;eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction(), *callback)
     
     If eventTap
       CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
@@ -1534,5 +1543,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --8---------------------------
+; Folding = --8-------vvi-v40-------------
 ; EnableXP

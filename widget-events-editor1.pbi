@@ -7827,16 +7827,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Next 
       EndIf
       
-      ProcedureReturn caret
+      ProcedureReturn caret - *this\EnteredRow( )\text\pos
     EndProcedure
     
-    Procedure   edit_sel_row_text_( *this._S_widget, *rows._S_rows, mode.l = 0 )
+    Procedure   edit_sel_row_text_( *this._S_widget, *rows._S_rows, mode.l = 0, drawing.b = 0 )
       Protected CaretLeftPos, CaretRightPos, CaretLastLen= 0
       Debug "edit_sel_row_text - "+*rows\index +" "+ mode
-      
-      *this\state\repaint = #True
-      *rows\color\state = #__s_2
-      *rows\state\focus = #True
       
       If mode =- 14 ; ok leave from
         *this\edit_caret_1( ) = *rows\text\pos
@@ -7845,36 +7841,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         CaretLeftPos = 0
         CaretRightPos = 0 
         
-      ElseIf mode = #__sel_remove ; 
+      ElseIf mode =- 6 ; 
         
         CaretLeftPos = 0
         CaretRightPos = 0 
-        *rows\color\state = #__s_0
-        *rows\state\focus = #False
-      
-      ElseIf mode = #__sel_to_first 
-        CaretLeftPos = 0
-        If *rows = *this\PressedRow( )
-          CaretRightPos = *this\edit_caret_2( ) - *rows\text\pos
-        Else
-          CaretRightPos = *rows\text\len
-          CaretLastLen = *this\mode\fullselection
-        EndIf
-        *this\edit_caret_1( ) = *rows\text\pos 
-         
-      ElseIf mode = #__sel_to_prev ; 
+        
+      ElseIf mode =- 5 ; 
         
         CaretLeftPos = 0
         CaretRightPos = *rows\text\len  
         CaretLastLen = *this\mode\fullselection
         
-      ElseIf mode = #__sel_to_next ; 
-        
-        CaretLeftPos = 0
-        CaretRightPos = *rows\text\len  
-        CaretLastLen = *this\mode\fullselection
-        
-      ElseIf mode = #__sel_to_last 
+      ElseIf mode =- 10 ; ok leave bottom
         If *rows = *this\PressedRow( )
           CaretLeftPos = *this\edit_caret_2( ) - *rows\text\pos
         Else
@@ -7886,9 +7864,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         *this\edit_caret_1( ) = *rows\text\pos + *rows\text\len 
         
+      ElseIf mode =- 9 ; ok leave top
+        CaretLeftPos = 0
+        If *rows = *this\PressedRow( )
+          CaretRightPos = *this\edit_caret_2( ) - *rows\text\pos
+        Else
+          CaretRightPos = *rows\text\len
+          CaretLastLen = *this\mode\fullselection
+        EndIf
+        *this\edit_caret_1( ) = *rows\text\pos 
+        
       Else
-         
-         If *this\edit_caret_1( ) >= *this\edit_caret_2( )
+        If *this\edit_caret_1( ) >= *this\edit_caret_2( )
           If *rows\text\pos <= *this\edit_caret_2( )
             CaretLeftPos = *this\edit_caret_2( ) - *rows\text\pos
           EndIf
@@ -7992,7 +7979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *line < 0
         PushListPosition( *this\_rows( ) )
         ForEach *this\_rows( )
-          edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_last )
+          edit_sel_row_text_( *this, *this\_rows( ), - 10 )
         Next
         PopListPosition( *this\_rows( ) )
         
@@ -8066,9 +8053,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\text\multiLine 
               ForEach *this\_rows( ) 
+                ;
                 If *this\_rows( )\text\edit[2]\width <> 0 
                   ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                  edit_sel_row_text_( *this, *this\_rows( ), #__sel_remove )
+                  edit_sel_row_text_( *this, *this\_rows( ), - 6 )
+                  ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
+                EndIf
+                
+                If *this\_rows( )\state\focus
+                  *this\_rows( )\state\focus = #False
+                  ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
                 EndIf
               Next
             EndIf
@@ -8076,10 +8070,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedRow( ) = *entered
           EndIf
           
+          ;Debug "   "+*this\FocusedRow( ) +"  "+ *entered 
+          
           If *this\FocusedRow( ) <> *entered 
             *this\FocusedRow( ) = *entered
             
             If *this\text\multiLine And *this\PressedRow( )
+              ;Debug "status change - " +  *this\EnteredRow( )\index
               ForEach *this\_rows( ) 
                 If Bool(( *this\FocusedRow( )\index >= *this\_rows( )\index And 
                           *this\PressedRow( )\index <= *this\_rows( )\index ) Or ; верх
@@ -8090,28 +8087,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\_rows( )\index <> *this\PressedRow( )\index And  
                      *this\_rows( )\index <> *this\FocusedRow( )\index 
                     
-                    ;Debug ""+*this\_rows( )\index +" "+ *this\PressedRow( )\index +" "+ *this\FocusedRow( )\index
+                    ;; Debug *this\_rows( )\index
                     
-                    If *this\PressedRow( )\index > *this\FocusedRow( )\index
-                      If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
-                        Debug "set - prev " +" "+ *this\_rows( )\text\string
-                        edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_prev )
-                      EndIf
-                    Else
-                      If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
-                        Debug "set - next " +" "+ *this\_rows( )\text\string
-                        edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_next )
-                      EndIf
+                    If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
+                      Debug "set - " +" "+ *this\_rows( )\text\string
+                      edit_sel_row_text_( *this, *this\_rows( ), - 5 )
+                      ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
                     EndIf
                   EndIf
+                  
+                  If *this\_rows( )\state\focus = #False
+                    *this\_rows( )\state\focus = #True
+                    ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
+                  EndIf
+                  
                 Else
                   ;
                   If *this\_rows( )\text\edit[2]\width <> 0 
                     Debug " remove - " +" "+ *this\_rows( )\text\string
-                    edit_sel_row_text_( *this, *this\_rows( ), #__sel_remove )
+                    edit_sel_row_text_( *this, *this\_rows( ), - 6 )
+                    ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
                   EndIf
+                  
+                  If *this\_rows( )\state\focus
+                    *this\_rows( )\state\focus = #False
+                    ; DoEvents( *this, #PB_EventType_StatusChange, *this\_rows( )\index, *this\_rows( ) )
+                  EndIf
+                  
                 EndIf
               Next
+              
+              ;DoEvents( *this, #PB_EventType_StatusChange, *this\EnteredRow( )\index, *this\EnteredRow( ) )
             EndIf
           EndIf
           
@@ -8121,6 +8127,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; *this\edit_linePos( ) = *entered\index
           ; DoEvents( *this, #PB_EventType_StatusChange, *entered\index, *entered )
+          *this\state\repaint = 1
         EndIf
       EndIf
       
@@ -8819,8 +8826,109 @@ CompilerIf Not Defined( Widget, #PB_Module )
       rows( )\height = rows( )\text\height ; + 10
       rows( )\width = *this\width[#__c_inner]
       rows( )\color = _get_colors_( )
-      ;rows( )\color\back = $FFF9F9F9
-            
+      
+      ; make line position
+      If *this\vertical
+      Else ; horizontal
+        If scroll_width_( *this ) < rows( )\text\width + *this\text\padding\x*2
+          scroll_width_( *this ) = rows( )\text\width + *this\text\padding\x*2
+        EndIf
+        
+        If *this\text\rotate = 0
+          If add_index >= 0
+            rows( )\text\pos = add_pos 
+            rows( )\y = add_y                                                                     - *this\text\padding\y
+          Else
+            rows( )\text\pos = *this\text\len 
+            rows( )\y = scroll_height_( *this )                                                   - *this\text\padding\y
+          EndIf
+        ElseIf *this\text\rotate = 180
+          rows( )\y = ( *this\height[#__c_inner] - scroll_height_( *this ) - rows( )\text\height ) + *this\text\padding\y 
+        EndIf
+        
+        scroll_height_( *this ) + rows( )\height + *this\mode\gridlines
+      EndIf
+      
+      *this\count\items + 1
+      *this\text\len + string_len + Len( #LF$ )
+      *this\text\string = InsertString( *this\text\string, rows( )\text\string + #LF$, 1 + rows( )\text\pos )
+      
+      ;       If *this\type = #__Type_Editor
+      ;         ; Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\y +" "+ rows( )\width +" "+ rows( )\height
+      ;         ;  Debug "e - "+rows( )\text\pos +" "+ rows( )\text\string +" "+ rows( )\text\y +" "+ rows( )\text\width +" "+ rows( )\text\height
+      ;       EndIf
+      ;       
+      ;       
+      *this\text\change = 0
+      *this\change = 0
+      
+      ; ;       If scroll_height_( *this ) > *this\height[#__c_inner]; bar_make_scroll_area( *this )
+      ; ;         PostCanvasRepaint( *this\_root( ) ) 
+      ; ;       EndIf
+    EndProcedure
+    Procedure   edit_AddItem1( *this._S_widget, List rows._S_rows( ), position, *text.Character, string_len )
+      Protected *rows._S_rows
+      Protected add_index =- 1, add_y, add_pos, add_height
+      
+      If position < 0 Or position > ListSize( rows( )) - 1
+        LastElement( rows( ))
+        *rows = AddElement( rows( )) 
+        
+        ;If position < 0 
+        position = ListIndex( rows( ))
+        ;EndIf
+        
+      Else
+        
+        *rows = SelectElement( rows( ), position )
+        add_index = rows( )\index
+        add_y = rows( )\y           + Bool( #PB_Compiler_OS = #PB_OS_Windows )
+        add_pos = rows( )\text\pos
+        add_height = rows( )\height + *this\mode\gridlines 
+        *rows = InsertElement( rows( ))
+        
+        PushListPosition( rows( )) 
+        While NextElement( rows( )) 
+          rows( )\index = ListIndex( rows( ) )
+          rows( )\y + add_height 
+          rows( )\text\pos + string_len + Len( #LF$ )
+        Wend
+        PopListPosition(rows( ))
+        
+        
+        ;         *rows = SelectElement( rows( ), position )
+        ;         add_index = rows( )\index
+        ;         add_y = rows( )\y
+        ;         add_pos = rows( )\text\pos
+        ;         add_height = rows( )\height
+        ;         PushListPosition( rows( )) 
+        ;         Repeat 
+        ;           rows( )\index = ListIndex( rows( ) ) + 1 
+        ;           rows( )\y + add_height
+        ;           rows( )\text\pos + string_len + Len( #LF$ )
+        ;         Until Not NextElement( rows( ))
+        ;         PopListPosition(rows( ))
+        ;         *rows = InsertElement( rows( ))
+      EndIf
+      
+      rows( )\index = position
+      rows( )\text\len = string_len
+      rows( )\text\string = PeekS ( *text, string_len )
+      
+      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+      ;         StopDrawing( )
+      ;         StartDrawing( CanvasOutput( *this\_root( )\canvas\gadget ) )
+      ;         DrawingFont( *this\_root( )\text\fontid )
+      ;       CompilerEndIf
+      draw_font_item_( *this, rows( ), rows( )\text\change )
+      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+      ;         StopDrawing( )
+      ;       CompilerEndIf
+      
+      rows( )\height = rows( )\text\height ; + 10
+      rows( )\width = *this\width[#__c_inner]
+      rows( )\color = _get_colors_( )
+      
       ; make line position
       If *this\vertical
       Else ; horizontal
@@ -9348,38 +9456,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 ;                 EndIf
                 
                 If *this\text\editable
-;                   ; Draw lines
-;                   ; Если для итема установили задный 
-;                   ; фон отличный от заднего фона едитора
-;                   If *this\_rows( )\color\back  
-;                     drawing_mode_alpha_( #PB_2DDrawing_Default )
-;                     draw_roundbox_( sel_x,Y,sel_width ,*this\_rows( )\height, *this\_rows( )\round,*this\_rows( )\round, *this\_rows( )\color\back[0] )
-;                     
-;                     If *this\color\back And 
-;                        *this\color\back <> *this\_rows( )\color\back
-;                       ; Draw margin back color
-;                       If *this\row\margin\width > 0
-;                         ; то рисуем вертикальную линию на границе поля нумерации и начало итема
-;                         drawing_mode_alpha_( #PB_2DDrawing_Default )
-;                         draw_box_( *this\row\margin\x, *this\_rows( )\y, *this\row\margin\width, *this\_rows( )\height, *this\row\margin\color\back )
-;                         Line( *this\x[#__c_inner] + *this\row\margin\width, *this\_rows( )\y, 1, *this\_rows( )\height, *this\color\back ) ; $FF000000 );
-;                       EndIf
-;                     EndIf
-;                   EndIf
+                  ; Draw lines
+                  ; Если для итема установили задный 
+                  ; фон отличный от заднего фона едитора
+                  If *this\_rows( )\color\back  
+                    drawing_mode_alpha_( #PB_2DDrawing_Default )
+                    draw_roundbox_( sel_x,Y,sel_width ,*this\_rows( )\height, *this\_rows( )\round,*this\_rows( )\round, *this\_rows( )\color\back[0] )
+                    
+                    If *this\color\back And 
+                       *this\color\back <> *this\_rows( )\color\back
+                      ; Draw margin back color
+                      If *this\row\margin\width > 0
+                        ; то рисуем вертикальную линию на границе поля нумерации и начало итема
+                        drawing_mode_alpha_( #PB_2DDrawing_Default )
+                        draw_box_( *this\row\margin\x, *this\_rows( )\y, *this\row\margin\width, *this\_rows( )\height, *this\row\margin\color\back )
+                        Line( *this\x[#__c_inner] + *this\row\margin\width, *this\_rows( )\y, 1, *this\_rows( )\height, *this\color\back ) ; $FF000000 );
+                      EndIf
+                    EndIf
+                  EndIf
                   
-;                   If *this\_rows( )\state\press
-;                     *this\_rows( )\color\state = 0
-;                   ElseIf *this\_rows( )\state\enter ;And *this\state\press
-;                     *this\_rows( )\color\state = 1
-;                   Else
-;                     *this\_rows( )\color\state = 0
-;                   EndIf
+                  If *this\_rows( )\state\press
+                    *this\_rows( )\color\state = 0
+                  ElseIf *this\_rows( )\state\enter ;And *this\state\press
+                    *this\_rows( )\color\state = 1
+                  Else
+                    *this\_rows( )\color\state = 0
+                  EndIf
                   
                   Protected text_enter_state = *this\_rows( )\color\state
                   
                   ; text_enter_state = Bool(*this\_rows( ) = *this\FocusedRow( )) ; *this\_rows( )\color\state ; Bool( *this\_rows( )\color\state ) ; Bool( *this\_rows( )\index = *this\EnteredRow( )\index ) + Bool( *this\_rows( )\index = *this\EnteredRow( )\index And *this\state\focus = #False )*2
                   ; Draw entered selection
-                  If text_enter_state = 1
+                  If text_enter_state
                     If *this\_rows( )\color\back[text_enter_state] <>- 1              ; no draw transparent
                       drawing_mode_alpha_( #PB_2DDrawing_Default )
                       draw_roundbox_( sel_x,Y,sel_width ,*this\_rows( )\height, *this\_rows( )\round,*this\_rows( )\round, *this\_rows( )\color\back[text_enter_state] )
@@ -9392,8 +9500,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 
-                ;Debug *this\_rows( )\color\state
-                Protected text_sel_state = *this\color\state
+                Protected text_sel_state = 2
                 Protected text_no_sel_state = 0
                 
                 ; Draw text
@@ -12147,7 +12254,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If *this\type = #__type_Editor
-        ProcedureReturn edit_AddItem( *this, *this\_rows( ), item, @text, Len(Text) )
+        ProcedureReturn edit_AddItem1( *this, *this\_rows( ), item, @text, Len(Text) )
       EndIf
       
       If *this\type = #__type_Tree Or 
@@ -17263,6 +17370,276 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
+    Procedure   _edit_sel_2( *this._s_WIDGET, _pos_, _len_ )
+      ;ProcedureReturn edit_sel_row_text_(
+      ;_pos_ - *this\_rows( )\text\pos
+      ;Debug "_edit_sel_2 "+_pos_ +" "+ _len_
+      
+      If _pos_ < 0 : _pos_ = 0 : EndIf
+      If _len_ < 0 : _len_ = 0 : EndIf
+      
+      If _pos_ > *this\_rows( )\text\len
+        _pos_ = *this\_rows( )\text\len
+      EndIf
+      
+      If _len_ > *this\_rows( )\text\len
+        _len_ = *this\_rows( )\text\len
+      EndIf
+      
+      Protected _caret_last_len_ = Bool( *this\EnteredRow( )\index <> *this\FocusedRow( )\index And 
+                                         ( *this\_rows( )\index < *this\EnteredRow( )\index Or 
+                                           *this\_rows( )\index < *this\FocusedRow( )\index )) * *this\mode\fullselection
+      
+      ;     If  _caret_last_len_
+      ;       _caret_last_len_ = *this\width[2]
+      ;     EndIf
+      
+      *this\_rows( )\text\edit[1]\len = _pos_
+      *this\_rows( )\text\edit[2]\len = _len_
+      
+      
+      *this\_rows( )\text\edit[1]\pos = 0 
+      *this\_rows( )\text\edit[2]\pos = *this\_rows( )\text\edit[1]\len
+      
+      *this\_rows( )\text\edit[3]\pos = *this\_rows( )\text\edit[2]\pos + *this\_rows( )\text\edit[2]\len 
+      *this\_rows( )\text\edit[3]\len = *this\_rows( )\text\len - *this\_rows( )\text\edit[3]\pos
+      
+      ; set string & size ( left;selected;right )
+      If *this\_rows( )\text\edit[1]\len > 0
+        *this\_rows( )\text\edit[1]\string = Left( *this\_rows( )\text\string, *this\_rows( )\text\edit[1]\len )
+        *this\_rows( )\text\edit[1]\width = TextWidth( *this\_rows( )\text\edit[1]\string ) 
+      Else
+        *this\_rows( )\text\edit[1]\string = ""
+        *this\_rows( )\text\edit[1]\width = 0
+      EndIf
+      If *this\_rows( )\text\edit[2]\len > 0
+        If *this\_rows( )\text\edit[2]\len <> *this\_rows( )\text\len
+          *this\_rows( )\text\edit[2]\string = Mid( *this\_rows( )\text\string, 1 + *this\_rows( )\text\edit[2]\pos, *this\_rows( )\text\edit[2]\len )
+          *this\_rows( )\text\edit[2]\width = TextWidth( *this\_rows( )\text\edit[2]\string ) + _caret_last_len_ 
+          ;         + Bool(( *this\EnteredRow( )\index <  *this\index[2] And *this\_rows( )\index = *this\EnteredRow( )\index ) Or
+          ;                                                                                                  ;( *this\EnteredRow( )\index <> *this\_rows( )\index And *this\_rows( )\index <> *this\index[2] ) Or
+          ;         ( *this\EnteredRow( )\index  > *this\index[2] And *this\_rows( )\index = *this\index[2] )) * *this\mode\fullselection
+        Else
+          *this\_rows( )\text\edit[2]\string = *this\_rows( )\text\string
+          *this\_rows( )\text\edit[2]\width = *this\_rows( )\text\width + _caret_last_len_
+        EndIf
+      Else
+        *this\_rows( )\text\edit[2]\string = ""
+        *this\_rows( )\text\edit[2]\width = _caret_last_len_
+      EndIf
+      
+      If *this\_rows( )\text\edit[3]\len > 0
+        *this\_rows( )\text\edit[3]\string = Right( *this\_rows( )\text\string, *this\_rows( )\text\edit[3]\len )
+        *this\_rows( )\text\edit[3]\width = TextWidth( *this\_rows( )\text\edit[3]\string )  
+      Else
+        *this\_rows( )\text\edit[3]\string = ""
+        *this\_rows( )\text\edit[3]\width = 0
+      EndIf
+      
+      ; because bug in mac os
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        If *this\_rows( )\text\edit[2]\width And Not ( *this\EnteredRow( )\index = *this\FocusedRow( )\index And *this\edit_caret_1( ) > *this\edit_caret_2( ) ) And
+           *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width - ( *this\_rows( )\text\edit[1]\width + *this\_rows( )\text\edit[3]\width ) + _caret_last_len_
+          *this\_rows( )\text\edit[2]\width = *this\_rows( )\text\width - ( *this\_rows( )\text\edit[1]\width + *this\_rows( )\text\edit[3]\width ) + _caret_last_len_
+        EndIf
+      CompilerEndIf
+      
+      ; для красоты
+      If *this\_rows( )\text\edit[2]\width > *this\width[#__c_required]
+        *this\_rows( )\text\edit[2]\width - _caret_last_len_
+      EndIf
+      
+      ; set position ( left;selected;right )
+      *this\_rows( )\text\edit[1]\x = *this\_rows( )\text\x 
+      *this\_rows( )\text\edit[2]\x = ( *this\_rows( )\text\edit[1]\x + *this\_rows( )\text\edit[1]\width ) 
+      *this\_rows( )\text\edit[3]\x = ( *this\_rows( )\text\edit[2]\x + *this\_rows( )\text\edit[2]\width )
+      
+      ; если выделили свнизу вверх
+      ; то запоминаем позицию начала текста[2]
+      If *this\FocusedRow( )\index >= *this\_rows( )\index
+        *this\text\edit[1]\len = ( *this\_rows( )\text\pos + *this\_rows( )\text\edit[2]\pos )
+        *this\text\edit[2]\pos = *this\text\edit[1]\len
+      EndIf
+      
+      ; если выделили сверху ввниз
+      ; то запоминаем позицию начала текста[3]
+      If *this\FocusedRow( )\index <= *this\_rows( )\index
+        *this\text\edit[3]\pos = ( *this\_rows( )\text\pos + *this\_rows( )\text\edit[3]\pos )
+        *this\text\edit[3]\len = ( *this\text\len - *this\text\edit[3]\pos )
+      EndIf
+      
+      ; text/pos/len/state
+      If *this\EnteredRow( )\index = *this\_rows( )\index
+        If *this\text\edit[2]\len <> ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
+          *this\text\edit[2]\len = ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
+        EndIf
+        
+        ; set text ( left;selected;right )
+        If *this\text\edit[1]\len > 0
+          *this\text\edit[1]\string = Left( *this\text\string.s, *this\text\edit[1]\len ) 
+        Else
+          *this\text\edit[1]\string = ""
+        EndIf
+        If *this\text\edit[2]\len > 0
+          *this\text\edit[2]\string = Mid( *this\text\string.s, 1 + *this\text\edit[2]\pos, *this\text\edit[2]\len ) 
+        Else
+          *this\text\edit[2]\string = ""
+        EndIf
+        If *this\text\edit[3]\len > 0
+          *this\text\edit[3]\string = Right( *this\text\string.s, *this\text\edit[3]\len )
+        Else
+          *this\text\edit[3]\string = ""
+        EndIf
+        
+        ;       ; set cursor pos
+        ;       If *this\EnteredRow( )\index = *this\_rows( )\index
+        *this\text\caret\y = *this\_rows( )\y
+        *this\text\caret\height = *this\_rows( )\text\height
+        
+        If *this\EnteredRow( )\index > *this\FocusedRow( )\index Or
+           ( *this\EnteredRow( )\index = *this\FocusedRow( )\index And *this\edit_caret_1( ) > *this\edit_caret_2( ) )
+          *this\text\caret\x = *this\_rows( )\x + *this\_rows( )\text\edit[3]\x
+          *this\text\caret\pos = *this\_rows( )\text\pos + *this\_rows( )\text\edit[3]\pos
+        Else
+          ;           If *this\_rows( )\text\edit[2]\x
+          *this\text\caret\x = *this\_rows( )\x + *this\_rows( )\text\edit[2]\x
+          ;           Else
+          ;             *this\text\caret\x = *this\text\padding\x
+          ;           EndIf
+          *this\text\caret\pos = *this\_rows( )\text\pos + *this\_rows( )\text\edit[2]\pos
+        EndIf
+        
+        
+        ;*this\text\caret\width = 1
+        
+        ProcedureReturn 1
+        ;       EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure   _edit_sel_set_2( *this._s_WIDGET, _scroll_ ) ; Ok
+                                                             ;     Debug  "" + *this\edit_caret_1( )  + " " +  *this\edit_caret_2( )
+                                                             ;     ProcedureReturn 3
+      If _scroll_
+        PushListPosition( *this\_rows( )) 
+        ForEach *this\_rows( )
+          If ( *this\EnteredRow( )\index = *this\_rows( )\index Or *this\FocusedRow( )\index = *this\_rows( )\index ) Or    ; линия
+             ( *this\EnteredRow( )\index < *this\_rows( )\index And *this\FocusedRow( )\index > *this\_rows( )\index ) Or   ; верх
+             ( *this\EnteredRow( )\index > *this\_rows( )\index And *this\FocusedRow( )\index < *this\_rows( )\index )      ; вниз
+            
+            If *this\EnteredRow( )\index = *this\FocusedRow( )\index  ; And *this\FocusedRow( )\index = *this\_rows( )\index
+              
+              If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                _edit_sel_2( *this, *this\edit_caret_2( ), *this\edit_caret_1( ) - *this\edit_caret_2( ) )
+              Else
+                _edit_sel_2( *this, *this\edit_caret_1( ), *this\edit_caret_2( ) - *this\edit_caret_1( ) )
+              EndIf
+              
+            ElseIf ( *this\EnteredRow( )\index < *this\_rows( )\index And *this\FocusedRow( )\index > *this\_rows( )\index ) Or   ; верх
+                   ( *this\EnteredRow( )\index > *this\_rows( )\index And *this\FocusedRow( )\index < *this\_rows( )\index )      ; вниз
+              
+              If *this\EnteredRow( )\index < 0
+                ; если курсор перешел за верхный предел
+                *this\EnteredRow( )\index = 0
+                *this\edit_caret_1( ) = 0
+              ElseIf *this\EnteredRow( )\index > *this\count\items - 1
+                ; если курсор перешел за нижный предел
+                *this\EnteredRow( )\index = *this\count\items - 1
+                *this\edit_caret_1( ) = *this\_rows( )\text\len
+              EndIf
+              
+              _edit_sel_2( *this, 0, *this\_rows( )\text\len )
+              
+            ElseIf *this\EnteredRow( )\index = *this\_rows( )\index 
+              If *this\EnteredRow( )\index > *this\FocusedRow( )\index 
+                _edit_sel_2( *this, 0, *this\edit_caret_1( ) )
+              Else
+                _edit_sel_2( *this, *this\edit_caret_1( ), *this\_rows( )\text\len - *this\edit_caret_1( ) )
+              EndIf
+              
+            ElseIf *this\FocusedRow( )\index = *this\_rows( )\index
+              
+              
+              If *this\count\items = 1 And 
+                 ( *this\EnteredRow( )\index < 0 Or *this\EnteredRow( )\index > *this\count\items - 1 )
+                ; если курсор перешел за пределы итемов
+                *this\EnteredRow( )\index = 0
+                
+                If *this\edit_caret_2( ) > *this\edit_caret_1( )
+                  _edit_sel_2( *this, 0, *this\edit_caret_2( ) )
+                Else
+                  *this\edit_caret_1( ) = *this\_rows( )\text\len
+                  _edit_sel_2( *this, *this\edit_caret_2( ), Bool( *this\EnteredRow( )\index <> *this\FocusedRow( )\index ) * ( *this\_rows( )\text\len - *this\edit_caret_2( ) ))
+                EndIf
+                
+                *this\EnteredRow( )\index = *this\EnteredRow( )\index
+              Else
+                If *this\EnteredRow( )\index < 0
+                  *this\EnteredRow( )\index = 0
+                  *this\edit_caret_1( ) = 0
+                ElseIf *this\EnteredRow( )\index > *this\count\items - 1
+                  *this\EnteredRow( )\index = *this\count\items - 1
+                  *this\edit_caret_1( ) = *this\_rows( )\text\len
+                EndIf
+                
+                If *this\FocusedRow( )\index > *this\EnteredRow( )\index 
+                  _edit_sel_2( *this, 0, *this\edit_caret_2( ) )
+                Else
+                  _edit_sel_2( *this, *this\edit_caret_2( ), ( *this\_rows( )\text\len - *this\edit_caret_2( ) ))
+                EndIf
+              EndIf
+              
+            EndIf
+            
+            If *this\EnteredRow( )\index = *this\_rows( )\index
+              ; vertical scroll
+              If _scroll_ = 1
+                edit_text_scroll_y_( *this )
+              EndIf
+              
+              ; horizontal scroll
+              If _scroll_ =- 1
+                edit_text_scroll_x_( *this )
+              EndIf
+            EndIf
+            
+          ElseIf ( *this\_rows( )\text\edit[2]\width <> 0 And 
+                   *this\FocusedRow( )\index <> *this\_rows( )\index And 
+                   *this\EnteredRow( )\index <> *this\_rows( )\index )
+            
+            ; reset selected string
+            *this\_rows( )\text\edit[1]\len = 0 
+            *this\_rows( )\text\edit[2]\len = 0 
+            *this\_rows( )\text\edit[3]\len = 0 
+            
+            *this\_rows( )\text\edit[1]\pos = 0 
+            *this\_rows( )\text\edit[2]\pos = 0 
+            *this\_rows( )\text\edit[3]\pos = 0 
+            
+            *this\_rows( )\text\edit[1]\width = 0 
+            *this\_rows( )\text\edit[2]\width = 0 
+            *this\_rows( )\text\edit[3]\width = 0 
+            
+            *this\_rows( )\text\edit[1]\string = ""
+            *this\_rows( )\text\edit[2]\string = "" 
+            *this\_rows( )\text\edit[3]\string = ""
+            
+            
+          EndIf
+        Next
+        PopListPosition( *this\_rows( )) 
+        
+        ;*this\text\caret\y = *this\EnteredRow( )\y
+        ;edit_sel_row_text_( *this, *this\EnteredRow( ) )
+        ;edit_sel_text_( *this, *this\EnteredRow( ) )
+        *this\state\repaint = 1
+        
+      EndIf 
+      
+      ProcedureReturn _scroll_
+    EndProcedure
+    
     Procedure DoEvent_Lines( *this._S_widget, eventtype.l, mouse_x.l =- 1, mouse_y.l =- 1 )
       Protected repaint, *item._S_ROWS
       
@@ -17275,32 +17652,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If eventtype = #PB_EventType_Focus
-          PushListPosition( *this\_rows( ) )
-          ForEach *this\_rows( )
-            If *this\_rows( )\state\focus
-              If *this\_rows( )\color\state = #__s_3
-                *this\_rows( )\color\state = #__s_2
-                
-                *this\_rows( )\state\repaint = #True
-              EndIf
+          If *this\FocusedRow( ) 
+            If *this\FocusedRow( )\state\focus
+              *this\FocusedRow( )\color\state = #__S_2
             EndIf
-          Next
-          PopListPosition( *this\_rows( ) )
+          EndIf
         EndIf
         
         ;
         If eventtype = #PB_EventType_LostFocus
-          PushListPosition( *this\_rows( ) )
-          ForEach *this\_rows( )
-            If *this\_rows( )\state\focus
-              If *this\_rows( )\color\state = #__s_2
-                *this\_rows( )\color\state = #__s_3
-                
-                *this\_rows( )\state\repaint = #True
-              EndIf
+          If *this\FocusedRow( ) 
+            If *this\FocusedRow( )\state\focus
+              *this\FocusedRow( )\color\state = #__S_3
             EndIf
-          Next
-          PopListPosition( *this\_rows( ) )
+          EndIf
         EndIf
         
         ;
@@ -17315,24 +17680,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; *this\PressedRow( )\color\back[*this\PressedRow( )\color\state] = $FF2C70F5 ; TEMP
             EndIf
             
-            If *this\FocusedRow( ) <> *this\EnteredRow( )
-              If *this\FocusedRow( ) 
-                If *this\FocusedRow( )\state\focus
-                  *this\FocusedRow( )\state\focus = #False
-                  *this\FocusedRow( )\color\state = #__S_0
-                EndIf
-              EndIf
-              
-              *this\FocusedRow( ) = *this\EnteredRow( )
-              
-              If *this\FocusedRow( )\state\focus = #False
-                *this\FocusedRow( )\state\focus = #True
-                ;Debug "status-change - focus - LeftButtonDown"
-                ;DoEvents(*this, #PB_EventType_Change, *this\FocusedRow( )\index, *this\FocusedRow( ))
-              EndIf
-            EndIf
             
-            edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), 1 )
+            
+            ;             If *this\FocusedRow( ) <> *this\EnteredRow( )
+            
+            ;               If *this\FocusedRow( ) 
+            ;                 If *this\FocusedRow( )\state\focus
+            ;                   *this\FocusedRow( )\state\focus = #False
+            ;                   *this\FocusedRow( )\color\state = #__S_0
+            ;                 EndIf
+            ;               EndIf
+            ;               
+            *this\FocusedRow( ) = *this\EnteredRow( )
+            ;               
+            ;               If *this\FocusedRow( )\state\focus = #False
+            ;                 *this\FocusedRow( )\state\focus = #True
+            ;                 ;Debug "status-change - focus - LeftButtonDown"
+            ;                 ; DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+            ;                 ;DoEvents(*this, #PB_EventType_Change, *this\FocusedRow( )\index, *this\FocusedRow( ))
+            ;               EndIf
+            ;             EndIf
           EndIf
         EndIf
         
@@ -17410,7 +17777,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   row_scroll_y_( *this, *item )
                 EndIf
               Else
-               ; *item = *this\VisibleFirstRow( )
+                *item = *this\VisibleFirstRow( )
               EndIf
             ElseIf mouse( )\y > mouse( )\delta\y And ( mouse( )\y > *this\y[#__c_inner] + *this\height[#__c_inner] )
               If *this\VisibleLastRow( ) And Not bar_in_stop_( *this\scroll\v\bar ) 
@@ -17421,7 +17788,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   row_scroll_y_( *this, *item )
                 EndIf
               Else
-               ; *item = *this\VisibleLastRow( )
+                *item = *this\VisibleLastRow( )
               EndIf
             EndIf
             ;             Else
@@ -17448,61 +17815,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\EnteredRow( )\color\state = #__S_1 
                 *this\EnteredRow( )\color\state = #__S_0
               EndIf
-              
+            
               If *this\state\drag > 0
                 ;Debug "le - "
-                 
-                If *this\EnteredRow( )\index < *this\PressedRow( )\index
-                  If Bool(( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2) = 0
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " ^le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
-;                                             edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_last )
-;                                             edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug " ^le bottom  set - " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_prev )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    EndIf
-                  Else
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " ^le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
-;                                             edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_first )
-;                                             edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug "  ^le top remove - " +" "+ *this\EnteredRow( )\text\string
-                      ; *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos - 1
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_remove )
-                      edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index + 1))
-                      ;' edit_sel_text_( *this,  *this\EnteredRow( ) )
-                    EndIf
-                  EndIf
+                
+                If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
+                  If *this\EnteredRow( ) = *this\PressedRow( )
+                    ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ),- 10)
+                  edit_sel_text_( *this, *this\EnteredRow( ))
                 Else
-                  ;
-                  If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_last )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug " le bottom  set - " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_next )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    EndIf
-                  Else
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_first )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug "  le top remove - " +" "+ *this\EnteredRow( )\text\string
-                      ; *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos - 1
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_remove )
-                      edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index - 1))
-                      ;' edit_sel_text_( *this,  *this\EnteredRow( ) )
-                    EndIf
+                    ;Debug " le bottom  set - " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), - 5 )
+                  edit_sel_text_( *this, *this\EnteredRow( ))
+                EndIf
+                Else
+                  If *this\EnteredRow( ) = *this\PressedRow( )
+                    ;Debug " le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ),- 9)
+                  edit_sel_text_( *this, *this\EnteredRow( ))
+                Else
+                    ;Debug "  le top remove - " +" "+ *this\EnteredRow( )\text\string
+                    ; *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos - 1
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), - 6 )
+                    edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index - 1))
+                    ;' edit_sel_text_( *this,  *this\EnteredRow( ) )
                   EndIf
                 EndIf
                 
+                ;*this\edit_caret_1( ) = 0
               EndIf
               
               *this\state\repaint = #True
@@ -17524,24 +17865,67 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
                 If *this\state\drag > 0 
-                 ; Debug "en - "
-                  edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), - 1 )
+                  edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this )+*this\EnteredRow( )\text\pos, - 1 )
+                  ;Debug "en - "
                 EndIf
                 
                 *this\state\repaint = #True
               EndIf
             EndIf
-          EndIf
-          
-        Else
-          If *this\state\drag > 0
-            If *this\EnteredRow( ) And *this\PressedRow( ) And *this\FocusedRow( )
-              edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ) )
+          Else
+            ; 
+            If *this\state\drag > 0 
+              If *this\LeavedRow( ) 
+                Debug "leave - all"
+;                 ;                 
+;                 If ( mouse_y - *this\LeavedRow( )\y ) > *this\LeavedRow( )\height / 2
+;                   If *this\LeavedRow( ) = *this\PressedRow( )
+;                     Debug " leave bottom  set - Pressed  " +" "+ *this\LeavedRow( )\text\string
+;                     edit_sel_row_text_( *this, *this\LeavedRow( ),- 10)
+;                   Else
+;                     Debug " leave bottom  set - " +" "+ *this\LeavedRow( )\text\string
+;                     edit_sel_row_text_( *this, *this\LeavedRow( ), - 5 )
+;                   EndIf
+;                 Else
+;                   If *this\LeavedRow( ) = *this\PressedRow( )
+;                     Debug " leave top remove - Pressed  " +" "+ *this\LeavedRow( )\text\string
+;                     edit_sel_row_text_( *this, *this\LeavedRow( ),- 9)
+;                   Else
+;                     Debug "  leave top remove - " +" "+ *this\LeavedRow( )\text\string
+;                     edit_sel_row_text_( *this, *this\LeavedRow( ), - 6 )
+;                   EndIf
+;                 EndIf
+;                 
+;                 edit_sel_text_( *this, *this\LeavedRow( ))
+;                 *this\state\repaint = #True
+                ;                ; DoEvents(*this, #PB_EventType_StatusChange, *this\LeavedRow( )\index, *this\LeavedRow( ))
+                
+              EndIf
             EndIf
           EndIf
         EndIf
         
-     EndIf
+        If mouse()\buttons
+          ; второй вариант выделения
+          If *this\EnteredRow( ) And *this\PressedRow( ) And *this\FocusedRow( )
+            If eventtype = #PB_EventType_LeftButtonDown
+              edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this )+*this\EnteredRow( )\text\pos, 1 )
+            Else
+              edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this )+*this\EnteredRow( )\text\pos )
+            EndIf
+          ElseIf *this\LeavedRow( )
+            ;Debug 788767
+          EndIf
+        EndIf
+        
+        ;
+        If eventtype = #PB_EventType_MouseEnter 
+          If *this\FocusedRow( ) And 
+             ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) ) = 0
+            ;DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+          EndIf
+        EndIf
+      EndIf
       
     EndProcedure
     
@@ -17985,23 +18369,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-          Case #PB_EventType_Focus
-            If *this\color\state = #__s_3
-              *this\color\state = #__s_2
-            EndIf
-            *this\state\repaint = #True
-            
-          Case #PB_EventType_LostFocus
-            If *this\color\state = #__s_2
-              *this\color\state = #__s_3
-            EndIf
-            *this\state\repaint = #True
-            
-          Case #PB_EventType_StatusChange
-            If *this\row
-              *this\state\repaint = #True
-            EndIf
-            
           Case #PB_EventType_CursorChange
             *this\state\repaint = #True
             
@@ -18009,6 +18376,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bar And *this\state\drag
               *this\state\repaint = #True
             EndIf
+            
+          Case #PB_EventType_Focus
+            *this\state\repaint = #True
+            
+            CompilerIf #PB_Compiler_IsMainFile
+              If Not is_root_( *this )
+                *this\color\state = 2
+              EndIf
+            CompilerEndIf
+            
+          Case #PB_EventType_LostFocus
+            *this\state\repaint = #True
+            
+            ;           If GetActive( )\gadget = *this
+            ;             *this\color\state = 3
+            ;           Else
+            If Not is_root_( *this )
+              *this\color\state = 0
+            EndIf
+            ;           EndIf
+            
+          Case #PB_EventType_StatusChange
+            If *this\row
+              *this\state\repaint = #True
+            EndIf
+            
+            ;             ;If *this\mouse And *this\mouse\interact
+            ;               *this\state\repaint = #True
+            ;               
+            ;               If Not is_root_( *this )
+            ;                 If Not *this\row
+            ;                   If *Data > 0
+            ;                     If *this\color\state = 0
+            ;                       *this\color\state = 1
+            ;                     EndIf
+            ;                   ElseIf *Data < 0
+            ;                     If *this\state\focus = 0
+            ;                       *this\color\state = 0
+            ;                     EndIf
+            ;                   EndIf
+            ;                 EndIf
+            ;               EndIf
+            ;             ;EndIf
+            
             
           Case #PB_EventType_MouseEnter,
                #PB_EventType_MouseLeave,
@@ -18509,10 +18920,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; do events all
         If eventtype = #PB_EventType_Focus
-          If FocusedWidget( )
-            Debug "canvas - Focus " +FocusedWidget( ) +" "+  GadgetType(Canvas)
-            DoEvents( FocusedWidget( ), #PB_EventType_Focus );, PressedItem( ) )
-          EndIf
           ;           If FocusedWidget( )                          And Not FocusedWidget( )\_a_\transform ; a_transform_( *leave )
           ;             Repaint | SetActive( FocusedWidget( ) ) 
           ;           Else
@@ -18530,10 +18937,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;           EndIf
           ;           
         ElseIf eventtype = #PB_EventType_LostFocus
-          If FocusedWidget( )
-            Debug "canvas - LostFocus " +FocusedWidget( ) +" "+  GadgetType(Canvas)
-                DoEvents( FocusedWidget( ), #PB_EventType_LostFocus )
-          EndIf
+          ;           Repaint = SetActive( 0 ) 
           
         ElseIf eventtype = #PB_EventType_MouseEnter 
         ElseIf eventtype = #PB_EventType_MouseLeave 
@@ -20158,5 +20562,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------v-----0--------4----z--------f-8--------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

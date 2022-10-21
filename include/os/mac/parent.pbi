@@ -12,7 +12,24 @@ Module Parent
     PB_Window_GetID(hWnd) 
   EndImport
   
-  Procedure.s GetClassName(handle.i)
+  Procedure.s ObjectInheritance(Object)
+  
+  Protected.i Result
+  Protected.i MutableArray = CocoaMessage(0, 0, "NSMutableArray arrayWithCapacity:", 10)
+  
+  Repeat
+    CocoaMessage(0, MutableArray, "addObject:", CocoaMessage(0, Object, "className"))
+    CocoaMessage(@Object, Object, "superclass")
+  Until Object = 0
+  
+  CocoaMessage(@Result, MutableArray, "componentsJoinedByString:$", @"  -->  ")
+  CocoaMessage(@Result, Result, "UTF8String")
+  
+  ProcedureReturn PeekS(Result, -1, #PB_UTF8)
+  
+EndProcedure
+
+Procedure.s GetClassName(handle.i)
     Protected Result
     CocoaMessage(@Result, CocoaMessage(0, handle, "className"), "UTF8String")
     If Result
@@ -42,6 +59,7 @@ Module Parent
   EndProcedure
   
   Procedure GetParentID(handle.i) ; Return the handle of the parent from the gadget handle
+    Protected GadgetID = handle
     Protected WindowID = GetWindowID(handle)
     
     While handle 
@@ -52,8 +70,18 @@ Module Parent
           ProcedureReturn handle
         EndIf
         If Not CocoaMessage( 0, handle, "window" )
-         ; Debug CocoaMessage(0, handle, "superview")
+          ; Debug CocoaMessage(0, handle, "superview")
+          Define Object = handle
+          CocoaMessage(@Object, Object, "superclass") ; NSView
+          CocoaMessage(@Object, Object, "superclass") ; NSResponder
+          CocoaMessage(@Object, Object, "superclass") ; NSObject
+          Debug GetClassName(Object)
+          ; Debug CocoaMessage(0, Object, "superview")
+          ;Debug ObjectInheritance(GadgetID) ; PBButtonGadgetView  -->  NSButton  -->  NSControl  -->  NSView  -->  NSResponder  -->  NSObject
+          ;Debug ObjectInheritance(GadgetID(23)) ;#PANEL ; PBContainerView  -->  NSBox  -->  NSView  -->  NSResponder  -->  NSObject
+          Debug ObjectInheritance(handle) ; PB_NSFlippedView  -->  NSView  -->  NSResponder  -->  NSObject
           Debug " - panel "+handle
+         ; ProcedureReturn Object
         EndIf
       Else
         ProcedureReturn WindowID
@@ -372,5 +400,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------9-
+; Folding = ------6-
 ; EnableXP

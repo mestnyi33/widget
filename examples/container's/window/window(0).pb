@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
   
-  Bind(Root(), @Events_widgets())
+  Bind(Root(), @Events_widgets(), #PB_EventType_LeftClick)
   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

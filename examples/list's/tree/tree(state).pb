@@ -51,12 +51,16 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *reset
             If widget::GetState(*reset)
               count = widget::CountItems( *w1 )
+              SetText(*reset, "reset state")
+            Else
+              SetText(*reset, "set state")
             EndIf
             
             widget::SetState(*w1, count - 1)
             widget::SetState(*w2, count - 1)
             SetGadgetState_(*g1, count - 1)
             SetGadgetState_(*g2, count - 1)
+            
             
         EndSelect
         
@@ -95,8 +99,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu))
     ; demo gadget
-    *g1 = TreeGadget(#PB_Any, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)
-    *g2 = TreeGadget(#PB_Any, 10, 165, 250, 260, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+    *g1 = TreeGadget(#PB_Any, 10, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+    *g2 = TreeGadget(#PB_Any, 10, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines)
     
     For a = 0 To countitems
       AddGadgetItem(*g1, -1, "Item "+Str(a), 0)
@@ -108,8 +112,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
-    *w1 = widget::Tree(265, 10, 250, 150, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
-    *w2 = widget::Tree(265, 165, 250, 260, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines) ; |#PB_Flag_MultiSelect
+    *w1 = widget::Tree(265, 10, 250, 100, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
+    *w2 = widget::Tree(265, 115, 250, 310, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines) ; |#PB_Flag_MultiSelect
     
     For a = 0 To countitems
       widget::AddItem(*w1, -1, "Item "+Str(a), 0)

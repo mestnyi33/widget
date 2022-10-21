@@ -1,5 +1,5 @@
 ﻿;IncludePath "../../../" : XIncludeFile "widgets-plus.pbi"
-IncludePath "../../../" : XIncludeFile "-widgets-edit.pbi"
+IncludePath "../../../" : XIncludeFile "widget-events.pbi"
 ; XIncludeFile "../empty5.pb"
 
 ;- EXAMPLE
@@ -172,7 +172,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(GetWidget(i), @events_widgets())
     Next
     
-    bind(-1,-1)
     ;WaitClose( ) 
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
