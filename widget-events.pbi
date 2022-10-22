@@ -9553,7 +9553,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Repaint = edit_key_page_up_down_( *this, 1, 1 ) 
                 
               Case #PB_Shortcut_Up       ; Ok
-                                         ; Repaint = edit_key_caret_move_( *this, _line_first_, -1 )
                 If *this\FocusedRow( )\index > 0
                   
                   *item = SelectElement( *this\_rows( ), *this\FocusedRow( )\index - 1 )
@@ -9614,10 +9613,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       edit_sel_text_( *this, *this\FocusedRow( ) )
                     EndIf
                   EndIf
+                  
                 EndIf
                 
               Case #PB_Shortcut_Down     ; Ok
-                                         ;\\ Repaint = edit_key_caret_move_( *this, -1, _line_last_ )
                 If *this\FocusedRow( )\index < *this\count\items - 1
                   
                   *item = SelectElement( *this\_rows( ), *this\FocusedRow( )\index + 1 )
@@ -9653,7 +9652,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       If keyboard( )\key[1] & #PB_Canvas_Shift = #False
                         ; вызывать если только строки выделени 
                         If *this\text\edit[2]\width <> 0 
-                          Debug 8998899
                           If *this\text\multiLine 
                             PushListPosition( *this\_rows( ) )
                             ForEach *this\_rows( ) 
@@ -9681,19 +9679,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  
-                  
-                  
-                  
                 EndIf
                 
               Case #PB_Shortcut_Left     ; Ok
-                ;\\ Repaint = edit_key_caret_move_( *this, _line_first_, -1, #True )
                 If *this\FocusedRow( ) And *this\edit_caret_1( ) > 0
                   If *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
                     If *this\FocusedRow( )\index > 0
                       *this\FocusedRow( )\color\state = #__s_0
-                      
                       *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index - 1 )
                       *this\FocusedRow( )\color\state = #__s_1
                     EndIf
@@ -9710,13 +9702,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
               Case #PB_Shortcut_Right    ; Ok
-                ;\\ Repaint = edit_key_caret_move_( *this, -1, _line_last_, #True )
                 If *this\FocusedRow( ) And *this\edit_caret_1( ) < *this\text\len
                   If *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
                     If *this\FocusedRow( )\index < *this\count\items - 1
-                      *this\FocusedRow( )\color\state = #__s_0
                       
-                      If *this\FocusedRow( ) = *this\PressedRow( )
+                      If keyboard( )\key[1] & #PB_Canvas_Shift 
+                        If *this\FocusedRow( ) = *this\PressedRow( )
                           ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedRow( )\text\string
                           edit_sel_row_text_( *this, *this\FocusedRow( ), #__sel_to_last )
                           edit_sel_text_( *this, *this\FocusedRow( ))
@@ -9729,7 +9720,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           edit_sel_row_text_( *this, *this\FocusedRow( ), #__sel_to_set )
                           edit_sel_text_( *this, *this\FocusedRow( ))
                         EndIf
-                        
+                      EndIf
+                      
+                      *this\FocusedRow( )\color\state = #__s_0
                       *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index + 1 )
                       *this\FocusedRow( )\color\state = #__s_1
                     EndIf
@@ -20341,5 +20334,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------3fq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
