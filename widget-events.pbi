@@ -9348,24 +9348,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 ;                 EndIf
                 
                 If *this\text\editable
-;                   ; Draw lines
-;                   ; Если для итема установили задный 
-;                   ; фон отличный от заднего фона едитора
-;                   If *this\_rows( )\color\back  
+                  ; Draw lines
+                  ; Если для итема установили задный 
+                  ; фон отличный от заднего фона едитора
+                  If *this\_rows( )\color\back  
 ;                     drawing_mode_alpha_( #PB_2DDrawing_Default )
 ;                     draw_roundbox_( sel_x,Y,sel_width ,*this\_rows( )\height, *this\_rows( )\round,*this\_rows( )\round, *this\_rows( )\color\back[0] )
-;                     
-;                     If *this\color\back And 
-;                        *this\color\back <> *this\_rows( )\color\back
-;                       ; Draw margin back color
-;                       If *this\row\margin\width > 0
-;                         ; то рисуем вертикальную линию на границе поля нумерации и начало итема
-;                         drawing_mode_alpha_( #PB_2DDrawing_Default )
-;                         draw_box_( *this\row\margin\x, *this\_rows( )\y, *this\row\margin\width, *this\_rows( )\height, *this\row\margin\color\back )
-;                         Line( *this\x[#__c_inner] + *this\row\margin\width, *this\_rows( )\y, 1, *this\_rows( )\height, *this\color\back ) ; $FF000000 );
-;                       EndIf
-;                     EndIf
-;                   EndIf
+                    
+                    If *this\color\back And 
+                       *this\color\back <> *this\_rows( )\color\back
+                      ; Draw margin back color
+                      If *this\row\margin\width > 0
+                        ; то рисуем вертикальную линию на границе поля нумерации и начало итема
+                        drawing_mode_alpha_( #PB_2DDrawing_Default )
+                        draw_box_( *this\row\margin\x, *this\_rows( )\y, *this\row\margin\width, *this\_rows( )\height, *this\row\margin\color\back )
+                        Line( *this\x[#__c_inner] + *this\row\margin\width, *this\_rows( )\y, 1, *this\_rows( )\height, *this\color\back ) ; $FF000000 );
+                      EndIf
+                    EndIf
+                  EndIf
                   
 ;                   If *this\_rows( )\state\press
 ;                     *this\_rows( )\color\state = 0
@@ -9481,7 +9481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    *this\_rows( )\color\line And 
                    *this\_rows( )\color\line <> *this\_rows( )\color\back 
                   drawing_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_box_( row_x_( *this, *this\_rows( ) ), y + *this\_rows( )\height, *this\_rows( )\width, 1, *this\color\line )
+                  draw_box_( row_x_( *this, *this\_rows( ) ), y + *this\_rows( )\height, *this\_rows( )\width, *this\mode\GridLines, $fff0f0f0 )
                 EndIf
               EndIf
             Next
@@ -19985,7 +19985,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
     AddItem(*g, a, "Line "+Str(a))
   Next
   AddItem(*g, 3+a, "")
-  AddItem(*g, 4+a, "_")
+  AddItem(*g, 4+a, "_ The string must be very long. _")
   AddItem(*g, 5+a, "")
   For a = 6 To 8
     AddItem(*g, a, "Line "+Str(a))
@@ -20158,5 +20158,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------v-----0--------4----z--------f-8--------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------0----v---------+---f+--------8f---------------------------------
 ; EnableXP
