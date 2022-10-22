@@ -9687,16 +9687,63 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                 EndIf
                 
-                
-                
-                
-                
-                
               Case #PB_Shortcut_Left     ; Ok
-                Repaint = edit_key_caret_move_( *this, _line_first_, -1, #True )
+                ;\\ Repaint = edit_key_caret_move_( *this, _line_first_, -1, #True )
+                If *this\FocusedRow( ) And *this\edit_caret_1( ) > 0
+                  If *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
+                    If *this\FocusedRow( )\index > 0
+                      *this\FocusedRow( )\color\state = #__s_0
+                      
+                      *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index - 1 )
+                      *this\FocusedRow( )\color\state = #__s_1
+                    EndIf
+                  EndIf
+                  
+                  *this\edit_caret_1( ) - 1
+                  
+                  If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                  EndIf
+                  
+                  edit_sel_row_text_( *this, *this\FocusedRow( ) )
+                  edit_sel_text_( *this, *this\FocusedRow( ) )
+                EndIf
                 
               Case #PB_Shortcut_Right    ; Ok
-                Repaint = edit_key_caret_move_( *this, -1, _line_last_, #True )
+                ;\\ Repaint = edit_key_caret_move_( *this, -1, _line_last_, #True )
+                If *this\FocusedRow( ) And *this\edit_caret_1( ) < *this\text\len
+                  If *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
+                    If *this\FocusedRow( )\index < *this\count\items - 1
+                      *this\FocusedRow( )\color\state = #__s_0
+                      
+                      If *this\FocusedRow( ) = *this\PressedRow( )
+                          ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedRow( )\text\string
+                          edit_sel_row_text_( *this, *this\FocusedRow( ), #__sel_to_last )
+                          edit_sel_text_( *this, *this\FocusedRow( ))
+                        ElseIf *this\FocusedRow( )\index < *this\PressedRow( )\index
+                          ;Debug "  ^le top remove - " +" "+ *this\FocusedRow( )\text\string
+                          edit_sel_row_text_( *this, *this\FocusedRow( ), #__sel_to_remove )
+                          edit_sel_text_( *this, SelectElement(*this\_rows(), *this\FocusedRow( )\index + 1))
+                        Else
+                          ;Debug " le bottom  set - " +" "+ *this\FocusedRow( )\text\string
+                          edit_sel_row_text_( *this, *this\FocusedRow( ), #__sel_to_set )
+                          edit_sel_text_( *this, *this\FocusedRow( ))
+                        EndIf
+                        
+                      *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index + 1 )
+                      *this\FocusedRow( )\color\state = #__s_1
+                    EndIf
+                  EndIf
+                  
+                  *this\edit_caret_1( ) + 1
+                  
+                  If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                  EndIf
+                  
+                  edit_sel_row_text_( *this, *this\FocusedRow( ) )
+                  edit_sel_text_( *this, *this\FocusedRow( ) )
+                EndIf
                 
                 
               Case #PB_Shortcut_Back   
@@ -20294,5 +20341,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
