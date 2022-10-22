@@ -7845,13 +7845,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
         CaretLeftPos = 0
         CaretRightPos = 0 
         
-      ElseIf mode = #__sel_remove ; 
+      ElseIf mode = #__sel_to_remove ; 
         
         CaretLeftPos = 0
         CaretRightPos = 0 
         *rows\color\state = #__s_0
         *rows\state\focus = #False
       
+      ElseIf mode = #__sel_to_set ; 
+        
+        CaretLeftPos = 0
+        CaretRightPos = *rows\text\len  
+        CaretLastLen = *this\mode\fullselection
+        
       ElseIf mode = #__sel_to_first 
         CaretLeftPos = 0
         If *rows = *this\PressedRow( )
@@ -7862,18 +7868,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         *this\edit_caret_1( ) = *rows\text\pos 
          
-      ElseIf mode = #__sel_to_prev ; 
-        
-        CaretLeftPos = 0
-        CaretRightPos = *rows\text\len  
-        CaretLastLen = *this\mode\fullselection
-        
-      ElseIf mode = #__sel_to_next ; 
-        
-        CaretLeftPos = 0
-        CaretRightPos = *rows\text\len  
-        CaretLastLen = *this\mode\fullselection
-        
       ElseIf mode = #__sel_to_last 
         If *rows = *this\PressedRow( )
           CaretLeftPos = *this\edit_caret_2( ) - *rows\text\pos
@@ -8068,7 +8062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ForEach *this\_rows( ) 
                 If *this\_rows( )\text\edit[2]\width <> 0 
                   ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                  edit_sel_row_text_( *this, *this\_rows( ), #__sel_remove )
+                  edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
                 EndIf
               Next
             EndIf
@@ -8090,25 +8084,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\_rows( )\index <> *this\PressedRow( )\index And  
                      *this\_rows( )\index <> *this\FocusedRow( )\index 
                     
-                    ;Debug ""+*this\_rows( )\index +" "+ *this\PressedRow( )\index +" "+ *this\FocusedRow( )\index
-                    
-                    If *this\PressedRow( )\index > *this\FocusedRow( )\index
-                      If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
-                        Debug "set - prev " +" "+ *this\_rows( )\text\string
-                        edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_prev )
-                      EndIf
-                    Else
-                      If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
-                        Debug "set - next " +" "+ *this\_rows( )\text\string
-                        edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_next )
-                      EndIf
+                    If *this\_rows( )\text\edit[2]\width <> *this\_rows( )\text\width + *this\mode\fullselection
+                      Debug "set - " +" "+ *this\_rows( )\text\string
+                      edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_set )
                     EndIf
                   EndIf
                 Else
                   ;
                   If *this\_rows( )\text\edit[2]\width <> 0 
                     Debug " remove - " +" "+ *this\_rows( )\text\string
-                    edit_sel_row_text_( *this, *this\_rows( ), #__sel_remove )
+                    edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
                   EndIf
                 EndIf
               Next
@@ -17332,7 +17317,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), 1 )
+            ;\\ edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), 1 )
+            *this\FocusedRow( ) = *this\EnteredRow( )
+            *this\edit_caret_1( ) = edit_caret_( *this )
+            *this\edit_caret_2( ) = *this\edit_caret_1( )
+            *this\edit_lineDelta( ) = *this\EnteredRow( )\index
+            ;\\ edit_row_caret_1_( *this ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
+            *this\EnteredRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
+            If *this\text\multiLine 
+              ForEach *this\_rows( ) 
+                If *this\_rows( )\text\edit[2]\width <> 0 
+                  ; Debug " remove - " +" "+ *this\_rows( )\text\string
+                  edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
+                EndIf
+              Next
+            EndIf
+            edit_sel_row_text_( *this, *this\EnteredRow( ) )
+            edit_sel_text_( *this, *this\EnteredRow( ) )
+            
           EndIf
         EndIf
         
@@ -17451,61 +17453,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               If *this\state\drag > 0
                 ;Debug "le - "
-                 
-                If *this\EnteredRow( )\index < *this\PressedRow( )\index
-                  If Bool(( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2) = 0
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " ^le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
-;                                             edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_last )
-;                                             edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug " ^le bottom  set - " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_prev )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    EndIf
+                
+                If mouse_y > ( *this\EnteredRow( )\y + *this\EnteredRow( )\height / 2 )
+                  If *this\EnteredRow( ) = *this\PressedRow( )
+                    ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_last )
+                    edit_sel_text_( *this, *this\EnteredRow( ))
+                  ElseIf *this\EnteredRow( )\index < *this\PressedRow( )\index
+                    ;Debug "  ^le top remove - " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_remove )
+                    edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index + 1))
                   Else
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " ^le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
-;                                             edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_first )
-;                                             edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug "  ^le top remove - " +" "+ *this\EnteredRow( )\text\string
-                      ; *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos - 1
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_remove )
-                      edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index + 1))
-                      ;' edit_sel_text_( *this,  *this\EnteredRow( ) )
-                    EndIf
+                    ;Debug " le bottom  set - " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_set )
+                    edit_sel_text_( *this, *this\EnteredRow( ))
                   EndIf
                 Else
-                  ;
-                  If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_last )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug " le bottom  set - " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_next )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    EndIf
+                  If *this\EnteredRow( ) = *this\PressedRow( )
+                    ;Debug " le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_first )
+                    edit_sel_text_( *this, *this\EnteredRow( ))
+                  ElseIf *this\EnteredRow( )\index > *this\PressedRow( )\index 
+                    ;Debug "  le top remove - " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_remove )
+                    edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index - 1))
                   Else
-                    If *this\EnteredRow( ) = *this\PressedRow( )
-                      ;Debug " le top remove - Pressed  " +" "+ *this\EnteredRow( )\text\string
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_first )
-                      edit_sel_text_( *this, *this\EnteredRow( ))
-                    Else
-                      ;Debug "  le top remove - " +" "+ *this\EnteredRow( )\text\string
-                      ; *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos - 1
-                      edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_remove )
-                      edit_sel_text_( *this, SelectElement(*this\_rows(), *this\EnteredRow( )\index - 1))
-                      ;' edit_sel_text_( *this,  *this\EnteredRow( ) )
-                    EndIf
+                    ;Debug " ^le bottom  set - " +" "+ *this\EnteredRow( )\text\string
+                    edit_sel_row_text_( *this, *this\EnteredRow( ), #__sel_to_set )
+                    edit_sel_text_( *this, *this\EnteredRow( ))
                   EndIf
                 EndIf
-                
+
               EndIf
               
-              *this\state\repaint = #True
             EndIf
           EndIf
           
@@ -17525,7 +17505,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If *this\state\drag > 0 
                  ; Debug "en - "
-                  edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), - 1 )
+                  ;\\ edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), - 1 )
+                  *this\edit_caret_1( ) = edit_caret_( *this )
+                  *this\FocusedRow( ) = *this\EnteredRow( )
+                  edit_sel_row_text_( *this, *this\EnteredRow( ) )
+                  edit_sel_text_( *this, *this\EnteredRow( ) )
+                  
                 EndIf
                 
                 *this\state\repaint = #True
@@ -20158,5 +20143,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------0----v---------+---f+--------8f---------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--+----------------4---------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------80+---+--------8----6--------v-0--------------------------------
 ; EnableXP
