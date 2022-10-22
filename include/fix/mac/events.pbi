@@ -792,6 +792,7 @@ Module events
       If EventType = #PB_EventType_KeyDown Or
          EventType = #PB_EventType_KeyUp Or
          EventType = #PB_EventType_Input
+        
         CallCFunctionFast(*setcallback, EventGadget, EventType)
       EndIf
     EndIf
