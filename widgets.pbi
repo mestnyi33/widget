@@ -7904,7 +7904,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       
       If _scroll_
-        Debug ""+_line_+" "+*this\index[#__s_1]+" "+*this\index[#__s_2]
+        ;Debug ""+_line_+" "+*this\index[#__s_1]+" "+*this\index[#__s_2]
         
         PushListPosition( RowList( *this )) 
         ForEach RowList( *this )
@@ -10182,7 +10182,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     Debug "" + #PB_Compiler_Procedure + "RowList( *this )\index <> _line_last_"
                   EndIf
                   
-                  If *this\text\caret\pos[1] <> _caret_max_ : *this\text\caret\pos[2] = _caret_max_ : _caret_last_pos_ = *this\text\caret\pos[1]
+                  If *this\text\caret\pos[1] <> _caret_max_ 
+                    *this\text\caret\pos[2] = _caret_max_ 
+                    _caret_last_pos_ = *this\text\caret\pos[1]
                     Repaint = _edit_sel_draw_( *this, _line_last_, *this\text\caret\pos[2] )  
                   EndIf
                   
@@ -20439,7 +20441,20 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenList( *root1 )
   *panel = Panel(20, 20, 180+40, 180+60, editable) : SetText(*panel, "1")
   AddItem( *panel, -1, "item_1" )
-  Button( 20,20, 80,80, "item_1")
+  ;Button( 20,20, 80,80, "item_1")
+  *g = Editor(0, 0, 0, 0, #__flag_autosize) 
+  For a = 0 To 2
+    AddItem(*g, a, "Line "+Str(a))
+  Next
+  AddItem(*g, 3+a, "")
+  AddItem(*g, 4+a, "The string must be very long.1")
+  AddItem(*g, 5+a, "_")
+  AddItem(*g, 6+a, "The string must be very long.2")
+  AddItem(*g, 7+a, "")
+  For a = 8 To 10
+    AddItem(*g, a, "Line "+Str(a))
+  Next 
+  
   AddItem( *panel, -1, "item_2" )
   ; Button( 10,10, 80,80, "item_2")
   Bind(Button( 5, 5, 55, 22, "hide_2"), @_Events())
@@ -20515,7 +20530,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button( 40,40, 80,80, "item_5")
   CloseList( ) ; *panel
   CloseList( ) ; *root1
-  SetState( *panel, 2 )
+  ;SetState( *panel, 2 )
   ;
   OpenList( *root2 )
   SetText(*root2, "*root2" )
@@ -20920,5 +20935,5 @@ CompilerEndIf
 ;   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6------------------------------------------------------8--f--86+-----------------------------------------------------8-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
+; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6------------------------------------------------------8--f--86+-----------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
 ; EnableXP
