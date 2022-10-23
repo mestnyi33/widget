@@ -769,10 +769,12 @@
     #__event_LeftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
     #__event_LeftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
     #__event_LeftClick        = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__event_Left3Click        = #PB_EventType_Left3Click        ; A click With the left mouse button
     #__event_LeftDoubleClick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
     #__event_RightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
     #__event_RightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
     #__event_RightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__event_Right3Click       = #PB_EventType_Right3Click       ; A click With the right mouse button
     #__event_RightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
     #__event_MiddleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
     #__event_MiddleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released

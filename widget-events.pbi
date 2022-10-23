@@ -8146,10 +8146,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro edit_sel_end_( _char_ )
-      Bool(( _char_ >= ' ' And _char_ <= '/' ) Or 
-           ( _char_ >= ':' And _char_ <= '@' ) Or 
-           ( _char_ >= '[' And _char_ <= '`' ) Or 
-           ( _char_ >= '{' And _char_ <= '~' ))
+      Bool(( _char_ = ' ' Or _char_ = '"' ) )
+;       Bool(( _char_ >= ' ' And _char_ <= '/' ) Or 
+;            ( _char_ >= ':' And _char_ <= '@' ) Or 
+;            ( _char_ >= '[' And _char_ <= '`' ) Or 
+;            ( _char_ >= '{' And _char_ <= '~' ))
     EndMacro
     
     Procedure.i edit_sel_start_word( *this._S_widget, caret, *rows._S_rows )
@@ -8178,7 +8179,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       For i = caret + 2 To *rows\text\len
         char = Asc( Mid( *rows\text\string.s, i, 1 ))
         If edit_sel_end_( char )
-          result = *rows\text\pos + i 
+          result = *rows\text\pos + i
           Break
         EndIf
       Next 
@@ -17407,26 +17408,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
+            
             *this\edit_caret_1( ) = edit_caret_( *this )
-            *this\edit_caret_2( ) = *this\edit_caret_1( )
+            If *this\edit_caret_2( ) <> *this\edit_caret_1( ) 
+              *this\edit_caret_2( ) = *this\edit_caret_1( ) 
+              
+              *this\edit_lineDelta( ) = *this\EnteredRow( )\index ;????
+              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
+              *this\EnteredRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
             
-            *this\edit_lineDelta( ) = *this\EnteredRow( )\index ;????
-            
-            *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
-            *this\EnteredRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
-            
-            ;
-            edit_sel_reset_( *this )
-            
-            edit_sel_row_text_( *this, *this\EnteredRow( ) )
-            edit_sel_text_( *this, *this\EnteredRow( ) )
-            
+              ;
+              edit_sel_reset_( *this )
+              
+              edit_sel_row_text_( *this, *this\EnteredRow( ) )
+              edit_sel_text_( *this, *this\EnteredRow( ) )
+            EndIf
           EndIf
         EndIf
         
         If eventtype = #PB_EventType_LeftDoubleClick
-          double_click = 1
-          Debug "edit - LeftDoubleClick"
+          Debug "edit - Left2Click"
           *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_1( ), *this\EnteredRow( ) )
           *this\edit_caret_2( ) = edit_sel_start_word( *this, *this\edit_caret_1( ), *this\EnteredRow( ) )
           
@@ -17436,8 +17437,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If eventtype = #PB_EventType_Left3Click
           Debug "edit - Left3Click"
-          *this\edit_caret_1( ) = *this\EnteredRow( )\text\pos
-          *this\edit_caret_2( ) = *this\edit_caret_1( ) + *this\EnteredRow( )\text\len
+          *this\edit_caret_2( ) = *this\EnteredRow( )\text\pos
+          *this\edit_caret_1( ) = *this\EnteredRow( )\text\pos + *this\EnteredRow( )\text\len
           
           edit_sel_row_text_( *this, *this\EnteredRow( ) )
           edit_sel_text_( *this, *this\EnteredRow( ) )
@@ -18165,6 +18166,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_LeftButtonDown, 
                #PB_EventType_LeftButtonUp,
                #PB_EventType_LeftDoubleClick, 
+               #PB_EventType_Left3Click, 
                #PB_EventType_LeftClick 
             
             Protected mouse_x, mouse_y
@@ -18842,9 +18844,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PressedWidget( )\state\drag = 0 And 
                PressedWidget( ) = EnteredWidget( )
               
-              If PressedWidget( )\time_click And
-                 DoubleClickTime( ) > ElapsedMilliseconds( ) - PressedWidget( )\time_click
-                
+              Static time2Click, time3Click
+              If time2Click And DoubleClickTime( ) > ( ElapsedMilliseconds( ) - time2Click )
+                time3Click = ElapsedMilliseconds( )
                 ; do double-click events 
                 If eventtype = #__event_LeftButtonUp
                   DoEvents( PressedWidget( ), #__event_LeftDoubleClick )
@@ -18853,18 +18855,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DoEvents( PressedWidget( ), #__event_RightDoubleClick )
                 EndIf
                 
-                PressedWidget( )\time_click = 0
+                time2Click = 0
               Else
-                PressedWidget( )\time_click = ElapsedMilliseconds( )
+                time2Click = ElapsedMilliseconds( )
                 
-                ; do click events
-                If eventtype = #__event_LeftButtonUp
-                  DoEvents( PressedWidget( ), #__event_LeftClick )
-                EndIf
-                If eventtype = #__event_RightButtonUp
-                  DoEvents( PressedWidget( ), #__event_RightClick )
+                If time3Click And DoubleClickTime( ) > ( ElapsedMilliseconds( ) - time3Click )
+                  ; do 3-click events 
+                  If eventtype = #__event_LeftButtonUp
+                    DoEvents( PressedWidget( ), #__event_Left3Click )
+                  EndIf
+                  If eventtype = #__event_RightButtonUp
+                    DoEvents( PressedWidget( ), #__event_Right3Click )
+                  EndIf
+                  
+                  time3Click = 0
+                Else
+                  ; do click events
+                  If eventtype = #__event_LeftButtonUp
+                    DoEvents( PressedWidget( ), #__event_LeftClick )
+                  EndIf
+                  If eventtype = #__event_RightButtonUp
+                    DoEvents( PressedWidget( ), #__event_RightClick )
+                  EndIf
                 EndIf
               EndIf
+              
             EndIf
             
           EndIf
@@ -20272,5 +20287,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6Lf-T----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8--0--8-------------------------4-+48vb+---------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6Lf-T----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8--80-4f------------------------v-0v4f49----------------------------
 ; EnableXP
