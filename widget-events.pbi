@@ -7836,15 +7836,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "edit_sel_row_text - "+*rows\index +" "+ mode
       
       *this\state\repaint = #True
-      ;*rows\color\state = #__s_2
+      ;\\ *rows\color\state = #__s_2
       *rows\state\focus = #True
       
       If mode =- 14 ; ok leave from
-        *this\edit_caret_1( ) = *rows\text\pos
         
         ; Debug ""+*this\edit_caret_1( ) +" "+ *rows\text\pos
         CaretLeftPos = 0
         CaretRightPos = 0 
+        *this\edit_caret_1( ) = *rows\text\pos
         
       ElseIf mode = #__sel_to_remove ; 
         
@@ -7891,7 +7891,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Else
           CaretLeftPos = *this\edit_caret_1( ) - *rows\text\pos
           If *this\edit_caret_2( ) > ( *rows\text\pos + *rows\text\len )
-            CaretLastLen = *this\mode\fullselection
+            If *rows <> *this\PressedRow( )
+              CaretLastLen = *this\mode\fullselection
+            EndIf
             CaretRightPos = *rows\text\len
           Else
             CaretRightPos = *this\edit_caret_2( ) - *rows\text\pos
@@ -8119,22 +8121,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     
-    Macro edit_sel_reset_( _address_ )
-      _address_\text\edit[1]\len = 0 
-      _address_\text\edit[2]\len = 0 
-      _address_\text\edit[3]\len = 0 
-      
-      _address_\text\edit[1]\pos = 0 
-      _address_\text\edit[2]\pos = 0 
-      _address_\text\edit[3]\pos = 0 
-      
-      _address_\text\edit[1]\width = 0 
-      _address_\text\edit[2]\width = 0 
-      _address_\text\edit[3]\width = 0 
-      
-      _address_\text\edit[1]\string = ""
-      _address_\text\edit[2]\string = "" 
-      _address_\text\edit[3]\string = ""
+    Macro edit_sel_reset_( _this_ )
+      If _this_\text\edit[2]\width <> 0 
+        ; вызывать если только строки выделени 
+        If _this_\text\multiLine 
+          PushListPosition( _this_\_rows( ) )
+          ForEach _this_\_rows( ) 
+            If _this_\_rows( )\text\edit[2]\width <> 0 
+              ; Debug " remove - " +" "+ _this_\_rows( )\text\string
+              edit_sel_row_text_( _this_, _this_\_rows( ), #__sel_to_remove )
+            EndIf
+          Next
+          PopListPosition( _this_\_rows( ) )
+        EndIf
+      EndIf
     EndMacro
     
     Macro edit_sel_is_line_pos_( _this_ )
@@ -8145,47 +8145,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\x < ( _this_\_rows( )\text\edit[2]\x + _this_\_rows( )\text\edit[2]\width ) - scroll_x_( _this_ ) )
     EndMacro
     
-    
-    Procedure.i edit_sel_start_( *this._S_widget, caret, *rows._S_rows )
-      Protected result.i = *rows\text\pos, i.i, char.i
-      caret - *rows\text\pos
-      
-      Macro edit_sel_end_( _char_ )
-        Bool(( _char_ >= ' ' And _char_ <= '/' ) Or 
-             ( _char_ >= ':' And _char_ <= '@' ) Or 
-             ( _char_ >= '[' And _char_ <= 96 ) Or 
-             ( _char_ >= '{' And _char_ <= '~' ))
-      EndMacro
-      
-      ; | <<<<<< left edge of the word 
-      If caret >= 0 
-        For i = caret - 1 To 1 Step - 1
-          char = Asc( Mid( *rows\text\string.s, i, 1 ))
-          If edit_sel_end_( char )
-            result = *rows\text\pos + i
-            Break
-          EndIf
-        Next 
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
-    
-    Procedure.i edit_sel_stop_( *this._S_widget, caret, *rows._S_rows )
-      Protected result.i = *rows\text\pos + *rows\text\len, i.i, char.i
-      caret - *rows\text\pos
-      
-      ; >>>>>> | right edge of the word
-      For i = caret + 2 To *rows\text\len
-        char = Asc( Mid( *rows\text\string.s, i, 1 ))
-        If edit_sel_end_( char )
-          result = *rows\text\pos + ( i - 1 )
-          Break
-        EndIf
-      Next 
-      
-      ProcedureReturn result
-    EndProcedure
+    Macro edit_sel_end_( _char_ )
+      Bool(( _char_ >= ' ' And _char_ <= '/' ) Or 
+           ( _char_ >= ':' And _char_ <= '@' ) Or 
+           ( _char_ >= '[' And _char_ <= 96 ) Or 
+           ( _char_ >= '{' And _char_ <= '~' ))
+    EndMacro
     
     Procedure   edit_row_align( *this._S_widget )
       ; Debug ""+*this\text\align\anchor\left +" "+ *this\text\align\anchor\top +" "+ *this\text\align\anchor\right +" "+ *this\text\align\anchor\bottom
@@ -8465,102 +8430,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ProcedureReturn repaint
-    EndProcedure
-    
-    Procedure   edit_key_caret_move_( *this._S_widget, _top_line_, _bottom_line_, move_position = 0, scroll_row_step = 1 )
-      Protected result, caret =- 1
-      
-      If _top_line_ <> - 1 
-        ; left in line
-        If move_position And 
-           *this\edit_caret_1( ) > *this\FocusedRow( )\text\pos 
-          caret = *this\edit_caret_1( ) - move_position
-          ;\\ edit_row_caret_1_( *this ) = caret - *this\FocusedRow( )\text\pos
-          *this\FocusedRow( )\edit_caret_1( ) = caret - *this\FocusedRow( )\text\pos
-          result = 1
-        EndIf
-        
-        If result = 0
-          ; prev line
-          If *this\FocusedRow( )\index > _top_line_ 
-            If *this\FocusedRow( )
-              edit_row_select_( *this, *this\FocusedRow( ), *this\FocusedRow( )\index - scroll_row_step )
-            EndIf
-            
-            If move_position
-              ; перешли снизу верх
-              caret = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len 
-            Else
-              ;\\ caret = *this\FocusedRow( )\text\pos + edit_row_caret_1_( *this )
-              caret = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\edit_caret_1( )
-            EndIf
-            
-            result =- 1
-          Else
-            ; first line
-            If *this\edit_caret_1( ) <> *this\FocusedRow( )\text\pos
-              caret = *this\FocusedRow( )\text\pos
-              result = 1
-            EndIf
-          EndIf
-        EndIf
-        
-      ElseIf _bottom_line_ <> - 1
-        ; right in line
-        If move_position And 
-           *this\edit_caret_1( ) < *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len 
-          caret = *this\edit_caret_1( ) + move_position
-          ;\\ edit_row_caret_1_( *this ) = caret - *this\FocusedRow( )\text\pos
-          *this\FocusedRow( )\edit_caret_1( ) = caret - *this\FocusedRow( )\text\pos
-          result = 1
-        EndIf
-        
-        If result = 0
-          ; next line
-          If *this\FocusedRow( )\index < _bottom_line_
-            If *this\FocusedRow( )
-              edit_row_select_( *this, *this\FocusedRow( ), *this\FocusedRow( )\index + scroll_row_step )
-            EndIf
-            
-            If move_position
-              ; перешли сверху с конца вниз
-              caret = *this\FocusedRow( )\text\pos 
-            Else
-              ;\\ caret = *this\FocusedRow( )\text\pos + edit_row_caret_1_( *this )
-              caret = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\edit_caret_1( )
-            EndIf
-            
-            result =- 1
-          Else
-            ; last line
-            If *this\edit_caret_1( ) <> *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
-              caret = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
-              result = 1
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-      If result
-        If *this\FocusedRow( ) <> *this\_rows( )
-          *this\FocusedRow( ) = *this\_rows( ) ; SelectElement( *this\_rows( ), *this\FocusedRow( )\index )
-        EndIf             
-        
-        If keyboard( )\key[1] & #PB_Canvas_Shift
-          Protected *entered._s_rows = *this\FocusedRow( ) ; SelectElement( *this\_rows( ), *this\FocusedRow( )\index )
-          Protected *pressed._s_rows = *this\PressedRow( ) ; SelectElement( *this\_rows( ), *this\edit_lineDelta( ) )
-          edit_sel_pos( *this, *entered, *pressed, caret )
-          Debug 7777
-        Else
-          *this\edit_caret_1( ) = caret
-          *this\edit_caret_2( ) = *this\edit_caret_1( )
-          
-          *this\edit_linePos( ) = *this\FocusedRow( )\index 
-          *this\edit_lineDelta( ) = *this\edit_linePos( )
-        EndIf
-        
-        ProcedureReturn 1
-      EndIf
     EndProcedure
     
     Procedure   edit_key_home_( *this._S_widget )
@@ -9511,7 +9380,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure   Editor_Events_Key( *this._S_widget, eventtype.l, mouse_x.l, mouse_y.l )
       Static _caret_last_pos_, DoubleClick.i
-      Protected Repaint.i, Caret.i, Item.i, String.s
+      Protected i.i, caret.i
+      
+      Protected Repaint.i, Item.i, String.s
       Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *this\_rows( )\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
       Protected page_height = *this\height[#__c_inner]
       
@@ -9571,37 +9442,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  *this\FocusedRow( )\color\state = #__s_0
-                  
-                  If *this\FocusedRow( )\index > 0
-                    *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index - 1 )
-                    
-                    *this\FocusedRow( )\color\state = #__s_1
-                    
-                    If *this\edit_caret_0( ) > *this\FocusedRow( )\text\len
-                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
-                    Else
-                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
-                    EndIf
+                  If keyboard( )\key[1] & #PB_Canvas_Alt 
+                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
+                    *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
                   Else
-                    *this\edit_caret_1( ) = 0
+                    If *this\FocusedRow( )\index > 0
+                      *this\FocusedRow( )\color\state = #__s_0
+                      *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index - 1 )
+                      *this\FocusedRow( )\color\state = #__s_1
+                      
+                      If *this\edit_caret_0( ) > *this\FocusedRow( )\text\len
+                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
+                      Else
+                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
+                      EndIf
+                    Else
+                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
+                    EndIf
                   EndIf
                   
                   If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                    If *this\text\edit[2]\width <> 0 
-                      ; вызывать если только строки выделени 
-                      If *this\text\multiLine 
-                        PushListPosition( *this\_rows( ) )
-                        ForEach *this\_rows( ) 
-                          If *this\_rows( )\text\edit[2]\width <> 0 
-                            ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                            edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
-                          EndIf
-                        Next
-                        PopListPosition( *this\_rows( ) )
-                      EndIf
-                    EndIf
-                    
+                    edit_sel_reset_( *this )
+              
                     If *this\PressedRow( ) <> *this\FocusedRow( )
                       If *this\PressedRow( ) And 
                          *this\PressedRow( )\state\press
@@ -9617,8 +9479,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   edit_sel_row_text_( *this, *this\FocusedRow( ) )
                   edit_sel_text_( *this, *this\FocusedRow( ) )
                 EndIf
-                
-                Debug " up - "+*this\edit_caret_1( ) +" "+ *this\text\len
                 
               Case #PB_Shortcut_Down     ; Ok
                 If *this\FocusedRow( ) And *this\edit_caret_1( ) < *this\text\len 
@@ -9638,37 +9498,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  *this\FocusedRow( )\color\state = #__s_0
-                  
-                  If *this\FocusedRow( )\index < ( *this\count\items - 1 )
-                    *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index + 1 )
-                    
-                    *this\FocusedRow( )\color\state = #__s_1
-                    
-                    If *this\edit_caret_0( ) > *this\FocusedRow( )\text\len
-                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
-                    Else
-                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
-                    EndIf
+                  If keyboard( )\key[1] & #PB_Canvas_Alt 
+                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
+                    *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
                   Else
-                    *this\edit_caret_1( ) = *this\text\len
+                    If *this\FocusedRow( )\index < ( *this\count\items - 1 )
+                      *this\FocusedRow( )\color\state = #__s_0
+                      *this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\FocusedRow( )\index + 1 )
+                      *this\FocusedRow( )\color\state = #__s_1
+                      
+                      If *this\edit_caret_0( ) > *this\FocusedRow( )\text\len
+                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
+                      Else
+                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
+                      EndIf
+                    Else
+                      *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
+                    EndIf
                   EndIf
                   
                   If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                    If *this\text\edit[2]\width <> 0 
-                      ; вызывать если только строки выделени 
-                      If *this\text\multiLine 
-                        PushListPosition( *this\_rows( ) )
-                        ForEach *this\_rows( ) 
-                          If *this\_rows( )\text\edit[2]\width <> 0 
-                            ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                            edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
-                          EndIf
-                        Next
-                        PopListPosition( *this\_rows( ) )
-                      EndIf
-                    EndIf
-                    
+                    edit_sel_reset_( *this )
+              
                     If *this\PressedRow( ) <> *this\FocusedRow( )
                       If *this\PressedRow( ) And 
                          *this\PressedRow( )\state\press
@@ -9684,10 +9535,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   edit_sel_row_text_( *this, *this\FocusedRow( ) )
                   edit_sel_text_( *this, *this\FocusedRow( ) )
                 EndIf
-                
-                
-                Debug " down - "+*this\edit_caret_1( ) +" "+ *this\text\len
-                
+               
               Case #PB_Shortcut_Left     ; Ok
                 If *this\FocusedRow( ) And *this\edit_caret_1( ) > 0
                   If *this\edit_caret_1( ) > *this\FocusedRow( )\text\pos + *this\FocusedRow( )\text\len
@@ -9702,24 +9550,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  *this\edit_caret_1( ) - 1
+                  If keyboard( )\key[1] & #PB_Canvas_Alt 
+                    ; | <<<<<< left edge of the word 
+                    caret = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
+                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
+                    For i = caret - 1 To 1 Step - 1
+                      If edit_sel_end_( Asc( Mid( *this\FocusedRow( )\text\string, i, 1 )) )
+                        *this\edit_caret_1( ) + i
+                        Break
+                      EndIf
+                    Next 
+                  Else
+                    *this\edit_caret_1( ) - 1
+                  EndIf
                   *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
                   
                   If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                    ; вызывать если только строки выделени 
-                    If *this\text\edit[2]\width <> 0 
-                      If *this\text\multiLine 
-                        PushListPosition( *this\_rows( ) )
-                        ForEach *this\_rows( ) 
-                          If *this\_rows( )\text\edit[2]\width <> 0 
-                            ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                            edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
-                          EndIf
-                        Next
-                        PopListPosition( *this\_rows( ) )
-                      EndIf
-                    EndIf
-                    
+                    edit_sel_reset_( *this )
+              
                     *this\edit_caret_2( ) = *this\edit_caret_1( )
                   EndIf
                   
@@ -9760,24 +9608,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  *this\edit_caret_1( ) + 1
+                  If keyboard( )\key[1] & #PB_Canvas_Alt 
+                    ; >>>>>> | right edge of the word
+                    caret = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
+                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
+                    For i = caret + 2 To *this\FocusedRow( )\text\len
+                      If edit_sel_end_( Asc( Mid( *this\FocusedRow( )\text\string, i, 1 )) )
+                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + i 
+                        Break
+                      EndIf
+                    Next 
+                  Else
+                    *this\edit_caret_1( ) + 1
+                  EndIf
                   *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
                   
                   If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                    ; вызывать если только строки выделени 
-                    If *this\text\edit[2]\width <> 0 
-                      If *this\text\multiLine 
-                        PushListPosition( *this\_rows( ) )
-                        ForEach *this\_rows( ) 
-                          If *this\_rows( )\text\edit[2]\width <> 0 
-                            ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                            edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
-                          EndIf
-                        Next
-                        PopListPosition( *this\_rows( ) )
-                      EndIf
-                    EndIf
-                    
+                    edit_sel_reset_( *this )
+              
                     *this\edit_caret_2( ) = *this\edit_caret_1( )
                   EndIf
                   
@@ -9785,7 +9633,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   edit_sel_text_( *this, *this\FocusedRow( ) )
                   ; EndIf
                 EndIf
-                
                 
               Case #PB_Shortcut_Back   
                 If Not \notify
@@ -20416,5 +20263,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------L824-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zX++P0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------
 ; EnableXP
