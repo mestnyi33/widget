@@ -8062,7 +8062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If reset > 0
             *this\edit_caret_2( ) = caret
-            ;\\ edit_row_caret_1_( *this ) = caret - *entered\text\pos
+            ;\\ *this\edit_caret_0( ) = caret - *entered\text\pos
             *entered\edit_caret_1( ) = caret - *entered\text\pos
             *this\edit_lineDelta( ) = *entered\index
             
@@ -8148,9 +8148,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro edit_sel_end_( _char_ )
       Bool(( _char_ >= ' ' And _char_ <= '/' ) Or 
            ( _char_ >= ':' And _char_ <= '@' ) Or 
-           ( _char_ >= '[' And _char_ <= 96 ) Or 
+           ( _char_ >= '[' And _char_ <= '`' ) Or 
            ( _char_ >= '{' And _char_ <= '~' ))
     EndMacro
+    
+    Procedure.i edit_sel_start_word( *this._S_widget, caret, *rows._S_rows )
+      Protected result.i = *rows\text\pos, i.i, char.i
+      caret - *rows\text\pos
+      
+      ; | <<<<<< left edge of the word 
+      If caret >= 0 
+        For i = caret - 1 To 1 Step - 1
+          char = Asc( Mid( *rows\text\string.s, i, 1 ))
+          If edit_sel_end_( char )
+            result = *rows\text\pos + i
+            Break
+          EndIf
+        Next 
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure.i edit_sel_stop_word( *this._S_widget, caret, *rows._S_rows )
+      Protected result.i = *rows\text\pos + *rows\text\len, i.i, char.i
+      caret - *rows\text\pos
+      
+      ; >>>>>> | right edge of the word
+      For i = caret + 2 To *rows\text\len
+        char = Asc( Mid( *rows\text\string.s, i, 1 ))
+        If edit_sel_end_( char )
+          result = *rows\text\pos + i 
+          Break
+        EndIf
+      Next 
+      
+      ProcedureReturn result
+    EndProcedure
     
     Procedure   edit_row_align( *this._S_widget )
       ; Debug ""+*this\text\align\anchor\left +" "+ *this\text\align\anchor\top +" "+ *this\text\align\anchor\right +" "+ *this\text\align\anchor\bottom
@@ -8375,7 +8409,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If select_index = first_index
               *this\edit_caret_1( ) = 0
             Else  
-              ;\\ *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + edit_row_caret_1_( *this )
+              ;\\ *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
               *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\edit_caret_1( )
             EndIf
             
@@ -8402,7 +8436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If select_index = last_index
               *this\edit_caret_1( ) = *this\text\len 
             Else  
-              ;\\ *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + edit_row_caret_1_( *this )
+              ;\\ *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\edit_caret_0( )
               *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + *this\FocusedRow( )\edit_caret_1( ) 
             EndIf
             
@@ -8456,7 +8490,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If result
         *this\edit_caret_2( ) = *this\edit_caret_1( ) 
         *this\edit_lineDelta( ) = *this\edit_linePos( )
-        ;\\ edit_row_caret_1_( *this ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
+        ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
         *this\FocusedRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
       EndIf
       
@@ -8487,7 +8521,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If result
         *this\edit_caret_2( ) = *this\edit_caret_1( )
         *this\edit_lineDelta( ) = *this\edit_linePos( )
-        ;\\ edit_row_caret_1_( *this ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
+        ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
         *this\FocusedRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
       EndIf
       
@@ -9551,15 +9585,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If keyboard( )\key[1] & #PB_Canvas_Alt 
-                    ; | <<<<<< left edge of the word 
-                    caret = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
-                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
-                    For i = caret - 1 To 1 Step - 1
-                      If edit_sel_end_( Asc( Mid( *this\FocusedRow( )\text\string, i, 1 )) )
-                        *this\edit_caret_1( ) + i
-                        Break
-                      EndIf
-                    Next 
+                    *this\edit_caret_1( ) = edit_sel_start_word( *this, *this\edit_caret_1( ), *this\FocusedRow( ) )
                   Else
                     *this\edit_caret_1( ) - 1
                   EndIf
@@ -9609,15 +9635,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If keyboard( )\key[1] & #PB_Canvas_Alt 
-                    ; >>>>>> | right edge of the word
-                    caret = *this\edit_caret_1( ) - *this\FocusedRow( )\text\pos
-                    *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos
-                    For i = caret + 2 To *this\FocusedRow( )\text\len
-                      If edit_sel_end_( Asc( Mid( *this\FocusedRow( )\text\string, i, 1 )) )
-                        *this\edit_caret_1( ) = *this\FocusedRow( )\text\pos + i 
-                        Break
-                      EndIf
-                    Next 
+                    *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_1( ), *this\FocusedRow( ) )
                   Else
                     *this\edit_caret_1( ) + 1
                   EndIf
@@ -17389,32 +17407,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            ;\\ edit_sel_pos( *this, *this\EnteredRow( ), *this\PressedRow( ), edit_caret_( *this ), 1 )
-            ;# *this\FocusedRow( ) = *this\EnteredRow( )
-            *this\edit_caret_0( ) = edit_caret_( *this ) - *this\EnteredRow( )\text\pos
-            *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\EnteredRow( )\text\pos 
+            *this\edit_caret_1( ) = edit_caret_( *this )
             *this\edit_caret_2( ) = *this\edit_caret_1( )
             
             *this\edit_lineDelta( ) = *this\EnteredRow( )\index ;????
             
-            ;\\ edit_row_caret_1_( *this ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
+            *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
             *this\EnteredRow( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\EnteredRow( )\text\pos
             
-            If *this\text\edit[2]\width
-              If *this\text\multiLine 
-                ForEach *this\_rows( ) 
-                  If *this\_rows( )\text\edit[2]\width <> 0 
-                    ; Debug " remove - " +" "+ *this\_rows( )\text\string
-                    edit_sel_row_text_( *this, *this\_rows( ), #__sel_to_remove )
-                  EndIf
-                Next
-              EndIf
-            EndIf
+            ;
+            edit_sel_reset_( *this )
             
             edit_sel_row_text_( *this, *this\EnteredRow( ) )
             edit_sel_text_( *this, *this\EnteredRow( ) )
             
           EndIf
+        EndIf
+        
+        If eventtype = #PB_EventType_LeftDoubleClick
+          double_click = 1
+          Debug "edit - LeftDoubleClick"
+          *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_1( ), *this\EnteredRow( ) )
+          *this\edit_caret_2( ) = edit_sel_start_word( *this, *this\edit_caret_1( ), *this\EnteredRow( ) )
+          
+          edit_sel_row_text_( *this, *this\EnteredRow( ) )
+          edit_sel_text_( *this, *this\EnteredRow( ) )
+        EndIf
+        
+        If eventtype = #PB_EventType_Left3Click
+          Debug "edit - Left3Click"
+          *this\edit_caret_1( ) = *this\EnteredRow( )\text\pos
+          *this\edit_caret_2( ) = *this\edit_caret_1( ) + *this\EnteredRow( )\text\len
+          
+          edit_sel_row_text_( *this, *this\EnteredRow( ) )
+          edit_sel_text_( *this, *this\EnteredRow( ) )
         EndIf
         
         ;
@@ -18137,7 +18163,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_Focus, 
                #PB_EventType_LostFocus,
                #PB_EventType_LeftButtonDown, 
-               #PB_EventType_LeftButtonUp 
+               #PB_EventType_LeftButtonUp,
+               #PB_EventType_LeftDoubleClick, 
+               #PB_EventType_LeftClick 
             
             Protected mouse_x, mouse_y
             
@@ -18434,7 +18462,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
       EndIf
       
-      
+      ;\\
       If eventtype = #PB_EventType_Input Or
          eventtype = #PB_EventType_KeyDown Or
          eventtype = #PB_EventType_KeyUp
@@ -18477,6 +18505,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf  
       
+      ;\\
       If Root( ) And Root( )\canvas\gadget = Canvas 
         Select eventtype
           Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -18536,7 +18565,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\change = 1<<4
             
         EndSelect
-        
         
         ; get enter&leave widget address
         If mouse( )\change
@@ -18648,29 +18676,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
         EndIf
         
-        
-        ; do events all
+        ; do all events
         If eventtype = #PB_EventType_Focus
           If FocusedWidget( )
             Debug "canvas - Focus " +FocusedWidget( ) +" "+  GadgetType(Canvas)
-            DoEvents( FocusedWidget( ), #PB_EventType_Focus );, PressedItem( ) )
+            DoEvents( FocusedWidget( ), #PB_EventType_Focus )
           EndIf
-          ;           If FocusedWidget( )                          And Not FocusedWidget( )\_a_\transform ; a_transform_( *leave )
-          ;             Repaint | SetActive( FocusedWidget( ) ) 
-          ;           Else
-          ;             If GetActive( ) 
-          ;               If GetActive( )\gadget                 And Not GetActive( )\gadget\_a_\transform 
-          ;                 Repaint | SetActive( GetActive( )\gadget ) 
-          ;               ElseIf                                     Not GetActive( )\_a_\transform 
-          ;                 Repaint | SetActive( GetActive( ) ) 
-          ;               EndIf
-          ;             Else
-          ;               If EnteredWidget( )                      And Not EnteredWidget( )\_a_\transform
-          ;                 Repaint = SetActive( EnteredWidget( )) 
-          ;               EndIf
-          ;             EndIf
-          ;           EndIf
-          ;           
+          
         ElseIf eventtype = #PB_EventType_LostFocus
           If FocusedWidget( )
             Debug "canvas - LostFocus " +FocusedWidget( ) +" "+  GadgetType(Canvas)
@@ -18681,6 +18693,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ElseIf eventtype = #PB_EventType_MouseLeave 
         ElseIf eventtype = #PB_EventType_MouseMove 
           
+          ;\\
           If mouse( )\change > 1
             ; mouse entered-widget move event
             If EnteredWidget( ) And EnteredWidget( )\state\enter
@@ -18724,14 +18737,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                eventtype = #PB_EventType_MiddleButtonDown Or
                eventtype = #PB_EventType_RightButtonDown
           
-          ;
+          ;\\
           If EnteredWidget( )
             PressedWidget( ) = EnteredWidget( )
-            ;PressedRow( EnteredWidget( ) ) = EnteredWidget( )\EnteredRow( )
+            PressedWidget( )\state\press = #True
             
-            EnteredWidget( )\state\press = #True
-            ;If Not EnteredWidget( )\time_down
-            ;EndIf
             ; Debug ""+ EnteredWidget( )\class +" "+ EventGadget( ) + " #PB_EventType_LeftButtonDown" 
             
             If ( eventtype = #PB_EventType_LeftButtonDown Or
@@ -18771,8 +18781,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            Repaint | DoEvents( EnteredWidget( ), eventtype )
-            
+            DoEvents( EnteredWidget( ), eventtype )
           EndIf
           
           
@@ -18838,10 +18847,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ; do double-click events 
                 If eventtype = #__event_LeftButtonUp
-                  Repaint | DoEvents( PressedWidget( ), #__event_LeftDoubleClick )
+                  DoEvents( PressedWidget( ), #__event_LeftDoubleClick )
                 EndIf
                 If eventtype = #__event_RightButtonUp
-                  Repaint | DoEvents( PressedWidget( ), #__event_RightDoubleClick )
+                  DoEvents( PressedWidget( ), #__event_RightDoubleClick )
                 EndIf
                 
                 PressedWidget( )\time_click = 0
@@ -18850,10 +18859,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ; do click events
                 If eventtype = #__event_LeftButtonUp
-                  Repaint | DoEvents( PressedWidget( ), #__event_LeftClick )
+                  DoEvents( PressedWidget( ), #__event_LeftClick )
                 EndIf
                 If eventtype = #__event_RightButtonUp
-                  Repaint | DoEvents( PressedWidget( ), #__event_RightClick )
+                  DoEvents( PressedWidget( ), #__event_RightClick )
                 EndIf
               EndIf
             EndIf
@@ -20263,5 +20272,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zX++P0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6Lf-T----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8--0--8-------------------------4-+48vb+---------------------------
 ; EnableXP

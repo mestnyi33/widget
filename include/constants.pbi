@@ -736,6 +736,8 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
+      #PB_EventType_Left3Click
+      #PB_EventType_Right3Click
       
       #PB_EventType_MouseStatus ; temp
       #PB_EventType_StatusChangeEdit
