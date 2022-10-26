@@ -447,11 +447,12 @@
     ;       #__image_invert 
     ;     EndEnumeration
     
-    ;-  Constant edit-sel
-    #__sel_to_remove = - 6
-    #__sel_to_first = - 9
-    #__sel_to_last = - 10
-    #__sel_to_set = - 5
+    ;-  Constant sel-edit
+    #__sel_to_line = 1
+    #__sel_to_first = 2
+    #__sel_to_remove = - 1
+    #__sel_to_last = - 2
+    #__sel_to_set = 5
     
     ;- _c_text
     #__textFlagCount = 10

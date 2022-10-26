@@ -15,8 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "ww "+ WidgetEventType( ) +" "+ EventWidget( )\index
   EndProcedure
   
-  ;Open(OpenWindow(#PB_Any, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
-  
+  ;
   Window(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
