@@ -16,7 +16,7 @@ EndEnumeration
 
 Procedure menu_events()
   ;Case #PB_Event_Menu
-  Protected CurrentObject = transform( )\widget ; a_widget()
+  Protected CurrentObject = a_enter_widget( )
   
   If CurrentObject
     Select EventMenu()
@@ -51,7 +51,7 @@ If Open(#PB_Any, 0, 0, 800, 450, "Example 4: Changing the order of the objects (
   MenuItem(#MenuItem_ZOrder_Bottom, "Push to the deepest layer")
   
   Container(0, 0, 800, 450) 
-  a_init(widget(), 0) ; , 4)
+  a_init(widget() , 8)
   SetColor(widget(), #__color_back, RGBA(255, 255, 255, alpha))
   
   a_object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha))

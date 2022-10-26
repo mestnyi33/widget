@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;
     If type = #PB_GadgetType_Container
       Container(x,y,width,height)
-    ElseIf type = #PB_GadgetType_Window
+    ElseIf type = #__Type_Window
       Window(x,y,width,height, "", parent)
     ElseIf type = #PB_GadgetType_ScrollArea
       ScrollArea(x,y,width,height, 500,500,1)

@@ -1,44 +1,11 @@
-﻿; ver: 3.0.0.0 ; 
-; sudo adduser your_username vboxsf
-; https://linuxrussia.com/sh-ubuntu.html
-; http://forums.purebasic.com/english/viewtopic.php?p=577957
-
+﻿; ver: 3.0.0.1 ; 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   #path = "/Users/as/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
-  #path = "/media/sf_as/Documents/GitHub/widget"
+  #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows 
-  #path = "Z:/Documents/GitHub/widget"
-  ;#path "C:\Users\as\Desktop\Widget_15_08_2020"
+  #path = ""
 CompilerEndIf
-
-; IncludePath #path
-; 
-; 
-; XIncludeFile "include/modules.pbi"
-; 
-; CompilerIf Not Defined( constants, #PB_Module )
-;   XIncludeFile "include/constants.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( structures, #PB_Module )
-;   XIncludeFile "include/structures.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( func, #PB_Module )
-;   XIncludeFile "include/func.pbi"
-; CompilerEndIf
-; 
-; CompilerIf Not Defined( colors, #PB_Module )
-;   XIncludeFile "include/colors.pbi"
-; CompilerEndIf
-; 
-; ; fix all (PB) bug's
-; CompilerIf Not Defined( fix, #PB_Module )
-;   XIncludeFile "include/fix.pbi"
-; CompilerEndIf
-; 
-; XIncludeFile "include/events.pbi"
 
 IncludePath #path
 
@@ -58,10 +25,11 @@ CompilerIf Not Defined( colors, #PB_Module )
   XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
+; fix all pb bug's
 CompilerIf Not Defined( fix, #PB_Module )
-  ; fix all pb bug's
   XIncludeFile "include/fix.pbi"
 CompilerEndIf
+
 ;XIncludeFile "include/os/mac/cursor.pbi"
 
 CompilerIf Not Defined( Widget, #PB_Module )
@@ -2873,7 +2841,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *button And *this\_a_\id
             If mouse( )\cursor <> *data
               ;Debug "cursor-change " + *data +" "+ *this\_root( )\canvas\gadget
-              SetCursor( *this, *data )
+              ;;SetCursor( *this, *data )
               mouse( )\cursor = *data
             EndIf
           EndIf
@@ -18779,6 +18747,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                eventtype = #PB_EventType_MiddleButtonUp Or
                eventtype = #PB_EventType_RightButtonUp
           
+          ;\\
           If PressedWidget( ) 
             
             ; do drop events
@@ -18870,9 +18839,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
             EndIf
             
-          EndIf
+            ; reset state
+            PressedWidget( )\state\press = #False 
+            PressedWidget( )\state\drag = #False
+          EndIf  
           
-          ; reset mouse buttons
+          
+          ;\\ reset mouse buttons
           If mouse( )\buttons
             If eventtype = #PB_EventType_LeftButtonUp
               mouse( )\buttons &~ #PB_Canvas_LeftButton
@@ -18886,82 +18859,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\y = 0
           EndIf
           
-          If PressedWidget( ) 
-            PressedWidget( )\state\press = #False 
-            PressedWidget( )\state\drag = #False
-          EndIf  
-          
         ElseIf eventtype = #PB_EventType_MouseWheelX
-          Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelX, - 1, EventData( ) )
+          If EnteredWidget( )
+            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelX, - 1, EventData( ) )
+          EndIf
+          
         ElseIf eventtype = #PB_EventType_MouseWheelY
-          Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelY, - 1, EventData( ) )
-          
-        ElseIf eventtype = #PB_EventType_MouseWheel
-          CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-            If EnteredWidget( )
-              CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-                Protected app, ev
-                app = CocoaMessage(0,0,"NSApplication sharedApplication")
-                If app
-                  ev = CocoaMessage(0,app,"currentEvent")
-                  If ev
-                    mouse( )\wheel\x = CocoaMessage(0,ev,"scrollingDeltaX")
-                  EndIf
-                EndIf
-              CompilerEndIf
-              
-              mouse( )\wheel\y = GetGadgetAttribute( Root( )\canvas\gadget, #PB_Canvas_WheelDelta )
-              
-              ; mouse wheel events
-              If mouse( )\wheel\y
-                Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelY, - 1, mouse( )\wheel\y )
-                mouse( )\wheel\y = 0
-              ElseIf mouse( )\wheel\x
-                Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelX, - 1, mouse( )\wheel\x )
-                mouse( )\wheel\x = 0
-              EndIf
-            EndIf
-          CompilerEndIf
-          
-        ElseIf eventtype = #PB_EventType_LeftClick 
-          If EnteredWidget( ) And 
-             EnteredWidget( ) = PressedWidget( )
-            ; Repaint | DoEvents( PressedWidget( ), eventtype )
-          EndIf      
-          
-        ElseIf eventtype = #PB_EventType_LeftDoubleClick 
-          If PressedWidget( )
-            ;Repaint | DoEvents( PressedWidget( ), eventtype )
+          If EnteredWidget( )
+            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelY, - 1, EventData( ) )
           EndIf
           
-        ElseIf eventtype = #PB_EventType_Drop
-          ;           If EnteredWidget( )
-          ;             Repaint | DoEvents( EnteredWidget( ), eventtype )
-          ;           EndIf
-          
-        ElseIf eventtype = #PB_EventType_RightClick 
-        ElseIf eventtype = #PB_EventType_DragStart 
-        ElseIf eventtype = #PB_EventType_RightDoubleClick 
-        ElseIf eventtype = #PB_EventType_Change 
-        ElseIf eventtype = #PB_EventType_Resize 
-        ElseIf eventtype = #PB_EventType_Repaint 
-        ElseIf eventtype = #PB_EventType_Input Or
-               eventtype = #PB_EventType_KeyDown Or
-               eventtype = #PB_EventType_KeyUp
-          
-        ElseIf eventtype =- 1        
-        Else     
-          If eventtype <> #PB_EventType_MouseMove
-            mouse( )\change | 1<<0|1<<1
-          EndIf
-          Debug  #PB_Compiler_Procedure + " - else eventtype - "+eventtype
-          
-          If EnteredWidget( ) And mouse( )\change
-            Repaint | DoEvents( EnteredWidget( ), eventtype )
-          EndIf
-          If FocusedWidget( ) And EnteredWidget( ) <> FocusedWidget( ) And FocusedWidget( )\state\press And mouse( )\change 
-            Repaint | DoEvents( FocusedWidget( ), eventtype )
-          EndIf
         EndIf
         
         ; reset
@@ -18970,7 +18877,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If ListSize( Root( )\_events( ) )
-          ;Debug ListSize( Root( )\_events( ) )
+          Debug ""+#PB_Compiler_Procedure+ " Root( )\_events( ) - "+ ListSize( Root( )\_events( ) )
           ForEach Root( )\_events( )
             ;If Root( )\_events( )\type = #PB_EventType_LeftClick 
             ; Debug 333
@@ -20278,5 +20185,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t--8H33+v-4-fv-+-------------------9n-9+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f86480-4f------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------t--8H33+v-4-fv-+-------------------9n-9+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f86480-4f------------------------P-0v3v-+8-------------------------
 ; EnableXP
