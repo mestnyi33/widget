@@ -236,18 +236,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;-
     Macro  ChangeCurrentRoot(_canvas_gadget_address_ )
-      FindMapElement( Root( ), Str( _canvas_gadget_address_ ) )
+      FindMapElement( widget::Root( ), Str( _canvas_gadget_address_ ) )
     EndMacro
     
     Macro PostCanvasRepaint( _address_, _data_ = #Null ) 
       ; Debug "-- post --- event -- repaint --1"
-      If _address_\_root( )\canvas\repaint = #False
-        _address_\_root( )\canvas\repaint = #True
+      If _address_\widget::_root( )\canvas\repaint = #False
+        _address_\widget::_root( )\canvas\repaint = #True
         ; Debug "-- post --- event -- repaint --2"
         If _data_ = #Null
-          PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _address_\_root( ) )
+          PostEvent( #PB_Event_Gadget, _address_\widget::_root( )\canvas\window, _address_\widget::_root( )\canvas\gadget, #PB_EventType_Repaint, _address_\widget::_root( ) )
         Else
-          PostEvent( #PB_Event_Gadget, _address_\_root( )\canvas\window, _address_\_root( )\canvas\gadget, #PB_EventType_Repaint, _data_ )
+          PostEvent( #PB_Event_Gadget, _address_\widget::_root( )\canvas\window, _address_\widget::_root( )\canvas\gadget, #PB_EventType_Repaint, _data_ )
         EndIf
       EndIf
     EndMacro
