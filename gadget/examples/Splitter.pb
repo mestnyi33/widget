@@ -30,7 +30,7 @@ CompilerIf Not Defined( fix, #PB_Module )
   XIncludeFile "include/fix.pbi"
 CompilerEndIf
 
-  XIncludeFile "include/os/mac/parent.pbi"
+XIncludeFile "include/os/mac/parent.pbi"
 
 CompilerIf Not Defined( Widget, #PB_Module )
   ;-  >>>
@@ -4158,7 +4158,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.b Resize( *this._S_widget, x.l,y.l,width.l,height.l )
       Protected.b result
       Protected.l ix,iy,iwidth,iheight,  Change_x, Change_y, Change_width, Change_height
-      ; Debug " resize - "+*this\class
+       Debug ""+*this\width[#__c_container] +" "+ iwidth 
       
       ;       If *this\resize & #__resize_start = #False
       ;         *this\resize | #__resize_start
@@ -4206,7 +4206,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           width = *this\_parent( )\width[#__c_inner] 
           height = *this\_parent( )\height[#__c_inner] 
         EndIf
-        
       Else
         If a_transform( ) And 
            a_transform( )\grid\size > 1 And
@@ -4310,7 +4309,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       iy = ( y + *this\fs + *this\fs[2] )
       iwidth = width - *this\fs*2 - ( *this\fs[1] + *this\fs[3] )
       iheight = height - *this\fs*2 - ( *this\fs[2] + *this\fs[4] )
-      
+       
       ; 
       If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
       If *this\y[#__c_frame] <> y : Change_y = y - *this\y[#__c_frame] : EndIf 
@@ -4318,9 +4317,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;       If *this\y[#__c_inner] <> iy : Change_y = iy - *this\y[#__c_inner] : EndIf 
       If *this\width[#__c_frame] <> width : Change_width = width - *this\width[#__c_frame] : EndIf 
       If *this\height[#__c_frame] <> height : Change_height = height - *this\height[#__c_frame] : EndIf 
-;       If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf 
+;       If *this\width[#__c_container] <> iwidth 
+;         Change_width = iwidth - *this\width[#__c_container] 
+;       EndIf 
 ;       If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf 
-      
+            Debug " resize - "+*this\class +" "+Change_x+" "+Change_y+" "+Change_width+" "+Change_height
+     
       ;
       If Change_x
         *this\resize | #__resize_x | #__resize_change
@@ -4447,6 +4449,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\ChangeTabIndex( ) =- 1
         EndIf
         
+      
         bar_Update( *this\bar, Bool( Change_width Or Change_height ) )
       EndIf
       
@@ -6613,12 +6616,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\x        = *this\x[#__c_frame]
             *BB2\x        = *this\x[#__c_frame]
             
-;             If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And bar_is_first_gadget_( *this ) And Not *this\_parent( ) )
+            If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And bar_is_first_gadget_( *this ) And Not *this\_parent( ) )
               *BB1\y      = *this\y[#__c_frame] 
               *BB2\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *this\y[#__c_frame] 
-;             Else
-;               *BB1\y      = *this\height[#__c_frame] - *BB1\height
-;             EndIf
+            Else
+              *BB1\y      = *this\height[#__c_frame] - *BB1\height
+            EndIf
             
             *BB2\height   = *this\height[#__c_frame] - ( *BB1\height + *bar\thumb\len )
             *BB2\width    = *this\width[#__c_frame]
@@ -6653,16 +6656,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; Splitter first-child auto resize       
-          If bar_is_first_gadget_( *this )
-;             If *this\_root( )\canvas\container
+          If bar_first_gadget_( *this ) >= 0 And bar_is_first_gadget_( *this )
+            If *this\_root( )\canvas\container
               PB(ResizeGadget)( bar_first_gadget_( *this ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
-;             Else
-;               PB(ResizeGadget)( bar_first_gadget_( *this ),
-;                                 *BB1\x + GadgetX( *this\_root( )\canvas\gadget ), 
-;                                 *BB1\y + GadgetY( *this\_root( )\canvas\gadget ),
-;                                 *BB1\width, *BB1\height )
-;             EndIf
-              
+            Else
+              PB(ResizeGadget)( bar_first_gadget_( *this ),
+                                *BB1\x,; + GadgetX( *this\_root( )\canvas\gadget ), 
+                                *BB1\y,; + GadgetY( *this\_root( )\canvas\gadget ),
+                                *BB1\width, *BB1\height )
+            EndIf
           Else
             If bar_first_gadget_( *this )
               If bar_first_gadget_( *this )\x <> *BB1\x Or
@@ -6688,16 +6690,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; Splitter second-child auto resize       
-          If bar_is_second_gadget_( *this )
-;             If *this\_root( )\canvas\container 
+          If bar_second_gadget_( *this ) >= 0 And bar_is_second_gadget_( *this )
+            If *this\_root( )\canvas\container 
               PB(ResizeGadget)( bar_second_gadget_( *this ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
-;             Else
-;               PB(ResizeGadget)( bar_second_gadget_( *this ), 
-;                                 *BB2\x + GadgetX( *this\_root( )\canvas\gadget ),
-;                                 *BB2\y + GadgetY( *this\_root( )\canvas\gadget ),
-;                                 *BB2\width, *BB2\height )
-;             EndIf
-              
+            Else
+              PB(ResizeGadget)( bar_second_gadget_( *this ), 
+                                *BB2\x,; + GadgetX( *this\_root( )\canvas\gadget ),
+                                *BB2\y,; + GadgetY( *this\_root( )\canvas\gadget ),
+                                *BB2\width, *BB2\height )
+            EndIf
           Else
             If bar_second_gadget_( *this )
               If bar_second_gadget_( *this )\x <> *BB2\x Or 
@@ -6877,11 +6878,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
           EndIf
           
-;           ;
-;           If *this\_root( )\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( )) 
-;             Debug "bar redraw - "+*this\_root( )\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
-;             ReDraw( *this\_root( ) ) 
-;           EndIf
+          ;
+          If *this\_root( )\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( )) 
+            Debug "bar redraw - "+*this\_root( )\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
+            ReDraw( *this\_root( ) ) 
+          EndIf
           
           ;         If is_integral_( *this )
           ;           If *this\type = #__type_ScrollBar ; is_scrollbars_( *this )
@@ -13682,6 +13683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure.i SetAlignmentFlag( *this._S_widget, Mode.l, Type.l = 1 ) ; ok
       Protected rx.b, ry.b
+      ProcedureReturn 
       
       With *this
         Select Type
@@ -13833,7 +13835,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure SetAlignment( *this._S_widget, left.l, top.l, right.l, bottom.l, auto.b = #True )
       Protected flag
-      
+      ProcedureReturn 
       ;If Not *this\align
       ;
       If left = #__align_full
@@ -14782,13 +14784,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\state\create = #True
         *this\state\repaint = #True
         
-;         *this\x[#__c_inner] =- 2147483648
-;         *this\y[#__c_inner] =- 2147483648
         *this\x[#__c_frame] = #PB_Ignore
         *this\y[#__c_frame] = #PB_Ignore
         *this\width[#__c_frame] = #PB_Ignore
         *this\height[#__c_frame] = #PB_Ignore
-        
         
         *this\round = round
         *this\class = class
@@ -15509,7 +15508,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\type = #__type_Splitter
             If bar_is_first_gadget_( *this )
               Debug "bar_is_first_gadget_ "+bar_is_first_gadget_( *this )
-               Parent::SetParent( bar_first_gadget_( *this ), *this\_root( )\canvas\address )
+              ;Parent::SetParent( bar_first_gadget_( *this ), *this\_root( )\canvas\address )
             Else
               If bar_first_gadget_( *this ) 
                 SetParent( bar_first_gadget_( *this ), *this )
@@ -15518,12 +15517,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If bar_is_second_gadget_( *this )
               Debug "bar_is_second_gadget_ "+bar_is_second_gadget_( *this )
-               Parent::SetParent( bar_second_gadget_( *this ), *this\_root( )\canvas\address )
+              Parent::SetParent( bar_second_gadget_( *this ), *this\_root( )\canvas\address )
             Else
               If bar_second_gadget_( *this ) 
                 SetParent( bar_second_gadget_( *this ), *this )
               EndIf
             EndIf
+          ; Debug Bool(flag&#__flag_autosize)
           EndIf
           
           ;
@@ -16899,15 +16899,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected flags
       
       Select Type
-;         Case #__type_Splitter
-;           If Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical
-;             Flag &~ #PB_Splitter_Vertical
-;             flags | #__bar_vertical
-;           EndIf
-;           If Flag & #PB_Splitter_Separator = #PB_Splitter_Separator
-;             Flag &~ #PB_Splitter_Separator
-;           EndIf
-          
         Case #__type_CheckBox
           If Flag & #PB_CheckBox_Right = #PB_CheckBox_Right
             Flag &~ #PB_CheckBox_Right
@@ -18432,7 +18423,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;         EndIf
       ;       EndIf
       
-      ;\\
       If eventtype = #PB_EventType_MouseEnter
         If Not mouse( )\interact
           If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
@@ -18441,28 +18431,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ;\\
       If eventtype = #PB_EventType_Repaint ; = 262150
         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
-          PushMapPosition( Root( ) )
-          If ChangeCurrentRoot( GadgetID( Canvas ) )
+          ChangeCurrentRoot( GadgetID( Canvas ) )
+          
+          ;
+          If Root( )\canvas\repaint = #True
             
-            ;
-            If Root( )\canvas\repaint = #True
-              
-              If EventData() = #PB_EventType_Create
-                If Root( )\canvas\ResizeBeginWidget
-                  ; Debug "   end - resize " + #PB_Compiler_Procedure
-                  Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
-                  Root( )\canvas\ResizeBeginWidget = #Null
-                EndIf
+            If EventData() = #PB_EventType_Create
+              If Root( )\canvas\ResizeBeginWidget
+                ; Debug "   end - resize " + #PB_Compiler_Procedure
+                Post( Root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
+                Root( )\canvas\ResizeBeginWidget = #Null
               EndIf
-              
-              ReDraw( Root( ) )
-              Root( )\canvas\repaint = #False
             EndIf
+            
+            ReDraw( Root( ) )
+            Root( )\canvas\repaint = #False
           EndIf
-          PopMapPosition( Root( ) )
           
           ; 
           If Not mouse( )\interact
@@ -18472,7 +18458,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
         EndIf
-        
+       
         ;Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
       EndIf
       
@@ -18520,19 +18506,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf  
       
       ;\\
-      If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-        PushMapPosition( Root( ) )
-        If ChangeCurrentRoot( GadgetID( Canvas ) )
-          Resize( Root( ), 0, 0, PB(GadgetWidth)( Canvas ), PB(GadgetHeight)( Canvas ) )  
-          ;PostCanvasRepaint( Root( ) )
-          ReDraw( Root( ) ) 
-        EndIf
-        PopMapPosition( Root( ) )
-      EndIf
-      
-      ;\\
       If Root( ) And Root( )\canvas\gadget = Canvas 
         Select eventtype
+          Case #PB_EventType_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            Resize( Root( ), 0, 0, PB(GadgetWidth)( Canvas ), PB(GadgetHeight)( Canvas ) )  
+            ;PostCanvasRepaint( Root( ) )
+            ReDraw( Root( ) ) 
+            Repaint = 1
+            
           Case #PB_EventType_MouseEnter,
                #PB_EventType_MouseLeave,
                #PB_EventType_MouseMove
@@ -19364,10 +19345,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Window = - 1
         Window = GetActiveWindow( )
       EndIf
-      ;;Debug Window
+      Debug Window
       Flag = PBFlag( Type, Flag ) | #__flag_autosize
       
-      Open( Window, x,y,width,height, "", #PB_Canvas_Container, *CallBack, Gadget )
+      Open( Window, x,y,width,height, "", #Null, *CallBack, Gadget )
       
       Select Type
         Case #__type_Tree      : *this = Tree( 0, 0, width, height, flag )
@@ -19378,8 +19359,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_HyperLink : *this = HyperLink( 0, 0, width, height, Text, *param1, flag )
         Case #__type_Splitter  : *this = Splitter( 0, 0, width, height, *param1, *param2, flag )
       EndSelect
-      
-      CloseGadgetList( )
       
       If Gadget =- 1
         Gadget = GetGadget( Root( ))
@@ -19893,352 +19872,74 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile ;=99
+;
+; example demo resize draw splitter - OS gadgets
+; 
+
+;XIncludeFile "../../../widget-events.pbi"
+
+CompilerIf #PB_Compiler_IsMainFile
+  Uselib(widget)
   
-  EnableExplicit
-  UseLIB(widget)
+  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  Enumeration 
-    #window_0
-    #window
-  EndEnumeration
-  
-  
-  ; Shows using of several panels...
-  Procedure BindEvents( )
-    Protected *this._S_widget = EventWidget( )
-    Protected eventtype = WidgetEventType( )
+  If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+; ;       Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+; ;       Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+; ;       
+; ;       Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+; ;       Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+; ;       Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+; ;       Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+; ;       
+; ;       Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+; ;       Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
+; ;       SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+; ;       SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+; ;       Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
+; ;       Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
+; ;       Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+; ;       
+; ;       SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
+; ;       SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
+; ;       
+; ;       SetGadgetState(Splitter_1, 20)
+; ;       
+; ;       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
+      
+        Button_0 = ButtonGadget(#PB_Any, 0, 0, 20, 20, "Button 0") ; as they will be sized automatically
+      Button_1 = ButtonGadget(#PB_Any, 0, 0, 30, 30, "Button 1") ; as they will be sized automatically
+      
     
-    Select eventtype
-        ;       Case #PB_EventType_Draw          : Debug "draw"         
-      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
-      Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
-      Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
-      Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
-      Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
-      Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
-      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
-      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
-      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
-      Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
-      Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
-      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
-      Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
-      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
-    EndSelect
-  EndProcedure
-  
-  
-  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-  
-  Define i
-  Define *w._S_widget, *g._S_widget, editable
-  Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
-  
-  ;BindWidgetEvent( *root, @BindEvents( ) )
-  Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-  view = Container(10, 10, 406, 238, #PB_Container_Flat)
-  SetColor(view, #PB_Gadget_BackColor,RGB(213,213,213))
-  ;a_enable( widget( ), 15 )
-  a_init( view, 15 )
-  
-  ;Define *a1._s_widget = image( 5+170,5+140,60,60, -1 )
-  Define *a1._s_widget = Panel( 5+170,5+140,160,160, #__flag_nogadgets )
-  ;Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-  Define *a2._s_widget = ScrollArea( 50,45,135,95, 300,300, 1, #__flag_nogadgets )
-  Define *a3._s_widget = image( 150,110,60,60, -1 )
-  
-  ; a_init( *a, 15 )
-  a_set( *a1, #__a_size )
-  
-  CloseList()
-  size_value = Track(56, 262, 240, 26, 0, 30)
-  pos_value = Track(56, 292, 240, 26, 0, 30)
-  grid_value = Track(56, 320, 240, 26, 0, 30)
-  back_color = Button(304, 264, 112, 32, "BackColor")
-  frame_color = Button(304, 304, 112, 32, "FrameColor")
-  size_text = Text(8, 256, 40, 24, "0")
-  pos_text = Text(8, 288, 40, 24, "0")
-  grid_text = Text(8, 320, 40, 24, "0")
-  
-  SetState( size_value, 7 )
-  SetState( pos_value, 3 )
-  SetState( grid_value, 6 )
-  
-  ;;Bind( *root, @WidgetEventHandler( ) )
-  
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  
-  
-  ;{ OpenRoot0
-  Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  Define Text.s, m.s=#LF$, a
-  *g = Editor(10, 10, 200+60, 200, #__flag_gridlines);, #__flag_autosize) 
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "I have to write the text in the box or not." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work."
-  
-  SetText(*g, Text.s) 
-  For a = 0 To 2
-    AddItem(*g, a, "Line "+Str(a))
-  Next
-  AddItem(*g, 7+a, "_")
-  For a = 4 To 6
-    AddItem(*g, a, "Line "+Str(a))
-  Next 
-  
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #__string_password|#__string_right)
-  
-  
-  Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")
-  ;BindWidgetEvent( *root1, @BindEvents( ) )
-  
-  
-  Define *root2._S_widget = Open(#window,10,300,300-20,300-20): *root2\class = "root2": SetText(*root2, "root2")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  HyperLink( 10,10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-  String( 60,20, 60, 40, "String" )
-  *w = ComboBox( 108,20, 152,40)
-  For i=1 To 100;0000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  
-  
-  Define *root3._S_widget = Open(#window,300,300,300-20,300-20): *root3\class = "root3": SetText(*root3, "root3")
-  ;BindWidgetEvent( *root3, @BindEvents( ) )
-  
-  Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetText(*root4, "root4")
-  ;BindWidgetEvent( *root4, @BindEvents( ) )
-  
-  
-  
-  Define count = 2;0000
-  #st = 1
-  Global  mx=#st,my=#st
-  
-  Define time = ElapsedMilliseconds( )
-  
-  Global *c, *panel._S_widget
-  Procedure do_Events()
-    Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
-        
-        Select GetText( EventWidget( ) )
-          Case "hide_2"
-            hide(*c, 1)
-            ; Disable(*c, 1)
-            
-          Case "show_2" 
-            hide(*c, 0)
-            
-        EndSelect
-        
-        ;         ;Case #PB_EventType_LeftButtonUp
-        ;         ClearDebugOutput( )
-        ;         
-        ;         If StartEnumerate(*panel);Root())
-        ;           If Not hide(widget( )) ;And GetParent(widget()) = *panel
-        ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-        ;           EndIf
-        ;           StopEnumerate( )
-        ;         EndIf
-        
-    EndSelect
-  EndProcedure
-  
-  OpenList( *root1 )
-  *panel = Panel(20, 20, 180+40, 180+60, editable) : SetText(*panel, "1")
-  AddItem( *panel, -1, "item_1" )
-  ;Button( 20,20, 80,80, "item_1")
-  *g = Editor(0, 0, 0, 0, #__flag_autosize) 
-  For a = 0 To 2
-    AddItem(*g, a, "Line "+Str(a))
-  Next
-  AddItem(*g, 3+a, "")
-  AddItem(*g, 4+a, ~"define W_0 = Window( 282, \"Window_0\" )")
-  AddItem(*g, 5+a, "")
-  For a = 6 To 8
-    AddItem(*g, a, "Line "+Str(a))
-  Next 
-  
-  AddItem( *panel, -1, "item_2" )
-  ; Button( 10,10, 80,80, "item_2")
-  Bind(Button( 5, 5, 55, 22, "hide_2"), @do_Events())
-  Bind(Button( 5, 30, 55, 22, "show_2"), @do_Events())
-  
-  *c=Container(110,5,150,155, #PB_Container_Flat) 
-  Define *p = Panel(10,5,150,65) 
-  AddItem(*p, -1, "item-1")
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,25, "butt1") 
-  CloseList()
-  CloseList()
-  AddItem(*p, -1, "item-2")
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,25, "butt2") 
-  CloseList()
-  CloseList()
-  CloseList()
-  
-  Container(10,75,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Container(10,5,150,55, #PB_Container_Flat) 
-  Button(10,5,50,45, "butt1") 
-  CloseList()
-  CloseList()
-  CloseList()
-  CloseList()
-  
-  AddItem( *panel, -1, "item_3" )
-  
-  SetText(Container(20, 20, 180, 180, editable), "4") 
-  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), "5") 
-  SetText(Container(40, 20, 180, 180, editable), "6")
-  Define seven = Container(20, 20, 180, 180, editable)
-  SetText(seven, "      7")
-  
-  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), "     8") 
-  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
-  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
-  
-  CloseList( ) ; 7
-  CloseList( ) ; 6
-  SetText(Container(10, 45, 70, 180, editable), "11") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
-  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
-  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), "14") 
-  
-  SetText(Container(10, 45, 70, 180, editable), "15") 
-  SetText(Container(10, 5, 70, 180, editable), "16") 
-  SetText(Container(10, 5, 70, 180, editable), "17") 
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
-  CloseList( ) ; 1
-  
-  OpenList( seven )
-  ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-  ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1") 
-  SetText(Container( -5, 80, 180, 50, #__Flag_NoGadgets|editable), "container-7")
-  CloseList( ) ; 7
-               ;OpenList( *panel )
-  
-  AddItem( *panel, -1, "item_4" )
-  Button( 30,30, 80,80, "item_4")
-  AddItem( *panel, -1, "item_5" )
-  Button( 40,40, 80,80, "item_5")
-  CloseList( ) ; *panel
-  CloseList( ) ; *root1
-               ; SetState( *panel, 2 )
-  
-  ;\\\
-  OpenList( *root2 )
-  SetText(*root2, "*root2" )
-  ;   ;Define *p3._S_widget = Container( 80,80, 150,150 )
-  ;   Define *p3._S_widget = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-  ;   SetText(*p3, "12" )
-  ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-  ;   
-  ;   Define *p2._S_widget = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-  ;   SetText(Container( 5,5, 70,70 ), "5" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-  ;   CloseList( )
-  ;   Define *c1._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-  ;   CloseList( )
-  ;   
-  ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-  ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-  ;   CloseList( )
-  ;   CloseList( )
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-  ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-  ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-  ;   Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  
-  
-  Button_2 = ComboBox( 20,20, 150,40)
-  For i=1 To 100;0000
-    AddItem(Button_2, i, "text-"+Str(i))
-  Next
-  
-  ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-  Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-  Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-  Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-  Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-  Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-  Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = widget::Splitter(10, 70, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-  SetState(Splitter_5, 50)
-  SetState(Splitter_4, 50)
-  SetState(Splitter_3, 40)
-  SetState(Splitter_1, 50)
-  
-  OpenList( *root3 )
-  *w = Tree( 10,20, 150,200, #__tree_multiselect)
-  For i=1 To 100;0000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  Container( 70,180, 80,80): CloseList( )
-  
-  *w = Tree( 100,30, 100,260-20+300, #__flag_borderless)
-  SetColor( *w, #__color_back, $FF07EAF6 )
-  For i=1 To 10;00000
-    AddItem(*w, i, "text-"+Str(i))
-  Next
-  
-  *w = Tree( 180,40, 100,260-20+300, #__tree_checkboxes )
-  For i=1 To 100;0000
-    If (i & 5)
-      AddItem(*w, i, "text-"+Str(i), -1, 1 )
-    Else
-      AddItem(*w, i, "text-"+Str(i))
+     If widget::Open(0, 430, 10, 410, 210, "", #PB_Canvas_Container)
+;       Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+;       Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+;       Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+;       Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      
+      
+      ; Button_0 = widget::Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      ; Button_1 = widget::Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+      
+      Splitter_0 = widget::Splitter(50, 10, 410, 210, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed );| #__flag_autosize)
+;       Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+;       widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+;       widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+;       Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5)
+;       Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2)
+;       ;Splitter_4 = widget::Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+;       Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical | #__flag_autosize)
+      
+;       widget::SetState(Splitter_1, 20)
+;       ;widget::SetState(Splitter_1, 410-20)
+;       
+      TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     EndIf
-  Next
+    
+    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  EndIf
   
-  Debug "--------  time --------- "+Str(ElapsedMilliseconds( ) - time)
-  
-  
-  ;
-  Define *window._S_widget
-  Define i,y = 5
-  OpenList( *root4 )
-  For i = 1 To 4
-    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-    Container(5, 5, 120+2,85+2)                                                                           ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
-    Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                      ; Gadget(i+10,
-    Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                      ; Gadget(i+20,
-    CloseList( )                                                                                          ; Gadget
-    y + 130
-  Next
-  
-  ; redraw(root())
-  ; 
-  WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8---40-------------------------------f8--+htt-8-0-48v-------------------P-6Pv-----------------------------------------------------------------------------------------------------------------------------------------v---4f-0bf80------------------------------DAg----------3zv48-v-+-----------------------4f+-----v-+-------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---04f-34e-+------------------------------------------------------------------------------------------------------------
 ; EnableXP

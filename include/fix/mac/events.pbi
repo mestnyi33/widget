@@ -457,17 +457,17 @@ DeclareModule events
     ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
   EndMacro
   
-  Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
-    PB(ResizeGadget)(_gadget_,_x_,_y_,_width_,_height_)
-;     
-;     If *setcallback ;And GadgetType(_gadget_) = #PB_GadgetType_Canvas
-;       CompilerIf #PB_Compiler_IsMainFile
-;        ; Debug "resize - " + _gadget_
-;       CompilerEndIf
-;       
-;       CallCFunctionFast(*setcallback, _gadget_, #PB_EventType_Resize)
-;     EndIf
-  EndMacro
+;   Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
+;     PB(ResizeGadget)(_gadget_,_x_,_y_,_width_,_height_)
+; ;     
+; ;     If *setcallback ;And GadgetType(_gadget_) = #PB_GadgetType_Canvas
+; ;       CompilerIf #PB_Compiler_IsMainFile
+; ;        ; Debug "resize - " + _gadget_
+; ;       CompilerEndIf
+; ;       
+; ;       CallCFunctionFast(*setcallback, _gadget_, #PB_EventType_Resize)
+; ;     EndIf
+;   EndMacro
   
   
   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
@@ -783,12 +783,12 @@ Module events
           CallCFunctionFast(*setcallback, EventGadget, EventType)
         EndIf
       CompilerEndIf
-      If EventType = #PB_EventType_MouseEnter
-        ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
-        If Mouse::Window() = WindowID(EventWindow())
-          CallCFunctionFast(*setcallback, EventGadget, EventType)
-        EndIf
-      EndIf
+;       If EventType = #PB_EventType_MouseEnter
+;         ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
+;         If Mouse::Window() = WindowID(EventWindow())
+;           CallCFunctionFast(*setcallback, EventGadget, EventType)
+;         EndIf
+;       EndIf
       If EventType = #PB_EventType_KeyDown Or
          EventType = #PB_EventType_KeyUp Or
          EventType = #PB_EventType_Input
@@ -1544,5 +1544,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --8-------vvi-v40-------------
+; Folding = --8-------4Xx-48+------------
 ; EnableXP

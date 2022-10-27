@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Create desktop for the widgets
   If Open(10)
     *WINDOW = Root()
-    *WINDOW = Container(0,0,0,0,#__flag_autosize) : SetClass(widget(), "root") 
+    *WINDOW = Container(0,0,0,0,#__flag_autosize) ;: SetClass(widget(), "root") 
     
     *WINDOW_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
     *PANEL0 = Button(12,126,56,20,">>(0)") 
