@@ -326,7 +326,7 @@ EndProcedure
         *C\c = Asc( LCase( Chr( *C\c ) ) )
       EndIf
       
-      *C + #__sOC ; SizeOf( CHARACTER )
+      *C + SizeOf( CHARACTER )
     Wend
     
     ProcedureReturn Text
@@ -691,17 +691,19 @@ EndProcedure
     CompilerEndSelect
   EndProcedure
   
-  Procedure SetCursorPosition(StringGadgetID.I, CursorPosition.I)
+  Procedure SetCaretPosition(StringGadgetID.I, CursorPosition.I)
     ; https://www.purebasic.fr/english/viewtopic.php?f=13&t=58868&start=5
     SetActiveGadget(StringGadgetID)
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
         SendMessage_(GadgetID(StringGadgetID), #EM_SETSEL, CursorPosition, CursorPosition)
+        
       CompilerCase #PB_OS_Linux
         CompilerIf Subsystem("gtk3")
           gtk_editable_set_position_(GadgetID(StringGadgetID), CursorPosition)
         CompilerEndIf
+        
       CompilerCase #PB_OS_MacOS
         Protected Range.NSRange
         Protected TextView.I
@@ -873,5 +875,5 @@ CompilerEndIf
 ;   EndIf
 ; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --r-----------
+; Folding = --------------
 ; EnableXP

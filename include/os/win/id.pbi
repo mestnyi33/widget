@@ -3,25 +3,18 @@
   Declare.i Gadget( GadgetID.i )
   Declare.i IsWindowID( handle.i )
   Declare.i GetWindowID( handle.i )
+  Declare.s ClassName( handle.i )
 EndDeclareModule
 
 Module ID
-  ; XIncludeFile "../import.pbi"
-  Import ""
-    PB_Window_GetID(hWnd) 
-  EndImport
-    
   Procedure.s ClassName( handle.i )
-    Protected Result
-    CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
-    
-    If Result
-      ProcedureReturn PeekS( Result, - 1, #PB_UTF8 )
-    EndIf
+    Protected Class$ = Space( 16 )
+    GetClassName_( handle, @Class$, Len( Class$ ) )
+    ProcedureReturn Class$
   EndProcedure
   
   Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-    ProcedureReturn CocoaMessage( 0, handle, "window" )
+    ProcedureReturn GetAncestor_( handle, #GA_ROOT )
   EndProcedure
   
   Procedure.i IsWindowID( handle.i )
@@ -31,11 +24,19 @@ Module ID
   EndProcedure
   
   Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-    ProcedureReturn PB_Window_GetID( WindowID )
+    Protected Window = GetProp_( WindowID, "PB_WindowID" ) - 1
+    If IsWindow( Window ) And WindowID( Window ) = WindowID
+      ProcedureReturn Window
+    EndIf
+    ProcedureReturn - 1
   EndProcedure
   
   Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
-    ProcedureReturn CocoaMessage(0, GadgetID, "tag")
+    Protected gadget = GetProp_( GadgetID, "PB_ID" )
+    If IsGadget( gadget ) And GadgetID( gadget ) = GadgetID
+      ProcedureReturn gadget
+    EndIf
+    ProcedureReturn - 1
   EndProcedure
 EndModule
 

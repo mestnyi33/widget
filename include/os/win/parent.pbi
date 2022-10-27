@@ -1,42 +1,36 @@
-﻿
-;
+﻿XIncludeFile "id.pbi"
+
 DeclareModule Parent
-  Declare GetWindowID( handle.i )
-  Declare GetParentID( handle.i )
-  
-  Declare GetWindow( gadget.i )
-  Declare GetParent( gadget.i )
-  Declare SetParent( gadget.i, ParentID.i, Item.i = #PB_Default )
+  Declare Window( gadget.i )
+  Declare Gadget( gadget.i )
+  Declare Get( handle.i )
+  Declare Set( gadget.i, ParentID.i, Item.i = #PB_Default )
 EndDeclareModule
 
 Module Parent
-  Procedure.s GetClassName( handle.i )
+  Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+    ProcedureReturn GetAncestor_( handle, #GA_ROOT )
+  EndProcedure
+  
+  Procedure.s ClassName( handle.i )
     Protected Class$ = Space( 16 )
     GetClassName_( handle, @Class$, Len( Class$ ) )
     ProcedureReturn Class$
   EndProcedure
   
-  Procedure IDWindow( handle.i ) ; Return the id of the window from the window handle
-    Protected Window = GetProp_( handle, "PB_WindowID" ) - 1
-    If IsWindow( Window ) And WindowID( Window ) = handle
-      ProcedureReturn Window
+  Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget handle
+    If IsGadget( gadget )
+      ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget ) ) )
     EndIf
-    ProcedureReturn - 1
   EndProcedure
   
-  Procedure IDgadget( handle.i )  ; Return the id of the gadget from the gadget handle
-    Protected gadget = GetProp_( handle, "PB_ID" )
-    If IsGadget( gadget ) And GadgetID( gadget ) = handle
-      ProcedureReturn gadget
+  Procedure Gadget( gadget.i ) ; Return the handle of the parent gadget from the gadget handle
+    If IsGadget( gadget )
+      ProcedureReturn IDgadget( Get( GadgetID( gadget ) ) )
     EndIf
-    ProcedureReturn - 1
   EndProcedure
   
-  Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-    ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-  EndProcedure
-  
-  Procedure GetParentID( handle.i ) ; Return the handle of the parent from the handle ; Debug GetWindow_( ParentID, #GW_OWNER )
+  Procedure Get( handle.i ) ; Return the handle of the parent from the handle ; Debug GetWindow_( ParentID, #GW_OWNER )
     While handle
       handle = GetParent_( handle )
       
@@ -48,21 +42,9 @@ Module Parent
     Wend
   EndProcedure
   
-  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget handle
+  Procedure Set( gadget.i, ParentID.i, Item.i = #PB_Default ) ; Set a new parent for the gadget ; SetWindowLongPtr_( gadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
     If IsGadget( gadget )
-      ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget ) ) )
-    EndIf
-  EndProcedure
-  
-  Procedure GetParent( gadget.i ) ; Return the handle of the parent gadget from the gadget handle
-   If IsGadget( gadget )
-     ProcedureReturn IDgadget( GetParentID( GadgetID( gadget ) ) )
-   EndIf
- EndProcedure
-  
-  Procedure SetParent( gadget.i, ParentID.i, Item.i = #PB_Default ) ; Set a new parent for the gadget ; SetWindowLongPtr_( gadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
-    If IsGadget( gadget )
-      Select GetClassName( ParentID )
+      Select ClassName( ParentID )
         Case "PureScrollArea"  
           ParentID = FindWindowEx_( ParentID, 0, 0, 0 ) ; get child
         Case "SysTabControl32" 
@@ -87,10 +69,40 @@ Module Parent
   EndProcedure
 EndModule
 
-
+;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Parent
+  
+  Procedure GadgetIDType(  GadgetID )
+    If GadgetID
+      CompilerSelect #PB_Compiler_OS 
+        CompilerCase #PB_OS_Windows
+          Protected Class$ = Space(  16 )
+          GetClassName_(  GadgetID, @Class$, Len(  Class$ ) )
+          
+          Select Class$
+            Case "PureContainer":  ProcedureReturn #PB_GadgetType_Container
+            Case "PureScrollArea":  ProcedureReturn #PB_GadgetType_ScrollArea
+            Case "SysTabControl32":  ProcedureReturn #PB_GadgetType_Panel
+          EndSelect 
+          
+        CompilerCase #PB_OS_Linux
+          Protected *notebook.GtkNotebook = GadgetID
+          If *notebook\children
+            If *notebook\first_tab = *notebook\children
+              ProcedureReturn #PB_GadgetType_Panel
+            ElseIf *notebook\packed_flags
+              ProcedureReturn - 1
+            Else
+              ProcedureReturn #PB_GadgetType_ScrollArea
+            EndIf
+          Else
+            ProcedureReturn #PB_GadgetType_Container
+          EndIf
+      CompilerEndSelect
+    EndIf
+  EndProcedure 
   
   Enumeration 21
     #CANVAS
@@ -108,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define ParentID
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
-  OpenWindow( 10, 0, 0, 425, 350, "demo set gadget new parent", Flags )
+  OpenWindow( 10, 0, 0, 425, 350, "demo set gadget new Parent", Flags )
   
   ButtonGadget( 6, 30,90,160,25,"Button >>( Window )" )
   
@@ -135,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
-  OpenWindow( 20, WindowX( 10 )-210, WindowY( 10 ), 240, 350, "old parent", Flags, WindowID( 10 ) )
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_ScreenCentered 
+  OpenWindow( 20, 0, 0, 240, 350, "old Parent", Flags, WindowID( 10 ) )
   
   ButtonGadget( #CHILD,30,10,160,70,"Buttongadget" ) 
   ButtonGadget( #RETURN, 30,90,160,25,"Button <<( Return )" ) 
@@ -179,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddGadgetItem( #COMBO, -1, "Shortcutgadget" )  
   AddGadgetItem( #COMBO, -1, "Canvasgadget" )    
   
-  SetGadgetState( #COMBO, #PB_GadgetType_Button ): PostEvent( #PB_Event_Gadget, #CHILD, #COMBO, #PB_EventType_Change )
+  SetGadgetState( #COMBO, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, #COMBO, #PB_EventType_Change )
   
   ButtonGadget( #DESKTOP, 30,150,160,20,"Button >>( Desktop )" ) 
   CompilerIf #PB_Compiler_Version > 546
@@ -188,6 +200,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList( )
   CompilerEndIf
   
+  
+  ResizeWindow( 20, WindowX( 20 )-WindowWidth( 20 ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+  ResizeWindow( 10, WindowX( 10 )+WindowWidth( 20 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   ;
   HideWindow( 10,0 )
   HideWindow( 20,0 )
@@ -199,20 +214,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Select EventType( )
         Case #PB_EventType_LeftClick, #PB_EventType_Change
           Select EventGadget( )
-            Case  #DESKTOP:  SetParent( #CHILD, 0 )
-            Case  6:  SetParent( #CHILD, WindowID( 10 ) )
-            Case 60, #PANEL0:  SetParent( #CHILD, GadgetID( #PANEL ), 0 )
-            Case 61, #PANEL1:  SetParent( #CHILD, GadgetID( #PANEL ), 1 )
-            Case 62, #PANEL2:  SetParent( #CHILD, GadgetID( #PANEL ), 2 )
-            Case  7:  SetParent( #CHILD, GadgetID( #CONTAINER ) )
-            Case  8:  SetParent( #CHILD, GadgetID( #SCROLLAREA ) )
-            Case 11:  SetParent( #CHILD, GadgetID( #CANVAS ) )
-            Case  #RETURN:  SetParent( #CHILD, WindowID( 20 ) )
+            Case  #DESKTOP:  Parent::Set( #CHILD, 0 )
+            Case  6:  Parent::Set( #CHILD, WindowID( 10 ) )
+            Case 60, #PANEL0:  Parent::Set( #CHILD, GadgetID( #PANEL ), 0 )
+            Case 61, #PANEL1:  Parent::Set( #CHILD, GadgetID( #PANEL ), 1 )
+            Case 62, #PANEL2:  Parent::Set( #CHILD, GadgetID( #PANEL ), 2 )
+            Case  7:  Parent::Set( #CHILD, GadgetID( #CONTAINER ) )
+            Case  8:  Parent::Set( #CHILD, GadgetID( #SCROLLAREA ) )
+            Case 11:  Parent::Set( #CHILD, GadgetID( #CANVAS ) )
+            Case  #RETURN:  Parent::Set( #CHILD, WindowID( 20 ) )
               
             Case #COMBO
               Select EventType( )
                 Case #PB_EventType_Change
-                  Define ParentID = GetParentID( GadgetID( #CHILD ) )
+                  Define ParentID = Parent::Get( GadgetID( #CHILD ) )
                   
                   Select GetGadgetState( #COMBO )
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
@@ -265,18 +280,20 @@ CompilerIf #PB_Compiler_IsMainFile
                   CompilerEndIf
                   
                   ResizeGadget( #CHILD,30,10,150,70 )
-                  SetParent( #CHILD, ParentID ) 
+                  Parent::Set( #CHILD, ParentID ) 
                   
               EndSelect
           EndSelect
           
-          If ( EventGadget( ) <> #CHILD )
-            Define Parent = GetParent( #CHILD )
-            
-            If IsGadget( Parent )
-              Debug "parent - gadget ( " + Parent + " )"
-            Else
-              Debug "parent - window ( " + GetWindow( #CHILD ) + " )"
+          If EventType( ) = #PB_EventType_LeftClick
+            If ( EventGadget( ) <> #CHILD )
+              Define Parent = Parent::Gadget( #CHILD )
+              
+              If IsGadget( Parent )
+                Debug "Parent - gadget ( " + Parent + " )"
+              Else
+                Debug "Parent - window ( " + Parent::Window( #CHILD ) + " )"
+              EndIf
             EndIf
           EndIf
       EndSelect
@@ -284,8 +301,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 14
-; FirstLine = 6
-; Folding = -v-0--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ------
 ; EnableXP

@@ -1,176 +1,19 @@
-﻿DeclareModule constants
-  Enumeration #PB_EventType_FirstCustomValue
-    #PB_EventType_Drop
-    #PB_EventType_CursorChange
-    #PB_EventType_MouseWheelX
-    #PB_EventType_MouseWheelY
-  EndEnumeration
-EndDeclareModule
-Module constants
-EndModule
+﻿CompilerIf #PB_Compiler_IsMainFile
+  DeclareModule constants
+    Enumeration #PB_EventType_FirstCustomValue
+      #PB_EventType_Drop
+      #PB_EventType_CursorChange
+      #PB_EventType_MouseWheelX
+      #PB_EventType_MouseWheelY
+    EndEnumeration
+  EndDeclareModule
+  Module constants
+  EndModule
+CompilerEndIf
 
-DeclareModule ID
-  Declare.i Window(WindowID.i)
-  Declare.i Gadget(GadgetID.i)
-  Declare.i IsWindowID(WindowID.i)
-  Declare.i GetWindowID(GadgetID.i)
-  Declare.s ClassName(handle.i)
-  Macro GetWindow(Gadget)
-    ID::Window(ID::GetWindowID(GadgetID(Gadget)))
-    ;PB_Window_GetID(CocoaMessage(0, GadgetID(Gadget), "window"))
-  EndMacro
-EndDeclareModule
-Module ID
-  ;   XIncludeFile "../import.pbi"
-  Import ""
-    PB_Window_GetID(hWnd) 
-  EndImport
-  
-  Procedure.s ClassName(handle.i)
-    Protected Result 
-    CocoaMessage(@Result, CocoaMessage(0, handle, "className"), "UTF8String")
-    If Result
-      ProcedureReturn PeekS(Result, - 1, #PB_UTF8)
-    EndIf
-  EndProcedure
-  
-  Procedure.i GetWindowID(GadgetID.i) ; Return the handle of the parent window from the GadgetID
-    ProcedureReturn CocoaMessage(0, GadgetID, "window")
-  EndProcedure
-  
-  Procedure.i IsWindowID(WindowID.i)
-    ProcedureReturn Bool(ClassName(WindowID) = "PBWindow")
-  EndProcedure
-  
-  Procedure.i Window(WindowID.i) ; Return the id of the window from the window handle
-    ProcedureReturn PB_Window_GetID(WindowID)
-  EndProcedure
-  
-  Procedure.i Gadget(GadgetID.i)  ; Return the id of the Gadget from the Gadget handle
-    If GadgetID
-      ProcedureReturn CocoaMessage(0, GadgetID, "tag")
-    Else
-      ProcedureReturn - 1
-    EndIf
-  EndProcedure
-EndModule
-
-DeclareModule Mouse
-  Declare.i Window()
-  Declare.i Gadget(WindowID)
-EndDeclareModule
-Module Mouse
-  ;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
-  ;     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
-  ;   EndMacro
-  
-  ;   Procedure CocoaNSApp()
-  ;     ProcedureReturn CocoaMessage(0, 0, "NSApplication sharedApplication")
-  ;   EndProcedure
-  ;   
-  ;   Procedure CocoaWindowNumber(CocoaNSWindow)
-  ;     ProcedureReturn CocoaMessage(0, CocoaNSWindow, "windowNumber")
-  ;   EndProcedure
-  ;   
-  ;   Procedure CocoaNSWindow(CocoaNSApp, CocoaWindowNumber)
-  ;     ProcedureReturn CocoaMessage(0, CocoaNSApp, "windowWithWindowNumber:", CocoaWindowNumber)
-  ;   EndProcedure
-  ;   
-  Procedure Window()
-    Protected.i NSApp, WindowID, WindowNumber, Point.CGPoint
-    NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
-    
-    ; get-WindowNumber
-    CocoaMessage(@Point, 0, "NSEvent mouseLocation")
-    WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
-    
-    ; get-NS-WindowID
-    WindowID = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
-    
-    ProcedureReturn WindowID
-  EndProcedure
-  
-  Procedure Gadget(WindowID)
-    Protected.i handle, superview, ContentView, Point.CGPoint
-    
-    If  WindowID 
-      ContentView = CocoaMessage(0,  WindowID , "contentView")
-      CocoaMessage(@Point,  WindowID , "mouseLocationOutsideOfEventStream")
-      
-      ;       ;func isMousePoint(_ point: NSPoint, in rect: NSRect) -> Bool
-      ;       Debug GetCocoa(ContentView, "isMousePoint", Point) 
-      
-      ; func hitTest(_ point: NSPoint) -> NSView? ; Point.NSPoint
-      handle = CocoaMessage(0, ContentView, "hitTest:@", @Point) ; hitTest(_:) 
-                                                                 ;handle = GetCocoa(ContentView, "hitTest", Point) 
-      
-      If handle
-        Select ID::ClassName(handle)
-          Case "NSStepper" 
-            handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
-            handle = CocoaMessage(0, handle, "subviews")
-            handle = CocoaMessage(0, handle, "objectAtIndex:", 0)
-            
-          Case "NSTableHeaderView" 
-            handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
-            
-          Case "NSScroller"                                 ;
-                                                            ; PBScrollView
-            handle = CocoaMessage(0, handle, "superview")   ; NSScrollView
-                                                            ;
-            Select ID::ClassName(handle) 
-              Case "WebDynamicScrollBarsView"
-                handle = CocoaMessage(0, handle, "superview") ; WebFrameView
-                handle = CocoaMessage(0, handle, "superview") ; PB_WebView
-                
-              Case "PBTreeScrollView"
-                handle = CocoaMessage(0, handle, "documentView")
-                
-              Case "NSScrollView"
-                superview = CocoaMessage(0, handle, "superview")
-                If ID::ClassName(superview) = "PBScintillaView"
-                  handle = superview ; PBScintillaView
-                Else
-                  handle = CocoaMessage(0, handle, "documentView")
-                EndIf
-                
-            EndSelect
-            
-          Case "_NSRulerContentView", "SCIContentView" 
-            handle = CocoaMessage(0, handle, "superview") ; NSClipView
-            handle = CocoaMessage(0, handle, "superview") ; NSScrollView
-            handle = CocoaMessage(0, handle, "superview") ; PBScintillaView
-            
-          Case "NSView" 
-            handle = CocoaMessage(0, handle, "superview") ; PB_NSBox
-            
-          Case "NSTextField", "NSButton"
-            handle = CocoaMessage(0, handle, "superview") ; PB_DateView
-            
-          Case "WebHTMLView" 
-            handle = CocoaMessage(0, handle, "superview") ; WebClipView
-            handle = CocoaMessage(0, handle, "superview") ; WebDynamicScrollBarsView
-            handle = CocoaMessage(0, handle, "superview") ; WebFrameView
-            handle = CocoaMessage(0, handle, "superview") ; PB_WebView
-            
-          Case "PB_NSFlippedView"                           ;
-                                                            ; container
-            handle = CocoaMessage(0, handle, "superview")   ; NSClipView
-                                                            ; scrollarea
-            If ID::ClassName(handle) = "NSClipView"         ;
-              handle = CocoaMessage(0, handle, "superview") ; PBScrollView
-            EndIf
-            ;           Default
-            ;             Debug "-"  
-            ;             Debug  Get::ClassName(handle) ; PB_NSTextField
-            ;             Debug "-"
-        EndSelect
-      EndIf
-    EndIf
-    
-    ProcedureReturn handle
-  EndProcedure
-EndModule
+XIncludeFile "id.pbi"
+XIncludeFile "mouse.pbi"
+XIncludeFile "parent.pbi"
 
 DeclareModule Cursor
   Enumeration 
@@ -202,16 +45,13 @@ DeclareModule Cursor
   Structure _s_cursor
     icursor.a
     *hcursor
-    *window
-    *Gadget
-    change.b
+    *windowID
   EndStructure
   
   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
   Declare   Free(hCursor.i)
   Declare   Hide(state.b)
   Declare   Get()
-  Declare   Update()
   Declare   Change(Gadget.i, state.b )
   Declare   Set(Gadget.i, cursor.i)
 EndDeclareModule
@@ -263,41 +103,6 @@ Module Cursor
     ProcedureReturn CocoaMessage(0, 0, "NSCursor currentCursor")
   EndProcedure
   
-  Procedure   Get()
-    Protected result.i, currentSystemCursor
-    
-    ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
-    
-    If CGCursorIsVisible() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
-      Select CocoaMessage(0, 0, "NSCursor currentCursor")
-        Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Default
-        Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #PB_Cursor_IBeam
-          ; Case CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor") : result = #PB_Cursor_VIBeam
-          
-        Case CocoaMessage(0, 0, "NSCursor dragCopyCursor") : result = #PB_Cursor_Drop
-        Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #PB_Cursor_Drag
-        Case CocoaMessage(0, 0, "NSCursor disappearingItemCursor") : result = #PB_Cursor_Denied
-          
-        Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #PB_Cursor_Cross
-        Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #PB_Cursor_Hand
-        Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #PB_Cursor_Grab
-        Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #PB_Cursor_Grabbing
-          
-        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #PB_Cursor_Up
-        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #PB_Cursor_Down
-        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #PB_Cursor_UpDown
-          
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #PB_Cursor_Left
-        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #PB_Cursor_Right
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
-      EndSelect 
-    Else
-      result = #PB_Cursor_Invisible
-    EndIf
-    
-    ProcedureReturn result
-  EndProcedure
-  
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
     Protected *ic, Hotspot.NSPoint
     
@@ -311,34 +116,6 @@ Module Cursor
     ProcedureReturn *ic
   EndProcedure
   
-  Procedure Update()
-    CompilerIf #PB_Compiler_IsMainFile
-      Debug "updateCursor"
-    CompilerEndIf
-    
-    If IsGadget(EventGadget())
-      *cursor.cursor::_s_cursor = objc_getAssociatedObject_(GadgetID(EventGadget()), "__cursor") ; GetGadgetData(EventGadget())
-      If *cursor And
-         *cursor\hcursor 
-        If *cursor\change 
-          CompilerIf #PB_Compiler_IsMainFile
-            Debug "u+"
-          CompilerEndIf
-          CocoaMessage(0, WindowID(EventWindow()), "disableCursorRects")
-          CocoaMessage(0, *cursor\hcursor, "set") 
-        Else
-          CompilerIf #PB_Compiler_IsMainFile
-            Debug "u-"
-          CompilerEndIf
-          CocoaMessage(0, WindowID(EventWindow()), "enableCursorRects")
-          CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
-        EndIf
-      EndIf
-    EndIf
-    
-    UnbindEvent(#PB_Event_FirstCustomValue, @Update(), EventWindow(), EventGadget())
-  EndProcedure
-  
   Procedure Change( Gadget.i, state.b )
     CompilerIf #PB_Compiler_IsMainFile
       Debug "changeCursor"
@@ -349,14 +126,14 @@ Module Cursor
        *cursor\hcursor  
       
       ; reset
-      If state = 0 And *cursor\change = 1 : *cursor\change = 0
-        CocoaMessage(0, WindowID(*cursor\window), "enableCursorRects")
+      If state = 0 
+        CocoaMessage(0, *cursor\windowID, "enableCursorRects")
         CocoaMessage(0, CocoaMessage(0, 0, "NSCursor arrowCursor"), "set") 
       EndIf
       
       ; set
-      If state = 1 And *cursor\change = 0 : *cursor\change = 1
-        CocoaMessage(0, WindowID(*cursor\window), "disableCursorRects")
+      If state = 1 
+        CocoaMessage(0, *cursor\windowID, "disableCursorRects")
         CocoaMessage(0, *cursor\hcursor, "set") 
       EndIf
     EndIf
@@ -364,22 +141,18 @@ Module Cursor
   EndProcedure
   
   Procedure Set(Gadget.i, cursor.i)
-    Protected WindowID, *cursor._s_cursor
-    
     If Gadget >= 0
+      Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
       CompilerIf #PB_Compiler_IsMainFile
         Debug "setCursor"
       CompilerEndIf
       
-      windowID = ID::GetWindowID(GadgetID)
-      
       *cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
       
       If Not *cursor
         *cursor = AllocateStructure(_s_cursor)
-        *cursor\gadget = Gadget
-        *cursor\window = ID::Window(windowID)
+        *cursor\windowID = ID::GetWindowID(GadgetID)
         objc_setAssociatedObject_(GadgetID, "__cursor", *cursor, 0) 
       EndIf
       
@@ -437,14 +210,46 @@ Module Cursor
         EndIf
       EndIf
       
-      If *cursor\hcursor And GadgetID = mouse::Gadget(WindowID)
-        *cursor\change = 1
+      If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
         Change( Gadget, 1 )
         ProcedureReturn #True
       EndIf
     EndIf
-    ; CocoaMessage(0, CocoaMessage(0, GadgetID(Gadget), "window"), "discardCursorRects") 
-    ; CocoaMessage(0, CocoaMessage(0, GadgetID(Gadget), "window"), "resetCursorRects") ; for the actived-window Gadget
+  EndProcedure
+  
+  Procedure   Get()
+    Protected result.i, currentSystemCursor
+    
+    ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
+    
+    If CGCursorIsVisible() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
+      Select CocoaMessage(0, 0, "NSCursor currentCursor")
+        Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Default
+        Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #PB_Cursor_IBeam
+          ; Case CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor") : result = #PB_Cursor_VIBeam
+          
+        Case CocoaMessage(0, 0, "NSCursor dragCopyCursor") : result = #PB_Cursor_Drop
+        Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #PB_Cursor_Drag
+        Case CocoaMessage(0, 0, "NSCursor disappearingItemCursor") : result = #PB_Cursor_Denied
+          
+        Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #PB_Cursor_Cross
+        Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #PB_Cursor_Hand
+        Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #PB_Cursor_Grab
+        Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #PB_Cursor_Grabbing
+          
+        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #PB_Cursor_Up
+        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #PB_Cursor_Down
+        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #PB_Cursor_UpDown
+          
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #PB_Cursor_Left
+        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #PB_Cursor_Right
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
+      EndSelect 
+    Else
+      result = #PB_Cursor_Invisible
+    EndIf
+    
+    ProcedureReturn result
   EndProcedure
   
   ;       DataSection
@@ -464,7 +269,7 @@ Module Cursor
   ;       EndDataSection
 EndModule   
 
-
+;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
   UseModule constants
   ;UseModule events
@@ -1226,5 +1031,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---v----v------------
+; Folding = 4---------------
 ; EnableXP

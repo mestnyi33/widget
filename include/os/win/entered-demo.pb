@@ -72,137 +72,137 @@ EndProcedure
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
   
   DeclareModule ID
-  Declare.i Window( WindowID.i )
-  Declare.i Gadget( GadgetID.i )
-  Declare.i IsWindowID( handle.i )
-  Declare.i GetWindowID( handle.i )
-EndDeclareModule
-Module ID
-  Procedure.s ClassName( handle.i )
-    Protected Class$ = Space( 16 )
-    GetClassName_( handle, @Class$, Len( Class$ ) )
-    ProcedureReturn Class$
-  EndProcedure
-  
-  Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-    ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-  EndProcedure
-  
-  Procedure.i IsWindowID( handle.i )
-    If ClassName( handle ) = "PBWindow"
-      ProcedureReturn 1
-    EndIf
-  EndProcedure
-  
-  Procedure.i Window( handle.i ) ; Return the id of the window from the window handle
-    Protected Window = GetProp_( handle, "PB_WindowID" ) - 1
-    If IsWindow( Window ) And WindowID( Window ) = handle
-      ProcedureReturn Window
-    EndIf
-    ProcedureReturn - 1
-  EndProcedure
-  
-  Procedure.i Gadget( handle.i )  ; Return the id of the gadget from the gadget handle
-    Protected gadget = GetProp_( handle, "PB_ID" )
-  If IsGadget( gadget ) And GadgetID( gadget ) = handle
-    ProcedureReturn gadget
-  EndIf
-  ProcedureReturn - 1
-EndProcedure
-EndModule
-DeclareModule Mouse
-  Declare.i Window( )
-  Declare.i Gadget( WindowID )
-EndDeclareModule
-Module Mouse
-  Procedure Window( )
-    Protected Cursorpos.q, handle
-  GetCursorPos_( @Cursorpos )
-  handle = WindowFromPoint_( Cursorpos )
-  ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-EndProcedure
-  
-  Procedure Gadget( WindowID )
-    Protected Cursorpos.q, handle, GadgetID
-  GetCursorPos_( @Cursorpos )
-  
-  If WindowID
-    GadgetID = WindowFromPoint_( Cursorpos )
+    Declare.i Window( WindowID.i )
+    Declare.i Gadget( GadgetID.i )
+    Declare.i IsWindowID( handle.i )
+    Declare.i GetWindowID( handle.i )
+  EndDeclareModule
+  Module ID
+    Procedure.s ClassName( handle.i )
+      Protected Class$ = Space( 16 )
+      GetClassName_( handle, @Class$, Len( Class$ ) )
+      ProcedureReturn Class$
+    EndProcedure
     
-    If IsGadget( ID::Gadget( GadgetID ) )
-      handle = GadgetID
-    Else
-      ScreenToClient_( WindowID, @Cursorpos ) 
-      handle = ChildWindowFromPoint_( WindowID, Cursorpos )
-      
-      ; spin-buttons
-      If handle = GadgetID 
-        If handle = WindowID
-          ; in the window
-          ProcedureReturn 0
-        Else
-          handle = GetWindow_( GadgetID, #GW_HWNDPREV )
-        EndIf
-      Else
-        ; MDIGadget childrens
-        ;           If IsWindow( IDWindow( GadgetID ) )
-        ;             If handle = WindowID
-        ;               ; in the window
-        ;               ProcedureReturn 0
-        ;             Else
-        ;               ;;handle = GetParent_( handle )
-        ;             EndIf
-        ;           EndIf
+    Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+      ProcedureReturn GetAncestor_( handle, #GA_ROOT )
+    EndProcedure
+    
+    Procedure.i IsWindowID( handle.i )
+      If ClassName( handle ) = "PBWindow"
+        ProcedureReturn 1
       EndIf
-    EndIf
+    EndProcedure
     
-    ProcedureReturn handle
-  Else
-    ProcedureReturn 0
-  EndIf
-EndProcedure
-EndModule
-
-Global OldProc
-Declare Proc(hWnd, uMsg, wParam, lParam)
-
-Procedure Proc(hWnd, uMsg, wParam, lParam)
-  Protected gadget
-  Protected result = 0
-  
-  Select uMsg
-    Case #WM_MOUSEMOVE
+    Procedure.i Window( handle.i ) ; Return the id of the window from the window handle
+      Protected Window = GetProp_( handle, "PB_WindowID" ) - 1
+      If IsWindow( Window ) And WindowID( Window ) = handle
+        ProcedureReturn Window
+      EndIf
+      ProcedureReturn - 1
+    EndProcedure
+    
+    Procedure.i Gadget( handle.i )  ; Return the id of the gadget from the gadget handle
+      Protected gadget = GetProp_( handle, "PB_ID" )
+      If IsGadget( gadget ) And GadgetID( gadget ) = handle
+        ProcedureReturn gadget
+      EndIf
+      ProcedureReturn - 1
+    EndProcedure
+  EndModule
+  DeclareModule Mouse
+    Declare.i Window( )
+    Declare.i Gadget( WindowID )
+  EndDeclareModule
+  Module Mouse
+    Procedure Window( )
+      Protected Cursorpos.q, handle
+      GetCursorPos_( @Cursorpos )
+      handle = WindowFromPoint_( Cursorpos )
+      ProcedureReturn GetAncestor_( handle, #GA_ROOT )
+    EndProcedure
+    
+    Procedure Gadget( WindowID )
+      Protected Cursorpos.q, handle, GadgetID
+      GetCursorPos_( @Cursorpos )
       
-;       gadget = mouse::gadget(hWnd)
-;        Debug gadget
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-     
-    Case #WM_SETCURSOR
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-     ;result = 0
-   Default
-      result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-  EndSelect
+      If WindowID
+        GadgetID = WindowFromPoint_( Cursorpos )
+        
+        If IsGadget( ID::Gadget( GadgetID ) )
+          handle = GadgetID
+        Else
+          ScreenToClient_( WindowID, @Cursorpos ) 
+          handle = ChildWindowFromPoint_( WindowID, Cursorpos )
+          
+          ; spin-buttons
+          If handle = GadgetID 
+            If handle = WindowID
+              ; in the window
+              ProcedureReturn 0
+            Else
+              handle = GetWindow_( GadgetID, #GW_HWNDPREV )
+            EndIf
+          Else
+            ; MDIGadget childrens
+            ;           If IsWindow( IDWindow( GadgetID ) )
+            ;             If handle = WindowID
+            ;               ; in the window
+            ;               ProcedureReturn 0
+            ;             Else
+            ;               ;;handle = GetParent_( handle )
+            ;             EndIf
+            ;           EndIf
+          EndIf
+        EndIf
+        
+        ProcedureReturn handle
+      Else
+        ProcedureReturn 0
+      EndIf
+    EndProcedure
+  EndModule
   
-  ProcedureReturn result
-EndProcedure
-
-;-
+  Global OldProc
+  Declare Proc(hWnd, uMsg, wParam, lParam)
+  
+  Procedure Proc(hWnd, uMsg, wParam, lParam)
+    Protected gadget
+    Protected result = 0
+    
+    Select uMsg
+      Case #WM_MOUSEMOVE
+        
+        ;       gadget = mouse::gadget(hWnd)
+        ;        Debug gadget
+        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
+        
+      Case #WM_SETCURSOR
+        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
+        ;result = 0
+      Default
+        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
+    EndSelect
+    
+    ProcedureReturn result
+  EndProcedure
+  
+  ;-
   ; Для виндовс чтобы приклепить гаджеты на место
   ; надо вызывать процедуру в конце создания всех гаджетов
   ; 
   
-Procedure GadgetsClipCallBack( GadgetID, lParam )
+  Procedure GadgetsClipCallBack( GadgetID, lParam )
     ; https://www.purebasic.fr/english/viewtopic.php?t=64799
     ; https://www.purebasic.fr/english/viewtopic.php?f=5&t=63915#p475798
     ; https://www.purebasic.fr/english/viewtopic.php?t=63915&start=15
     If GadgetID
       Protected Gadget = ID::Gadget(GadgetID)
       
-        If IsGadget(Gadget)
-         ; OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
-        EndIf
-        
+      If IsGadget(Gadget)
+        ; OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
+      EndIf
+      
       ;       If IsGadget( Gadget ) And GadgetID = GadgetID( Gadget )
       ;         Debug "Gadget "+ Gadget +"  -  "+ GadgetID
       ;       Else
@@ -236,7 +236,7 @@ Procedure GadgetsClipCallBack( GadgetID, lParam )
         EndIf
         
         SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-       EndIf
+      EndIf
       
     EndIf
     
@@ -350,7 +350,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Define eventID, windowID, gadgetID
     
- 
+    
     Repeat
       eventID = WaitWindowEvent()
       windowID = GetUMWindow( )
@@ -373,8 +373,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 193
-; FirstLine = 160
-; Folding = -0-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = K+-------
 ; EnableXP

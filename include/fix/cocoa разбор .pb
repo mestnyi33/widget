@@ -1,4 +1,24 @@
-﻿
+﻿Macro GetCocoa( objectCocoa, funcCocoa, paramCocoa )
+    CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
+  EndMacro
+  ;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)
+  ;     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
+  ;   EndMacro
+  
+  ;   Procedure CocoaNSApp()
+  ;     ProcedureReturn CocoaMessage(0, 0, "NSApplication sharedApplication")
+  ;   EndProcedure
+  ;   
+  ;   Procedure CocoaWindowNumber(CocoaNSWindow)
+  ;     ProcedureReturn CocoaMessage(0, CocoaNSWindow, "windowNumber")
+  ;   EndProcedure
+  ;   
+  ;   Procedure CocoaNSWindow(CocoaNSApp, CocoaWindowNumber)
+  ;     ProcedureReturn CocoaMessage(0, CocoaNSApp, "windowWithWindowNumber:", CocoaWindowNumber)
+  ;   EndProcedure
+  ;   
+  
+  
 ;@MainActor class NSResponder : NSObject
 ;class NSApplication : NSResponder
 ;class NSWindow : NSResponder
@@ -53,4 +73,5 @@
 
 ;@property(class, readonly, strong) __kindof NSApplication *sharedApplication;    Application = CocoaMessage(0, 0, "NSApplication sharedApplication")
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = -
 ; EnableXP

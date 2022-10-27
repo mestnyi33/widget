@@ -30,8 +30,6 @@ CompilerIf Not Defined( fix, #PB_Module )
   XIncludeFile "include/fix.pbi"
 CompilerEndIf
 
-  XIncludeFile "include/os/mac/parent.pbi"
-
 CompilerIf Not Defined( Widget, #PB_Module )
   ;-  >>>
   DeclareModule Widget
@@ -316,10 +314,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Bool( _this_\_root( ) And _this_ = _this_\_root( )\canvas\container )
     EndMacro
     
-    Macro bar_first_gadget_( _this_ ): _this_\gadget[#__split_1]: EndMacro
-    Macro bar_second_gadget_( _this_ ): _this_\gadget[#__split_2]: EndMacro
-    Macro bar_is_first_gadget_( _this_ ): _this_\index[#__split_1]: EndMacro
-    Macro bar_is_second_gadget_( _this_ ): _this_\index[#__split_2]: EndMacro
+    Macro splitter_gadget_1( ): gadget[#__split_1]: EndMacro
+    Macro splitter_gadget_2( ): gadget[#__split_2]: EndMacro
+    Macro splitter_is_gadget_1( ): index[#__split_1]: EndMacro
+    Macro splitter_is_gadget_2( ): index[#__split_2]: EndMacro
     
     Macro is_scrollbars_( _this_ ) 
       Bool( _this_\_parent( ) And _this_\_parent( )\scroll And ( _this_\_parent( )\scroll\v = _this_ Or _this_\_parent( )\scroll\h = _this_ )) 
@@ -4045,11 +4043,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; for the splitter childrens
         If *parent\type = #__type_Splitter
-          If bar_first_gadget_( *parent ) = *this
+          If *parent\splitter_gadget_1( ) = *this
             _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
             _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
           EndIf
-          If bar_second_gadget_( *parent ) = *this
+          If *parent\splitter_gadget_2( ) = *this
             _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
             _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
           EndIf
@@ -6613,7 +6611,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\x        = *this\x[#__c_frame]
             *BB2\x        = *this\x[#__c_frame]
             
-;             If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And bar_is_first_gadget_( *this ) And Not *this\_parent( ) )
+;             If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And *this\splitter_is_gadget_1( ) And Not *this\_parent( ) )
               *BB1\y      = *this\y[#__c_frame] 
               *BB2\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *this\y[#__c_frame] 
 ;             Else
@@ -6653,31 +6651,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; Splitter first-child auto resize       
-          If bar_is_first_gadget_( *this )
+          If *this\splitter_is_gadget_1( )
 ;             If *this\_root( )\canvas\container
-              PB(ResizeGadget)( bar_first_gadget_( *this ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+              PB(ResizeGadget)( *this\splitter_gadget_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
 ;             Else
-;               PB(ResizeGadget)( bar_first_gadget_( *this ),
+;               PB(ResizeGadget)( *this\splitter_gadget_1( ),
 ;                                 *BB1\x + GadgetX( *this\_root( )\canvas\gadget ), 
 ;                                 *BB1\y + GadgetY( *this\_root( )\canvas\gadget ),
 ;                                 *BB1\width, *BB1\height )
 ;             EndIf
               
           Else
-            If bar_first_gadget_( *this )
-              If bar_first_gadget_( *this )\x <> *BB1\x Or
-                 bar_first_gadget_( *this )\y <> *BB1\y Or
-                 bar_first_gadget_( *this )\width <> *BB1\width Or
-                 bar_first_gadget_( *this )\height <> *BB1\height
-                ; Debug "splitter_1_resize " + bar_first_gadget_( *this )
+            If *this\splitter_gadget_1( )
+              If *this\splitter_gadget_1( )\x <> *BB1\x Or
+                 *this\splitter_gadget_1( )\y <> *BB1\y Or
+                 *this\splitter_gadget_1( )\width <> *BB1\width Or
+                 *this\splitter_gadget_1( )\height <> *BB1\height
+                ; Debug "splitter_1_resize " + *this\splitter_gadget_1( )
                 
-                If bar_first_gadget_( *this )\type = #__type_window
-                  Resize( bar_first_gadget_( *this ),
+                If *this\splitter_gadget_1( )\type = #__type_window
+                  Resize( *this\splitter_gadget_1( ),
                           *BB1\x - *this\x[#__c_frame],
                           *BB1\y - *this\y[#__c_frame], 
                           *BB1\width - #__window_frame_size*2, *BB1\height - #__window_frame_size*2 - #__window_caption_height)
                 Else
-                  Resize( bar_first_gadget_( *this ),
+                  Resize( *this\splitter_gadget_1( ),
                           *BB1\x - *this\x[#__c_frame],
                           *BB1\y - *this\y[#__c_frame], 
                           *BB1\width, *BB1\height )
@@ -6688,31 +6686,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; Splitter second-child auto resize       
-          If bar_is_second_gadget_( *this )
+          If *this\splitter_is_gadget_2( )
 ;             If *this\_root( )\canvas\container 
-              PB(ResizeGadget)( bar_second_gadget_( *this ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+              PB(ResizeGadget)( *this\splitter_gadget_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
 ;             Else
-;               PB(ResizeGadget)( bar_second_gadget_( *this ), 
+;               PB(ResizeGadget)( *this\splitter_gadget_2( ), 
 ;                                 *BB2\x + GadgetX( *this\_root( )\canvas\gadget ),
 ;                                 *BB2\y + GadgetY( *this\_root( )\canvas\gadget ),
 ;                                 *BB2\width, *BB2\height )
 ;             EndIf
               
           Else
-            If bar_second_gadget_( *this )
-              If bar_second_gadget_( *this )\x <> *BB2\x Or 
-                 bar_second_gadget_( *this )\y <> *BB2\y Or
-                 bar_second_gadget_( *this )\width <> *BB2\width Or
-                 bar_second_gadget_( *this )\height <> *BB2\height 
-                ; Debug "splitter_2_resize " + bar_second_gadget_( *this )
+            If *this\splitter_gadget_2( )
+              If *this\splitter_gadget_2( )\x <> *BB2\x Or 
+                 *this\splitter_gadget_2( )\y <> *BB2\y Or
+                 *this\splitter_gadget_2( )\width <> *BB2\width Or
+                 *this\splitter_gadget_2( )\height <> *BB2\height 
+                ; Debug "splitter_2_resize " + *this\splitter_gadget_2( )
                 
-                If bar_second_gadget_( *this )\type = #__type_window
-                  Resize( bar_second_gadget_( *this ), 
+                If *this\splitter_gadget_2( )\type = #__type_window
+                  Resize( *this\splitter_gadget_2( ), 
                           *BB2\x - *this\x[#__c_frame], 
                           *BB2\y - *this\y[#__c_frame], 
                           *BB2\width - #__window_frame_size*2, *BB2\height - #__window_frame_size*2 - #__window_caption_height )
                 Else
-                  Resize( bar_second_gadget_( *this ), 
+                  Resize( *this\splitter_gadget_2( ), 
                           *BB2\x - *this\x[#__c_frame], 
                           *BB2\y - *this\y[#__c_frame], 
                           *BB2\width, *BB2\height )
@@ -7011,13 +7009,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
               result = Bool( *this\bar\max )
               
             Case #PB_Splitter_FirstGadget
-              bar_first_gadget_( *this ) = *value
-              bar_is_first_gadget_( *this ) = Bool( PB(IsGadget)( *value ))
+              *this\splitter_gadget_1( ) = *value
+              *this\splitter_is_gadget_1( ) = Bool( PB(IsGadget)( *value ))
               result =- 1
               
             Case #PB_Splitter_SecondGadget
-              bar_second_gadget_( *this ) = *value
-              bar_is_second_gadget_( *this ) = Bool( PB(IsGadget)( *value ))
+              *this\splitter_gadget_2( ) = *value
+              *this\splitter_is_gadget_2( ) = Bool( PB(IsGadget)( *value ))
               result =- 1
               
           EndSelect
@@ -12539,8 +12537,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If *this\type = #__type_Splitter
         Select Attribute 
-          Case #PB_Splitter_FirstGadget       : result = bar_first_gadget_( *this )
-          Case #PB_Splitter_SecondGadget      : result = bar_second_gadget_( *this )
+          Case #PB_Splitter_FirstGadget       : result = *this\splitter_gadget_1( )
+          Case #PB_Splitter_SecondGadget      : result = *this\splitter_gadget_2( )
           Case #PB_Splitter_FirstMinimumSize  : result = BB1( )\size
           Case #PB_Splitter_SecondMinimumSize : result = BB2( )\size
         EndSelect
@@ -13446,17 +13444,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ElseIf tabindex
           If *parent\type = #__type_Splitter
             If tabindex%2
-              bar_first_gadget_( *parent ) = *this
-              bar_is_first_gadget_( *parent ) = Bool( PB(IsGadget)( *this ))
+              *parent\splitter_gadget_1( ) = *this
+              *parent\splitter_is_gadget_1( ) = Bool( PB(IsGadget)( *this ))
               Update( *parent )
-              If bar_is_first_gadget_( *parent )
+              If *parent\splitter_is_gadget_1( )
                 ProcedureReturn 0
               EndIf
             Else
-              bar_second_gadget_( *parent ) = *this
-              bar_is_second_gadget_( *parent ) = Bool( PB(IsGadget)( *this ))
+              *parent\splitter_gadget_2( ) = *this
+              *parent\splitter_is_gadget_2( ) = Bool( PB(IsGadget)( *this ))
               Update( *parent )
-              If bar_is_second_gadget_( *parent )
+              If *parent\splitter_is_gadget_2( )
                 ProcedureReturn 0
               EndIf
             EndIf    
@@ -15451,16 +15449,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\color\back =- 1
             
             If *param_1 >= 0 
-              bar_first_gadget_( *this ) = *param_1
+              *this\splitter_gadget_1( ) = *param_1
             EndIf
             If *param_2 >= 0
-              bar_second_gadget_( *this ) = *param_2
+              *this\splitter_gadget_2( ) = *param_2
             EndIf
-            bar_is_first_gadget_( *this ) = Bool( PB(IsGadget)( *param_1 ))
-            bar_is_second_gadget_( *this ) = Bool( PB(IsGadget)( *param_2 ))
+            *this\splitter_is_gadget_1( ) = Bool( PB(IsGadget)( *param_1 ))
+            *this\splitter_is_gadget_2( ) = Bool( PB(IsGadget)( *param_2 ))
             
-            *this\bar\button[#__b_1]\hide = Bool( bar_is_first_gadget_( *this ) Or bar_first_gadget_( *this ) )
-            *this\bar\button[#__b_2]\hide = Bool( bar_is_second_gadget_( *this ) Or bar_second_gadget_( *this ) )
+            *this\bar\button[#__b_1]\hide = Bool( *this\splitter_is_gadget_1( ) Or *this\splitter_gadget_1( ) )
+            *this\bar\button[#__b_2]\hide = Bool( *this\splitter_is_gadget_2( ) Or *this\splitter_gadget_2( ) )
             
             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             *this\vertical = Bool( Flag & #__bar_vertical = #False And Flag & #PB_Splitter_Vertical = #False )
@@ -15507,21 +15505,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Else  
           ; splitter 
           If *this\type = #__type_Splitter
-            If bar_is_first_gadget_( *this )
-              Debug "bar_is_first_gadget_ "+bar_is_first_gadget_( *this )
-               Parent::SetParent( bar_first_gadget_( *this ), *this\_root( )\canvas\address )
+            If *this\splitter_is_gadget_1( )
+              Debug "bar_is_first_gadget_ "+*this\splitter_is_gadget_1( )
+               parent::set( *this\splitter_gadget_1( ), *this\_root( )\canvas\address )
             Else
-              If bar_first_gadget_( *this ) 
-                SetParent( bar_first_gadget_( *this ), *this )
+              If *this\splitter_gadget_1( ) 
+                SetParent( *this\splitter_gadget_1( ), *this )
               EndIf
             EndIf
             
-            If bar_is_second_gadget_( *this )
-              Debug "bar_is_second_gadget_ "+bar_is_second_gadget_( *this )
-               Parent::SetParent( bar_second_gadget_( *this ), *this\_root( )\canvas\address )
+            If *this\splitter_is_gadget_2( )
+              Debug "bar_is_second_gadget_ "+*this\splitter_is_gadget_2( )
+               parent::set( *this\splitter_gadget_2( ), *this\_root( )\canvas\address )
             Else
-              If bar_second_gadget_( *this ) 
-                SetParent( bar_second_gadget_( *this ), *this )
+              If *this\splitter_gadget_2( ) 
+                SetParent( *this\splitter_gadget_2( ), *this )
               EndIf
             EndIf
           EndIf
@@ -19461,13 +19459,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\_parent( )\type = #__type_Splitter
-            If bar_first_gadget_( *this\_parent( ) ) = *this
-              FreeStructure( bar_first_gadget_( *this\_parent( ) ) ) 
-              bar_first_gadget_( *this\_parent( ) ) = 0
+            If *this\_parent( )\splitter_gadget_1( ) = *this
+              FreeStructure( *this\_parent( )\splitter_gadget_1( ) ) 
+              *this\_parent( )\splitter_gadget_1( ) = 0
             EndIf
-            If bar_second_gadget_( *this\_parent( ) ) = *this
-              FreeStructure( bar_second_gadget_( *this\_parent( ) ) )  
-              bar_second_gadget_( *this\_parent( ) ) = 0
+            If *this\_parent( )\splitter_gadget_2( ) = *this
+              FreeStructure( *this\_parent( )\splitter_gadget_2( ) )  
+              *this\_parent( )\splitter_gadget_2( ) = 0
             EndIf
           EndIf
           
@@ -19507,15 +19505,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If *this\_widgets( )\type = #__type_Splitter
-                    If bar_first_gadget_( *this\_widgets( ) ) 
-                      Debug "   free - splitter - first " +bar_first_gadget_( *this\_widgets( ) )\class
-                      FreeStructure( bar_first_gadget_( *this\_widgets( ) ) ) 
-                      bar_first_gadget_( *this\_widgets( ) ) = 0 
+                    If *this\_widgets( )\splitter_gadget_1( ) 
+                      Debug "   free - splitter - first " +*this\_widgets( )\splitter_gadget_1( )\class
+                      FreeStructure( *this\_widgets( )\splitter_gadget_1( )  ) 
+                      *this\_widgets( )\splitter_gadget_1( )  = 0 
                     EndIf
-                    If bar_second_gadget_( *this\_widgets( ) ) 
-                      Debug "   free - splitter - second " +bar_second_gadget_( *this\_widgets( ) )\class
-                      FreeStructure( bar_second_gadget_( *this\_widgets( ) ) ) 
-                      bar_second_gadget_( *this\_widgets( ) ) = 0 
+                    If *this\_widgets( )\splitter_gadget_2( ) 
+                      Debug "   free - splitter - second " +*this\_widgets( )\splitter_gadget_2( )\class
+                      FreeStructure( *this\_widgets( )\splitter_gadget_2( ) ) 
+                      *this\_widgets( )\splitter_gadget_2( ) = 0 
                     EndIf
                   EndIf
                   
@@ -20240,5 +20238,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8---40-------------------------------f8--+htt-8-0-48v-------------------P-6Pv-----------------------------------------------------------------------------------------------------------------------------------------v---4f-0bf80------------------------------DAg----------3zv48-v-+-----------------------4f+-----v-+-------------------------
+; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8------------------------------------f8--+htt-8-0-48v-------------------P-6Pv-----------------------------------------------------------------------------------------------------------------------------------------v---4f-0bf80------------------------------DAg----------3zv48-v-+-----------------------4f+-----v-+-------------------------
 ; EnableXP

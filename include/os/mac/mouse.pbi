@@ -1,73 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile 
-  ;   XIncludeFile "ID.pbi"
-  ;   XIncludeFile "Get.pbi"
-  DeclareModule Get
-    Declare.s ClassName( handle.i )
-  EndDeclareModule
-  Module Get
-    Procedure.s ClassName( handle.i )
-      Protected Result
-      CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
-      If Result
-        ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
-      EndIf
-    EndProcedure
-  EndModule
-  ;////
-  DeclareModule ID
-    Declare.i Window( WindowID.i )
-    Declare.i Gadget( GadgetID.i )
-    Declare.i IsWindowID( handle.i )
-    Declare.i GetWindowID( handle.i )
-  EndDeclareModule
-  Module ID
-    ;   XIncludeFile "../import.pbi"
-    Import ""
-      PB_Window_GetID(hWnd) 
-    EndImport
-    
-    Procedure.s ClassName( handle.i )
-      Protected Result
-      CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
-      
-      If Result
-        ProcedureReturn PeekS( Result, - 1, #PB_UTF8 )
-      EndIf
-    EndProcedure
-    
-    Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-      ProcedureReturn CocoaMessage( 0, handle, "window" )
-    EndProcedure
-    
-    Procedure.i IsWindowID( handle.i )
-      If ClassName( handle ) = "PBWindow"
-        ProcedureReturn 1
-      EndIf
-    EndProcedure
-    
-    Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-      ProcedureReturn PB_Window_GetID( WindowID )
-    EndProcedure
-    
-    Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
-      ProcedureReturn CocoaMessage(0, GadgetID, "tag")
-    EndProcedure
-  EndModule
-  
-  ; CompilerIf #PB_Compiler_IsMainFile 
-  ;   EnableExplicit
-  ;   Global eventID
-  ;   
-  ;   OpenWindow(1, 0, 0, 200, 100, "window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  ;   ButtonGadget(1, 10, 10, 180,80, "button" ) 
-  ;   
-  ;   Debug "gadget - "+GadgetID(1) +" >> "+ ID::Gadget(GadgetID(1))
-  ;   Debug "window - "+WindowID(1) +" >> "+ ID::Window(WindowID(1))
-  ;   
-  ;   Repeat
-  ;     eventID = WaitWindowEvent( )
-  ;   Until eventID = #PB_Event_CloseWindow
-  ; CompilerEndIf
+  XIncludeFile "id.pbi"
 CompilerEndIf
 
 DeclareModule Mouse
@@ -76,6 +8,14 @@ DeclareModule Mouse
 EndDeclareModule
 
 Module Mouse
+  Procedure.s ClassName( handle.i )
+    Protected Result
+    CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
+    If Result
+      ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
+    EndIf
+  EndProcedure
+  
   Procedure Window( )
     Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
     
@@ -90,10 +30,6 @@ Module Mouse
     ProcedureReturn NSWindow
   EndProcedure
   
-  Macro GetCocoa( objectCocoa, funcCocoa, paramCocoa )
-    CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
-  EndMacro
-  
   Procedure Gadget( WindowID )
     Protected.i handle, superview, ContentView, Point.CGPoint
     
@@ -101,53 +37,34 @@ Module Mouse
       ContentView = CocoaMessage(0,  WindowID , "contentView")
       CocoaMessage(@Point,  WindowID , "mouseLocationOutsideOfEventStream")
       
-      ;       ;func isMousePoint(_ point: NSPoint, in rect: NSRect ) -> Bool
-      ;       Debug GetCocoa( ContentView, "isMousePoint", Point) 
-      
-      ; func hitTest(_ point: NSPoint) -> NSView? ; Point.NSPoint
-      handle = CocoaMessage(0, ContentView, "hitTest:@", @Point) ; hitTest(_:) 
-                                                                 ;handle = GetCocoa( ContentView, "hitTest", Point) 
+      ; func hitTest(_ point: NSPoint) -> NSView? ; Point.NSPoint ; hitTest(_:) 
+      handle = CocoaMessage(0, ContentView, "hitTest:@", @Point)
       
       If handle
-        Select Get::ClassName( handle )
+        Select ClassName(handle)
           Case "NSStepper" 
-            ;handle = CocoaMessage(0, handle, "superclass") ; NSControl
-            
-            ; handle = CocoaMessage( 0, handle, "nextResponder" ) ; PB_SpinView
-            ;handle = CocoaMessage( 0, handle, "superview" ) ; PB_SpinView
-            
-            ;handle = CocoaMessage(0, handle, "superclass") ; NSView
-            
-            ;;handle = CocoaMessage(0, handle, "contentView") ; 
-            ;Debug  Get::ClassName( CocoaMessage(0, handle, "subviews") );
-            ;Debug  Get::ClassName( CocoaMessage(0, handle, "opaqueAncestor") );
-            ;Debug  Get::ClassName( CocoaMessage(0, handle, "enclosingScrollView") );
-            ;;Debug  Get::ClassName( CocoaMessage(0, handle, "superclass") );
-            ;;handle = CocoaMessage(0, handle, "opaqueAncestor") ; 
-            ;; handle = CocoaMessage( 0, handle, "superview" ) ; PB_SpinView
-            
-            ; handle = CocoaMessage( 0, handle, "NSTextView" ) ; PB_SpinView
-            ; handle = CocoaMessage( 0, handle, "NSTextField" ) ; PB_SpinView
-            Debug  Get::ClassName( handle ) 
+            handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
+            handle = CocoaMessage(0, handle, "subviews")
+            handle = CocoaMessage(0, handle, "objectAtIndex:", 0)
             
           Case "NSTableHeaderView" 
             handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
             
           Case "NSScroller"                                 ;
                                                             ; PBScrollView
-            handle = CocoaMessage( 0, handle, "superview" ) ; NSScrollView
-            
-            Select Get::ClassName( handle ) 
+            handle = CocoaMessage(0, handle, "superview")   ; NSScrollView
+                                                            ;
+            Select ClassName(handle) 
               Case "WebDynamicScrollBarsView"
-                handle = CocoaMessage( 0, handle, "superview" ) ; WebFrameView
-                handle = CocoaMessage( 0, handle, "superview" ) ; PB_WebView
+                handle = CocoaMessage(0, handle, "superview") ; WebFrameView
+                handle = CocoaMessage(0, handle, "superview") ; PB_WebView
                 
               Case "PBTreeScrollView"
                 handle = CocoaMessage(0, handle, "documentView")
                 
               Case "NSScrollView"
-                superview = CocoaMessage( 0, handle, "superview" )
-                If Get::ClassName( superview ) = "PBScintillaView"
+                superview = CocoaMessage(0, handle, "superview")
+                If ClassName(superview) = "PBScintillaView"
                   handle = superview ; PBScintillaView
                 Else
                   handle = CocoaMessage(0, handle, "documentView")
@@ -156,32 +73,32 @@ Module Mouse
             EndSelect
             
           Case "_NSRulerContentView", "SCIContentView" 
-            handle = CocoaMessage( 0, handle, "superview" ) ; NSClipView
-            handle = CocoaMessage( 0, handle, "superview" ) ; NSScrollView
-            handle = CocoaMessage( 0, handle, "superview" ) ; PBScintillaView
+            handle = CocoaMessage(0, handle, "superview") ; NSClipView
+            handle = CocoaMessage(0, handle, "superview") ; NSScrollView
+            handle = CocoaMessage(0, handle, "superview") ; PBScintillaView
             
           Case "NSView" 
-            handle = CocoaMessage( 0, handle, "superview" ) ; PB_NSBox
+            handle = CocoaMessage(0, handle, "superview") ; PB_NSBox
             
           Case "NSTextField", "NSButton"
-            handle = CocoaMessage( 0, handle, "superview" ) ; PB_DateView
+            handle = CocoaMessage(0, handle, "superview") ; PB_DateView
             
           Case "WebHTMLView" 
-            handle = CocoaMessage( 0, handle, "superview" ) ; WebClipView
-            handle = CocoaMessage( 0, handle, "superview" ) ; WebDynamicScrollBarsView
-            handle = CocoaMessage( 0, handle, "superview" ) ; WebFrameView
-            handle = CocoaMessage( 0, handle, "superview" ) ; PB_WebView
+            handle = CocoaMessage(0, handle, "superview") ; WebClipView
+            handle = CocoaMessage(0, handle, "superview") ; WebDynamicScrollBarsView
+            handle = CocoaMessage(0, handle, "superview") ; WebFrameView
+            handle = CocoaMessage(0, handle, "superview") ; PB_WebView
             
           Case "PB_NSFlippedView"                           ;
                                                             ; container
-            handle = CocoaMessage( 0, handle, "superview" ) ; NSClipView
+            handle = CocoaMessage(0, handle, "superview")   ; NSClipView
                                                             ; scrollarea
-            If Get::ClassName( handle ) = "NSClipView"
-              handle = CocoaMessage( 0, handle, "superview" ) ; PBScrollView
+            If ClassName(handle) = "NSClipView"             ;
+              handle = CocoaMessage(0, handle, "superview") ; PBScrollView
             EndIf
             ;           Default
             ;             Debug "-"  
-            ;             Debug  Get::ClassName( handle ) ; PB_NSTextField
+            ;             Debug  Get::ClassName(handle) ; PB_NSTextField
             ;             Debug "-"
         EndSelect
       EndIf
@@ -191,7 +108,7 @@ Module Mouse
   EndProcedure
 EndModule
 
-;- EXAMPLE
+;-\\ example
 CompilerIf #PB_Compiler_IsMainFile 
   EnableExplicit
   UsePNGImageDecoder( )
@@ -275,9 +192,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
-    CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container )
+    CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container ):CloseGadgetList()
     
-    Define eventID,  WindowID , gadgetID
+    ;Define container = ContainerGadget(-1,0,0,0,0, #PB_Container_Flat):CloseGadgetList()
+    
+    Define eventID,  WindowID , gadgetID, gadget
     Repeat
       eventID = WaitWindowEvent( )
       WindowID = Mouse::Window( )
@@ -287,7 +206,15 @@ CompilerIf #PB_Compiler_IsMainFile
         If ID::Gadget( gadgetID ) =- 1
           Debug "window - ("+ ID::Window( WindowID ) +") "+ WindowID ;+" "+ GetClassName( WindowID )
         Else
-          Debug "gadget - ("+ ID::Gadget( gadgetID ) +") "+ gadgetID ;+" "+ GetClassName( gadgetID )
+          gadget = ID::Gadget( gadgetID )
+          Debug "gadget - ("+ gadget +") "+ gadgetID ;+" "+ GetClassName( gadgetID )
+          
+          ; ResizeGadget(container, GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget))
+          ;           If StartDrawing( WindowOutput( EventWindow() ))
+          ;             DrawingMode( #PB_2DDrawing_Outlined )
+          ;             Box( GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget),$ff0000) 
+          ;             StopDrawing()
+          ;           EndIf
         EndIf
       EndIf
       
@@ -301,5 +228,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------
+; Folding = ----
 ; EnableXP
