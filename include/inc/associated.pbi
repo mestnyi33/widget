@@ -24,6 +24,9 @@ Module Associated
       CompilerCase #PB_OS_Windows
         ProcedureReturn GetProp_( object, *key\s )
         
+      CompilerCase #PB_OS_Linux
+        g_object_get_data_(object, *key\s )
+        
     CompilerEndSelect                                                                  
   EndProcedure
   
@@ -34,6 +37,9 @@ Module Associated
         
       CompilerCase #PB_OS_Windows
         RemoveProp_( object, *key\s )
+        
+      CompilerCase #PB_OS_Linux
+        g_object_set_data_(object, *key\s, #Null )
         
     CompilerEndSelect                                                                    
   EndProcedure
@@ -56,6 +62,9 @@ Module Associated
         
       CompilerCase #PB_OS_Windows
         SetProp_(object, *key\s, value )
+        
+      CompilerCase #PB_OS_Linux
+        g_object_set_data_(object, *key\s, value )
         
     CompilerEndSelect                                                                   
   EndProcedure

@@ -48,6 +48,7 @@ DeclareModule Cursor
     *windowID
   EndStructure
   
+  Declare   isHiden()
   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
   Declare   Free(hCursor.i)
   Declare   Hide(state.b)
@@ -86,7 +87,7 @@ Module Cursor
     CocoaMessage(0, hCursor, "release")
   EndProcedure
   
-  Procedure   isHide()
+  Procedure   isHiden()
     CGCursorIsVisible()
   EndProcedure
   
@@ -96,11 +97,6 @@ Module Cursor
     Else
       CocoaMessage(0, 0, "NSCursor unhide")
     EndIf
-  EndProcedure
-  
-  Procedure   getCurrent()
-    ;Debug ""+CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
-    ProcedureReturn CocoaMessage(0, 0, "NSCursor currentCursor")
   EndProcedure
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
@@ -161,19 +157,11 @@ Module Cursor
         
         If cursor >= 0 And cursor <= 255
           ; if ishidden cursor show cursor
-          If Not CGCursorIsVisible()
+          If Not isHiden()
             CocoaMessage(0, 0, "NSCursor unhide")
           EndIf
           
           Select cursor
-              ;           Case #PB_Cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-              ;           Case #PB_Cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-              ;           Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-              ;           Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-              ;           Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-              ;           Case #PB_Cursor_LeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-              
-              
             Case #PB_Cursor_Invisible 
               CocoaMessage(0, 0, "NSCursor hide")
               ; SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, cursor)
@@ -222,7 +210,9 @@ Module Cursor
     
     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
     
-    If CGCursorIsVisible() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
+    If isHiden() 
+      result = #PB_Cursor_Invisible
+    Else
       Select CocoaMessage(0, 0, "NSCursor currentCursor")
         Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Default
         Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #PB_Cursor_IBeam
@@ -245,8 +235,6 @@ Module Cursor
         Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #PB_Cursor_Right
         Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
       EndSelect 
-    Else
-      result = #PB_Cursor_Invisible
     EndIf
     
     ProcedureReturn result
@@ -1031,5 +1019,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 4---------------
+; Folding = --f-------------
 ; EnableXP

@@ -1,6 +1,7 @@
 ﻿XIncludeFile "id.pbi"
 
 DeclareModule Parent
+  EnableExplicit
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -380,5 +381,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------
+; Folding = ---f----
 ; EnableXP

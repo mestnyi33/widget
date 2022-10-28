@@ -1,15 +1,11 @@
-﻿
+﻿XIncludeFile "id.pbi"
+
 DeclareModule Parent
   EnableExplicit
-  Declare IDGadget( handle.i )
-  Declare IDWindow( handle.i )
-  
-  Declare GetWindowID( handle.i )
-  Declare GetParentID( handle.i )
-  
-  Declare GetWindow( gadget.i )
-  Declare GetParent( gadget.i )
-  Declare SetParent( gadget.i, ParentID.i, Item.l = #PB_Default )
+  Declare Window( gadget.i )
+  Declare Gadget( gadget.i )
+  Declare Get( handle.i )
+  Declare Set( gadget.i, ParentID.i, Item.l = #PB_Default )
 EndDeclareModule
 
 Module Parent
@@ -39,7 +35,7 @@ Module Parent
   Macro gtk_viewport( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_viewport_get_type_ ( ) ) : EndMacro
   
   ;-
-  Procedure.s GetClassName( handle.i )
+  Procedure.s ClassName( handle.i )
     Protected Result = gtk_widget_get_name_( handle )
     If Result
       ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
@@ -53,7 +49,7 @@ Module Parent
     CompilerEndIf
     
     If handle              
-      Select GetClassName( handle )
+      Select ClassName( handle )
         Case "GtkWindow"
           handle = g_list_nth_data_( gtk_container_get_children_( gtk_bin_get_child_( handle ) ), 0 )
           CompilerIf #PB_Compiler_Version > 531 And #PB_Compiler_Version < 560 ; ?????
@@ -74,19 +70,19 @@ Module Parent
           ProcedureReturn handle
           
         Case "GtkLayout"
-           CompilerIf Subsystem("gtk2")
-             ProcedureReturn g_list_nth_data_( gtk_container_get_children_( handle ), 0 )
-           CompilerElse
-             ProcedureReturn handle
-           CompilerEndIf 
-           
+          CompilerIf Subsystem("gtk2")
+            ProcedureReturn g_list_nth_data_( gtk_container_get_children_( handle ), 0 )
+          CompilerElse
+            ProcedureReturn handle
+          CompilerEndIf 
+          
       EndSelect 
     EndIf
   EndProcedure
   
   Procedure pb_widget( handle )
-;     GtkComboBox
-;     GtkImage
+    ;     GtkComboBox
+    ;     GtkImage
     
     If handle 
       If gtk_fixed( handle ) = gtk_container( handle )
@@ -98,9 +94,9 @@ Module Parent
   EndProcedure
   
   Procedure GTKView( handle )
-       
-        
-    Select GetClassName( handle )
+    
+    
+    Select ClassName( handle )
       Case "GtkImage"
         If gtk_container( handle ) = gtk_frame( handle ) ; gtk_widget_get_parent_( handle ) = gtk_frame( handle )
           handle = gtk_widget_get_parent_( gtk_frame( handle ) ) ; GtkEventBox
@@ -113,7 +109,7 @@ Module Parent
         
       Case "GtkTextView", "GtkTreeView"
         handle = gtk_bin( handle ) ; "GtkScrolledWindow"
-       
+        
       Case "GtkVPaned"
         handle = gtk_container( handle ) ; GtkContainer
         
@@ -121,7 +117,7 @@ Module Parent
         handle = gtk_frame( handle ) ; "GtkFrame"
         
       Case "GtkEntry"
-        If GetClassName( gtk_widget_get_parent_( handle ) ) <> "GtkLayout"
+        If ClassName( gtk_widget_get_parent_( handle ) ) <> "GtkLayout"
           handle = gtk_box( handle ) 
         EndIf
         
@@ -134,12 +130,12 @@ Module Parent
         EndIf
         
       Case "GtkComboBox"
-        If GetClassName( gtk_widget_get_parent_( handle ) ) = "GtkEventBox"
+        If ClassName( gtk_widget_get_parent_( handle ) ) = "GtkEventBox"
           handle = gtk_widget_get_parent_( handle ) ; ; ComboBox
         Else
           handle = gtk_bin( handle ) ; ExplorerCombo ; "GtkLayout"
         EndIf
-       
+        
     EndSelect
     ProcedureReturn handle
   EndProcedure
@@ -158,26 +154,34 @@ Module Parent
     ProcedureReturn gtk_widget_get_toplevel_( handle )
   EndProcedure
   
-  Procedure GetParentID( handle.i ) ; Return the handle of the parent from the handle
+  Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget ident
+    ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
+  EndProcedure
+  
+  Procedure Gadget( gadget.i ) ; Return the handle of the parent gadget from the gadget ident
+    ProcedureReturn IDGadget( Get( GadgetID( gadget.i ) ) )
+  EndProcedure
+  
+  Procedure Get( handle.i ) ; Return the handle of the parent from the handle
     Protected a
     While handle
       a = handle
       handle = gtk_widget_get_parent_( handle )
       
       If handle
-;         ; ok
-;         If IsWindow( IDWindow( handle ) ) Or 
-;            IsGadget( IDgadget( handle ) )
-;           ProcedureReturn handle
-;         EndIf
+        ;         ; ok
+        ;         If IsWindow( IDWindow( handle ) ) Or 
+        ;            IsGadget( IDgadget( handle ) )
+        ;           ProcedureReturn handle
+        ;         EndIf
         
-        Select GetClassName( handle ) 
+        Select ClassName( handle ) 
           Case "GtkWindow", "GtkScrolledWindow", "GtkNotebook" 
             ProcedureReturn handle
           Case "GtkFrame"
             ProcedureReturn a
           Default
-            If GetClassName( gtk_widget_get_parent_( handle ) ) = "GtkLayout"
+            If ClassName( gtk_widget_get_parent_( handle ) ) = "GtkLayout"
               ProcedureReturn handle
             EndIf
         EndSelect
@@ -185,15 +189,7 @@ Module Parent
     Wend
   EndProcedure
   
-  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
-    ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
-  EndProcedure
-  
-  Procedure GetParent( gadget.i ) ; Return the handle of the parent gadget from the gadget ident
-    ProcedureReturn IDGadget( GetParentID( GadgetID( gadget.i ) ) )
-  EndProcedure
-  
-  Procedure SetParent( gadget.i, ParentID.i, Item.l = #PB_Default ) ; Set a new parent for the gadget
+  Procedure Set( gadget.i, ParentID.i, Item.l = #PB_Default ) ; Set a new parent for the gadget
     If IsGadget( Gadget )
       Protected GtkWidget,GtkWidget1
       Protected *GtkWidget.GtkWidget, GadgetX, GadgetY, GtkFixed, handle = GadgetID( Gadget )
@@ -205,14 +201,14 @@ Module Parent
       
       Select GadgetType( Gadget )
         Case #PB_GadgetType_Web;, #PB_GadgetType_ExplorerCombo
-          Debug ""+GetClassName( handle ) +" "+ GetClassName(gtk_widget_get_parent_( handle ))
-;           Debug GetClassName(gtk_widget_get_parent_(g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ))) ;pb_parent( handle, -1 )
-;           ;handle = g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 )
-;           gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ), GtkFixed )
-;           ;gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 0 ), GtkFixed )
-           gtk_widget_reparent_( gtk_bin( handle ), GtkFixed )
-;           gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ), handle )
-           ResizeGadget( Gadget, GadgetX, GadgetY, #PB_Ignore, #PB_Ignore )
+          Debug ""+ClassName( handle ) +" "+ ClassName(gtk_widget_get_parent_( handle ))
+          ;           Debug ClassName(gtk_widget_get_parent_(g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ))) ;pb_parent( handle, -1 )
+          ;           ;handle = g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 )
+          ;           gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ), GtkFixed )
+          ;           ;gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 0 ), GtkFixed )
+          gtk_widget_reparent_( gtk_bin( handle ), GtkFixed )
+          ;           gtk_widget_reparent_( g_list_nth_data_( gtk_container_get_children_( ( handle ) ), 1 ), handle )
+          ResizeGadget( Gadget, GadgetX, GadgetY, #PB_Ignore, #PB_Ignore )
           
         Default
           
@@ -223,7 +219,7 @@ Module Parent
             CompilerIf #PB_Compiler_Version =< 531
               *GtkWidget = pb_widget( handle )
               
-              If GetClassName( ParentID ) = "GtkNotebook" ; #PB_GadgetType_Panel
+              If ClassName( ParentID ) = "GtkNotebook" ; #PB_GadgetType_Panel
                 If *GtkWidget\parent
                   GadgetX = GadgetX + *GtkWidget\parent\allocation\x
                   GadgetY = GadgetY + *GtkWidget\parent\allocation\y 
@@ -288,9 +284,30 @@ Module Parent
   EndProcedure
 EndModule
 
+;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Parent
+  
+  Procedure GadgetIDType(  GadgetID )
+    If GadgetID
+      CompilerSelect #PB_Compiler_OS 
+        CompilerCase #PB_OS_Linux
+          Protected *notebook.GtkNotebook = GadgetID
+          If *notebook\children
+            If *notebook\first_tab = *notebook\children
+              ProcedureReturn #PB_GadgetType_Panel
+            ElseIf *notebook\packed_flags
+              ProcedureReturn - 1
+            Else
+              ProcedureReturn #PB_GadgetType_ScrollArea
+            EndIf
+          Else
+            ProcedureReturn #PB_GadgetType_Container
+          EndIf
+      CompilerEndSelect
+    EndIf
+  EndProcedure 
   
   Enumeration 21
     #CANVAS
@@ -306,16 +323,9 @@ CompilerIf #PB_Compiler_IsMainFile
     #PANEL2
   EndEnumeration
   
-;   If LoadFont(0, "Arial", 8)
-;     SetGadgetFont(#PB_Default, FontID(0))   ; Set the loaded Arial 16 font as new standard
-;   EndIf
-  If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp")
-    Define img = ImageID( 0 )
-  EndIf
-  
   Define ParentID
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
-  OpenWindow( 10, 0, 0, 425, 350, "demo set gadget new parent", Flags )
+  OpenWindow( 10, 0, 0, 425, 350, "demo set gadget new Parent", Flags )
   
   ButtonGadget( 6, 30,90,160,25,"Button >>( Window )" )
   
@@ -333,7 +343,6 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseGadgetList( )
   
   ContainerGadget( #CONTAINER, 215,10,200,160,#PB_Container_Flat ) 
-  SetGadgetColor( #CONTAINER, #PB_Gadget_BackColor, $ffa0a0a0)
   ButtonGadget( 7, 30,90,160,30,"Button >>( Container )" ) 
   CloseGadgetList( )
   
@@ -343,15 +352,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
-  OpenWindow( 20, WindowX( 10 )-210, WindowY( 10 ), 240, 350, "old parent", Flags, WindowID( 10 ) )
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_ScreenCentered 
+  OpenWindow( 20, 0, 0, 240, 350, "old Parent", Flags, WindowID( 10 ) )
   
-  ;SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
-   ButtonGadget( #CHILD,30,10,160,70,"Buttongadget" ) 
-;   ButtonGadget( 201,0,0,30,30,"1" )
-;   ButtonGadget( 202,0,0,30,30,"2" )
-;   SplitterGadget( #CHILD,30,20,150,30,201,202 )
-   ButtonGadget( #RETURN, 30,90,160,25,"Button <<( Return )" ) 
+  ButtonGadget( #CHILD,30,10,160,70,"Buttongadget" ) 
+  ButtonGadget( #RETURN, 30,90,160,25,"Button <<( Return )" ) 
   
   ComboBoxGadget( #COMBO,30,120,160,25 ) 
   AddGadgetItem( #COMBO, -1, "Selected gadget to move" )
@@ -400,6 +405,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList( )
   CompilerEndIf
   
+  
+  ResizeWindow( 20, WindowX( 20 )-WindowWidth( 20 ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+  ResizeWindow( 10, WindowX( 10 )+WindowWidth( 20 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   ;
   HideWindow( 10,0 )
   HideWindow( 20,0 )
@@ -407,37 +415,36 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat
     Define Event = WaitWindowEvent( )
     
-    If Event = #PB_Event_Gadget And 
-       ( GadgetType( EventGadget( ) ) <> #PB_GadgetType_Canvas And GadgetType( EventGadget( ) ) <> #PB_GadgetType_ScrollArea ) ; bug gtk3
+    If Event = #PB_Event_Gadget 
       Select EventType( )
         Case #PB_EventType_LeftClick, #PB_EventType_Change
           Select EventGadget( )
-            Case  #DESKTOP:  SetParent( #CHILD, 0 )
-            Case  6:  SetParent( #CHILD, WindowID( 10 ) )
-            Case 60, #PANEL0:  SetParent( #CHILD, GadgetID( #PANEL ), 0 )
-            Case 61, #PANEL1:  SetParent( #CHILD, GadgetID( #PANEL ), 1 )
-            Case 62, #PANEL2:  SetParent( #CHILD, GadgetID( #PANEL ), 2 )
-            Case  7:  SetParent( #CHILD, GadgetID( #CONTAINER ) )
-            Case  8:  SetParent( #CHILD, GadgetID( #SCROLLAREA ) )
-            Case 11:  SetParent( #CHILD, GadgetID( #CANVAS ) )
-            Case  #RETURN:  SetParent( #CHILD, WindowID( 20 ) )
+            Case  #DESKTOP:  Parent::Set( #CHILD, 0 )
+            Case  6:  Parent::Set( #CHILD, WindowID( 10 ) )
+            Case 60, #PANEL0:  Parent::Set( #CHILD, GadgetID( #PANEL ), 0 )
+            Case 61, #PANEL1:  Parent::Set( #CHILD, GadgetID( #PANEL ), 1 )
+            Case 62, #PANEL2:  Parent::Set( #CHILD, GadgetID( #PANEL ), 2 )
+            Case  7:  Parent::Set( #CHILD, GadgetID( #CONTAINER ) )
+            Case  8:  Parent::Set( #CHILD, GadgetID( #SCROLLAREA ) )
+            Case 11:  Parent::Set( #CHILD, GadgetID( #CANVAS ) )
+            Case  #RETURN:  Parent::Set( #CHILD, WindowID( 20 ) )
               
             Case #COMBO
               Select EventType( )
                 Case #PB_EventType_Change
-                  Define ParentID = GetParentID( GadgetID( #CHILD ) )
+                  Define ParentID = Parent::Get( GadgetID( #CHILD ) )
                   
                   Select GetGadgetState( #COMBO )
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
                     Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
-                    Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget");, #PB_Text_Border ) 
+                    Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget", #PB_Text_Border ) 
                     Case  4: OptionGadget( #CHILD,30,20,150,30,"Optiongadget" ) 
                     Case  5: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
-                    Case  6: ListViewGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ListViewGadget" )
+                    Case  6: ListViewGadget( #CHILD,30,20,150,30 ) 
                     Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
                     Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
-                    Case  9: ImageGadget( #CHILD,30,20,150,30,img);,#PB_Image_Border ) 
-                    Case 10: HyperLinkGadget( #CHILD,30,20,150,30,"HyperLinkgadget",$ff0000FF ) 
+                    Case  9: ImageGadget( #CHILD,30,20,150,30,0,#PB_Image_Border ) 
+                    Case 10: HyperLinkGadget( #CHILD,30,20,150,30,"HyperLinkgadget",0 ) 
                     Case 11: ContainerGadget( #CHILD,30,20,150,30,#PB_Container_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( ) ; Containergadget
                     Case 12: ListIconGadget( #CHILD,30,20,150,30,"",88 ) 
                     Case 13: IPAddressGadget( #CHILD,30,20,150,30 ) 
@@ -445,7 +452,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case 15: ScrollBarGadget( #CHILD,30,20,150,30,5,335,9 )
                     Case 16: ScrollAreaGadget( #CHILD,30,20,150,30,305,305,9,#PB_ScrollArea_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( )
                     Case 17: TrackBarGadget( #CHILD,30,20,150,30,0,5 )
-                      ; Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
+                    Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
                     Case 19: ButtonImageGadget( #CHILD,30,20,150,30,0 )
                     Case 20: CalendarGadget( #CHILD,30,20,150,30 ) 
                     Case 21: DateGadget( #CHILD,30,20,150,30 )
@@ -464,7 +471,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                     Select GetGadgetState( #COMBO )
-                      Case 30: MDIgadget( #CHILD,30,10,150,70,0,0 )
+                      Case 30: MDIGadget( #CHILD,30,10,150,70,0,0 )
                       Case 31: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 32: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 33: CanvasGadget( #CHILD,30,10,150,70 ) 
@@ -478,19 +485,20 @@ CompilerIf #PB_Compiler_IsMainFile
                   CompilerEndIf
                   
                   ResizeGadget( #CHILD,30,10,150,70 )
-                  SetGadgetColor( #CHILD, #PB_Gadget_BackColor, $ffa0a0a0)
-                  SetParent( #CHILD, ParentID ) 
+                  Parent::Set( #CHILD, ParentID ) 
                   
               EndSelect
           EndSelect
           
-          If ( EventGadget( ) <> #CHILD )
-            Define Parent = GetParent( #CHILD )
-            
-            If IsGadget( Parent )
-              Debug "parent - gadget ( " + Parent + " )"
-            Else
-              Debug "parent - window ( " + GetWindow( #CHILD ) + " )"
+          If EventType( ) = #PB_EventType_LeftClick
+            If ( EventGadget( ) <> #CHILD )
+              Define Parent = Parent::Gadget( #CHILD )
+              
+              If IsGadget( Parent )
+                Debug "Parent - gadget ( " + Parent + " )"
+              Else
+                Debug "Parent - window ( " + Parent::Window( #CHILD ) + " )"
+              EndIf
             EndIf
           EndIf
       EndSelect
@@ -498,6 +506,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
-; Folding = ----+v-----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ------------
 ; EnableXP
