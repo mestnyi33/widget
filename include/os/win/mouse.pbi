@@ -1,5 +1,6 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile 
   XIncludeFile "id.pbi"
+  XIncludeFile "parent.pbi"
 CompilerEndIf
 
 DeclareModule Mouse
@@ -21,7 +22,7 @@ Module Mouse
     ProcedureReturn GetAncestor_( handle, #GA_ROOT )
   EndProcedure
   
-  Procedure Gadget( WindowID )
+  Procedure Gadget1( WindowID )
     Protected Cursorpos.q, handle, GadgetID
     GetCursorPos_( @Cursorpos )
     
@@ -34,24 +35,64 @@ Module Mouse
         ScreenToClient_( WindowID, @Cursorpos ) 
         handle = ChildWindowFromPoint_( WindowID, Cursorpos )
         
-        ; spin-buttons
         If handle = GadgetID 
           If handle = WindowID
             ; in the window
-            ProcedureReturn 0
+            ProcedureReturn WindowID
           Else
-            handle = GetWindow_( GadgetID, #GW_HWNDPREV )
+            ; spin-gadget spin-buttons on window
+            If ClassName( handle ) = "msctls_updown32"
+              handle = GetWindow_( GadgetID, #GW_HWNDNEXT )
+            EndIf
           EndIf
         Else
+          Debug ClassName( handle )
+          If ClassName( handle ) = "PureSplitter"
+            handle = GetWindow_( GadgetID, #GW_HWNDNEXT )
+          EndIf
+          
           ; MDIGadget childrens
-          ;           If IsWindow( IDWindow( GadgetID ) )
-          ;             If handle = WindowID
-          ;               ; in the window
-          ;               ProcedureReturn 0
-          ;             Else
-          ;               ;;handle = GetParent_( handle )
-          ;             EndIf
-          ;           EndIf
+          If ClassName( handle ) = "MDIClient"
+            handle = FindWindowEx_( handle, 0, 0, 0 ) ; 
+          EndIf
+        EndIf
+      EndIf
+      
+      ProcedureReturn handle
+    Else
+      ProcedureReturn 0
+    EndIf
+  EndProcedure
+  
+  Procedure Gadget( WindowID )
+    Protected Cursorpos.q, handle, GadgetID
+    GetCursorPos_( @Cursorpos )
+    
+    If WindowID
+      GadgetID = WindowFromPoint_( Cursorpos )
+      
+      ScreenToClient_( GadgetID, @Cursorpos ) 
+      handle = ChildWindowFromPoint_( GadgetID, Cursorpos )
+      
+      If Not IsGadget( ID::Gadget( handle ) )
+        If IsGadget( ID::Gadget( GadgetID ) )
+          handle = GadgetID
+        ElseIf ClassName( GadgetID ) = "Internet Explor"
+          handle = GetParent_(GetParent_(GetParent_(GadgetID)))
+        ElseIf ClassName( GadgetID ) = "msctls_updown32"
+          handle = GetWindow_( GadgetID, #GW_HWNDPREV )
+          If ClassName( handle ) <> "Edit"
+            Debug ClassName( handle )
+          EndIf
+        Else
+          handle = GetParent_(handle)
+        EndIf
+        ; panel item scroll buttons 
+        If ClassName( handle ) = "Static"
+          handle = GetParent_(handle)
+        EndIf
+        If Not handle
+          handle = WindowID
         EndIf
       EndIf
       
@@ -64,6 +105,7 @@ EndModule
 
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile 
+  XIncludeFile "ClipGadgets.pbi"
   EnableExplicit
   UsePNGImageDecoder( )
   
@@ -82,8 +124,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenWindow(10, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWindowColor(ID::Window(UseGadgetList(0)), $83BFEC)
+    
+    ; test container
+    ; ContainerGadget(315, 0, 0, 995, 605)
     
     ButtonGadget(#PB_GadgetType_Button, 5, 5, 160,95, "Multiline Button_"+Str(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #PB_Button_MultiLine ) 
     StringGadget(#PB_GadgetType_String, 5, 105, 160,95, "String_"+Str(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
@@ -138,17 +183,29 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
     SetGadgetState( #PB_GadgetType_Panel, 4)
     
+    ; bug spin in splitter
     SpinGadget(301, 0, 0, 100,20,0,10)
-    SpinGadget(302, 0, 0, 100,20,0,10)                 
+    SpinGadget(302, 0, 0, 100,20,0,10) 
+    Define Gadget301 = GetWindow_( GadgetID( 301 ), #GW_HWNDNEXT )
+    Define Gadget302 = GetWindow_( GadgetID( 302 ), #GW_HWNDNEXT )
     SplitterGadget(#PB_GadgetType_Splitter, 665, 405, 160, 95, 301, 302)
+    SetParent_( Gadget301, GadgetID(#PB_GadgetType_Splitter) )
+    SetWindowPos_(Gadget301, GadgetID(301), 0, 0, 0, 0, #SWP_NOSIZE | #SWP_NOMOVE)
+    SetParent_( Gadget302, GadgetID(#PB_GadgetType_Splitter) )
+    SetWindowPos_(Gadget302, GadgetID(302), 0, 0, 0, 0, #SWP_NOSIZE | #SWP_NOMOVE)
     
-    InitScintilla( )
-    ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
+    ;
+    MDIGadget( #PB_GadgetType_MDI,665, 505, 160,95,0,0 ) : AddGadgetItem(#PB_GadgetType_MDI,-1,"form_1") :UseGadgetList(WindowID(10))
+    
+    InitScintilla( ) : ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
     CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container ):CloseGadgetList()
     
-    ;Define container = ContainerGadget(-1,0,0,0,0, #PB_Container_Flat):CloseGadgetList()
+    If IsGadget(315)
+      CloseGadgetList()
+    EndIf
+    ClipGadgets(WindowID(10))
     
     Define eventID,  WindowID , gadgetID, gadget
     Repeat
@@ -163,12 +220,13 @@ CompilerIf #PB_Compiler_IsMainFile
           gadget = ID::Gadget( gadgetID )
           Debug "gadget - ("+ gadget +") "+ gadgetID ;+" "+ GetClassName( gadgetID )
           
-          ; ResizeGadget(container, GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget))
-          ;           If StartDrawing( WindowOutput( EventWindow() ))
-          ;             DrawingMode( #PB_2DDrawing_Outlined )
-          ;             Box( GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget),$ff0000) 
-          ;             StopDrawing()
-          ;           EndIf
+;           If StartDrawing( WindowOutput( EventWindow() ))
+; ;             DrawingMode( #PB_2DDrawing_Default )
+; ;             Box( 0,0,OutputWidth(),OutputHeight(),$ff0000) 
+;             DrawingMode( #PB_2DDrawing_Outlined )
+;             Box( GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget),$ff0000) 
+;             StopDrawing()
+;           EndIf
         EndIf
       EndIf
       
@@ -181,6 +239,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 130
+; FirstLine = 68
+; Folding = d-----
 ; EnableXP

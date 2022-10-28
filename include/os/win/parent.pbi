@@ -20,13 +20,13 @@ Module Parent
   
   Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget handle
     If IsGadget( gadget )
-      ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget ) ) )
+      ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
     EndIf
   EndProcedure
   
   Procedure Gadget( gadget.i ) ; Return the handle of the parent gadget from the gadget handle
     If IsGadget( gadget )
-      ProcedureReturn IDgadget( Get( GadgetID( gadget ) ) )
+      ProcedureReturn ID::Gadget( Get( GadgetID( gadget ) ) )
     EndIf
   EndProcedure
   
@@ -34,9 +34,9 @@ Module Parent
     While handle
       handle = GetParent_( handle )
       
-      If IsWindow( IDWindow( handle ) ) Or IsGadget( IDgadget( handle ) )
+      If IsWindow( ID::Window( handle ) ) Or IsGadget( ID::Gadget( handle ) )
         ProcedureReturn handle
-      ElseIf IsGadget( IDgadget( GetParent_( handle ) ) ) ; Это для скролл ареа гаджет
+      ElseIf IsGadget( ID::Gadget( GetParent_( handle ) ) ) ; Это для скролл ареа гаджет
         ProcedureReturn GetParent_( handle )
       EndIf
     Wend
@@ -59,11 +59,19 @@ Module Parent
       
       ; Set spin up/down control in the new parent
       If GadgetType( gadget ) = #PB_GadgetType_Spin
-        SetParent_( GetWindow_( GadgetID( gadget ), #GW_HWNDNEXT ), ParentID )
+        Protected SpinPrev = GetWindow_( GadgetID( gadget ), #GW_HWNDPREV )
+        Protected SpinNext = GetWindow_( GadgetID( gadget ), #GW_HWNDNEXT )
+        If SpinPrev And ClassName( SpinPrev ) = "msctls_updown32"
+          SetParent_( SpinPrev, ParentID )
+        EndIf
+        If SpinNext And ClassName( SpinNext ) = "msctls_updown32"
+          SetParent_( SpinNext, ParentID )
+        EndIf
       EndIf
       
       SetParent_( GadgetID( gadget ), ParentID )
-      
+      ; SetWindowLongPtr_(GadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
+    
       ProcedureReturn ParentID
     EndIf
   EndProcedure
@@ -121,6 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define ParentID
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow( 10, 0, 0, 425, 350, "demo set gadget new Parent", Flags )
+  ;SpinGadget( #CHILD,30,10,160,70,0,100 ) 
   
   ButtonGadget( 6, 30,90,160,25,"Button >>( Window )" )
   
@@ -145,6 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonGadget( 8, 30,90,160,30,"Button >>( ScrollArea )" ) 
   CloseGadgetList( )
   
+  ;parent::set(#CHILD, GadgetID(#CONTAINER))
   
   ;
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_ScreenCentered 
@@ -259,9 +269,16 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case 27: TreeGadget( #CHILD,30,20,150,30 ):  AddGadgetItem( #CHILD,-1,"Treegadget" ):  AddGadgetItem( #CHILD,-1,"SubLavel",0,1 )
                     Case 28: PanelGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"Panelgadget" ): CloseGadgetList( )
                     Case 29 
-                      ButtonGadget( 201,0,0,30,30,"1" )
+                      ; bug spin in splitter
+                      SpinGadget( 201,0,0,30,30, 0,100 )
+                      Define GadgetID201 = GetWindow_( GadgetID( 201 ), #GW_HWNDNEXT )
+                        
                       ButtonGadget( 202,0,0,30,30,"2" )
                       SplitterGadget( #CHILD,30,20,150,30,201,202 )
+                      
+                      SetParent_( GadgetID201, GadgetID(#CHILD) )
+                      SetWindowPos_(GadgetID201, GadgetID(201), 0, 0, 0, 0, #SWP_NOSIZE | #SWP_NOMOVE) ; #GW_HWNDNEXT
+                      
                   EndSelect
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -301,6 +318,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 63
+; FirstLine = 53
 ; Folding = ------
 ; EnableXP

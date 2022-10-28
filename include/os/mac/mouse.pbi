@@ -131,6 +131,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWindowColor(ID::Window(UseGadgetList(0)), $83BFEC)
     
+    ; test container
+    ; ContainerGadget(315, 0, 0, 995, 605)
+    
     ButtonGadget(#PB_GadgetType_Button, 5, 5, 160,95, "Multiline Button_"+Str(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #PB_Button_MultiLine ) 
     StringGadget(#PB_GadgetType_String, 5, 105, 160,95, "String_"+Str(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
     TextGadget(#PB_GadgetType_Text, 5, 205, 160,95, "Text_"+Str(#PB_GadgetType_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
@@ -194,6 +197,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
     CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container ):CloseGadgetList()
     
+    If IsGadget(315)
+      CloseGadgetList()
+    EndIf
     ;Define container = ContainerGadget(-1,0,0,0,0, #PB_Container_Flat):CloseGadgetList()
     
     Define eventID,  WindowID , gadgetID, gadget

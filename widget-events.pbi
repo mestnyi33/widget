@@ -2,7 +2,7 @@
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   #path = "/Users/as/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
-  #path = ""
+  #path = "Z:\Documents\GitHub\Widget\"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows 
   #path = ""
 CompilerEndIf
@@ -8582,15 +8582,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       rows( )\text\len = string_len
       rows( )\text\string = PeekS ( *text, string_len )
       
-      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
-      ;         StopDrawing( )
-      ;         StartDrawing( CanvasOutput( *this\_root( )\canvas\gadget ) )
-      ;         DrawingFont( *this\_root( )\text\fontid )
-      ;       CompilerEndIf
+;             CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+;               StopDrawing( )
+;               StartDrawing( CanvasOutput( *this\_root( )\canvas\gadget ) )
+;               DrawingFont( *this\_root( )\text\fontid )
+;             CompilerEndIf
       draw_font_item_( *this, rows( ), rows( )\text\change )
-      ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
-      ;         StopDrawing( )
-      ;       CompilerEndIf
+;             CompilerIf #PB_Compiler_OS = #PB_OS_Windows Or #PB_Compiler_OS = #PB_OS_Linux
+;               StopDrawing( )
+;             CompilerEndIf
       
       rows( )\height = rows( )\text\height ; + 10
       rows( )\width = *this\width[#__c_inner]
@@ -8729,14 +8729,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\text\len = 0
       *this\text\string = string
       
+      If Not Drawing( )
+        Drawing( ) = StartDrawing( CanvasOutput( Root( )\canvas\gadget ))
+        
+;         If Drawing( )
+;           draw_font_( Root( ) )
+;           ; difference in system behavior
+;           If Root( )\canvas\fontID
+;             DrawingFont( Root( )\canvas\fontID ) 
+;           EndIf
+;           
+;           
+;           ; StopDrawing()
+;         EndIf
+      EndIf
+      
+      ; Debug "Drawing( ) "+Drawing( )
       While *end\c 
         If *end\c = #LF 
           edit_SetItem( *this, *this\_rows( ), - 1, *str, (*end-*str)>>#PB_Compiler_Unicode )
           
-          If enter_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
-          If focus_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
-          If press_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
-          
+          If ListSize(*this\_rows( ))
+            If enter_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
+            If focus_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
+            If press_index = *this\_rows( )\index: *this\EnteredRow( ) = *this\_rows( ): EndIf
+          EndIf
+        
           *str = *end + #__sOC 
         EndIf 
         *end + #__sOC 
@@ -20237,6 +20255,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ; 
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8------------------------------------f8--+htt-8-0-48v-------------------P-6Pv-----------------------------------------------------------------------------------------------------------------------------------------v---4f-0bf80------------------------------DAg----------3zv48-v-+-----------------------4f+-----v-+-------------------------
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 16679
+; FirstLine = 15142
+; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8------------------------------------f8--+htt-8-0-48v--------------------9n-9+-----------------------------------------------------------------------------------------------------------------------------------------+--f-04v0t4------------------------------PAA+---------bP-ev--+8-----------------------f-6------+8-------------------------
 ; EnableXP

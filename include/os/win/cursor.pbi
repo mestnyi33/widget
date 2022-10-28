@@ -57,6 +57,9 @@ DeclareModule Cursor
   Declare   Set(Gadget.i, cursor.i)
 EndDeclareModule
 Module Cursor 
+  Global OldProc
+  Declare Proc(hWnd, uMsg, wParam, lParam)
+  
   Procedure   Free(hCursor.i)
     ProcedureReturn DestroyCursor_( hCursor )
   EndProcedure
@@ -91,20 +94,42 @@ Module Cursor
       
       ; reset
       If state = 0 
-        SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
+        ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
         SetCursor_( LoadCursor_(0,#IDC_ARROW) )
       EndIf
       
       ; set
       If state = 1 
-        SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
-        SetCursor_( *cursor\cursor )
+        ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
+        ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
+        SetCursor_( *cursor\hcursor )
       EndIf
     EndIf
     
   EndProcedure
   
+  Procedure Proc(hWnd, uMsg, wParam, lParam)
+    Protected *cursor._s_cursor
+    
+    Select uMsg
+      Case #WM_SETCURSOR
+        ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
+        *cursor = GetProp_(wParam, "__cursor")
+        If *cursor And 
+           *cursor\hcursor
+          SetCursor_( *cursor\hcursor )
+        EndIf
+        
+      Default
+        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
+    EndSelect
+    
+    ProcedureReturn result
+  EndProcedure
+  
   Procedure Set(Gadget.i, cursor.i)
+    ; Debug ""+Gadget +" "+ cursor
+    ;ProcedureReturn 0
     If Gadget >= 0
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
@@ -118,6 +143,8 @@ Module Cursor
         *cursor = AllocateStructure(_s_cursor)
         *cursor\windowID = ID::GetWindowID(GadgetID)
         SetProp_(GadgetID, "__cursor", *cursor) 
+        ;
+        OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
       EndIf
       
       If *cursor\icursor <> cursor
@@ -125,14 +152,14 @@ Module Cursor
         
         If cursor >= 0 And cursor <= 255
           Select cursor
-            Case #PB_Cursor_Default   : *cursor\cursor = LoadCursor_(0,#IDC_ARROW)
-            Case #PB_Cursor_IBeam     : *cursor\cursor = LoadCursor_(0,#IDC_IBEAM)
+            Case #PB_Cursor_Default   : *cursor\hcursor = LoadCursor_(0,#IDC_ARROW)
+            Case #PB_Cursor_IBeam     : *cursor\hcursor = LoadCursor_(0,#IDC_IBEAM)
               
-            Case #PB_Cursor_Cross     : *cursor\cursor = LoadCursor_(0,#IDC_CROSS)
-            Case #PB_Cursor_Hand      : *cursor\cursor = LoadCursor_(0,#IDC_HAND)
+            Case #PB_Cursor_Cross     : *cursor\hcursor = LoadCursor_(0,#IDC_CROSS)
+            Case #PB_Cursor_Hand      : *cursor\hcursor = LoadCursor_(0,#IDC_HAND)
               
-            Case #PB_Cursor_UpDown    : *cursor\cursor = LoadCursor_(0,#IDC_SIZEWE)
-            Case #PB_Cursor_LeftRight : *cursor\cursor = LoadCursor_(0,#IDC_SIZENS)
+            Case #PB_Cursor_UpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            Case #PB_Cursor_LeftRight : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
               
             Case #PB_Cursor_Drag      : *cursor\hcursor = LoadCursor_(0,#IDC_ARROW)
             Case #PB_Cursor_Drop      : *cursor\hcursor = LoadCursor_(0,#IDC_ARROW)
@@ -153,9 +180,6 @@ Module Cursor
           EndIf
         EndIf
       EndIf
-      
-      SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS | #WS_CLIPCHILDREN )
-      SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
       
       If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
         Change( Gadget, 1 )
@@ -215,6 +239,7 @@ EndModule
 
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "ClipGadgets.pbi"
   UseModule constants
   ;UseModule events
   
@@ -388,7 +413,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf       
   
   If cursor::Set((1),#PB_Cursor_Hand)
-    Debug "setCursorHand - " +CocoaMessage(0, 0, "NSCursor currentCursor")
+    Debug "setCursorHand - " ;+CocoaMessage(0, 0, "NSCursor currentCursor")
   EndIf       
   
   If cursor::Set((11),#PB_Cursor_Cross)
@@ -396,7 +421,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf       
   
   
-  
+  ClipGadgets(UseGadgetList(0))
   ;/// second
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   g1=StringGadget(-1,0,0,0,0,"StringGadget")
@@ -417,7 +442,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   EndIf       
   
   
-  
+  ClipGadgets(UseGadgetList(0))
   ;/// third
   OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
@@ -490,6 +515,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
   Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
   
+  ClipGadgets(UseGadgetList(0))
+  ;-
   Macro DrawUp(x, y, size, bcolor, fcolor)
     Line(x+7, y, 2, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
@@ -941,20 +968,20 @@ CompilerIf #PB_Compiler_IsMainFile
     EnteredGadget = ID::Gadget(Mouse::Gadget(Mouse::Window()))
     
     If LeavedGadget <> EnteredGadget And buttons = 0
-     ; Debug  CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "NSEvent")
+      ; Debug  CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "NSEvent")
       
       If LeavedGadget >= 0
         ; Debug GetGadgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
         EventHandler(LeavedGadget, #PB_EventType_MouseLeave, 0)
         ;Cursor::Change(LeavedGadget, 0 )
-        PostEvent(#PB_Event_Gadget, EventWindow(), LeavedGadget, #PB_EventType_CursorChange, 0)
+        ;PostEvent(#PB_Event_Gadget, EventWindow(), LeavedGadget, #PB_EventType_CursorChange, 0)
       EndIf
       
       If EnteredGadget >= 0
         ; Debug GetGadgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
         EventHandler(EnteredGadget, #PB_EventType_MouseEnter, 1)
         ;Cursor::Change(EnteredGadget, 1 )
-        PostEvent(#PB_Event_Gadget, EventWindow(), EnteredGadget, #PB_EventType_CursorChange, 1)
+        ;PostEvent(#PB_Event_Gadget, EventWindow(), EnteredGadget, #PB_EventType_CursorChange, 1)
       EndIf
       LeavedGadget = EnteredGadget
     EndIf
@@ -962,7 +989,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If event = #PB_Event_Gadget
       Select EventType()
         Case #PB_EventType_CursorChange
-          Cursor::Change(EventGadget(), EventData() )
+          ;Cursor::Change(EventGadget(), EventData() )
           
         Case #PB_EventType_LeftButtonDown
           buttons = 1
@@ -974,6 +1001,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 160
+; FirstLine = 150
 ; Folding = ----------------
 ; EnableXP

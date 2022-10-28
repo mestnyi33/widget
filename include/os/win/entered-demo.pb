@@ -1,260 +1,41 @@
-﻿EnableExplicit
+﻿; splitter !!!!!!
 
-Procedure IDWindow( handle.i ) ; Return the id of the window from the window handle
-  Protected Window = GetProp_( handle, "PB_WindowID" ) - 1
-  If IsWindow( Window ) And WindowID( Window ) = handle
-    ProcedureReturn Window
-  EndIf
-  ProcedureReturn - 1
-EndProcedure
-
-Procedure IDGadget( handle.i )  ; Return the id of the gadget from the gadget handle
-  Protected gadget = GetProp_( handle, "PB_ID" )
-  If IsGadget( gadget ) And GadgetID( gadget ) = handle
-    ProcedureReturn gadget
-  EndIf
-  ProcedureReturn - 1
-EndProcedure
-
-Procedure.s GetClassName( handle.i )
-  Protected Class$ = Space( 16 )
-  GetClassName_( handle, @Class$, Len( Class$ ) )
-  ProcedureReturn Class$
-EndProcedure
-
-Procedure GetUMWindow( )
-  Protected Cursorpos.q, handle
-  GetCursorPos_( @Cursorpos )
-  handle = WindowFromPoint_( Cursorpos )
-  ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-EndProcedure
-
-Procedure GetUMGadget( WindowID )
-  Protected Cursorpos.q, handle, GadgetID
-  GetCursorPos_( @Cursorpos )
-  
-  If WindowID
-    GadgetID = WindowFromPoint_( Cursorpos )
-    
-    If IsGadget( IDGadget( GadgetID ) )
-      handle = GadgetID
-    Else
-      ScreenToClient_( WindowID, @Cursorpos ) 
-      handle = ChildWindowFromPoint_( WindowID, Cursorpos )
-      
-      ; spin-buttons
-      If handle = GadgetID 
-        If handle = WindowID
-          ; in the window
-          ProcedureReturn 0
-        Else
-          handle = GetWindow_( GadgetID, #GW_HWNDPREV )
-        EndIf
-      Else
-        ; MDIGadget childrens
-        ;           If IsWindow( IDWindow( GadgetID ) )
-        ;             If handle = WindowID
-        ;               ; in the window
-        ;               ProcedureReturn 0
-        ;             Else
-        ;               ;;handle = GetParent_( handle )
-        ;             EndIf
-        ;           EndIf
-      EndIf
-    EndIf
-    
-    ProcedureReturn handle
-  Else
-    ProcedureReturn 0
-  EndIf
-EndProcedure
-
-CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  
-  DeclareModule ID
-    Declare.i Window( WindowID.i )
-    Declare.i Gadget( GadgetID.i )
-    Declare.i IsWindowID( handle.i )
-    Declare.i GetWindowID( handle.i )
-  EndDeclareModule
-  Module ID
-    Procedure.s ClassName( handle.i )
-      Protected Class$ = Space( 16 )
-      GetClassName_( handle, @Class$, Len( Class$ ) )
-      ProcedureReturn Class$
-    EndProcedure
-    
-    Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-      ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-    EndProcedure
-    
-    Procedure.i IsWindowID( handle.i )
-      If ClassName( handle ) = "PBWindow"
-        ProcedureReturn 1
-      EndIf
-    EndProcedure
-    
-    Procedure.i Window( handle.i ) ; Return the id of the window from the window handle
-      Protected Window = GetProp_( handle, "PB_WindowID" ) - 1
-      If IsWindow( Window ) And WindowID( Window ) = handle
-        ProcedureReturn Window
-      EndIf
-      ProcedureReturn - 1
-    EndProcedure
-    
-    Procedure.i Gadget( handle.i )  ; Return the id of the gadget from the gadget handle
-      Protected gadget = GetProp_( handle, "PB_ID" )
-      If IsGadget( gadget ) And GadgetID( gadget ) = handle
-        ProcedureReturn gadget
-      EndIf
-      ProcedureReturn - 1
-    EndProcedure
-  EndModule
-  DeclareModule Mouse
-    Declare.i Window( )
-    Declare.i Gadget( WindowID )
-  EndDeclareModule
-  Module Mouse
-    Procedure Window( )
-      Protected Cursorpos.q, handle
-      GetCursorPos_( @Cursorpos )
-      handle = WindowFromPoint_( Cursorpos )
-      ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-    EndProcedure
-    
-    Procedure Gadget( WindowID )
-      Protected Cursorpos.q, handle, GadgetID
-      GetCursorPos_( @Cursorpos )
-      
-      If WindowID
-        GadgetID = WindowFromPoint_( Cursorpos )
-        
-        If IsGadget( ID::Gadget( GadgetID ) )
-          handle = GadgetID
-        Else
-          ScreenToClient_( WindowID, @Cursorpos ) 
-          handle = ChildWindowFromPoint_( WindowID, Cursorpos )
-          
-          ; spin-buttons
-          If handle = GadgetID 
-            If handle = WindowID
-              ; in the window
-              ProcedureReturn 0
-            Else
-              handle = GetWindow_( GadgetID, #GW_HWNDPREV )
-            EndIf
-          Else
-            ; MDIGadget childrens
-            ;           If IsWindow( IDWindow( GadgetID ) )
-            ;             If handle = WindowID
-            ;               ; in the window
-            ;               ProcedureReturn 0
-            ;             Else
-            ;               ;;handle = GetParent_( handle )
-            ;             EndIf
-            ;           EndIf
-          EndIf
-        EndIf
-        
-        ProcedureReturn handle
-      Else
-        ProcedureReturn 0
-      EndIf
-    EndProcedure
-  EndModule
-  
-  Global OldProc
-  Declare Proc(hWnd, uMsg, wParam, lParam)
-  
-  Procedure Proc(hWnd, uMsg, wParam, lParam)
-    Protected gadget
-    Protected result = 0
-    
-    Select uMsg
-      Case #WM_MOUSEMOVE
-        
-        ;       gadget = mouse::gadget(hWnd)
-        ;        Debug gadget
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-        
-      Case #WM_SETCURSOR
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-        ;result = 0
-      Default
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
-    EndSelect
-    
-    ProcedureReturn result
-  EndProcedure
-  
-  ;-
-  ; Для виндовс чтобы приклепить гаджеты на место
-  ; надо вызывать процедуру в конце создания всех гаджетов
-  ; 
-  
-  Procedure GadgetsClipCallBack( GadgetID, lParam )
-    ; https://www.purebasic.fr/english/viewtopic.php?t=64799
-    ; https://www.purebasic.fr/english/viewtopic.php?f=5&t=63915#p475798
-    ; https://www.purebasic.fr/english/viewtopic.php?t=63915&start=15
-    If GadgetID
-      Protected Gadget = ID::Gadget(GadgetID)
-      
-      If IsGadget(Gadget)
-        ; OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
-      EndIf
-      
-      ;       If IsGadget( Gadget ) And GadgetID = GadgetID( Gadget )
-      ;         Debug "Gadget "+ Gadget +"  -  "+ GadgetID
-      ;       Else
-      ;         Debug "- Gadget   -  "+ GadgetID
-      ;       EndIf
-      
-      If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
-        If IsGadget( Gadget ) 
-          Select GadgetType( Gadget )
-            Case #PB_GadgetType_ComboBox
-              Protected Height = GadgetHeight( Gadget )
-              
-              ;             ; Из-за бага когда устанавливаешь фоновый рисунок (например точки на кантейнер)
-              ;             Case #PB_GadgetType_Container 
-              ;               SetGadgetColor( Gadget, #PB_Gadget_BackColor, GetSysColor_( #COLOR_BTNFACE ))
-              ;               
-              ;             ; Для панел гаджета темный фон убирать
-              ;             Case #PB_GadgetType_Panel 
-              ;               If Not IsGadget( Gadget ) And (GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-              ;                 SetWindowLongPtr_(GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-              ;               EndIf
-              ;               ; SetClassLongPtr_(GadgetID, #GCL_HBRBACKGROUND, GetStockObject_(#NULL_BRUSH))
-              
-          EndSelect
-        EndIf
-        
-        SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS | #WS_CLIPCHILDREN )
-        
-        If Height
-          ResizeGadget( Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
-        EndIf
-        
-        SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-      EndIf
-      
-    EndIf
-    
-    ProcedureReturn GadgetID
-  EndProcedure
-CompilerEndIf
+IncludePath "../../os/win/"
+XIncludeFile "id.pbi"
+XIncludeFile "mouse.pbi"
+XIncludeFile "cursor.pbi"
+XIncludeFile "parent.pbi"
 
 
-Procedure ClipGadgets( WindowID )
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-  CompilerEndIf
-EndProcedure
+Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
+
+Macro DraggedGadget() : *dragged : EndMacro
+Macro EnteredGadget() : *entered : EndMacro
+Macro FocusedGadget() : *focused : EndMacro
+Macro PressedGadget() : *pressed : EndMacro
+
+Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
+  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
+  DesktopMouseX() - GadgetX(_canvas_, _mode_)
+  ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
+EndMacro
+Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
+  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
+  DesktopMouseY() - GadgetY(_canvas_, _mode_)
+  ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
+EndMacro
+
+
+DraggedGadget() =- 1 
+EnteredGadget() =- 1 
+PressedGadget() =- 1 
+FocusedGadget() =- 1 
 
 
 
-;- EXAMPLE
+
 CompilerIf #PB_Compiler_IsMainFile ;= 100
+  XIncludeFile "ClipGadgets.pbi"
   EnableExplicit
   UsePNGImageDecoder()
   
@@ -272,9 +53,64 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndProcedure
   
+  Procedure EventHandler(eventobject, eventtype, eventdata)
+    Protected window = EventWindow()
+    Static parentID, parent =-1, first=-1, second=-1
+    
+    If eventobject <> 315
+      Select eventtype
+        Case #PB_EventType_MouseEnter
+          Debug ""+eventobject + " #PB_EventType_MouseEnter "
+          ;           parentID = Parent::get(GadgetID(eventobject))
+          ;           
+          ;           If Not ID::IsWindowID(parentID)
+          ;             parent = ID::Gadget(parentID)
+          ;           Else
+          ;             parent=-1
+          ;           EndIf
+          ;           
+          ;           If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
+          ;             first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
+          ;             Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
+          ;             
+          ;             If first = eventobject
+          ;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
+          ;             ElseIf Second = eventobject
+          ;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
+          ;             EndIf
+          ;             Parent::set(eventobject, GadgetID(315))
+          ;           Else
+          ;             Parent::set(315, parentID)
+          ;             ResizeGadget(315, GadgetX(eventobject)-1, GadgetY(eventobject)-1, GadgetWidth(eventobject)+2, GadgetHeight(eventobject)+2)
+          ;             ResizeGadget(eventobject, 1, 1, #PB_Ignore, #PB_Ignore)
+          ;             Parent::set(eventobject, GadgetID(315))
+          ;           EndIf
+          ;           
+          ;           Cursor::setCursor(GadgetID(eventobject), #PB_Cursor_Hand)
+          PostEvent(#PB_Event_Gadget, EventWindow(), eventobject, eventtype, eventdata)
+          
+        Case #PB_EventType_MouseLeave
+          Debug ""+eventobject + " #PB_EventType_MouseLeave "
+          ;             If first = eventobject
+          ;               SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
+          ;               first =- 1
+          ;             ElseIf Second = eventobject
+          ;               SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
+          ;               Second =- 1
+          ;             Else
+          ;               ResizeGadget(eventobject, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
+          ;               Parent::set(eventobject, parentID)
+          ; ;              ResizeGadget(Parent, 0,0,0,0)
+          ;             EndIf
+          PostEvent(#PB_Event_Gadget, EventWindow(), eventobject, eventtype, eventdata)
+      EndSelect
+    EndIf
+  EndProcedure
   
-  If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetWindowColor(IDWindow(UseGadgetList(0)), $83BFEC)
+  ;SetCallBack(@EventHandler())
+  
+  If OpenWindow(10, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    SetWindowColor(ID::Window(UseGadgetList(0)), $83BFEC)
     
     ButtonGadget(#PB_GadgetType_Button, 5, 5, 160,95, "Multiline Button_"+Str(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #PB_Button_MultiLine ) 
     StringGadget(#PB_GadgetType_String, 5, 105, 160,95, "String_"+Str(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
@@ -329,50 +165,99 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseGadgetList()
     SetGadgetState( #PB_GadgetType_Panel, 4)
     
+    ; bug spin in splitter
     SpinGadget(301, 0, 0, 100,20,0,10)
-    SpinGadget(302, 0, 0, 100,20,0,10)                 
+    SpinGadget(302, 0, 0, 100,20,0,10) 
+    Define Gadget301 = GetWindow_( GadgetID( 301 ), #GW_HWNDNEXT )
+    Define Gadget302 = GetWindow_( GadgetID( 302 ), #GW_HWNDNEXT )
     SplitterGadget(#PB_GadgetType_Splitter, 665, 405, 160, 95, 301, 302)
-    
-    Define UseGadgetList = UseGadgetList(0)
-    MDIGadget(#PB_GadgetType_MDI, 665, 505, 160,95, 1, 2);, #PB_MDI_AutoSize)
-    Define *form = AddGadgetItem(#PB_GadgetType_MDI, -1, "form_0")
-    ResizeWindow( *form, #PB_Ignore, 40, 120, 60)
-    UseGadgetList( UseGadgetList ) ; go back to the main window gadgetlist
-    
-    InitScintilla()
-    ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
-    ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
-    CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
-    CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container )
+    SetParent_( Gadget301, GadgetID(#PB_GadgetType_Splitter) )
+    SetWindowPos_(Gadget301, GadgetID(301), 0, 0, 0, 0, #SWP_NOSIZE | #SWP_NOMOVE)
+    SetParent_( Gadget302, GadgetID(#PB_GadgetType_Splitter) )
+    SetWindowPos_(Gadget302, GadgetID(302), 0, 0, 0, 0, #SWP_NOSIZE | #SWP_NOMOVE)
     
     ;
-    ClipGadgets( UseGadgetList )
+    MDIGadget( #PB_GadgetType_MDI,665, 505, 160,95,0,0 ) : AddGadgetItem(#PB_GadgetType_MDI,-1,"form_1") :UseGadgetList(WindowID(10))
     
-    Define eventID, windowID, gadgetID
+    InitScintilla( ) : ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
+    ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
+    CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
+    CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container ):CloseGadgetList()
     
+    ContainerGadget(315, 830, 405, 160,95);, #PB_Container_Flat) 
+    SetGadgetColor(315, #PB_Gadget_BackColor, RGB(255, 0, 0))
+    CloseGadgetList()
+    ClipGadgets(WindowID(10))
+    
+;     parent::set(#PB_GadgetType_Spin, GadgetID(315))
+;     ResizeGadget(#PB_GadgetType_Spin, 0, 0, #PB_Ignore, #PB_Ignore)
+    
+    Define eventID,  WindowID , gadgetID, gadget
+    Define enGadget=-1,leGadget=-1,parent =-1, first=-1, second=-1
+    Define handle,parentID, eventobject=-1
+    
+    ;; Cursor::setCursor(GadgetID(1), #PB_Cursor_Hand)
     
     Repeat
-      eventID = WaitWindowEvent()
-      windowID = GetUMWindow( )
-      gadgetID = GetUMGadget( windowID )
-      
-      If gadgetID
-        If IDGadget( gadgetID ) =- 1
-          Debug "window - ("+ IDWindow( windowID ) +") "+ windowID ;+" "+ GetClassName( windowID )
-        Else
-          Debug "gadget - ("+ IDGadget( gadgetID ) +") "+ gadgetID ;+" "+ GetClassName( gadgetID )
+       Define  Event = WaitWindowEvent()
+      handle = Mouse::Gadget( Mouse::Window( ) )
+      If handle
+        enGadget = ID::Gadget( handle )
+        
+        If leGadget <> enGadget
+          If leGadget >= 0 And leGadget <> 315 
+            If first = leGadget
+              SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, first)
+              first =- 1
+            ElseIf Second = leGadget
+              SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, Second)
+              Second =- 1
+            Else
+              ResizeGadget(leGadget, GadgetX(315)+1, GadgetY(315)+1, #PB_Ignore, #PB_Ignore)
+              Parent::set(leGadget, parentID)
+            EndIf
+          EndIf
+          
+          leGadget = enGadget
+          
+          If enGadget >= 0  And enGadget <> 315 
+            parentID = Parent::get(GadgetID(enGadget))
+            If Not ID::IsWindowID(parentID)
+              parent = ID::Gadget(parentID)
+            Else
+              parent=-1
+            EndIf
+            
+            If IsGadget(parent) And GadgetType(parent) = #PB_GadgetType_Splitter
+              first = GetGadgetAttribute(parent, #PB_Splitter_FirstGadget)
+              Second = GetGadgetAttribute(parent, #PB_Splitter_SecondGadget)
+              
+              If first = leGadget
+                SetGadgetAttribute(parent, #PB_Splitter_FirstGadget, 315)
+              ElseIf Second = leGadget
+                SetGadgetAttribute(parent, #PB_Splitter_SecondGadget, 315)
+              EndIf
+              Parent::set(leGadget, GadgetID(315))
+            Else
+              Parent::set(315, parentID)
+              ResizeGadget(315, GadgetX(leGadget)-1, GadgetY(leGadget)-1, GadgetWidth(leGadget)+2, GadgetHeight(leGadget)+2)
+              ResizeGadget(leGadget, 1, 1, #PB_Ignore, #PB_Ignore)
+              Parent::set(leGadget, GadgetID(315))
+            EndIf
+            
+            ;Cursor::set((leGadget), #PB_Cursor_Hand)
+          EndIf
+          ;Debug ""+ leGadget
         EndIf
       EndIf
       
-      Select eventID 
-        Case #PB_Event_Gadget
-          If EventGadget() = #PB_GadgetType_ScrollBar
-            SetGadgetState(#PB_GadgetType_ProgressBar, GetGadgetState(#PB_GadgetType_ScrollBar))
-          EndIf
-      EndSelect
-    Until eventID = #PB_Event_CloseWindow
+;       
+      
+    Until Event= #PB_Event_CloseWindow
+    
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = K+-------
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 8
+; Folding = -v--
 ; EnableXP

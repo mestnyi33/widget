@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets-plus.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure _Events( )
+  Procedure Events( )
     Debug "window "+EventWindow( )+" widget "+EventGadget( )+" eventtype "+EventType( )+" eventdata "+EventData( )
   EndProcedure
   
@@ -134,11 +134,13 @@ CompilerIf #PB_Compiler_IsMainFile
         CloseWindow( EventWindow( ) ) 
         Break
       Default
-        CanvasEvents(  )
+        ; CanvasEvents(  )
     EndSelect
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 136
+; FirstLine = 111
 ; Folding = ---
 ; EnableXP
