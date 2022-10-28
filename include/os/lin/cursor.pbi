@@ -54,7 +54,7 @@ DeclareModule Cursor
   Declare   Free(hCursor.i)
   Declare   Hide(state.b)
   Declare   Get()
-  Declare   Change(Gadget.i, state.b )
+  Declare   Change(GadgetID.i, state.b )
   Declare   Set(Gadget.i, cursor.i)
 EndDeclareModule
 Module Cursor 
@@ -182,12 +182,12 @@ Module Cursor
     ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
   EndProcedure
   
-  Procedure Change( Gadget.i, state.b )
+  Procedure Change( GadgetID.i, state.b )
     CompilerIf #PB_Compiler_IsMainFile
       Debug "changeCursor"
     CompilerEndIf
     
-    Protected *cursor._s_cursor = g_object_get_data_(GadgetID(Gadget), "__cursor") ; GetGadgetData(EnteredGadget())
+    Protected *cursor._s_cursor = g_object_get_data_(GadgetID, "__cursor") ; GetGadgetData(EnteredGadget())
     If *cursor And 
        *cursor\hcursor  
       
@@ -256,7 +256,7 @@ Module Cursor
       EndIf
       
       If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
-        Change( Gadget, 1 )
+        Change( GadgetID, 1 )
         ProcedureReturn #True
       EndIf
     EndIf
@@ -1048,14 +1048,14 @@ CompilerIf #PB_Compiler_IsMainFile
       If LeavedGadget >= 0
         ; Debug GetGadgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
         EventHandler(LeavedGadget, #PB_EventType_MouseLeave, 0)
-        ;Cursor::Change(LeavedGadget, 0 )
+        ;Cursor::Change(GadgetID(LeavedGadget), 0 )
         PostEvent(#PB_Event_Gadget, EventWindow(), LeavedGadget, #PB_EventType_CursorChange, 0)
       EndIf
       
       If EnteredGadget >= 0
         ; Debug GetGadgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
         EventHandler(EnteredGadget, #PB_EventType_MouseEnter, 1)
-        ;Cursor::Change(EnteredGadget, 1 )
+        ;Cursor::Change(GadgetID(EnteredGadget), 1 )
         PostEvent(#PB_Event_Gadget, EventWindow(), EnteredGadget, #PB_EventType_CursorChange, 1)
       EndIf
       LeavedGadget = EnteredGadget
@@ -1064,7 +1064,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If event = #PB_Event_Gadget
       Select EventType()
         Case #PB_EventType_CursorChange
-          Cursor::Change(EventGadget(), EventData() )
+          Cursor::Change(GadgetID(EventGadget()), EventData() )
           
         Case #PB_EventType_LeftButtonDown
           buttons = 1
