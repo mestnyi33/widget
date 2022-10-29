@@ -165,7 +165,7 @@ Module Cursor
   EndProcedure
   
   Procedure   isHiden()
-    ProcedureReturn 0
+    ProcedureReturn Bool( gdk_cursor_get_cursor_type_(gdk_window_get_cursor_( gdk_display_get_default_() )) = #GDK_BLANK_CURSOR )
   EndProcedure
   
   Procedure   Hide(state.b)
