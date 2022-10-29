@@ -137,7 +137,7 @@ Module Cursor
 ;   GDK_UR_ANGLE 		  = 148,
 ;   GDK_WATCH 		  = 150,
 ;   GDK_XTERM 		  = 152
-;   GDK_BLANK_CURSOR = -2 ; пустой курсор
+   #GDK_BLANK_CURSOR = -2 ; пустой курсор
 ;   GDK_CURSOR_IS_PIXMAP = -1
   
 ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php 
@@ -157,15 +157,22 @@ Module Cursor
   
   ImportC ""
     gtk_widget_get_window(*widget.GtkWidget)
+    gdk_cursor_get_cursor_type(*cursor.GDKCursor)
+    gdk_window_get_cursor(*widget.GtkWidget)
+    g_object_set_data(*Widget.GtkWidget, strData.p-utf8, *userdata)
   EndImport
-  
+    ImportC "" ; -gtk"
+    g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
+    g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
+  EndImport
+
   Procedure   Free(hCursor.i)
     ; Используйте g_object_unref()
     ProcedureReturn gdk_cursor_unref_(hCursor)
   EndProcedure
   
   Procedure   isHiden()
-    ProcedureReturn Bool( gdk_cursor_get_cursor_type_(gdk_window_get_cursor_( gdk_display_get_default_() )) = #GDK_BLANK_CURSOR )
+    ProcedureReturn Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_() )) = #GDK_BLANK_CURSOR )
   EndProcedure
   
   Procedure   Hide(state.b)
@@ -193,18 +200,19 @@ Module Cursor
       
       ; reset
       If state = 0 
-        gdk_window_set_cursor_( gtk_widget_get_window_(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
+        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
       EndIf
       
       ; set
       If state = 1 
-        gdk_window_set_cursor_( gtk_widget_get_window_(*cursor\windowID), *cursor\hcursor)
+        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
       EndIf
     EndIf
     
   EndProcedure
   
   Procedure Set(Gadget.i, cursor.i)
+    ProcedureReturn
     If Gadget >= 0
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
@@ -217,7 +225,7 @@ Module Cursor
       If Not *cursor
         *cursor = AllocateStructure(_s_cursor)
         *cursor\windowID = ID::GetWindowID(GadgetID)
-        g_object_set_data_(GadgetID, "__cursor", *cursor, 0) 
+        g_object_set_data(GadgetID, "__cursor", *cursor) 
       EndIf
       
       If *cursor\icursor <> cursor
@@ -271,7 +279,7 @@ Module Cursor
     If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
       result = #PB_Cursor_Invisible
     Else
-      Select gdk_window_get_cursor_( gdk_display_get_default_() )
+      Select gdk_window_get_cursor( gdk_display_get_default_() )
         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
         Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
           
@@ -490,7 +498,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf       
   
   If cursor::Set((1),#PB_Cursor_Hand)
-    Debug "setCursorHand - " +CocoaMessage(0, 0, "NSCursor currentCursor")
+    Debug "setCursorHand - " ;+CocoaMessage(0, 0, "NSCursor currentCursor")
   EndIf       
   
   If cursor::Set((11),#PB_Cursor_Cross)
@@ -1076,6 +1084,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; CursorPosition = 163
+; FirstLine = 156
 ; Folding = ----------------
 ; EnableXP

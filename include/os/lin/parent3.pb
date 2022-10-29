@@ -1,4 +1,69 @@
-﻿EnableExplicit
+﻿; #include <gtk/gtk.h>
+; #include <glib.h>
+; 
+; void
+; button1_clicked_cb (GtkWidget * widget, GtkWindow * window)
+; {
+;     GdkWindow *root;
+;     gint width, height, rwidth, rheight;
+; 
+;     gtk_window_get_size (window, &width, &height);
+;     root = gtk_widget_get_root_window (GTK_WIDGET (window));
+;     gdk_window_get_geometry (root, NULL, NULL, &rwidth,
+;                              &rheight);
+; 
+;     gtk_window_move (window, (rwidth - width) / 2,
+;                      (rheight - height) / 2);
+; }
+; 
+; void
+; button2_clicked_cb (GtkWidget * widget, GtkWindow * window)
+; {
+;     gtk_widget_hide (GTK_WIDGET (window));
+;     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+;     gtk_widget_show_all (GTK_WIDGET (window));
+; }
+; 
+; int
+; main (int argc, char *argv[])
+; {
+;     GtkWidget *window;
+;     GtkWidget *box;
+;     GtkWidget *button1;
+;     GtkWidget *button2;
+; 
+;     gtk_init (&argc, &argv);
+; 
+;     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+; 
+;     button1 = gtk_button_new_with_label ("approach 1");
+;     button2 = gtk_button_new_with_label ("approach 2");
+; 
+;     box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10);
+;     gtk_box_pack_start (GTK_BOX (box), button1, TRUE, TRUE,
+;                         10);
+;     gtk_box_pack_start (GTK_BOX (box), button2, TRUE, TRUE,
+;                         10);
+; 
+;     gtk_container_add (GTK_CONTAINER (window), box);
+;     gtk_widget_show_all (window);
+; 
+;     g_signal_connect (window, "destroy",
+;                       G_CALLBACK (gtk_main_quit), NULL);
+;     g_signal_connect (button1, "clicked",
+;                       G_CALLBACK (button1_clicked_cb),
+;                       window);
+;     g_signal_connect (button2, "clicked",
+;                       G_CALLBACK (button2_clicked_cb),
+;                       window);
+; 
+;     gtk_main ();
+; 
+;     Return 0;
+; }
+
+
+EnableExplicit
 
 ImportC ""
   PB_Gadget_Objects.i
@@ -417,6 +482,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf  
   Until Event=#PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; CursorPosition = 14
 ; Folding = --------
 ; EnableXP

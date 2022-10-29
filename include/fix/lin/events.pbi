@@ -10,6 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndModule
 CompilerEndIf
 
+XIncludeFile "../../os/modules.pbi"
+
 DeclareModule events
   EnableExplicit
   
@@ -405,6 +407,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 11
 ; Folding = ------------
 ; EnableXP

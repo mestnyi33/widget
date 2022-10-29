@@ -92,6 +92,7 @@ Module Parent
     If IsGadget( gadget )
       Protected i = item
       Protected GadgetID = GadgetID( gadget )
+      ;Debug CocoaMessage( 0, GadgetID, "contentView" )
       
       If ParentID ; And ParentID <>Parent::Get(  GadgetID )
         Select GadgetType( gadget )
@@ -381,5 +382,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---f----
+; Folding = --------
 ; EnableXP

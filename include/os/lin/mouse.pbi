@@ -8,6 +8,20 @@ DeclareModule Mouse
 EndDeclareModule
 
 Module Mouse
+  Macro gtk_children( _handle_, _children_ = 0 ) : g_list_nth_data_( gtk_container_get_children_( _handle_ ), _children_ ) : EndMacro
+  Macro gtk_bin( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_bin_get_type_ ( ) ) : EndMacro
+  Macro gtk_box( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_box_get_type_ ( ) ) : EndMacro
+  Macro gtk_frame( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_frame_get_type_ ( ) ) : EndMacro
+  Macro gtk_fixed( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_fixed_get_type_ ( ) ) : EndMacro
+  Macro gtk_container( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_container_get_type_ ( ) ) : EndMacro
+  Macro gtk_widget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_widget_get_type_ ( ) ) : EndMacro
+  Macro gtk_window( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_window_get_type_ ( ) ) : EndMacro
+  Macro gtk_table( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_table_get_type_ ( ) ) : EndMacro
+  Macro gtk_hbox( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_hbox_get_type_ ( ) ) : EndMacro
+  Macro gtk_vbox( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_hbox_get_type_ ( ) ) : EndMacro
+  Macro gtk_vpaned( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_vpaned_get_type_ ( ) ) : EndMacro
+  Macro gtk_viewport( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_viewport_get_type_ ( ) ) : EndMacro
+  
   Procedure.s ClassName( handle.i )
     Protected Result = gtk_widget_get_name_( handle )
     If Result
@@ -20,7 +34,6 @@ Module Mouse
     
     If *GdkWindow
       gdk_window_get_user_data_( *GdkWindow, @handle )
-      ; handle = *GdkWindow\user_data ; Начиная с PB 5.40, * GdkWindow.GdkWindowObject \ user_data больше не содержит GtkWindow или является неверным
       ProcedureReturn gtk_widget_get_toplevel_( handle )
     EndIf
   EndProcedure
@@ -31,8 +44,51 @@ Module Mouse
       
       If *GdkWindow
         gdk_window_get_user_data_( *GdkWindow, @handle )
-        ; handle = *GdkWindow\user_data ; Начиная с PB 5.40, * GdkWindow.GdkWindowObject \ user_data больше не содержит GtkWindow или является неверным
-        ProcedureReturn handle
+        If IsGadget(ID::Gadget(handle))
+          ProcedureReturn handle
+        Else
+          If IsGadget(ID::Gadget(gtk_widget_get_parent_( handle )))
+            ProcedureReturn gtk_widget_get_parent_( handle )
+          Else
+            
+            If ClassName(handle) = "GtkButton"
+              ; listicon heder
+              handle = gtk_widget_get_parent_( handle )
+            ElseIf ClassName(handle) = "GtkToggleButton"
+              ; combobox
+              handle = gtk_widget_get_parent_( handle )
+              handle = gtk_widget_get_parent_( handle )
+            ElseIf ClassName(handle) = "GtkEventBox"
+              ; hyperlink
+              handle = gtk_children(handle)
+              If ClassName(handle) = "GtkFrame"
+                ; text & image
+                handle = gtk_children(handle)
+              EndIf
+            ElseIf ClassName(handle) = "GtkLabel"
+              handle = gtk_widget_get_parent_( handle )
+              
+            ElseIf ClassName(handle) = "GtkLayout"
+              handle = gtk_widget_get_parent_( handle )
+              handle = gtk_widget_get_parent_( handle )
+              ;handle = gtk_children(handle)
+              Debug "eee "+ClassName(handle)
+              ;handle = gtk_children(handle)
+              
+            Else
+;               Debug ""
+;               Debug ClassName(handle)
+;               handle = gtk_children(handle)
+;               Debug ClassName(handle)
+;               handle = gtk_children(handle)
+;               Debug ClassName(handle)
+              
+            EndIf
+            ;handle = gtk_widget_get_parent_( handle )
+            
+            ProcedureReturn handle
+          EndIf
+        EndIf
       EndIf
     EndIf
   EndProcedure
@@ -59,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetWindowColor(ID::Window(UseGadgetList(0)), $83BFEC)
+    ;SetWindowColor(ID::Window(UseGadgetList(0)), $83BFEC) ; bug
     
     ButtonGadget(#PB_GadgetType_Button, 5, 5, 160,95, "Multiline Button_"+Str(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #PB_Button_MultiLine ) 
     StringGadget(#PB_GadgetType_String, 5, 105, 160,95, "String_"+Str(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
@@ -82,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBarGadget(#PB_GadgetType_ScrollBar, 335, 205, 160,95,0,100,0) : SetGadgetState(#PB_GadgetType_ScrollBar, 40)
     ScrollAreaGadget(#PB_GadgetType_ScrollArea, 335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) :  ButtonGadget(201, 0, 0, 150,20, "ScrollArea_"+Str(#PB_GadgetType_ScrollArea) ) :  ButtonGadget(202, 180-150, 90-20, 150,20, "Button_"+Str(202) ) : CloseGadgetList()
     TrackBarGadget(#PB_GadgetType_TrackBar, 335, 405, 160,95,0,21, #PB_TrackBar_Ticks) : SetGadgetState(#PB_GadgetType_TrackBar, 11)
-    WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"https://www.purebasic.com" )
+    ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"https://www.purebasic.com" ) ; bug
     
     ButtonImageGadget(#PB_GadgetType_ButtonImage, 500, 5, 160,95, ImageID(0), 1)
     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
@@ -124,7 +180,6 @@ CompilerIf #PB_Compiler_IsMainFile
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
     CanvasGadget(#PB_GadgetType_Canvas+1, 830, 305, 160,95, #PB_Canvas_Container ):CloseGadgetList()
     
-    ;Define container = ContainerGadget(-1,0,0,0,0, #PB_Container_Flat):CloseGadgetList()
     
     Define eventID,  WindowID , gadgetID, gadget
     Repeat
@@ -139,7 +194,6 @@ CompilerIf #PB_Compiler_IsMainFile
           gadget = ID::Gadget( gadgetID )
           Debug "gadget - ("+ gadget +") "+ gadgetID ;+" "+ GetClassName( gadgetID )
           
-          ; ResizeGadget(container, GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget))
           ;           If StartDrawing( WindowOutput( EventWindow() ))
           ;             DrawingMode( #PB_2DDrawing_Outlined )
           ;             Box( GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget),$ff0000) 
@@ -157,6 +211,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; CursorPosition = 86
+; FirstLine = 69
+; Folding = -------
 ; EnableXP

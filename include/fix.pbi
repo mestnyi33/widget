@@ -76,7 +76,7 @@ Module fix
 EndModule 
 
 UseModule fix
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 1
 ; Folding = 4--
 ; EnableXP

@@ -25,11 +25,11 @@ Module ID
   EndProcedure
   
   Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-    ProcedureReturn g_object_get_data_( handle, "pb_id" )
+    ProcedureReturn g_object_get_data_( WindowID, "pb_id" )
   EndProcedure
   
   Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
-    ProcedureReturn g_object_get_data_( handle, "pb_id" ) - 1 
+    ProcedureReturn g_object_get_data_( GadgetID, "pb_id" ) - 1 
   EndProcedure
 EndModule
 
@@ -47,6 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; CursorPosition = 31
+; FirstLine = 22
 ; Folding = --
 ; EnableXP
