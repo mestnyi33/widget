@@ -161,32 +161,32 @@ Module Cursor
     gdk_window_get_cursor(*widget.GtkWidget)
     g_object_set_data(*Widget.GtkWidget, strData.p-utf8, *userdata)
   EndImport
-    ImportC "" ; -gtk"
-    g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
-    g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
-  EndImport
+;     ImportC "" ; -gtk"
+;     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
+;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
+;   EndImport
 
   Procedure   Free(hCursor.i)
-    ; Используйте g_object_unref()
-    ProcedureReturn gdk_cursor_unref_(hCursor)
+;     ; Используйте g_object_unref()
+;     ProcedureReturn gdk_cursor_unref_(hCursor)
   EndProcedure
   
   Procedure   isHiden()
-    ProcedureReturn Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_() )) = #GDK_BLANK_CURSOR )
+    ProcedureReturn 0;Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_() )) = #GDK_BLANK_CURSOR )
   EndProcedure
   
   Procedure   Hide(state.b)
-    ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
-    If state
-      gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_BLANK_CURSOR))
-      ;gdk_cursor_new_from_name("none")
-    Else
-      gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_ARROW))
-    EndIf
+;     ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
+;     If state
+;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_BLANK_CURSOR))
+;       ;gdk_cursor_new_from_name("none")
+;     Else
+;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_ARROW))
+;     EndIf
   EndProcedure
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
-    ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
+;     ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
@@ -198,15 +198,15 @@ Module Cursor
     If *cursor And 
        *cursor\hcursor  
       
-      ; reset
-      If state = 0 
-        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
-      EndIf
-      
-      ; set
-      If state = 1 
-        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
-      EndIf
+;       ; reset
+;       If state = 0 
+;         gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
+;       EndIf
+;       
+;       ; set
+;       If state = 1 
+;         gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
+;       EndIf
     EndIf
     
   EndProcedure
@@ -220,89 +220,89 @@ Module Cursor
         Debug "setCursor"
       CompilerEndIf
       
-      *cursor = g_object_get_data_(GadgetID, "__cursor")
+;       *cursor = g_object_get_data_(GadgetID, "__cursor")
+;       
+;       If Not *cursor
+;         *cursor = AllocateStructure(_s_cursor)
+;         *cursor\windowID = ID::GetWindowID(GadgetID)
+;         g_object_set_data(GadgetID, "__cursor", *cursor) 
+;       EndIf
+;       
+;       If *cursor\icursor <> cursor
+;         *cursor\icursor = cursor
+;         
+;         If cursor >= 0 And cursor <= 255
+;           Select cursor
+;             Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR)
+;             Case #PB_Cursor_Busy 
+;             Case #PB_Cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR)
+;             Case #PB_Cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
+;               
+;             Case #PB_Cursor_Drag      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_Drop      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
+;               
+;             Case #PB_Cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS)
+;             Case #PB_Cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2)
+;             Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;               
+;             Case #PB_Cursor_Arrows   : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
+;             Case #PB_Cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_LeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;               
+;             Case #PB_Cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;             Case #PB_Cursor_UpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+;           EndSelect 
+;         Else
+;           If cursor
+;             *cursor\hcursor = Create(cursor)
+;           EndIf
+;         EndIf
+;       EndIf
       
-      If Not *cursor
-        *cursor = AllocateStructure(_s_cursor)
-        *cursor\windowID = ID::GetWindowID(GadgetID)
-        g_object_set_data(GadgetID, "__cursor", *cursor) 
-      EndIf
-      
-      If *cursor\icursor <> cursor
-        *cursor\icursor = cursor
-        
-        If cursor >= 0 And cursor <= 255
-          Select cursor
-            Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR)
-            Case #PB_Cursor_Busy 
-            Case #PB_Cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR)
-            Case #PB_Cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
-              
-            Case #PB_Cursor_Drag      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Drop      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
-              
-            Case #PB_Cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS)
-            Case #PB_Cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2)
-            Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-              
-            Case #PB_Cursor_Arrows   : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
-            Case #PB_Cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_LeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-              
-            Case #PB_Cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_UpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-          EndSelect 
-        Else
-          If cursor
-            *cursor\hcursor = Create(cursor)
-          EndIf
-        EndIf
-      EndIf
-      
-      If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
-        Change( GadgetID, 1 )
-        ProcedureReturn #True
-      EndIf
+;       If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
+;         Change( GadgetID, 1 )
+;         ProcedureReturn #True
+;       EndIf
     EndIf
   EndProcedure
   
   Procedure   Get()
-   ; gdk_cursor_get_cursor_type_(GdkCursor *cursor) ; Возвращает тип курсора для этого курсора.
-    Protected result.i, currentSystemCursor
-    
-    ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
-    
-    If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
-      result = #PB_Cursor_Invisible
-    Else
-      Select gdk_window_get_cursor( gdk_display_get_default_() )
-        Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
-        Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
-          
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drop
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drag
-        Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #PB_Cursor_Denied
-          
-        Case gdk_cursor_new_(#GDK_CROSS) : result = #PB_Cursor_Cross
-        Case gdk_cursor_new_(#GDK_HAND2) : result = #PB_Cursor_Hand
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grab
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grabbing
-          
-        Case gdk_cursor_new_(#GDK_FLEUR) : result = #PB_Cursor_Arrows
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Up
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Down
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_UpDown
-          
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Left
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Right
-        Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_LeftRight
-      EndSelect 
-    EndIf
-    
+;    ; gdk_cursor_get_cursor_type_(GdkCursor *cursor) ; Возвращает тип курсора для этого курсора.
+;     Protected result.i, currentSystemCursor
+;     
+;     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
+;     
+;     If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
+;       result = #PB_Cursor_Invisible
+;     Else
+;       Select gdk_window_get_cursor( gdk_display_get_default_() )
+;         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
+;         Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
+;           
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drop
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drag
+;         Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #PB_Cursor_Denied
+;           
+;         Case gdk_cursor_new_(#GDK_CROSS) : result = #PB_Cursor_Cross
+;         Case gdk_cursor_new_(#GDK_HAND2) : result = #PB_Cursor_Hand
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grab
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grabbing
+;           
+;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #PB_Cursor_Arrows
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Up
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Down
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_UpDown
+;           
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Left
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Right
+;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_LeftRight
+;       EndSelect 
+;     EndIf
+;     
     ProcedureReturn result
   EndProcedure
   
@@ -324,7 +324,7 @@ Module Cursor
 EndModule   
 
 ;-\\ example
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
   UseModule constants
   ;UseModule events
   
@@ -1085,7 +1085,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 163
-; FirstLine = 156
-; Folding = ----------------
+; CursorPosition = 326
+; FirstLine = 319
+; Folding = --------------
 ; EnableXP

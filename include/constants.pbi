@@ -101,10 +101,10 @@
       #__splitter_buttonsize = 9
     CompilerEndIf
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      #__splitter_buttonsize = 7;4
+      #__splitter_buttonsize = 9;4
     CompilerEndIf
     CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-      #__splitter_buttonsize = 4;4
+      #__splitter_buttonsize = 9;4;4
     CompilerEndIf
     #__scroll_buttonsize = 16
     
@@ -522,7 +522,7 @@
     #__image_bottom = #__text_bottom
     
     ;- _c_Mdi
-    #__Mdi_editable = #__flag_anchorsgadget
+    #__Mdi_editable = #__flag_anchorsgadget ; win - 4294967296
     
     ;- _c_window
     ;     #__window_nogadgets = #__flag_nobuttons

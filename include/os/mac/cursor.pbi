@@ -141,7 +141,7 @@ Module Cursor
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
       CompilerIf #PB_Compiler_IsMainFile
-        Debug "setCursor"
+        Debug "setCursor "+ cursor
       CompilerEndIf
       
       *cursor = objc_getAssociatedObject_(GadgetID, "__cursor")

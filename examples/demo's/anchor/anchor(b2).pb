@@ -10,7 +10,7 @@ Procedure a_mode( *this._s_widget, mode.i, size.l = #PB_Default )
   *this\_a_mode = mode  
   
   If size.l <> #PB_Default
-    transform( )\size = size
+    a_transform( )\size = size
     
     *this\_a_\size = size
       *this\_a_\pos = size - size / 3 - 2
@@ -69,6 +69,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP

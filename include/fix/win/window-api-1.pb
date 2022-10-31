@@ -98,6 +98,6 @@ While GetMessage_(msg.MSG, #Null, 0, 0 )
   TranslateMessage_(msg) 
   DispatchMessage_(msg) 
 Wend 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
 ; Folding = -
 ; EnableXP

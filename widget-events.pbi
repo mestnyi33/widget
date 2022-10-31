@@ -866,9 +866,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Global resize_one
     Declare   EventHandler ( canvas.i=- 1, eventtype.i =- 1 )
     Declare   WaitClose( *this = #PB_Any, waittime.l = 0 )
-    Declare   Message( Title.s, Text.s, Flag.i = #Null )
+    Declare   Message( Title.s, Text.s, flag.q = #Null )
     
-    Declare.i Tree_properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Declare.i Tree_properties( x.l,y.l,width.l,height.l, flag.q = 0 )
     
     Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
     Declare a_set( *this, size.l = #PB_Ignore, position.l = #PB_Ignore )
@@ -878,7 +878,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i SetAlignmentFlag( *this, Mode.l, Type.l = 1 )
     Declare.i SetAlignment( *this, left.l, top.l, right.l, bottom.l, auto.b = #True )
     Declare   SetFrame( *this, size.a, mode.i = 0 )
-    Declare   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1 )
+    Declare   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.q=#Null, framesize=1 )
     
     Declare.i TypeFromClass( class.s )
     Declare.s ClassFromType( type.i )
@@ -899,7 +899,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Declare.b Update( *this )
     Declare   IsChild( *this, *parent )
-    Declare   Flag( *this, flag.i = #Null, state.b = #PB_Default )
+    Declare   Flag( *this, flag.q = #Null, state.b = #PB_Default )
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
     Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
     Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
@@ -986,56 +986,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   SetImage( *this, *image )
     Declare   SetBackgroundImage( *this, *image )
     
-    Declare.i Create( *parent, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.i = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
+    Declare.i Create( *parent, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
     
     ; button
-    Declare.i Text( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, round.l = 0 )
-    Declare.i String( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, round.l = 0 )
-    Declare.i Button( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
-    Declare.i Option( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
-    Declare.i Checkbox( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
-    Declare.i HyperLink( x.l,y.l,width.l,height.l, Text.s, Color.i, Flag.i = 0 )
-    Declare.i ComboBox( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Declare.i Text( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, round.l = 0 )
+    Declare.i String( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, round.l = 0 )
+    Declare.i Button( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, Image.i = -1, round.l = 0 )
+    Declare.i Option( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
+    Declare.i Checkbox( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
+    Declare.i HyperLink( x.l,y.l,width.l,height.l, Text.s, Color.i, flag.q = 0 )
+    Declare.i ComboBox( x.l,y.l,width.l,height.l, flag.q = 0 )
     
     ; bar
     ;Declare.i bar_area_( *parent, ScrollStep, AreaWidth, AreaHeight, width, height, Mode = 1 )
-    Declare.i Spin( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 0, increment.f = 1.0 )
-    Declare.i Tab( x.l,y.l,width.l,height.l, Flag.i = 0, round.l = 0 )
-    Declare.i Scroll( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i = 0, round.l = 0 )
-    Declare.i Track( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 7 )
-    Declare.i Progress( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 0 )
-    Declare.i Splitter( x.l,y.l,width.l,height.l, First.i, Second.i, Flag.i = 0 )
+    Declare.i Spin( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 0, increment.f = 1.0 )
+    Declare.i Tab( x.l,y.l,width.l,height.l, flag.q = 0, round.l = 0 )
+    Declare.i Scroll( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, flag.q = 0, round.l = 0 )
+    Declare.i Track( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 7 )
+    Declare.i Progress( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 0 )
+    Declare.i Splitter( x.l,y.l,width.l,height.l, First.i, Second.i, flag.q = 0 )
     
     ; list
-    Declare.i Tree( x.l,y.l,width.l,height.l, Flag.i = 0 )
-    Declare.i ListView( x.l,y.l,width.l,height.l, Flag.i = 0 )
-    Declare.i Editor( x.l, Y.l, width.l,height.l, Flag.i = 0, round.i = 0 )
-    Declare.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.i=0 )
+    Declare.i Tree( x.l,y.l,width.l,height.l, flag.q = 0 )
+    Declare.i ListView( x.l,y.l,width.l,height.l, flag.q = 0 )
+    Declare.i Editor( x.l, Y.l, width.l,height.l, flag.q = 0, round.i = 0 )
+    Declare.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.q=0 )
     
-    Declare.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.i=0 )
+    Declare.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.q=0 )
     
-    Declare.i Image( x.l,y.l,width.l,height.l, image.i, Flag.i = 0 )
-    Declare.i ButtonImage( x.l,y.l,width.l,height.l, Image.i = -1, Flag.i = 0, round.l = 0 )
+    Declare.i Image( x.l,y.l,width.l,height.l, image.i, flag.q = 0 )
+    Declare.i ButtonImage( x.l,y.l,width.l,height.l, Image.i = -1, flag.q = 0, round.l = 0 )
     
     ; container
-    Declare.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
-    Declare.i Container( x.l,y.l,width.l,height.l, Flag.i = 0 )
-    Declare.i Frame( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
-    Declare.i Window( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, *parent = 0 )
-    Declare.i ScrollArea( x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.i = 0 )
-    Declare.i MDI( x.l,y.l,width.l,height.l, Flag.i = 0 ) 
+    Declare.i Panel( x.l,y.l,width.l,height.l, flag.q = 0 )
+    Declare.i Container( x.l,y.l,width.l,height.l, flag.q = 0 )
+    Declare.i Frame( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
+    Declare.i Window( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, *parent = 0 )
+    Declare.i ScrollArea( x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
+    Declare.i MDI( x.l,y.l,width.l,height.l, flag.q = 0 ) 
     
     ; menu
-    Declare   ToolBar( *parent, flag.i = #PB_ToolBar_Small )
-    ;     Declare   Menus( *parent, flag.i )
-    ;     Declare   PopupMenu( *parent, flag.i )
+    Declare   ToolBar( *parent, flag.q = #PB_ToolBar_Small )
+    ;     Declare   Menus( *parent, flag.q )
+    ;     Declare   PopupMenu( *parent, flag.q )
     
     Declare.i bar_tab_SetState( *this._S_widget, State.l )
     Declare   mdi_bar_update_( *this, x.l,y.l,width.l,height.l )
     Declare   bar_Resizes( *this, x.l,y.l,width.l,height.l )
     Declare.b bar_Change( *this, ScrollPos.l )
     
-    Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
+    Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i =- 1 )
     
     Declare.b Arrow( x.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
@@ -1049,8 +1049,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i OpenList( *this, item.l = 0 )
     ;
     Declare   DoEvents( *this, eventtype.l, *button = #PB_All, *data = #Null ) ;, mouse_x.l, mouse_y.l
-    Declare   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
-    Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  Window = -1, *CallBack = #Null )
+    Declare   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *callback = #Null, canvas = #PB_Any )
+    Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null,  Window = -1, *CallBack = #Null )
     Declare   Free( *this )
     ;}
   EndDeclareModule
@@ -4824,7 +4824,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If item = 0 
           *this\SelectedTabIndex( ) = 0
           PushListPosition( *this\_tabs( ) )
-          *this\FocusedTab( ) = FirstElement( *this\_tabs( ) )
+          FirstElement( *this\_tabs( ) )
+          *this\FocusedTab( ) = *this\_tabs( )
           PopListPosition( *this\_tabs( ) )
         EndIf
         
@@ -11867,7 +11868,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   Flag( *this._S_widget, flag.i=#Null, state.b =- 1 )
+    Procedure   Flag( *this._S_widget, flag.q=#Null, state.b =- 1 )
       Protected result
       
       If Not flag
@@ -12127,7 +12128,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure   AddItem( *this._S_widget, Item.l, Text.s, Image.i =- 1, flag.i = 0 )
+    Procedure   AddItem( *this._S_widget, Item.l, Text.s, Image.i =- 1, flag.q = 0 )
       Protected result
       
       If *this\type = #__type_MDI
@@ -12656,28 +12657,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;- 
     Procedure   SetCursor( *this._S_widget, *cursor )
       ProcedureReturn Cursor::Set( *this\_root( )\canvas\gadget, *cursor )
-    EndProcedure
-    
-    Procedure   SetFrame( *this._S_widget, size.a, mode.i = 0 )
-      Protected result
-      If *this\fs <> size
-        result = *this\fs 
-        *this\fs = size
-        
-        If *this\_a_\transform
-          a_set_size( *this\_a_\id, *this\_a_\size )
-        EndIf
-        ;;
-        If mode =- 1 ; auto pos
-          Resize( *this, *this\x[#__c_container]-size, *this\y[#__c_container]-size, *this\width[#__c_frame]+size*2, *this\height[#__c_frame]+size*2 )
-        ElseIf mode =- 2 ; auto pos
-                         ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          Resize( *this, *this\x[#__c_container]-(size - result), *this\y[#__c_container]-(size - result), #PB_Ignore, #PB_Ignore  )
-        Else
-          Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-        EndIf
-        
-      EndIf
     EndProcedure
     
     Procedure   SetClass( *this._S_widget, class.s )
@@ -13314,7 +13293,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       result = #True
       ProcedureReturn result
     EndProcedure
-    
     
     Procedure   SetPosition( *this._S_widget, position.l, *widget._S_widget = #Null ) ; Ok
       If *widget = #Null
@@ -14176,6 +14154,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
+    Procedure   SetFrame( *this._S_widget, size.a, mode.i = 0 )
+      Protected result
+      If *this\fs <> size
+        result = *this\fs 
+        *this\fs = size
+        
+        If *this\_a_\transform
+          a_set_size( *this\_a_\id, *this\_a_\size )
+        EndIf
+        ;;
+        If mode =- 1 ; auto pos
+          Resize( *this, *this\x[#__c_container]-size, *this\y[#__c_container]-size, *this\width[#__c_frame]+size*2, *this\height[#__c_frame]+size*2 )
+        ElseIf mode =- 2 ; auto pos
+                         ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          Resize( *this, *this\x[#__c_container]-(size - result), *this\y[#__c_container]-(size - result), #PB_Ignore, #PB_Ignore  )
+        Else
+          Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+        EndIf
+        
+      EndIf
+    EndProcedure
     
     Procedure.i SetAttachment( *this._S_widget, *parent._S_widget, mode.a )
       If *parent 
@@ -14723,6 +14722,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       Else
       EndIf
+     
       
       ProcedureReturn result
     EndProcedure
@@ -14730,7 +14730,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;- 
     ;-  CREATEs
-    Procedure.i Create( *parent._S_widget, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.i = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
+    Procedure.i Create( *parent._S_widget, class.s, type.l, x.l,y.l,width.l,height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
       Protected color, image
       Protected ScrollBars;, *this.allocate( Widget )
       
@@ -15576,88 +15576,88 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i Tab( x.l,y.l,width.l,height.l, Flag.i = 0, round.l = 0 )
+    Procedure.i Tab( x.l,y.l,width.l,height.l, flag.q = 0, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_TabBar, x,y,width,height, #Null$, flag, 0,0,0, 40,round,40 )
     EndProcedure
     
-    Procedure.i Spin( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 0, Increment.f = 1.0 )
+    Procedure.i Spin( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Spin, x,y,width,height, #Null$, flag, min,max,0, #__spin_buttonsize,round,Increment )
     EndProcedure
     
-    Procedure.i Scroll( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i = 0, round.l = 0 )
+    Procedure.i Scroll( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, flag.q = 0, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ScrollBar, x,y,width,height, #Null$, flag, min,max,pagelength, #__scroll_buttonsize,round,1 )
     EndProcedure
     
-    Procedure.i Track( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 7 )
+    Procedure.i Track( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 7 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_TrackBar, x,y,width,height, #Null$, flag, min,max,0, 0,round,1 )
     EndProcedure
     
-    Procedure.i Progress( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 0 )
+    Procedure.i Progress( x.l,y.l,width.l,height.l, Min.l,Max.l, flag.q = 0, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ProgressBar, x,y,width,height, #Null$, flag, min,max,0, 0,round,1 )
     EndProcedure
     
-    Procedure.i Splitter( x.l,y.l,width.l,height.l, First.i,Second.i, Flag.i = 0 )
+    Procedure.i Splitter( x.l,y.l,width.l,height.l, First.i,Second.i, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Splitter, x,y,width,height, #Null$, flag, First,Second,0, 0,0,1 )
     EndProcedure
     
     
     ;- 
-    Procedure.i Tree( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i Tree( x.l,y.l,width.l,height.l, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Tree, x,y,width,height, "", Flag )
     EndProcedure
     
-    Procedure.i ListView( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i ListView( x.l,y.l,width.l,height.l, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListView, x,y,width,height, "", Flag | #__tree_nobuttons | #__list_nolines )
     EndProcedure
     
-    Procedure.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.i = 0 )
+    Procedure.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_tree, x,y,width,height, "", Flag )
       ;  ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListIcon, x,y,width,height, "", Flag )
     EndProcedure
     
-    Procedure.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.i=0 )
+    Procedure.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.q=0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ExplorerList, x,y,width,height, "", Flag | #__tree_nobuttons | #__list_nolines )
     EndProcedure
     
-    Procedure.i Tree_properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i Tree_properties( x.l,y.l,width.l,height.l, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Property, x,y,width,height, "", Flag )
     EndProcedure
     
     
     ;- 
-    Procedure.i Editor( x.l, Y.l, width.l,height.l, Flag.i = 0, round.i = 0 )
+    Procedure.i Editor( x.l, Y.l, width.l,height.l, flag.q = 0, round.i = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Editor, x,y,width,height, "", flag, 0,0,0,0,round,0 )
     EndProcedure
     
-    Procedure.i String( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, round.l = 0 )
+    Procedure.i String( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_String, x,y,width,height, Text, flag, 0,0,0,0,round,0 )
     EndProcedure
     
-    Procedure.i Text( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, round.l = 0 )
+    Procedure.i Text( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Text, x,y,width,height, Text, flag, 0,0,0,0,round,0 )
     EndProcedure
     
-    Procedure.i Button( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
+    Procedure.i Button( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, Image.i = -1, round.l = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Button, x,y,width,height, Text, flag, Image, 0,0,0, round )
     EndProcedure
     
-    Procedure.i Option( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
+    Procedure.i Option( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Option, x,y,width,height, Text, flag, 0,0,0,0,0,0 )
     EndProcedure
     
-    Procedure.i Checkbox( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
+    Procedure.i Checkbox( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_CheckBox, x,y,width,height, Text, flag, 0,0,0,0,0,0 )
     EndProcedure
     
-    Procedure.i HyperLink( x.l,y.l,width.l,height.l, Text.s, Color.i, Flag.i = 0 )
+    Procedure.i HyperLink( x.l,y.l,width.l,height.l, Text.s, Color.i, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_HyperLink, x,y,width,height, Text, flag, Color, 0,0,0,0,0 )
     EndProcedure
     
-    Procedure.i ButtonImage( x.l,y.l,width.l,height.l, Image.i =-1 , Flag.i = 0, round.l = 0 )
+    Procedure.i ButtonImage( x.l,y.l,width.l,height.l, Image.i =-1 , flag.q = 0, round.l = 0 )
       ProcedureReturn Button( x,y,width,height, "", Flag, Image, round )
     EndProcedure
     
-    Procedure.i ComboBox( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i ComboBox( x.l,y.l,width.l,height.l, flag.q = 0 )
       Protected *this.allocate( Widget ) 
       Protected *parent._S_widget = OpenedWidget( )
       
@@ -15720,23 +15720,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure.i MDI( x.l,y.l,width.l,height.l, Flag.i = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+    Procedure.i MDI( x.l,y.l,width.l,height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_MDI, x,y,width,height, #Null$, flag | #__flag_nogadgets, 0,0,0, #__scroll_buttonsize,0,1 )
     EndProcedure
     
-    Procedure.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i Panel( x.l,y.l,width.l,height.l, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Panel, x,y,width,height, #Null$, flag | #__flag_noscrollbars, 0,0,0, #__scroll_buttonsize,0,0 )
     EndProcedure
     
-    Procedure.i Container( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i Container( x.l,y.l,width.l,height.l, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Container, x,y,width,height, #Null$, flag | #__flag_noscrollbars, 0,0,0, #__scroll_buttonsize,0,0 )
     EndProcedure
     
-    Procedure.i ScrollArea( x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.i = 0 )
+    Procedure.i ScrollArea( x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ScrollArea, x,y,width,height, #Null$, flag, ScrollAreaWidth,ScrollAreaHeight,0, #__scroll_buttonsize,0,ScrollStep )
     EndProcedure
     
-    Procedure.i Frame( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0 )
+    Procedure.i Frame( x.l,y.l,width.l,height.l, Text.s, flag.q = 0 )
       Protected Size = 16, *this.allocate( Widget ) 
       ;set_last_parameters_( *this, #__type_Frame, Flag, OpenedWidget( ))
       Protected *parent._S_widget = OpenedWidget( )
@@ -15781,12 +15781,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i Image( x.l,y.l,width.l,height.l, image.i, Flag.i = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+    Procedure.i Image( x.l,y.l,width.l,height.l, image.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
       ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Image, x,y,width,height, #Null$, flag, 0,0,image, #__scroll_buttonsize,0,1 )
     EndProcedure
     
     ;- 
-    Procedure ToolBar( *parent._S_widget, flag.i = #PB_ToolBar_Small )
+    Procedure ToolBar( *parent._S_widget, flag.q = #PB_ToolBar_Small )
       ProcedureReturn ListView( 0,0,*parent\width[#__c_inner],20, flag )
     EndProcedure
     
@@ -15969,18 +15969,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\mode\buttons And *rows( )\count\childrens And
                Not ( *rows( )\sublevel And *this\mode\check = #__m_optionselect )
               
-              If #PB_Compiler_OS = #PB_OS_Windows Or 
-                 (*rows( )\parent\row And *rows( )\parent\row\last And *rows( )\parent\row\sublevel = *rows( )\parent\row\last\sublevel)
-                
-                draw_button_( 0, x, y, *ibox\width, *ibox\height, 0,2)
-                draw_box( *ibox, color\frame )
-                
-                Line(x + 2, y + *ibox\height/2, *ibox\width - 4, 1, $ff000000)
-                If *ibox\___state 
-                  Line(x + *ibox\width/2, y + 2, 1, *ibox\height - 4, $ff000000)
-                EndIf
-                
-              Else
+;               If #PB_Compiler_OS = #PB_OS_Windows Or 
+;                  (*rows( )\parent\row And *rows( )\parent\row\last And *rows( )\parent\row\sublevel = *rows( )\parent\row\last\sublevel)
+;                 
+;                 draw_button_( 0, x, y, *ibox\width, *ibox\height, 0,2)
+;                 draw_box( *ibox, color\frame )
+;                 
+;                 Line(x + 2, y + *ibox\height/2, *ibox\width - 4, 1, $ff000000)
+;                 If *ibox\___state 
+;                   Line(x + *ibox\width/2, y + 2, 1, *ibox\height - 4, $ff000000)
+;                 EndIf
+;                 
+;               Else
                 
                 
                 If *rows( )\color\state 
@@ -15989,7 +15989,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DrawArrow2(x,y, 3-Bool(*ibox\___state), $ff000000)
                 EndIf
                 
-              EndIf
+;               EndIf
               
             EndIf
           EndIf    
@@ -17032,6 +17032,105 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Repaint
     EndProcedure
     
+    Procedure Row_timer_events( )
+      ; Debug "  timer"
+      Protected result
+      Protected scroll_x, scroll_y
+      Protected  *this._S_widget = PressedWidget( )
+      
+      If *this
+        If *this\_root( ) <> Root( )
+          mouse( )\x = CanvasMouseX( *this\_root( )\canvas\gadget )
+          mouse( )\y = CanvasMouseY( *this\_root( )\canvas\gadget )
+        EndIf
+        
+        If Not is_at_point_y_( *this, mouse( )\y, [#__c_inner] ) And *this\scroll\v
+          If mouse( )\y < mouse( )\delta\y
+            If Not bar_in_start_( *this\scroll\v\bar )
+              scroll_y = mouse( )\y - ( *this\y[#__c_inner] )
+              bar_SetState( *this\scroll\v\bar, *this\scroll\v\bar\page\pos + scroll_y )
+              Editor_Update( *this, *this\_rows( ))
+              ReDraw(   *this\_root( ) ) 
+              Debug "scroll v top " + scroll_y +" "+ *this\VisibleFirstRow( )\index
+              
+            Else
+              ; Debug "scroll v stop top"
+            EndIf
+          ElseIf mouse( )\y > mouse( )\delta\y
+            If Not bar_in_stop_( *this\scroll\v\bar )
+              scroll_y = 400;mouse( )\y - ( *this\y[#__c_inner] + *this\height[#__c_inner] )
+                            ;bar_SetState( *this\scroll\v\bar, *this\scroll\v\bar\page\pos + scroll_y )
+                            ;Editor_Update( *this, *this\_rows( ))
+                            ;ReDraw(   *this\_root( ) ) 
+              Debug "scroll v bottom "+ scroll_y +" "+ *this\VisibleLastRow( )\index
+              
+              ;               If *this\FocusedRow( ) <> *this\VisibleLastRow( )
+              ;                 ;                 If *this\EnteredRow( )
+              ;                 ;                   *this\EnteredRow( )\state\enter = 0
+              ;                 ;                   *this\EnteredRow( )\color\state = 0
+              ;                 ;                 EndIf
+              ;                 ;                 *this\EnteredRow( ) = *this\VisibleLastRow( )
+              ;                 ;                 *this\EnteredRow( )\state\enter = 1
+              ;                 ;                 *this\EnteredRow( )\color\state = 1
+              ;                 
+              ;                 If *this\FocusedRow( )
+              ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\VisibleLastRow( )\index +" "+ *this\FocusedRow( )\index
+              ;                   *this\FocusedRow( )\state\focus = 0
+              ;                   *this\FocusedRow( )\color\state = 0
+              ;                 EndIf
+              ;                 
+              ;                 ; edit_sel__( *this, *this\VisibleLastRow( ), *this\PressedRow( ), *this\FocusedRow( ), 0, *this\FocusedRow( )\text\len )
+              ;                 *this\FocusedRow( ) = *this\VisibleLastRow( )
+              ;                 ;*this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\VisibleLastRow( )\index )
+              ;                 *this\FocusedRow( )\state\focus = 1
+              ;                 *this\FocusedRow( )\color\state = 1
+              ;                 *this\FocusedRow( )\state\repaint = 1
+              ;                 
+              ;                 Debug *this\FocusedRow( )\index
+              ;                 edit_set_sel_( *this, *this\FocusedRow( ), *this\PressedRow( ) )
+              ;                 
+              ;                 *this\state\repaint = 1
+              ;               EndIf             
+              
+              ;                 result = 1
+            Else
+              ; Debug "scroll v stop bottom"
+            EndIf
+          EndIf
+        EndIf
+        
+        If Not is_at_point_x_( *this, mouse( )\x, [#__c_inner] ) And *this\scroll\h
+          If mouse( )\x < mouse( )\delta\x
+            If Not bar_in_start_( *this\scroll\h\bar )
+              scroll_x = mouse( )\x - ( *this\x[#__c_inner] )
+              Debug "scroll h top " + scroll_x
+              bar_SetState( *this\scroll\h\bar, *this\scroll\h\bar\page\pos + scroll_x )
+              result = 1
+            Else
+              ; Debug "scroll h stop top"
+            EndIf
+          ElseIf mouse( )\x > mouse( )\delta\x
+            If Not bar_in_stop_( *this\scroll\h\bar )
+              scroll_x = mouse( )\x - ( *this\x[#__c_inner] + *this\height[#__c_inner] )
+              Debug "scroll h bottom "+ scroll_x
+              bar_SetState( *this\scroll\h\bar, *this\scroll\h\bar\page\pos + scroll_x )
+              result = 1
+            Else
+              ; Debug "scroll h stop bottom"
+            EndIf
+          EndIf
+        EndIf
+        
+        If result = 1
+          ;Debug 888
+          ;           ReDraw(   *this\_root( ) ) 
+          ;           PostCanvasRepaint( *this\_root( ) )
+          ;           DoEvents( *this, #PB_EventType_StatusChange, #PB_All, #Null )
+        EndIf 
+      EndIf
+      
+    EndProcedure
+    
     Procedure DoEvent_BarButtons( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
       Protected repaint, *button._S_buttons
       
@@ -17208,105 +17307,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ProcedureReturn repaint
-    EndProcedure
-    
-    Procedure Row_timer_events( )
-      ; Debug "  timer"
-      Protected result
-      Protected scroll_x, scroll_y
-      Protected  *this._S_widget = PressedWidget( )
-      
-      If *this
-        If *this\_root( ) <> Root( )
-          mouse( )\x = CanvasMouseX( *this\_root( )\canvas\gadget )
-          mouse( )\y = CanvasMouseY( *this\_root( )\canvas\gadget )
-        EndIf
-        
-        If Not is_at_point_y_( *this, mouse( )\y, [#__c_inner] ) And *this\scroll\v
-          If mouse( )\y < mouse( )\delta\y
-            If Not bar_in_start_( *this\scroll\v\bar )
-              scroll_y = mouse( )\y - ( *this\y[#__c_inner] )
-              bar_SetState( *this\scroll\v\bar, *this\scroll\v\bar\page\pos + scroll_y )
-              Editor_Update( *this, *this\_rows( ))
-              ReDraw(   *this\_root( ) ) 
-              Debug "scroll v top " + scroll_y +" "+ *this\VisibleFirstRow( )\index
-              
-            Else
-              ; Debug "scroll v stop top"
-            EndIf
-          ElseIf mouse( )\y > mouse( )\delta\y
-            If Not bar_in_stop_( *this\scroll\v\bar )
-              scroll_y = 400;mouse( )\y - ( *this\y[#__c_inner] + *this\height[#__c_inner] )
-                            ;bar_SetState( *this\scroll\v\bar, *this\scroll\v\bar\page\pos + scroll_y )
-                            ;Editor_Update( *this, *this\_rows( ))
-                            ;ReDraw(   *this\_root( ) ) 
-              Debug "scroll v bottom "+ scroll_y +" "+ *this\VisibleLastRow( )\index
-              
-              ;               If *this\FocusedRow( ) <> *this\VisibleLastRow( )
-              ;                 ;                 If *this\EnteredRow( )
-              ;                 ;                   *this\EnteredRow( )\state\enter = 0
-              ;                 ;                   *this\EnteredRow( )\color\state = 0
-              ;                 ;                 EndIf
-              ;                 ;                 *this\EnteredRow( ) = *this\VisibleLastRow( )
-              ;                 ;                 *this\EnteredRow( )\state\enter = 1
-              ;                 ;                 *this\EnteredRow( )\color\state = 1
-              ;                 
-              ;                 If *this\FocusedRow( )
-              ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\VisibleLastRow( )\index +" "+ *this\FocusedRow( )\index
-              ;                   *this\FocusedRow( )\state\focus = 0
-              ;                   *this\FocusedRow( )\color\state = 0
-              ;                 EndIf
-              ;                 
-              ;                 ; edit_sel__( *this, *this\VisibleLastRow( ), *this\PressedRow( ), *this\FocusedRow( ), 0, *this\FocusedRow( )\text\len )
-              ;                 *this\FocusedRow( ) = *this\VisibleLastRow( )
-              ;                 ;*this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\VisibleLastRow( )\index )
-              ;                 *this\FocusedRow( )\state\focus = 1
-              ;                 *this\FocusedRow( )\color\state = 1
-              ;                 *this\FocusedRow( )\state\repaint = 1
-              ;                 
-              ;                 Debug *this\FocusedRow( )\index
-              ;                 edit_set_sel_( *this, *this\FocusedRow( ), *this\PressedRow( ) )
-              ;                 
-              ;                 *this\state\repaint = 1
-              ;               EndIf             
-              
-              ;                 result = 1
-            Else
-              ; Debug "scroll v stop bottom"
-            EndIf
-          EndIf
-        EndIf
-        
-        If Not is_at_point_x_( *this, mouse( )\x, [#__c_inner] ) And *this\scroll\h
-          If mouse( )\x < mouse( )\delta\x
-            If Not bar_in_start_( *this\scroll\h\bar )
-              scroll_x = mouse( )\x - ( *this\x[#__c_inner] )
-              Debug "scroll h top " + scroll_x
-              bar_SetState( *this\scroll\h\bar, *this\scroll\h\bar\page\pos + scroll_x )
-              result = 1
-            Else
-              ; Debug "scroll h stop top"
-            EndIf
-          ElseIf mouse( )\x > mouse( )\delta\x
-            If Not bar_in_stop_( *this\scroll\h\bar )
-              scroll_x = mouse( )\x - ( *this\x[#__c_inner] + *this\height[#__c_inner] )
-              Debug "scroll h bottom "+ scroll_x
-              bar_SetState( *this\scroll\h\bar, *this\scroll\h\bar\page\pos + scroll_x )
-              result = 1
-            Else
-              ; Debug "scroll h stop bottom"
-            EndIf
-          EndIf
-        EndIf
-        
-        If result = 1
-          ;Debug 888
-          ;           ReDraw(   *this\_root( ) ) 
-          ;           PostCanvasRepaint( *this\_root( ) )
-          ;           DoEvents( *this, #PB_EventType_StatusChange, #PB_All, #Null )
-        EndIf 
-      EndIf
-      
     EndProcedure
     
     Procedure DoEvent_Lines( *this._S_widget, eventtype.l, mouse_x.l =- 1, mouse_y.l =- 1 )
@@ -17870,6 +17870,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ; update non-focus status  
                 If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ))
+                  Debug " items status change enter"
+                  
                   DoEvents(*this, #PB_EventType_StatusChange, *this\EnteredRow( )\index, *this\EnteredRow( ))
                 EndIf
               EndIf
@@ -17877,6 +17879,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Else
             ; 
             If *this\FocusedRow( ) <> *this\LeavedRow( )
+              Debug " items status change leave"
+               
               If *this\FocusedRow( ) 
                 DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
               ElseIf *this\LeavedRow( ) 
@@ -18323,7 +18327,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not is_interact_row_( *leave ) And Not a_transform_( *leave ) 
               If Not IsChild( *widget, *leave )
                 ;
-                DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
+                ;DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
                 
                 If *leave\address
                   ChangeCurrentElement( *leave\_widgets( ), *leave\address )
@@ -18397,6 +18401,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure EventHandler( Canvas =- 1, EventType =- 1 )
       Protected Repaint, mouse_x , mouse_y 
       
+      ;       If eventtype = #PB_EventType_Create
+      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
+      ;           ChangeCurrentRoot( GadgetID( Canvas ) )
+      ;         EndIf
+      ;       EndIf
+      
+      ;\\
       If eventtype = #PB_EventType_LeftButtonUp Or 
          eventtype = #PB_EventType_MiddleButtonUp Or
          eventtype = #PB_EventType_RightButtonUp
@@ -18423,12 +18434,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
       EndIf
-      
-      ;       If eventtype = #PB_EventType_Create
-      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
-      ;           ChangeCurrentRoot( GadgetID( Canvas ) )
-      ;         EndIf
-      ;       EndIf
       
       ;\\
       If eventtype = #PB_EventType_MouseEnter
@@ -19030,7 +19035,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
+    Procedure   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *CallBack = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
       
@@ -19193,7 +19198,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Root( )
     EndProcedure
     
-    Procedure.i Window( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, *parent._S_widget = 0 )
+    Procedure.i Window( x.l,y.l,width.l,height.l, Text.s, flag.q = 0, *parent._S_widget = 0 )
       Protected *this.allocate( Widget ) 
       
       With *this
@@ -19356,7 +19361,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  Window = -1, *CallBack = #Null )
+    Procedure.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null,  Window = -1, *CallBack = #Null )
       Protected *this, g
       
       If Window = - 1
@@ -19389,7 +19394,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn g
     EndProcedure
     
-    Procedure   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.i=#Null, framesize=1  )
+    Procedure   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.q=#Null, framesize=1  )
       Protected *this._S_widget
       If Not Alpha(Color)
         Color = Color&$FFFFFF | 255<<24
@@ -19558,7 +19563,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   WaitEvents( *this._s_WIDGET )
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "run")
-      CompilerElse
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
         Protected msg.MSG
         ;         If PeekMessage_(@msg,0,0,0,1)
         ;           TranslateMessage_(@msg)
@@ -19604,7 +19610,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn #PB_Ignore
     EndProcedure
     
-    Procedure   Message( Title.s, Text.s, Flag.i = #Null )
+    Procedure   Message( Title.s, Text.s, flag.q = #Null )
       Protected result
       Protected img =- 1, f1 =- 1, f2=8, width = 400, height = 120
       Protected bw = 85, bh = 25, iw = height-bh-f1 - f2*4 - 2-1
@@ -20238,5 +20244,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8------------------------------------f8--+htt-8-0-48v--------------------9n-9+-----------------------------------------------------------------------------------------------------------------------------------------+--f-04v0t4------------------------------PAA+---------bP-ev--+8-----------------------f-6------+8-------------------------
+; Folding = -------------------------------------------------------------------------+-------------------------------------------------------------------------8------------------------------------f8--+htt-8-0-48v--------------------9n-9+-----------------------------------------------------------------------------------------------------------------------------------------+--f-04v0t4------------------------------DAg----------3zv48-v-+---fv-----------------+3f+t-0--v-+-------------------------
 ; EnableXP

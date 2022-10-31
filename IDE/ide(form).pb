@@ -562,6 +562,7 @@ CompilerIf #PB_Compiler_IsMainFile
         properties_update_coordinate( id_i_properties_tree, EventWidget )
         
       Case #PB_EventType_StatusChange
+        Debug "widget status change "
         If IsGadget( id_design_code )
           SetGadgetState( id_design_code, GetData( EventWidget ) )
         EndIf
@@ -1193,6 +1194,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 1
-; Folding = ------+-----------5
+; CursorPosition = 564
+; FirstLine = 529
+; Folding = ------+--------f--5
 ; EnableXP

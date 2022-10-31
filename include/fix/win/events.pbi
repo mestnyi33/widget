@@ -49,7 +49,9 @@ Module events
     If MouseDrag Or Event = #PB_Event_Gadget
       ;             If EventType = #PB_EventType_Repaint
       
-      CallFunctionFast(*setcallback, EventGadget(), EventType())
+      If *setcallback
+        CallFunctionFast(*setcallback, EventGadget(), EventType())
+      EndIf
       ;             EndIf
       
     EndIf
@@ -781,7 +783,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 115
-; FirstLine = 97
-; Folding = ----9--------
+; CursorPosition = 54
+; FirstLine = 42
+; Folding = ----8--------
 ; EnableXP
