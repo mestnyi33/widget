@@ -65,7 +65,12 @@ Module Cursor
   EndProcedure
   
   Procedure   isHiden()
-    ProcedureReturn 0
+    Protected cursor_info.CURSORINFO ;= {0};
+		cursor_info\cbSize = SizeOf(CURSORINFO);
+		GetCursorInfo_(@cursor_info);
+		
+		Debug "  "+GetCursor_()
+    ProcedureReturn cursor_info\ptScreenPos\x ; Bool( cursor_info\flags & #CURSOR_SHOWING )
   EndProcedure
   
   Procedure   Hide(state.b)
@@ -104,6 +109,7 @@ Module Cursor
         ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
         SetCursor_( *cursor\hcursor )
       EndIf
+      
     EndIf
     
   EndProcedure
@@ -394,6 +400,9 @@ Module Cursor
           SetCursor_( *cursor\hcursor )
         EndIf
         
+          
+      Debug isHiden()
+    
       Default
         result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
     EndSelect
@@ -426,6 +435,8 @@ Module Cursor
         Debug "setCursor"
       CompilerEndIf
       
+;        SetClassLongPtr_( GadgetID, #GCL_HCURSOR, #NUL )
+;        SetClassLongPtr_( id::getwindowid(GadgetID), #GCL_HCURSOR, #NUL )
       *cursor = GetProp_(GadgetID, "__cursor")
       
       If Not *cursor
@@ -1295,7 +1306,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 1295
-; FirstLine = 1265
+; CursorPosition = 72
+; FirstLine = 65
 ; Folding = -------------------------
 ; EnableXP

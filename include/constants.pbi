@@ -194,7 +194,7 @@
     ;     #__ci_container = #__c_draw
     #__c_inner_b = #__c_inner
     
-    ;- \_state
+    ;- temp for the widgets.pbi
     Enumeration
       #__s_normal      = 0<<0  ; 0
       #__s_select    = 1<<0    ; 1
@@ -209,17 +209,9 @@
       #__s_scroll    = 1<<8  ; 256
       
       #__s_drag     = 1<<9  ; 512
-      #__s_drop     = 1<<10 ; 1024 ; drop enter state
-      
+      #__s_drop   = 1<<10
       #__s_current     = 1<<11 ;
     EndEnumeration
-    
-    
-    ;     Macro _get_state_index_( _adress_ )
-    ;       ( Bool( _adress_\_state & #__s_enter ) * 1 | 
-    ;         Bool( _adress_\_state & #__s_select ) * 2 | 
-    ;         Bool( _adress_\_state & #__s_disable ) * 3 )
-    ;     EndMacro
     
     ; \__state
     EnumerationBinary 1
@@ -1192,6 +1184,8 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 204
+; FirstLine = 193
 ; Folding = ---
 ; EnableXP

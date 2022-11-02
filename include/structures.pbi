@@ -30,23 +30,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     STATE
     Structure _s_STATE
-      *flag           ; & normal; entered; selected; disabled
+      *flag           ; temp for the widgets.pbi
       hide.b          ; panel childrens real hide state
       disable.b
+      create.b
       
       enter.b
       press.b
       focus.b
       drag.b
       
+      toggle.b 
+      collapse.b
+      
       change.b
-      move.b
-      size.b
-      
       repaint.b
-      click.b
       
-      create.b
+      ; check.b
+      ; click.b
+      ; move.b
+      ; size.b
     EndStructure
     ;--     COUNT
     Structure _s_COUNT
@@ -78,6 +81,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       y.l[3]
       x.l[3]
       
+      ;;;clickCount.b
       change.b                   ; if moved mouse this value #true
       buttons.l                  ; 
       
@@ -764,9 +768,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     struct
     Structure _s_struct 
       *drawing
-      *action_widget._s_WIDGET
-      action_type.s
-       
+      
       *opened._s_WIDGET             ; last list opened element
       *closed._s_WIDGET             ; last list opened element
        
@@ -783,7 +785,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; для совместимости
       List *_root._s_ROOT( )        ; 
       List *_address._s_WIDGET( )   ; widget( )\
-    EndStructure
+      
+      ; TEMP
+      *action_widget._s_WIDGET ; temp
+      action_type.s ; temp
+     EndStructure
     
     ;Global *event._s_events = Allocatestructure(_s_events)
     ;}
@@ -795,5 +801,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------8-
+; Folding = ----------
 ; EnableXP

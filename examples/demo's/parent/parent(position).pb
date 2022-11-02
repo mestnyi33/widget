@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     debug_position(root(), "")
     
-    SetParent(*CHILD, *PANEL, 1)
+    SetParent(*CHILD, *PANEL, 0)
     
     debug_position(root(), "container")
     

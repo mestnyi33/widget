@@ -1,5 +1,5 @@
 ﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pb"
+XIncludeFile "../../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -112,6 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP

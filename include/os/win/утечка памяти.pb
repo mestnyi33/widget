@@ -54,6 +54,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure   AddItem( *this._S_widget, Item.l, Text.s, Image.i =- 1, flag.i = 0 )
       LastElement( *this\_s( ))
       AddElement( *this\_s( )) 
+      *this\_s.allocate(TABS, ( ))
       *this\tab = @*this\_s( ) ; bad
       
       ; *this\tab = *this\_s( ) ; good
@@ -74,6 +75,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         
         If Root( )\child( )\tab
+;           ChangeCurrentElement(Root( )\_s(), Root( )\child( )\tab)
+;           Root( )\_s()\state\focus = #False
           Root( )\child( )\tab\state\focus = #False
         EndIf
       Next
@@ -166,6 +169,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.72 (Windows - x86)
-; FirstLine = 127
+; CursorPosition = 78
+; FirstLine = 40
 ; Folding = ----
 ; EnableXP

@@ -104,12 +104,15 @@ Module events
     CFRunLoopGetCurrent()
     CFRunLoopAddCommonMode(rl, mode)
     
-    GetCurrentProcess(*psn)
-    CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
     CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+    
+;     GetCurrentProcess(*psn)
+;     CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+    CGEventTapCreateForPSN(*ProcessSerialNumber, CGEventTapPlacement.i, CGEventTapOptions.i, CGEventMask.Q, CGEventTapCallback.i, *UserData)
+    GetCurrentProcess(*ProcessSerialNumber)
   EndImport
   
-  ProcedureC  eventTapFunction(proxy, eType, event, refcon)
+  ProcedureC  eventTapFunction(proxy, eType, event, refcon) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
     Protected Point.CGPoint
     Protected *cursor.cursor::_s_cursor = #Null
     ; Debug "eventTapFunction - "+ID::ClassName(event)
@@ -401,6 +404,7 @@ Module events
     If eventTap
       CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
     EndIf
+    ; CFRelease_(eventTap)
     
     BindEvent(#PB_Event_Gadget, @ResizeEvent( ))
   EndProcedure
@@ -1119,5 +1123,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --4Xx-48+------------
+; Folding = -94Xx-48-v-----------
 ; EnableXP

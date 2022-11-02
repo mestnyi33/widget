@@ -3,8 +3,7 @@
 ; 
 
 ;XIncludeFile "../../../widgets.pbi"
-;XIncludeFile "../../../widget-events.pb"
-XIncludeFile "../../../CE.pb"
+XIncludeFile "../../../widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -75,6 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::WaitClose( )
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Windows - x86)
+; CursorPosition = 5
 ; Folding = -
 ; EnableXP

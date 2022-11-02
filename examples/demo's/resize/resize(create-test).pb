@@ -17,7 +17,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_1 = SplitterGadget(#PB_Any, 10, 10, 285+30, 140, Button_1, Button_2, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
 
     Open(5, 10, 160, 285+30+2, 140+2)
-    Splitter_1 = Splitter(0, 0, 285+30, 140, 0,0, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Button_1 = ScrollArea( 0, 0, 0, 0, 150, 150, 1) : CloseList() 
+    Button_2 = Button( 0, 0, 0, 0, "button_1")
+    Splitter_1 = Splitter(0, 0, 285+30, 140, Button_1,Button_2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     
     WaitClose()
   EndIf
