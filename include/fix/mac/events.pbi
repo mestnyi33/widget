@@ -509,9 +509,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_Resize " 
         
       Case #PB_EventType_MouseMove
-        If events::DraggedGadget() = 1
+        If events::PressedGadget() = 0
           Debug ""+eventobject + " #PB_EventType_MouseMove " 
-          ResizeGadget(events::DraggedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+          ResizeGadget(events::PressedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
         EndIf
         ;         If events::DraggedGadget() = 0
         ;           ResizeGadget(events::DraggedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
@@ -1123,5 +1123,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -94Xx-48-v-----------
+; Folding = -9-X6-48-v-----------
 ; EnableXP

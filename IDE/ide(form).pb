@@ -7,7 +7,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib( WIDGET )
   UsePNGImageDecoder( )
   
-  #_drag_private_type = 1
+  #_drag_private_drop = 1<<1
+  #_drag_private_move = 1<<2
   
   ;- ENUMs
   ; properties items
@@ -418,7 +419,7 @@ CompilerIf #PB_Compiler_IsMainFile
         newClass.s = GetClass( *new )+"_"+GetCount( *new )
         
         If *new\container 
-          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_drag_private_type )
+          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_drag_private_drop|#_drag_private_move )
         EndIf
         
         ;
@@ -490,11 +491,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart
-        If IsContainer( EventWidget )
-          If GetState( id_elements_tree) <> 0 
-            DragPrivate( #_drag_private_type )
+        If GetState( id_elements_tree) <> 0 
+          If IsContainer( EventWidget )
+            DragPrivate( #_drag_private_drop )
             SetCursor( EventWidget, #PB_Cursor_Cross )
           EndIf
+        Else
+          Debug "changeParent"
+          DragPrivate( #_drag_private_move )
         EndIf
         
       Case #PB_EventType_Drop
@@ -505,6 +509,10 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; end new create 
             SetState( id_elements_tree, 0 )
+          Else
+            If SetParent( PressedWidget( ), EnteredWidget( ) )
+              Debug "reParent"
+            EndIf
           EndIf
         EndIf
         
@@ -522,6 +530,11 @@ CompilerIf #PB_Compiler_IsMainFile
           ;               SetItemState( id_i_view_tree, GetData( a_transform( )\group( )\widget ), 0 )
           ;             Next
           ;           EndIf
+        Else
+;           If GetState( id_elements_tree) <> 0 
+;             ; end new create 
+;             SetState( id_elements_tree, 0 )
+;           EndIf
         EndIf
         
       Case #PB_EventType_LeftButtonUp
@@ -721,7 +734,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragPrivate( #_drag_private_type )
+          DragPrivate( #_drag_private_drop )
           Protected imgID = ImageID(GetItemData( EventWidget, GetState( EventWidget ) )) 
           SetCursor( EventWidget( ), imgID)
           
@@ -1193,8 +1206,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 564
-; FirstLine = 529
-; Folding = ------+--------f--5
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ------+----f9---+-x-
 ; EnableXP

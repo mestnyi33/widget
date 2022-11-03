@@ -1548,7 +1548,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Bool( _address_\drop And mouse( )\drag And 
             _address_\drop\format = mouse( )\drag\format And 
             _address_\drop\actions & mouse( )\drag\actions And
-            _address_\drop\PrivateType = mouse( )\drag\PrivateType )
+            _address_\drop\PrivateType & mouse( )\drag\PrivateType )
     EndMacro
     
     Procedure   DD_Cursor( *this._S_widget )
@@ -13631,18 +13631,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; for the scrollarea container childrens
           ; if new parent - scrollarea container
-          If *parent\scroll And *parent\scroll\v And *parent\scroll\h
+          If *parent\scroll And
+             *parent\scroll\v And *parent\scroll\h
             x - *parent\scroll\h\bar\page\pos
             y - *parent\scroll\v\bar\page\pos
           EndIf
+          
           ; if last parent - scrollarea container
-          If *LastParent\scroll And *LastParent\scroll\v And *LastParent\scroll\h
+          If *LastParent\scroll And 
+             *LastParent\scroll\v And *LastParent\scroll\h
             x + *LastParent\scroll\h\bar\page\pos
             y + *LastParent\scroll\v\bar\page\pos
           EndIf
           
-          Resize( *this, x - scroll_x_( *parent ), y - scroll_y_( *parent ), #PB_Ignore, #PB_Ignore )
+          ; 
+          If Not ( *this\state\drag =- 1 )
+            Resize( *this, x - scroll_x_( *parent ), y - scroll_y_( *parent ), #PB_Ignore, #PB_Ignore )
+          EndIf
           
+          ; 
           If *this\_root( )\canvas\ResizeBeginWidget
             ; Debug "   end - resize " + #PB_Compiler_Procedure
             Post( *this\_root( )\canvas\ResizeBeginWidget, #PB_EventType_ResizeEnd )
@@ -18254,6 +18261,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *root\count\childrens
         LastElement( *root\_widgets( )) 
         Repeat   
+          ; если переместили виджет то его исключаем 
+          If *root\_widgets( )\state\drag =- 1
+            Continue
+          EndIf
           If *root\_widgets( )\address And Not *root\_widgets( )\hide And 
              *root\_widgets( )\_root( )\canvas\gadget = *root\canvas\gadget And
              is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_frame] ) And 
@@ -18311,6 +18322,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *widget = a_enter_widget( )
               EndIf
             EndIf
+            
             Break
           EndIf
         Until PreviousElement( *root\_widgets( )) = #False 
@@ -18730,6 +18742,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;\\
           If mouse( )\change > 1
             If PressedWidget( )
+              ;
               If PressedWidget( )\state\press And 
                  PressedWidget( )\_root( ) <> Root( )
                 mouse( )\x = CanvasMouseX( PressedWidget( )\_root( )\canvas\gadget )
@@ -18738,24 +18751,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ; mouse drag start
               If PressedWidget( ) And
-                 PressedWidget( )\state\press = #True And
-                 PressedWidget( )\state\drag = #False 
-                PressedWidget( )\state\drag = #True
+                 PressedWidget( )\state\press And
+                 PressedWidget( )\state\drag = 0 
+                PressedWidget( )\state\drag = 1
                 
-                DoEvents( PressedWidget( ), #PB_EventType_DragStart);, PressedItem( ) )
+                DoEvents( PressedWidget( ), #PB_EventType_DragStart )
+                Static DeltaX,DeltaY
+                DeltaX = PressedWidget( )\x
+                DeltaY = PressedWidget( )\y
+              EndIf
+            EndIf
+            
+            ; mouse pressed-widget move event
+            If PressedWidget( ) And
+               PressedWidget( )\state\drag  
+              
+              If PressedWidget( ) <> EnteredWidget( )
+                Repaint | DoEvents( PressedWidget( ), #PB_EventType_MouseMove )
+              EndIf  
+              
+              ; if move gadget x&y position
+              If PressedWidget( )\state\drag = 1
+                If DeltaX <> PressedWidget( )\x Or 
+                   DeltaY <> PressedWidget( )\y
+                  Debug "move"
+                  PressedWidget( )\state\drag =- 1
+                EndIf
               EndIf
             EndIf
             
             ; mouse entered-widget move event
             If EnteredWidget( ) And EnteredWidget( )\state\enter
               Repaint | DoEvents( EnteredWidget( ), #PB_EventType_MouseMove )
-            EndIf
-            
-            ; mouse pressed-widget move event
-            If EnteredWidget( ) <> PressedWidget( )  
-              If PressedWidget( ) And PressedWidget( )\state\drag
-                Repaint | DoEvents( PressedWidget( ), #PB_EventType_MouseMove )
-              EndIf
             EndIf
             
             mouse( )\change = 0
@@ -18815,17 +18842,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DoubleClickTime( ) > ( ElapsedMilliseconds( ) - mouseClickTime )
               mouseClickCount + 1
               If mouseClickCount > 3
-                Debug "left-down"
                 DoEvents( EnteredWidget( ), eventtype )
               EndIf
             Else
               mouseClickCount = 1
-              Debug "left-down"
               DoEvents( EnteredWidget( ), eventtype )
             EndIf
             mouseClickTime = ElapsedMilliseconds( )
-            
-            ;             DoEvents( EnteredWidget( ), eventtype )
           EndIf
           
           
@@ -18837,12 +18860,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If PressedWidget( ) 
             
             ;\\ do drop events
-            If PressedWidget( )\state\drag <> #False
+            If PressedWidget( )\state\drag
+              
+;               If EnteredWidget( ) <> PressedWidget( )  
+;                 If PressedWidget( )\state\drag = 1
+;                   
+;                 EndIf
+;               EndIf
+;               If EnteredWidget( )  
+;                 Debug "drop2"
+;               EndIf
               
               ; drag & drop stop 
               If mouse( )\drag
                 ; drag
-                If EnteredWidget( ) <> PressedWidget( )  
+                If PressedWidget( )\state\drag = 1 And 
+                   EnteredWidget( ) <> PressedWidget( )
+                  Debug "drop1"
                   If _DD_action_( PressedWidget( ) )
                     ;
                     DoEvents( PressedWidget( ), #PB_EventType_Drop, - 1, mouse_x|mouse_y )
@@ -18858,6 +18892,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ; drop
                 If EnteredWidget( )  
+                  Debug "drop2"
                   If _DD_action_( EnteredWidget( ) )
                     ;
                     DoEvents( EnteredWidget( ), #PB_EventType_Drop, - 1, mouse_x|mouse_y )
@@ -18882,7 +18917,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ do up&click events
             If mouseClickCount
               If mouseClickCount = 3
-                Debug "left-3click"
                 If eventtype = #__event_LeftButtonUp
                   DoEvents( PressedWidget( ), #__event_Left3Click )
                 EndIf
@@ -18890,7 +18924,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DoEvents( PressedWidget( ), #__event_Right3Click )
                 EndIf
               ElseIf mouseClickCount = 2
-                Debug "left-2click"
                 If eventtype = #__event_LeftButtonUp
                   DoEvents( PressedWidget( ), #__event_LeftDoubleClick )
                 EndIf
@@ -18899,16 +18932,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               Else
                 ;\\ do up events
-                ; If mouseClickCount = 1
-                Debug "left-up"
                 DoEvents( PressedWidget( ), eventtype )
-                ; EndIf
                 
                 ;\\ do click events
                 If EnteredWidget( ) And 
                    EnteredWidget( )\state\drag = 0 And 
                    EnteredWidget( ) = PressedWidget( )
-                  Debug "left-click"
+                  
                   If eventtype = #__event_LeftButtonUp
                     DoEvents( PressedWidget( ), #__event_LeftClick )
                   EndIf
@@ -20267,5 +20297,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0-8X----------------------------------------------------------------------------------------------------------------vMz--+4-+t-d+vffv--------------------------
 ; EnableXP
