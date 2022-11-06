@@ -69,6 +69,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     D&D
     Structure _s_DD Extends _s_COORDINATE
+      *cursor
       format.i
       actions.i
       privatetype.i

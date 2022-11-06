@@ -106,9 +106,15 @@ Module Cursor
   
   Global OldProc
   Procedure Proc(hWnd, uMsg, wParam, lParam)
+    ; oldproc = GetProp_(hWnd, "__oldproc")
+    
     Protected *cursor._s_cursor
     
     Select uMsg
+;       Case #WM_NCDESTROY
+;         ; RemoveProp_(hwnd, "__oldproc")
+;       ; RemoveProp_(hwnd, "__cursor")
+      
       Case #WM_SETCURSOR
         ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
         Cursor::Change( wParam, 1 )
@@ -138,6 +144,7 @@ Module Cursor
         SetProp_(GadgetID, "__cursor", *cursor) 
         ;
         OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
+        ; SetProp_(GadgetID,"__oldproc", SetWindowLongPtr_(GadgetID,#GWL_WNDPROC,@Proc()))
       EndIf
       
       If *cursor\icursor <> cursor
@@ -1025,8 +1032,6 @@ CompilerIf #PB_Compiler_IsMainFile
     event = WaitWindowEvent()
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 160
-; FirstLine = 153
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ------------fAA9
 ; EnableXP

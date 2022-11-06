@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Create desktop for the widgets
   If Open(10)
     *WINDOW = Root()
-    *WINDOW = Container(0,0,0,0,#__flag_autosize) ;: SetClass(widget(), "root") 
+    *WINDOW = Container(0,0,0,0,#__flag_autosize) : SetClass(widget(), "*WINDOW") 
     
     *WINDOW_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
     *PANEL0 = Button(12,126,56,20,">>(0)") 
@@ -75,13 +75,13 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    *CONTAINER = Container(215,10,200,130,#PB_Container_Flat) : SetClass(widget(), "container") 
+    *CONTAINER = Container(215,10,200,130,#PB_Container_Flat) : SetClass(widget(), "*CONTAINER") 
     *CONTAINER_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    *SCROLLAREA = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(widget(), "scrollarea") 
+    *SCROLLAREA = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(widget(), "*SCROLLAREA") 
     *SCROLLAREA_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
-    *CHILD = Button(pos_x,10,160,70,"*this") : SetClass(widget(), GetText(widget())) 
+    *CHILD = Button(pos_x,10,160,70,"*CHILD") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     debug_position(root(), "")

@@ -30,6 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;*parent\MenuBarHeight = 32;+2 + 6
     *parent\ToolBarHeight = 32;+2 + 6
     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+    ;*parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
     ProcedureReturn *parent\tab\widget
   EndProcedure
@@ -130,6 +131,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = j-
 ; EnableXP

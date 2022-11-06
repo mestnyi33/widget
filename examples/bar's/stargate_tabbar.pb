@@ -1860,8 +1860,10 @@ Procedure Examine(*this._s_widget)
 					MousePosition = OutputWidth() - MousePosition
 				EndIf
 			EndIf
+			
 			If Not \Event
-				ChangeCurrentElement(\Item(), \MoveItem)
+			  ; swap to right
+			  ChangeCurrentElement(\Item(), \MoveItem)
 				While NextElement(\Item())
 					If MousePosition > \Item()\Position + \MaxLength*\Item()\Row
 						SwapElements(\Item(), @\Item(), \MoveItem)
@@ -1876,7 +1878,8 @@ Procedure Examine(*this._s_widget)
 				Wend
 			EndIf
 			If Not \Event
-				ChangeCurrentElement(\Item(), \MoveItem)
+			  ; swap to left
+			  ChangeCurrentElement(\Item(), \MoveItem)
 				While PreviousElement(\Item()) And ListIndex(\Item()) >= \Shift-1
 					If \MoveItem\Length < \Item()\Length
 						MinLength = \MoveItem\Length
@@ -3502,6 +3505,6 @@ Repeat
 	EndSelect
 	
 ForEver
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --------------------------------------------------------------------------------
 ; EnableXP

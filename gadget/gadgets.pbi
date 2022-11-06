@@ -2,6 +2,7 @@
 ;IncludePath "/Users/as/Documents/GitHub/Widget/"
 IncludePath "../"
 XIncludeFile "widgets.pbi"
+;;XIncludeFile "widget-events.pbi"
 ; XIncludeFile "../examples/empty.pb"
 Uselib(widget)
 
@@ -1315,6 +1316,6 @@ DeclareModule Gadget
     EndIf
   CompilerEndIf
   
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = n------P0d4tttttttttttttt0----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = n------P-d4tttttttttttttt0----
 ; EnableXP

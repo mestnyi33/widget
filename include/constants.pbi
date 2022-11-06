@@ -614,6 +614,7 @@
     #PB_Tree_Collapse = 32
     #PB_Tree_OptionBoxes = 64
     #PB_Tree_GridLines = 128
+    ;#PB_Tree_ItemPosition = 256
     
     #__tree_alwaysselection = #__flag_alwaysselection
     #__tree_nolines = #PB_Tree_NoLines ; #__flag_nolines
@@ -1184,8 +1185,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 204
-; FirstLine = 193
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

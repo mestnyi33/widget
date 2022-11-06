@@ -22,13 +22,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Open(0, 20,20 )
-    
-   ; Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)
+    SetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
+   
+    ;Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)
     ;MDI(0,0,0,0, #__flag_autosize) : OpenList(widget())
-    ;Container(0,0,0,0, #__flag_autosize)
-    ScrollArea(0,0,400, 591, 800,500, #__flag_autosize)
+    Container(0,0,0,0, #__flag_autosize)
+    ;ScrollArea(0,0,400, 591, 800,500,0, #__flag_autosize)
     ;Panel(0,0,0,0, #__flag_autosize) : AddItem(widget(), -1, "panel")
-    
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff0000)
    
     Repeat
       Select WaitWindowEvent()   

@@ -123,7 +123,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro DragText( Text, Actions = #PB_Drag_Copy ): DD_DragText( Text, Actions ): EndMacro
     Macro DragImage( Image, Actions = #PB_Drag_Copy ): DD_DragImage( Image, Actions ): EndMacro
     Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DD_DragFiles( Files, Actions ): EndMacro
-    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DD_DragPrivate( PrivateType, Actions ): EndMacro
+    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy, Cursor = #PB_Cursor_Default ): DD_DragPrivate( PrivateType, Actions, Cursor ): EndMacro
     
     Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Widget, Format, Actions, PrivateType ) : EndMacro
     Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Gadget, Format, Actions, PrivateType ) : EndMacro
@@ -143,7 +143,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Declare.i DD_DragText( Text.S, Actions.i = #PB_Drag_Copy )
     Declare.i DD_DragImage( Image.i, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_DragPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DD_DragPrivate( Type.i, Actions.i = #PB_Drag_Copy, Cursor.i = #PB_Cursor_Default )
     Declare.i DD_DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
     
     Declare.i DD_DropEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
@@ -875,7 +875,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare a_update( *parent )
     
     Declare.i SetAttachment( *this, *parent, mode.a )
-    Declare.i SetAlignmentFlag( *this, Mode.l, Type.l = 1 )
+    Declare.i SetAlignmentFlag( *this, Mode.q, Type.l = 1 )
     Declare.i SetAlignment( *this, left.l, top.l, right.l, bottom.l, auto.b = #True )
     Declare   SetFrame( *this, size.a, mode.i = 0 )
     Declare   a_object( x.l,y.l,width.l,height.l, text.s, Color.l, flag.q=#Null, framesize=1 )
@@ -909,19 +909,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   RemoveItem( *this, Item.l ) 
     
     ;;Declare.b GetFocus( *this )
+    Declare.l GetButtons( )
     Declare.l GetIndex( *this )
-    Declare   GetWidget( index )
-    
     Declare.l GetDeltaX( *this )
     Declare.l GetDeltaY( *this )
     Declare.l GetLevel( *this )
-    Declare.l GetButtons( *this )
     Declare.l GetType( *this )
     Declare.i GetRoot( *this )
     
-    Declare.i GetWindow( *this )
+    Declare.i GetWindow( *this = #Null )
     Declare.i GetGadget( *this = #Null )
     
+    Declare   GetWidget( index )
     Declare.l GetCount( *this, mode.b = #False )
     Declare.i GetItem( *this, parent_sublevel.l =- 1 )
     
@@ -1552,7 +1551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Procedure   DD_Cursor( *this._S_widget )
-      If mouse( )\drag 
+      If mouse( )\drag And mouse( )\cursor = 0
         If _DD_action_( *this)
           SetCursor( *this, ImageID( CatchImage( #PB_Any, ?add, 601 ) ))
         Else
@@ -1840,7 +1839,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_DragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
+    Procedure.i DD_DragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy, cursor.i = #PB_Cursor_Default )
       Debug "  drag private - " + PrivateType
       
       If PrivateType
@@ -1848,7 +1847,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
         mouse( )\drag\format = #PB_Drop_Private
         mouse( )\drag\actions = Actions
         mouse( )\drag\PrivateType = PrivateType
-        DD_Cursor( PressedWidget( ) )
+        
+        If cursor = #PB_Cursor_Default
+          DD_Cursor( PressedWidget( ) )
+        Else
+          If cursor
+            If mouse( )\cursor <> cursor
+              mouse( )\cursor = cursor
+              SetCursor( PressedWidget( ), cursor )
+            EndIf
+          EndIf
+        EndIf
       EndIf
     EndProcedure
     
@@ -4198,7 +4207,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;           *this\width[#__c_frame] = #PB_Ignore
         ;           *this\height[#__c_frame] = #PB_Ignore
       ElseIf *this\autosize
-        If *this\_parent( )
+        If *this\_parent( ) And *this <> *this\_parent( )
           x = *this\_parent( )\x[#__c_inner]
           Y = *this\_parent( )\y[#__c_inner]
           width = *this\_parent( )\width[#__c_inner] 
@@ -4312,12 +4321,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; 
       If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
       If *this\y[#__c_frame] <> y : Change_y = y - *this\y[#__c_frame] : EndIf 
-      ;       If *this\x[#__c_inner] <> ix : Change_x = ix - *this\x[#__c_inner] : EndIf
-      ;       If *this\y[#__c_inner] <> iy : Change_y = iy - *this\y[#__c_inner] : EndIf 
       If *this\width[#__c_frame] <> width : Change_width = width - *this\width[#__c_frame] : EndIf 
       If *this\height[#__c_frame] <> height : Change_height = height - *this\height[#__c_frame] : EndIf 
-      ;       If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf 
-      ;       If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf 
+      
+      If *this\x[#__c_inner] <> ix : Change_x = ix - *this\x[#__c_inner] : EndIf
+      If *this\y[#__c_inner] <> iy : Change_y = iy - *this\y[#__c_inner] : EndIf 
+      If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf 
+      If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf 
       
       ;
       If Change_x
@@ -12401,7 +12411,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn ( mouse( )\delta\y + *this\y[#__c_container] )
     EndProcedure
     
-    Procedure.l GetButtons( *this._S_widget )
+    Procedure.l GetButtons( )
       ProcedureReturn mouse( )\buttons
     EndProcedure
     
@@ -12430,17 +12440,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i GetGadget( *this._S_widget = #Null )
-      If *this = #Null : *this = Root( ) : EndIf
-      
-      If is_root_(*this )
-        ProcedureReturn *this\_root( )\canvas\gadget ; Returns canvas gadget
+      If *this = #Null 
+        ProcedureReturn Root( )\canvas\gadget ; Returns canvas window
+      ElseIf is_root_(*this )
+        ProcedureReturn *this\_root( )\canvas\gadget ; Returns canvas window
       Else
-        ProcedureReturn *this\gadget ; Returns active gadget
+        ProcedureReturn *this\gadget ; Returns element window
       EndIf
     EndProcedure
     
-    Procedure.i GetWindow( *this._S_widget )
-      If is_root_(*this )
+    Procedure.i GetWindow( *this._S_widget = #Null )
+      If *this = #Null 
+        ProcedureReturn Root( )\canvas\window ; Returns canvas window
+      ElseIf is_root_(*this )
         ProcedureReturn *this\_root( )\canvas\window ; Returns canvas window
       Else
         ProcedureReturn *this\_window( ) ; Returns element window
@@ -13670,7 +13682,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i SetAlignmentFlag( *this._S_widget, Mode.l, Type.l = 1 ) ; ok
+    Procedure.i SetAlignmentFlag( *this._S_widget, Mode.q, Type.l = 1 ) ; ok
       Protected rx.b, ry.b
       
       With *this
@@ -14729,6 +14741,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
           Case #__tree_OptionBoxes
             *this\mode\check = Bool( *value ) * #__m_clickselect
+            
+          Case #__tree_sublevel
+            If is_no_select_item_( *this\_rows( ), Item )
+              ProcedureReturn #False
+            EndIf
+            
+            *this\_rows( )\sublevel = *value
             
         EndSelect
         
@@ -19163,7 +19182,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Root( )\_root( ) = Root( )
         Root( )\_window( ) = Root( )
         
-        Root( )\fs = Bool( flag & #__flag_BorderLess = 0 )
+        Root( )\fs = 0;Bool( flag & #__flag_BorderLess = 0 )
         Root( )\bs = Root( )\fs
         
         Root( )\color = _get_colors_( )
@@ -19196,7 +19215,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Resize( Root( ), #PB_Ignore,#PB_Ignore,width,height ) ;??
         
         ; post repaint canvas event
-        PostCanvasRepaint( Root( ), #PB_EventType_Create)
+        PostCanvasRepaint( Root( ), #PB_EventType_Create )
         
         ; BindGadgetEvent( Canvas, @EventCanvas( ))
       EndIf
@@ -19613,10 +19632,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
+    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      ProcedureC WindowCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
+        gtk_main_quit_()
+      EndProcedure
+    CompilerEndIf
     Procedure   WaitEvents( *this._s_WIDGET )
+      ; https://www.purebasic.fr/english/viewtopic.php?p=570200&hilit=move+items#p570200
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "run")
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+        g_signal_connect_(Window, "delete-event", @WindowCloseHandler(), 0)
+        g_signal_connect_(Window, "destroy", @WindowCloseHandler(), 0)
+        gtk_main_()
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
         Protected msg.MSG
         ;         If PeekMessage_(@msg,0,0,0,1)
@@ -19657,6 +19685,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "stop:", *this)
+            CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+              gtk_main_quit_()
             CompilerEndIf
         EndSelect
       EndIf
@@ -20297,5 +20327,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0-8X----------------------------------------------------------------------------------------------------------------vMz--+4-+t-d+vffv--------------------------
+; Folding = ------------------------------------x--fV4bV----------------------------------------v0+b0-----------------------------------------------------------------------------------------------------------------------------------------------------+v----------------------------------------------------------------------------------v---f-0-8Xf---------------------------------------------------------------------------------------------------------------fZm--0v-0f-89f-+e---------------------V----
 ; EnableXP

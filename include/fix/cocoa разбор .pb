@@ -1,4 +1,12 @@
-﻿Macro GetCocoa( objectCocoa, funcCocoa, paramCocoa )
+﻿; Просто время от времени заглядывайте на уроки какао : . Вот откуда я знал.
+; Если вы посмотрите на справочник класса NSEvent, вы увидите, что он помечен знаком
+; (+), указывающим на то, что это функция класса, которая не требует предварительного создания экземпляра.
+; Многие другие методы являются методами экземпляра, помеченными знаком 
+; (-), для работы с которыми требуется экземпляр класса.
+
+
+
+Macro GetCocoa( objectCocoa, funcCocoa, paramCocoa )
     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)
   EndMacro
   ;   Macro GetCocoa(objectCocoa, funcCocoa, paramCocoa)

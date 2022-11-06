@@ -121,24 +121,24 @@ If Asc(File$)
     
     ;Debug PeekS(*str, (*end-*str)>>#PB_Compiler_Unicode )
     
-    Debug Str(ElapsedMilliseconds()-time) + " - time"
-    
-    Debug  "----------------------------"
-    Define time = ElapsedMilliseconds()
-    Define count = CountString(Text, #LF$ )
-    Define i
-    For i=0 To count
-      StringField(Text, 1+i, #LF$ ) 
-      
-      SetupStringField(this.StringField,string$,del$)
-  
-  While GetStringFieldEnd(this) = 0
-    NextStringField(this)
-    x+Val(GetStringField(this))
-  Wend
-    Next
-    Debug Str(ElapsedMilliseconds()-time) + " - time"
-   
+     Debug Str(ElapsedMilliseconds()-time) + " - time"
+;     
+;     Debug  "----------------------------"
+;     Define time = ElapsedMilliseconds()
+;     Define count = CountString(Text, #LF$ )
+;     Define i
+;     For i=0 To count
+;       StringField(Text, 1+i, #LF$ ) 
+;       
+;       SetupStringField(this.StringField,string$,del$)
+;   
+;   While GetStringFieldEnd(this) = 0
+;     NextStringField(this)
+;     x+Val(GetStringField(this))
+;   Wend
+;     Next
+;     Debug Str(ElapsedMilliseconds()-time) + " - time"
+;    
 		
 ;     
 ;     

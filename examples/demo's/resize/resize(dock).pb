@@ -25,8 +25,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
-  Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-    ProcedureReturn SetAlignmentFlag(*This._S_widget, Mode.i, Type.i)
+  Procedure.i _SetAlignment(*This._S_widget, Mode.q, Type.i=1)
+    ProcedureReturn SetAlignmentFlag(*This, Mode, Type)
   EndProcedure
   
   Procedure Window_0()

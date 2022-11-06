@@ -133,13 +133,13 @@ Module Cursor
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
-    If Not CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+    ;If Not CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
       Protected *cursor._s_cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
       
       If *cursor And *cursor\hcursor
-        CompilerIf #PB_Compiler_IsMainFile
+        ;CompilerIf #PB_Compiler_IsMainFile
           Debug "changeCursor"
-        CompilerEndIf
+        ;CompilerEndIf
         
         ; reset
         If state = 0 
@@ -159,7 +159,7 @@ Module Cursor
           EndIf
         EndIf
       EndIf
-    EndIf
+    ;EndIf
   EndProcedure
   
   ProcedureC  Proc(proxy, eType, event, refcon)
@@ -1128,5 +1128,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -T0--+4--7--------
+; Folding = -T--v-0-v+--------
 ; EnableXP
