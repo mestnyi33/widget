@@ -505,29 +505,25 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
       Case #PB_EventType_Drop
-        If IsContainer( *newWidget )
-          Select EventDropPrivate( )
-            Case #_DD_new_create 
-              widget_add( *newWidget, GetText( id_elements_tree ), 
-                          EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
-              
-            Case #_DD_re_parent
-              If SetParent( PressedWidget( ), EnteredWidget( ) )
-                Debug "re-parent"
-                
-              EndIf
-              
-            Case #_DD_selector
-              Debug "selector"
-              
-          EndSelect
-          
-          ; end new create
-          If GetState( id_elements_tree) > 0 
-            SetState( id_elements_tree, 0 )
-          EndIf
+        Select EventDropPrivate( )
+          Case #_DD_new_create 
+            widget_add( *newWidget, GetText( id_elements_tree ), 
+                        EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+            
+          Case #_DD_re_parent
+            If SetParent( PressedWidget( ), EnteredWidget( ) )
+              Debug "re-parent"
+            EndIf
+            
+          Case #_DD_selector
+            Debug "selector"
+            
+        EndSelect
+        
+        ; end new create
+        If GetState( id_elements_tree) > 0 
+          SetState( id_elements_tree, 0 )
         EndIf
-        SetCursor( *newWidget, #PB_Cursor_Default )
         
       Case #PB_EventType_LeftButtonDown
         If IsContainer( *newWidget )
@@ -568,23 +564,23 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-      Case #PB_EventType_MouseEnter
-        If Not GetButtons( )
-          If GetState( id_elements_tree) > 0 
-            If IsContainer( *newWidget )
-              SetCursor( *newWidget, #PB_Cursor_Cross )
-            EndIf
-          EndIf
-        EndIf
-        
-      Case #PB_EventType_MouseLeave
-        If Not GetButtons( )
-          If GetState( id_elements_tree) > 0 
-            If IsContainer( *newWidget )
-              SetCursor( *newWidget, #PB_Cursor_Default )
-            EndIf
-          EndIf
-        EndIf
+;       Case #PB_EventType_MouseEnter
+;         If Not GetButtons( )
+;           If GetState( id_elements_tree) > 0 
+;             If IsContainer( *newWidget )
+;               SetCursor( *newWidget, #PB_Cursor_Cross )
+;             EndIf
+;           EndIf
+;         EndIf
+;         
+;       Case #PB_EventType_MouseLeave
+;         If Not GetButtons( )
+;           If GetState( id_elements_tree) > 0 
+;             If IsContainer( *newWidget )
+;               SetCursor( *newWidget, #PB_Cursor_Default )
+;             EndIf
+;           EndIf
+;         EndIf
         
       Case #PB_EventType_Resize
         properties_update_coordinate( id_i_properties_tree, *newWidget )
@@ -750,7 +746,6 @@ CompilerIf #PB_Compiler_IsMainFile
           
           a_transform( )\type = 0
           DragPrivate( #_DD_new_create, #PB_Drag_Copy, ImageID(GetItemData( EventWidget, GetState( EventWidget ) ) ) )
-          
         EndIf
         
       Case #PB_EventType_StatusChange
@@ -1220,5 +1215,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------+-----j---4-P+
+; Folding = ------+--f8x--X7-H-
 ; EnableXP

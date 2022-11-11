@@ -1549,12 +1549,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _address_\drop\PrivateType & mouse( )\drag\PrivateType )
     EndMacro
     
-    Procedure   DD_Cursor( *this._S_widget )
-      If mouse( )\drag And mouse( )\cursor = 0
-        If _DD_action_( *this)
-          Cursor::Set( *this\_root( )\canvas\gadget, ImageID( CatchImage( #PB_Any, ?add, 601 ) ))
+    Procedure.i DD_DragCursor( cursor.i )
+      Debug "  drag cursor - " + cursor
+      
+      If Not mouse( )\drag
+        mouse( )\drag.allocate( DD )
+      EndIf
+      If mouse( )\drag\cursor <> cursor
+        mouse( )\drag\cursor = cursor
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, cursor )
+      EndIf
+    EndProcedure
+    
+    Procedure   DD_DropCursor( type.i = 0 )
+      Protected cursor = #PB_Cursor_Default
+      
+      If mouse( )\drag
+        If type
+          cursor = ImageID( CatchImage( #PB_Any, ?add, 601 ) )
         Else
-          Cursor::Set( *this\_root( )\canvas\gadget, ImageID( CatchImage( #PB_Any, ?copy, 530 ) ))
+          cursor = ImageID( CatchImage( #PB_Any, ?copy, 530 ) )
         EndIf
         
         DataSection
@@ -1593,6 +1607,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           copy_end:
         EndDataSection
       EndIf
+      
+      ProcedureReturn cursor
     EndProcedure
     
     Procedure   DD_Draw( *this._S_widget )
@@ -1796,11 +1812,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "  drag Item - " + *rows
       
       If *rows
-        mouse( )\drag.allocate( DD )
+        If Not mouse( )\drag
+          mouse( )\drag.allocate( DD )
+        EndIf
         mouse( )\drag\format = #PB_Drop_Item
         mouse( )\drag\actions = Actions
         mouse( )\drag\value = *rows
-        DD_Cursor( PressedWidget( ) )
+        
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, DD_DropCursor( ) )
+              
       EndIf
     EndProcedure
     
@@ -1808,11 +1828,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "  drag text - " + Text
       
       If Text
-        mouse( )\drag.allocate( DD )
+        If Not mouse( )\drag
+          mouse( )\drag.allocate( DD )
+        EndIf
         mouse( )\drag\format = #PB_Drop_Text
         mouse( )\drag\actions = Actions
         mouse( )\drag\string = Text
-        DD_Cursor( PressedWidget( ) )
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, DD_DropCursor( ) )
       EndIf
     EndProcedure
     
@@ -1820,13 +1842,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "  drag image - " + Image
       
       If IsImage( Image )
-        mouse( )\drag.allocate( DD )
+        If Not mouse( )\drag
+          mouse( )\drag.allocate( DD )
+        EndIf
         mouse( )\drag\format = #PB_Drop_Image
         mouse( )\drag\actions = Actions
         mouse( )\drag\value = ImageID( Image )
         mouse( )\drag\width = ImageWidth( Image )
         mouse( )\drag\height = ImageHeight( Image )
-        DD_Cursor( PressedWidget( ) )
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, DD_DropCursor( ) )
       EndIf
     EndProcedure
     
@@ -1834,11 +1858,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "  drag files - " + Files
       
       If Files
-        mouse( )\drag.allocate( DD )
+        If Not mouse( )\drag
+          mouse( )\drag.allocate( DD )
+        EndIf
         mouse( )\drag\format = #PB_Drop_Files
         mouse( )\drag\actions = Actions
         mouse( )\drag\string = Files
-        DD_Cursor( PressedWidget( ) )
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, DD_DropCursor( ) )
       EndIf
     EndProcedure
     
@@ -1846,21 +1872,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "  drag private - " + PrivateType
       
       If PrivateType
-        mouse( )\drag.allocate( DD )
+        If Not mouse( )\drag
+          mouse( )\drag.allocate( DD )
+        EndIf
         mouse( )\drag\format = #PB_Drop_Private
         mouse( )\drag\actions = Actions
         mouse( )\drag\PrivateType = PrivateType
         
         If cursor = #PB_Cursor_Default
-          DD_Cursor( PressedWidget( ) )
+          Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, DD_DropCursor( ) )
         Else
-          If cursor
-            SetCursor( PressedWidget( ), cursor )
-;             If mouse( )\cursor <> cursor
-;               mouse( )\cursor = cursor
-;               Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, cursor )
-;             EndIf
-          EndIf
+          DD_DragCursor( cursor )
         EndIf
       EndIf
     EndProcedure
@@ -11665,7 +11687,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\caption\interact = is_at_point_( *this\caption, mouse_x, mouse_y, [2] )
           ;*this\color\state = 2
           
-          Debug ""+mouse_x +" "+ *this\caption\button[#__wb_close]\x
+          Debug ""+#PB_Compiler_Procedure+" "+mouse_x +" "+ *this\caption\button[#__wb_close]\x
           ; close button
           If is_at_point_( *this\caption\button[#__wb_close], mouse_x, mouse_y )
             ProcedureReturn Window_SetState( *this, #__Window_Close )
@@ -12347,25 +12369,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure   GetWidget( index )
-      Protected result
-      
-      If index =- 1
-        ProcedureReturn enumWidget( )
-      Else
-        PushListPosition( enumWidget( ) )
-        ForEach enumWidget( )
-          If enumWidget( )\index = index ;+  1
-            result = enumWidget( )
-            Break
-          EndIf
-        Next
-        PopListPosition( enumWidget( ) )
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
-    
     Procedure.l GetIndex( *this._S_widget )
       ProcedureReturn *this\index ; - 1
     EndProcedure
@@ -12411,31 +12414,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.l GetType( *this._S_widget )
-      ProcedureReturn *this\type
+      ProcedureReturn *this\type ; Returns create widget-type
     EndProcedure
     
-    Procedure.i GetRoot( *this._S_widget )
-      ProcedureReturn *this\_root( ) ; Returns root element
+    Procedure.i GetRoot( *this._S_widget ) ; Returns root widget
+      If *this = #Null 
+        ProcedureReturn Root( )
+      Else
+        ProcedureReturn *this\_root( )
+      EndIf
     EndProcedure
     
     Procedure.i GetGadget( *this._S_widget = #Null )
       If *this = #Null 
-        ProcedureReturn Root( )\canvas\gadget ; Returns canvas window
-      ElseIf is_root_(*this )
-        ProcedureReturn *this\_root( )\canvas\gadget ; Returns canvas window
+        ProcedureReturn Root( )\canvas\gadget ; Returns current root canvas-gadget
+      ElseIf is_window_( *this )
+        ProcedureReturn *this\gadget ; Returns active gadget
       Else
-        ProcedureReturn *this\gadget ; Returns element window
+        ProcedureReturn *this\_root( )\canvas\gadget ; Returns canvas-gadget
       EndIf
     EndProcedure
     
     Procedure.i GetWindow( *this._S_widget = #Null )
       If *this = #Null 
-        ProcedureReturn Root( )\canvas\window ; Returns canvas window
-      ElseIf is_root_(*this )
-        ProcedureReturn *this\_root( )\canvas\window ; Returns canvas window
+        ProcedureReturn Root( )\canvas\window ; Returns current root canvas-window
+      ElseIf is_window_( *this )
+        ProcedureReturn *this\_window( ) ; Returns parent window
       Else
-        ProcedureReturn *this\_window( ) ; Returns element window
+        ProcedureReturn *this\_root( )\canvas\window ; Returns canvas-window
       EndIf
+    EndProcedure
+    
+    Procedure   GetWidget( index )
+      Protected result
+      
+      If index =- 1
+        ProcedureReturn enumWidget( )
+      Else
+        PushListPosition( enumWidget( ) )
+        ForEach enumWidget( )
+          If enumWidget( )\index = index
+            result = enumWidget( )
+            Break
+          EndIf
+        Next
+        PopListPosition( enumWidget( ) )
+      EndIf
+      
+      ProcedureReturn result
     EndProcedure
     
     Procedure.i GetParent( *this._S_widget )
@@ -14132,7 +14158,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 enumWidget( )\align\indent\left = enumWidget( )\_parent( )\align\auto\left
                 enumWidget( )\align\indent\right = parent_width - enumWidget( )\_parent( )\align\auto\right
                 
-                Debug enumWidget( )\class +""+ enumWidget( )\_parent( )\align\auto\left +" "+ enumWidget( )\_parent( )\align\auto\right
+                Debug ""+#PB_Compiler_Procedure +" "+ enumWidget( )\class +""+ enumWidget( )\_parent( )\align\auto\left +" "+ enumWidget( )\_parent( )\align\auto\right
               EndIf
               
               If flag & #__align_full = #__align_full
@@ -17269,6 +17295,48 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\state\repaint = #True
         EndIf
         
+        If *this\type = #__type_Splitter
+          If BB3( )\state\enter
+            If *this\state\enter = 1
+              *this\state\enter = 2
+            EndIf
+            
+            If BB1()\state\disable <> bar_in_start_( *this\bar )
+              BB1()\state\disable = bar_in_start_( *this\bar )
+              If BB1()\state\disable
+                If *this\vertical
+                  *this\cursor = cursor::#PB_Cursor_Down
+                Else
+                  *this\cursor = cursor::#PB_Cursor_Right
+                EndIf
+              Else
+                If *this\vertical
+                  *this\cursor = cursor::#PB_Cursor_UpDown
+                Else
+                  *this\cursor = cursor::#PB_Cursor_LeftRight
+                EndIf
+              EndIf
+            EndIf
+            
+            If BB2()\state\disable <> bar_in_stop_( *this\bar )
+              BB2()\state\disable = bar_in_stop_( *this\bar )
+              If BB2()\state\disable
+                If *this\vertical
+                  *this\cursor = cursor::#PB_Cursor_Up
+                Else
+                  *this\cursor = cursor::#PB_Cursor_Left
+                EndIf
+              Else
+                If *this\vertical
+                  *this\cursor = cursor::#PB_Cursor_UpDown
+                Else
+                  *this\cursor = cursor::#PB_Cursor_LeftRight
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
       EndIf
       
       ProcedureReturn repaint
@@ -17823,11 +17891,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 ; drag & drop state
                 If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
                   *this\EnteredRow( )\state\enter = 1
-                  *this\state\enter =- 1
+                  ; mouse( )\enter =- 1
                   ;Debug "-1 (+1)"
                 Else
                   ;Debug "+1 (-1)"
-                  *this\state\enter = 1
+                  ; mouse( )\enter = 1
                   *this\EnteredRow( )\state\enter =- 1
                 EndIf
                 
@@ -17861,12 +17929,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;         If *this\EnteredRow( ) And *this\EnteredRow( )\state\enter
         ;           If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
         ;             *this\EnteredRow( )\state\enter = 1
-        ;             *this\state\enter =- 1
         ;             *this\state\repaint = 1
         ;             ;Debug "-1 (+1)"
         ;           Else
         ;             ;Debug "+1 (-1)"
-        ;             *this\state\enter = 1
         ;             *this\state\repaint = 1
         ;             *this\EnteredRow( )\state\enter =- 1
         ;           EndIf
@@ -18189,18 +18255,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Not *this\state\disable 
         Select eventtype
           Case #PB_EventType_LeftButtonUp
-            If EnteredWidget( ) And mouse( )\cursor <> EnteredWidget( )\cursor 
-              Debug " reset-change - "+ EnteredWidget( )\cursor +" << "+mouse( )\cursor 
-              Cursor::Set( *this\_root( )\canvas\gadget, EnteredWidget( )\cursor )
-              mouse( )\cursor = EnteredWidget( )\cursor
+            If Not ( is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And 
+                     is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) )
+              
+              If EnteredWidget( ) And EnteredWidget( )\state\enter = 2 And 
+                 mouse( )\cursor <> EnteredWidget( )\cursor 
+                Debug " cursor-reset-up - "+ EnteredWidget( )\cursor +" << "+mouse( )\cursor 
+                Cursor::Set( EnteredWidget( )\_root( )\canvas\gadget, EnteredWidget( )\cursor )
+                mouse( )\cursor = EnteredWidget( )\cursor
+              Else
+                If mouse( )\cursor <> #PB_Cursor_Default 
+                  Debug " cursor-reset-leave-up - "+ #PB_Cursor_Default +" << "+mouse( )\cursor 
+                  Cursor::Set( *this\_root( )\canvas\gadget, #PB_Cursor_Default )
+                  mouse( )\cursor = #PB_Cursor_Default
+                EndIf
+              EndIf
             EndIf
-            
+          
           Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove
-            If mouse( )\buttons ; Not ( PressedWidget( ) And PressedWidget( )\state\drag =- 1 )
-              If PressedWidget( ) And mouse( )\cursor <> PressedWidget( )\cursor 
-                Debug " cursor-press-change - "+mouse( )\cursor +" >> "+ PressedWidget( )\cursor 
-                Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, PressedWidget( )\cursor )
-                mouse( )\cursor = PressedWidget( )\cursor 
+            If mouse( )\buttons
+              If PressedWidget( )
+                If mouse( )\drag
+                  If eventtype = #PB_EventType_MouseEnter
+                    If Not mouse( )\drag\cursor
+                      If _DD_action_( *this )
+                        mouse( )\cursor = DD_DropCursor( 1 )
+                      Else
+                        mouse( )\cursor = DD_DropCursor( 0 )
+                      EndIf
+                      
+                      Debug " cursor-drag - "+mouse( )\cursor +" >> "+ mouse( )\drag\cursor
+                      Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
+                    EndIf
+                  EndIf
+                Else
+                  If mouse( )\cursor <> PressedWidget( )\cursor 
+                    Debug " cursor-press - "+mouse( )\cursor +" >> "+ PressedWidget( )\cursor 
+                    Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, PressedWidget( )\cursor )
+                    mouse( )\cursor = PressedWidget( )\cursor 
+                  EndIf
+                EndIf
               EndIf
             Else
               If *this\state\enter = 2
@@ -18211,7 +18305,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               Else
                 If mouse( )\cursor <> #PB_Cursor_Default 
-                  Debug " reset-change - "+ #PB_Cursor_Default +" << "+mouse( )\cursor 
+                  Debug " cursor-reset-leave - "+ #PB_Cursor_Default +" << "+mouse( )\cursor 
                   Cursor::Set( *this\_root( )\canvas\gadget, #PB_Cursor_Default )
                   mouse( )\cursor = #PB_Cursor_Default
                 EndIf
@@ -18360,7 +18454,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *widget\state\enter = 1 + Bool( *widget\type <> #__type_Splitter And is_at_point_( *widget, mouse_x, mouse_y, [#__c_inner] ))
             
             DoEvents( *widget, #PB_EventType_MouseEnter )
-            DD_Cursor( *widget )
             
             If Not is_interact_row_( *widget ) And Not a_transform_( *widget )
               If *widget\address And Not *widget\attach 
@@ -18906,11 +18999,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 
-                ; reset 
-                FreeStructure( mouse( )\drag) : mouse( )\drag = #Null
-                
                 ; reset dragged cursor
                 ;; Cursor::Set( Root( )\canvas\address, #PB_Cursor_Default )
+                SetCursor( PressedWidget( ), #PB_Cursor_Default )
+                Cursor::Set( GetGadget(PressedWidget( )), #PB_Cursor_Default )
+                Debug "cur-sor "+PressedWidget( )\cursor
+                
+                ; reset 
+                FreeStructure( mouse( )\drag) : mouse( )\drag = #Null
               EndIf
             EndIf
             
@@ -19690,7 +19786,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
           DispatchMessage_(msg)  ;  посылает сообщение в функцию WindowProc.
           
-          Debug ""+msg\message +" "+ msg\hwnd +" "+ msg\lParam +" "+ msg\wParam
+          Debug ""+#PB_Compiler_Procedure+" "+msg\message +" "+ msg\hwnd +" "+ msg\lParam +" "+ msg\wParam
           ;   If msg\wParam = #WM_QUIT
           ;     Debug "#WM_QUIT "
           ;   EndIf
@@ -19956,7 +20052,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ;Else
                     
                     ForEach Root( )
-                      Debug Root( )
+                      Debug ""+#PB_Compiler_Procedure+" "+Root( )
                       free( Root( ))
                       ;               ForEach Root( )\_widgets( )
                       ;                 Debug ""+ Root( )\_widgets( )\_root( ) +" "+ is_root_( Root( )\_widgets( ))
@@ -20359,5 +20455,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------f4-----8q+---------------f--v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------44+zv0v--------------------------------
+; Folding = --------------------------------0-38f+----f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff8v-3-+-------------------------------
 ; EnableXP

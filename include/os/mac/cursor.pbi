@@ -154,9 +154,9 @@ Module Cursor
             CocoaMessage(0, *cursor\hcursor, "set") 
           EndIf
         EndIf
-        ;CompilerIf #PB_Compiler_IsMainFile
+        CompilerIf #PB_Compiler_IsMainFile
         Debug "changeCursor"
-       ;CompilerEndIf
+        CompilerEndIf
       EndIf
     EndIf
     ;EndIf
@@ -194,7 +194,7 @@ Module Cursor
       handle = Mouse::Gadget(Mouse::Window())
       
       If EnteredID <> handle
-        Debug ""+EnteredID +" "+ handle
+        ; Debug ""+#PB_Compiler_Procedure+" "+EnteredID +" "+ handle
         If EnteredID
           Cursor::change(EnteredID, 0)
         EndIf
@@ -257,7 +257,7 @@ Module Cursor
               
             Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
             Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-            Case #PB_Cursor_Arrows      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+            Case #PB_Cursor_Arrows      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
               
             Case #PB_Cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
             Case #PB_Cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
@@ -1146,5 +1146,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -T-------0--------
+; Folding = -T----------------
 ; EnableXP
