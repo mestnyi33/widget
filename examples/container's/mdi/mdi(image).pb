@@ -77,6 +77,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Static DragWidget
     
     Select WidgetEventType( )
+;       Case #PB_EventType_MouseEnter
+;         SetCursor( EventWidget( ), #PB_Cursor_Hand )
+;         
+;       Case #PB_EventType_MouseLeave
+;         SetCursor( EventWidget( ), #PB_Cursor_Default )
+        
       Case #PB_EventType_LeftButtonUp 
         DragWidget = #Null
         
@@ -136,11 +142,14 @@ CompilerIf #PB_Compiler_IsMainFile
     *this\cursor = #PB_Cursor_Hand
     *this\round = round
     
+    ;SetCursor( *this, #PB_Cursor_Hand )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonUp )
     Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonDown )
     Bind( *this, @CustomEvents(), #PB_EventType_MouseMove )
+    Bind( *this, @CustomEvents(), #PB_EventType_MouseEnter )
+    Bind( *this, @CustomEvents(), #PB_EventType_MouseLeave )
     Bind( *this, @CustomEvents(), #PB_EventType_Draw )
     Bind( #PB_All, @CustomEvents(), #PB_EventType_Repaint )
   EndProcedure
@@ -254,5 +263,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = +---
 ; EnableXP

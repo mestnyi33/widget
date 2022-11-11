@@ -7,8 +7,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib( WIDGET )
   UsePNGImageDecoder( )
   
-  #_DD_widget_new_create = 1<<1
-  #_DD_widget_re_parent = 1<<2
+  #_DD_new_create = 1<<1
+  #_DD_re_parent = 1<<2
+  #_DD_selector = 1<<3
   
   ;- ENUMs
   ; properties items
@@ -419,7 +420,7 @@ CompilerIf #PB_Compiler_IsMainFile
         newClass.s = GetClass( *new )+"_"+GetCount( *new )
         
         If *new\container 
-          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
+          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_new_create|#_DD_re_parent|#_DD_selector )
         EndIf
         
         ;
@@ -487,40 +488,53 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events( )
-    Protected EventWidget = EventWidget( )
+    Protected *newWidget._s_widget = EventWidget( )
     
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
-          If IsContainer( EventWidget )
-            DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy, #PB_Cursor_Cross )
+          If IsContainer( *newWidget )
+            DragPrivate( #_DD_new_create, #PB_Drag_Copy, #PB_Cursor_Cross )
           EndIf
         Else
-          DragPrivate( #_DD_widget_re_parent, #PB_Drag_Copy, #PB_Cursor_Arrows )
+          If *newWidget\state\drag =- 1
+            DragPrivate( #_DD_re_parent, #PB_Drag_Copy, #PB_Cursor_Arrows )
+          Else
+            DragPrivate( #_DD_selector, #PB_Drag_Copy, #PB_Cursor_Cross )
+          EndIf
         EndIf
         
       Case #PB_EventType_Drop
-        If IsContainer( EventWidget )
-          If GetState( id_elements_tree) > 0 
-            widget_add( EventWidget, GetText( id_elements_tree ), 
-                        EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
-            
-            ; end new create
-            SetState( id_elements_tree, 0 )
-          Else
-            If SetParent( PressedWidget( ), EnteredWidget( ) )
-              Debug "re-parent"
+        If IsContainer( *newWidget )
+          Select EventDropPrivate( )
+            Case #_DD_new_create 
+              widget_add( *newWidget, GetText( id_elements_tree ), 
+                          EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
               
-            EndIf
+            Case #_DD_re_parent
+              If SetParent( PressedWidget( ), EnteredWidget( ) )
+                Debug "re-parent"
+                
+              EndIf
+              
+            Case #_DD_selector
+              Debug "selector"
+              
+          EndSelect
+          
+          ; end new create
+          If GetState( id_elements_tree) > 0 
+            SetState( id_elements_tree, 0 )
           EndIf
         EndIf
+        SetCursor( *newWidget, #PB_Cursor_Default )
         
       Case #PB_EventType_LeftButtonDown
-        If IsContainer( EventWidget )
+        If IsContainer( *newWidget )
           If a_transform( )\type > 0 Or group_select
             ;a_transform( )\grab = 1
             If group_select 
-              group_drag = EventWidget
+              group_drag = *newWidget
             EndIf
           EndIf
           
@@ -538,7 +552,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LeftButtonUp
         ; then group select
-        If IsContainer( EventWidget )
+        If IsContainer( *newWidget )
           If a_transform( ) And a_widget( ) And a_widget( )\_a_transform =- 1
             SetState( id_i_view_tree, - 1 )
             If IsGadget( id_design_code )
@@ -557,8 +571,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseEnter
         If Not GetButtons( )
           If GetState( id_elements_tree) > 0 
-            If IsContainer( EventWidget )
-              SetCursor( EventWidget, #PB_Cursor_Cross )
+            If IsContainer( *newWidget )
+              SetCursor( *newWidget, #PB_Cursor_Cross )
             EndIf
           EndIf
         EndIf
@@ -566,22 +580,22 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseLeave
         If Not GetButtons( )
           If GetState( id_elements_tree) > 0 
-            If IsContainer( EventWidget )
-              SetCursor( EventWidget, #PB_Cursor_Default )
+            If IsContainer( *newWidget )
+              SetCursor( *newWidget, #PB_Cursor_Default )
             EndIf
           EndIf
         EndIf
         
       Case #PB_EventType_Resize
-        properties_update_coordinate( id_i_properties_tree, EventWidget )
+        properties_update_coordinate( id_i_properties_tree, *newWidget )
         
       Case #PB_EventType_StatusChange
         Debug "widget status change "
         If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, GetData( EventWidget ) )
+          SetGadgetState( id_design_code, GetData( *newWidget ) )
         EndIf
-        SetState( id_i_view_tree, GetData( EventWidget ) )
-        properties_update( id_i_properties_tree, EventWidget )
+        SetState( id_i_view_tree, GetData( *newWidget ) )
+        properties_update( id_i_properties_tree, *newWidget )
         
         
     EndSelect
@@ -735,7 +749,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy, ImageID(GetItemData( EventWidget, GetState( EventWidget ) ) ) )
+          DragPrivate( #_DD_new_create, #PB_Drag_Copy, ImageID(GetItemData( EventWidget, GetState( EventWidget ) ) ) )
           
         EndIf
         
@@ -1206,5 +1220,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------+-----5---0-j-
+; Folding = ------+-----j---4-P+
 ; EnableXP

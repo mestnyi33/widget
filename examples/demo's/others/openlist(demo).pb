@@ -1,14 +1,14 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
-UseLib(widget)
-
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+  UseLib(widget)
   EnableExplicit
   Global *w, *w1, *w2
   
-  If Open(OpenWindow(#PB_Any, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)) : bind(-1,-1)
+  If Open(OpenWindow(#PB_Any, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)) ;: bind(-1,-1)
     
     *w = Window(100, 100, 180, 130, "openlist1", #__Window_SystemMenu)
     Button( 50, 95, 80,20,"button1")

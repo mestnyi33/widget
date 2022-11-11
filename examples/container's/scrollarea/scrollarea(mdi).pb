@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -9,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+    Debug ""+Str(GetIndex(EventWidget()))+ " - widget event - " +WidgetEventType();+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -24,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30,"Button 1")
@@ -34,12 +35,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
-    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
+    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
     ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
     ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
-    ;*b = Container(Sw-130, Sh-130, 130, 30) : OpenList(*g)
-    CloseList()
+    ;*b = Container(Sw-130, Sh-130, 130, 31) : OpenList(*g)
     
+    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
+    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
+    ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : CloseList()
+    ;*b = Container(Sw-130, Sh-130, 130, 31) : CloseList()
+    CloseList()
+    Debug " opened - "+openedWidget()\class+" "+openedWidget()\height
     ;
     Splitter(10,10,590,480, 0, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
     
@@ -80,8 +86,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b), #PB_Ignore, #PB_Ignore)
+      If *b
+        ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
+        Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b), #PB_Ignore, #PB_Ignore)
+      EndIf
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
@@ -110,6 +118,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = P-
 ; EnableXP

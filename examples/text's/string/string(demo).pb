@@ -1,4 +1,6 @@
-﻿IncludePath "../../../" : XIncludeFile "widget-events.pbi"
+﻿
+
+IncludePath "../../../" : XIncludeFile "widget-events.pbi"
 ;IncludePath "../../../" : XIncludeFile "-widgets-plus.pbi"
 ; XIncludeFile "../empty5.pb"
 
@@ -121,6 +123,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
+  Macro EString(x,y,width,height, text, flag=0)
+    String(x,y,width,height, text, flag)
+    ; Editor(x,y,width,height, flag) : setText(widget(), text)
+  EndMacro
+  
   If Open(OpenWindow(#PB_Any, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
     StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
@@ -142,15 +149,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #__string_readonly)
-    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #__string_numeric|#__string_center)
-    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__string_right)
-    String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #__string_lowercase)
-    String(305+8, (height+5)*4+10, 290, height, "uppercase...", #__string_uppercase)
-    String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #__flag_borderless)
-    String(305+8, (height+5)*6+10, 290, height, "Password", #__string_password)
-    String(305+8, (height+5)*7+10, 290, height, "")
-    String(305+8, (height+5)*8+10, 290, 90, Text)
+    EString(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #__string_readonly)
+    EString(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #__string_numeric|#__string_center)
+    EString(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__string_right)
+    EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #__string_lowercase)
+    EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #__string_uppercase)
+    EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #__flag_borderless)
+    EString(305+8, (height+5)*6+10, 290, height, "Password", #__string_password)
+    EString(305+8, (height+5)*7+10, 290, height, "")
+    EString(305+8, (height+5)*8+10, 290, 90, Text)
     
     ;SetText(GetWidget(6+1), "pas")
     Debug GetText(GetWidget(6+1))+"- get widget text"

@@ -1,5 +1,6 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿
+;XIncludeFile "../../../widgets.pbi" 
+ XIncludeFile "../../../widget-events.pbi" 
 ;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -63,7 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(10)
     *WINDOW = Root()
     *WINDOW = Container(0,0,0,0,#__flag_autosize) : SetClass(widget(), "*WINDOW") 
-    
+    SetColor(*WINDOW, #PB_Gadget_BackColor, $ff00ff00)
+   
     *WINDOW_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
     *PANEL0 = Button(12,126,56,20,">>(0)") 
     *PANEL1 = Button(20+50,126,56,20,">>(1)") 
@@ -99,5 +101,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Folding = A9
 ; EnableXP

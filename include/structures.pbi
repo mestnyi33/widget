@@ -97,8 +97,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *_transform._s_transform
       
       
-      cursor.l                   ; ????????????
-      ;area._s_COORDINATE         ; cursor tracking area - область отслеживания курсора
+      *cursor                    ; current visible cursor
+      ;area._s_COORDINATE        ; cursor tracking area - область отслеживания курсора
       interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
     EndStructure
     ;--     KEYBOARD
@@ -488,8 +488,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;--     scroll
-    Structure _s_scroll Extends _s_coordinate
+    ;--     SCROLL
+    Structure _s_SCROLL Extends _s_COORDINATE
+      bars.b
       align._s_align
       ;padding.b
       
@@ -736,7 +737,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _s_CANVAS
       *ResizeBeginWidget._s_WIDGET
       
-      *cursor             ; current visible cursor
       *fontID             ; current drawing fontid
       *address            ; root list address
       

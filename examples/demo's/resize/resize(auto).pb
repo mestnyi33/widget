@@ -21,16 +21,26 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    SetWindowColor( 0, $ff0000)
+  
     Open(0, 20,20 )
     SetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
    
     ;Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)
     ;MDI(0,0,0,0, #__flag_autosize) : OpenList(widget())
-    Container(0,0,0,0, #__flag_autosize)
-    ;ScrollArea(0,0,400, 591, 800,500,0, #__flag_autosize)
+    ;Container(0,0,0,0, #__flag_autosize)
+    ScrollArea(0,0,400, 591, 800,500,0, #__flag_autosize)
     ;Panel(0,0,0,0, #__flag_autosize) : AddItem(widget(), -1, "panel")
-    SetColor(widget(), #PB_Gadget_BackColor, $ffff0000)
-   
+    ;Button(0,0,0,0,"button", #__flag_autosize)
+    
+    If ListSize(widget())
+      SetColor(widget(), #__color_back, $ff00ff00)
+      SetColor(widget(), #__color_frame, $ff0000ff)
+    Else
+      SetColor(root(), #__color_back, $ff0000ff)
+      SetColor(root(), #__color_frame, $ff00ff00)
+    EndIf
+    
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
@@ -41,5 +51,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = --
 ; EnableXP

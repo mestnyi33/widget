@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*spl1, width - 150)
   SetState(*spl2, height - 150)
   
-  Bind( #PB_Default, #PB_Default )
+  ;Bind( #PB_Default, #PB_Default )
   
   Repeat
     Event = WaitWindowEvent()

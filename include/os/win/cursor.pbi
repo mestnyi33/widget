@@ -238,8 +238,9 @@ Module Cursor
         Case LoadCursor_(0,#IDC_IBEAM) : result = #PB_Cursor_IBeam
         Case LoadCursor_(0,#IDC_NO) : result = #PB_Cursor_Denied
           
-        Case LoadCursor_(0,#IDC_CROSS) : result = #PB_Cursor_Cross
         Case LoadCursor_(0,#IDC_HAND) : result = #PB_Cursor_Hand
+        Case LoadCursor_(0,#IDC_CROSS) : result = #PB_Cursor_Cross
+        Case LoadCursor_(0,#IDC_SIZEALL) : result = #PB_Cursor_Arrows
           
         Case LoadCursor_(0,#IDC_SIZEWE) : result = #PB_Cursor_Up
         Case LoadCursor_(0,#IDC_SIZEWE) : result = #PB_Cursor_Down
@@ -252,12 +253,12 @@ Module Cursor
         Case LoadCursor_(0,#IDC_SIZENESW) : result = #PB_Cursor_LeftDownRightUp
         Case LoadCursor_(0,#IDC_SIZENWSE) : result = #PB_Cursor_LeftUpRightDown
           
-        Case LoadCursor_(0,#IDC_SIZEALL) : result = #PB_Cursor_Arrows
+        Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Drop
+        Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Drag
           
         Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Grab
         Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Grabbing
-        Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Drop
-        Case LoadCursor_(0,#IDC_ARROW) : result = #PB_Cursor_Drag
+          
       EndSelect 
     Else
       result = #PB_Cursor_Invisible

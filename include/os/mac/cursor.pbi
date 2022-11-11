@@ -93,7 +93,7 @@ Module Cursor
     CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
   EndImport
   
-  Global eventTap, psn 
+  Global eventTap, psn, EnteredID 
   GetCurrentProcess(@psn)
   DeclareC Proc(proxy, eType, event, refcon)
   ;eventTap = CGEventTapCreateForPSN(@psn, 0, 1, #NSMouseMovedMask | #NSLeftMouseDownMask | #NSLeftMouseUpMask | #NSCursorUpdateMask | #NSAppKitDefinedMask, @Proc( ), #NUL)
@@ -134,22 +134,18 @@ Module Cursor
   
   Procedure Change( GadgetID.i, state.b )
     ;If Not CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-      Protected *cursor._s_cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
-      
-      If *cursor And *cursor\hcursor
-        ;CompilerIf #PB_Compiler_IsMainFile
-          Debug "changeCursor"
-        ;CompilerEndIf
-        
-        ; reset
-        If state = 0 
-          CocoaMessage(0, *cursor\windowID, "enableCursorRects")
-          If *cursor\hcursor =- 1
-            CocoaMessage(0, 0, "NSCursor unhide")
-          EndIf
+    Protected *cursor._s_cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
+    If *cursor And *cursor\hcursor
+      ; reset
+      If state = 0 
+        CocoaMessage(0, *cursor\windowID, "enableCursorRects")
+        If *cursor\hcursor =- 1
+          CocoaMessage(0, 0, "NSCursor unhide")
         EndIf
-        
-        ; set
+      EndIf
+      
+      ; set
+      If *cursor\hcursor <> CocoaMessage(0, 0, "NSCursor currentCursor")
         If state = 1 
           CocoaMessage(0, *cursor\windowID, "disableCursorRects")
           If *cursor\hcursor =- 1
@@ -158,13 +154,18 @@ Module Cursor
             CocoaMessage(0, *cursor\hcursor, "set") 
           EndIf
         EndIf
+        ;CompilerIf #PB_Compiler_IsMainFile
+        Debug "changeCursor"
+       ;CompilerEndIf
       EndIf
+    EndIf
     ;EndIf
   EndProcedure
   
   ProcedureC  Proc(proxy, eType, event, refcon)
-    Protected EnteredID
-    Static PressedID, GadgetID
+    Protected handle
+    Shared EnteredID
+    Static PressedID
     
     If eType = #NSCursorUpdate
       Debug "#NSCursorUpdate"
@@ -174,38 +175,48 @@ Module Cursor
       PressedID = Mouse::Gadget(Mouse::Window())
       
     ElseIf eType = #NSLeftMouseUp
-      EnteredID = Mouse::Gadget(Mouse::Window())
+      handle = Mouse::Gadget(Mouse::Window())
       
-      If PressedID  
-        Cursor::change(PressedID, 0)
+      If handle And 
+         handle <> PressedID
+        
+        If PressedID  
+          Cursor::change(PressedID, 0)
+        EndIf
+        
+        Cursor::change( handle, 1)
       EndIf
       
-      If EnteredID And 
-         EnteredID <> PressedID
-        Cursor::change( EnteredID, 1)
-      EndIf
-      
-      GadgetID = EnteredID
+      EnteredID = handle
       PressedID = 0
       
     ElseIf eType = #NSMouseMoved
-      EnteredID = Mouse::Gadget(Mouse::Window())
+      handle = Mouse::Gadget(Mouse::Window())
       
-      If GadgetID <> EnteredID
-        If GadgetID
-          Cursor::change(GadgetID, 0)
+      If EnteredID <> handle
+        Debug ""+EnteredID +" "+ handle
+        If EnteredID
+          Cursor::change(EnteredID, 0)
         EndIf
         
-        GadgetID = EnteredID
+        EnteredID = handle
         
-        If GadgetID 
-          Cursor::change(GadgetID, 1)
+        If EnteredID 
+          Cursor::change(EnteredID, 1)
         EndIf
       EndIf
+      
     Else ; appKitDefined
       CompilerIf #PB_Compiler_IsMainFile
+        ; event =  __NSCFType
         Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-        Debug ""+eType+" "+NSEvent
+        Debug ""+eType +" "+ event +" "+ NSEvent ;+" "+ ID::ClassName(NSEvent) ; GetWindowTitle(GetActiveWindow())
+                                                 ;CocoaMessage(0, WindowID(GetActiveWindow()), "disableCursorRects")
+        ;Debug CocoaMessage(0, 0, "eventType:", event)
+          
+;         If EnteredID 
+;           Cursor::change(EnteredID, 1)
+;         EndIf
       CompilerEndIf
     EndIf
   EndProcedure
@@ -242,15 +253,11 @@ Module Cursor
               
             Case #PB_Cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
             Case #PB_Cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-              
-            Case #PB_Cursor_Drag      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor")
-            Case #PB_Cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
             Case #PB_Cursor_Denied    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
               
-            Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
             Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-            Case #PB_Cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
-            Case #PB_Cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+            Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+            Case #PB_Cursor_Arrows      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
               
             Case #PB_Cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
             Case #PB_Cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
@@ -292,7 +299,17 @@ Module Cursor
             
             Case #PB_Cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
             Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-          EndSelect 
+              
+            Case #PB_Cursor_LeftDownRightUp : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            Case #PB_Cursor_LeftUpRightDown : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+              
+            Case #PB_Cursor_Drag      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor")
+            Case #PB_Cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+              
+            Case #PB_Cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+            Case #PB_Cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+              
+            EndSelect 
         Else
           If cursor
             *cursor\hcursor = Create(cursor)
@@ -302,7 +319,8 @@ Module Cursor
       
       If *cursor\hcursor And 
          GadgetID = mouse::Gadget(*cursor\windowID)
-        Change( GadgetID, 1 )
+         EnteredID = GadgetID
+         Change( GadgetID, 1 )
         ProcedureReturn #True
       EndIf
     EndIf
@@ -460,11 +478,11 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_LeftDoubleClick " 
         
       Case #PB_EventType_MouseEnter
-        Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
+        ;Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
         DrawCanvasFrame(eventobject, $00A600)
         
       Case #PB_EventType_MouseLeave
-        Debug ""+eventobject + " #PB_EventType_MouseLeave "
+        ;Debug ""+eventobject + " #PB_EventType_MouseLeave "
         DrawCanvasFrame(eventobject, 0)
         
       Case #PB_EventType_Resize
@@ -584,7 +602,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
   ;;events::SetCallback(@EventHandler())
   
-  OpenWindow(#PB_Any, 550, 300, 328, 328, "window_1", #PB_Window_SystemMenu)
+  OpenWindow(#PB_Any, 550, 300, 328, 328, "window_4", #PB_Window_SystemMenu)
   Define Canvas_0 = CanvasGadget(#PB_Any, 8, 8, 86, 86)
   ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
   Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56)
@@ -1128,5 +1146,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -T--v-0-v+--------
+; Folding = -T-------0--------
 ; EnableXP

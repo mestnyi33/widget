@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   If ReadFile(0, file$)
     Define  length = Lof(0)                       ; read length of file
-    ;FileSeek(0, length-100000)                     ; set the file pointer 10 chars from end of file
+    FileSeek(0, length-100000)                     ; set the file pointer 10 chars from end of file
     
     ;Debug "Position: " + Str(Loc(0))      ; show actual file pointer position
     Define  *MemoryID = AllocateMemory(length)    ; allocate the needed memory for 10 bytes
