@@ -215,7 +215,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure Canvas_CallBack( )
+  Procedure Canvas_Events( )
     Protected Repaint
     Protected Event = EventType( )
     Protected Canvas = EventGadget( )
@@ -235,12 +235,12 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint = #True
         
       Case #PB_EventType_LeftButtonUp : Drag = #False
-        Canvas_SetCursor( Mousex, Mousey )
+        ; Canvas_SetCursor( Mousex, Mousey )
         
       Case #PB_EventType_LeftButtonDown
         Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
         If Drag 
-          Canvas_SetCursor( Mousex, Mousey, #PB_Cursor_Arrows )
+          ; Canvas_SetCursor( Mousex, Mousey, #PB_Cursor_Arrows )
           Repaint = #True 
         EndIf
         
@@ -258,7 +258,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
           EndIf
         Else 
-          Canvas_SetCursor( Mousex, Mousey )
+          ; Canvas_SetCursor( Mousex, Mousey )
         EndIf
         
       Case #PB_EventType_Resize 
@@ -318,9 +318,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) 
-  BindGadgetEvent(MyCanvas, @Canvas_CallBack())
+  BindGadgetEvent(MyCanvas, @Canvas_Events())
   Area_Use( 0, MyCanvas)
-  ;MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_CallBack( ) ) )
+  ;MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_Events( ) ) )
   
   ; add new images
   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
@@ -396,6 +396,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = R5--DDAA+
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = R8----BA+
 ; EnableXP

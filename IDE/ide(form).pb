@@ -564,23 +564,30 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-;       Case #PB_EventType_MouseEnter
-;         If Not GetButtons( )
-;           If GetState( id_elements_tree) > 0 
-;             If IsContainer( *newWidget )
-;               SetCursor( *newWidget, #PB_Cursor_Cross )
-;             EndIf
-;           EndIf
-;         EndIf
-;         
-;       Case #PB_EventType_MouseLeave
-;         If Not GetButtons( )
-;           If GetState( id_elements_tree) > 0 
-;             If IsContainer( *newWidget )
-;               SetCursor( *newWidget, #PB_Cursor_Default )
-;             EndIf
-;           EndIf
-;         EndIf
+      Case #PB_EventType_MouseEnter
+        If Not GetButtons( )
+          If GetState( id_elements_tree) > 0 
+            If IsContainer( *newWidget )
+              SetCursor( *newWidget, #PB_Cursor_Cross )
+            EndIf
+          EndIf
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        If Not GetButtons( )
+          If GetState( id_elements_tree) > 0 
+            If IsContainer( *newWidget )
+              SetCursor( *newWidget, #PB_Cursor_Default )
+            EndIf
+          EndIf
+        EndIf
+        
+      Case #PB_EventType_RightButtonUp
+        ; end new create
+        If GetState( id_elements_tree) > 0 
+          SetState( id_elements_tree, 0 )
+          SetCursor( *newWidget, #PB_Cursor_Default )
+        EndIf
         
       Case #PB_EventType_Resize
         properties_update_coordinate( id_i_properties_tree, *newWidget )
@@ -1196,7 +1203,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\ include images
   DataSection   
-    IncludePath "include/images"
+    ;IncludePath "include/images"
+    IncludePath #path + "IDE/include/images"
     
     widget_delete:    : IncludeBinary "delete1.png"
     widget_paste:     : IncludeBinary "paste.png"
@@ -1215,5 +1223,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------+--f8x--X7-H-
+; Folding = ------+--f8-j--v1-P+
 ; EnableXP

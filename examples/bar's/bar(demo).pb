@@ -33,11 +33,11 @@ CompilerIf #PB_Compiler_IsMainFile
            "The string must be very long." + m.s +
            "Otherwise it will not work." ;+ m.s +
  
-  Procedure _Events()
+  Procedure Events_()
     Select WidgetEventType( )
       Case #PB_EventType_MouseEnter
         Debug "post enter - "+EventWidget( )\index
-        If GetButtons(EventWidget( ))
+        If GetButtons( )
           EventWidget( )\color\back = $00FF00
         Else
           EventWidget( )\color\back = $0000FF

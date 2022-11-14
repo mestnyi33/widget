@@ -264,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect     
    
    
-    If Not GetButtons( 0 ) And EnterButton( ) ; EnterButton( );(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
+    If Not GetButtons( ) And EnterButton( ) ; EnterButton( );(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
       Select EventType
         Case #PB_EventType_LeftButtonUp
           Debug "----------Up---------"

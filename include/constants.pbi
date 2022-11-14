@@ -546,16 +546,19 @@
                                                          ;     #__Window_close          = #PB_Window_NoActivate<<2
                                                          ;#PB_Window                 = #PB_Window_NoActivate<<2
     
-    ;- _c_spin
+    ;-  SPIN
     #__spin_padding_text = 3
     #__spin_buttonsize = #__scroll_buttonsize + 3
     
-    #__spin_Left = #__text_Left
-    #__spin_Right = #__text_Right
-    #__spin_center = #__text_center
-    #__spin_numeric = #__text_numeric
-    #__spin_vertical = #__bar_vertical
-    #__spin_Plus = 2
+    #__spin_TextLeft = #__text_Left
+    #__spin_TextRight = #__text_Right
+    #__spin_TextCenter = #__text_center
+    
+    #__spin_Numeric = #__text_numeric
+    #__spin_Vertical = #__bar_vertical
+    #__spin_Left = 1<<1
+    #__spin_Right = 1<<2
+    #__spin_Plus = 1<<3
     
     ;     ;- 
     ; Debug #PB_Checkbox_Unchecked ; 0
@@ -738,7 +741,7 @@
       ;       #PB_EventType_TimerStart
       ;       #PB_EventType_TimerStop
       ;;;; #PB_EventType_ColorChange
-      #PB_EventType_CursorUpdate
+     ; #PB_EventType_CursorUpdate
       #PB_EventType_CursorChange
     EndEnumeration
     

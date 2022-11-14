@@ -16,8 +16,8 @@ EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SizeGadget| #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
-  Tab(0,0, 100, 30,0,0,0)
-  SetAlignment(GetWidget(0), #__flag_AutoSize|#__align_top)
+  Tab(0,0, 100, 30,0,0)
+  SetAlignmentFlag(GetWidget(0), #__flag_AutoSize|#__align_top)
   
   AddItem(GetWidget(0), -1, "Sub-Panel 1")
   AddItem(GetWidget(0), -1, "Sub-Panel 2")
@@ -33,7 +33,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Size
   WaitClose()
 EndIf
 
-
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

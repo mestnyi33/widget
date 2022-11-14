@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define time = ElapsedMilliseconds()
     SetText(*g, Text.s) 
     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)
-    
+    ;\\Close( )
     
     
     

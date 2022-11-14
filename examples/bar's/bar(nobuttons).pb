@@ -1,5 +1,5 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If Open(0, 10, 10, 380, 80)
         g_Canvas = GetGadget(root())
         *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8);, #__bar_buttonsize)
-        Splitter(5, 10, 370, 70, *scrollbar,0)
+        Splitter(0, 0, 380, 80, *scrollbar, - 1 )
         SetState(widget(), 70)
         
         SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
@@ -27,7 +27,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Window_0()
-  bind(-1,-1)
   
   ; SetAttribute(*scrollbar, #__Bar_ButtonSize, 100 )
   buttonsize = GetAttribute(*scrollbar, #__Bar_ButtonSize)
@@ -67,6 +66,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

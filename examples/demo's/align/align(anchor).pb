@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 UseLib(widget)
 
 Global Window_3, demo
@@ -402,7 +403,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   
   ; BindGadgetEvent(C_Add,@Additinal())
   Bind(#PB_All, @AliginsEvent());, Window_3)
-  bind(-1,-1)
+  ;bind(-1,-1)
   CloseList()
   ProcedureReturn widget
 EndProcedure

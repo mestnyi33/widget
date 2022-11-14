@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+ XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -9,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+  ;  Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -33,16 +34,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *g1 = AddItem(*g, -1, "form_1") : Resize(*g1, 10,  10, 230, 30)
     Define *g2 = AddItem(*g, -1, "form_2") : Resize(*g2, 50,  50, 230, 30)
     Define *g3 = AddItem(*g, -1, "form_3") : Resize(*g3, 90,  90, 230, 30)
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
-    ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = AddItem(*g, -1, "form") : Resize(*b, Sw-130, Sh-30, 130, 30)
     ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
     ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
     CloseList()
-    
+   
     ;
-    Splitter(10,10,590,480, 0, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
+    Splitter(10,10,590,480, -1, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
     
     If count
       OpenGadgetList(g)
@@ -81,9 +80,11 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b), #PB_Ignore, #PB_Ignore)
-      
+      If *b
+        ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
+        Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b), #PB_Ignore, #PB_Ignore)
+      EndIf
+
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
       
@@ -111,6 +112,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = 6-
 ; EnableXP

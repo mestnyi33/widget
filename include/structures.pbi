@@ -605,26 +605,32 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     WIDGET
     Structure _s_WIDGET
       autosize.b
-      *root._s_ROOT     ; TEMP
-      *window._s_WIDGET ; TEMP
+      fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
+      bs.a    ; border size
+      
+      *_tt._s_tt          ; notification = уведомление
+      *drop._s_dd
+      *attach._s_ATTACH
+      *align._s_ALIGN
+      
+      *bar._s_BAR
+      *row._s_ROW ; multi-text; buttons; lists; - gadgets
+      *_box_._s_BUTTONS ; checkbox; optionbox
       
       tab._s_TAB        
+      scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
-      *mouse._s_mouse
-      state._s_state
-      
-      *drop._s_dd
-      *attach._s_attach
-      bounds._s_boundS
+      StructureUnion
+        *_group._s_WIDGET  ; = Option( ) groupbar gadget  
+        *_popup._s_WIDGET  ; = ComboBox( ) listView gadget
+        *_string._s_WIDGET  ; = SpinBar( ) String gadget
+      EndStructureUnion
       
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._s_buttons[constants::#__a_moved+1]
       _a_._s_a
       transform.b
-      
-      fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-      bs.a    ; border size
       
       __state.w ; #_s_ss_ (font; back; frame; fore; line)
       __draw.b 
@@ -641,16 +647,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       width.l[constants::#__c]
       ; transporent.b
       
-      ; placing layout
-      first._s_objecttype
-      last._s_objecttype
-      after._s_objecttype
-      before._s_objecttype
-      
       parent._s_PARENT
-      *bar._s_bar
       
-      ; 
+      ; placing layout
+      first._s_OBJECTTYPE
+      last._s_OBJECTTYPE
+      after._s_OBJECTTYPE
+      before._s_OBJECTTYPE
+      
+      bounds._s_BOUNDS
+      state._s_STATE
+      
+       ; 
       *position ; ;#PB_List_First; #PB_List_Last
       
       
@@ -662,19 +670,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; \index[2] - tab selected item index
       
       *address          ; widgets list address
-      
-      
       *container        ; 
-      count._s_count
       
-      ;StructureUnion
-        *_owner._s_WIDGET; this window owner parent
-        *_group._s_WIDGET; = option( ) groupbar gadget  
-      ;EndStructureUnion
-      
-      *_tt._s_tt          ; notification = уведомление
-      *_popup._s_WIDGET   ; combobox( ) list-view gadget
-      scroll._s_scroll    ; vertical & horizontal scrollbars
+      text._s_TEXT
+      count._s_COUNT
       
       *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
@@ -692,46 +691,30 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *data
       *cursor
       
-      draw_widget.b
-      
+      type.b
+      vertical.b
       child.b ; is the widget composite?
+      interact.i 
       
       level.l 
       class.s  
       change.l
-      vertical.b
-      type.b
       hide.b[2] 
       round.a
-      
-      repaint.i
       resize.i
       
       *errors
       notify.l ; оповестить об изменении
-      interact.i 
       
       mode._s_mode
       caption._s_caption
       color._s_color[4]
       
-      text._s_text 
-      
-      *row._s_row ; multi-text; buttons; lists; - gadgets
-      *_box_._s_buttons ; checkbox; optionbox
-      
-      *combo_list._s_WIDGET
-      
-      *align._s_align
-      
-      *time_click
-      *time_down
-      *time
-      
       *event._s_event
-      events._s_eventdata ;?????????
       
       List *column._s_column( )
+      *root._s_ROOT     ; TEMP
+      *window._s_WIDGET ; TEMP
     EndStructure
     ;--     CANVAS
     Structure _s_CANVAS

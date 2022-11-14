@@ -1,4 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi"
+﻿; XIncludeFile "../../../widgets.pbi"
 XIncludeFile "../../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile

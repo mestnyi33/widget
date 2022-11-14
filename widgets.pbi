@@ -1013,7 +1013,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.l GetDeltaX( *this )
     Declare.l GetDeltaY( *this )
     Declare.l GetLevel( *this )
-    Declare.l GetButtons( *this )
+    Declare.l GetButtons( )
     Declare.l GetType( *this )
     Declare.i GetRoot( *this )
     
@@ -1236,8 +1236,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;     CompilerEndSelect ;}        
     
     Macro _set_cursor_( _this_, _cursor_ )
-      If _this_\root\canvas\cursor <> _cursor_ 
-        _this_\root\canvas\cursor = _cursor_
+      If mouse( )\cursor <> _cursor_ 
+        mouse( )\cursor = _cursor_
         If 65535 >= _cursor_
           SetGadgetAttribute( _this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_ )
         Else
@@ -1259,7 +1259,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Not mouse( )\buttons
         ; Debug "remove cursor "+_this_ +" "+ EnteredWidget( )
         
-        If EnteredWidget( ) And EnteredWidget( )\cursor And EnteredWidget( )\cursor <> EnteredWidget( )\root\canvas\cursor ; Not _is_root_( EnteredWidget( ))  
+        If EnteredWidget( ) And EnteredWidget( )\cursor And EnteredWidget( )\cursor <> mouse( )\cursor ; Not _is_root_( EnteredWidget( ))  
           _set_cursor_( _this_, EnteredWidget( )\cursor )
         Else
           _set_cursor_( _this_, #PB_Cursor_Default )
@@ -13141,7 +13141,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;         pos_y + y + #__window_frame_size + #__window_caption_height
         ;         pos_x + x + #__window_frame_size
         
-        ;result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag, *this )
+        result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag, *this )
         ;         EndIf
         If IsImage( Image )
           If flag & #__flag_BorderLess = #__flag_BorderLess
@@ -13427,7 +13427,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ProcedureReturn ( mouse( )\delta\y + *this\y[#__c_container] )
     EndProcedure
     
-    Procedure.l GetButtons( *this._s_WIDGET )
+    Procedure.l GetButtons( )
       ProcedureReturn mouse( )\buttons
     EndProcedure
     
@@ -19601,12 +19601,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
              eventtype = #__event_MiddleButtonDown Or
              eventtype = #__event_RightButtonDown
         
+        Static time_down, time_click
         PressedWidget( ) = EnteredWidget( )
         
         ;
         If EnteredWidget( )
           EnteredWidget( )\state\flag | #__s_select
-          EnteredWidget( )\time_down = ElapsedMilliseconds( )
+          time_down = ElapsedMilliseconds( )
           
           If ( eventtype = #__event_LeftButtonDown Or
                eventtype = #__event_RightButtonDown ) 
@@ -19731,16 +19732,16 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ; do double-click events 
-            If PressedWidget( )\time_click And DoubleClickTime( ) > ElapsedMilliseconds( ) - PressedWidget( )\time_click
+            If time_click And DoubleClickTime( ) > ElapsedMilliseconds( ) - time_click
               If eventtype = #__event_LeftButtonUp
                 Repaint | DoEvents( PressedWidget( ), #__event_LeftDoubleClick, mouse( )\x, mouse( )\y )
               EndIf
               If eventtype = #__event_RightButtonUp
                 Repaint | DoEvents( PressedWidget( ), #__event_RightDoubleClick, mouse( )\x, mouse( )\y )
               EndIf
-              PressedWidget( )\time_click = 0
+              time_click = 0
             Else
-              PressedWidget( )\time_click = ElapsedMilliseconds( )
+              time_click = ElapsedMilliseconds( )
             EndIf
           Else
             ; do enter events
@@ -20934,8 +20935,6 @@ CompilerEndIf
 ;   EndDataSection
 ;   
 ; CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 1866
-; FirstLine = 1853
-; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6------------------------------------------------------8--f--86+------------------------------------------8----------8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = +-------------------------------------------------------------------------------0-----v++------------------------Pe6------------------------------------------------------8--f--86+------------------------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---------------------------------------------------------------
 ; EnableXP

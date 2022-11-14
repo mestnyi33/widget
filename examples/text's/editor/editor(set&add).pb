@@ -84,6 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g, a, "Line "+Str(a))
     Next
     ;SetFont(*g, FontID(0))
+    ;\\Close( )
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
