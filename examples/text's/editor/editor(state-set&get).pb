@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 UseLib(widget)
 
@@ -14,10 +15,13 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
   
   a=0
   For a = 0 To LN
-    AddItem (*w, -1, "Item "+Str(a), 0)
+    AddItem (*w, a, "Item "+Str(a), 0)
   Next
   
-  SetState(*w, 5) ; set (beginning with 0) the tenth item as the active one
+  Define i = 2
+  ; SetState(*w, - 1) 
+  SetState(*w, i*7+5) ; set (beginning with 0) the tenth item as the active one
+  SetActive( *w )
   
   ;
   a=0

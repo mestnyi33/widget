@@ -1084,8 +1084,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
 ; CursorPosition = 326
-; FirstLine = 319
+; FirstLine = 313
 ; Folding = --------------
 ; EnableXP

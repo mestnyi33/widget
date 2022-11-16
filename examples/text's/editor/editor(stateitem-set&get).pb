@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 UseLib(widget)
 
@@ -11,21 +12,24 @@ If OpenWindow(0, 100, 50, 530, 540, "editor set&get item state", #PB_Window_Syst
   
   Open(0, 270, 10, 250, 520);, "", #__flag_borderless)
   *w=Editor(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
+  SetActive( *w )
   ;
   ;-
   ;
   a=0
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
-    AddItem (*w, -1, "Item "+Str(a), 0)
+    AddItem (*w, a, "Item "+Str(a), 0)
   Next
   Debug " "+Str(ElapsedMilliseconds()-time) + " - widget add items time count - " + CountItems(*w)
   
   a=0
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
-    SetItemState(*w, a, 1) ; set (beginning with 0) the tenth item as the active one
+    SetItemState(*w, a, - 1) ; set (beginning with 0) the tenth item as the active one
   Next
+  
+  ; SetItemState(*w, 2, 0) ; set (beginning with 0) the tenth item as the active one
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - widget set items state time"
   
   

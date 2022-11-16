@@ -11,9 +11,21 @@
 ; spake & up/down selected item
 ; spake post event leftclick
 
+; OS
+; windows 
+; multi-select 
+;   mouse
+;      button down and mouse-moved 
+;   keyboard
+;      shift and up/down-key
+; reset then button down no-selected item
+; не приятное поведение когда выбран один итем при нажатии на нем
+; и попытке выделить еще несколько итемов не происходит выделение,
+; так как при нажатии на выделеном итеме не сбрасываются выделение
 
-XIncludeFile "../../../widgets.pbi" 
-;XIncludeFile "../empty.pb"
+;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
+
 Uselib(widget)
 
 Procedure events_gadgets()
@@ -37,7 +49,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Select this()\event
+  Select WidgetEventType( )
 ;     Case #PB_EventType_Up
 ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
 ;       

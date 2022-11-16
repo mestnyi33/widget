@@ -563,14 +563,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     TAB
     Structure _s_TAB
       index.i 
-      *widget._s_WIDGET
+      change.b
       
       ; tab
       *pressed._s_rows ; _get_bar_active_item_
       *active._s_rows ; _get_bar_active_item_
       *entered._s_rows  ; _get_bar_active_item_
       
-      change.b
+      *widget._s_WIDGET
     EndStructure
     
     ;--     PARENT
