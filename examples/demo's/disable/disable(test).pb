@@ -64,9 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               Case 27: *CHILD = Tree(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1)
               Case 28: *CHILD = Panel(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseList()
               Case 29 
-                Button(0,0,30,30,"1")
-                Button(0,0,30,30,"2")
-                *CHILD = Splitter(30,20,150,30,201,202)
+                *CHILD = Splitter(30,20,150,30,Button(0,0,30,30,"1"),Button(0,0,30,30,"2"))
                 
               Case 30: *CHILD = MDI(30,10,150,70)
                 ; Case 31: *CHILD = Scintilla(30,10,150,70,0)

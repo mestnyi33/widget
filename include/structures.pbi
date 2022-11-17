@@ -54,7 +54,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     COUNT
     Structure _s_COUNT
       index.l
-      type.l
+      type.l;[100]
       items.l
       events.l
       parents.l
@@ -604,6 +604,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     WIDGET
     Structure _s_WIDGET
+      type.b
+      
       autosize.b
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
       bs.a    ; border size
@@ -691,7 +693,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *data
       *cursor
       
-      type.b
       vertical.b
       child.b ; is the widget composite?
       interact.i 

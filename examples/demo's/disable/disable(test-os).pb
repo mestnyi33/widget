@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case *LIST
         Select EventType( )
-          Case #PB_EventType_Change
+          Case #PB_EventType_LeftClick
             Select GetGadgetState( *LIST )
               Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
               Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Case 15: ScrollBarGadget( #CHILD,30,20,150,30,5,335,9 )
               Case 16: ScrollAreaGadget( #CHILD,30,20,150,30,305,305,9,#PB_ScrollArea_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( )
               Case 17: TrackBarGadget( #CHILD,30,20,150,30,0,5 )
-              Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
+              ;Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
               Case 19: ButtonImageGadget( #CHILD,30,20,150,30,0 )
               Case 20: CalendarGadget( #CHILD,30,20,150,30 ) 
               Case 21: DateGadget( #CHILD,30,20,150,30 )
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent( *disable, @events( ), #PB_EventType_LeftClick )
     
 ListViewGadget( *LIST,300,10,150,180 ) 
-  BindGadgetEvent( *LIST, @events( ), #PB_EventType_Change )
+  BindGadgetEvent( *LIST, @events( ), #PB_EventType_LeftClick )
     AddGadgetItem( *LIST, -1, "Selected gadget to move" )
   AddGadgetItem( *LIST, -1, "Buttongadget" )
   AddGadgetItem( *LIST, -1, "Stringgadget" )
@@ -168,6 +168,8 @@ ListViewGadget( *LIST,300,10,150,180 )
       Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 63
+; FirstLine = 50
 ; Folding = ---
 ; EnableXP

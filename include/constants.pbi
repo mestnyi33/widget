@@ -798,58 +798,60 @@
     
     
     ;- Constant create-type
-    Enumeration -8
-      #__Type_Message   = -8
-      #__Type_PopupMenu = -7
-      #__Type_StatusBar = -6
-      #__Type_Root      = -5
-      #__Type_Menu      = -4       
-      #__Type_Toolbar   = -3      
-      #__Type_Window    = -2       
-      #__Type_All       = -1     
-      
-      #__type_unknown       = #PB_GadgetType_Unknown       ; 0
-      #__type_Button        = #PB_GadgetType_Button        ; 1
-      #__type_String        = #PB_GadgetType_String        ; 2
-      #__type_Text          = #PB_GadgetType_Text          ; 3
-      #__type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
-      #__type_Option        = #PB_GadgetType_Option        ; 5
-      #__type_ListView      = #PB_GadgetType_ListView      ; 6
-      #__type_Frame         = #PB_GadgetType_Frame         ; 7
-      #__type_ComboBox      = #PB_GadgetType_ComboBox      ; 8
-      #__type_Image         = #PB_GadgetType_Image         ; 9
-      #__type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
-      #__type_Container     = #PB_GadgetType_Container     ; 11
-      #__type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
-      #__type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
-      #__type_ProgressBar   = #PB_GadgetType_ProgressBar   ; 14
-      #__type_ScrollBar     = #PB_GadgetType_ScrollBar     ; 15
-      #__type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
-      #__type_TrackBar      = #PB_GadgetType_TrackBar      ; 17
-      #__type_Web           = #PB_GadgetType_Web           ; 18
-      #__type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
-      #__type_Calendar      = #PB_GadgetType_Calendar      ; 20
-      #__type_Date          = #PB_GadgetType_Date          ; 21
-      #__type_Editor        = #PB_GadgetType_Editor        ; 22
-      #__type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
-      #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
-      #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
-      #__type_Spin          = #PB_GadgetType_Spin          ; 26
-      #__type_Tree          = #PB_GadgetType_Tree          ; 27
-      #__type_Panel         = #PB_GadgetType_Panel         ; 28
-      #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
-      #__type_MDI           = #PB_GadgetType_MDI           ; 30
-      #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
-      #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
-      #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
-      #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+    Enumeration - 1
+      #__Type_All          
+      #__Type_Unknown       = #PB_GadgetType_Unknown       ; 0
+      #__Type_Button        = #PB_GadgetType_Button        ; 1
+      #__Type_String        = #PB_GadgetType_String        ; 2
+      #__Type_Text          = #PB_GadgetType_Text          ; 3
+      #__Type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
+      #__Type_Option        = #PB_GadgetType_Option        ; 5
+      #__Type_ListView      = #PB_GadgetType_ListView      ; 6
+      #__Type_Frame         = #PB_GadgetType_Frame         ; 7
+      #__Type_ComboBox      = #PB_GadgetType_ComboBox      ; 8
+      #__Type_Image         = #PB_GadgetType_Image         ; 9
+      #__Type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
+      #__Type_Container     = #PB_GadgetType_Container     ; 11
+      #__Type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
+      #__Type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
+      #__Type_ProgressBar   = #PB_GadgetType_ProgressBar   ; 14
+      #__Type_ScrollBar     = #PB_GadgetType_ScrollBar     ; 15
+      #__Type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
+      #__Type_TrackBar      = #PB_GadgetType_TrackBar      ; 17
+      #__Type_Web           = #PB_GadgetType_Web           ; 18
+      #__Type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
+      #__Type_Calendar      = #PB_GadgetType_Calendar      ; 20
+      #__Type_Date          = #PB_GadgetType_Date          ; 21
+      #__Type_Editor        = #PB_GadgetType_Editor        ; 22
+      #__Type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
+      #__Type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
+      #__Type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
+      #__Type_Spin          = #PB_GadgetType_Spin          ; 26
+      #__Type_Tree          = #PB_GadgetType_Tree          ; 27
+      #__Type_Panel         = #PB_GadgetType_Panel         ; 28
+      #__Type_Splitter      = #PB_GadgetType_Splitter      ; 29
+      #__Type_MDI           = #PB_GadgetType_MDI           ; 30
+      #__Type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
+      #__Type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
+      #__Type_Canvas        = #PB_GadgetType_Canvas        ; 33
+      #__Type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
       
       #__Type_TabBar        = 50
+      #__Type_ToolBar       
+      #__Type_StatusBar 
+      
       #__Type_Toggled
       #__Type_Property 
       #__Type_ImageButton
       #__Type_StringButton
-      #__Type_Hiasm     
+      
+      #__Type_Menu            
+      #__Type_PopupMenu
+      #__Type_Window          
+      #__Type_Message   
+      #__Type_Root      
+      
+      #__Type_Hiasm 
     EndEnumeration
     
     ;}
@@ -900,26 +902,26 @@
     Global test_draw_box_inner_type  ;= #PB_All
     Global test_draw_box_frame_type  ;= #PB_All
     
-    ;     test_draw_box_clip_type = #__type_Listview
-    ;     test_draw_box_clip1_type = #__type_Listview
-    ;     test_draw_box_clip2_type = #__type_Listview
+    ;     test_draw_box_clip_type = #__Type_Listview
+    ;     test_draw_box_clip1_type = #__Type_Listview
+    ;     test_draw_box_clip2_type = #__Type_Listview
     
-    ;     test_draw_box_clip_type = #__type_tree
-    ;     test_draw_box_clip1_type = #__type_tree
-    ;     test_draw_box_clip2_type = #__type_tree
+    ;     test_draw_box_clip_type = #__Type_tree
+    ;     test_draw_box_clip1_type = #__Type_tree
+    ;     test_draw_box_clip2_type = #__Type_tree
     ;     
-    ;     test_draw_box_clip_type = #__type_Mdi
-    ;     test_draw_box_clip1_type = #__type_Mdi
-    ;     test_draw_box_clip2_type = #__type_Mdi
+    ;     test_draw_box_clip_type = #__Type_Mdi
+    ;     test_draw_box_clip1_type = #__Type_Mdi
+    ;     test_draw_box_clip2_type = #__Type_Mdi
     
-    ;     test_draw_box_clip_type = #__type_scrollarea
-    ;     test_draw_box_clip1_type = #__type_scrollarea
-    ;     test_draw_box_clip2_type = #__type_scrollarea
+    ;     test_draw_box_clip_type = #__Type_scrollarea
+    ;     test_draw_box_clip1_type = #__Type_scrollarea
+    ;     test_draw_box_clip2_type = #__Type_scrollarea
     
     
-    test_draw_box_clip_type = #__type_scrollbar
-    test_draw_box_clip1_type = #__type_scrollbar
-    test_draw_box_clip2_type = #__type_scrollbar
+    test_draw_box_clip_type = #__Type_scrollbar
+    test_draw_box_clip1_type = #__Type_scrollbar
+    test_draw_box_clip2_type = #__Type_scrollbar
     
     
     

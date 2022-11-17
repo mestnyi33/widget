@@ -142,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flags.S
     
     Select type
-      Case #PB_GadgetType_Text
+      Case #__Type_Text
         If flag & #__text_center
           flags + "#PB_Text_Center | "
         EndIf
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
           flags + "#PB_Text_Border | "
         EndIf
         
-      Case #PB_GadgetType_Button
+      Case #__Type_Button
         If flag & #__button_left
           flags + "#PB_Button_Left | "
         EndIf
@@ -170,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
           flags + "#PB_Button_Default | "
         EndIf
         
-      Case #PB_GadgetType_Container
+      Case #__Type_Container
         If flag & #__flag_borderless
           flags + "#PB_Container_BorderLess | "
         EndIf
@@ -388,7 +388,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select class
         Case "window"    
-          If GetType( *parent ) = #PB_GadgetType_MDI
+          If GetType( *parent ) = #__Type_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
@@ -417,7 +417,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *new
         Protected newClass.s
-        newClass.s = GetClass( *new )+"_"+GetCount( *new )
+        newClass.s = GetClass( *new )+"_"+GetCount( *new , 0 )
+        ;newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
         
         If *new\container 
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_new_create|#_DD_re_parent|#_DD_selector )
@@ -1015,19 +1016,19 @@ CompilerIf #PB_Compiler_IsMainFile
     id_i_properties_tree = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless )
     If id_i_properties_tree
       AddItem( id_i_properties_tree, #_pi_group_0,  "Common" )
-      AddItem( id_i_properties_tree, #_pi_id,       "ID"      , #PB_GadgetType_String, 1 )
-      AddItem( id_i_properties_tree, #_pi_class,    "Class"   , #PB_GadgetType_String, 1 )
-      AddItem( id_i_properties_tree, #_pi_text,     "Text"    , #PB_GadgetType_String, 1 )
+      AddItem( id_i_properties_tree, #_pi_id,       "ID"      , #__Type_String, 1 )
+      AddItem( id_i_properties_tree, #_pi_class,    "Class"   , #__Type_String, 1 )
+      AddItem( id_i_properties_tree, #_pi_text,     "Text"    , #__Type_String, 1 )
       
       AddItem( id_i_properties_tree, #_pi_group_1,  "Layout" )
-      AddItem( id_i_properties_tree, #_pi_x,        "x"       , #PB_GadgetType_Spin, 1 )
-      AddItem( id_i_properties_tree, #_pi_y,        "Y"       , #PB_GadgetType_Spin, 1 )
-      AddItem( id_i_properties_tree, #_pi_width,    "Width"   , #PB_GadgetType_Spin, 1 )
-      AddItem( id_i_properties_tree, #_pi_height,   "Height"  , #PB_GadgetType_Spin, 1 )
+      AddItem( id_i_properties_tree, #_pi_x,        "x"       , #__Type_Spin, 1 )
+      AddItem( id_i_properties_tree, #_pi_y,        "Y"       , #__Type_Spin, 1 )
+      AddItem( id_i_properties_tree, #_pi_width,    "Width"   , #__Type_Spin, 1 )
+      AddItem( id_i_properties_tree, #_pi_height,   "Height"  , #__Type_Spin, 1 )
       
       AddItem( id_i_properties_tree, #_pi_group_2,  "State" )
-      AddItem( id_i_properties_tree, #_pi_disable,  "Disable" , #PB_GadgetType_ComboBox, 1 )
-      AddItem( id_i_properties_tree, #_pi_hide,     "Hide"    , #PB_GadgetType_ComboBox, 1 )
+      AddItem( id_i_properties_tree, #_pi_disable,  "Disable" , #__Type_ComboBox, 1 )
+      AddItem( id_i_properties_tree, #_pi_hide,     "Hide"    , #__Type_ComboBox, 1 )
     EndIf
     
     ; id_inspector_panel_item_3 
@@ -1223,5 +1224,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------+--f8-j--v1-P+
+; Folding = ------+--f8-j--v1-v+
 ; EnableXP

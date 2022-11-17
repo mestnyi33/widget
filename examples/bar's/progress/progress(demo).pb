@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widget-events.pbi" : Uselib(widget)
 
 Procedure events_progress_gadgets()
   ;ClearDebugOutput()
@@ -13,12 +13,12 @@ EndProcedure
 
 Procedure events_progress_widgets()
   ;ClearDebugOutput()
-  ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(this()\widget)) + " state - "+ GetState(this()\widget) ; 
+  ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-     ; SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      ; Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
+     ; SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      ; Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -36,12 +36,12 @@ EndProcedure
 
 Procedure events_track_widgets()
   ;ClearDebugOutput()
- ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(this()\widget)) + " state - "+ GetState(this()\widget) ; 
+ ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      SetState(GetWidget(GetIndex(this()\widget)-3), GetState(this()\widget))
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      SetState(GetWidget(GetIndex(EventWidget( ))-3), GetState(EventWidget( )))
   EndSelect
 EndProcedure
 
@@ -101,6 +101,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
