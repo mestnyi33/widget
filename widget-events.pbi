@@ -963,7 +963,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   SetPosition( *this, position.l, *widget = #Null )
     
     Declare.l GetColor( *this, ColorType.l )
-    Declare.l SetColor( *this, ColorType.l, Color.l )
+    Declare.l SetColor( *this, ColorType.l, Color.l, Column.l = 0 )
     
     Declare.i GetAttribute( *this, Attribute.l )
     Declare.i SetAttribute( *this, Attribute.l, *value )
@@ -5676,18 +5676,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Protected _reverse_ = *this\bar\invert
         Protected _round_ = BB1( )\round
         Protected alpha = 230
-        Protected _frame_color_ = $FF000000 ; BB1( )\color\frame[0]
+        Protected _frame_color_ = $FF000000 ; *this\color\frame ; BB1( )\color\frame[0] ; 
         Protected _fore_color1_
         Protected _back_color1_
         Protected _fore_color2_ 
         Protected _back_color2_
         
         alpha = 230
-        _fore_color1_ = BB1( )\color\fore[2]&$FFFFFF | alpha<<24 ; $f0E9BA81 ; 
-        _back_color1_ = BB1( )\color\back[2]&$FFFFFF | alpha<<24 ; $f0E89C3D ; 
+        _fore_color1_ = *this\color\fore[2]&$FFFFFF | alpha<<24 ; BB1( )\color\fore[2]&$FFFFFF | alpha<<24 ; $f0E9BA81 ; 
+        _back_color1_ = *this\color\back[2]&$FFFFFF | alpha<<24 ; BB1( )\color\back[2]&$FFFFFF | alpha<<24 ; $f0E89C3D ; 
         alpha - 15
-        _fore_color2_ = BB1( )\color\fore[0]&$FFFFFF | alpha<<24 ; $e0F8F8F8 ; 
-        _back_color2_ = BB1( )\color\back[0]&$FFFFFF | alpha<<24 ; $e0E2E2E2 ; 
+        _fore_color2_ = *this\color\fore&$FFFFFF | alpha<<24 ; BB1( )\color\fore[0]&$FFFFFF | alpha<<24 ; $e0F8F8F8 ; 
+        _back_color2_ = *this\color\back&$FFFFFF | alpha<<24 ; BB1( )\color\back[0]&$FFFFFF | alpha<<24 ; $e0E2E2E2 ; 
         
         If _vertical_
           If _reverse_
@@ -5707,6 +5707,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _position_ = 0
         EndIf
         
+       ; Debug "_position_ "+_position_ +" "+ *this\bar\page\pos
+      
         ;https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
         ; FrontColor(_frame_color_) ; не работает
         drawing_mode_alpha_(#PB_2DDrawing_Outlined)
@@ -6217,13 +6219,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Debug ""+height +" "+width+" "+ *this\height +" "+ *this\vertical+" "+ *this\class
       
       If mode > 0
+        ;\\ get area size
+        If *this\vertical
+          *bar\area\len = height 
+        Else
+          *bar\area\len = width 
+        EndIf
+        
         If *this\type = #__Type_Spin 
-          If *this\vertical
-            *bar\area\len = height 
-          Else
-            *bar\area\len = width 
-          EndIf
-          
           ; set real spin-buttons height
           If Not *this\flag & #__spin_Plus
             *BB1\size =  height/2 + Bool( height % 2 )
@@ -6238,13 +6241,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *bar\percent = ( *bar\area\end - *bar\area\pos ) / ( *bar\page\end - *bar\min )
           
         Else
-          ; get area size
-          If *this\vertical
-            *bar\area\len = height 
-          Else
-            *bar\area\len = width 
-          EndIf
-          
           If *this\type = #__Type_ScrollBar 
             ; default button size
             If *bar\max 
@@ -6277,88 +6273,90 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          
-          *bar\area\pos = ( *BB1\size + *bar\min[1] ) + bordersize
-          *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) - bordersize*2
-          
-          If ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar )
-            If *bar\max
-              *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
-              *bar\page\end = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
-            EndIf
-          Else
-            If *bar\page\len
-              ; get thumb size
-              *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
-              If *bar\thumb\len > *bar\thumb\end 
-                *bar\thumb\len = *bar\thumb\end 
-              EndIf
-              If *bar\thumb\len < *BB3\size 
-                If *bar\thumb\end > *BB3\size + *bar\thumb\len
-                  *bar\thumb\len = *BB3\size 
-                ElseIf *BB3\size > 7
-                  Debug "get thumb size - ????? " + *this\class +" "+ *this\width +" "+ *this\height +" "+ *this\_parent( )\width +" "+ *this\_parent( )\height
-                  *bar\thumb\len = 0
-                EndIf
-              EndIf
-              
-              ; for the scroll-bar
-              If *bar\max > *bar\page\len
-                *bar\page\end = *bar\max - *bar\page\len
-              Else
-                *bar\page\end = *bar\page\len - *bar\max
+          ; Debug ""+*bar\area\len +" "+ *bar\thumb\end
+          If *bar\area\len ; TODO - ?
+            *bar\area\pos = ( *BB1\size + *bar\min[1] ) + bordersize
+            *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) - bordersize*2
+            
+            If ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar )
+              If *bar\max
+                *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
+                *bar\page\end = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
               EndIf
             Else
-              ; get page end
-              If *bar\max
-                *bar\thumb\len = *BB3\size
-                If *bar\thumb\len > *bar\area\len
-                  *bar\thumb\len = *bar\area\len
-                EndIf
-                ;*bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )), #PB_Round_Nearest )
-                *bar\page\end = *bar\max
-              Else
+              If *bar\page\len
                 ; get thumb size
-                *bar\thumb\len = *BB3\size
-                If *bar\thumb\len > *bar\area\len
-                  *bar\thumb\len = *bar\area\len
+                *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
+                If *bar\thumb\len > *bar\thumb\end 
+                  *bar\thumb\len = *bar\thumb\end 
+                EndIf
+                If *bar\thumb\len < *BB3\size 
+                  If *bar\thumb\end > *BB3\size + *bar\thumb\len
+                    *bar\thumb\len = *BB3\size 
+                  ElseIf *BB3\size > 7
+                    Debug "get thumb size - ????? " + *this\class +" "+ *this\width +" "+ *this\height +" "+ *this\_parent( )\width +" "+ *this\_parent( )\height
+                    *bar\thumb\len = 0
+                  EndIf
                 EndIf
                 
-                ; one set end
-                If Not *bar\page\end And *bar\area\len 
-                  *bar\page\end = *bar\area\len - *bar\thumb\len
-                  
-                  If Not *bar\page\pos
-                    *bar\page\pos = *bar\page\end/2 
+                ; for the scroll-bar
+                If *bar\max > *bar\page\len
+                  *bar\page\end = *bar\max - *bar\page\len
+                Else
+                  *bar\page\end = *bar\page\len - *bar\max
+                EndIf
+              Else
+                ; get page end
+                If *bar\max
+                  *bar\thumb\len = *BB3\size
+                  If *bar\thumb\len > *bar\area\len
+                    *bar\thumb\len = *bar\area\len
+                  EndIf
+                  ;*bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )), #PB_Round_Nearest )
+                  *bar\page\end = *bar\max
+                Else
+                  ; get thumb size
+                  *bar\thumb\len = *BB3\size
+                  If *bar\thumb\len > *bar\area\len
+                    *bar\thumb\len = *bar\area\len
                   EndIf
                   
-                  ; if splitter fixed 
-                  ; set splitter pos to center
-                  If *bar\fixed
-                    If *bar\fixed = #__split_1
-                      *bar\button[*bar\fixed]\fixed = *bar\page\pos
-                    Else
-                      *bar\button[*bar\fixed]\fixed = *bar\page\end - *bar\page\pos
+                  ; one set end
+                  If Not *bar\page\end And *bar\area\len 
+                    *bar\page\end = *bar\area\len - *bar\thumb\len
+                    
+                    If Not *bar\page\pos
+                      *bar\page\pos = *bar\page\end/2 
+                    EndIf
+                    
+                    ; if splitter fixed 
+                    ; set splitter pos to center
+                    If *bar\fixed
+                      If *bar\fixed = #__split_1
+                        *bar\button[*bar\fixed]\fixed = *bar\page\pos
+                      Else
+                        *bar\button[*bar\fixed]\fixed = *bar\page\end - *bar\page\pos
+                      EndIf
+                    EndIf
+                  Else
+                    If *bar\page\change Or *bar\fixed = 1
+                      *bar\page\end = *bar\area\len - *bar\thumb\len 
                     EndIf
                   EndIf
-                Else
-                  If *bar\page\change Or *bar\fixed = 1
-                    *bar\page\end = *bar\area\len - *bar\thumb\len 
-                  EndIf
                 EndIf
+                
               EndIf
-              
             EndIf
+            
+            If *bar\page\end
+              ; *bar\percent = ( *bar\thumb\end - *bar\thumb\len-*this\scroll\increment ) / ( *bar\page\end - *bar\min-*this\scroll\increment )
+              *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
+            Else
+              *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\min )
+            EndIf
+            
+            *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] + bordersize )
           EndIf
-          
-          If *bar\page\end
-            ; *bar\percent = ( *bar\thumb\end - *bar\thumb\len-*this\scroll\increment ) / ( *bar\page\end - *bar\min-*this\scroll\increment )
-            *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
-          Else
-            *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\min )
-          EndIf
-          
-          *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] + bordersize )
         EndIf
       EndIf
       
@@ -7155,7 +7153,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *bar\page\end
           ScrollPos = *bar\page\end 
         Else
-          ScrollPos = bar_page_pos_( *bar, *bar\area\end ) - ScrollPos
+          If *bar\area\end ; TODO - ? example-splitter(3)
+            ScrollPos = bar_page_pos_( *bar, *bar\area\end ) - ScrollPos
+          EndIf
         EndIf
       EndIf
       
@@ -12719,7 +12719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;- 
-    Procedure.l SetColor( *this._S_widget, ColorType.l, Color.l )
+    Procedure.l SetColor( *this._S_widget, ColorType.l, Color.l, Column.l = 0 )
       *this\color\alpha.allocate( COLOR )
       Protected result.l, alpha.a = Alpha( Color )
       
@@ -12727,15 +12727,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Color = Color&$FFFFFF | 255<<24 
       EndIf
       
-      set_color_( result, *this\color, ColorType, Color, alpha )
+      set_color_( result, *this\color, ColorType, Color, alpha, [Column] )
       
       If *this\scroll
         If ColorType = #__color_back
           If *this\scroll\v
-            *this\scroll\v\color\back = color
+            *this\scroll\v\color\back[Column] = color
           EndIf
           If *this\scroll\h
-            *this\scroll\h\color\back = color
+            *this\scroll\h\color\back[Column] = color
           EndIf
         EndIf
       EndIf
@@ -14746,7 +14746,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected result, alpha.a
       
       ; 
-      If ListSize( *this\_rows( ) ) ;*this\type = #__Type_Tree Or *this\type = #__Type_Editor
+      If *this\row And ListSize( *this\_rows( ) ) ;*this\type = #__Type_Tree Or *this\type = #__Type_Editor
         If Item = #PB_All
           PushListPosition( *this\_rows( )) 
           ForEach *this\_rows( )
@@ -15374,7 +15374,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; - Create Tab
-        If ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar )
+        If *this\type = #__Type_TabBar Or
+           *this\type = #__Type_ToolBar
+          
           ;;*this\text\change = 1
           *this\color\back =- 1 
           BB1( )\color = _get_colors_( )
@@ -15464,10 +15466,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; - Create Progress
         If *this\type = #__Type_ProgressBar
-          *this\color\back =- 1 
           BB1( )\color = _get_colors_( )
           BB2( )\color = _get_colors_( )
           ;BB3( )\color = _get_colors_( )
+          *this\color = _get_colors_( )
           
           
           *this\vertical = Bool( Flag & #__bar_vertical = #__bar_vertical Or
@@ -16569,7 +16571,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; draw disable state
         If *this\state\disable
           drawing_mode_alpha_( #PB_2DDrawing_Default )
-          draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $80f0f0f0 )
+          draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $AAE4E4E4 )
         EndIf
          
         
@@ -20367,7 +20369,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
   widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
   widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+  ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+  Button_4 = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
   Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
   Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
@@ -20436,5 +20439,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------8------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------8------------------------+-----------+-fu--6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--+----------------------------------vy1vvtX-------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -2,7 +2,7 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-XIncludeFile "../../../widget-events.pb"
+XIncludeFile "../../../widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile

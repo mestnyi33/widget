@@ -3,8 +3,7 @@
 ; 
 
 ;XIncludeFile "../../../widgets.pbi"
-;XIncludeFile "../../../widgets-splitter.pbi"
-XIncludeFile "../../../-widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -23,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  Define auto = 0
+  Define auto = 1
   widget::Open(0);, 0, 0, 510, 340)
   
   ; first splitter

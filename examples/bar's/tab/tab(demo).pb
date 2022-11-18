@@ -107,12 +107,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemFont(*panel_1, 1, 6)
     SetItemFont(*panel_2, 1, 6)
   
-    Bind( root( ), #PB_Default )
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

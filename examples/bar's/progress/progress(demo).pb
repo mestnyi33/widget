@@ -1,4 +1,8 @@
-﻿XIncludeFile "../../../widget-events.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widget-events.pbi" 
+
+CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  Uselib(widget)
 
 Procedure events_progress_gadgets()
   ;ClearDebugOutput()
@@ -47,10 +51,17 @@ EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
 If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  ;\\
   ProgressBarGadget(0,  10, 30, 250,  30, 0, 100)
   SetGadgetState   (0, 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
+  
+  ;\\
   ProgressBarGadget(1,  10, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth)
   SetGadgetState   (1, 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
+  SetGadgetColor(1, #PB_Gadget_BackColor, $00FFFF)
+  SetGadgetColor(1, #PB_Gadget_FrontColor, $FFFFFF)
+      
+  ;\\
   ProgressBarGadget(2, 270, 10,  30, 140, 0, 300, #PB_ProgressBar_Vertical)
   SetGadgetState   (2, 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
   
@@ -65,6 +76,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
   TextGadget       (7,  10, 90, 250,  20, "ProgressBar Smooth  (50/200)", #PB_Text_Center)
   TextGadget       (8, 100,155, 200,  20, "ProgressBar Vertical  (100/300)", #PB_Text_Right)
   
+  Define i
   For i = 0 To 2
     BindGadgetEvent(i, @events_progress_gadgets())
   Next
@@ -72,13 +84,30 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
     BindGadgetEvent(i, @events_track_gadgets())
   Next
   
-  Progress(10+330, 30, 250,  30, 0, 100, 0, 40)
+  ;\\
+  Progress(0,0,0,0, 0, 100, 0, 40)
   SetState(widget( ), 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
+  Resize(widget( ), 10+330, 30, 250,  30)
+  
+  ;\\
   Progress(10+330, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
   SetState(widget( ), 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
+  
+  SetColor(widget( ), #__color_back, $ff00ff00)
+  SetColor(widget( ), #__color_fore, $FFC1FFBC)
+  
+  SetColor(widget( ), #__Color_Fore,  $FFBCBFFF, #__color_state_selected)
+  SetColor(widget( ), #__Color_Back,  $ff0000ff, #__color_state_selected)
+  
+  ; SetColor(widget( ), #__color_frame, $ff0000ff)
+  ; SetColor(widget( ), #__Color_Frame,  $ffff0000, #__color_state_selected)
+  
+  
+  ;\\
   Progress(270+330, 10,  30, 140, 0, 300, #PB_ProgressBar_Vertical)
   SetState(widget( ), 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
   
+  ;\\
   Track    (10+330, 60, 250,  20, 0,100)
   SetState(widget( ), 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
   Track    (10+330, 140, 250,  20, 0, 200)
@@ -101,6 +130,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
   
   WaitClose( )
 EndIf
+CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
