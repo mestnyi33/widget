@@ -82,7 +82,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       y.l[3]
       x.l[3]
       
-      ;;;clickCount.b
+      time.w                     ; mouse click time
+      click.b                    ; mouse click count
+      
       change.b                   ; if moved mouse this value #true
       buttons.l                  ; 
       
