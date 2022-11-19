@@ -18118,8 +18118,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #PB_EventType_MouseLeave,
                #PB_EventType_RightButtonDown,
                #PB_EventType_RightButtonUp,
+               #PB_EventType_RightDoubleClick,
+               #PB_EventType_Right3Click,
+               #PB_EventType_RightClick,
                #PB_EventType_LeftButtonDown,
                #PB_EventType_LeftButtonUp,
+               #PB_EventType_LeftDoubleClick,
+               #PB_EventType_Left3Click,
+               #PB_EventType_LeftClick,
                #PB_EventType_KeyDown,
                #PB_EventType_KeyUp,
                #PB_EventType_Focus,
@@ -18896,9 +18902,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouseClickTime And 
                DoubleClickTime( ) > ( ElapsedMilliseconds( ) - mouseClickTime )
               mouseClickCount + 1
-              If mouseClickCount > 3
-                DoEvents( EnteredWidget( ), eventtype )
-              EndIf
+;               If mouseClickCount > 3
+;                 DoEvents( EnteredWidget( ), eventtype )
+;               EndIf
             Else
               mouseClickCount = 1
               DoEvents( EnteredWidget( ), eventtype )
@@ -18980,15 +18986,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               ElseIf mouseClickCount = 2
                 If eventtype = #__event_LeftButtonUp
-                  DoEvents( PressedWidget( ), #__event_LeftDoubleClick )
+                  DoEvents( PressedWidget( ), #__event_Left2Click )
                 EndIf
                 If eventtype = #__event_RightButtonUp
-                  DoEvents( PressedWidget( ), #__event_RightDoubleClick )
+                  DoEvents( PressedWidget( ), #__event_Right2Click )
                 EndIf
               Else
-                ;\\ do up events
-                DoEvents( PressedWidget( ), eventtype )
-                
+                If mouseClickCount = 1
+                  ;\\ do up events
+                  DoEvents( PressedWidget( ), eventtype )
+                EndIf
+              
                 ;\\ do click events
                 If EnteredWidget( ) And 
                    EnteredWidget( )\state\drag = 0 And 
@@ -20439,5 +20447,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------8------------------------+-----------+-fu--6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--+----------------------------------vy1vvtX-------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------8------------------------+-----------+-fu--6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--+----------------------------------vy1vvtX--------------------------------------------------------------------v--0----vv04f8ff-j+9---------------------------
 ; EnableXP

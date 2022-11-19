@@ -32,6 +32,7 @@
 
 
 ; #PB_EventType_Resize
+; #PB_EventType_CloseWindow
 ; #PB_EventType_MaximizeWindow
 ; #PB_EventType_MinimizeWindow
 ; #PB_EventType_RestoreWindow
@@ -51,11 +52,6 @@
 ;
 ; #PB_EventType_Create
 ; #PB_EventType_SizeItem
-;
-; #PB_EventType_CloseWindow
-; #PB_EventType_MaximizeWindow
-; #PB_EventType_MinimizeWindow
-; #PB_EventType_RestoreWindow
 ;    
 ; #PB_EventType_MouseWheel    
 ; #PB_EventType_KeyDown     

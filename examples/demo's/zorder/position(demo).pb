@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 
 ;- EXAMPLE
@@ -15,150 +16,14 @@ CompilerIf #PB_Compiler_IsMainFile
   #last=102
   #return = 103
   
-  Procedure   _SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
-    ProcedureReturn SetPosition(*this, position, *widget)
-      
-; ;     Protected Type
-; ;     Protected result
-; ;     
-; ;     Protected *before._s_widget 
-; ;     Protected *after._s_widget 
-; ;     Protected *last._s_widget
-; ;     Protected *first._s_widget
-; ;     
-; ;     If *this = *widget
-; ;       ProcedureReturn 0
-; ;     EndIf
-; ;     
-; ;     Select Position
-; ;       Case #PB_List_First 
-; ;         result = _SetPosition(*this, #PB_List_Before, *this\parent\first)
-; ;         
-; ;       Case #PB_List_Before 
-; ;         If *widget
-; ;           *after = *widget
-; ;         Else
-; ;           *after = *this\before
-; ;         EndIf
-; ;         
-; ;         If *after
-; ;           ChangeCurrentElement(widget(), *this\address)
-; ;           MoveElement(widget(), #PB_List_Before, *after\address)
-; ;           
-; ;           While NextElement(widget()) 
-; ;             If Child(widget(), *this)
-; ;               MoveElement(widget(), #PB_List_Before, *after\address)
-; ;             EndIf
-; ;           Wend
-; ;           
-; ;           ; if first element in parent list
-; ;           If *this\parent\first = *this
-; ;             *this\parent\first = *this\after
-; ;           EndIf
-; ;           
-; ;           ; if last element in parent list
-; ;           If *this\parent\last = *this
-; ;             *this\parent\last = *this\before
-; ;           EndIf
-; ;           
-; ;           If *this\before
-; ;             *this\before\after = *this\after
-; ;           EndIf
-; ;           
-; ;           If *this\after
-; ;             *this\after\before = *this\before
-; ;           EndIf
-; ;           
-; ;           ;           If *widget
-; ;           ;             *this\after = *this\parent\first
-; ;           ;             *this\before = 0
-; ;           ;           Else
-; ;           *this\after = *after
-; ;           *this\before = *after\before 
-; ;           ;           EndIf
-; ;           
-; ;           If Not *this\before
-; ;             *this\parent\first\before = *this
-; ;             *this\parent\first = *this
-; ;           EndIf
-; ;           
-; ;           result = 1
-; ;         EndIf
-; ;         
-; ;       Case #PB_List_After 
-; ;         If *widget
-; ;           *before = *widget
-; ;         Else
-; ;           *before = *this\after
-; ;         EndIf
-; ;         
-; ;         If *before
-; ;           *last = GetLast(*before)
-; ;           ;           Debug *before\class
-; ;           ;           Debug *last\class
-; ;           
-; ;           ChangeCurrentElement(widget(), *this\address)
-; ;           MoveElement(widget(), #PB_List_After, *last\address)
-; ;           
-; ;           While PreviousElement(widget()) 
-; ;             If Child(widget(), *this)
-; ;               MoveElement(widget(), #PB_List_After, *this\address)
-; ;             EndIf
-; ;           Wend
-; ;           
-; ;           ; if first element in parent list
-; ;           If *this\parent\first = *this
-; ;             *this\parent\first = *this\after
-; ;           EndIf
-; ;           
-; ;           ; if last element in parent list
-; ;           If *this\parent\last = *this
-; ;             *this\parent\last = *this\before
-; ;           EndIf
-; ;           
-; ;           If *this\after
-; ;             *this\after\before = *this\before
-; ;           EndIf
-; ;           
-; ;           If *this\before
-; ;             *this\before\after = *this\after
-; ;           EndIf
-; ;           
-; ;           
-; ;           ;           If *widget
-; ;           ;             *this\before = *this\parent\last
-; ;           ;             *this\after = 0
-; ;           ;           Else
-; ;           *this\before = *before
-; ;           *this\after = *before\after 
-; ;           ;           EndIf
-; ;           
-; ;           If Not *this\after
-; ;             *this\parent\last\after = *this
-; ;             *this\parent\last = *this
-; ;           EndIf
-; ;           
-; ;           result = 1
-; ;         EndIf
-; ;         
-; ;       Case #PB_List_Last 
-; ;         result = _SetPosition(*this, #PB_List_After, *this\parent\last)
-; ;         
-; ;     EndSelect
-; ;     
-; ;     ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
-; ;     
-; ;     ProcedureReturn result
-  EndProcedure
-  
   Procedure this_events()
     Static after
     Static before
     
-    Select this()\event
+    Select WidgetEventType( )
       Case #PB_EventType_LeftButtonDown 
-        after = GetPosition(this()\widget, #PB_List_After)
-        before = GetPosition(this()\widget, #PB_List_Before)
+        after = GetPosition(EventWidget( ), #PB_List_After)
+        before = GetPosition(EventWidget( ), #PB_List_Before)
         
         If after
           Debug "After - "+GetClass(after)
@@ -167,23 +32,23 @@ CompilerIf #PB_Compiler_IsMainFile
           Debug "Before - "+GetClass(before)
         EndIf
         
-        _SetPosition(this()\widget, #PB_List_First)
+        SetPosition(EventWidget( ), #PB_List_First)
         
-;         Debug ">>"
-;         ForEach widget()
-;           Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
-;         Next
+        ;         Debug ">>"
+        ;         ForEach widget()
+        ;           Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
+        ;         Next
         
       Case #PB_EventType_LeftButtonUp
-        _SetPosition(this()\widget, #PB_List_After)
+        SetPosition(EventWidget( ), #PB_List_After)
         
         If after 
           Debug "<<"
-;           _SetPosition(this()\widget, #PB_List_After, after)
-;           
-;           ForEach widget()
-;             Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
-;           Next
+          ;           _SetPosition(EventWidget( ), #PB_List_After, after)
+          ;           
+          ;           ForEach widget()
+          ;             Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
+          ;           Next
           
           after = 0
         EndIf
@@ -193,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Demo()
     Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    Open(0, 0, 0, 250, 180) : bind(-1,-1)
+    Open(0, 0, 0, 250, 180) 
     
     ;{ first container
     Container(55, 95, 30, 45)                     ; Gadget(9,   
@@ -204,10 +69,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
     SetClass(widget(), "first_1")
     
-;     Container(3, 4, 17-8, 25+6)   
-;     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
-;     SetClass(widget(), "first_2")
-;     CloseList()
+    ;     Container(3, 4, 17-8, 25+6)   
+    ;     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    ;     SetClass(widget(), "first_2")
+    ;     CloseList()
     Button(3, 4, 17, 25+6, "1", #__Button_left) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
@@ -248,10 +113,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     SetClass(widget(), "last_1")
     
-;     Container(3, -3, 17-8, 25+6)   
-;     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
-;     SetClass(widget(), "last_2")
-;     CloseList()
+    ;     Container(3, -3, 17-8, 25+6)   
+    ;     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+    ;     SetClass(widget(), "last_2")
+    ;     CloseList()
     Button(3, -3, 17, 25+6, "9", #__Button_left) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
@@ -289,25 +154,25 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
               Case #first
-               before = GetPosition(*this, #PB_List_Before)
-               _SetPosition(*this, #PB_List_First)
+                before = GetPosition(*this, #PB_List_Before)
+                SetPosition(*this, #PB_List_First)
                 
               Case #before
-                _SetPosition(*this, #PB_List_Before)
+                SetPosition(*this, #PB_List_Before)
                 
               Case #after
-                _SetPosition(*this, #PB_List_After)
+                SetPosition(*this, #PB_List_After)
                 
               Case #last
-               after = GetPosition(*this, #PB_List_After)
-               _SetPosition(*this, #PB_List_Last)
+                after = GetPosition(*this, #PB_List_After)
+                SetPosition(*this, #PB_List_Last)
                 
               Case #return
                 If after
-                  _SetPosition(*this, #PB_List_Before, after)
+                  SetPosition(*this, #PB_List_Before, after)
                 EndIf
                 If before
-                  _SetPosition(*this, #PB_List_After, before)
+                  SetPosition(*this, #PB_List_After, before)
                 EndIf
             EndSelect
             
@@ -331,6 +196,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -j-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ---
 ; EnableXP

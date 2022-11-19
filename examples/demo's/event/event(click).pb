@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -10,17 +11,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected result
     Static _2click
-    Select WidgetEventType( )
-;       Case #PB_EventType_Draw ;: result = 1 : AddItem(w_flag, -1, " ------------ draw")
-;         Debug "draw"
-;         
-      Case #PB_EventType_LeftButtonDown  : Debug  "down"
-      Case #PB_EventType_DragStart       : Debug  " drag"
-      Case #PB_EventType_Drop            : Debug  " drop"
-      Case #PB_EventType_LeftButtonUp    : Debug  "up"
-      Case #PB_EventType_LeftClick       : Debug  " click"
-      Case #PB_EventType_LeftDoubleClick : Debug  "  2_click"
-    EndSelect
+;     Select WidgetEventType( )
+; ;       Case #PB_EventType_Draw ;: result = 1 : AddItem(w_flag, -1, " ------------ draw")
+; ;         Debug "draw"
+; ;         
+;       Case #PB_EventType_LeftButtonDown  : Debug  "down"
+;       Case #PB_EventType_LeftButtonUp    : Debug  "up"
+;       Case #PB_EventType_DragStart       : Debug  " drag"
+;       Case #PB_EventType_Drop            : Debug  " drop"
+;       Case #PB_EventType_LeftClick       : Debug  " click"
+;       Case #PB_EventType_LeftDoubleClick : Debug  "  2_click"
+;       Case #PB_EventType_Left3Click      : Debug  "  3_click"
+;     EndSelect
+    
     Select WidgetEventType( )
       Case #PB_EventType_Draw ;: result = 1 : AddItem(w_flag, -1, " ------------ draw")
         Debug "draw"
@@ -35,6 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonUp    : result = 1 : AddItem(w_flag, -1, " up")
       Case #PB_EventType_LeftClick       : result = 1 : AddItem(w_flag, -1, "  click") : _2click + 1
       Case #PB_EventType_LeftDoubleClick : result = 1 : AddItem(w_flag, -1, "   2_click") : _2click = 2
+      Case #PB_EventType_Left3Click : result = 1 : AddItem(w_flag, -1, "   3_click") : _2click = 2
     EndSelect
     
     If result
@@ -55,6 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftClick)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    widget::Bind(w_this, @events_widgets(), #PB_EventType_Left3Click)
     
     widget::WaitClose()
   EndIf

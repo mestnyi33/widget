@@ -34,6 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       Case *LIST
         Select WidgetEventType( )
           Case #PB_EventType_Change
+            If *CHILD
+              Free(*CHILD)
+            EndIf
+            
             Select GetState(*LIST)
               Case  1: *CHILD = Button(30,20,150,30,"Button") 
               Case  2: *CHILD = String(30,20,150,30,"String") 
@@ -47,11 +51,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
               Case 11: *CHILD = Container(30,20,150,30,#PB_Container_Flat): Button(0,0,80,20,"Button"): CloseList() ; Container
               Case 12: *CHILD = ListIcon(30,20,150,30,"",88) 
-                ;Case 13: *CHILD = IPAddress(30,20,150,30) 
-                ;Case 14: *CHILD = ProgressBar(30,20,150,30,0,5)
-                ;Case 15: *CHILD = ScrollBar(30,20,150,30,5,335,9)
+              ; Case 13: *CHILD = IPAddress(30,20,150,30) 
+              Case 14: *CHILD = Progress(30,20,150,30,0,5)
+              Case 15: *CHILD = Scroll(30,20,150,30,5,335,9)
               Case 16: *CHILD = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): Button(0,0,80,20,"Button"): CloseList()
-                ;Case 17: *CHILD = TrackBar(30,20,150,30,0,5)
+              Case 17: *CHILD = Track(30,20,150,30,0,5)
                 ;Case 18: *CHILD = Web(30,20,150,30,"") ; bug 531 linux
               Case 19: *CHILD = ButtonImage(30,20,150,30,0)
                 ;Case 20: *CHILD = Calendar(30,20,150,30) 

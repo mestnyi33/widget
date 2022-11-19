@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../-widgets.pbi" 
+﻿XIncludeFile "../../../widget-events.pbi" 
 
 
 ;- EXAMPLE

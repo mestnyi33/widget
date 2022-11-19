@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widget-events.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -28,13 +28,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select Position
       Case #PB_List_First 
-        result = _SetPosition(*this, #PB_List_Before, *this\parent\first)
+        result = _SetPosition(*this, #PB_List_Before, *this\parent\widget\first\widget)
         
       Case #PB_List_Before 
         If *widget
           *after = *widget
         Else
-          *after = *this\before
+          *after = *this\before\widget
         EndIf
         
         If *after
@@ -42,38 +42,38 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(widget(), #PB_List_Before, *after\address)
           
           While NextElement(widget()) 
-            If Child(widget(), *this)
+            If IsChild(widget(), *this)
               MoveElement(widget(), #PB_List_Before, *after\address)
             EndIf
           Wend
           
           ; if first element in parent list
-          If *this\parent\first = *this
-            *this\parent\first = *this\after
+          If *this\parent\widget\first\widget = *this
+            *this\parent\widget\first\widget = *this\after\widget
           EndIf
           
           ; if last element in parent list
-          If *this\parent\last = *this
-            *this\parent\last = *this\before
+          If *this\parent\widget\last\widget = *this
+            *this\parent\widget\last\widget = *this\before\widget
           EndIf
           
-          If *this\before
-            *this\before\after = *this\after
+          If *this\before\widget
+            *this\before\widget\after\widget = *this\after\widget
           EndIf
           
-          If *this\after
-            *this\after\before = *this\before
+          If *this\after\widget
+            *this\after\widget\before\widget = *this\before\widget
           EndIf
           
-          *this\after = *after
-          *this\before = *after\before 
-          *after\before = *this
+          *this\after\widget = *after
+          *this\before\widget = *after\before\widget 
+          *after\before\widget = *this
           
-          If *this\before
-            *this\before\after = *this
+          If *this\before\widget
+            *this\before\widget\after\widget = *this
           Else
-            *this\parent\first\before = *this
-            *this\parent\first = *this
+            *this\parent\widget\first\widget\before\widget = *this
+            *this\parent\widget\first\widget = *this
           EndIf
           
           result = 1
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If *widget
           *before = *widget
         Else
-          *before = *this\after
+          *before = *this\after\widget
         EndIf
         
         If *before
@@ -95,45 +95,45 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(widget(), #PB_List_After, *last\address)
           
           While PreviousElement(widget()) 
-            If Child(widget(), *this)
+            If IsChild(widget(), *this)
               MoveElement(widget(), #PB_List_After, *this\address)
             EndIf
           Wend
           
           ; if first element in parent list
-          If *this\parent\first = *this
-            *this\parent\first = *this\after
+          If *this\parent\widget\first\widget = *this
+            *this\parent\widget\first\widget = *this\after\widget
           EndIf
           
           ; if last element in parent list
-          If *this\parent\last = *this
-            *this\parent\last = *this\before
+          If *this\parent\widget\last\widget = *this
+            *this\parent\widget\last\widget = *this\before\widget
           EndIf
           
-          If *this\after
-            *this\after\before = *this\before
+          If *this\after\widget
+            *this\after\widget\before\widget = *this\before\widget
           EndIf
           
-          If *this\before
-            *this\before\after = *this\after
+          If *this\before\widget
+            *this\before\widget\after\widget = *this\after\widget
           EndIf
           
-          *this\before = *before
-          *this\after = *before\after 
-          *before\after = *this
+          *this\before\widget = *before
+          *this\after\widget = *before\after\widget 
+          *before\after\widget = *this
           
-          If *this\after
-            *this\after\before = *this
+          If *this\after\widget
+            *this\after\widget\before\widget = *this
           Else
-            *this\parent\last\after = *this
-            *this\parent\last = *this
+            *this\parent\widget\last\widget\after\widget = *this
+            *this\parent\widget\last\widget = *this
           EndIf
           
           result = 1
         EndIf
         
       Case #PB_List_Last 
-        result = _SetPosition(*this, #PB_List_After, *this\parent\last)
+        result = _SetPosition(*this, #PB_List_After, *this\parent\widget\last\widget)
         
     EndSelect
     
@@ -143,14 +143,14 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure this_events()
-    Select this()\event
+    Select WidgeteventType( )
       Case #PB_EventType_LeftButtonDown 
-        before = GetPosition(this()\widget, #PB_List_Before)
-        after = GetPosition(this()\widget, #PB_List_After)
+        before = GetPosition(EventWidget( ), #PB_List_Before)
+        after = GetPosition(EventWidget( ), #PB_List_After)
         
         If before
           Debug "Before - "+GetClass(before)
-         _SetPosition(this()\widget, #PB_List_First)
+         _SetPosition(EventWidget( ), #PB_List_First)
         EndIf
         If after
           Debug "After - "+GetClass(after)
@@ -159,11 +159,11 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LeftButtonUp
         If before
-          _SetPosition(this()\widget, #PB_List_After, before)
+          _SetPosition(EventWidget( ), #PB_List_After, before)
           
           Debug " --- up "
-          before = GetPosition(this()\widget, #PB_List_Before)
-          after = GetPosition(this()\widget, #PB_List_After)
+          before = GetPosition(EventWidget( ), #PB_List_Before)
+          after = GetPosition(EventWidget( ), #PB_List_After)
           
           If before
             Debug "Before - "+GetClass(before)
@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(bind(Open(0, 10, 10),-1));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetGadget( Open(0, 10, 10) );, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetClass(widget(), "form_0")
   Button(10,10,100,90,"button_0") : SetClass(widget(), GetText(widget()))
@@ -190,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(90,90,100,90,"button_4") : SetClass(widget(), GetText(widget()))
   
   ForEach widget()
-    If Child(widget(), *g0)
+    If IsChild(widget(), *g0)
       Bind(widget(), @this_events(), #PB_EventType_LeftButtonDown)
       Bind(widget(), @this_events(), #PB_EventType_LeftButtonUp)
     EndIf
@@ -207,6 +207,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ---8-
 ; EnableXP
