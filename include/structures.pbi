@@ -79,15 +79,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     MOUSE
     Structure _s_MOUSE ; Extends _s_POINT
+      *cursor                    ; current visible cursor
       y.l[3]
       x.l[3]
       
-      time.w                     ; mouse click time
-      click.b                    ; mouse click count
+      time.q                     ; mouse down time
+      click.a                    ; mouse clicked count
+      buttons.l                  ; mouse clicked button
+      change.b                   ; mouse moved state
       
-      change.b                   ; if moved mouse this value #true
-      buttons.l                  ; 
-      
+      *drag._s_DD
       wheel._s_POINT
       delta._s_POINT
       
@@ -95,12 +96,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       pressed._s_OBJECTTYPE      ; mouse button's pushed element
       leaved._s_OBJECTTYPE       ; mouse leaved element
       
-      *drag._s_DD
       *_transform._s_transform
-      
-      
-      *cursor                    ; current visible cursor
-      ;area._s_COORDINATE        ; cursor tracking area - область отслеживания курсора
       interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
     EndStructure
     ;--     KEYBOARD
