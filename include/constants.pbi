@@ -394,7 +394,7 @@
       
       #__bar_vertical ;= #__flag_vertical
       #__bar_invert = #__flag_invert
-      ; #__bar_nobuttons = #__flag_nogadgets
+      #__bar_nobuttons = #__flag_nogadgets
     EndEnumeration
     
     

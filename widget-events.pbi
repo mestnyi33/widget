@@ -1058,7 +1058,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i CloseList( )
     Declare.i OpenList( *this, item.l = 0 )
     ;
-    Declare   DoEvents( *this, eventtype.l, *button = #PB_All, *data = #Null ) ;, mouse_x.l, mouse_y.l
+    Declare   DoEvents( *this, eventtype.l, *data = #Null, *button = #PB_All ) ;, mouse_x.l, mouse_y.l
     Declare   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *callback = #Null, canvas = #PB_Any )
     Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l,height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null,  Window = -1, *CallBack = #Null )
     Declare   Free( *this )
@@ -2456,7 +2456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *a_ew\_a_\id[i]\color\state = #__S_1
                 EndIf
                 
-                DoEvents( *a_ew, #PB_EventType_CursorChange, a_enter_anchor_( *a_ew ), *a_ew\_a_\id[i]\cursor )
+               ; DoEvents( *a_ew, #PB_EventType_CursorChange, a_enter_anchor_( *a_ew ), *a_ew\_a_\id[i]\cursor )
                 ; PostCanvasRepaint( *a_ew\_root( ) )
               EndIf
               Break
@@ -2479,7 +2479,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      a_enter_anchor_( *a_ew )
                     
                     a_enter_anchor_( *a_ew )\color\state = #__S_0
-                    DoEvents( *a_ew, #PB_EventType_CursorChange, a_enter_anchor_( *a_ew ), a_enter_anchor_( *a_ew )\cursor )
+                   ; DoEvents( *a_ew, #PB_EventType_CursorChange, a_enter_anchor_( *a_ew ), a_enter_anchor_( *a_ew )\cursor )
                     a_enter_index( *a_ew ) = 0
                     
                     If *leave And *leave\i <> *a_ew
@@ -2491,7 +2491,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *enter\i = a_focus_widget( )
                   EndIf
                   a_focus_widget( )\_a_\id[i]\color\state = #__S_1
-                  DoEvents( a_focus_widget( ), #PB_EventType_CursorChange, a_enter_anchor_( a_focus_widget( ) ), a_focus_widget( )\_a_\id[i]\cursor )
+                 ; DoEvents( a_focus_widget( ), #PB_EventType_CursorChange, a_enter_anchor_( a_focus_widget( ) ), a_focus_widget( )\_a_\id[i]\cursor )
                 EndIf
               EndIf
               Break
@@ -5046,9 +5046,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             HideChildrens( *this\_parent( ) )
           EndIf
           ;           
-          ;           DoEvents( *this\_parent( ), #PB_EventType_Change, State, *this\FocusedTab( ) )
+          ;           DoEvents( *this\_parent( ), #PB_EventType_Change, *this\FocusedTab( ), State )
           ;         Else
-          ;           DoEvents( *this, #PB_EventType_Change, State, *this\FocusedTab( ) )
+          ;           DoEvents( *this, #PB_EventType_Change, *this\FocusedTab( ), State )
         EndIf
         
         result = #True
@@ -5576,7 +5576,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; Draw scroll bar background
           If *this\color\back <>- 1
             drawing_mode_alpha_( #PB_2DDrawing_Default )
-            draw_box(*this, color\back, [#__c_frame])
+            ;draw_box(*this, color\back, [#__c_inner])
+            draw_roundbox_(*this\x[#__c_inner],*this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round,*this\round, *this\color\back )
           EndIf
           
           ;
@@ -5674,7 +5675,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Protected i,a, _position_, _frame_size_ = 1, _gradient_ = 1
         Protected _vertical_ = *this\vertical
         Protected _reverse_ = *this\bar\invert
-        Protected _round_ = BB1( )\round
+        Protected _round_ = *this\round
         Protected alpha = 230
         Protected _frame_color_ = $FF000000 ; *this\color\frame ; BB1( )\color\frame[0] ; 
         Protected _fore_color1_
@@ -5682,25 +5683,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Protected _fore_color2_ 
         Protected _back_color2_
         
+        
+        Protected state1 = Bool(Not *this\bar\invert) * #__s_2
+        Protected state2 = Bool(*this\bar\invert) * #__s_2
+      
         alpha = 230
-        _fore_color1_ = *this\color\fore[2]&$FFFFFF | alpha<<24 ; BB1( )\color\fore[2]&$FFFFFF | alpha<<24 ; $f0E9BA81 ; 
-        _back_color1_ = *this\color\back[2]&$FFFFFF | alpha<<24 ; BB1( )\color\back[2]&$FFFFFF | alpha<<24 ; $f0E89C3D ; 
+        _fore_color1_ = *this\color\fore[state1]&$FFFFFF | alpha<<24 ; BB1( )\color\fore[2]&$FFFFFF | alpha<<24 ; $f0E9BA81 ; 
+        _back_color1_ = *this\color\back[state1]&$FFFFFF | alpha<<24 ; BB1( )\color\back[2]&$FFFFFF | alpha<<24 ; $f0E89C3D ; 
+        
         alpha - 15
-        _fore_color2_ = *this\color\fore&$FFFFFF | alpha<<24 ; BB1( )\color\fore[0]&$FFFFFF | alpha<<24 ; $e0F8F8F8 ; 
-        _back_color2_ = *this\color\back&$FFFFFF | alpha<<24 ; BB1( )\color\back[0]&$FFFFFF | alpha<<24 ; $e0E2E2E2 ; 
+        _fore_color2_ = *this\color\fore[state2]&$FFFFFF | alpha<<24 ; BB1( )\color\fore[0]&$FFFFFF | alpha<<24 ; $e0F8F8F8 ; 
+        _back_color2_ = *this\color\back[state2]&$FFFFFF | alpha<<24 ; BB1( )\color\back[0]&$FFFFFF | alpha<<24 ; $e0E2E2E2 ; 
         
         If _vertical_
-          If _reverse_
-            _position_ = *this\bar\thumb\pos
-          Else
+;           If _reverse_
+;             _position_ = *this\bar\thumb\pos
+;           Else
             _position_ = *this\height[#__c_frame] - *this\bar\thumb\pos
-          EndIf
+;           EndIf
         Else
-          If _reverse_
-            _position_ = *this\width[#__c_frame] - *this\bar\thumb\pos
-          Else
+;           If _reverse_
+;             _position_ = *this\width[#__c_frame] - *this\bar\thumb\pos
+;           Else
             _position_ = *this\bar\thumb\pos
-          EndIf
+;           EndIf
+          
         EndIf
         
         If _position_ < 0
@@ -5709,7 +5716,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; Debug "_position_ "+_position_ +" "+ *this\bar\page\pos
         
-        ;https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
+        ; https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
         ; FrontColor(_frame_color_) ; не работает
         drawing_mode_alpha_(#PB_2DDrawing_Outlined)
         draw_roundbox_(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _frame_size_, *this\width[#__c_frame] - _frame_size_*2, *this\height[#__c_frame] - _frame_size_*2, _round_,_round_, _frame_color_)
@@ -7172,10 +7179,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; example-scroll(area) fixed
         If is_integral_( *this )
           If *this\type = #__Type_ScrollBar ; is_scrollbars_( *bar\widget )
-            DoEvents( *this\_parent( ), #PB_EventType_ScrollChange, *this, *bar\page\change )
+            DoEvents( *this\_parent( ), #PB_EventType_ScrollChange, *bar\page\change, *this )
           EndIf
         Else
-          Post( *this, #PB_EventType_Change, EnteredButton( ), *bar\page\change )
+          Post( *this, #PB_EventType_Change, *bar\page\change, EnteredButton( ) )
         EndIf
         
         ProcedureReturn #True
@@ -7229,6 +7236,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected value = *value
       
       With *this
+        ;\\
+        If Attribute = #__bar_invert
+          If *this\bar\invert <> Bool( value )
+            *this\bar\invert = Bool( value )
+            result = 1
+          EndIf
+        EndIf      
+        
+        ;\\
+        If Attribute = #__bar_ScrollStep
+          If *this\scroll\increment <> value
+            *this\scroll\increment = value
+            result = 1
+          EndIf
+        EndIf      
+        
+        ;\\
         If \type = #__Type_Splitter
           Select Attribute
             Case #PB_Splitter_FirstMinimumSize
@@ -7353,12 +7377,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
               
-            Case #__bar_invert
-              *this\bar\invert = Bool( *value )
-              ProcedureReturn bar_Update( *this\bar )
-            Case #__bar_ScrollStep 
-              \scroll\increment = value
-              
           EndSelect
         EndIf
         
@@ -7366,12 +7384,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\bar\page\change = #True
                   ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
           
-          If *this\_root( ) ;And *this\_root( )\canvas\postevent = #False
+          ;If *this\_root( ) ;And *this\_root( )\canvas\postevent = #False
             If ( *this\vertical And *this\height ) Or ( *this\vertical = 0 And *this\width )
               ; Debug "bar_SetAttribute - "+*this\height +" "+ *this\width +" "+ *this\vertical 
               bar_Update( *this\bar ) ; ??????????????
             EndIf
-          EndIf
+          ;EndIf
           
           ; after update and resize bar
           If *this\type = #__Type_ScrollBar And
@@ -8983,7 +9001,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn 1
     EndProcedure
     
-    Procedure   Editor_Update( *this._S_widget, List row._S_rows( ))
+    Procedure   _Editor_Update( *this._S_widget, List row._S_rows( ))
       With *this
         
         If *this\change > 0
@@ -9104,6 +9122,309 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;           Debug "-------------------------------"
           
           edit_make_text_position( *this )
+        EndIf
+        
+        
+      EndWith
+    EndProcedure
+    
+    Procedure   Editor_Update( *this._s_WIDGET, List row._s_rows( ))
+      With *this
+        
+        If \text\string.s And *this\change > 0
+          If #debug_update_text
+            Debug "*this\change > 0 - " + #PB_Compiler_Procedure
+          EndIf
+          
+          Protected *str.Character
+          Protected *end.Character
+          Protected TxtHeight = \text\height
+          Protected String.s, String1.s, CountString
+          Protected IT, len.l, Position.l, width
+          Protected ColorFont = \color\front[Bool( *this\__state & #__ss_front ) * \color\state]
+          
+          ; \max 
+          If *this\vertical
+            If *this\height[#__c_required] > *this\height[#__c_inner]
+              *this\text\change = #__text_update
+            EndIf
+            Width = *this\height[#__c_inner] - *this\text\padding\x*2
+            
+          Else
+            If *this\width[#__c_required] > *this\width[#__c_inner]
+              *this\text\change = #__text_update
+            EndIf
+            
+            width = *this\width[#__c_inner] - *this\text\padding\x*2 
+          EndIf
+          
+          If *this\text\multiLine
+            ; make multiline text
+            Protected text$ = *this\text\string.s + #LF$
+            
+            ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
+            ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
+            ;     text$ = ReplaceString( text$, #CR$, #LF$ )
+            ;     text$ + #LF$
+            ;     
+            
+            If *this\text\multiLine > 0
+              String = text$
+            Else
+              ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+              Protected.i i, start, found, length
+              Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
+              
+              *str.Character = @text$
+              *end.Character = @text$
+              
+              ; make word wrap
+              While *end\c 
+                If *end\c = #LF
+                  start = ( *end - *str ) >> #PB_Compiler_Unicode
+                  line$ = PeekS ( *str, start )
+                  length = start
+                  
+                  ; Get text len
+                  While length > 1
+                    If width > TextWidth( RTrim( Left( line$, length ) ))
+                      Break
+                    Else
+                      length - 1 
+                    EndIf
+                  Wend
+                  
+                  While start > length 
+                    For found = length To 1 Step - 1
+                      If FindString( " ", Mid( line$, found,1 ))
+                        start = found
+                        Break
+                      EndIf
+                    Next
+                    
+                    If Not found
+                      start = length
+                    EndIf
+                    
+                    String + Left( line$, start ) + nl$
+                    line$ = LTrim( Mid( line$, start + 1 ))
+                    start = Len( line$ )
+                    
+                    ;If length <> start
+                    length = start
+                    
+                    ; Get text len
+                    While length > 1
+                      If width > TextWidth( RTrim( Left( line$, length ) ))
+                        Break
+                      Else
+                        length - 1 
+                      EndIf
+                    Wend
+                    ;EndIf
+                  Wend
+                  
+                  String + line$ + nl$
+                  *str = *end + #__sOC 
+                EndIf 
+                
+                *end + #__sOC 
+              Wend
+            EndIf
+            
+            CountString = CountString( String, #LF$ )
+          Else
+            String.s = RemoveString( *this\text\string, #LF$ ) + #LF$
+            CountString = 1
+          EndIf
+          
+          If *this\count\items <> CountString
+            If *this\count\items > CountString
+              *this\text\change = 1
+            Else
+              *this\text\change = #__text_update
+            EndIf
+            
+            *this\count\items = CountString
+          EndIf
+          
+          If *this\change > 0
+            *this\text\change = 1
+          EndIf
+          
+          If *this\text\change
+            *str.Character = @String
+            *end.Character = @String
+            
+            *this\text\pos  = 0
+            *this\text\len = Len( *this\text\string )
+            
+            ;; editor
+            If #debug_update_text
+              Debug  " - - - - ClearList - - - - " + *this\text\change
+            EndIf
+            Protected padding_x2 = *this\text\padding\x*2 ;+ *this\image\width
+            
+            ClearList( row( ))
+            *this\width[#__c_required] = padding_x2
+            *this\height[#__c_required] = *this\text\padding\y*2 
+            
+            ;
+            While *end\c 
+              If *end\c = #LF 
+                AddElement( row( ))
+                row( )\text\len = ( *end - *str )>>#PB_Compiler_Unicode
+                row( )\text\string = PeekS ( *str, row( )\text\len )
+                ;;row( )\text\width = TextWidth( row( )\text\string )
+                
+                ; drawing item font
+                draw_font_item_( *this, row( ), row( )\text\change )
+                
+                ;; editor
+                row( )\index = ListIndex( row( ))
+                
+                row( )\height = row( )\text\height
+                row( )\width = \width[#__c_inner]
+                row( )\color = _get_colors_( )
+                
+                
+                
+                If *this\EnteredRowIndex(  ) = row( )\index Or
+                   *this\FocusedRowIndex(  ) = row( )\index 
+                  row( )\text\change = 1
+                EndIf
+                
+                ; make line position
+                If \vertical
+                Else ; horizontal
+                  If *this\width[#__c_required] < row( )\text\width + padding_x2
+                    *this\width[#__c_required] = row( )\text\width + padding_x2
+                  EndIf
+                  
+                  If \text\rotate = 0
+                    row( )\y = *this\height[#__c_required]                                                     - *this\text\padding\y                 
+                  ElseIf \text\rotate = 180
+                    row( )\y = ( *this\height[#__c_inner] - *this\height[#__c_required] - row( )\text\height ) + *this\text\padding\y 
+                  EndIf
+                  
+                  *this\height[#__c_required] + TxtHeight + Bool( row( )\index <> *this\count\items - 1 ) * *this\mode\gridlines
+                EndIf
+                
+                *str = *end + #__sOC 
+              EndIf 
+              
+              *end + #__sOC 
+            Wend
+            
+            
+            ;
+            ForEach row( )
+              row( )\text\pos = *this\text\pos 
+              *this\text\pos + row( )\text\len + 1 ; Len( #LF$ )
+              
+              If *this\vertical
+              Else ; horizontal
+                If *this\text\rotate = 180
+                  row( )\y - ( *this\height[#__c_inner] - *this\height[#__c_required] )
+                EndIf
+                
+                ; changed
+                If \text\rotate = 90
+                  row( )\text\y = 0 
+                ElseIf \text\rotate = 180
+                  row( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + row( )\text\height
+                Else
+                  row( )\text\y =- Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                EndIf
+                
+                set_align_x_( *this\text, row( )\text, *this\width[#__c_required], *this\text\rotate )
+              EndIf
+              
+              
+              If row( )\text\change <> 0
+                ; edit_sel_update_( *this )
+                
+                row( )\text\change = 0
+              EndIf
+            Next 
+            
+            
+          EndIf
+        EndIf
+        
+        If *this\text\change ;= 99
+          Protected update_scroll_area
+          
+          If *this\scroll\v And
+             *this\scroll\v\bar\max <> *this\height[#__c_required] And
+             Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *this\height[#__c_required] )
+            update_scroll_area = 1
+          EndIf
+          
+          If *this\scroll\h And 
+             *this\scroll\h\bar\max <> *this\width[#__c_required] And  
+             Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *this\width[#__c_required] )
+            update_scroll_area = 1
+          EndIf
+          
+          If update_scroll_area ; _bar_scrollarea_update_( *this )
+            Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            \height[#__c_inner] = \scroll\v\bar\page\len
+            \width[#__c_inner] = \scroll\h\bar\page\len 
+          EndIf
+          
+          ; make horizontal scroll x
+          make_scrollarea_x( *this, *this\text )
+          
+          ; make vertical scroll y
+          make_scrollarea_y( *this, *this\text )
+          
+;           ; This is for the caret and scroll 
+;           ; when entering the key - ( enter & backspace ) 
+;           If *this\scroll\v
+;             edit_text_scroll_y_( *this )
+;           EndIf
+;           If *this\scroll\h
+;             edit_text_scroll_x_( *this )
+;           EndIf
+          
+          
+          ; vertical bar one before displaying
+          If *this\scroll\v And Not *this\scroll\v\bar\thumb\change 
+            If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len  
+              If *this\text\align\anchor\bottom
+                If Bar_Change( *this\scroll\v\bar, *this\scroll\v\bar\page\end ) 
+                   Bar_Update( *this\scroll\v\bar )
+;                   Bar_Resize( *this\scroll\v\bar )  
+                EndIf
+                
+              ElseIf Not *this\text\align\anchor\top
+                If Bar_Change( *this\scroll\v\bar, *this\scroll\v\bar\page\end / 2 ) 
+                   Bar_Update( *this\scroll\v\bar )
+;                   Bar_Resize( *this\scroll\v\bar )  
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
+          ; horizontal bar one before displaying
+          If *this\scroll\h And Not *this\scroll\h\bar\thumb\change   
+            If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len  
+              If *this\text\align\anchor\right
+                If Bar_Change( *this\scroll\h\bar, *this\scroll\h\bar\page\end ) 
+                   Bar_Update( *this\scroll\h\bar )
+;                   Bar_Resize( *this\scroll\h\bar )  
+                EndIf
+                
+              ElseIf Not *this\text\align\anchor\left
+                If Bar_Change( *this\scroll\h\bar, *this\scroll\h\bar\page\end / 2 ) 
+                   Bar_Update( *this\scroll\h\bar )
+;                   Bar_Resize( *this\scroll\h\bar )  
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
         EndIf
         
         
@@ -9823,10 +10144,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Repaint
         ; *this\state\repaint = #True
         PushListPosition( *this\_rows( ) )
-        ; DoEvents( *this, #PB_EventType_StatusChange, 0, 0 )
+        ; DoEvents( *this, #PB_EventType_StatusChange);, 0, 0 )
         
         If *this\text\change
-          DoEvents( *this, #PB_EventType_Change, 0, 0 )
+          DoEvents( *this, #PB_EventType_Change);, 0, 0 )
         EndIf
         PopListPosition( *this\_rows( ) )
       EndIf  
@@ -15423,11 +15744,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\vertical = Bool( Flag & #__bar_vertical = #__bar_vertical Or
                                  Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical )
           
-          If *this\vertical
-            *this\bar\invert = Bool( Flag & #__bar_invert = 0 )
-          Else
+;           If *this\vertical
+;             *this\bar\invert = Bool( Flag & #__bar_invert = 0 )
+;           Else
             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
-          EndIf
+;           EndIf
           
           ;             If flag & #PB_Trackbar_Ticks = #PB_Trackbar_Ticks
           ;               *this\bar\widget\flag | #PB_Trackbar_Ticks
@@ -15469,25 +15790,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; - Create Progress
         If *this\type = #__Type_ProgressBar
-          BB1( )\color = _get_colors_( )
-          BB2( )\color = _get_colors_( )
-          ;BB3( )\color = _get_colors_( )
-          *this\color = _get_colors_( )
-          
-          
           *this\vertical = Bool( Flag & #__bar_vertical = #__bar_vertical Or
                                  Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical )
           
-          If *this\vertical
-            *this\bar\invert = Bool( Flag & #__bar_invert = 0 )
-          Else
-            *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
-          EndIf
+          *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
+;           If *this\vertical
+;             *this\bar\invert = Bool( Flag & #__bar_invert = 0 )
+;           Else
+;             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
+;           EndIf
           
-          BB1( )\round = *this\round
-          BB2( )\round = *this\round
-          
+          *this\color = _get_colors_( )
           *this\text\change = #True
+          
+;           BB1( )\round = *this\round
+;           BB2( )\round = *this\round
+; ;           BB1( )\color = *this\color
+; ;           BB2( )\color = *this\color
+; ;           ;BB3( )\color = *this\color
+          
           set_text_flag_( *this, flag | #__text_center )
         EndIf
         
@@ -16534,8 +16855,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_below_( *this )
             
             ; Draw frames
-            If *this\fs 
-              If *this\type = #__Type_Frame
+            If *this\type = #__Type_Frame
+              If *this\fs 
                 
                 drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                 If *this\flag = #PB_Frame_Single
@@ -16557,30 +16878,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 drawing_mode_alpha_( #PB_2DDrawing_Default )
                 draw_roundbox_(*this\x[#__c_inner],*this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round,*this\round, *this\color\back )
                 
+              EndIf
                 
-                If *this\text\string
-                  drawing_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_roundbox_(*this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x-6, 
-                            *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y+1, *this\text\width+12, *this\text\height, *this\round,*this\round, $BEEFEFEF )
-                  
-                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_(*this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x-6, 
-                            *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y+1, *this\text\width+12, *this\text\height, *this\round,*this\round, *this\color\frame )
-                EndIf
+              If *this\text\string
+                ;
+                drawing_mode_alpha_( #PB_2DDrawing_Default )
+                draw_roundbox_(*this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x-6, 
+                               *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y+1, *this\text\width+12, *this\text\height, *this\round,*this\round, $BEEFEFEF )
                 
-                ;  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-;                 draw_box( *this, color\frame, [#__c_frame] )
+                ;
+                drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                draw_roundbox_(*this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x-6, 
+                               *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y+1, *this\text\width+12, *this\text\height, *this\round,*this\round, *this\color\frame )
                 
-                If *this\text\string
-                  drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawText( *this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x, 
-                            *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y, 
-                            *this\text\string, *this\color\front&$FFFFFF | *this\color\_alpha<<24 )
-                EndIf
-                
+                ;
+                drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+                DrawText( *this\x[#__c_inner] + scroll_x_( *this ) + *this\text\x, 
+                          *this\y[#__c_inner] + scroll_y_( *this ) + *this\text\y, 
+                          *this\text\string, *this\color\front&$FFFFFF | *this\color\_alpha<<24 )
               EndIf
             EndIf
-            
             ;             ; Draw frames
             ;             If *this\fs 
             ;               drawing_mode_( #PB_2DDrawing_Outlined )
@@ -17169,7 +17486,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;Debug 888
           ;           ReDraw(   *this\_root( ) ) 
           ;           PostCanvasRepaint( *this\_root( ) )
-          ;           DoEvents( *this, #PB_EventType_StatusChange, #PB_All, #Null )
+          ;           DoEvents( *this, #PB_EventType_StatusChange )
         EndIf 
       EndIf
       
@@ -17228,10 +17545,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If     ( BB2( )\state\press And *this\bar\invert ) Or
                    ( BB1( )\state\press And Not *this\bar\invert )
-              DoEvents( *this, #PB_EventType_Up, *this\bar, *this\bar\page\pos - *this\scroll\increment )
+              DoEvents( *this, #PB_EventType_Up, *this\bar\page\pos - *this\scroll\increment, *this\bar )
             ElseIf ( BB1( )\state\press And *this\bar\invert ) Or
                    ( BB2( )\state\press And Not *this\bar\invert )
-              DoEvents( *this, #PB_EventType_Down, *this\bar, *this\bar\page\pos + *this\scroll\increment )
+              DoEvents( *this, #PB_EventType_Down, *this\bar\page\pos + *this\scroll\increment, *this\bar )
             EndIf
             
             *this\state\repaint = #True
@@ -17751,7 +18068,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\FocusedRow( )\state\focus = #True
                 ;Debug "status-change - focus - LeftButtonDown"
                 ;DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
-                DoEvents(*this, #PB_EventType_Change, *this\FocusedRow( )\index, *this\FocusedRow( ))
+                DoEvents(*this, #PB_EventType_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
               EndIf
             EndIf
           EndIf
@@ -17929,7 +18246,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ))
                   ; Debug " items status change enter"
                   
-                  DoEvents(*this, #PB_EventType_StatusChange, *this\EnteredRow( )\index, *this\EnteredRow( ))
+                  DoEvents(*this, #PB_EventType_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
                 EndIf
               EndIf
             EndIf
@@ -17939,9 +18256,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; Debug " items status change leave"
               
               If *this\FocusedRow( ) 
-                DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+                DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
               ElseIf *this\LeavedRow( ) 
-                DoEvents(*this, #PB_EventType_StatusChange, *this\LeavedRow( )\index, *this\LeavedRow( ))
+                DoEvents(*this, #PB_EventType_StatusChange, *this\LeavedRow( ), *this\LeavedRow( )\index)
               EndIf
             EndIf
           EndIf
@@ -17964,7 +18281,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If eventtype = #PB_EventType_MouseEnter 
           If *this\FocusedRow( ) And 
              ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) ) = 0
-            DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+            DoEvents(*this, #PB_EventType_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
           EndIf
         EndIf
       EndIf
@@ -18038,7 +18355,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If Not *this\state\drag And 
                  Not *this\PressedTab( )\state\focus
                 
-                DoEvents( *this, #PB_EventType_StatusChange, *this\PressedTab( ), - 1 )
+                DoEvents( *this, #PB_EventType_StatusChange, *this\PressedTab( ) )
               EndIf
               
               *this\state\repaint = #True
@@ -18116,8 +18433,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure DoEvents( *this._S_widget, eventtype.l, *button = #PB_All, *data = #Null )
-      ;
+    Procedure DoEvents( *this._S_widget, eventtype.l, *data = #Null, *button = #PB_All )
+      ;Debug ""+*this +" "+ eventtype
+      ;\\
       If Not *this\state\disable 
         ;\\ repaint state 
         Select eventtype
@@ -18463,7 +18781,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not is_interact_row_( *leave ) And Not a_transform_( *leave ) 
               If Not IsChild( *widget, *leave )
                 ;
-                ;DoEvents( *leave, #PB_EventType_StatusChange, #Null, - 1 )
+                ;DoEvents( *leave, #PB_EventType_StatusChange, - 1 )
                 
                 If *leave\address
                   ChangeCurrentElement( *leave\_widgets( ), *leave\address )
@@ -18480,7 +18798,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          IsChild( *leave, *leave\_widgets( )) And
                          Not IsChild( *widget, *leave\_widgets( ))
                         *leave\_widgets( )\state\enter = 0
-                        DoEvents( *leave\_widgets( ), #PB_EventType_StatusChange, #Null, - 1 )
+                        DoEvents( *leave\_widgets( ), #PB_EventType_StatusChange, - 1 )
                       EndIf
                     EndIf
                   Until PreviousElement( *leave\_widgets( )) = #False 
@@ -18509,12 +18827,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      IsChild( *widget, *widget\_widgets( ))
                     
                     *widget\_widgets( )\state\enter =- 1
-                    DoEvents( *widget\_widgets( ), #PB_EventType_StatusChange, #Null, 1 )
+                    DoEvents( *widget\_widgets( ), #PB_EventType_StatusChange, 1 )
                   EndIf
                 Next
               EndIf
               
-              DoEvents( *widget, #PB_EventType_StatusChange, #Null, 1 )
+              DoEvents( *widget, #PB_EventType_StatusChange, 1 )
             EndIf
           EndIf
         EndIf
@@ -19006,7 +19324,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug "drop1"
                   If _DD_action_( PressedWidget( ) )
                     ;
-                    DoEvents( PressedWidget( ), #PB_EventType_Drop, - 1, mouse_x|mouse_y )
+                    DoEvents( PressedWidget( ), #PB_EventType_Drop, mouse_x|mouse_y )
                     
                     ; then drop if create new widget 
                     If PressedWidget( ) <> Widget()
@@ -19022,7 +19340,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug "drop2"
                   If _DD_action_( EnteredWidget( ) )
                     ;
-                    DoEvents( EnteredWidget( ), #PB_EventType_Drop, - 1, mouse_x|mouse_y )
+                    DoEvents( EnteredWidget( ), #PB_EventType_Drop, mouse_x|mouse_y )
                     
                     ; then drop if create new widget 
                     If EnteredWidget( ) <> Widget()
@@ -19060,14 +19378,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Else
                 ;\\ do up events
                 ;If mouse( )\click > 3
-                DoEvents( EnteredWidget( ), eventtype )
+                DoEvents( PressedWidget( ), eventtype )
                 ;EndIf
                 
                 ;\\ do click events
-                If EnteredWidget( ) And 
-                   EnteredWidget( )\state\drag = 0 And 
-                   EnteredWidget( ) = PressedWidget( )
-                  
+                If PressedWidget( ) = EnteredWidget( ) And 
+                   PressedWidget( )\state\drag = 0 
+                   
                   If eventtype = #__event_LeftButtonUp
                     DoEvents( PressedWidget( ), #__event_LeftClick )
                   EndIf
@@ -19100,12 +19417,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
         ElseIf eventtype = #PB_EventType_MouseWheelX
           If EnteredWidget( )
-            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelX, - 1, EventData( ) )
+            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelX, EventData( ) )
           EndIf
           
         ElseIf eventtype = #PB_EventType_MouseWheelY
           If EnteredWidget( )
-            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelY, - 1, EventData( ) )
+            DoEvents( EnteredWidget( ), #PB_EventType_MouseWheelY, EventData( ) )
           EndIf
           
         EndIf
@@ -19124,7 +19441,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; Debug "" +Root( )\_events( )\type +" "+ Root( )\_events( )\id +" "+ ClassFromEvent( Root( )\_events( )\type )
             EndIf
             
-            ;_DoEvents( Root( )\_events( )\id, Root( )\_events( )\type, Root( )\_events( )\item, Root( )\_events( )\data )
+            ;_DoEvents( Root( )\_events( )\id, Root( )\_events( )\type, Root( )\_events( )\data, Root( )\_events( )\item )
             Post( Root( )\_events( )\id, Root( )\_events( )\type, Root( )\_events( )\item, Root( )\_events( )\data )
             ;EndIf
           Next
@@ -20513,5 +20830,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------8------+--8-----------------------------------f44----------------------------------------v-+-----------------------------------------------------------------------------------------------------------v0-------------------------------------------------r8lpffbv---------------4--------------------------------------------------f--2--0------04f8ff-6-0---------------------------
 ; EnableXP
