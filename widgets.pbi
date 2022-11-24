@@ -4552,7 +4552,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\y[#__c_inner] - *this\fs - *this\fs[2] 
           
           If *this\type = #__type_Panel
-            If *this\tab\widget\vertical
+            If *this\tab\widget\bar\vertical
               Resize( *this\tab\widget, *this\fs+*this\fs[1]-*this\barHeight, *this\fs, *this\barHeight, *this\height[#__c_inner] )
             Else
               Resize( *this\tab\widget, *this\fs, *this\fs+*this\fs[2]-*this\barHeight, *this\width[#__c_inner], *this\barHeight)
@@ -4922,7 +4922,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     Macro _draw_item_( _this_, _item_, x, y, _round_, _mode_= )
       ;draw_font_item_( _this_, _item_, 0 )
       
-      Tab_Draw_Item( _this_\vertical, _item_, x, y,
+      Tab_Draw_Item( _this_\bar\vertical, _item_, x, y,
                      _item_\color\fore#_mode_,
                      _item_\color\back#_mode_,
                      _item_\color\frame#_mode_, 
@@ -5012,7 +5012,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
             Debug " --- widget::Tab_Update( ) - "+*this\image\x
             
-            If *this\vertical
+            If *this\bar\vertical
               *this\text\y = text_pos
             Else
               *this\text\x = text_pos
@@ -5031,7 +5031,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               draw_font_item_( *this, *this\bar\_s( ), *this\bar\_s( )\change )
               
               ; init items position
-              If *this\vertical
+              If *this\bar\vertical
                 *this\bar\_s( )\y = *this\bar\max + pos 
                 
                 If \index[#__tab_2] = \bar\_s( )\index
@@ -5122,7 +5122,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ; 
-          If *this\vertical 
+          If *this\bar\vertical 
             *this\bar\button[#__b_2]\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] +pos- *this\bar\button[#__b_2]\size )/2            
             *this\bar\button[#__b_1]\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] +pos- *this\bar\button[#__b_1]\size )/2              
           Else 
@@ -5146,7 +5146,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             draw_font_item_( *this, *this\bar\_s( ), 0 )
             
             ; real visible items
-            If *this\vertical
+            If *this\bar\vertical
               *this\bar\_s( )\visible = Bool( Not *this\bar\_s( )\hide And 
                                               (( y + *this\bar\_s( )\y + *this\bar\_s( )\height ) > *this\y[#__c_inner]  And 
                                                ( y + *this\bar\_s( )\y ) < ( *this\y[#__c_inner] + *this\height[#__c_inner] ) ))
@@ -5192,7 +5192,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           ; draw lines
           If _get_bar_active_item_( *this )  
-            If *this\vertical
+            If *this\bar\vertical
               color = _get_bar_active_item_( *this )\color\frame[2]
               ; frame on the selected item
               If _get_bar_active_item_( *this )\visible
@@ -5306,7 +5306,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
           fabe_out = Size - button_size
           ;
-          If *this\vertical
+          If *this\bar\vertical
             ; to top
             If Not \bar\button[#__b_2]\hide 
               fabe_pos = \y + ( size ) - \fs
@@ -5376,7 +5376,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; Draw buttons
             If \bar\button[#__b_2]\color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_( \vertical,\bar\button[#__b_2], \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
+              _draw_gradient_( *this\bar\vertical,\bar\button[#__b_2], \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_round( \bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF | \bar\button[#__b_2]\color\_alpha<<24 )
@@ -5386,7 +5386,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             ; Draw buttons
             If \bar\button[#__b_1]\color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_( \vertical, \bar\button[#__b_1], \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
+              _draw_gradient_( *this\bar\vertical, \bar\button[#__b_1], \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_round( \bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF | \bar\button[#__b_1]\color\_alpha<<24 )
@@ -5401,7 +5401,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             ; Draw arrows
             If Not \bar\button[#__b_1]\hide And \bar\button[#__b_1]\arrow\size
-              _draw_arrows_( *this\bar\button[#__b_1], Bool( \vertical ) + 2 ) 
+              _draw_arrows_( *this\bar\button[#__b_1], Bool( *this\bar\vertical ) + 2 ) 
             EndIf
           EndIf
           If Not \bar\button[#__b_2]\hide 
@@ -5409,7 +5409,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             ; Draw arrows
             If \bar\button[#__b_2]\arrow\size
-              _draw_arrows_( *this\bar\button[#__b_2], Bool( \vertical )) 
+              _draw_arrows_( *this\bar\button[#__b_2], Bool( *this\bar\vertical )) 
             EndIf
           EndIf
           
@@ -5439,7 +5439,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If Not*this\bar\button[#__b_1]\hide
             If *this\bar\button[#__b_1]\color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_(*this\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
+              _draw_gradient_(*this\bar\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_(*this\bar\button[#__b_1], color\back)
@@ -5448,7 +5448,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If Not*this\bar\button[#__b_2]\hide
             If *this\bar\button[#__b_2]\color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_(*this\vertical,\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
+              _draw_gradient_(*this\bar\vertical,\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_(*this\bar\button[#__b_2], color\back)
@@ -5458,7 +5458,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           
           If *this\type = #__type_ScrollBar
-            If *this\vertical
+            If *this\bar\vertical
               If (*this\bar\page\len + Bool(*this\round )*(*this\width/4 )) = *this\height[#__c_frame]
                 Line(*this\x[#__c_frame],*this\y[#__c_frame], 1,*this\bar\page\len + 1,*this\color\front&$FFFFFF |*this\color\_alpha<<24 ) ; $FF000000 ) ;   
               Else
@@ -5476,13 +5476,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; frame buttons draw
           If Not *this\bar\button[#__b_1]\hide
             If *this\bar\button[#__b_1]\arrow\size
-              _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\vertical )) 
+              _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\bar\vertical )) 
             EndIf
             draw_box_(*this\bar\button[#__b_1], color\frame)
           EndIf
           If Not *this\bar\button[#__b_2]\hide
             If *this\bar\button[#__b_2]\arrow\size
-              _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\vertical ) + 2 ) 
+              _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\bar\vertical ) + 2 ) 
             EndIf
             draw_box_(\bar\button[#__b_2], color\frame)
           EndIf
@@ -5491,7 +5491,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If *this\bar\thumb\len And*this\type <> #__type_ProgressBar
             ; Draw thumb
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            _draw_gradient_(*this\vertical,\bar\button[#__b_3],*this\bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\back[\bar\button[#__b_3]\color\state])
+            _draw_gradient_(*this\bar\vertical,\bar\button[#__b_3],*this\bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\back[\bar\button[#__b_3]\color\state])
             
             If *this\bar\button[#__b_3]\arrow\type ;*this\type = #__type_ScrollBar
               If *this\bar\button[#__b_3]\arrow\size
@@ -5504,7 +5504,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             Else
               ; Draw thumb lines
               drawing_mode_alpha_( #PB_2DDrawing_Default )
-              If *this\vertical
+              If *this\bar\vertical
                 Line(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y +*this\bar\button[#__b_3]\height/2 - 3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\color\_alpha<<24 )
                 Line(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y +*this\bar\button[#__b_3]\height/2,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\color\_alpha<<24 )
                 Line(*this\bar\button[#__b_3]\x + (*this\bar\button[#__b_3]\width -*this\bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y +*this\bar\button[#__b_3]\height/2 + 3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF |*this\color\_alpha<<24 )
@@ -5527,7 +5527,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     Procedure.b Progress_Draw( *this._s_WIDGET )
       With *this
         Protected i,a, _position_, _frame_size_ = 1, _gradient_ = 1
-        Protected _vertical_ = *this\vertical
+        Protected _vertical_ = *this\bar\vertical
         Protected _reverse_ = *this\bar\invert
         Protected _round_ = *this\bar\button[#__b_1]\round
         Protected alpha = 230
@@ -5792,8 +5792,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     Procedure.i Spin_Draw( *this._s_WIDGET ) 
       drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-      _draw_gradient_(*this\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[*this\bar\button[#__b_1]\color\state],*this\bar\button[#__b_1]\color\back[*this\bar\button[#__b_1]\color\state] )
-      _draw_gradient_(*this\vertical,*this\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[*this\bar\button[#__b_2]\color\state],*this\bar\button[#__b_2]\color\back[*this\bar\button[#__b_2]\color\state] )
+      _draw_gradient_(*this\bar\vertical,*this\bar\button[#__b_1],*this\bar\button[#__b_1]\color\fore[*this\bar\button[#__b_1]\color\state],*this\bar\button[#__b_1]\color\back[*this\bar\button[#__b_1]\color\state] )
+      _draw_gradient_(*this\bar\vertical,*this\bar\button[#__b_2],*this\bar\button[#__b_2]\color\fore[*this\bar\button[#__b_2]\color\state],*this\bar\button[#__b_2]\color\back[*this\bar\button[#__b_2]\color\state] )
       
       draw_mode( #PB_2DDrawing_Outlined )
       
@@ -5840,10 +5840,10 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Else
         ; arrows on the buttons
         If *this\bar\button[#__b_1]\arrow\size
-          _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\vertical )) 
+          _draw_arrows_( *this\bar\button[#__b_1], Bool(*this\bar\vertical )) 
         EndIf
         If *this\bar\button[#__b_2]\arrow\size
-          _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\vertical ) + 2 ) 
+          _draw_arrows_( *this\bar\button[#__b_2], Bool(*this\bar\vertical ) + 2 ) 
         EndIf
       EndIf
       
@@ -5873,7 +5873,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Protected i, x,y
           draw_mode( #PB_2DDrawing_XOr )
           
-          If \vertical
+          If *this\bar\vertical
             x = \bar\button[#__b_3]\x + Bool( \bar\invert )*( \bar\button[#__b_3]\width - 3 + 4 ) - 2
             y = *this\y + \bar\area\pos + \bar\button[#__b_3]\size/2  
             
@@ -5937,7 +5937,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         If *this\bar\thumb\len
           Protected circle_x, circle_y
           
-          If *this\vertical
+          If *this\bar\vertical
             circle_y = ( *this\bar\button[#__split_b3]\y + *this\bar\button[#__split_b3]\height/2 )
             circle_x = *this\x[#__c_frame] + ( *this\width[#__c_frame] - *this\bar\button[#__split_b3]\round )/2 + Bool( *this\width%2 )
           Else
@@ -5945,7 +5945,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             circle_y = *this\y[#__c_frame] + ( *this\height[#__c_frame] - *this\bar\button[#__split_b3]\round )/2 + Bool( *this\height%2 )
           EndIf
           
-          If \vertical ; horisontal line
+          If *this\bar\vertical ; horisontal line
             If \bar\button[#__split_b3]\width > 35
               Circle( circle_x - ( \bar\button[#__split_b3]\round*2 + 2 )*2 - 2, circle_y,\bar\button[#__split_b3]\round,\bar\button[#__split_b3]\color\frame[#__s_2] )
               Circle( circle_x + ( \bar\button[#__split_b3]\round*2 + 2 )*2 + 2, circle_y,\bar\button[#__split_b3]\round,\bar\button[#__split_b3]\color\frame[#__s_2] )
@@ -6263,7 +6263,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ; buttons resize coordinate
       If ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar )
         ; inner coordinate
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           *bar\widget\x[#__c_inner] = *bar\widget\x[#__c_frame] 
           *bar\widget\width[#__c_inner] = *bar\widget\width[#__c_frame] - 1
           *bar\widget\y[#__c_inner] = *bar\widget\y[#__c_frame] + Bool( *bar\button[#__b_2]\hide = #False ) * ( *bar\button[#__b_2]\size + *bar\widget\fs )
@@ -6276,7 +6276,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *bar\button[#__b_2]\size And Not *bar\button[#__b_2]\hide 
-          If *bar\widget\vertical 
+          If *bar\widget\bar\vertical 
             ; Top button coordinate on vertical scroll bar
             ;  *bar\button[#__b_2]\x = *bar\widget\x[#__c_frame] + ( *bar\widget\width[#__c_frame] - *bar\button[#__b_2]\size )/2            
             *bar\button[#__b_2]\y = *bar\widget\y[#__c_inner] - *bar\button[#__b_2]\size
@@ -6294,7 +6294,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *bar\button[#__b_1]\size And Not *bar\button[#__b_1]\hide
-          If *bar\widget\vertical 
+          If *bar\widget\bar\vertical 
             ; Botom button coordinate on vertical scroll bar
             ;  *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame] + ( *bar\widget\width[#__c_frame] - *bar\button[#__b_1]\size )/2              
             *bar\button[#__b_1]\y = *bar\widget\y[#__c_inner] + *bar\widget\height[#__c_inner]
@@ -6312,7 +6312,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;If *bar\thumb\len
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           *bar\button[#__b_3]\x = *bar\widget\x[#__c_inner]          
           *bar\button[#__b_3]\width = *bar\widget\width[#__c_inner]
           *bar\button[#__b_3]\height = *bar\max                             
@@ -6332,7 +6332,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;
       If *bar\widget\type = #__type_ScrollBar
         If *bar\thumb\len 
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             *bar\button[#__b_3]\x = *bar\widget\x[#__c_frame]           + 1 ; white line size 
             *bar\button[#__b_3]\width = *bar\widget\width[#__c_frame]   - 1 ; white line size 
             *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
@@ -6346,7 +6346,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *bar\button[#__b_1]\size 
-          If *bar\widget\vertical 
+          If *bar\widget\bar\vertical 
             ; Top button coordinate on vertical scroll bar
             *bar\button[#__b_1]\x = *bar\button[#__b_3]\x
             *bar\button[#__b_1]\width = *bar\button[#__b_3]\width
@@ -6362,7 +6362,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *bar\button[#__b_2]\size 
-          If *bar\widget\vertical 
+          If *bar\widget\bar\vertical 
             ; Botom button coordinate on vertical scroll bar
             *bar\button[#__b_2]\x = *bar\button[#__b_3]\x
             *bar\button[#__b_2]\width = *bar\button[#__b_3]\width
@@ -6380,7 +6380,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ; Thumb coordinate on scroll bar
         If Not *bar\thumb\len
           ; auto resize buttons
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             *bar\button[#__b_2]\height = *bar\widget\height[#__c_frame]/2 
             *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame] + *bar\button[#__b_2]\height + Bool( *bar\widget\height[#__c_frame]%2 ) 
             
@@ -6395,7 +6395,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *bar\button[#__b_1]\width = *bar\widget\width[#__c_frame]/2 - Bool( Not *bar\widget\width[#__c_frame]%2 )
           EndIf
           
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             *bar\button[#__b_3]\width = 0 
             *bar\button[#__b_3]\height = 0                             
           Else
@@ -6428,7 +6428,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           
         Else
           ; spin buttons numeric plus -/+ 
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             If *bar\button[#__b_1]\size 
               *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame]
               *bar\button[#__b_1]\y = ( *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] ) - *bar\button[#__b_1]\size
@@ -6461,7 +6461,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;
       If *bar\widget\type = #__type_Splitter 
         If *bar\thumb\len 
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             *bar\button[#__b_3]\x = *bar\widget\x[#__c_frame]           + 1 ; white line size 
             *bar\button[#__b_3]\width = *bar\widget\width[#__c_frame]   - 1 ; white line size 
             *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
@@ -6474,7 +6474,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
         EndIf
         
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           *bar\button[#__split_b1]\width    = *bar\widget\width[#__c_frame]
           *bar\button[#__split_b1]\height   = *bar\thumb\pos
           
@@ -6586,15 +6586,15 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *bar\widget\type = #__type_TrackBar
         If *bar\direction > 0 
           If *bar\thumb\pos = *bar\area\end Or *bar\widget\flag & #PB_TrackBar_Ticks
-            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\vertical ) + Bool( *bar\widget\vertical = *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\bar\vertical ) + Bool( *bar\widget\bar\vertical = *bar\invert ) * 2
           Else
-            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\vertical ) + Bool( Not *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\bar\vertical ) + Bool( Not *bar\invert ) * 2
           EndIf
         Else
           If *bar\thumb\pos = *bar\area\pos Or *bar\widget\flag & #PB_TrackBar_Ticks 
-            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\vertical ) + Bool( *bar\widget\vertical = *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\bar\vertical ) + Bool( *bar\widget\bar\vertical = *bar\invert ) * 2
           Else
-            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\vertical ) + Bool( *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\bar\vertical ) + Bool( *bar\invert ) * 2
           EndIf
         EndIf
         
@@ -6611,7 +6611,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; track bar draw coordinate
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           If *bar\thumb\len
             *bar\button[#__b_3]\y      = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
             *bar\button[#__b_3]\height = *bar\thumb\len                              
@@ -6672,7 +6672,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ;- widget::Area_Update( )
         If *bar\widget\parent\widget And *bar\widget\parent\widget\scroll And *bar\widget\type = #__type_ScrollBar
           
-          If *bar\widget\vertical
+          If *bar\widget\bar\vertical
             If *bar\widget\parent\widget\scroll\v = *bar\widget
               *bar\widget\parent\widget\change =- 1
               *bar\widget\parent\widget\y[#__c_required] =- *bar\page\pos
@@ -6772,7 +6772,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       Protected height = *bar\widget\height[#__c_frame]
       
       If *bar\widget\type = #__type_Spin 
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           *bar\area\len = height 
         Else
           *bar\area\len = width 
@@ -6793,7 +6793,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
       Else
         ; get area size
-        If *bar\widget\vertical
+        If *bar\widget\bar\vertical
           *bar\area\len = height 
         Else
           *bar\area\len = width 
@@ -6803,11 +6803,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; default button size
           If *bar\max 
             If *bar\button[#__b_1]\size =- 1 And *bar\button[#__b_2]\size =- 1
-              If *bar\widget\vertical And width > 7 And width < 21
+              If *bar\widget\bar\vertical And width > 7 And width < 21
                 *bar\button[#__b_1]\size = width - 1
                 *bar\button[#__b_2]\size = width - 1
                 
-              ElseIf Not *bar\widget\vertical And height > 7 And height < 21
+              ElseIf Not *bar\widget\bar\vertical And height > 7 And height < 21
                 *bar\button[#__b_1]\size = height - 1
                 *bar\button[#__b_2]\size = height - 1
                 
@@ -6818,7 +6818,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ;           If *bar\button[#__b_3]\size
-            ;             If *bar\widget\vertical
+            ;             If *bar\widget\bar\vertical
             ;               If *bar\widget\width = 0
             ;                 *bar\widget\width = *bar\button[#__b_3]\size
             ;               EndIf
@@ -7079,7 +7079,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                     *this\bar\button[#__b_1]\size = *value
                     *this\bar\button[#__b_2]\size = *value
                     
-                    If *this\vertical
+                    If *this\bar\vertical
                       *this\fs[2] = *this\bar\button[#__b_2]\size - 1
                       *this\fs[4] = *this\bar\button[#__b_1]\size - 1
                     Else
@@ -7107,7 +7107,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                   ; if it is a composite element of the parent
                   If *this\child > 0 And *this\parent\widget And *value
                     *value + 1
-                    If *this\vertical
+                    If *this\bar\vertical
                       Resize(*this, *this\parent\widget\width[#__c_container]-*value, #PB_Ignore, *value, #PB_Ignore)
                     Else
                       Resize(*this, #PB_Ignore, *this\parent\widget\width[#__c_container]-*value, #PB_Ignore, *value)
@@ -7651,7 +7651,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If eventtype = #__event_MouseMove
         If _is_selected_( *this ) And FocusedButton( ) = *this\bar\button[#__b_3]
-          If *this\vertical
+          If *this\bar\vertical
             Repaint | Bar_SetPos( *this\bar, ( mouse_y - mouse( )\delta\y ))
           Else
             Repaint | Bar_SetPos( *this\bar, ( mouse_x - mouse( )\delta\x ))
@@ -8567,7 +8567,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Protected ColorFont = \color\front[Bool( *this\__state & #__ss_front ) * \color\state]
           
           ; \max 
-          If *this\vertical
+          If *this\text\vertical
             If *this\height[#__c_required] > *this\height[#__c_inner]
               *this\text\change = #__text_update
             EndIf
@@ -8724,7 +8724,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 EndIf
                 
                 ; make line position
-                If \vertical
+                If *this\text\vertical
                   If *this\height[#__c_required] < row( )\text\width + *this\text\padding\y * 2
                     *this\height[#__c_required] = row( )\text\width + *this\text\padding\y * 2
                   EndIf
@@ -8791,7 +8791,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               row( )\text\pos = *this\text\pos 
               *this\text\pos + row( )\text\len + 1 ; Len( #LF$ )
               
-              If *this\vertical
+              If *this\text\vertical
                 If *this\text\rotate = 270
                   row( )\x - ( *this\width[#__c_inner] - *this\width[#__c_required] )
                 EndIf
@@ -8951,7 +8951,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Protected ColorFont = \color\front[Bool( *this\__state & #__ss_front ) * \color\state]
           
           ; \max 
-          If *this\vertical
+          If *this\bar\vertical
             If *this\height[#__c_required] > *this\height[#__c_inner]
               *this\text\change = #__text_update
             EndIf
@@ -9107,7 +9107,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 EndIf
                 
                 ; make line position
-                If \vertical
+                If *this\bar\vertical
                   If *this\height[#__c_required] < row( )\text\width + *this\text\padding\y * 2
                     *this\height[#__c_required] = row( )\text\width + *this\text\padding\y * 2
                   EndIf
@@ -9174,7 +9174,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               row( )\text\pos = *this\text\pos 
               *this\text\pos + row( )\text\len + 1 ; Len( #LF$ )
               
-              If *this\vertical
+              If *this\bar\vertical
                 If *this\text\rotate = 270
                   row( )\x - ( *this\width[#__c_inner] - *this\width[#__c_required] )
                 EndIf
@@ -9324,7 +9324,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           Protected IT, len.l, Position.l, Width,Height
           Protected ColorFont = \color\front[Bool( *this\__state & #__ss_front ) * \color\state]
           
-          If \vertical
+          If *this\bar\vertical
             Width = \height[#__c_inner] - \text\x*2
             Height = \width[#__c_inner] - \text\y*2
           Else
@@ -9413,7 +9413,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
           ; \max 
-          If \vertical
+          If *this\bar\vertical
             If *this\height[#__c_required] > *this\height[#__c_inner]
               *this\text\change = #True
             EndIf
@@ -9472,7 +9472,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 EndIf
                 
                 ; make line position
-                If \vertical
+                If *this\bar\vertical
                   If *this\height[#__c_required] < row( )\text\width + *this\text\padding\y * 2
                     *this\height[#__c_required] = row( )\text\width + *this\text\padding\y * 2
                   EndIf
@@ -9538,7 +9538,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               row( )\text\pos = *this\text\pos 
               *this\text\pos + row( )\text\len + 1 ; Len( #LF$ )
               
-              If *this\vertical
+              If *this\bar\vertical
                 If *this\text\rotate = 270
                   row( )\x - ( *this\width[#__c_inner] - *this\width[#__c_required] )
                 EndIf
@@ -9686,7 +9686,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           ; Draw back color
           ;         If \color\fore[\color\state]
           ;           draw_mode( #PB_2DDrawing_Gradient )
-          ;           _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[\color\state], [#__c_frame] )
+          ;           _draw_gradient_( *this\bar\vertical, *this,\color\fore[\color\state],\color\back[\color\state], [#__c_frame] )
           ;         Else
           drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_round( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\round,\round,\color\back[\color\state] )
@@ -9852,8 +9852,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ; Draw margin text
                 If *this\row\margin\width > 0
                   draw_mode( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( RowList( *this )\margin\x + Bool( *this\vertical ) * *this\x[#__c_required],
-                                   RowList( *this )\margin\y + Bool( Not *this\vertical ) * *this\y[#__c_required], 
+                  DrawRotatedText( RowList( *this )\margin\x + Bool( *this\bar\vertical ) * *this\x[#__c_required],
+                                   RowList( *this )\margin\y + Bool( Not *this\bar\vertical ) * *this\y[#__c_required], 
                                    RowList( *this )\margin\string, *this\text\rotate, *this\row\margin\color\front )
                 EndIf
                 
@@ -11448,17 +11448,17 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               
               ; change box option
               If *this\mode\check = #__m_optionselect
-                If EnteredItem( )\_parent And EnteredItem( )\option_group  
-                  If EnteredItem( )\option_group\_parent And 
-                     EnteredItem( )\option_group\checkbox\___state 
-                    EnteredItem( )\option_group\checkbox\___state = #PB_Checkbox_Unchecked
+                If EnteredItem( )\_parent And EnteredItem( )\OptionGroupRow  
+                  If EnteredItem( )\OptionGroupRow\_parent And 
+                     EnteredItem( )\OptionGroupRow\checkbox\___state 
+                    EnteredItem( )\OptionGroupRow\checkbox\___state = #PB_Checkbox_Unchecked
                   EndIf
                   
-                  If EnteredItem( )\option_group\option_group <> EnteredItem( )
-                    If EnteredItem( )\option_group\option_group
-                      EnteredItem( )\option_group\option_group\checkbox\___state = #PB_Checkbox_Unchecked
+                  If EnteredItem( )\OptionGroupRow\OptionGroupRow <> EnteredItem( )
+                    If EnteredItem( )\OptionGroupRow\OptionGroupRow
+                      EnteredItem( )\OptionGroupRow\OptionGroupRow\checkbox\___state = #PB_Checkbox_Unchecked
                     EndIf
-                    EnteredItem( )\option_group\option_group = EnteredItem( )
+                    EnteredItem( )\OptionGroupRow\OptionGroupRow = EnteredItem( )
                   EndIf
                 EndIf
               EndIf
@@ -12747,7 +12747,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
              *this\type = #__type_Text
             ; commons
             If Flag & #__flag_vertical
-              *this\vertical = state
+              *this\text\vertical = state
               *this\text\change = #True
             EndIf
             
@@ -12885,7 +12885,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ForEach RowList( *this )
                   If RowList( *this )\_parent
                     RowList( *this )\checkbox\___state = #PB_Checkbox_Unchecked
-                    RowList( *this )\option_group = Bool( state ) * GetItem( RowList( *this ), 0 ) 
+                    RowList( *this )\OptionGroupRow = Bool( state ) * GetItem( RowList( *this ), 0 ) 
                   EndIf
                 Next
                 PopListPosition( RowList( *this ))
@@ -13733,14 +13733,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; - widget::Option_SetState( )
       If *this\type = #__type_Option
-        If *this\_group And 
+        If *this\OptionGroupWidget And 
            *this\_box_\___state <> State
           
-          If *this\_group\_group <> *this
-            If *this\_group\_group
-              *this\_group\_group\_box_\___state = 0
+          If *this\OptionGroupWidget\OptionGroupWidget <> *this
+            If *this\OptionGroupWidget\OptionGroupWidget
+              *this\OptionGroupWidget\OptionGroupWidget\_box_\___state = 0
             EndIf
-            *this\_group\_group = *this
+            *this\OptionGroupWidget\OptionGroupWidget = *this
           EndIf
           *this\_box_\___state = State
           
@@ -15770,7 +15770,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\image\padding\x = 2
           *this\text\padding\x = 4
           
-          ;*this\vertical = Bool( Flag&#__flag_vertical )
+          ;*this\bar\vertical = Bool( Flag&#__flag_vertical )
           *this\fs = Bool( Not Flag&#__flag_borderLess )*2
           *this\bs = *this\fs
           
@@ -15933,7 +15933,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\color\front = $FFFFFFFF
             
             If Flag & #PB_ScrollBar_Vertical = #PB_ScrollBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
-              *this\vertical = #True
+              *this\bar\vertical = #True
               *this\class = class+"-v"
             Else
               *this\class = class+"-h"
@@ -15985,11 +15985,11 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               flag | #__text_center
               *this\flag | #__text_center
               If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical ) 
-                *this\vertical = #True
+                *this\bar\vertical = #True
               EndIf
             Else
               If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
-                *this\vertical = #True
+                *this\bar\vertical = #True
                 *this\bar\invert = #True
               EndIf
             EndIf
@@ -16047,7 +16047,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\invert = Bool( Flag & #__bar_invert = #False )
             
             If Flag & #__bar_vertical = #__bar_vertical
-              *this\vertical = #True
+              *this\bar\vertical = #True
             EndIf
             
             If Not Flag & #__bar_buttonsize = #__bar_buttonsize
@@ -16090,7 +16090,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
             If Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
-              *this\vertical = #True
+              *this\bar\vertical = #True
               *this\bar\invert = Bool( Not Flag & #__bar_invert )
             Else
               *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
@@ -16130,7 +16130,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             
             If Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical Or Flag & #__bar_vertical = #__bar_vertical
-              *this\vertical = #True
+              *this\bar\vertical = #True
               *this\bar\invert = Bool( Not Flag & #__bar_invert )
             Else
               *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
@@ -16168,7 +16168,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
               *this\cursor = #PB_Cursor_LeftRight
             Else
-              *this\vertical = #True
+              *this\bar\vertical = #True
               *this\cursor = #PB_Cursor_UpDown
             EndIf
             
@@ -16330,7 +16330,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       *this\mode\threestate = constants::_check_( Flag, #PB_CheckBox_ThreeState )
@@ -16428,12 +16428,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this\type = #__type_Option
         If Root( )\count\childrens
           If Widget( )\type = #__type_Option
-            *this\_group = Widget( )\_group 
+            *this\OptionGroupWidget = Widget( )\OptionGroupWidget 
           Else
-            *this\_group = Widget( ) 
+            *this\OptionGroupWidget = Widget( ) 
           EndIf
         Else
-          *this\_group = OpenedWidget( )
+          *this\OptionGroupWidget = OpenedWidget( )
         EndIf
       EndIf
       
@@ -16510,7 +16510,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\color\back = $FFF9F9F9
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       
@@ -16569,7 +16569,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\color\back = $FFF9F9F9
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       If *this\text\multiline
@@ -16625,7 +16625,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\type = #__type_Text
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       _set_text_flag_( *this, flag )
@@ -16671,7 +16671,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\flag = Flag | #__text_center
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       _set_text_flag_( *this, *this\flag )
@@ -16727,12 +16727,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If Root( )\count\childrens
         If Widget( )\type = #__type_Option
-          *this\_group = Widget( )\_group 
+          *this\OptionGroupWidget = Widget( )\OptionGroupWidget 
         Else
-          *this\_group = Widget( ) 
+          *this\OptionGroupWidget = Widget( ) 
         EndIf
       Else
-        *this\_group = OpenedWidget( )
+        *this\OptionGroupWidget = OpenedWidget( )
       EndIf
       
       *this\x[#__c_inner] =- 2147483648
@@ -16744,7 +16744,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       *this\fs = 0 : *this\bs = *this\fs
       
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       _set_text_flag_( *this, flag | #__text_center | ( Bool( Not flag & #__text_center ) * #__text_left ))
@@ -16793,7 +16793,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       *this\fs = 0 : *this\bs = *this\fs
       If Flag & #__flag_vertical = #__flag_vertical
-        *this\vertical = #True
+        *this\bar\vertical = #True
       EndIf
       
       
@@ -17308,7 +17308,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If *this\color\back <>- 1
             If *this\color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_( *this\vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
+              _draw_gradient_( *this\bar\vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_( *this, color\back, [#__c_inner])
@@ -17432,7 +17432,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           If *this\color\back <>- 1
             If \color\fore <>- 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
+              _draw_gradient_( *this\text\vertical, *this,\color\fore[\color\state],\color\back[Bool( *this\__state&#__ss_back )*\color\state], [#__c_frame] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_box_( *this, color\back, [#__c_frame])
@@ -17755,7 +17755,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             Box( _this_\x[#__c_inner], _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_inner], _this_\barheight, $ffffffff )
           Else
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            _draw_gradient_( _this_\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[Bool( _this_\__state & #__ss_back ) * _this_\color\state], [#__c_frame] )
+            _draw_gradient_( _this_\text\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[Bool( _this_\__state & #__ss_back ) * _this_\color\state], [#__c_frame] )
           EndIf
           
           If _this_\state\flag & #__s_collapse

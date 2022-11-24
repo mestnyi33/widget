@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Bind(#PB_All, @events_widgets())
     
     For i = 0 To 2
-      Bind(GetWidget(i), @events_widgets())
+      Bind(GetWidget(i), @events_widgets(), #PB_EventType_Change)
     Next
     
     ;ClearDebugOutput()

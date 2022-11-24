@@ -144,21 +144,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
       change.w
     EndStructure
     
-    ;--     caret
-    Structure _s_caret Extends _s_coordinate
+    ;--     CARET
+    Structure _s_CARET Extends _s_COORDINATE
       mode.i
       ;direction.b
       
-      pos.l[4]
+      pos.l[3]
       time.l
       
-      
-      line.l[2]
       change.b
     EndStructure
     
     ;--     edit
-    Structure _s_edit Extends _s_coordinate
+    Structure _s_edit Extends _s_COORDINATE
       pos.l
       len.l
       
@@ -299,7 +297,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *_parent._s_rows
       parent._s_objecttype
       
-      *option_group._s_rows
+      *OptionGroupRow._s_rows ; option group row 
       
       ; edit
       margin._s_edit
@@ -618,12 +616,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *bar._s_BAR
       *row._s_ROW ; multi-text; buttons; lists; - gadgets
       *_box_._s_BUTTONS ; checkbox; optionbox
+      *OptionGroupWidget._s_WIDGET  ; option group widget  
       
       tab._s_TAB        
       scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
       StructureUnion
-        *_group._s_WIDGET  ; = Option( ) groupbar gadget  
         *_popup._s_WIDGET  ; = ComboBox( ) listView gadget
         *_string._s_WIDGET  ; = SpinBar( ) String gadget
       EndStructureUnion
