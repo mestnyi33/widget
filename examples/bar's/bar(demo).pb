@@ -79,7 +79,6 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(*w, 60)
     widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__text_right)
     *w = widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    widget::SetAttribute(*w, #__bar_invert, 0)
     widget::SetState(*w, 8000)
     *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_invert)
     widget::SetState(*w, 8000)

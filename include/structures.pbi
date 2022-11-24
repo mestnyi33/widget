@@ -173,8 +173,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *word._s_edit( )
     EndStructure
     
-    ;--     text
-    Structure _s_text Extends _s_edit
+    ;--     TEXT
+    Structure _s_TEXT Extends _s_edit
       ;     ;     Char.c
       *fontID ; .i[2]
       
@@ -345,8 +345,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
     EndStructure
     
-    ;--     bar
-    Structure _s_bar
+    ;--     BAR
+    Structure _s_BAR
       *widget._s_WIDGET
       
       fixed.l ; splitter fixed button index  
@@ -355,8 +355,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       max.l
       min.l[3]
       
-      percent.f
       invert.b
+      vertical.b
+      
+      percent.f
       direction.l
       
       page._s_page
@@ -691,7 +693,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *data
       *cursor
       
-      vertical.b
       child.b ; is the widget composite?
       interact.i 
       
