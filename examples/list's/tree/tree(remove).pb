@@ -6,11 +6,25 @@ Define gLN=5000;0      ;0; количесвто итемов
 Define LN=5000;0;0
 Global *w._S_widget
 
+Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 19
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
 If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
   *w=Tree(0, 0, 250, 680, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
   
-  TreeGadget(0, 10, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect
+  TreeGadget_(0, 10, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect
   
   
   Define a=0

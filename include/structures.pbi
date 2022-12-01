@@ -621,10 +621,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       tab._s_TAB        
       scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
-      StructureUnion
+      ;StructureUnion
         *_popup._s_WIDGET  ; = ComboBox( ) listView gadget
         *_string._s_WIDGET  ; = SpinBar( ) String gadget
-      EndStructureUnion
+      ;EndStructureUnion
       
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
@@ -755,7 +755,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *closed._s_WIDGET             ; last list opened element
        
       *root._s_ROOT       ; 
-      Map *roots._s_ROOT( )         ; 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
       sticky._s_sticky              ; sticky( )\
@@ -763,6 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *widget._s_WIDGET             ; eventwidget( )\ 
       event._s_eventdata            ; widgetevent( )\ ; \type ; \item ; \data
       
+      Map *_roots._s_ROOT( )         ; 
       
       ; для совместимости
       List *_root._s_ROOT( )        ; 

@@ -50,18 +50,18 @@ EndProcedure
 
 Procedure events_widgets()
   Select WidgetEventType( )
-;     Case #PB_EventType_Up
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
-;       
-;     Case #PB_EventType_Down
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
-;       
-;     Case #PB_EventType_ScrollChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-;       
-;     Case #PB_EventType_StatusChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-;       
+      ;     Case #PB_EventType_Up
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
+      ;       
+      ;     Case #PB_EventType_Down
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
+      ;       
+      ;     Case #PB_EventType_ScrollChange
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      ;       
+      ;     Case #PB_EventType_StatusChange
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      ;       
     Case #PB_EventType_DragStart
       Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
@@ -80,8 +80,22 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
+Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = ListViewGadget(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 19
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
 If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  ListViewGadget(0, 10, 30, 250, 120)
+  ListViewGadget_(0, 10, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -89,7 +103,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   SetGadgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
   
-  ListViewGadget(1, 10+270, 30, 250, 120, #PB_ListView_ClickSelect)
+  ListViewGadget_(1, 10+270, 30, 250, 120, #PB_ListView_ClickSelect)
   For a = 0 To 12
     AddGadgetItem (1, -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
@@ -98,7 +112,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
-  ListViewGadget(2, 10+270+270, 30, 250, 120, #PB_ListView_MultiSelect)
+  ListViewGadget_(2, 10+270+270, 30, 250, 120, #PB_ListView_MultiSelect)
   For a = 0 To 12
     AddGadgetItem (2, -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -114,8 +128,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  ;--------------
   
+  ;\\
   ListView(10, 190, 250, 120)
   For a = 0 To 12
     AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
@@ -141,12 +155,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   SetState(GetWidget(2), 7) 
   SetState(GetWidget(2), 9) 
   
-;   Text(10,170, 250,20, "flag = no")
-;   Text(10+270,170, 250,20, "flag = ClickSelect")
-;   Text(10+270+270,170, 250,20, "flag = MultiSelect")
-;   TextGadget(#PB_Any, 10,170, 250,20, "flag = no")
-;   TextGadget(#PB_Any, 10+270,170, 250,20, "flag = ClickSelect")
-;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
+  ;   Text(10,170, 250,20, "flag = no")
+  ;   Text(10+270,170, 250,20, "flag = ClickSelect")
+  ;   Text(10+270+270,170, 250,20, "flag = MultiSelect")
+  ;   TextGadget(#PB_Any, 10,170, 250,20, "flag = no")
+  ;   TextGadget(#PB_Any, 10+270,170, 250,20, "flag = ClickSelect")
+  ;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
     Bind(GetWidget(i), @events_widgets())
@@ -155,5 +169,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = --
 ; EnableXP

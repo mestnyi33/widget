@@ -7,6 +7,21 @@ XIncludeFile "widget-events.pbi"
 CompilerIf #PB_Compiler_IsMainFile
  UseLib(widget)
  
+ Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 20
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
+
  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure GadgetsClipCallBack( GadgetID, lParam )
       If GadgetID
@@ -241,7 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;{
-; ;     TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
+; ;     TreeGadget_(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
 ; ;     ; 1_example
 ; ;     AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
 ; ;     AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
@@ -263,7 +278,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     ;     Debug "g "+ GetGadgetText(g)
     g = 0
     ; 1_example
-    TreeGadget(g, 10, 10, 210, 100)                                         
+    TreeGadget_(g, 10, 10, 210, 100)                                         
     AddGadgetItem(g, -1, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
@@ -274,7 +289,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
     g = 1
     ; 2_example
-    TreeGadget(g, 10, 10+110, 210, 100)                                         
+    TreeGadget_(g, 10, 10+110, 210, 100)                                         
     AddGadgetItem(g, 0, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, 1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, 3, "Sub-Item 3", 0, 3)
@@ -290,7 +305,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 2
     ; 2_example
-    TreeGadget(g, 230, 10, 103, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoButtons)                                         
+    TreeGadget_(g, 230, 10, 103, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoButtons)                                         
     AddGadgetItem(g, 0, "Tree_0",0 )
     AddGadgetItem(g, 1, "Tree_1",0, 0) 
     AddGadgetItem(g, 2, "Tree_2",0, 0) 
@@ -314,7 +329,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 3
     ;  3_example
-    TreeGadget(g, 230+107, 10, 103, 210, #PB_Tree_AlwaysShowSelection)                                         
+    TreeGadget_(g, 230+107, 10, 103, 210, #PB_Tree_AlwaysShowSelection)                                         
     AddGadgetItem(g, 0, "Tree_1", 0, 1) 
     AddGadgetItem(g, 0, "Tree_2_1", 0, 2) 
     AddGadgetItem(g, 0, "Tree_2_2", 0, 3) 
@@ -331,7 +346,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 4
     ; 4_example
-    TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
+    TreeGadget_(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
     AddGadgetItem(g, 0, "Tree_0", 0 )
     AddGadgetItem(g, 1, "Tree_1_1", img, 1) 
     AddGadgetItem(g, 4, "Tree_1_1_1", 0, 2) 
@@ -351,7 +366,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 5
     ; 5_example
-    TreeGadget(g, 670, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoLines)                                         
+    TreeGadget_(g, 670, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoLines)                                         
     AddGadgetItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", 0 )
     AddGadgetItem(g, 1, "Tree_1", 0, 1) 
     AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
@@ -362,7 +377,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 6
     ;  6_example
-    TreeGadget(g, 890, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons | #PB_Tree_ThreeState)                                      
+    TreeGadget_(g, 890, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons | #PB_Tree_ThreeState)                                      
     AddGadgetItem(g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)",ImageID(0)) 
     For i=1 To 20
       If i=5
@@ -561,6 +576,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; Folding = 8f8--0--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = f-b--v---
 ; EnableXP

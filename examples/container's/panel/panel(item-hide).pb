@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If *this\tab
         SelectElement( *this\tab\widget\bar\_s( ), item )
         *this\tab\widget\bar\_s( )\hide = state
-        *this\tab\widget\bar\change_tab_items = #True
+        ;*this\tab\widget\bar\change_tab_items = #True
       EndIf
     EndIf
   EndProcedure

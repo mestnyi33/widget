@@ -2,7 +2,7 @@
 ; demo state
 ;
 IncludePath "../../../"
-XIncludeFile "widget-events.pb"
+XIncludeFile "widget-events.pbi"
 ;XIncludeFile "CE.pb"
 
 ;XIncludeFile "-widgets.pbi"

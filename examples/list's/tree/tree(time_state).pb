@@ -1,10 +1,11 @@
 ﻿IncludePath "../../../"
-XIncludeFile "-widgets.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 DisableExplicit
 
 UseLib(widget)
 
-LN=500; количесвто итемов 
+LN=1000; количесвто итемов 
 Global *w._S_widget
 
 ; CompilerCase #PB_OS_MacOS
@@ -12,10 +13,38 @@ Global *w._S_widget
 ;   CocoaMessage(0, GadgetID(DialogGadget(#Dialog_Main, "log")), "scrollRangeToVisible:@", @Range)
 ; CompilerEndSelect
 
+Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = ListViewGadget(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 20
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
+Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 20
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
-  ListViewGadget(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
-                                         ;TreeGadget(0, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+  ;TreeGadget_(0, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+  ListViewGadget_(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
+  
   
   Open(0, 270, 10, 250, 150)
   *w=Tree(0, 0, 250, 150, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
@@ -58,8 +87,8 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   
   Debug " -------- "
   
-  ;ListViewGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
-  TreeGadget(10, 10, 170, 250, 520);, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+  ;ListViewGadget_(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
+  TreeGadget_(10, 10, 170, 250, 520);, #PB_Tree_NoButtons|#PB_Tree_NoLines)
   
   Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
   *w=Tree(0, 0, 250, 520, #__Flag_GridLines|#__tree_collapse);|#__Tree_NoButtons|#__Tree_NoLines)  ; |#PB_Flag_MultiSelect
@@ -115,5 +144,5 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = --
 ; EnableXP

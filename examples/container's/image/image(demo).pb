@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 UseLib(widget)
@@ -15,6 +15,11 @@ UseLib(widget)
 ; ;   Button(10,390, 95, 25, "")
 ; ;   WaitClose()
 ; ; EndIf
+
+; ImageSize.NSSize
+; ImageSize\width = 64
+; ImageSize\height = 64
+; CocoaMessage(0, ImageID(1), "setSize:@", @ImageSize)
 
 ; IncludePath "../"
 ; XIncludeFile "widgets().pbi"
@@ -103,6 +108,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

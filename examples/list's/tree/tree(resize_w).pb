@@ -1,9 +1,12 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
-;XIncludeFile "../empty.pb"
-UseLib(widget)
+﻿IncludePath "../../../"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
+
 
 CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  UseLib(widget)
+  
   Global g, *g._S_widget, g_Canvas, NewList *List._S_widget()
   
   UsePNGImageDecoder()
@@ -12,10 +15,24 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    g_Canvas = GetGadget(Open(0))
+  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
   
-    g = TreeGadget(#PB_Any, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 20
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
+If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    g_Canvas = GetGadget(Open(0))
+    
+    g = TreeGadget_(#PB_Any, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
     ; 3_example
     AddGadgetItem(g, 0, "Tree_0", 0 )
     AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
@@ -55,10 +72,10 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_6", -1 )
     
     
-    Splitter(0,0,0,0, 0,Splitter(0,0,0,0, g,*g), #__flag_borderless|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    SetState(widget(), 0)
+    Define *splitter1 = Splitter(0,0,0,0, 0, Splitter(0,0,0,0, g,*g), #__flag_borderless|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    SetState(*splitter1, 0)
     ;SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16, g,*g, #__flag_autosize))
-   
+    
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
@@ -68,6 +85,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = --
 ; EnableXP

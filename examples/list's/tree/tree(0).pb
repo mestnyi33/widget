@@ -1,10 +1,11 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
-UseLib(widget)
+;XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
+  UseLIB(widget)
   
   Define i, a, *g, g =- 1
   
@@ -136,19 +137,19 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+this()\widget+" "+this()\event
-    Protected EventGadget = this()\widget
-    Protected EventType = this()\event
-    Protected EventData = this()\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEventType( )
+    Protected EventData = WidgetEventData( )
+     Protected EventItem = GetState(EventGadget)
     
     Select EventType
       Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DD::DragText(GetItemText(EventGadget, EventItem))
+        ;DD::DragText(GetItemText(EventGadget, EventItem))
         
       Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        Debug DD::DropText()
+        ;Debug DD::DropText()
         
       Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
@@ -206,6 +207,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = 0--+-
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
 
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug " widget - "+this()\widget+" "+this()\event
     Protected EventGadget = this()\widget
     Protected EventType = this()\event
-    Protected EventData = this()\data
+    Protected EventData; = this()\data
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -467,6 +467,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -------
 ; EnableXP

@@ -451,7 +451,6 @@
     #__textFlagValue = 2147483648 >> ( #__textFlagCount - 1 )
     
     EnumerationBinary #__align_text_bottom ; #__textFlagValue
-      #__text_vertical
       #__text_invert
       
       #__text_InLine
@@ -463,8 +462,11 @@
       #__text_uppercase
       #__text_Lowercase
       #__text_numeric
-    EndEnumeration
-    
+      
+     EndEnumeration
+     
+     #__text_vertical = 20<<1
+   
     ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     ;       Debug #PB_Text_Right         ; 1  ; 2         ;
     ;       Debug #PB_Text_Center        ; 2  ; 1         ;

@@ -134,9 +134,24 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaints()
   EndProcedure  
   
+  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 19
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
+
   If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ;ListViewGadget(0, 10, 10, 160, 160) 
-    tree = PB(TreeGadget)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+    tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
     *tree = Tree(190, 10, 170, 160, #PB_Tree_GridLines | #PB_Tree_CheckBoxes | #__list_nolines | #PB_Tree_ThreeState | #PB_Tree_Collapse)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
     Define a
     
@@ -196,5 +211,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = -----
 ; EnableXP
