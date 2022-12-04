@@ -1,6 +1,7 @@
 ﻿; 
 ; demo state
-;
+; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
+
 IncludePath "../../../"
 ;XIncludeFile "widgets.pbi"
 XIncludeFile "widget-events.pbi"
@@ -11,6 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global a, *added, *reset, *w1, *w2, *g1, *g2, countitems=9; количесвто итемов 
   
+  ;\\
   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
@@ -23,6 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(gadget, state)
   EndProcedure
   
+  ;\\
   Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
     AddGadgetItem(gadget, position, text, imageID, flags)
     
@@ -32,6 +35,21 @@ CompilerIf #PB_Compiler_IsMainFile
           SetGadgetState_(gadget, CountGadgetItems(gadget) - 1)
         EndIf
     CompilerEndSelect
+  EndProcedure
+  
+  ;\\
+  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+    If gadget =- 1 : gadget = g : EndIf
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Define RowHeight.CGFloat = 20
+      ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+      CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    CompilerElse
+    CompilerEndIf
+    
+    ProcedureReturn gadget
   EndProcedure
   
   Procedure button_events()
@@ -99,12 +117,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu))
     ; demo gadget
-    *g1 = TreeGadget(#PB_Any, 10, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)
-    *g2 = TreeGadget(#PB_Any, 10, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+    *g1 = TreeGadget_(#PB_Any, 10, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+    *g2 = TreeGadget_(#PB_Any, 10, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines)
     
     For a = 0 To countitems
-      AddGadgetItem(*g1, -1, "Item "+Str(a), 0)
-      AddGadgetItem(*g2, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
     Next
     
     SetGadgetState_(*g1, a-1)

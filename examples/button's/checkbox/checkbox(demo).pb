@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 EnableExplicit
 Uselib( widget )
@@ -33,27 +34,27 @@ Define cr.s = #LF$, text.s = "this long" + cr + " multiline " + cr + "text"
 If Open( OpenWindow( #PB_Any, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) )
   CheckBoxGadget( 0, 10, 10, 140, 20, "CheckBox 1" )
   CheckBoxGadget( 1, 10, 35, 140, 40, text, #PB_CheckBox_ThreeState )
-  CheckBoxGadget( 2, 10, 80, 140, 20, "CheckBox 3" )
-  SetGadgetState( 0, #PB_Checkbox_Checked )   ; set first option as active one
-  SetGadgetState( 1, #PB_Checkbox_Inbetween )   ; set second option as active one
+  CheckBoxGadget( 2, 10, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
+  SetGadgetState( 0, #PB_Checkbox_Checked )   
+  SetGadgetState( 1, #PB_Checkbox_Inbetween )  
   
   For i = 0 To 2
     BindGadgetEvent( i, @events_gadgets( ) )
   Next
   
   CheckBox( 10+160, 10, 140, 20, "CheckBox 1" )
-  CheckBox( 10+160, 35, 140, 40, text, #PB_CheckBox_ThreeState );, #__text_center )
-  CheckBox( 10+160, 80, 140, 20, "CheckBox 3", #__text_right )
-  SetState( GetWidget( 0 ), #PB_Checkbox_Checked )   ; set first option as active one
-  SetState( GetWidget( 1 ), #PB_Checkbox_Inbetween )   ; set second option as active one
+  CheckBox( 10+160, 35, 140, 40, text, #PB_CheckBox_ThreeState );| #__text_center )
+  CheckBox( 10+160, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
+  SetState( GetWidget( 0 ), #PB_Checkbox_Checked )  
+  SetState( GetWidget( 1 ), #PB_Checkbox_Inbetween )  
   ;Bind( #PB_All, @events_widgets( ) )
   
   For i = 0 To 2
-    Bind( GetWidget( i ), @events_widgets( ) )
+    Bind( GetWidget( i ), @events_widgets( ), #PB_EventType_Change )
   Next
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

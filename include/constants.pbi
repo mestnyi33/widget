@@ -746,6 +746,10 @@
       #PB_EventType_CursorChange
     EndEnumeration
     
+    #__event_CursorChange = #PB_EventType_CursorChange
+    #__event_ResizeBegin = #PB_EventType_ResizeBegin
+    #__event_ResizeEnd = #PB_EventType_ResizeEnd
+    
     #__event_Free     = #PB_EventType_Free
     #__event_Drop     = #PB_EventType_Drop
     #__event_Create   = #PB_EventType_Create

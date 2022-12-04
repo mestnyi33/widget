@@ -33,7 +33,7 @@ ProcedureC winShouldClose(obj.i, sel.i, win.i) ; call 1
 	Debug "winShouldClose - " + obj +" "+sel +" - "+win
 	
 	CocoaMessage(0, win, "release")
-	CocoaMessage(0, app, "stop:", win)
+	;;CocoaMessage(0, app, "stop:", win)
 ;CocoaMessage(@app, 0, "NSApplication sharedApplication")
 	;CocoaMessage(0, app, "terminate:", app)
 	;CocoaMessage(0, win, "close")
@@ -55,7 +55,8 @@ EndProcedure
 ProcedureC appWillTerminate(obj.i, sel.i, ntn.i) ; call 4
   Debug "appWillTerminate - " + obj +" - "+sel +" - "+ntn
   
-  End
+  	CocoaMessage(0, app, "stop:", win)
+End
 	ProcedureReturn #YES
 EndProcedure
 
