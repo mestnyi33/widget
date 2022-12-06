@@ -23,13 +23,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *panel, *option
   Global SelectedGadget
   
-  Procedure TabViewType( *this._s_widget, position.i )
+  Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
+    ; reset position
     *this\fs[1] = 0
     *this\fs[2] = 0
     *this\fs[3] = 0
     *this\fs[4] = 0
     
-    If position = 0
+    If position = 4
       *this\TabWidget( )\hide = 1
     Else
       *this\TabWidget( )\hide = 0
@@ -37,40 +38,86 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If position = 1
       *this\TabWidget( )\bar\vertical = 1
-      *this\fs[1] = #__panel_width
+      If size = #PB_Default
+        *this\fs[1] = #__panel_width
+      Else
+        *this\fs[1] = size
+      EndIf
     EndIf
     
     If position = 3
       *this\TabWidget( )\bar\vertical = 1
-      *this\fs[3] = #__panel_width
+      If size = #PB_Default
+        *this\fs[3] = #__panel_width
+      Else
+        *this\fs[3] = size
+      EndIf
+    EndIf
+    
+    If position = 0
+      *this\TabWidget( )\bar\vertical = 0
+      If size = #PB_Default
+        *this\fs[2] = #__panel_height
+      Else
+        *this\fs[2] = size
+      EndIf
     EndIf
     
     If position = 2
       *this\TabWidget( )\bar\vertical = 0
-      *this\fs[2] = #__panel_height
+      If size = #PB_Default
+        *this\fs[4] = #__panel_height
+      Else
+        *this\fs[4] = size
+      EndIf
     EndIf
     
-    If position = 4
-      *this\TabWidget( )\bar\vertical = 0
-      *this\fs[4] = #__panel_height
+    If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      PostCanvasRepaint( *this\_root( ) )
     EndIf
-    
-    Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   EndProcedure
   
-  Procedure events_widget( )
+;   Procedure events_widget( )
+;     
+;     Select GetText( EventWidget( ) )
+;       Case "Top"
+;         TabViewType( *panel, 2 )
+;       Case "Left"
+;         TabViewType( *panel, 1 )
+;       Case "Right"
+;         TabViewType( *panel, 3 )
+;       Case "Bottom"
+;         TabViewType( *panel, 4 )
+;       Case "Hide"
+;         TabViewType( *panel, 0 )
+;     EndSelect
+;     
+;   EndProcedure
+  
+  Procedure GadgetTabViewType( gadget, position.i )
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      CocoaMessage(0, GadgetID(gadget), "setTabViewType:", position)
+    CompilerEndIf
+  EndProcedure
+  
+  Procedure events_gadget( )
     
-    Select GetText( EventWidget( ) )
+    Select GetGadgetText( EventGadget( ) )
       Case "Top"
-        TabViewType( *panel, 2 )
+        GadgetTabViewType( 0, 0 )
+        TabViewType( *panel, 0 )
       Case "Left"
+        GadgetTabViewType( 0, 1 )
         TabViewType( *panel, 1 )
       Case "Right"
+        GadgetTabViewType( 0, 3 )
         TabViewType( *panel, 3 )
       Case "Bottom"
-        TabViewType( *panel, 4 )
+        GadgetTabViewType( 0, 2 )
+        TabViewType( *panel, 2 )
       Case "Hide"
-        TabViewType( *panel, 0 )
+        GadgetTabViewType( 0, 4 )
+        TabViewType( *panel, 4 )
     EndSelect
     
   EndProcedure
@@ -90,46 +137,36 @@ CompilerIf #PB_Compiler_IsMainFile
   OptionGadget(5, 210, GadgetY(1) + 45, 80, 20, "Right")
   SetGadgetState(2, #True)
   
+  BindGadgetEvent(2, @events_gadget( ), #PB_EventType_LeftClick )
+  BindGadgetEvent(3, @events_gadget( ), #PB_EventType_LeftClick )
+  BindGadgetEvent(4, @events_gadget( ), #PB_EventType_LeftClick )
+  BindGadgetEvent(5, @events_gadget( ), #PB_EventType_LeftClick )
+  BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
+  
   
   *panel = Panel(300+10, 10, 300 - 20, 180)
   AddItem (*panel, -1, "Tab 1")
   AddItem (*panel, -1, "Tab 2")
   CloseList() ; *panel
   
-  Frame(300+30, 200, 300 - 60, 100, "Tab location")
-  *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
-  Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
-  Option(300+130, GadgetY(1) + 45, 80, 20, "Hide")
-  Option(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
-  Option(300+210, GadgetY(1) + 45, 80, 20, "Right")
-  SetState(*option, #True)
-  Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
+;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
+;   *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
+;   Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
+;   Option(300+130, GadgetY(1) + 45, 80, 20, "Hide")
+;   Option(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
+;   Option(300+210, GadgetY(1) + 45, 80, 20, "Right")
+;   SetState(*option, #True)
+;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
   
   Repeat
     Select WaitWindowEvent()
       Case #PB_Event_CloseWindow
         Break
-      Case #PB_Event_Gadget
-        SelectedGadget = EventGadget()
-        
-        If SelectedGadget = 13
-          ; SetGadgetAttribute(0, #PB_Panel_TabHeight, 0 )
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            
-            CocoaMessage(0, GadgetID(0), "setTabViewType:", 4)
-           ; CocoaMessage(0, GadgetID(0), "setTabViewBorderType:", 1)
-          CompilerEndIf
-        EndIf
-        If SelectedGadget >= 2 And SelectedGadget <= 5
-          ; SetGadgetAttribute(0, #PB_Panel_TabHeight, 30 )
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            CocoaMessage(0, GadgetID(0), "setTabViewType:", SelectedGadget - 2)
-          CompilerEndIf
-        EndIf
+      
     EndSelect
   ForEver
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0--
+; Folding = ---
 ; EnableXP
