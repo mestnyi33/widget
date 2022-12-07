@@ -6246,6 +6246,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       width  = *this\width[#__c_frame]
       height = *this\height[#__c_frame]
       
+      ;\\
       If *this\child
         If *this\bar\vertical
           If height = 0
@@ -6262,6 +6263,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; Debug ""+height +" "+width+" "+ *this\height +" "+ *this\bar\vertical+" "+ *this\class
       
+      ;\\
       If mode > 0
         ;\\ get area size
         If *this\bar\vertical
@@ -6404,8 +6406,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
+      ;\\
       If mode < 2
-        ; get thumb pos
+        ;\\ get thumb pos
         If *bar\fixed And Not *bar\page\change
           If *bar\fixed = #__split_1
             ThumbPos = *bar\button[*bar\fixed]\fixed
@@ -6440,7 +6443,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
         Else
-          If ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar )
+          If *this\type = #__Type_TabBar Or
+             *this\type = #__Type_ToolBar
+            
             If *bar\page\pos < *bar\min
               ; If *bar\max > *bar\page\len
               *bar\page\pos = *bar\min
@@ -6480,7 +6485,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; get fixed size
+        ;\\ get fixed size
         If *bar\fixed And *bar\page\change
           If *bar\fixed = #__split_1
             *BB1\fixed = *bar\thumb\pos
@@ -6489,138 +6494,150 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; buttons state
-        If *this\type = #__Type_ScrollBar Or
-           *this\type = #__Type_TabBar Or
-           *this\type = #__Type_ToolBar
-          
-          ; disable/enable button-scroll(left&top)-tab(right&bottom)
-          If *BB1\size And bar_in_start_( *bar )
-            *BB1\state\disable = 1
-            If *BB1\color\state <> #__S_3
+        ;
+        ;\\ disable/enable
+        ;
+        ;\\ buttons(left&top)-tab(right&bottom)
+        If bar_in_start_( *bar )
+          If *BB1\state\disable = #False
+            *BB1\state\disable = #True
+            
+            ;\\
+            If *this\type = #__Type_ScrollBar Or
+               *this\type = #__Type_spin Or
+               *this\type = #__Type_TabBar Or
+               *this\type = #__Type_ToolBar
+              
               *BB1\color\state = #__S_3
             EndIf
-          Else
-            *BB1\state\disable = 0
-            If *BB1\color\state <> #__S_2
+            
+            ;\\
+            If *this\type = #__Type_TabBar
+              *BB1\hide = 1
+            EndIf
+            
+            ;\\
+            If *this\type = #__Type_splitter
+              If *this\bar\vertical
+                *this\cursor = cursor::#PB_Cursor_Down
+              Else
+                *this\cursor = cursor::#PB_Cursor_Right
+              EndIf
+            EndIf
+          EndIf
+        Else
+          If *BB1\state\disable = #True
+            *BB1\state\disable = #False
+            
+            ;\\
+            If *this\type = #__Type_ScrollBar Or
+               *this\type = #__Type_spin Or
+               *this\type = #__Type_TabBar Or
+               *this\type = #__Type_ToolBar
+              
               *BB1\color\state = #__S_0
             EndIf
-          EndIf
-          
-          ; disable/enable button-scroll(right&bottom)-tab(left&top)
-          If *BB2\size And bar_in_stop_( *bar )
-            *BB2\state\disable = 1
-            If *BB2\color\state <> #__S_3
-              *BB2\color\state = #__S_3
+            
+            ;\\
+            If *this\type = #__Type_TabBar
+              *BB1\hide = 0
             EndIf
-          Else
-            *BB2\state\disable = 0
-            If *BB2\color\state <> #__S_2
-              *BB2\color\state = #__S_0
-            EndIf
-          EndIf
-          
-          ; disable/enable button-thumb
-          If *this\type = #__Type_ScrollBar
-            If *bar\thumb\len
-              If *BB1\color\state = #__S_3 And
-                 *BB2\color\state = #__S_3
-                
-                If *BB3\color\state <> #__S_3
-                  *BB3\color\state = #__S_3
-                EndIf
+            
+            ;\\
+            If *this\type = #__Type_splitter
+              If *this\bar\vertical
+                *this\cursor = cursor::#PB_Cursor_UpDown
               Else
-                If *BB3\color\state <> #__S_2
-                  *BB3\color\state = #__S_0
-                EndIf
+                *this\cursor = cursor::#PB_Cursor_LeftRight
               EndIf
-            EndIf
-          EndIf
-          
-          ; show/hide button-(right&bottom)
-          If *BB2\size > 0
-            If *BB2\hide <> Bool( *BB2\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-              *BB2\hide = Bool( *BB2\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-            EndIf
-          Else
-            If *BB2\hide <> #True
-              *BB2\hide = #True
-            EndIf
-          EndIf
-          
-          ; show/hide button-(left&top)
-          If *BB1\size > 0
-            If *BB1\hide <> Bool( *BB1\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-              *BB1\hide = Bool( *BB1\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-            EndIf
-          Else
-            If *BB1\hide <> #True
-              *BB1\hide = #True
             EndIf
           EndIf
         EndIf
         
-        ; spin-buttons state
-        If *this\type = #__Type_spin
-          ; disable/enable button(left&top)-tab(right&bottom)
-          If *BB1\size
-            If bar_in_start_( *bar )
-              If *BB1\color\state <> #__S_3
-                *BB1\color\state = #__S_3
+        ;\\ buttons(right&bottom)-tab(left&top)
+        If bar_in_stop_( *bar )
+          If *BB2\state\disable = #False
+            *BB2\state\disable = #True
+            
+            ;\\
+            If *this\type = #__Type_ScrollBar Or
+               *this\type = #__Type_spin Or
+               *this\type = #__Type_TabBar Or
+               *this\type = #__Type_ToolBar
+              
+              *BB2\color\state = #__S_3
+            EndIf
+            
+            ;\\
+            If *this\type = #__Type_TabBar
+              *BB2\hide = 1
+            EndIf
+            
+            ;\\
+            If *this\type = #__Type_splitter
+              If *this\bar\vertical
+                *this\cursor = cursor::#PB_Cursor_Up
+              Else
+                *this\cursor = cursor::#PB_Cursor_Left
+              EndIf
+            EndIf
+          EndIf
+        Else
+          If *BB2\state\disable = #True
+            *BB2\state\disable = #False
+            ;\\
+            If *this\type = #__Type_ScrollBar Or
+               *this\type = #__Type_spin Or
+               *this\type = #__Type_TabBar Or
+               *this\type = #__Type_ToolBar
+              
+              *BB2\color\state = #__S_0
+            EndIf
+            
+            ;\\
+            If *this\type = #__Type_TabBar
+              *BB2\hide = 0
+            EndIf
+            
+            ;\\
+            If *this\type = #__Type_splitter
+              If *this\bar\vertical
+                *this\cursor = cursor::#PB_Cursor_UpDown
+              Else
+                *this\cursor = cursor::#PB_Cursor_LeftRight
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ;\\ button-thumb
+        If *this\type = #__Type_ScrollBar
+          If *bar\thumb\len
+            If *BB1\color\state = #__S_3 And
+               *BB2\color\state = #__S_3
+              
+              If *BB3\state\disable = #False
+                *BB3\state\disable = #True
+                
+                *BB3\color\state = #__S_3
               EndIf
             Else
-              If *BB1\color\state <> #__S_2
-                *BB1\color\state = #__S_0
+              If *BB3\state\disable = #True
+                *BB3\state\disable = #False
+                
+                *BB3\color\state = #__S_0
               EndIf
             EndIf
           EndIf
-          
-          ; disable/enable button(right&bottom)-tab(left&top)
-          If *BB2\size And bar_in_stop_( *bar )
-            If *BB2\color\state <> #__S_3
-              *BB2\color\state = #__S_3
-            EndIf
-          Else
-            If *BB2\color\state <> #__S_2
-              *BB2\color\state = #__S_0
-            EndIf
-          EndIf
-          
-          ; show/hide button-(right&bottom)
-          If *BB2\size > 0
-            If *BB2\hide <> Bool( *BB2\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-              *BB2\hide = Bool( *BB2\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-            EndIf
-          Else
-            If *BB2\hide <> #True
-              *BB2\hide = #True
-            EndIf
-          EndIf
-          
-          ; show/hide button-(left&top)
-          If *BB1\size > 0
-            If *BB1\hide <> Bool( *BB1\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-              *BB1\hide = Bool( *BB1\color\state = #__S_3 And ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar ))
-            EndIf
-          Else
-            If *BB1\hide <> #True
-              *BB1\hide = #True
-            EndIf
-          EndIf
         EndIf
         
-        
-        
-        
-        ; if enter buttons disabled
-        If EnteredButton( ) And
-           EnteredButton( )\color\state = #__S_3
-          EnteredButton( ) = #Null
-        EndIf
-        
-        
-        ; buttons resize coordinate
-        If ( *this\type = #__Type_TabBar Or *this\type = #__Type_ToolBar )
+        ;
+        ;\\ resize buttons coordinate
+        ;
+        ;\\
+        If *this\type = #__Type_TabBar Or 
+           *this\type = #__Type_ToolBar
+          
           ; inner coordinate
           If *this\bar\vertical
             *this\x[#__c_inner]      = *this\x[#__c_frame]
@@ -6688,7 +6705,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           result = Bool( *this\resize & #__resize_change )
         EndIf
         
-        ;
+        ;\\
         If *this\type = #__Type_ScrollBar
           If *bar\thumb\len
             If *this\bar\vertical
@@ -6764,7 +6781,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; Ok
+        ;\\ Ok
         If *this\type = #__Type_Spin
           *BB3\x      = *this\x[#__c_inner]
           *BB3\y      = *this\y[#__c_inner]
@@ -6817,63 +6834,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; Ok
+        ;\\ Ok
         If *this\type = #__Type_Splitter
-          ; is current button
-          If *BB3\state\press Or
-             ( *BB3\state\enter And Not mouse( )\buttons )
-            
-            ; disable/enable buttons(left&top)-tab(right&bottom)
-            If bar_in_start_( *bar )
-              If *BB1\state\disable = #False
-                *BB1\state\disable = #True
-                If *this\type = #__Type_splitter
-                  If *this\bar\vertical
-                    *this\cursor = cursor::#PB_Cursor_Down
-                  Else
-                    *this\cursor = cursor::#PB_Cursor_Right
-                  EndIf
-                EndIf
-              EndIf
-            Else
-              If *BB1\state\disable = #True
-                *BB1\state\disable = #False
-                If *this\type = #__Type_splitter
-                  If *this\bar\vertical
-                    *this\cursor = cursor::#PB_Cursor_UpDown
-                  Else
-                    *this\cursor = cursor::#PB_Cursor_LeftRight
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ; disable/enable buttons(right&bottom)-tab(left&top)
-            If bar_in_stop_( *bar )
-              If *BB2\state\disable = #False
-                *BB2\state\disable = #True
-                If *this\type = #__Type_splitter
-                  If *this\bar\vertical
-                    *this\cursor = cursor::#PB_Cursor_Up
-                  Else
-                    *this\cursor = cursor::#PB_Cursor_Left
-                  EndIf
-                EndIf
-              EndIf
-            Else
-              If *BB2\state\disable = #True
-                *BB2\state\disable = #False
-                If *this\type = #__Type_splitter
-                  If *this\bar\vertical
-                    *this\cursor = cursor::#PB_Cursor_UpDown
-                  Else
-                    *this\cursor = cursor::#PB_Cursor_LeftRight
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
           ;
           If *this\bar\vertical
             *BB1\width  = *this\width[#__c_frame]
@@ -6994,7 +6956,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           result = Bool( *this\resize & #__resize_change )
         EndIf
         
-        ;
+        ;\\
         If *this\type = #__Type_TrackBar
           If *bar\direction > 0
             If *bar\thumb\pos = *bar\area\end Or *this\flag & #PB_TrackBar_Ticks
@@ -7066,9 +7028,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         
-        ;
+        ;\\
         If *bar\page\change <> 0
-          ;
+          ;\\
           If *this\type = #__Type_ScrollBar
             ;- widget::bar_update_parent_area_( )
             If *this\_parent( ) And *this\_parent( )\scroll
@@ -7133,11 +7095,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          ;
+          ;\\
           If *this\type = #__Type_ProgressBar
             *this\text\string = "%" + Str( *bar\page\pos )
           EndIf
+          
+          ;\\
           If *this\type = #__Type_Spin 
+            Debug " update spin-change "+*bar\page\change
             Protected i
             For i = 0 To 3
               If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
@@ -7151,18 +7116,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
           EndIf
           
-          ;           ;
-          ;           If *this\_root( )\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( ))
-          ;             Debug "bar redraw - "+*this\_root( )\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
-          ;             ReDraw( *this\_root( ) )
-          ;           EndIf
-          
+          ;         ;\\
           ;         If is_integral_( *this )
           ;           If *this\type = #__Type_ScrollBar ; is_scrollbars_( *this )
-          ;             Post( *this\_parent( ), #PB_EventType_ScrollChange, *this, *bar\page\change )
+          ;             Post( *this\_parent( ), #__event_ScrollChange, *this, *bar\page\change )
           ;           EndIf
           ;         Else
-          ;           Post( *this, #PB_EventType_Change, EnteredButton( ), *bar\page\change )
+          ;           Post( *this, #__event_Change, EnteredButton( ), *bar\page\change )
           ;         EndIf
           
           *bar\page\change = 0
@@ -7773,86 +7733,288 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure bar_Events( *this._S_widget, eventtype.l, *button._S_buttons, *data )
-      Protected Repaint
+    Procedure bar_AtPointTabs( *this._S_widget, eventtype.l, mouse_x.l =  - 1, mouse_y.l =  - 1 )
+      Protected repaint, *tab._S_ROWS
+      
+      ;
       Protected._s_BUTTONS *BB1, *BB2, *BB3
       *BB1 = *this\bar\button[#__b_1]
       *BB2 = *this\bar\button[#__b_2]
       *BB3 = *this\bar\button[#__b_3]
       
-      If eventtype = #PB_EventType_StatusChange
-        If *this\type = #__Type_TabBar
-          If *this\PressedTab( ) And bar_tab_SetState( *this, *this\PressedTab( )\index )
-            Repaint = #True
-          EndIf
-        EndIf
-      EndIf
-      
-      If eventtype = #PB_EventType_Down
-        If bar_SetState( *this\bar, *this\bar\page\pos + *this\scroll\increment )
-          Repaint = #True
-        EndIf
-      EndIf
-      
-      If eventtype = #PB_EventType_Up
-        If bar_SetState( *this\bar, *this\bar\page\pos - *this\scroll\increment )
-          Repaint = #True
-        EndIf
-      EndIf
-      
-      
-      If eventtype = #PB_EventType_LeftButtonDown
-        If FocusedButton( ) <> EnteredButton( )
-          FocusedButton( ) = EnteredButton( )
-        EndIf
-        ; change the color state of non-disabled buttons
-        
-        If EnteredButton( ) And
-           EnteredButton( )\color\state <> #__S_3 And
-           EnteredButton( )\state\disable = #False
-          EnteredButton( )\state\press = #True
-          
-          If Not ( *this\type = #__Type_TrackBar Or
-                   ( *this\type = #__Type_Splitter And
-                     EnteredButton( ) <> *BB3 ))
-            EnteredButton( )\color\state = #__S_2
-          EndIf
-          
-          If *BB3\state\press
-            Repaint = #True
-          EndIf
-        EndIf
-        
-      EndIf
-      
-      If eventtype = #PB_EventType_LeftButtonUp
-        If FocusedButton( ) And
-           FocusedButton( )\state\press = #True
-          FocusedButton( )\state\press = #False
-          
-          If FocusedButton( )\color\state <> #__S_3 And
-             FocusedButton( )\state\disable = #False
+      ;\\ get at point items if enter inner coordinate                           ;
+      If *this\state\enter = 2 
+        If ListSize( *this\_tabs( ) )
+          If Not ( *this\EnteredTab( ) And
+                   *this\EnteredTab( )\visible And
+                   *this\EnteredTab( )\hide = 0 And 
+                   ( ( *this\state\enter And is_at_point_( *this\EnteredTab( ), mouse_x, mouse_y )) Or
+                     ( *this\state\drag And is_at_point_x_( *this\EnteredTab( ), mouse_x )) ))
             
-            ; change color state
-            If FocusedButton( )\color\state = #__S_2 And
-               Not ( *this\type = #__Type_TrackBar Or
-                     ( *this\type = #__Type_Splitter And
-                       FocusedButton( ) <> *BB3 ))
+            ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
+            ; search entered item
+            LastElement( *this\_tabs( ))
+            Repeat
+              If *this\_tabs( )\visible And
+                 *this\_tabs( )\hide = 0 And
+                 ( ( *this\state\enter And is_at_point_( *this\_tabs( ), mouse_x, mouse_y )) Or
+                   ( *this\state\drag And is_at_point_x_( *this\_tabs( ), mouse_x )) )
+                *tab = *this\_tabs( )
+                Break
+              EndIf
+            Until PreviousElement( *this\_tabs( )) = #False
+          Else
+            *tab = *this\EnteredTab( )
+          EndIf
+        EndIf
+      EndIf
+      
+      ; change enter/leave state
+      If *this\EnteredTab( ) <> *tab And Not *this\state\drag
+        ;\\ leaved tabs
+        If *this\EnteredTab( )
+          If *this\EnteredTab( )\state\enter = #True
+            *this\EnteredTab( )\state\enter = #False
+            
+            If *this\EnteredTab( )\color\state = #__S_1
+              *this\EnteredTab( )\color\state = #__S_0
+            EndIf
+            
+            *this\state\repaint = #True
+          EndIf
+        EndIf
+        
+        *this\EnteredTab( ) = *tab
+        
+        ;\\ entered tabs
+        If *this\EnteredTab( )
+          If *this\state\enter
+            If *this\EnteredTab( )\state\enter = #False
+              *this\EnteredTab( )\state\enter = #True
               
-              If FocusedButton( )\state\enter
-                FocusedButton( )\color\state = #__S_1
+              If *this\EnteredTab( )\color\state = #__S_0
+                *this\EnteredTab( )\color\state = #__S_1
+              EndIf
+              
+              *this\state\repaint = #True
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure bar_Events( *this._S_widget, eventtype.l, *button._S_buttons, *data )
+      Protected Repaint
+      Protected._s_BUTTONS *BB0, *BB1, *BB2, *BB3
+      *BB1 = *this\bar\button[#__b_1]
+      *BB2 = *this\bar\button[#__b_2]
+      *BB3 = *this\bar\button[#__b_3]
+      
+      ;\\ buttons events
+      Select eventtype
+        Case #__event_MouseEnter,
+             #__event_MouseLeave,
+             #__event_MouseMove,
+             #__event_Focus,
+             #__event_LostFocus,
+             #__event_Down,
+             #__event_Up
+          
+          Protected mouse_x, mouse_y
+          
+          If *this\bar
+            ;\\ get at-point-button address
+            If *this\state\enter
+              If Not ( EnteredButton( ) And
+                       EnteredButton( )\hide = 0 And
+                       is_at_point_( EnteredButton( ), mouse( )\x, mouse( )\y ))
+                
+                ; search entered button
+                If *BB1\interact And *BB1\hide = 0 And
+                   is_at_point_( *BB1, mouse( )\x, mouse( )\y )
+                  
+                  *BB0 = *BB1
+                ElseIf *BB2\interact And *BB2\hide = 0 And
+                       is_at_point_( *BB2, mouse( )\x, mouse( )\y )
+                  
+                  *BB0 = *BB2
+                ElseIf *BB3\interact And *BB3\hide = 0 And
+                       is_at_point_( *BB3, mouse( )\x, mouse( )\y, )
+                  
+                  *BB0 = *BB3
+                EndIf
               Else
-                FocusedButton( )\color\state = #__S_0
+                *BB0 = EnteredButton( )
               EndIf
             EndIf
             
-            Repaint = 1
+            ;\\ do buttons events entered & leaved
+            If EnteredButton( ) <> *BB0
+              If EnteredButton( )
+                If EnteredButton( )\state\enter = #True
+                  EnteredButton( )\state\enter = #False
+                  
+                  If EnteredButton( )\color\state = #__S_1
+                    EnteredButton( )\color\state = #__S_0
+                  EndIf
+                  
+                  If *this\type = #__Type_Splitter
+                    If *this\state\enter = 2
+                      If Not mouse( )\buttons
+                        *this\state\enter = 1
+                      EndIf
+                    EndIf
+                  EndIf
+                  
+                  *this\state\repaint = #True
+                EndIf
+              EndIf
+              
+              EnteredButton( ) = *BB0
+              
+              If EnteredButton( )
+                If *this\state\enter
+                  If EnteredButton( )\state\enter = #False
+                    EnteredButton( )\state\enter = #True
+                    
+                    If EnteredButton( )\color\state = #__S_0
+                      EnteredButton( )\color\state = #__S_1
+                    EndIf
+                    
+                    ;
+                    If *this\type = #__Type_Splitter
+                      If *this\state\enter = 1
+                        If Not mouse( )\buttons
+                          *this\state\enter = 2
+                        EndIf
+                      EndIf
+                    EndIf
+                    
+                    *this\state\repaint = #True
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+            
+            ;\\
+            If *this\tab
+              mouse_x = mouse( )\x - *BB3\x
+              mouse_y = mouse( )\y - *BB3\y
+              
+              bar_AtPointTabs( *this, eventtype, mouse_x, mouse_y )
+            EndIf
+          EndIf
+      EndSelect
+      
+      ;\\
+      If eventtype = #__event_Down
+        If mouse( )\buttons & #PB_Canvas_LeftButton
+          ;\\
+          If EnteredButton( ) And
+             EnteredButton( )\state\disable = #False And
+             EnteredButton( )\color\state <> #__S_3 And ; change the color state of non-disabled buttons
+             EnteredButton( )\state\press = #False
+            
+            PressedButton( )                                          = EnteredButton( )
+            PressedButton( )\state\press                              = #True
+            ;PressedButton( )\color\state                              = #__S_2
+            If Not ( *this\type = #__Type_TrackBar Or
+                     ( *this\type = #__Type_Splitter And PressedButton( ) <> *BB3 ))
+              PressedButton( )\color\state = #__S_2
+            EndIf
+            PressedButton( )\color\back[PressedButton( )\color\state] = $FF2C70F5
+            
+            ;
+            If ( *BB2\state\press And *this\bar\invert ) Or
+               ( *BB1\state\press And Not *this\bar\invert )
+              
+              If bar_SetState( *this\bar, *this\bar\page\pos - *this\scroll\increment )
+                *this\state\repaint = #True
+              EndIf
+            ElseIf ( *BB1\state\press And *this\bar\invert ) Or
+                   ( *BB2\state\press And Not *this\bar\invert )
+              
+              If bar_SetState( *this\bar, *this\bar\page\pos + *this\scroll\increment )
+                *this\state\repaint = #True
+              EndIf
+            EndIf
+          EndIf
+          
+          ;\\
+          If *this\tab 
+            *this\PressedTab( ) = *this\EnteredTab( )
+            
+            ;                                              ;
+            If Not ( EnteredButton( ) And EnteredButton( )\state\press And EnteredButton( ) <> *BB3 )
+              If *this\PressedTab( )
+                If *this\PressedTab( )\state\press = #False
+                  *this\PressedTab( )\state\press = #True
+                  
+                  *this\PressedTab( )\color\state                                 = #__S_2
+                  *this\PressedTab( )\color\back[*this\PressedTab( )\color\state] = $FF2C70F5
+                  
+                  *this\state\repaint = #True
+                EndIf
+              EndIf
+            EndIf
           EndIf
         EndIf
-        
       EndIf
       
-      If eventtype = #PB_EventType_MouseMove
+      ;\\
+      If eventtype = #__event_Up
+        If mouse( )\buttons & #PB_Canvas_LeftButton
+          ;\\
+          If PressedButton( ) And
+             PressedButton( )\state\press = #True
+            PressedButton( )\state\press = #False
+            
+            If PressedButton( )\state\disable = #False And
+               PressedButton( )\color\state <> #__S_3
+              
+              ; change color state
+              If PressedButton( )\color\state = #__S_2 And
+                 Not ( *this\type = #__Type_TrackBar Or
+                       ( *this\type = #__Type_Splitter And PressedButton( ) <> *BB3 ))
+                
+                If PressedButton( )\state\enter
+                  PressedButton( )\color\state = #__S_1
+                Else
+                  PressedButton( )\color\state = #__S_0
+                EndIf
+              EndIf
+              
+              *this\state\repaint = #True
+            EndIf
+          EndIf
+          
+          ;\\
+          If *this\PressedTab( )
+            If *this\PressedTab( )\state\press = #True
+              *this\PressedTab( )\state\press = #False
+              
+              If *this\PressedTab( )\state\enter
+                *this\PressedTab( )\color\state = #__S_1
+              Else
+                *this\PressedTab( )\color\state = #__S_0
+              EndIf
+              
+              ; select new tab item if non-drag the item
+              If Not *this\state\drag And
+                 Not *this\PressedTab( )\state\focus
+                
+                If *this\PressedTab( ) And bar_tab_SetState( *this, *this\PressedTab( )\index )
+                  *this\state\repaint = #True
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+      
+      ;\\
+      If eventtype = #__event_MouseMove
         If *this\state\press And *BB3\state\press
           If *this\bar\vertical
             Repaint | bar_SetThumbPos( *this\bar, ( mouse( )\y - mouse( )\delta\y ))
@@ -7863,7 +8025,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           SetWindowTitle( EventWindow( ), Str( *this\bar\page\pos ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos ))
         EndIf
       EndIf
-      
       
       ProcedureReturn Repaint
     EndProcedure
@@ -17602,186 +17763,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure DoEvent_BarButtons( *this._S_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
-      Protected repaint, *button._S_buttons
-      Protected._s_BUTTONS *BB1, *BB2, *BB3
-      *BB1 = *this\bar\button[#__b_1]
-      *BB2 = *this\bar\button[#__b_2]
-      *BB3 = *this\bar\button[#__b_3]
-      
-      
-      ;
-      ; get at-point-tab address
-      If *this\bar
-        ;
-        ; get at-point-button address
-        If *this\state\enter
-          If Not ( EnteredButton( ) And
-                   EnteredButton( )\hide = 0 And
-                   is_at_point_( EnteredButton( ), mouse_x, mouse_y ))
-            
-            ; search entered button
-            If *BB1\interact And
-               is_at_point_( *BB1, mouse( )\x, mouse( )\y )
-              
-              *button = *BB1
-            ElseIf *BB2\interact And
-                   is_at_point_( *BB2, mouse( )\x, mouse( )\y )
-              
-              *button = *BB2
-            ElseIf *BB3\interact And
-                   is_at_point_( *BB3, mouse( )\x, mouse( )\y, )
-              
-              *button = *BB3
-            EndIf
-          EndIf
-        Else
-          *button = EnteredButton( )
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_MouseLeave
-          *button = #Null
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_LeftButtonDown
-          PressedButton( ) = *button
-          
-          If PressedButton( ) And
-             PressedButton( )\state\disable = #False And
-             PressedButton( )\state\press = #False
-            
-            PressedButton( )\state\press                              = #True
-            PressedButton( )\color\state                              = #__S_2
-            PressedButton( )\color\back[PressedButton( )\color\state] = $FF2C70F5
-            
-            ;
-            If ( *BB2\state\press And *this\bar\invert ) Or
-               ( *BB1\state\press And Not *this\bar\invert )
-              DoEvents( *this, #PB_EventType_Up, *this\bar\page\pos - *this\scroll\increment, *this\bar )
-            ElseIf ( *BB1\state\press And *this\bar\invert ) Or
-                   ( *BB2\state\press And Not *this\bar\invert )
-              DoEvents( *this, #PB_EventType_Down, *this\bar\page\pos + *this\scroll\increment, *this\bar )
-            EndIf
-            
-            *this\state\repaint = #True
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_LeftButtonUp
-          If PressedButton( )
-            If PressedButton( )\state\press = #True
-              PressedButton( )\state\press = #False
-              
-              If PressedButton( )\state\disable = #False And PressedButton( )\state\focus = #False
-                If PressedButton( )\state\enter
-                  PressedButton( )\color\state = #__S_1
-                Else
-                  PressedButton( )\color\state = #__S_0
-                EndIf
-                
-                *this\state\repaint = #True
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-        ; do buttons events entered & leaved
-        If EnteredButton( ) <> *button
-          If EnteredButton( )
-            If EnteredButton( )\state\enter = #True
-              EnteredButton( )\state\enter = #False
-              
-              If EnteredButton( )\color\state = #__S_1
-                EnteredButton( )\color\state = #__S_0
-              EndIf
-            EndIf
-            
-            If *this\type = #__Type_Splitter
-              If *this\state\enter = 2
-                If Not mouse( )\buttons
-                  *this\state\enter = 1
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
-          ; Debug ""+*button+" "+EnteredButton( )
-          EnteredButton( ) = *button
-          
-          If EnteredButton( )
-            If *this\state\enter
-              If EnteredButton( )\state\enter = #False
-                EnteredButton( )\state\enter = #True
-                
-                If EnteredButton( )\color\state = #__S_0
-                  EnteredButton( )\color\state = #__S_1
-                EndIf
-                
-                ;
-                If *this\type = #__Type_Splitter
-                  If *this\state\enter = 1
-                    If Not mouse( )\buttons
-                      *this\state\enter = 2
-                    EndIf
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
-          *this\state\repaint = #True
-        EndIf
-        
-        If *this\type = #__Type_Splitter
-          If *BB3\state\enter
-            If *this\state\enter = 1
-              *this\state\enter = 2
-            EndIf
-            
-            If *BB1\state\disable <> bar_in_start_( *this\bar )
-              *BB1\state\disable = bar_in_start_( *this\bar )
-              If *BB1\state\disable
-                If *this\bar\vertical
-                  *this\cursor = cursor::#PB_Cursor_Down
-                Else
-                  *this\cursor = cursor::#PB_Cursor_Right
-                EndIf
-              Else
-                If *this\bar\vertical
-                  *this\cursor = cursor::#PB_Cursor_UpDown
-                Else
-                  *this\cursor = cursor::#PB_Cursor_LeftRight
-                EndIf
-              EndIf
-            EndIf
-            
-            If *BB2\state\disable <> bar_in_stop_( *this\bar )
-              *BB2\state\disable = bar_in_stop_( *this\bar )
-              If *BB2\state\disable
-                If *this\bar\vertical
-                  *this\cursor = cursor::#PB_Cursor_Up
-                Else
-                  *this\cursor = cursor::#PB_Cursor_Left
-                EndIf
-              Else
-                If *this\bar\vertical
-                  *this\cursor = cursor::#PB_Cursor_UpDown
-                Else
-                  *this\cursor = cursor::#PB_Cursor_LeftRight
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-      EndIf
-      
-      ProcedureReturn repaint
-    EndProcedure
-    
     Procedure DoEvent_Lines( *this._S_widget, eventtype.l, mouse_x.l =  - 1, mouse_y.l =  - 1 )
       Protected repaint, *item._S_ROWS
       
@@ -18402,155 +18383,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure DoEvent_Tabs( *this._S_widget, eventtype.l, mouse_x.l =  - 1, mouse_y.l =  - 1 )
-      Protected repaint, *tab._S_ROWS
-      
-      ;
-      If *this\bar
-        Protected._s_BUTTONS *BB1, *BB2, *BB3
-        *BB1 = *this\bar\button[#__b_1]
-        *BB2 = *this\bar\button[#__b_2]
-        *BB3 = *this\bar\button[#__b_3]
-        ; get at point items                            ;
-        If Not ( EnteredButton( ) And EnteredButton( )\state\disable = #False And EnteredButton( ) <> *BB3 )
-          If ListSize( *this\_tabs( ) )
-            If Not ( *this\EnteredTab( ) And
-                     *this\EnteredTab( )\visible And
-                     *this\EnteredTab( )\hide = 0 And
-                     ( ( *this\state\enter And is_at_point_( *this\EnteredTab( ), mouse_x, mouse_y )) Or
-                       ( *this\state\drag And is_at_point_y_( *this\EnteredTab( ), mouse_y )) ))
-              
-              ; search entered item
-              LastElement( *this\_tabs( ))
-              Repeat
-                If *this\_tabs( )\visible And
-                   *this\_tabs( )\hide = 0 And
-                   ( ( *this\state\enter And is_at_point_( *this\_tabs( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_y_( *this\_tabs( ), mouse_y )) )
-                  *tab = *this\_tabs( )
-                  Break
-                EndIf
-              Until PreviousElement( *this\_tabs( )) = #False
-            Else
-              *tab = *this\EnteredTab( )
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_LeftButtonDown
-          ;If *tab
-          *this\PressedTab( ) = *tab
-          ;EndIf
-          ;                                              ;
-          If Not ( EnteredButton( ) And EnteredButton( )\state\press And EnteredButton( ) <> *BB3 )
-            If *this\PressedTab( )
-              If *this\PressedTab( )\state\press = #False
-                *this\PressedTab( )\state\press = #True
-                
-                *this\PressedTab( )\color\state                                 = #__S_2
-                *this\PressedTab( )\color\back[*this\PressedTab( )\color\state] = $FF2C70F5
-                
-                *this\state\repaint = #True
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_LeftButtonUp
-          If *this\PressedTab( )
-            If *this\PressedTab( )\state\press = #True
-              *this\PressedTab( )\state\press = #False
-              
-              If *this\PressedTab( )\state\enter
-                *this\PressedTab( )\color\state = #__S_1
-              Else
-                *this\PressedTab( )\color\state = #__S_0
-              EndIf
-              
-              ; select new tab item if non-drag the item
-              If Not *this\state\drag And
-                 Not *this\PressedTab( )\state\focus
-                
-                DoEvents( *this, #PB_EventType_StatusChange, *this\PressedTab( ) )
-              EndIf
-              
-              *this\state\repaint = #True
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #PB_EventType_MouseMove
-          If *this\state\drag = #False
-            If *this\state\enter = #False
-              *tab = #Null
-            EndIf
-          EndIf
-        EndIf
-        
-        ; change enter/leave state
-        If *this\EnteredTab( ) <> *tab ;And *tab
-          If *this\EnteredTab( )
-            If *this\EnteredTab( )\state\enter = #True
-              *this\EnteredTab( )\state\enter = #False
-              
-              If *this\EnteredTab( )\color\state = #__S_1
-                *this\EnteredTab( )\color\state = #__S_0
-              EndIf
-              ;EnteredTabindex( *this ) =- 1
-            EndIf
-            
-            ;             If *this\state\drag
-            ;               If *this\PressedTab( )
-            ;                 If *this\PressedTab( )\state\press = #True
-            ;                   *this\PressedTab( )\state\press = #False
-            ;
-            ;                   *this\PressedTab( )\color\state = #__S_0
-            ;                 EndIf
-            ;               EndIf
-            ;             EndIf
-          EndIf
-          
-          ; Debug ""+*tab+" "+*this\EnteredTab( )
-          *this\EnteredTab( ) = *tab
-          ;           If *this\state\drag
-          ;             *this\PressedTab( ) = *tab
-          ;           EndIf
-          
-          If *this\EnteredTab( )
-            If *this\state\enter
-              If *this\EnteredTab( )\state\enter = #False
-                *this\EnteredTab( )\state\enter = #True
-                
-                If *this\EnteredTab( )\color\state = #__S_0
-                  *this\EnteredTab( )\color\state = #__S_1
-                EndIf
-                ;EnteredTabindex( *this ) = *this\EnteredTab( )\index
-                
-              EndIf
-            EndIf
-            
-            ;             If *this\state\drag
-            ;               If *this\PressedTab( )
-            ;                 If *this\PressedTab( )\state\press = #False
-            ;                   *this\PressedTab( )\state\press = #True
-            ;
-            ;                   *this\PressedTab( )\color\state = #__S_2
-            ;                   *this\PressedTab( )\color\back[*this\PressedTab( )\color\state] = $FF2C70F5
-            ;                 EndIf
-            ;               EndIf
-            ;             EndIf
-          EndIf
-          
-          *this\state\repaint = #True
-        EndIf
-        
-      EndIf
-      
-    EndProcedure
-    
     Procedure DoEvents( *this._S_widget, eventtype.l, *data = #Null, *button = #PB_All )
       ;Debug ""+*this +" "+ eventtype
       ;\\
@@ -18658,17 +18490,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Protected mouse_x, mouse_y
             
-            If *this\bar
-              Protected._s_BUTTONS *BB1, *BB2, *BB3
-              *BB1 = *this\bar\button[#__b_1]
-              *BB2 = *this\bar\button[#__b_2]
-              *BB3 = *this\bar\button[#__b_3]
-              mouse_x = mouse( )\x - *BB3\x
-              mouse_y = mouse( )\y - *BB3\y
-              DoEvent_BarButtons( *this, eventtype, mouse_x, mouse_y )
-              DoEvent_Tabs( *this, eventtype, mouse_x, mouse_y )
-              
-            ElseIf *this\row
+            If *this\row
               mouse_x = mouse( )\x - *this\x[#__c_inner] ; - scroll_x_( *this )
               mouse_y = mouse( )\y - *this\y[#__c_inner] - scroll_y_( *this )
               
@@ -20785,5 +20607,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------z----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------8----------------------------------------------n-+-0----------------------------------------------
+; Folding = --------------------------------------------------------------------------------z-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------0-----------------------------------v---0----------------------------------------------
 ; EnableXP
