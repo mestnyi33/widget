@@ -7,9 +7,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib( WIDGET )
   UsePNGImageDecoder( )
   
-  #_DD_new_create = 1<<1
-  #_DD_re_parent = 1<<2
-  #_DD_selector = 1<<3
+  #_DD_New = 1<<1
+  #_DD_Move = 1<<2
+  #_DD_Group = 1<<3
+  #_DD_Copy = 1<<4
   
   ;- ENUMs
   ; properties items
@@ -421,7 +422,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
         
         If *new\container 
-          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_new_create|#_DD_re_parent|#_DD_selector )
+          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_New|#_DD_Move|#_DD_Copy|#_DD_Group )
         EndIf
         
         ;
@@ -489,39 +490,53 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events( )
-    Protected *eventWidget._s_widget = EventWidget( )
+    Protected *new, *eventWidget._s_widget = EventWidget( )
     
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( *eventWidget )
             DragCursor( #PB_Cursor_Cross )
-            DragPrivate( #_DD_new_create, #PB_Drag_Copy )
+            DragPrivate( #_DD_New, #PB_Drag_Copy )
           EndIf
         Else
-          If *eventWidget\state\drag =- 1
-            DragCursor( #PB_Cursor_Arrows )
-            DragPrivate( #_DD_re_parent, #PB_Drag_Copy )
-          Else
-            DragCursor( #PB_Cursor_Cross )
-            DragPrivate( #_DD_selector, #PB_Drag_Copy )
-          EndIf
+          Select DragType( ) 
+            Case #PB_Drag_Copy
+              DragCursor( #PB_Cursor_Hand )
+              DragPrivate( #_DD_Copy, #PB_Drag_Copy )
+              
+            Case #PB_Drag_Move 
+              DragCursor( #PB_Cursor_Arrows )
+              DragPrivate( #_DD_Move, #PB_Drag_Copy )
+              
+            Case #PB_Drag_Link 
+              DragCursor( #PB_Cursor_Cross )
+              DragPrivate( #_DD_Group, #PB_Drag_Copy )
+          EndSelect
         EndIf
         
       Case #PB_EventType_Drop
         Select EventDropPrivate( )
-          Case #_DD_new_create 
+          Case #_DD_Group
+            Debug " ----- group ----- "
+            
+          Case #_DD_New 
             widget_add( *eventWidget, GetText( id_elements_tree ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
             
-          Case #_DD_re_parent
+          Case #_DD_Move
             If SetParent( PressedWidget( ), EnteredWidget( ) )
               Debug "re-parent"
             EndIf
             
-          Case #_DD_selector
-            Debug "selector"
+          Case #_DD_Copy
+            Debug " ----- copy ----- " + GetText( PressedWidget( ) )
             
+           *new = widget_add( *eventWidget, GetClass( PressedWidget( ) ), 
+                        EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+           
+           SetText( *new, "Copy_"+GetText( PressedWidget( ) ))
+          
         EndSelect
         
         ; end new create
@@ -756,13 +771,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Select e_type
       Case #PB_EventType_DragStart
         If EventWidget = id_elements_tree
-          Debug "drag - "
+          Debug " ------ drag - "
           ;         DD_EventDragWidth( ) 
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
           DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) )
-          DragPrivate( #_DD_new_create, #PB_Drag_Copy )
+          DragPrivate( #_DD_New, #PB_Drag_Copy )
         EndIf
         
       Case #PB_EventType_StatusChange
@@ -862,7 +877,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LeftClick
         If EventWidget = id_elements_tree
-          Debug "click"
+          ; Debug "click"
           ; SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) )
         EndIf
         
@@ -1233,5 +1248,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------+-----H--fp-f0
+; Folding = -----f+-----H--fp-f0
 ; EnableXP

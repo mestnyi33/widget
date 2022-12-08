@@ -187,7 +187,7 @@ If Open( #PB_Any, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   TargetFiles = ListIcon( 310, 160, 140, 140, "Drop Files here", 130 )
   TargetPrivate1 = ListIcon( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
   TargetPrivate2 = ListIcon( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
-  
+  SetFrame( TargetPrivate1, 0 )
   ; Now enable the dropping on the target s
   ;
   EnableDrop( TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )

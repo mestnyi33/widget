@@ -1,7 +1,9 @@
 ﻿;- 
 ;- example list-icon
 ;-
-XIncludeFile "../../../-widgets.pbi"
+; CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
+        
+XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)

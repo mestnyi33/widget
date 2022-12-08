@@ -1960,8 +1960,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.i DD_DropImage( Image.i = -1, Depth.i = 24 )
       Protected result.i
       
-      If _DD_action_( EnteredWidget( ) ) And _DD_drag_( )\value
-        Debug "   event drop image - "+_DD_drag_( )\value
+      If _DD_action_( EnteredWidget( ) ) And _DD_drag_( )\imageID
+        Debug "   event drop image - "+_DD_drag_( )\imageID
         
         If Image  = - 1
           Result = CreateImage( #PB_Any, _DD_drag_( )\Width, _DD_drag_( )\Height ) : Image = Result
@@ -1971,9 +1971,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If Result And StartDrawing( ImageOutput( Image ))
           If Depth = 32
-            DrawAlphaImage( _DD_drag_( )\value, 0, 0 )
+            DrawAlphaImage( _DD_drag_( )\imageID, 0, 0 )
           Else
-            DrawImage( _DD_drag_( )\value, 0, 0 )
+            DrawImage( _DD_drag_( )\imageID, 0, 0 )
           EndIf
           StopDrawing( )
         EndIf  
@@ -2035,7 +2035,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _DD_drag_( ).allocate( DD )
         _DD_drag_( )\format = #PB_Drop_Item
         _DD_drag_( )\actions = Actions
-        _DD_drag_( )\value = *row
+        _DD_drag_( )\imageID = *row
       EndIf
     EndProcedure
     
@@ -2057,7 +2057,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _DD_drag_( ).allocate( DD )
         _DD_drag_( )\format = #PB_Drop_Image
         _DD_drag_( )\actions = Actions
-        _DD_drag_( )\value = ImageID( Image )
+        _DD_drag_( )\imageID = ImageID( Image )
         _DD_drag_( )\width = ImageWidth( Image )
         _DD_drag_( )\height = ImageHeight( Image )
       EndIf

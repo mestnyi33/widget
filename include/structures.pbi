@@ -74,8 +74,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       actions.i
       privatetype.i
       
-      *value
+      *imageID
       string.s
+      ; files.s
+      state.b
     EndStructure
     ;--     MOUSE
     Structure _s_MOUSE ; Extends _s_POINT
