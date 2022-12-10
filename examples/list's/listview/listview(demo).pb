@@ -88,6 +88,8 @@ Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
     Define RowHeight.CGFloat = 19
     ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
     CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    CocoaMessage(0, GadgetID(gadget), "setUsesAlternatingRowBackgroundColors:", #YES)
+  
   CompilerElse
   CompilerEndIf
   

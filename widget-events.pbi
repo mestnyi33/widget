@@ -3507,8 +3507,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\color\back[0] = $FFF0F0F0
           EndIf
         EndIf
-        
-        ;  _this_\text\fontID = root( )\text\fontID
       EndIf
       
       ; padding
@@ -3658,8 +3656,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\color\back[0] = $FFF0F0F0
           EndIf
         EndIf
-        
-        ;  _this_\text\fontID = root( )\text\fontID
       EndIf
     EndMacro
     
@@ -3740,7 +3736,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case "button" : result = #__Type_Button
         Case "buttonimage" : result = #__Type_ButtonImage
         Case "calendar" : result = #__Type_Calendar
-        Case "canvas" : result = #__Type_Canvas
+        Case "canvas" : result = #PB_GadgetType_Canvas
         Case "checkbox" : result = #__Type_CheckBox
         Case "combobox" : result = #__Type_ComboBox
         Case "container" : result = #__Type_Container
@@ -3821,7 +3817,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__Type_MDI : result.s = "mdi"
         Case #__Type_Scintilla : result.s = "scintilla"
         Case #__Type_Shortcut : result.s = "shortcut"
-        Case #__Type_Canvas : result.s = "canvas"
+        Case #PB_GadgetType_Canvas : result.s = "canvas"
           
           ;     case #__Type_imagebutton    : result.s = "imagebutton"
       EndSelect
@@ -4827,24 +4823,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     ;-
-    Procedure bar_tab_AddItem( *this._S_widget, Item.i, Text.s, Image.i = -1, sublevel.i = 0 )
+    Procedure bar_tab_AddItem( *tab._S_widget, Item.i, Text.s, Image.i = -1, sublevel.i = 0 )
       Protected result
       
-      With *this
+      With *tab
         If Item =  - 1 Or
-           Item > *this\count\items - 1
-          LastElement( *this\_tabs( ))
-          AddElement( *this\_tabs( ))
-          Item = ListIndex( *this\_tabs( ))
+           Item > *tab\count\items - 1
+          LastElement( *tab\_tabs( ))
+          AddElement( *tab\_tabs( ))
+          Item = ListIndex( *tab\_tabs( ))
         Else
-          If SelectElement( *this\_tabs( ), Item )
-            If *this\FocusedTabIndex( ) >= Item
-              *this\FocusedTabIndex( ) + 1
+          If SelectElement( *tab\_tabs( ), Item )
+            If *tab\FocusedTabIndex( ) >= Item
+              *tab\FocusedTabIndex( ) + 1
             EndIf
             
-            If *this = *this\_parent( )\TabWidget( )
-              If StartEnumerate( *this\_parent( ) )
-                If enumWidget( )\_parent( ) = *this\_parent( ) And
+            If *tab = *tab\_parent( )\TabWidget( )
+              If StartEnumerate( *tab\_parent( ) )
+                If enumWidget( )\_parent( ) = *tab\_parent( ) And
                    enumWidget( )\TabIndex( ) = Item
                   enumWidget( )\TabIndex( ) + 1
                 EndIf
@@ -4854,92 +4850,92 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            InsertElement( *this\_tabs( ))
+            InsertElement( *tab\_tabs( ))
             
-            PushListPosition( *this\_tabs( ))
-            While NextElement( *this\_tabs( ))
-              *this\_tabs( )\index = ListIndex( *this\_tabs( ))
+            PushListPosition( *tab\_tabs( ))
+            While NextElement( *tab\_tabs( ))
+              *tab\_tabs( )\index = ListIndex( *tab\_tabs( ))
             Wend
-            PopListPosition( *this\_tabs( ))
+            PopListPosition( *tab\_tabs( ))
           EndIf
         EndIf
         
         ;
-        *this\count\items + 1
-        *this\bar\_s.allocate( TABS, ( ))
-        *this\_tabs( )\color       = _get_colors_( )
-        *this\_tabs( )\height      = *this\height - 1
-        *this\_tabs( )\text\string = Text.s
-        *this\_tabs( )\index       = item
+        *tab\count\items + 1
+        *tab\bar\_s.allocate( TABS, ( ))
+        *tab\_tabs( )\color       = _get_colors_( )
+        *tab\_tabs( )\height      = *tab\height - 1
+        *tab\_tabs( )\text\string = Text.s
+        *tab\_tabs( )\index       = item
         
         ; TabBar last opened item
-        *this\OpenedTabIndex( ) = Item
-        *this\ChangeTabIndex( ) = #True
+        *tab\OpenedTabIndex( ) = Item
+        *tab\ChangeTabIndex( ) = #True
         
         ; set default selected tab
         If item = 0
-          If *this\FocusedTab( )
-            *this\FocusedTab( )\state\focus = #False
+          If *tab\FocusedTab( )
+            *tab\FocusedTab( )\state\focus = #False
           EndIf
           
-          *this\FocusedTabIndex( )        = 0
-          *this\FocusedTab( )             = *this\_tabs( )
-          *this\FocusedTab( )\state\focus = - 1 ; scroll to active tab
+          *tab\FocusedTabIndex( )        = 0
+          *tab\FocusedTab( )             = *tab\_tabs( )
+          *tab\FocusedTab( )\state\focus = - 1 ; scroll to active tab
         EndIf
         
-        If is_integral_( *this )
-          *this\_parent( )\count\items + 1
+        If is_integral_( *tab )
+          *tab\_parent( )\count\items + 1
         EndIf
         
-        set_image_( *this, *this\_tabs( )\Image, Image )
-        PostCanvasRepaint( *this\_root( ) )
+        set_image_( *tab, *tab\_tabs( )\Image, Image )
+        PostCanvasRepaint( *tab\_root( ) )
       EndWith
       
       ProcedureReturn Item
     EndProcedure
     
-    Procedure.i bar_tab_SetState( *this._S_widget, State.l )
+    Procedure.i bar_tab_SetState( *tab._S_widget, State.l )
       Protected result.b
       
       ; prevent selection of a non-existent tab
       If State < 0
         State =  - 1
       EndIf
-      If State > *this\count\items - 1
-        State = *this\count\items - 1
+      If State > *tab\count\items - 1
+        State = *tab\count\items - 1
       EndIf
       
-      If *this\FocusedTabIndex( ) <> State
-        *this\FocusedTabIndex( ) = State
+      If *tab\FocusedTabIndex( ) <> State
+        *tab\FocusedTabIndex( ) = State
         
-        *this\ChangeTabIndex( ) = #True
+        *tab\ChangeTabIndex( ) = #True
         
         If state =  - 1
-          *this\FocusedTab( ) = #Null
+          *tab\FocusedTab( ) = #Null
         Else
-          ;PushListPosition( *this\_tabs( ) )
-          SelectElement( *this\_tabs( ), state )
+          ;PushListPosition( *tab\_tabs( ) )
+          SelectElement( *tab\_tabs( ), state )
           
-          If *this\FocusedTab( )
-            *this\FocusedTab( )\state\focus = #False
+          If *tab\FocusedTab( )
+            *tab\FocusedTab( )\state\focus = #False
           EndIf
           
-          *this\FocusedTab( )             = *this\_tabs( )
-          *this\FocusedTab( )\state\focus = - 1 ; scroll to active tab
+          *tab\FocusedTab( )             = *tab\_tabs( )
+          *tab\FocusedTab( )\state\focus = - 1 ; scroll to active tab
           
-          ;PopListPosition( *this\_tabs( ) )
+          ;PopListPosition( *tab\_tabs( ) )
         EndIf
         
-        If is_integral_( *this )
+        If is_integral_( *tab )
           
           ; enumerate all parent childrens
-          If *this\_parent( )\count\childrens
-            HideChildrens( *this\_parent( ) )
+          If *tab\_parent( )\count\childrens
+            HideChildrens( *tab\_parent( ) )
           EndIf
           ;
-          ;           DoEvents( *this\_parent( ), #__event_Change, *this\FocusedTab( ), State )
+          ;           DoEvents( *tab\_parent( ), #__event_Change, *tab\FocusedTab( ), State )
           ;         Else
-          ;           DoEvents( *this, #__event_Change, *this\FocusedTab( ), State )
+          ;           DoEvents( *tab, #__event_Change, *tab\FocusedTab( ), State )
         EndIf
         
         result = #True
@@ -4948,50 +4944,121 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure.i bar_tab_RemoveItem( *this._S_widget, Item.l )
-      If SelectElement( *this\_tabs( ), item )
-        *this\ChangeTabIndex( ) = #True
+    Procedure   bar_tab_AtPoint( *tab._S_widget, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Protected repaint, *tabRow._S_ROWS
+              
+      If *tab\bar
+        ;\\
+        mouse_x - *tab\bar\button[#__b_3]\x
+        mouse_y - *tab\bar\button[#__b_3]\y
         
-        If *this\FocusedTabIndex( ) = *this\_tabs( )\index
-          *this\FocusedTabIndex( ) = item - 1
+        ;\\ get at point items if enter inner coordinate                           ;
+        If *tab\state\enter = 2 
+          If ListSize( *tab\_tabs( ) )
+            If Not ( *tab\EnteredTab( ) And
+                     *tab\EnteredTab( )\visible And
+                     *tab\EnteredTab( )\hide = 0 And 
+                     ( ( *tab\state\enter And is_at_point_( *tab\EnteredTab( ), mouse_x, mouse_y )) Or
+                       ( *tab\state\drag And is_at_point_x_( *tab\EnteredTab( ), mouse_x )) ))
+              
+              ; Debug "seach "+*tab\class +" "+ *tab\EnteredTab( )
+              ; search entered item
+              LastElement( *tab\_tabs( ))
+              Repeat
+                If *tab\_tabs( )\visible And
+                   *tab\_tabs( )\hide = 0 And
+                   ( ( *tab\state\enter And is_at_point_( *tab\_tabs( ), mouse_x, mouse_y )) Or
+                     ( *tab\state\drag And is_at_point_x_( *tab\_tabs( ), mouse_x )) )
+                  *tabRow = *tab\_tabs( )
+                  Break
+                EndIf
+              Until PreviousElement( *tab\_tabs( )) = #False
+            Else
+              *tabRow = *tab\EnteredTab( )
+            EndIf
+          EndIf
         EndIf
         
-        DeleteElement( *this\_tabs( ), 1 )
+        ; change enter/leave state
+        If *tab\EnteredTab( ) <> *tabRow And Not *tab\state\drag
+          ;\\ leaved tabs
+          If *tab\EnteredTab( )
+            If *tab\EnteredTab( )\state\enter = #True
+              *tab\EnteredTab( )\state\enter = #False
+              
+              If *tab\EnteredTab( )\color\state = #__S_1
+                *tab\EnteredTab( )\color\state = #__S_0
+              EndIf
+              
+              *tab\state\repaint = #True
+            EndIf
+          EndIf
+          
+          *tab\EnteredTab( ) = *tabRow
+          
+          ;\\ entered tabs
+          If *tab\EnteredTab( )
+            If *tab\state\enter
+              If *tab\EnteredTab( )\state\enter = #False
+                *tab\EnteredTab( )\state\enter = #True
+                
+                If *tab\EnteredTab( )\color\state = #__S_0
+                  *tab\EnteredTab( )\color\state = #__S_1
+                EndIf
+                
+                *tab\state\repaint = #True
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure.i bar_tab_RemoveItem( *tab._S_widget, Item.l )
+      If SelectElement( *tab\_tabs( ), item )
+        *tab\ChangeTabIndex( ) = #True
         
-        If *this\_parent( )\TabWidget( ) = *this
-          Post( *this\_parent( ), #__event_CloseItem, Item )
-          *this\_parent( )\count\items - 1
+        If *tab\FocusedTabIndex( ) = *tab\_tabs( )\index
+          *tab\FocusedTabIndex( ) = item - 1
+        EndIf
+        
+        DeleteElement( *tab\_tabs( ), 1 )
+        
+        If *tab\_parent( )\TabWidget( ) = *tab
+          Post( *tab\_parent( ), #__event_CloseItem, Item )
+          *tab\_parent( )\count\items - 1
         Else
-          Post( *this, #__event_CloseItem, Item )
+          Post( *tab, #__event_CloseItem, Item )
         EndIf
         
-        *this\count\items - 1
+        *tab\count\items - 1
       EndIf
     EndProcedure
     
-    Procedure bar_tab_ClearItems( *this._S_widget ) ; Ok
-      If *this\count\items <> 0
+    Procedure bar_tab_ClearItems( *tab._S_widget ) ; Ok
+      If *tab\count\items <> 0
         
-        *this\ChangeTabIndex( ) = #True
-        ClearList( *this\_tabs( ))
+        *tab\ChangeTabIndex( ) = #True
+        ClearList( *tab\_tabs( ))
         
-        If *this\_parent( )\TabWidget( ) = *this
-          Post( *this\_parent( ), #__event_CloseItem, #PB_All )
-          *this\_parent( )\count\items = 0
+        If *tab\_parent( )\TabWidget( ) = *tab
+          Post( *tab\_parent( ), #__event_CloseItem, #PB_All )
+          *tab\_parent( )\count\items = 0
         Else
-          Post( *this, #__event_CloseItem, #PB_All )
+          Post( *tab, #__event_CloseItem, #PB_All )
         EndIf
         
-        *this\count\items = 0
+        *tab\count\items = 0
       EndIf
     EndProcedure
     
-    Procedure.s bar_tab_GetItemText( *this._S_widget, Item.l, Column.l = 0 )
+    Procedure.s bar_tab_GetItemText( *tab._S_widget, Item.l, Column.l = 0 )
       Protected result.s
       
-      If is_item_( *this, Item ) And
-         SelectElement( *this\_tabs( ), Item )
-        result = *this\_tabs( )\text\string
+      If is_item_( *tab, Item ) And
+         SelectElement( *tab\_tabs( ), Item )
+        result = *tab\_tabs( )\text\string
       EndIf
       
       ProcedureReturn result
@@ -5027,8 +5094,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           _item_\color\front#_mode_, _round_ )
     EndMacro
     
-    Procedure.b bar_tab_draw( *this._S_widget )
-      With *this
+    Procedure.b bar_tab_draw( *tab._S_widget )
+      With *tab
         Protected._s_BUTTONS *BB1, *BB2, *BB3
         Protected Color
         Protected ActivColorPlus = $FF101010
@@ -5036,14 +5103,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Protected forecolor
         Protected backcolor
         Protected textcolor = $ff000000
-        Protected framecolor = $FF808080;&$FFFFFF | *this\_tabs( )\color\_alpha<<24
+        Protected framecolor = $FF808080;&$FFFFFF | *tab\_tabs( )\color\_alpha<<24
         Protected Item_Color_Background
         Protected widget_backcolor1 = $FFD0D0D0
         Protected widget_backcolor = $FFD0D0D0;$FFEEEEEE ; $FFE6E5E5;
         
         Protected typ = 0
         Protected pos = 1
-        If *this\_parent( ) And *this\_parent( )\type = #__Type_Panel
+        If *tab\_parent( ) And *tab\_parent( )\type = #__Type_Panel
           pos = 2
         EndIf
         
@@ -5053,9 +5120,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Protected text_pos = 6
         
         If Not \hide And \color\_alpha
-          *BB1 = *this\bar\button[#__b_1]
-          *BB2 = *this\bar\button[#__b_2]
-          *BB3 = *this\bar\button[#__b_3]
+          *BB1 = *tab\bar\button[#__b_1]
+          *BB2 = *tab\bar\button[#__b_2]
+          *BB3 = *tab\bar\button[#__b_3]
           
           If \color\back <>  - 1
             ; Draw scroll bar background
@@ -5064,113 +5131,113 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; - widget::bar_tab_update_( )
-          If *this\ChangeTabIndex( )
-            *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
-            Debug " --- widget::Tab_Update( ) - " + *this\image\x
+          If *tab\ChangeTabIndex( )
+            *tab\image\x = ( *tab\height - 16 - pos - 1 ) / 2
+            Debug " --- widget::Tab_Update( ) - " + *tab\image\x
             
-            If *this\bar\vertical
-              *this\text\y = text_pos
+            If *tab\bar\vertical
+              *tab\text\y = text_pos
             Else
-              *this\text\x = text_pos
+              *tab\text\x = text_pos
             EndIf
             
-            *this\bar\max = 0
-            ; *this\text\width = *this\width
+            *tab\bar\max = 0
+            ; *tab\text\width = *tab\width
             
-            ForEach *this\_tabs( )
+            ForEach *tab\_tabs( )
               ; if not visible then skip
-              If *this\_tabs( )\hide
+              If *tab\_tabs( )\hide
                 Continue
               EndIf
               
               ;
-              draw_font_item_( *this, *this\_tabs( ), *this\_tabs( )\change )
+              draw_font_item_( *tab, *tab\_tabs( ), *tab\_tabs( )\change )
               
               ; init items position
-              If *this\bar\vertical
-                *this\_tabs( )\y = *this\bar\max + pos
+              If *tab\bar\vertical
+                *tab\_tabs( )\y = *tab\bar\max + pos
                 
-                If *this\FocusedTabIndex( ) = *this\_tabs( )\index
-                  *this\_tabs( )\x     = 0
-                  *this\_tabs( )\width = *BB3\width + 1
+                If *tab\FocusedTabIndex( ) = *tab\_tabs( )\index
+                  *tab\_tabs( )\x     = 0
+                  *tab\_tabs( )\width = *BB3\width + 1
                 Else
-                  *this\_tabs( )\x     = 0
-                  *this\_tabs( )\width = *BB3\width - 1
+                  *tab\_tabs( )\x     = 0
+                  *tab\_tabs( )\width = *BB3\width - 1
                 EndIf
                 
-                *this\text\x = ( *this\_tabs( )\width - *this\_tabs( )\text\width ) / 2 ; - Bool(*this\FocusedTabIndex( ) <> *this\_tabs( )\index And typ)*2
+                *tab\text\x = ( *tab\_tabs( )\width - *tab\_tabs( )\text\width ) / 2 ; - Bool(*tab\FocusedTabIndex( ) <> *tab\_tabs( )\index And typ)*2
                 
-                *this\_tabs( )\text\y = *this\text\y + *this\_tabs( )\y
-                *this\_tabs( )\text\x = *this\text\x + *this\_tabs( )\x
-                *this\_tabs( )\height = *this\text\y * 2 + *this\_tabs( )\text\height
+                *tab\_tabs( )\text\y = *tab\text\y + *tab\_tabs( )\y
+                *tab\_tabs( )\text\x = *tab\text\x + *tab\_tabs( )\x
+                *tab\_tabs( )\height = *tab\text\y * 2 + *tab\_tabs( )\text\height
                 
-                *this\bar\max + *this\_tabs( )\height + Bool( *this\_tabs( )\index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( *this\_tabs( )\index = *this\count\items - 1 ) * layout
+                *tab\bar\max + *tab\_tabs( )\height + Bool( *tab\_tabs( )\index <> *tab\count\items - 1 ) - Bool(typ) * 2 + Bool( *tab\_tabs( )\index = *tab\count\items - 1 ) * layout
                 ;
-                If typ And *this\FocusedTabIndex( ) = *this\_tabs( )\index
-                  *this\_tabs( )\height + 4
-                  *this\_tabs( )\y - 2
+                If typ And *tab\FocusedTabIndex( ) = *tab\_tabs( )\index
+                  *tab\_tabs( )\height + 4
+                  *tab\_tabs( )\y - 2
                 EndIf
               Else
-                *this\_tabs( )\x = *this\bar\max + pos
+                *tab\_tabs( )\x = *tab\bar\max + pos
                 
-                If *this\FocusedTabIndex( ) = *this\_tabs( )\index
-                  *this\_tabs( )\y      = pos;pos - Bool( pos>0 )*2
-                  *this\_tabs( )\height = *BB3\height - *this\_tabs( )\y + 1
+                If *tab\FocusedTabIndex( ) = *tab\_tabs( )\index
+                  *tab\_tabs( )\y      = pos;pos - Bool( pos>0 )*2
+                  *tab\_tabs( )\height = *BB3\height - *tab\_tabs( )\y + 1
                 Else
-                  *this\_tabs( )\y      = pos;pos
-                  *this\_tabs( )\height = *BB3\height - *this\_tabs( )\y - 1
+                  *tab\_tabs( )\y      = pos;pos
+                  *tab\_tabs( )\height = *BB3\height - *tab\_tabs( )\y - 1
                 EndIf
                 
-                *this\text\y = ( *this\_tabs( )\height - *this\_tabs( )\text\height ) / 2
+                *tab\text\y = ( *tab\_tabs( )\height - *tab\_tabs( )\text\height ) / 2
                 ;
-                *this\_tabs( )\image\y = *this\_tabs( )\y + ( *this\_tabs( )\height - *this\_tabs( )\image\height ) / 2
-                *this\_tabs( )\text\y  = *this\_tabs( )\y + *this\text\y
+                *tab\_tabs( )\image\y = *tab\_tabs( )\y + ( *tab\_tabs( )\height - *tab\_tabs( )\image\height ) / 2
+                *tab\_tabs( )\text\y  = *tab\_tabs( )\y + *tab\text\y
                 
                 ;
-                *this\_tabs( )\image\x = *this\_tabs( )\x + Bool( *this\_tabs( )\image\width ) * *this\image\x ;+ Bool( *this\_tabs( )\text\width ) * ( *this\text\x )
-                *this\_tabs( )\text\x  = *this\_tabs( )\image\x + *this\_tabs( )\image\width + *this\text\x
-                *this\_tabs( )\width   = Bool( *this\_tabs( )\text\width ) * ( *this\text\x * 2 ) + *this\_tabs( )\text\width +
-                                         Bool( *this\_tabs( )\image\width ) * ( *this\image\x * 2 ) + *this\_tabs( )\image\width - ( Bool( *this\_tabs( )\image\width And *this\_tabs( )\text\width ) * ( *this\text\x ))
+                *tab\_tabs( )\image\x = *tab\_tabs( )\x + Bool( *tab\_tabs( )\image\width ) * *tab\image\x ;+ Bool( *tab\_tabs( )\text\width ) * ( *tab\text\x )
+                *tab\_tabs( )\text\x  = *tab\_tabs( )\image\x + *tab\_tabs( )\image\width + *tab\text\x
+                *tab\_tabs( )\width   = Bool( *tab\_tabs( )\text\width ) * ( *tab\text\x * 2 ) + *tab\_tabs( )\text\width +
+                                         Bool( *tab\_tabs( )\image\width ) * ( *tab\image\x * 2 ) + *tab\_tabs( )\image\width - ( Bool( *tab\_tabs( )\image\width And *tab\_tabs( )\text\width ) * ( *tab\text\x ))
                 
-                *this\bar\max + *this\_tabs( )\width + Bool( *this\_tabs( )\index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( *this\_tabs( )\index = *this\count\items - 1 ) * layout
+                *tab\bar\max + *tab\_tabs( )\width + Bool( *tab\_tabs( )\index <> *tab\count\items - 1 ) - Bool(typ) * 2 + Bool( *tab\_tabs( )\index = *tab\count\items - 1 ) * layout
                 ;
-                If typ And *this\FocusedTabIndex( ) = *this\_tabs( )\index
-                  *this\_tabs( )\width + 4
-                  *this\_tabs( )\x - 2
+                If typ And *tab\FocusedTabIndex( ) = *tab\_tabs( )\index
+                  *tab\_tabs( )\width + 4
+                  *tab\_tabs( )\x - 2
                 EndIf
               EndIf
               
             Next
             
             ;
-            bar_Update( *this\bar, 2 )
+            bar_Update( *tab\bar, 2 )
             ; scroll to active tab
-            If *this\FocusedTab( ) And *this\FocusedTab( )\state\enter = #False
-              If *this\FocusedTab( )\state\focus =  - 1
-                *this\FocusedTab( )\state\focus = 1
-                Debug " tab max - " + *this\bar\max + " " + *this\width[#__c_inner] + " " + *this\bar\page\pos + " " + *this\bar\page\end
+            If *tab\FocusedTab( ) And *tab\FocusedTab( )\state\enter = #False
+              If *tab\FocusedTab( )\state\focus =  - 1
+                *tab\FocusedTab( )\state\focus = 1
+                Debug " tab max - " + *tab\bar\max + " " + *tab\width[#__c_inner] + " " + *tab\bar\page\pos + " " + *tab\bar\page\end
                 
-                Protected ThumbPos = *this\bar\max - ( *this\FocusedTab( )\x + *this\FocusedTab( )\width ) - 3 ; to right
-                ThumbPos = *this\bar\max - ( *this\FocusedTab( )\x + *this\FocusedTab( )\width ) - ( *this\bar\thumb\end - *this\FocusedTab( )\width ) / 2 - 3   ; to center
-                Protected ScrollPos = bar_page_pos_( *this\bar, ThumbPos )
-                ScrollPos          = bar_invert_page_pos_( *this\bar, ScrollPos )
-                *this\bar\page\pos = ScrollPos
+                Protected ThumbPos = *tab\bar\max - ( *tab\FocusedTab( )\x + *tab\FocusedTab( )\width ) - 3 ; to right
+                ThumbPos = *tab\bar\max - ( *tab\FocusedTab( )\x + *tab\FocusedTab( )\width ) - ( *tab\bar\thumb\end - *tab\FocusedTab( )\width ) / 2 - 3   ; to center
+                Protected ScrollPos = bar_page_pos_( *tab\bar, ThumbPos )
+                ScrollPos          = bar_invert_page_pos_( *tab\bar, ScrollPos )
+                *tab\bar\page\pos = ScrollPos
               EndIf
             EndIf
-            bar_Update( *this\bar, 0 )
+            bar_Update( *tab\bar, 0 )
             
-            *this\ChangeTabIndex( ) = #False
+            *tab\ChangeTabIndex( ) = #False
           EndIf
           
           ;
           ; drawin
           ;
-          If *this\bar\vertical
-            *BB2\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] + pos - *BB2\size ) / 2
-            *BB1\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] + pos - *BB1\size ) / 2
+          If *tab\bar\vertical
+            *BB2\x = *tab\x[#__c_frame] + ( *tab\width[#__c_frame] + pos - *BB2\size ) / 2
+            *BB1\x = *tab\x[#__c_frame] + ( *tab\width[#__c_frame] + pos - *BB1\size ) / 2
           Else
-            *BB2\y = *this\y[#__c_frame] + ( *this\height[#__c_frame] + pos - *BB2\size ) / 2
-            *BB1\y = *this\y[#__c_frame] + ( *this\height[#__c_frame] + pos - *BB1\size ) / 2
+            *BB2\y = *tab\y[#__c_frame] + ( *tab\height[#__c_frame] + pos - *BB2\size ) / 2
+            *BB1\y = *tab\y[#__c_frame] + ( *tab\height[#__c_frame] + pos - *BB1\size ) / 2
           EndIf
           
           
@@ -5181,53 +5248,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           
           ;           drawing_mode_alpha_( #PB_2DDrawing_Default )
-          ;                 color = *this\_parent( )\color\frame[0]
-          ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs-1, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+          ;                 color = *tab\_parent( )\color\frame[0]
+          ;                draw_box_( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_frame], *tab\_parent( )\width[#__c_frame], *tab\_parent( )\fs-1, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
           
           ; draw all visible items
-          ForEach *this\_tabs( )
-            draw_font_item_( *this, *this\_tabs( ), 0 )
+          ForEach *tab\_tabs( )
+            draw_font_item_( *tab, *tab\_tabs( ), 0 )
             
             ; real visible items
-            If *this\bar\vertical
-              *this\_tabs( )\visible = Bool( Not *this\_tabs( )\hide And
-                                             (( y + *this\_tabs( )\y + *this\_tabs( )\height ) > *this\y[#__c_inner] And
-                                              ( y + *this\_tabs( )\y ) < ( *this\y[#__c_inner] + *this\height[#__c_inner] ) ))
+            If *tab\bar\vertical
+              *tab\_tabs( )\visible = Bool( Not *tab\_tabs( )\hide And
+                                             (( y + *tab\_tabs( )\y + *tab\_tabs( )\height ) > *tab\y[#__c_inner] And
+                                              ( y + *tab\_tabs( )\y ) < ( *tab\y[#__c_inner] + *tab\height[#__c_inner] ) ))
             Else
-              *this\_tabs( )\visible = Bool( Not *this\_tabs( )\hide And
-                                             (( x + *this\_tabs( )\x + *this\_tabs( )\width ) > *this\x[#__c_inner] And
-                                              ( x + *this\_tabs( )\x ) < ( *this\x[#__c_inner] + *this\width[#__c_inner] ) ))
+              *tab\_tabs( )\visible = Bool( Not *tab\_tabs( )\hide And
+                                             (( x + *tab\_tabs( )\x + *tab\_tabs( )\width ) > *tab\x[#__c_inner] And
+                                              ( x + *tab\_tabs( )\x ) < ( *tab\x[#__c_inner] + *tab\width[#__c_inner] ) ))
             EndIf
             
             ;no &~ entered &~ focused
-            If *this\_tabs( )\visible And 
-               *this\_tabs( )\state\enter = #False And 
-               *this\_tabs( )\state\press = #False And
-               *this\_tabs( )\state\focus = #False
+            If *tab\_tabs( )\visible And 
+               *tab\_tabs( )\state\enter = #False And 
+               *tab\_tabs( )\state\press = #False And
+               *tab\_tabs( )\state\focus = #False
               
-              ;                ( *this\_tabs( )\state\enter = #False Or
-              ;                  *this\_tabs( )\state\press = #True ) And
-              ;                *this\_tabs( )\state\focus = #False
+              ;                ( *tab\_tabs( )\state\enter = #False Or
+              ;                  *tab\_tabs( )\state\press = #True ) And
+              ;                *tab\_tabs( )\state\focus = #False
               ;               
-              bar_item_draw_( *this, *this\_tabs( ), x, y, *BB3\round, [0] )
+              bar_item_draw_( *tab, *tab\_tabs( ), x, y, *BB3\round, [0] )
             EndIf
           Next
           
           ; draw mouse-enter visible item
-          If *this\EnteredTab( ) And
-             *this\EnteredTab( )\visible And
-             *this\EnteredTab( )\state\focus = #False
+          If *tab\EnteredTab( ) And
+             *tab\EnteredTab( )\visible And
+             *tab\EnteredTab( )\state\focus = #False
             
-            draw_font_item_( *this, *this\EnteredTab( ), 0 )
-            bar_item_draw_( *this, *this\EnteredTab( ), x, y, *BB3\round, [*this\EnteredTab( )\color\state] )
+            draw_font_item_( *tab, *tab\EnteredTab( ), 0 )
+            bar_item_draw_( *tab, *tab\EnteredTab( ), x, y, *BB3\round, [*tab\EnteredTab( )\color\state] )
           EndIf
           
           ; draw key-focus visible item
-          If *this\FocusedTab( ) And
-             *this\FocusedTab( )\visible
+          If *tab\FocusedTab( ) And
+             *tab\FocusedTab( )\visible
             
-            draw_font_item_( *this, *this\FocusedTab( ), 0 )
-            bar_item_draw_( *this, *this\FocusedTab( ), x, y, *BB3\round, [2] )
+            draw_font_item_( *tab, *tab\FocusedTab( ), 0 )
+            bar_item_draw_( *tab, *tab\FocusedTab( ), x, y, *BB3\round, [2] )
           EndIf
           
           
@@ -5235,95 +5302,95 @@ CompilerIf Not Defined( Widget, #PB_Module )
           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
           
           ; draw lines
-          If *this\FocusedTab( )
-            If *this\bar\vertical
-              color = *this\FocusedTab( )\color\frame[2]
+          If *tab\FocusedTab( )
+            If *tab\bar\vertical
+              color = *tab\FocusedTab( )\color\frame[2]
               ; frame on the selected item
-              If *this\FocusedTab( )\visible
-                Line( x + *this\FocusedTab( )\x, y + *this\FocusedTab( )\y, 1, *this\FocusedTab( )\height, color )
-                Line( x + *this\FocusedTab( )\x, y + *this\FocusedTab( )\y, *this\FocusedTab( )\width, 1, color )
-                Line( x + *this\FocusedTab( )\x, y + *this\FocusedTab( )\y + *this\FocusedTab( )\height - 1, *this\FocusedTab( )\width, 1, color )
+              If *tab\FocusedTab( )\visible
+                Line( x + *tab\FocusedTab( )\x, y + *tab\FocusedTab( )\y, 1, *tab\FocusedTab( )\height, color )
+                Line( x + *tab\FocusedTab( )\x, y + *tab\FocusedTab( )\y, *tab\FocusedTab( )\width, 1, color )
+                Line( x + *tab\FocusedTab( )\x, y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height - 1, *tab\FocusedTab( )\width, 1, color )
               EndIf
               
-              color = *this\color\frame[0]
+              color = *tab\color\frame[0]
               ; vertical tab right line
-              If *this\FocusedTab( )
-                Line( *this\x[#__c_frame] + *this\width[#__c_frame] - 1, *this\y[#__c_screen], 1, ( y + *this\FocusedTab( )\y ) - *this\x[#__c_frame], color ) ;*this\_tabs( )\color\fore[2] )
-                Line( *this\x[#__c_frame] + *this\width[#__c_frame] - 1, y + *this\FocusedTab( )\y + *this\FocusedTab( )\height, 1, *this\y[#__c_frame] + *this\height[#__c_frame] - ( y + *this\FocusedTab( )\y + *this\FocusedTab( )\height ), color ) ; *this\_tabs( )\color\fore[2] )
+              If *tab\FocusedTab( )
+                Line( *tab\x[#__c_frame] + *tab\width[#__c_frame] - 1, *tab\y[#__c_screen], 1, ( y + *tab\FocusedTab( )\y ) - *tab\x[#__c_frame], color ) ;*tab\_tabs( )\color\fore[2] )
+                Line( *tab\x[#__c_frame] + *tab\width[#__c_frame] - 1, y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height, 1, *tab\y[#__c_frame] + *tab\height[#__c_frame] - ( y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height ), color ) ; *tab\_tabs( )\color\fore[2] )
               Else
-                Line( *this\x[#__c_screen] + *this\width[#__c_screen] - 1, *this\y[#__c_screen], 1, *this\height[#__c_screen], color )
+                Line( *tab\x[#__c_screen] + *tab\width[#__c_screen] - 1, *tab\y[#__c_screen], 1, *tab\height[#__c_screen], color )
               EndIf
               
-              If is_integral_( *this )
-                color = *this\_parent( )\color\back[0]
+              If is_integral_( *tab )
+                color = *tab\_parent( )\color\back[0]
                 ; selected tab inner frame
-                Line( x + *this\FocusedTab( )\x + 1, y + *this\FocusedTab( )\y + 1, 1, *this\FocusedTab( )\height - 2, color )
-                Line( x + *this\FocusedTab( )\x + 1, y + *this\FocusedTab( )\y + 1, *BB3\width, 1, color )
-                Line( x + *this\FocusedTab( )\x + 1, y + *this\FocusedTab( )\y + *this\FocusedTab( )\height - 2, *BB3\width, 1, color )
+                Line( x + *tab\FocusedTab( )\x + 1, y + *tab\FocusedTab( )\y + 1, 1, *tab\FocusedTab( )\height - 2, color )
+                Line( x + *tab\FocusedTab( )\x + 1, y + *tab\FocusedTab( )\y + 1, *BB3\width, 1, color )
+                Line( x + *tab\FocusedTab( )\x + 1, y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height - 2, *BB3\width, 1, color )
                 
                 Protected size1 = 5
                 ;
-                ;Arrow( *this\x[#__c_screen] + selected_tab_pos + ( *this\FocusedTab( )\width - size1 )/2, *this\y[#__c_frame]+*this\height[#__c_frame] - 5, 11, $ff000000, 1, 1)
+                ;Arrow( *tab\x[#__c_screen] + selected_tab_pos + ( *tab\FocusedTab( )\width - size1 )/2, *tab\y[#__c_frame]+*tab\height[#__c_frame] - 5, 11, $ff000000, 1, 1)
                 
-                Arrow( x + *this\FocusedTab( )\x + ( *this\FocusedTab( )\width - size1 ),
-                       y + *this\FocusedTab( )\y + ( *this\FocusedTab( )\height - size1 ) / 2, size1, 0, color, -1 )
+                Arrow( x + *tab\FocusedTab( )\x + ( *tab\FocusedTab( )\width - size1 ),
+                       y + *tab\FocusedTab( )\y + ( *tab\FocusedTab( )\height - size1 ) / 2, size1, 0, color, -1 )
                 
                 
                 
-                color = *this\_parent( )\color\frame[0]
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                color = *tab\_parent( )\color\frame[0]
+                Line( *tab\_parent( )\x[#__c_inner] - 1, *tab\_parent( )\y[#__c_inner] - 1, *tab\_parent( )\width[#__c_inner] + 2, 1, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *tab\_parent( )\x[#__c_inner] - 1, *tab\_parent( )\y[#__c_inner] + *tab\_parent( )\height[#__c_inner], *tab\_parent( )\width[#__c_inner] + 2, 1, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *tab\_parent( )\x[#__c_inner] + *tab\_parent( )\width[#__c_inner], *tab\_parent( )\y[#__c_inner] - 1, 1, *tab\_parent( )\height[#__c_inner] + 2, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
               EndIf
             Else
               ; frame on the selected item
-              If *this\FocusedTab( )\visible
-                color = *this\FocusedTab( )\color\frame[2]
-                Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y, *this\FocusedTab( )\width, 1, color )
-                Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y, 1, *this\FocusedTab( )\height - *this\FocusedTab( )\y, color )
-                Line( x + *this\FocusedTab( )\x + *this\FocusedTab( )\width - 1, y + *this\FocusedTab( )\y, 1, *this\FocusedTab( )\height - *this\FocusedTab( )\y, color )
-                ;Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y + *this\FocusedTab( )\height - 1, *this\FocusedTab( )\width, 1, color )
+              If *tab\FocusedTab( )\visible
+                color = *tab\FocusedTab( )\color\frame[2]
+                Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y, *tab\FocusedTab( )\width, 1, color )
+                Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y, 1, *tab\FocusedTab( )\height - *tab\FocusedTab( )\y, color )
+                Line( x + *tab\FocusedTab( )\x + *tab\FocusedTab( )\width - 1, y + *tab\FocusedTab( )\y, 1, *tab\FocusedTab( )\height - *tab\FocusedTab( )\y, color )
+                ;Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height - 1, *tab\FocusedTab( )\width, 1, color )
                 ;color = $ffff00ff
-                ;Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y+*this\FocusedTab( )\height-1, *this\FocusedTab( )\width, 1, color )
-                ;Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y+*this\FocusedTab( )\height, *this\FocusedTab( )\width, 1, color )
-                ;Line( x + *this\FocusedTab( )\x , y + *this\FocusedTab( )\y+*this\FocusedTab( )\height+1, *this\FocusedTab( )\width, 1, color )
+                ;Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y+*tab\FocusedTab( )\height-1, *tab\FocusedTab( )\width, 1, color )
+                ;Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y+*tab\FocusedTab( )\height, *tab\FocusedTab( )\width, 1, color )
+                ;Line( x + *tab\FocusedTab( )\x , y + *tab\FocusedTab( )\y+*tab\FocusedTab( )\height+1, *tab\FocusedTab( )\width, 1, color )
               EndIf
               
-              color = *this\color\frame[0]
-              color = *this\_parent( )\color\frame[2]
+              color = *tab\color\frame[0]
+              color = *tab\_parent( )\color\frame[2]
               
               ; horizontal tab bottom line
-              If *this\FocusedTab( )
-                Line( *this\x[#__c_screen], *this\y[#__c_frame] + *this\height[#__c_frame] - 1, ( x + *this\FocusedTab( )\x ) - *this\x[#__c_frame], 1, color ) ;*this\_tabs( )\color\fore[2] )
-                Line( x + *this\FocusedTab( )\x + *this\FocusedTab( )\width, *this\y[#__c_frame] + *this\height[#__c_frame] - 1, *this\x[#__c_frame] + *this\width[#__c_frame] - ( x + *this\FocusedTab( )\x + *this\FocusedTab( )\width ), 1, color ) ; *this\_tabs( )\color\fore[2] )
+              If *tab\FocusedTab( )
+                Line( *tab\x[#__c_screen], *tab\y[#__c_frame] + *tab\height[#__c_frame] - 1, ( x + *tab\FocusedTab( )\x ) - *tab\x[#__c_frame], 1, color ) ;*tab\_tabs( )\color\fore[2] )
+                Line( x + *tab\FocusedTab( )\x + *tab\FocusedTab( )\width, *tab\y[#__c_frame] + *tab\height[#__c_frame] - 1, *tab\x[#__c_frame] + *tab\width[#__c_frame] - ( x + *tab\FocusedTab( )\x + *tab\FocusedTab( )\width ), 1, color ) ; *tab\_tabs( )\color\fore[2] )
               Else
-                Line( *this\x[#__c_screen], *this\y[#__c_frame] + *this\height[#__c_frame] - 1, *this\width[#__c_screen], 1, color )
+                Line( *tab\x[#__c_screen], *tab\y[#__c_frame] + *tab\height[#__c_frame] - 1, *tab\width[#__c_screen], 1, color )
               EndIf
               
-              If is_integral_( *this )
-                color = *this\_parent( )\color\back[0] ;*this\_parent( )\color\front[2]
+              If is_integral_( *tab )
+                color = *tab\_parent( )\color\back[0] ;*tab\_parent( )\color\front[2]
                                                        ; selected tab inner frame
-                Line( x + *this\FocusedTab( )\x + 1, y + *this\FocusedTab( )\y + 1, *this\FocusedTab( )\width - 2, 1, color )
-                Line( x + *this\FocusedTab( )\x + 1, y + *this\FocusedTab( )\y + 1, 1, *this\FocusedTab( )\height - 1, color )
-                Line( x + *this\FocusedTab( )\x + *this\FocusedTab( )\width - 2, y + *this\FocusedTab( )\y + 1, 1, *this\FocusedTab( )\height - 1, color )
-                ;Line( x + *this\FocusedTab( )\x +1, y + *this\FocusedTab( )\y + *this\FocusedTab( )\height-1, *this\FocusedTab( )\width-2, 1, color )
+                Line( x + *tab\FocusedTab( )\x + 1, y + *tab\FocusedTab( )\y + 1, *tab\FocusedTab( )\width - 2, 1, color )
+                Line( x + *tab\FocusedTab( )\x + 1, y + *tab\FocusedTab( )\y + 1, 1, *tab\FocusedTab( )\height - 1, color )
+                Line( x + *tab\FocusedTab( )\x + *tab\FocusedTab( )\width - 2, y + *tab\FocusedTab( )\y + 1, 1, *tab\FocusedTab( )\height - 1, color )
+                ;Line( x + *tab\FocusedTab( )\x +1, y + *tab\FocusedTab( )\y + *tab\FocusedTab( )\height-1, *tab\FocusedTab( )\width-2, 1, color )
                 
                 ;;drawing_mode_alpha_( #PB_2DDrawing_Default )
-                color = *this\_parent( )\color\frame[0]
-                ;Box( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs+*this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                color = *tab\_parent( )\color\frame[0]
+                ;Box( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_frame], *tab\_parent( )\width[#__c_frame], *tab\_parent( )\fs+*tab\_parent( )\fs[2], color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
                 
-                ; ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ; ;                draw_box_( *this\_parent( )\x[#__c_frame] + *this\_parent( )\width[#__c_frame] - (*this\_parent( )\fs + pos), *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner]+1, *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ; ;                draw_box_( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_inner] - *tab\_parent( )\fs, *tab\_parent( )\fs + pos, *tab\_parent( )\fs, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ; ;                draw_box_( *tab\_parent( )\x[#__c_frame] + *tab\_parent( )\width[#__c_frame] - (*tab\_parent( )\fs + pos), *tab\_parent( )\y[#__c_inner] - *tab\_parent( )\fs, *tab\_parent( )\fs + pos, *tab\_parent( )\fs, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_inner] - *tab\_parent( )\fs[2] - 1, *tab\_parent( )\fs-1, *tab\_parent( )\fs[2], color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *tab\_parent( )\x[#__c_inner] + *tab\_parent( )\width[#__c_inner]+1, *tab\_parent( )\y[#__c_inner] - *tab\_parent( )\fs[2] - 1, *tab\_parent( )\fs-1, *tab\_parent( )\fs[2], color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
                 ;
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_inner] - 1, *tab\_parent( )\fs, *tab\_parent( )\height[#__c_inner] + 2, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *tab\_parent( )\x[#__c_inner] + *tab\_parent( )\width[#__c_inner], *tab\_parent( )\y[#__c_inner] - 1, *tab\_parent( )\fs, *tab\_parent( )\height[#__c_inner] + 2, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *tab\_parent( )\x[#__c_frame], *tab\_parent( )\y[#__c_inner] + *tab\_parent( )\height[#__c_inner], *tab\_parent( )\width[#__c_frame], *tab\_parent( )\fs, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( )  <>-1 )*2 ] )
                 
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *tab\_parent( )\x[#__c_inner] - 1, *tab\_parent( )\y[#__c_inner] - 1, 1, *tab\_parent( )\height[#__c_inner] + 2, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *tab\_parent( )\x[#__c_inner] + *tab\_parent( )\width[#__c_inner], *tab\_parent( )\y[#__c_inner] - 1, 1, *tab\_parent( )\height[#__c_inner] + 2, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *tab\_parent( )\x[#__c_inner] - 1, *tab\_parent( )\y[#__c_inner] + *tab\_parent( )\height[#__c_inner], *tab\_parent( )\width[#__c_inner] + 2, 1, color);*tab\color\frame ) ; [Bool( *tab\TabWidget( )\FocusedTabIndex( ) <>-1 )*2 ] )
                 
               EndIf
             EndIf
@@ -5348,7 +5415,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           fabe_out = Size - button_size
           ;
-          If *this\bar\vertical
+          If *tab\bar\vertical
             ; to top
             If Not *BB2\hide
               fabe_pos = \y + ( size ) - \fs
@@ -5418,7 +5485,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Draw buttons
             If *BB2\color\fore <>  - 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              draw_gradient_( *this\bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
+              draw_gradient_( *tab\bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\color\state] & $FFFFFF | *BB2\color\_alpha << 24 )
@@ -5428,7 +5495,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Draw buttons
             If *BB1\color\fore <>  - 1
               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-              draw_gradient_( *this\bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
+              draw_gradient_( *tab\bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
             Else
               drawing_mode_alpha_( #PB_2DDrawing_Default )
               draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\color\state] & $FFFFFF | *BB1\color\_alpha << 24 )
@@ -5443,7 +5510,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Draw arrows
             If Not *BB1\hide And *BB1\arrow\size
-              draw_arrows_( *BB1, Bool( *this\bar\vertical ) + 2 )
+              draw_arrows_( *BB1, Bool( *tab\bar\vertical ) + 2 )
             EndIf
           EndIf
           If Not *BB2\hide
@@ -5451,7 +5518,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Draw arrows
             If *BB2\arrow\size
-              draw_arrows_( *BB2, Bool( *this\bar\vertical ))
+              draw_arrows_( *BB2, Bool( *tab\bar\vertical ))
             EndIf
           EndIf
           
@@ -6333,9 +6400,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ; set splitter pos to center
                     If *bar\fixed
                       If *bar\fixed = #__split_1
-                        *bar\button[*bar\fixed]\fixed = *bar\page\pos
+                        *bar\fixed[*bar\fixed] = *bar\page\pos
                       Else
-                        *bar\button[*bar\fixed]\fixed = *bar\page\end - *bar\page\pos
+                        *bar\fixed[*bar\fixed] = *bar\page\end - *bar\page\pos 
                       EndIf
                     EndIf
                   Else
@@ -6355,7 +6422,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\min )
             EndIf
             
-            *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] + bordersize )
+           *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] + bordersize ) ; [2]
+           ;  *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + bordersize ) ; так не уменшается 1 фиксированый
           EndIf
         EndIf
       EndIf
@@ -6365,7 +6433,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ get thumb pos
         If *bar\fixed And Not *bar\page\change
           If *bar\fixed = #__split_1
-            ThumbPos = *bar\button[*bar\fixed]\fixed
+            ThumbPos = *bar\fixed[*bar\fixed]
             
             If ThumbPos > *bar\area\end
               If *bar\min[1] < *bar\area\end
@@ -6380,7 +6448,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
           Else
-            ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\button[*bar\fixed]\fixed
+            ;ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[*bar\fixed] ;[2]
+            ThumbPos = *bar\area\end - *bar\fixed[*bar\fixed]                    ;[1]
             
             If ThumbPos < *bar\min[1]
               If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
@@ -6442,9 +6511,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ get fixed size
         If *bar\fixed And *bar\page\change
           If *bar\fixed = #__split_1
-            *BB1\fixed = *bar\thumb\pos
+            *bar\fixed[*bar\fixed] = *bar\thumb\pos
           Else
-            *BB2\fixed = *bar\area\len - *bar\thumb\len - *bar\thumb\pos
+            ; Debug "splitter - "+Str( *bar\area\len - *bar\thumb\len ) +" "+ Str( *bar\area\end + *bar\min[2] ) +" "+ *bar\area\end
+            ; *bar\fixed[*bar\fixed] = ( *bar\area\len - *bar\thumb\len ) - *bar\thumb\pos ;[2]
+            ; *bar\fixed[*bar\fixed] = ( *bar\area\end + *bar\min[2] ) - *bar\thumb\pos    ;[2]
+            *bar\fixed[*bar\fixed] = *bar\area\end - *bar\thumb\pos                        ;[1]
           EndIf
         EndIf
         
@@ -7687,176 +7759,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure bar_AtPointTabs( *this._S_widget, eventtype.l, mouse_x.l =  - 1, mouse_y.l =  - 1 )
-      Protected repaint, *tab._S_ROWS
-      
-      ;
-      Protected._s_BUTTONS *BB1, *BB2, *BB3
-      *BB1 = *this\bar\button[#__b_1]
-      *BB2 = *this\bar\button[#__b_2]
-      *BB3 = *this\bar\button[#__b_3]
-      
-      ;\\ get at point items if enter inner coordinate                           ;
-      If *this\state\enter = 2 
-        If ListSize( *this\_tabs( ) )
-          If Not ( *this\EnteredTab( ) And
-                   *this\EnteredTab( )\visible And
-                   *this\EnteredTab( )\hide = 0 And 
-                   ( ( *this\state\enter And is_at_point_( *this\EnteredTab( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_x_( *this\EnteredTab( ), mouse_x )) ))
-            
-            ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
-            ; search entered item
-            LastElement( *this\_tabs( ))
-            Repeat
-              If *this\_tabs( )\visible And
-                 *this\_tabs( )\hide = 0 And
-                 ( ( *this\state\enter And is_at_point_( *this\_tabs( ), mouse_x, mouse_y )) Or
-                   ( *this\state\drag And is_at_point_x_( *this\_tabs( ), mouse_x )) )
-                *tab = *this\_tabs( )
-                Break
-              EndIf
-            Until PreviousElement( *this\_tabs( )) = #False
-          Else
-            *tab = *this\EnteredTab( )
-          EndIf
-        EndIf
-      EndIf
-      
-      ; change enter/leave state
-      If *this\EnteredTab( ) <> *tab And Not *this\state\drag
-        ;\\ leaved tabs
-        If *this\EnteredTab( )
-          If *this\EnteredTab( )\state\enter = #True
-            *this\EnteredTab( )\state\enter = #False
-            
-            If *this\EnteredTab( )\color\state = #__S_1
-              *this\EnteredTab( )\color\state = #__S_0
-            EndIf
-            
-            *this\state\repaint = #True
-          EndIf
-        EndIf
-        
-        *this\EnteredTab( ) = *tab
-        
-        ;\\ entered tabs
-        If *this\EnteredTab( )
-          If *this\state\enter
-            If *this\EnteredTab( )\state\enter = #False
-              *this\EnteredTab( )\state\enter = #True
-              
-              If *this\EnteredTab( )\color\state = #__S_0
-                *this\EnteredTab( )\color\state = #__S_1
-              EndIf
-              
-              *this\state\repaint = #True
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-    EndProcedure
-    
     Procedure bar_Events( *this._S_widget, eventtype.l, *button._S_buttons, *data )
       Protected Repaint
       Protected._s_BUTTONS *BB0, *BB1, *BB2, *BB3
       *BB1 = *this\bar\button[#__b_1]
       *BB2 = *this\bar\button[#__b_2]
       *BB3 = *this\bar\button[#__b_3]
-      
-      ;\\ buttons events
-      Select eventtype
-        Case #__event_MouseEnter,
-             #__event_MouseLeave,
-             #__event_MouseMove,
-             #__event_Focus,
-             #__event_LostFocus,
-             #__event_Down,
-             #__event_Up
-          
-          Protected mouse_x, mouse_y
-          
-          If *this\bar
-            ;\\ get at-point-button address
-            If *this\state\enter
-              If Not ( EnteredButton( ) And
-                       EnteredButton( )\hide = 0 And
-                       is_at_point_( EnteredButton( ), mouse( )\x, mouse( )\y ))
-                
-                ; search entered button
-                If *BB1\interact And *BB1\hide = 0 And
-                   is_at_point_( *BB1, mouse( )\x, mouse( )\y )
-                  
-                  *BB0 = *BB1
-                ElseIf *BB2\interact And *BB2\hide = 0 And
-                       is_at_point_( *BB2, mouse( )\x, mouse( )\y )
-                  
-                  *BB0 = *BB2
-                ElseIf *BB3\interact And *BB3\hide = 0 And
-                       is_at_point_( *BB3, mouse( )\x, mouse( )\y, )
-                  
-                  *BB0 = *BB3
-                EndIf
-              Else
-                *BB0 = EnteredButton( )
-              EndIf
-            EndIf
-            
-            ;\\ do buttons events entered & leaved
-            If EnteredButton( ) <> *BB0
-              If EnteredButton( )
-                If EnteredButton( )\state\enter = #True
-                  EnteredButton( )\state\enter = #False
-                  
-                  If EnteredButton( )\color\state = #__S_1
-                    EnteredButton( )\color\state = #__S_0
-                  EndIf
-                  
-                  ;                   ;\\
-                  ;                   If *this\type = #__Type_Splitter
-                  ;                     If *this\state\enter = 2
-                  ;                        *this\state\enter = 1
-                  ;                     EndIf
-                  ;                   EndIf
-                  
-                  *this\state\repaint = #True
-                EndIf
-              EndIf
-              
-              EnteredButton( ) = *BB0
-              
-              If EnteredButton( )
-                If *this\state\enter
-                  If EnteredButton( )\state\enter = #False
-                    EnteredButton( )\state\enter = #True
-                    
-                    If EnteredButton( )\color\state = #__S_0
-                      EnteredButton( )\color\state = #__S_1
-                    EndIf
-                    
-                    ;                     ;\\
-                    ;                     If *this\type = #__Type_Splitter
-                    ;                       If *this\state\enter = 1
-                    ;                          *this\state\enter = 2
-                    ;                       EndIf
-                    ;                     EndIf
-                    
-                    *this\state\repaint = #True
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ;\\
-            If *this\tab
-              mouse_x = mouse( )\x - *BB3\x
-              mouse_y = mouse( )\y - *BB3\y
-              
-              bar_AtPointTabs( *this, eventtype, mouse_x, mouse_y )
-            EndIf
-          EndIf
-      EndSelect
       
       ;\\
       If eventtype = #__event_Down
@@ -13503,6 +13411,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           result = bar_SetState( *this\bar, state )
       EndSelect
       
+      PostCanvasRepaint( *this\_root( ) )
       ProcedureReturn result
     EndProcedure
     
@@ -15360,10 +15269,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     ;-  CREATEs
     Procedure.i Create( *parent._S_widget, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 7, ScrollStep.f = 1.0 )
-      If Root( )\canvas\ResizeBeginWidget
+      Protected *root._s_root = Root( )  ; @*canvas\_roots( ) ;
+      If *root\canvas\ResizeBeginWidget
         ; Debug "   end - resize " + #PB_Compiler_Procedure
-        Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-        Root( )\canvas\ResizeBeginWidget = #Null
+        Post( *root\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+        *root\canvas\ResizeBeginWidget = #Null
       EndIf
       
       Protected color, image;, *this.allocate( Widget )
@@ -15373,10 +15283,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Not ListSize(EnumWidget())
         x                = 0
         y                = 0
-        width            = Root( )\width
-        height           = Root( )\height
-        Root( )\autosize = #True
-        *this            = Root( )
+        width            = *root\width
+        height           = *root\height
+        *root\autosize = #True
+        *this            = *root
       Else
         *this.allocate( Widget )
       EndIf
@@ -15456,21 +15366,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       If *parent
-        ;         ;\\
-        ;         If *this\type = #__Type_Option
-        ;           PushListPosition(Root( )\_widgets( ))
-        ;           If Root( )\count\childrens
-        ;             If Root( )\_widgets( )\type = #__Type_Option
-        ;               *this\OptionGroupWidget = Root( )\_widgets( )\OptionGroupWidget
-        ;             Else
-        ;               *this\OptionGroupWidget = Root( )\_widgets( )
-        ;             EndIf
-        ;           Else
-        ;             *this\OptionGroupWidget = OpenedWidget( )
-        ;           EndIf
-        ;           PopListPosition(Root( )\_widgets( ))
-        ;         EndIf
-        
         ;\\
         If flag & #__flag_autosize = #__flag_autosize
           If *parent\type <> #__Type_Splitter
@@ -16224,7 +16119,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;           EndIf
       ;         EndIf
       
-      PostCanvasRepaint( Root( ), #__event_Create)
+      ;; Debug ""+*this\class+" "+*this\_root( )
+      If *this\_root( )
+        PostCanvasRepaint( *this\_root( ), #__event_Create)
+      EndIf
       
       ProcedureReturn *this
     EndProcedure
@@ -18450,7 +18348,87 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\state\repaint = #True
         EndSelect
         
-        ;\\ items events
+            
+            
+       
+      ;\\ buttons events
+      Select eventtype
+        Case #__event_MouseEnter,
+             #__event_MouseLeave,
+             #__event_MouseMove,
+             #__event_Focus,
+             #__event_LostFocus,
+             #__event_Down,
+             #__event_Up
+          
+          If *this\bar
+            Protected._s_BUTTONS *BB0, *BB1, *BB2, *BB3
+            *BB1 = *this\bar\button[#__b_1]
+            *BB2 = *this\bar\button[#__b_2]
+            *BB3 = *this\bar\button[#__b_3]
+            
+            ;\\ get at-point-button address
+            If Not ( EnteredButton( ) And
+                     EnteredButton( )\hide = 0 And
+                     is_at_point_( EnteredButton( ), mouse( )\x, mouse( )\y ))
+              
+              ; search entered button
+              If *BB1\interact And *BB1\hide = 0 And
+                 is_at_point_( *BB1, mouse( )\x, mouse( )\y )
+                
+                *BB0 = *BB1
+              ElseIf *BB2\interact And *BB2\hide = 0 And
+                     is_at_point_( *BB2, mouse( )\x, mouse( )\y )
+                
+                *BB0 = *BB2
+              ElseIf *BB3\interact And *BB3\hide = 0 And
+                     is_at_point_( *BB3, mouse( )\x, mouse( )\y, )
+                
+                *BB0 = *BB3
+              EndIf
+            Else
+              *BB0 = EnteredButton( )
+            EndIf
+            
+            ;\\ do buttons events entered & leaved
+            If EnteredButton( ) <> *BB0
+              If EnteredButton( )
+                If EnteredButton( )\state\enter = #True
+                  EnteredButton( )\state\enter = #False
+                  
+                  If EnteredButton( )\color\state = #__S_1
+                    EnteredButton( )\color\state = #__S_0
+                  EndIf
+                  
+                  *this\state\repaint = #True
+                EndIf
+              EndIf
+              
+              EnteredButton( ) = *BB0
+              
+              If EnteredButton( )
+                If *this\state\enter
+                  If EnteredButton( )\state\enter = #False
+                    EnteredButton( )\state\enter = #True
+                    
+                    If EnteredButton( )\color\state = #__S_0
+                      EnteredButton( )\color\state = #__S_1
+                    EndIf
+                    
+                    *this\state\repaint = #True
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+           EndIf
+           
+            ;\\
+            If *this\tab
+              bar_tab_AtPoint( *this, eventtype, mouse( )\x, mouse( )\y )
+            EndIf
+      EndSelect
+      
+      ;\\ items events
         Select eventtype
           Case #__event_MouseEnter,
                #__event_MouseLeave,
@@ -18463,9 +18441,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #__event_Left3Click,
                #__event_LeftClick
             
-            Protected mouse_x, mouse_y
-            
+           
             If *this\row
+              Protected mouse_x, mouse_y
               mouse_x = mouse( )\x - *this\x[#__c_inner] ; - scroll_x_( *this )
               mouse_y = mouse( )\y - *this\y[#__c_inner] - scroll_y_( *this )
               
@@ -18638,11 +18616,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\ cursor change
       Select eventtype
-        Case #__event_MouseEnter, #__event_MouseMove, #__event_Up, #__event_Drop
+        Case #__event_MouseEnter, #__event_MouseMove, #__event_Up;, #__event_Drop
           If PressedWidget( ) And 
              mouse( )\buttons And
-             eventtype <> #__event_Up And 
-             eventtype <> #__event_Drop
+             eventtype <> #__event_Up ;And eventtype <> #__event_Drop
             
             If mouse( )\cursor <> PressedWidget( )\cursor 
               Debug " cursor-press-change - "+mouse( )\cursor +" >> "+ PressedWidget( )\cursor
@@ -18882,7 +18859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected Repaint, mouse_x , mouse_y
       
       ;       If eventtype = #__event_Create
-      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
+      ;         If IsGadget( Canvas ) And GadgetType( Canvas ) = #pb_gadgetType_Canvas
       ;           ChangeCurrentRoot( GadgetID( Canvas ) )
       ;         EndIf
       ;       EndIf
@@ -18917,8 +18894,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If eventtype = #__event_MouseEnter
-        If Not mouse( )\interact
-          If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
+        If Not mouse( )\interact 
+          If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
             ChangeCurrentRoot( GadgetID( Canvas ) )
           EndIf
         EndIf
@@ -18926,7 +18903,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If eventtype = #__event_Repaint ; = 262150
-        If IsGadget( Canvas ) And GadgetType( Canvas ) = #__Type_Canvas
+        If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
           PushMapPosition( Root( ) )
           If ChangeCurrentRoot( GadgetID( Canvas ) )
             
@@ -19487,15 +19464,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     
-    
     ;-
     Procedure.i CloseList( )
       Protected *open._s_WIDGET
       ; Debug "close - "+OpenedWidget( )\index;text\string
       
       If OpenedWidget( ) And
-         OpenedWidget( )\_parent( ) And
-         OpenedWidget( )\_root( )\canvas\gadget = Root( )\canvas\gadget
+         OpenedWidget( )\_parent( ) ;; And OpenedWidget( )\_root( )\canvas\gadget = Root( )\canvas\gadget ; проблема при добавлении окон
         
         If OpenedWidget( )\_parent( )\type = #__Type_MDI
           *open = OpenedWidget( )\_parent( )\_parent( )
@@ -19775,21 +19750,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent._S_widget = 0 )
       ;Protected *this.allocate( Widget )
+      Protected *root._s_root = OpenedWidget( )\_root( )
+      Protected MapSize = MapSize( root( ) )
       
       With *this
         Static pos_x.l, pos_y.l
         
         Protected *this._S_widget
-        If MapSize( Root( ) ) And 
+        If MapSize And 
            Not ListSize( EnumWidget( ) ) And
            Flag & #__flag_autosize = #__flag_autosize
           
           x                = 0
           y                = 0
-          width            = Root( )\width
-          height           = Root( )\height
-          Root( )\autosize = #True
-          *this            = Root( )
+          width            = *root\width
+          height           = *root\height
+          *root\autosize = #True
+          *this            = *root
         Else
           *this.allocate( Widget )
         EndIf
@@ -19882,7 +19859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If y = #PB_Ignore : If a_transform( ) : y = pos_y + a_transform( )\grid\size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
         
         ; open root list
-        If Not MapSize( Root( ))
+        If Not MapSize
           If Popup( *this, x, y, width + *this\fs * 2, height + *this\fs * 2 + *this\barHeight, Flag, *parent )
             x = 0
             y = 0
@@ -19891,12 +19868,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If *parent
-          If Root( ) = *parent
-            Root( )\_parent( ) = *this
+          If *root = *parent
+            *root\_parent( ) = *this
           EndIf
           
         Else
-          *parent = Root( )
+          *parent = *root
         EndIf
         
         If *parent
@@ -19922,7 +19899,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           SetActive( *this )
         EndIf
         
-        PostCanvasRepaint( Root( ), #__event_Create)
+        PostCanvasRepaint( *this\_root( ), #__event_Create)
       EndWith
       
       ProcedureReturn *this
@@ -20828,6 +20805,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   OpenList( *root4 )
   For i = 1 To 4
     Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget) 
+    ;Container(5, y, 150, 95 + 2) 
     If i = 2
       Disable( widget(), 1)
     EndIf
@@ -20853,6 +20831,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
       Disable( widget(), 1)
     EndIf
     CloseList( )                                                                                       
+    ;CloseList( )                                                                                       
     y + 130
   Next
   
@@ -20861,5 +20840,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------4+8--e------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8b-4v0v-P------------------------------
+; Folding = ------------------------------------4+8--e-----------------Vv-v-----------P---------------------------------------0------0-----------------vf9-r6WY+------------------------------+------------------------------------------------------------------------------------------------------------------------------------------+fv5--9-------------------------------------------------------+02---vi----------------------------------------------------0------------------vf8fff+--h--------------------------
 ; EnableXP

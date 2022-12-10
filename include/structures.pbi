@@ -229,16 +229,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;       *cursor
     ;       color._s_color;[4]
     ;     Endstructure
-    ;--     buttons
-    Structure _s_BUTTONS Extends _s_coordinate 
+    ;--     BUTTONS
+    Structure _s_BUTTONS Extends _s_COORDINATE
       state._s_state
-       index.l ; - anchors
+       
+      index.l ; - anchors
       *cursor ; anchor buttons
       
-      size.l 
       ___state.l  ; temp
       
-      fixed.l 
+      size.l 
       
       hide.b
       round.a
@@ -349,8 +349,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _s_BAR
       *widget._s_WIDGET
       
-      fixed.l ; splitter fixed button index  
-              ;;mode.i ;;; temp
+      fixed.l[3] ; splitter fixed button index  
+              
       
       max.l
       min.l[3]

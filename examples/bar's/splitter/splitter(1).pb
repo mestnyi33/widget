@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   widget::Open(0);, 0, 0, 510, 340)
   
-  ; first splitter
+  ;\\ gadget
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
   ButtonGadget(2, 0, 0, 0, 0, "BTN2")
   SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
@@ -39,8 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
   
   
-  
-  ; first splitter
+  ;\\ widget
   b_0 = widget::Button(0, 0, 0, 0, "BTN1")
   b_1 = widget::Button(0, 0, 0, 0, "BTN2")
   s_0 = widget::Splitter(125, 170, 250, 70, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
@@ -50,6 +49,12 @@ CompilerIf #PB_Compiler_IsMainFile
   s_1 = widget::Splitter(125, 170+80, 250, 70, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
+  
+  ;\\ state
+  SetGadgetState(3, 10)
+  SetGadgetState(6, 250-#__splitter_buttonsize-10)
+  SetState(s_0, 10)
+  SetState(s_1, 250-#__splitter_buttonsize-10)
   
   Define event
   Repeat

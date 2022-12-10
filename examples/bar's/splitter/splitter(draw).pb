@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -28,22 +29,36 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetGadgetState(Splitter_1, 20)
       
+;       HideGadget(Button_0, 1 ) 
+;       HideGadget(Button_1, 1 ) 
+;       HideGadget(Button_2, 1 ) 
+;       HideGadget(Button_3, 1 ) 
+;       HideGadget(Button_4, 1 ) 
+;       HideGadget(Button_5, 1 ) 
+      
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-;       Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-;       Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-;       
-;       Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-;       Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-;       Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-;       Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       
-      Button_0 = 0
-      Button_1 = 0
-      Button_2 = 0
-      Button_3 = 0
-      Button_4 = 0
-      Button_5 = 0
+      Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+      Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+      Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+      Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      
+      Hide(Button_0, 1 ) 
+      Hide(Button_1, 1 ) 
+      Hide(Button_2, 1 ) 
+      Hide(Button_3, 1 ) 
+      Hide(Button_4, 1 ) 
+      Hide(Button_5, 1 ) 
+
+;       Button_0 = 0
+;       Button_1 = 0
+;       Button_2 = 0
+;       Button_3 = 0
+;       Button_4 = 0
+;       Button_5 = 0
       
       Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_FirstFixed) ; #PB_Splitter_Vertical|
       Splitter_1 = Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)

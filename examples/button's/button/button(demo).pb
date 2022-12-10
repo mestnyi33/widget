@@ -62,6 +62,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetGadgetState( 5, 1 )
     SetGadgetFont( 5, FontID( 0 ) )
+    
+;     ; set default button cell
+;     #NSRoundedBezelStyle = 1 ; for default button
+;     #NSRightTextAlignment = 1; for right align string gadget
+;     Define ButtonCell = CocoaMessage(0,GadgetID(3),"cell")
+;     CocoaMessage(0,GadgetID(3),"setBezelStyle:", #NSRoundedBezelStyle)
+;     ;CocoaMessage(0,WindowID(main),"setDefaultButtonCell:", ButtonCell)
+   
     For i = 0 To 5
       BindGadgetEvent( i, @events_gadgets( ) )
     Next
@@ -139,8 +147,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 136
-; FirstLine = 111
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

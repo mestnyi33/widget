@@ -1,10 +1,9 @@
 ﻿;
 ; example demo resize draw splitter - OS gadgets
 ; 
-
+; есть различие 
 ;XIncludeFile "../../../widgets.pbi"
-;XIncludeFile "../../../widgets-splitter.pbi"
-XIncludeFile "../../../-widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
 
 
 ;- EXAMPLE

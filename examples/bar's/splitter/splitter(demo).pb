@@ -1,4 +1,6 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿;XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../widget-events.pbi"
+Uselib(widget)
 
 Procedure events_gadgets()
   ClearDebugOutput()
@@ -13,12 +15,12 @@ EndProcedure
 
 Procedure events_widgets()
   ClearDebugOutput()
-  ; Debug ""+Str(this()\widget\index - 1)+ " - widget  event - " +this()\event+ "  state - " GetState(this()\widget) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\event+ "  state - " GetState(EventWidget( )) ; 
   
-  Select this()\event
+  Select WidgetEventType( )
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -53,6 +55,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_Sys
 ;       EndIf
 ;     Until event = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

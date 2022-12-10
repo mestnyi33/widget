@@ -6057,7 +6057,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ; get thumb pos
       If *bar\fixed And Not *bar\page\change
         If *bar\fixed = #__split_1
-          ThumbPos = *bar\button[*bar\fixed]\fixed
+          ThumbPos = *bar\fixed[*bar\fixed]
           
           If ThumbPos > *bar\area\end
             If *bar\min[1] < *bar\area\end
@@ -6072,7 +6072,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
           
         Else 
-          ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\button[*bar\fixed]\fixed
+          ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[*bar\fixed]
           
           If ThumbPos < *bar\min[1]
             If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
@@ -6129,9 +6129,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ; get fixed size
       If *bar\fixed And *bar\page\change
         If *bar\fixed = #__split_1
-          *bar\button[#__split_1]\fixed = *bar\thumb\pos
+          *bar\fixed[#__split_1] = *bar\thumb\pos
         Else
-          *bar\button[#__split_2]\fixed = *bar\area\len - *bar\thumb\len - *bar\thumb\pos
+          *bar\fixed[#__split_2] = *bar\area\len - *bar\thumb\len - *bar\thumb\pos
         EndIf
       EndIf
       
@@ -6884,9 +6884,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
                 ; set splitter pos to center
                 If *bar\fixed
                   If *bar\fixed = #__split_1
-                    *bar\button[*bar\fixed]\fixed = *bar\page\pos
+                    *bar\fixed[*bar\fixed] = *bar\page\pos
                   Else
-                    *bar\button[*bar\fixed]\fixed = *bar\page\end - *bar\page\pos
+                    *bar\fixed[*bar\fixed] = *bar\page\end - *bar\page\pos
                   EndIf
                 EndIf
               Else

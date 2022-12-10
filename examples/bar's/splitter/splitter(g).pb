@@ -2,6 +2,7 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
+;XIncludeFile "../../../widgets.pbi"
 XIncludeFile "../../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -29,9 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
       SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-      
-;       SetGadgetState(Splitter_1, 20)
-      
+     
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
       ; Button_0 = widget::Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -53,9 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2)
       Splitter_4 = widget::Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
-;       widget::SetState(Splitter_1, 20)
-;       ;widget::SetState(Splitter_1, 410-20)
-      
+;       SetState(Splitter_0, Width(Splitter_0)/2-5)
+;       SetState(Splitter_1, Width(Splitter_1)/2-5)
+     
       TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     EndIf
     
