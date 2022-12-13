@@ -41,6 +41,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; toolbar buttons
   Enumeration 
+    #_tb_group_select = 1
+    
     #_tb_group_left = 3
     #_tb_group_right
     #_tb_group_top
@@ -632,6 +634,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;-
+  Macro ToolBar( parent, flag = #PB_ToolBar_Small )
+    Container( 0,0,0,0 ) 
+  EndMacro
+  
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
     ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
     ;widget( )\color = widget( )\_parent( )\color
@@ -976,13 +982,10 @@ CompilerIf #PB_Compiler_IsMainFile
     canvas_ide = widget::GetGadget( root )
     
     
-    toolbar_design = Container( 0,0,0,0 ) 
-    ;ToolBar( toolbar, window, flags )
-    
-    group_select = ToolBarButton( 1, - 1, #__button_Toggle )
+    toolbar_design = ToolBar( toolbar_design )
+    group_select = ToolBarButton( #_tb_group_select, - 1, #__button_Toggle )
     SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
     SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
-    
     Separator( )
     ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
     ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
@@ -1248,5 +1251,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f+-----H--fp-f0
+; Folding = -----f+------+--S--7
 ; EnableXP

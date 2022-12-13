@@ -261,15 +261,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       hide.b
     EndStructure
     
-    ;--     tabs
+    ;--     TABS
     Structure _s_TABS ;extends _s_coordinate
-      state._s_state
-      
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[constants::#__c]
       width.l[constants::#__c]
-      ; transporent.b
+      
+      state._s_state
       
       index.l  ; Index of new list element
       hide.b
@@ -283,9 +282,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       checkbox._s_buttons ; \box[1]\ -> \checkbox\
     EndStructure
     
-    ;--     rows
-    Structure _s_rowS Extends _s_TABS
-      ;;state._s_state
+    ;--     ROWS
+    Structure _s_ROWS Extends _s_TABS
       count._s_count
       
       sublevel.w
@@ -305,16 +303,28 @@ CompilerIf Not Defined(Structures, #PB_Module)
       margin._s_edit
       
       *data  ; set/get item data
-      
-      
     EndStructure
+    
     Structure _s_VISIBLEITEMS
       *first._s_rows           ; first draw-elemnt in the list 
       *last._s_rows            ; last draw-elemnt in the list 
       List *_s._s_rows( )      ; all draw-elements
     EndStructure
-    ;--     row
-    Structure _s_row
+    
+    ;--     TAB
+    Structure _s_TAB
+      *widget._s_WIDGET
+      index.i 
+      change.b
+      
+      ; tab
+      *entered._s_rows 
+      *pressed._s_rows
+      *focused._s_rows 
+    EndStructure
+    
+    ;--     ROW
+    Structure _s_ROW
       sublevel.w
       sublevelsize.a
       
@@ -347,10 +357,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     BAR
     Structure _s_BAR
-      *widget._s_WIDGET
+      *widget._s_WIDGET ; TEMP
       
       fixed.l[3] ; splitter fixed button index  
-              
       
       max.l
       min.l[3]
@@ -560,19 +569,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *_call._s_eventbind( ) ; TEMP
     EndStructure
     
-    ;--     TAB
-    Structure _s_TAB
-      index.i 
-      change.b
-      
-      ; tab
-      *pressed._s_rows ; _get_bar_active_item_
-      *active._s_rows ; _get_bar_active_item_
-      *entered._s_rows  ; _get_bar_active_item_
-      
-      *widget._s_WIDGET
-    EndStructure
-    
     ;--     PARENT
     Structure _s_PARENT
       ;*row._s_rowS
@@ -618,15 +614,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *bar._s_BAR
       *row._s_ROW ; multi-text; buttons; lists; - gadgets
       *_box_._s_BUTTONS ; checkbox; optionbox
-      *OptionGroupWidget._s_WIDGET  ; option group widget  
       
       tab._s_TAB        
       scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
-      ;StructureUnion
-        *_popup._s_WIDGET  ; = ComboBox( ) listView gadget
-        *_string._s_WIDGET  ; = SpinBar( ) String gadget
-      ;EndStructureUnion
+      *GroupWidget._s_WIDGET      ; = Option( ) group widget  
+                                  ; StructureUnion
+      ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
+      *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
+      *StringWidget._s_WIDGET     ; = SpinBar( ) string box
+      ;*VerticalWidget._s_WIDGET   ; = ScrollArea( ) vertical bar widget
+      ;*HorizontalWidget._s_WIDGET ; = ScrollArea( ) horizontal bar widget
+                                  ; EndStructureUnion
       
       _a_mode.i
       _a_transform.b ; add anchors on the widget (to size and move)
@@ -736,10 +735,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *events._s_eventdata( )    ; 
     EndStructure
     
-    ;--     sticky
-    Structure _s_sticky
+    ;--     STICKY
+    Structure _s_STICKY
+      *window._s_ROOT  ; top level root window element
       *widget._s_WIDGET  ; popup gadget element
-      *window._s_WIDGET  ; top level window element
       *message._s_WIDGET ; message window element
       *tooltip._s_WIDGET ; tool tip element
     EndStructure
@@ -759,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *root._s_ROOT       ; 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
-      sticky._s_sticky              ; sticky( )\
+      STICKY._s_STICKY              ; Sticky( )\
       
       *widget._s_WIDGET             ; eventwidget( )\ 
       event._s_eventdata            ; widgetevent( )\ ; \type ; \item ; \data
@@ -785,5 +784,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------
+; Folding = ----6-----
 ; EnableXP

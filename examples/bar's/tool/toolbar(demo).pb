@@ -17,7 +17,8 @@
 ;                        GetItemImage( *address, item ) - 
 ;                 SetItemImage( *address, item, image ) - 
 
-XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../widget-events.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -27,14 +28,13 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    ;*parent\MenuBarHeight = 32;+2 + 6
     *parent\ToolBarHeight = 32;+2 + 6
-    *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
-    ;*parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
+                              ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+    *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
     ProcedureReturn *parent\tab\widget
   EndProcedure
-    
+  
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
     If widget( )\tab\widget
       AddItem( widget( )\tab\widget, _button_, _text_, _image_, _mode_)
@@ -47,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndMacro
   
-  Macro DisableButton( _this_, _button_, _state_ )
-    
+  Macro DisableButton( _address_, _button_, _state_ )
+   ; DisableItem( _address_, _button_, _state_ )
   EndMacro
   
   
@@ -105,10 +105,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       ; ToolTip(*toolbar, 6, "Find a document")
     EndIf
-       
+    
     DisableButton(*toolbar, 2, 1) ; Disable the button '2'
-       
-    Bind( root( ), #PB_Default )
+    
+    ;  Bind( root( ), #PB_Default )
   EndIf
   
   
@@ -132,5 +132,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = j-
+; Folding = --
 ; EnableXP

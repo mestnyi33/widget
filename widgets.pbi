@@ -192,6 +192,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
     
     ;-
+    Macro OptionBox( ): GroupWidget: EndMacro
     Macro TabIndex( ): tab\index: EndMacro ; bar\index
     Macro OpenedTabIndex( ): index[#__tab_1]: EndMacro      ; parent\
     Macro ChangeTabIndex( ): tab\change: EndMacro ; bar\change_tab_items
@@ -347,7 +348,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;     Macro _get_bar_enter_item_( _this_ ): _this_\bar\entered: EndMacro ; Returns mouse entered widget
 ;     Macro _get_bar_active_item_( _this_ ): _this_\bar\active: EndMacro ; Returns mouse entered widget
     Macro _get_bar_enter_item_( _this_ ): _this_\tab\entered: EndMacro ; Returns mouse entered widget
-    Macro _get_bar_active_item_( _this_ ): _this_\tab\active: EndMacro ; Returns mouse entered widget
+    Macro _get_bar_active_item_( _this_ ): _this_\tab\focused: EndMacro ; Returns mouse entered widget
     
     Macro GetActive( ): keyboard( )\window: EndMacro   ; Returns activeed window
     Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
@@ -5877,7 +5878,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             x = \bar\button[#__b_3]\x + Bool( \bar\invert )*( \bar\button[#__b_3]\width - 3 + 4 ) - 2
             y = *this\y + \bar\area\pos + \bar\button[#__b_3]\size/2  
             
-            If \bar\widget\flag & #PB_TrackBar_Ticks
+            If *this\flag & #PB_TrackBar_Ticks
               For i = 0 To \bar\page\end
                 Line( x, y + _bar_thumb_pos_( *this\bar, i ),6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,1,\bar\button[#__b_3]\color\frame )
               Next
@@ -5890,7 +5891,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             x = *this\x + \bar\area\pos + \bar\button[#__b_3]\size/2 
             y = \bar\button[#__b_3]\y + Bool( Not \bar\invert )*( \bar\button[#__b_3]\height - 3 + 4 ) - 2
             
-            If \bar\widget\flag & #PB_TrackBar_Ticks
+            If *this\flag & #PB_TrackBar_Ticks
               For i = *this\bar\min To *this\bar\max
                 Line( x + _bar_thumb_pos_( *this\bar, i ), y,1,6-Bool(i>*this\bar\min And i<>0 And i<*this\bar\max)*3,\bar\button[#__b_3]\color\frame )
               Next
@@ -6052,6 +6053,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     
     ;- 
     Procedure.b Bar_Resize( *bar._s_BAR )
+      Protected *this._s_widget = *bar\widget
       Protected result.b, fixed.l, ScrollPos.f, ThumbPos.i
       
       ; get thumb pos
@@ -6089,7 +6091,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
       Else
-        If ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar )
+        If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
           If *bar\page\pos < *bar\min
             *bar\page\pos = *bar\min
           EndIf
@@ -6136,7 +6138,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       ; buttons state
-      If ( *bar\widget\type = #__type_ScrollBar Or ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ) )
+      If ( *this\type = #__type_ScrollBar Or ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ) )
         ; disable/enable button-scroll(left&top)-tab(right&bottom)
         If *bar\button[#__b_1]\size 
           If _bar_in_stop_( *bar )
@@ -6163,7 +6165,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; disable/enable button-thumb
-        If *bar\widget\type = #__type_ScrollBar
+        If *this\type = #__type_ScrollBar
           If *bar\thumb\len 
             If *bar\button[#__b_1]\color\state = #__s_3 And
                *bar\button[#__b_2]\color\state = #__s_3 
@@ -6181,8 +6183,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; show/hide button-(right&bottom)
         If *bar\button[#__b_2]\size > 0
-          If *bar\button[#__b_2]\hide <> Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
-            *bar\button[#__b_2]\hide = Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
+          If *bar\button[#__b_2]\hide <> Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
+            *bar\button[#__b_2]\hide = Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
           EndIf
         Else
           If *bar\button[#__b_2]\hide <> #True
@@ -6192,8 +6194,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; show/hide button-(left&top)
         If *bar\button[#__b_1]\size > 0
-          If *bar\button[#__b_1]\hide <> Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
-            *bar\button[#__b_1]\hide = Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
+          If *bar\button[#__b_1]\hide <> Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
+            *bar\button[#__b_1]\hide = Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
           EndIf
         Else
           If *bar\button[#__b_1]\hide <> #True
@@ -6203,7 +6205,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       ; spin-buttons state
-      If *bar\widget\type = #__type_spin 
+      If *this\type = #__type_spin 
         ; disable/enable button(left&top)-tab(right&bottom)
         If *bar\button[#__b_1]\size 
           If _bar_in_stop_( *bar )
@@ -6230,8 +6232,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; show/hide button-(right&bottom)
         If *bar\button[#__b_2]\size > 0
-          If *bar\button[#__b_2]\hide <> Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
-            *bar\button[#__b_2]\hide = Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
+          If *bar\button[#__b_2]\hide <> Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
+            *bar\button[#__b_2]\hide = Bool( *bar\button[#__b_2]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
           EndIf
         Else
           If *bar\button[#__b_2]\hide <> #True
@@ -6241,8 +6243,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         ; show/hide button-(left&top)
         If *bar\button[#__b_1]\size > 0
-          If *bar\button[#__b_1]\hide <> Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
-            *bar\button[#__b_1]\hide = Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar ))
+          If *bar\button[#__b_1]\hide <> Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
+            *bar\button[#__b_1]\hide = Bool( *bar\button[#__b_1]\color\state = #__s_3 And ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar ))
           EndIf
         Else
           If *bar\button[#__b_1]\hide <> #True
@@ -6261,29 +6263,29 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       
       ; buttons resize coordinate
-      If ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar )
+      If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
         ; inner coordinate
-        If *bar\widget\bar\vertical
-          *bar\widget\x[#__c_inner] = *bar\widget\x[#__c_frame] 
-          *bar\widget\width[#__c_inner] = *bar\widget\width[#__c_frame] - 1
-          *bar\widget\y[#__c_inner] = *bar\widget\y[#__c_frame] + Bool( *bar\button[#__b_2]\hide = #False ) * ( *bar\button[#__b_2]\size + *bar\widget\fs )
-          *bar\widget\height[#__c_inner] = *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] - *bar\widget\y[#__c_inner] - Bool( *bar\button[#__b_1]\hide = #False ) * ( *bar\button[#__b_1]\size + *bar\widget\fs )
+        If *this\bar\vertical
+          *this\x[#__c_inner] = *this\x[#__c_frame] 
+          *this\width[#__c_inner] = *this\width[#__c_frame] - 1
+          *this\y[#__c_inner] = *this\y[#__c_frame] + Bool( *bar\button[#__b_2]\hide = #False ) * ( *bar\button[#__b_2]\size + *this\fs )
+          *this\height[#__c_inner] = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\y[#__c_inner] - Bool( *bar\button[#__b_1]\hide = #False ) * ( *bar\button[#__b_1]\size + *this\fs )
         Else
-          *bar\widget\y[#__c_inner] = *bar\widget\y[#__c_frame]
-          *bar\widget\height[#__c_inner] = *bar\widget\height[#__c_frame] - 1
-          *bar\widget\x[#__c_inner] = *bar\widget\x[#__c_frame] + Bool( *bar\button[#__b_2]\hide = #False ) * ( *bar\button[#__b_2]\size + *bar\widget\fs )
-          *bar\widget\width[#__c_inner] = *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] - *bar\widget\x[#__c_inner] - Bool( *bar\button[#__b_1]\hide = #False ) * ( *bar\button[#__b_1]\size + *bar\widget\fs )
+          *this\y[#__c_inner] = *this\y[#__c_frame]
+          *this\height[#__c_inner] = *this\height[#__c_frame] - 1
+          *this\x[#__c_inner] = *this\x[#__c_frame] + Bool( *bar\button[#__b_2]\hide = #False ) * ( *bar\button[#__b_2]\size + *this\fs )
+          *this\width[#__c_inner] = *this\x[#__c_frame] + *this\width[#__c_frame] - *this\x[#__c_inner] - Bool( *bar\button[#__b_1]\hide = #False ) * ( *bar\button[#__b_1]\size + *this\fs )
         EndIf
         
         If *bar\button[#__b_2]\size And Not *bar\button[#__b_2]\hide 
-          If *bar\widget\bar\vertical 
+          If *this\bar\vertical 
             ; Top button coordinate on vertical scroll bar
-            ;  *bar\button[#__b_2]\x = *bar\widget\x[#__c_frame] + ( *bar\widget\width[#__c_frame] - *bar\button[#__b_2]\size )/2            
-            *bar\button[#__b_2]\y = *bar\widget\y[#__c_inner] - *bar\button[#__b_2]\size
+            ;  *bar\button[#__b_2]\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] - *bar\button[#__b_2]\size )/2            
+            *bar\button[#__b_2]\y = *this\y[#__c_inner] - *bar\button[#__b_2]\size
           Else 
             ; Left button coordinate on horizontal scroll bar
-            *bar\button[#__b_2]\x = *bar\widget\x[#__c_inner] - *bar\button[#__b_2]\size
-            ;  *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame] + ( *bar\widget\height[#__c_frame] - *bar\button[#__b_2]\size )/2           
+            *bar\button[#__b_2]\x = *this\x[#__c_inner] - *bar\button[#__b_2]\size
+            ;  *bar\button[#__b_2]\y = *this\y[#__c_frame] + ( *this\height[#__c_frame] - *bar\button[#__b_2]\size )/2           
           EndIf
           If *bar\button[#__b_2]\width <> *bar\button[#__b_2]\size
             *bar\button[#__b_2]\width = *bar\button[#__b_2]\size
@@ -6294,14 +6296,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         If *bar\button[#__b_1]\size And Not *bar\button[#__b_1]\hide
-          If *bar\widget\bar\vertical 
+          If *this\bar\vertical 
             ; Botom button coordinate on vertical scroll bar
-            ;  *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame] + ( *bar\widget\width[#__c_frame] - *bar\button[#__b_1]\size )/2              
-            *bar\button[#__b_1]\y = *bar\widget\y[#__c_inner] + *bar\widget\height[#__c_inner]
+            ;  *bar\button[#__b_1]\x = *this\x[#__c_frame] + ( *this\width[#__c_frame] - *bar\button[#__b_1]\size )/2              
+            *bar\button[#__b_1]\y = *this\y[#__c_inner] + *this\height[#__c_inner]
           Else 
             ; Right button coordinate on horizontal scroll bar
-            *bar\button[#__b_1]\x = *bar\widget\x[#__c_inner] + *bar\widget\width[#__c_inner]
-            ;  *bar\button[#__b_1]\y = *bar\widget\y[#__c_frame] + ( *bar\widget\height[#__c_frame] - *bar\button[#__b_1]\size )/2            
+            *bar\button[#__b_1]\x = *this\x[#__c_inner] + *this\width[#__c_inner]
+            ;  *bar\button[#__b_1]\y = *this\y[#__c_frame] + ( *this\height[#__c_frame] - *bar\button[#__b_1]\size )/2            
           EndIf
           If *bar\button[#__b_1]\width <> *bar\button[#__b_1]\size
             *bar\button[#__b_1]\width = *bar\button[#__b_1]\size
@@ -6312,90 +6314,90 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;If *bar\thumb\len
-        If *bar\widget\bar\vertical
-          *bar\button[#__b_3]\x = *bar\widget\x[#__c_inner]          
-          *bar\button[#__b_3]\width = *bar\widget\width[#__c_inner]
+        If *this\bar\vertical
+          *bar\button[#__b_3]\x = *this\x[#__c_inner]          
+          *bar\button[#__b_3]\width = *this\width[#__c_inner]
           *bar\button[#__b_3]\height = *bar\max                             
-          *bar\button[#__b_3]\y = *bar\widget\y[#__c_frame] + ( *bar\thumb\pos - *bar\area\end )
+          *bar\button[#__b_3]\y = *this\y[#__c_frame] + ( *bar\thumb\pos - *bar\area\end )
         Else
-          *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner]         
-          *bar\button[#__b_3]\height = *bar\widget\height[#__c_inner]
+          *bar\button[#__b_3]\y = *this\y[#__c_inner]         
+          *bar\button[#__b_3]\height = *this\height[#__c_inner]
           *bar\button[#__b_3]\width = *bar\max
-          *bar\button[#__b_3]\x = *bar\widget\x[#__c_frame] + ( *bar\thumb\pos - *bar\area\end )
+          *bar\button[#__b_3]\x = *this\x[#__c_frame] + ( *bar\thumb\pos - *bar\area\end )
         EndIf
         ;EndIf
         
         
-        result = Bool( *bar\widget\resize & #__resize_change )
+        result = Bool( *this\resize & #__resize_change )
       EndIf
       
       ;
-      If *bar\widget\type = #__type_ScrollBar
+      If *this\type = #__type_ScrollBar
         If *bar\thumb\len 
-          If *bar\widget\bar\vertical
-            *bar\button[#__b_3]\x = *bar\widget\x[#__c_frame]           + 1 ; white line size 
-            *bar\button[#__b_3]\width = *bar\widget\width[#__c_frame]   - 1 ; white line size 
-            *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
+          If *this\bar\vertical
+            *bar\button[#__b_3]\x = *this\x[#__c_frame]           + 1 ; white line size 
+            *bar\button[#__b_3]\width = *this\width[#__c_frame]   - 1 ; white line size 
+            *bar\button[#__b_3]\y = *this\y[#__c_inner_b] + *bar\thumb\pos
             *bar\button[#__b_3]\height = *bar\thumb\len                              
           Else
-            *bar\button[#__b_3]\y = *bar\widget\y[#__c_frame]           + 1 ; white line size
-            *bar\button[#__b_3]\height = *bar\widget\height[#__c_frame] - 1 ; white line size
-            *bar\button[#__b_3]\x = *bar\widget\x[#__c_inner_b] + *bar\thumb\pos 
+            *bar\button[#__b_3]\y = *this\y[#__c_frame]           + 1 ; white line size
+            *bar\button[#__b_3]\height = *this\height[#__c_frame] - 1 ; white line size
+            *bar\button[#__b_3]\x = *this\x[#__c_inner_b] + *bar\thumb\pos 
             *bar\button[#__b_3]\width = *bar\thumb\len                                  
           EndIf
         EndIf
         
         If *bar\button[#__b_1]\size 
-          If *bar\widget\bar\vertical 
+          If *this\bar\vertical 
             ; Top button coordinate on vertical scroll bar
             *bar\button[#__b_1]\x = *bar\button[#__b_3]\x
             *bar\button[#__b_1]\width = *bar\button[#__b_3]\width
-            *bar\button[#__b_1]\y = *bar\widget\y[#__c_frame] 
+            *bar\button[#__b_1]\y = *this\y[#__c_frame] 
             *bar\button[#__b_1]\height = *bar\button[#__b_1]\size                   
           Else 
             ; Left button coordinate on horizontal scroll bar
             *bar\button[#__b_1]\y = *bar\button[#__b_3]\y
             *bar\button[#__b_1]\height = *bar\button[#__b_3]\height
-            *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame] 
+            *bar\button[#__b_1]\x = *this\x[#__c_frame] 
             *bar\button[#__b_1]\width = *bar\button[#__b_1]\size 
           EndIf
         EndIf
         
         If *bar\button[#__b_2]\size 
-          If *bar\widget\bar\vertical 
+          If *this\bar\vertical 
             ; Botom button coordinate on vertical scroll bar
             *bar\button[#__b_2]\x = *bar\button[#__b_3]\x
             *bar\button[#__b_2]\width = *bar\button[#__b_3]\width
             *bar\button[#__b_2]\height = *bar\button[#__b_2]\size 
-            *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] - *bar\button[#__b_2]\height
+            *bar\button[#__b_2]\y = *this\y[#__c_frame] + *this\height[#__c_frame] - *bar\button[#__b_2]\height
           Else 
             ; Right button coordinate on horizontal scroll bar
             *bar\button[#__b_2]\y = *bar\button[#__b_3]\y
             *bar\button[#__b_2]\height = *bar\button[#__b_3]\height
             *bar\button[#__b_2]\width = *bar\button[#__b_2]\size 
-            *bar\button[#__b_2]\x = *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] - *bar\button[#__b_2]\width 
+            *bar\button[#__b_2]\x = *this\x[#__c_frame] + *this\width[#__c_frame] - *bar\button[#__b_2]\width 
           EndIf
         EndIf
         
         ; Thumb coordinate on scroll bar
         If Not *bar\thumb\len
           ; auto resize buttons
-          If *bar\widget\bar\vertical
-            *bar\button[#__b_2]\height = *bar\widget\height[#__c_frame]/2 
-            *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame] + *bar\button[#__b_2]\height + Bool( *bar\widget\height[#__c_frame]%2 ) 
+          If *this\bar\vertical
+            *bar\button[#__b_2]\height = *this\height[#__c_frame]/2 
+            *bar\button[#__b_2]\y = *this\y[#__c_frame] + *bar\button[#__b_2]\height + Bool( *this\height[#__c_frame]%2 ) 
             
-            *bar\button[#__b_1]\y = *bar\widget\y 
-            *bar\button[#__b_1]\height = *bar\widget\height/2 - Bool( Not *bar\widget\height[#__c_frame]%2 )
+            *bar\button[#__b_1]\y = *this\y 
+            *bar\button[#__b_1]\height = *this\height/2 - Bool( Not *this\height[#__c_frame]%2 )
             
           Else
-            *bar\button[#__b_2]\width = *bar\widget\width[#__c_frame]/2 
-            *bar\button[#__b_2]\x = *bar\widget\x[#__c_frame] + *bar\button[#__b_2]\width + Bool( *bar\widget\width[#__c_frame]%2 ) 
+            *bar\button[#__b_2]\width = *this\width[#__c_frame]/2 
+            *bar\button[#__b_2]\x = *this\x[#__c_frame] + *bar\button[#__b_2]\width + Bool( *this\width[#__c_frame]%2 ) 
             
-            *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame] 
-            *bar\button[#__b_1]\width = *bar\widget\width[#__c_frame]/2 - Bool( Not *bar\widget\width[#__c_frame]%2 )
+            *bar\button[#__b_1]\x = *this\x[#__c_frame] 
+            *bar\button[#__b_1]\width = *this\width[#__c_frame]/2 - Bool( Not *this\width[#__c_frame]%2 )
           EndIf
           
-          If *bar\widget\bar\vertical
+          If *this\bar\vertical
             *bar\button[#__b_3]\width = 0 
             *bar\button[#__b_3]\height = 0                             
           Else
@@ -6406,136 +6408,136 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       EndIf
       
       ; Ok
-      If *bar\widget\type = #__type_Spin
-        *bar\button[#__b_3]\x = *bar\widget\x[#__c_inner] 
-        *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner] 
-        *bar\button[#__b_3]\width = *bar\widget\width[#__c_inner] 
-        *bar\button[#__b_3]\height = *bar\widget\height[#__c_inner] 
+      If *this\type = #__type_Spin
+        *bar\button[#__b_3]\x = *this\x[#__c_inner] 
+        *bar\button[#__b_3]\y = *this\y[#__c_inner] 
+        *bar\button[#__b_3]\width = *this\width[#__c_inner] 
+        *bar\button[#__b_3]\height = *this\height[#__c_inner] 
         
-        If Not *bar\widget\flag & #__spin_Plus
+        If Not *this\flag & #__spin_Plus
           If *bar\button[#__b_1]\size 
-            *bar\button[#__b_1]\x = ( *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] ) - *bar\button[#__b_3]\size
-            *bar\button[#__b_1]\y = *bar\widget\y[#__c_frame] 
+            *bar\button[#__b_1]\x = ( *this\x[#__c_frame] + *this\width[#__c_frame] ) - *bar\button[#__b_3]\size
+            *bar\button[#__b_1]\y = *this\y[#__c_frame] 
             *bar\button[#__b_1]\width = *bar\button[#__b_3]\size
             *bar\button[#__b_1]\height = *bar\button[#__b_1]\size                   
           EndIf
           If *bar\button[#__b_2]\size 
             *bar\button[#__b_2]\x = *bar\button[#__b_1]\x
-            *bar\button[#__b_2]\y = ( *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] ) - *bar\button[#__b_2]\size
+            *bar\button[#__b_2]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *bar\button[#__b_2]\size
             *bar\button[#__b_2]\height = *bar\button[#__b_2]\size 
             *bar\button[#__b_2]\width = *bar\button[#__b_3]\size
           EndIf
           
         Else
           ; spin buttons numeric plus -/+ 
-          If *bar\widget\bar\vertical
+          If *this\bar\vertical
             If *bar\button[#__b_1]\size 
-              *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame]
-              *bar\button[#__b_1]\y = ( *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] ) - *bar\button[#__b_1]\size
-              *bar\button[#__b_1]\width = *bar\widget\width[#__c_frame]
+              *bar\button[#__b_1]\x = *this\x[#__c_frame]
+              *bar\button[#__b_1]\y = ( *this\y[#__c_frame] + *this\height[#__c_frame] ) - *bar\button[#__b_1]\size
+              *bar\button[#__b_1]\width = *this\width[#__c_frame]
               *bar\button[#__b_1]\height = *bar\button[#__b_1]\size
             EndIf
             If *bar\button[#__b_2]\size 
-              *bar\button[#__b_2]\x = *bar\widget\x[#__c_frame]
-              *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame] 
-              *bar\button[#__b_2]\width = *bar\widget\width[#__c_frame]
+              *bar\button[#__b_2]\x = *this\x[#__c_frame]
+              *bar\button[#__b_2]\y = *this\y[#__c_frame] 
+              *bar\button[#__b_2]\width = *this\width[#__c_frame]
               *bar\button[#__b_2]\height = *bar\button[#__b_2]\size              
             EndIf
           Else
             If *bar\button[#__b_1]\size 
-              *bar\button[#__b_1]\x = *bar\widget\x[#__c_frame]
-              *bar\button[#__b_1]\y = *bar\widget\y[#__c_frame] 
+              *bar\button[#__b_1]\x = *this\x[#__c_frame]
+              *bar\button[#__b_1]\y = *this\y[#__c_frame] 
               *bar\button[#__b_1]\width = *bar\button[#__b_1]\size
-              *bar\button[#__b_1]\height = *bar\widget\height[#__c_frame]               
+              *bar\button[#__b_1]\height = *this\height[#__c_frame]               
             EndIf
             If *bar\button[#__b_2]\size 
-              *bar\button[#__b_2]\x = ( *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] ) - *bar\button[#__b_2]\size
-              *bar\button[#__b_2]\y = *bar\widget\y[#__c_frame]
+              *bar\button[#__b_2]\x = ( *this\x[#__c_frame] + *this\width[#__c_frame] ) - *bar\button[#__b_2]\size
+              *bar\button[#__b_2]\y = *this\y[#__c_frame]
               *bar\button[#__b_2]\width = *bar\button[#__b_2]\size
-              *bar\button[#__b_2]\height = *bar\widget\height[#__c_frame] 
+              *bar\button[#__b_2]\height = *this\height[#__c_frame] 
             EndIf
           EndIf
         EndIf
       EndIf
       
       ;
-      If *bar\widget\type = #__type_Splitter 
+      If *this\type = #__type_Splitter 
         If *bar\thumb\len 
-          If *bar\widget\bar\vertical
-            *bar\button[#__b_3]\x = *bar\widget\x[#__c_frame]           + 1 ; white line size 
-            *bar\button[#__b_3]\width = *bar\widget\width[#__c_frame]   - 1 ; white line size 
-            *bar\button[#__b_3]\y = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
+          If *this\bar\vertical
+            *bar\button[#__b_3]\x = *this\x[#__c_frame]           + 1 ; white line size 
+            *bar\button[#__b_3]\width = *this\width[#__c_frame]   - 1 ; white line size 
+            *bar\button[#__b_3]\y = *this\y[#__c_inner_b] + *bar\thumb\pos
             *bar\button[#__b_3]\height = *bar\thumb\len                              
           Else
-            *bar\button[#__b_3]\y = *bar\widget\y[#__c_frame]           + 1 ; white line size
-            *bar\button[#__b_3]\height = *bar\widget\height[#__c_frame] - 1 ; white line size
-            *bar\button[#__b_3]\x = *bar\widget\x[#__c_inner_b] + *bar\thumb\pos 
+            *bar\button[#__b_3]\y = *this\y[#__c_frame]           + 1 ; white line size
+            *bar\button[#__b_3]\height = *this\height[#__c_frame] - 1 ; white line size
+            *bar\button[#__b_3]\x = *this\x[#__c_inner_b] + *bar\thumb\pos 
             *bar\button[#__b_3]\width = *bar\thumb\len                                  
           EndIf
         EndIf
         
-        If *bar\widget\bar\vertical
-          *bar\button[#__split_b1]\width    = *bar\widget\width[#__c_frame]
+        If *this\bar\vertical
+          *bar\button[#__split_b1]\width    = *this\width[#__c_frame]
           *bar\button[#__split_b1]\height   = *bar\thumb\pos
           
-          *bar\button[#__split_b1]\x        = *bar\widget\x[#__c_frame]
-          *bar\button[#__split_b2]\x        = *bar\widget\x[#__c_frame]
+          *bar\button[#__split_b1]\x        = *this\x[#__c_frame]
+          *bar\button[#__split_b2]\x        = *this\x[#__c_frame]
           
-          If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And *bar\widget\index[#__split_1] And Not *bar\widget\parent\widget )
-            *bar\button[#__split_b1]\y      = *bar\widget\y[#__c_frame] 
-            *bar\button[#__split_b2]\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *bar\widget\y[#__c_frame] 
+          If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And *this\index[#__split_1] And Not *this\parent\widget )
+            *bar\button[#__split_b1]\y      = *this\y[#__c_frame] 
+            *bar\button[#__split_b2]\y      = ( *bar\thumb\pos + *bar\thumb\len ) + *this\y[#__c_frame] 
           Else
-            *bar\button[#__split_b1]\y      = *bar\widget\height[#__c_frame] - *bar\button[#__split_b1]\height
+            *bar\button[#__split_b1]\y      = *this\height[#__c_frame] - *bar\button[#__split_b1]\height
           EndIf
           
-          *bar\button[#__split_b2]\height   = *bar\widget\height[#__c_frame] - ( *bar\button[#__split_b1]\height + *bar\thumb\len )
-          *bar\button[#__split_b2]\width    = *bar\widget\width[#__c_frame]
+          *bar\button[#__split_b2]\height   = *this\height[#__c_frame] - ( *bar\button[#__split_b1]\height + *bar\thumb\len )
+          *bar\button[#__split_b2]\width    = *this\width[#__c_frame]
           
         Else
           *bar\button[#__split_b1]\width    = *bar\thumb\pos
-          *bar\button[#__split_b1]\height   = *bar\widget\height[#__c_frame]
+          *bar\button[#__split_b1]\height   = *this\height[#__c_frame]
           
-          *bar\button[#__split_b1]\y        = *bar\widget\y[#__c_frame]
-          *bar\button[#__split_b2]\y        = *bar\widget\y[#__c_frame]
-          *bar\button[#__split_b1]\x        = *bar\widget\x[#__c_frame]
-          *bar\button[#__split_b2]\x        = ( *bar\thumb\pos + *bar\thumb\len ) + *bar\widget\x[#__c_frame]
+          *bar\button[#__split_b1]\y        = *this\y[#__c_frame]
+          *bar\button[#__split_b2]\y        = *this\y[#__c_frame]
+          *bar\button[#__split_b1]\x        = *this\x[#__c_frame]
+          *bar\button[#__split_b2]\x        = ( *bar\thumb\pos + *bar\thumb\len ) + *this\x[#__c_frame]
           
-          *bar\button[#__split_b2]\width    = *bar\widget\width[#__c_frame] - ( *bar\button[#__split_b1]\width + *bar\thumb\len )
-          *bar\button[#__split_b2]\height   = *bar\widget\height[#__c_frame]
+          *bar\button[#__split_b2]\width    = *this\width[#__c_frame] - ( *bar\button[#__split_b1]\width + *bar\thumb\len )
+          *bar\button[#__split_b2]\height   = *this\height[#__c_frame]
           
         EndIf
         
         
         ; Splitter childrens auto resize       
-        If *bar\widget\gadget[#__split_1]
-          If *bar\widget\index[#__split_1]
-            If *bar\widget\root\canvas\container
-              ResizeGadget( *bar\widget\gadget[#__split_1],
+        If *this\gadget[#__split_1]
+          If *this\index[#__split_1]
+            If *this\root\canvas\container
+              ResizeGadget( *this\gadget[#__split_1],
                             *bar\button[#__split_b1]\x,
                             *bar\button[#__split_b1]\y,
                             *bar\button[#__split_b1]\width, *bar\button[#__split_b1]\height )
             Else
-              ResizeGadget( *bar\widget\gadget[#__split_1],
-                            *bar\button[#__split_b1]\x + GadgetX( *bar\widget\root\canvas\gadget ), 
-                            *bar\button[#__split_b1]\y + GadgetY( *bar\widget\root\canvas\gadget ),
+              ResizeGadget( *this\gadget[#__split_1],
+                            *bar\button[#__split_b1]\x + GadgetX( *this\root\canvas\gadget ), 
+                            *bar\button[#__split_b1]\y + GadgetY( *this\root\canvas\gadget ),
                             *bar\button[#__split_b1]\width, *bar\button[#__split_b1]\height )
             EndIf
           Else
-            If *bar\widget\gadget[#__split_1]\x <> *bar\button[#__split_b1]\x Or
-               *bar\widget\gadget[#__split_1]\y <> *bar\button[#__split_b1]\y Or
-               *bar\widget\gadget[#__split_1]\width <> *bar\button[#__split_b1]\width Or
-               *bar\widget\gadget[#__split_1]\height <> *bar\button[#__split_b1]\height
-              ; Debug "splitter_1_resize " + *bar\widget\gadget[#__split_1]
+            If *this\gadget[#__split_1]\x <> *bar\button[#__split_b1]\x Or
+               *this\gadget[#__split_1]\y <> *bar\button[#__split_b1]\y Or
+               *this\gadget[#__split_1]\width <> *bar\button[#__split_b1]\width Or
+               *this\gadget[#__split_1]\height <> *bar\button[#__split_b1]\height
+              ; Debug "splitter_1_resize " + *this\gadget[#__split_1]
               
-              If *bar\widget\gadget[#__split_1]\type = #__type_window
-                Resize( *bar\widget\gadget[#__split_1],
-                        *bar\button[#__split_b1]\x - *bar\widget\x[#__c_frame],
-                        *bar\button[#__split_b1]\y - *bar\widget\y[#__c_frame], 
+              If *this\gadget[#__split_1]\type = #__type_window
+                Resize( *this\gadget[#__split_1],
+                        *bar\button[#__split_b1]\x - *this\x[#__c_frame],
+                        *bar\button[#__split_b1]\y - *this\y[#__c_frame], 
                         *bar\button[#__split_b1]\width - #__window_frame_size*2, *bar\button[#__split_b1]\height - #__window_frame_size*2 - #__window_caption_height)
               Else
-                Resize( *bar\widget\gadget[#__split_1],
-                        *bar\button[#__split_b1]\x - *bar\widget\x[#__c_frame],
-                        *bar\button[#__split_b1]\y - *bar\widget\y[#__c_frame], 
+                Resize( *this\gadget[#__split_1],
+                        *bar\button[#__split_b1]\x - *this\x[#__c_frame],
+                        *bar\button[#__split_b1]\y - *this\y[#__c_frame], 
                         *bar\button[#__split_b1]\width, *bar\button[#__split_b1]\height )
               EndIf
               
@@ -6543,35 +6545,35 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf
         EndIf
         
-        If *bar\widget\gadget[#__split_2]
-          If *bar\widget\index[#__split_2]
-            If *bar\widget\root\canvas\container 
-              ResizeGadget( *bar\widget\gadget[#__split_2],
+        If *this\gadget[#__split_2]
+          If *this\index[#__split_2]
+            If *this\root\canvas\container 
+              ResizeGadget( *this\gadget[#__split_2],
                             *bar\button[#__split_b2]\x, 
                             *bar\button[#__split_b2]\y,
                             *bar\button[#__split_b2]\width, *bar\button[#__split_b2]\height )
             Else
-              ResizeGadget( *bar\widget\gadget[#__split_2], 
-                            *bar\button[#__split_b2]\x + GadgetX( *bar\widget\root\canvas\gadget ),
-                            *bar\button[#__split_b2]\y + GadgetY( *bar\widget\root\canvas\gadget ),
+              ResizeGadget( *this\gadget[#__split_2], 
+                            *bar\button[#__split_b2]\x + GadgetX( *this\root\canvas\gadget ),
+                            *bar\button[#__split_b2]\y + GadgetY( *this\root\canvas\gadget ),
                             *bar\button[#__split_b2]\width, *bar\button[#__split_b2]\height )
             EndIf
           Else
-            If *bar\widget\gadget[#__split_2]\x <> *bar\button[#__split_b2]\x Or 
-               *bar\widget\gadget[#__split_2]\y <> *bar\button[#__split_b2]\y Or
-               *bar\widget\gadget[#__split_2]\width <> *bar\button[#__split_b2]\width Or
-               *bar\widget\gadget[#__split_2]\height <> *bar\button[#__split_b2]\height 
-              ; Debug "splitter_2_resize " + *bar\widget\gadget[#__split_2]
+            If *this\gadget[#__split_2]\x <> *bar\button[#__split_b2]\x Or 
+               *this\gadget[#__split_2]\y <> *bar\button[#__split_b2]\y Or
+               *this\gadget[#__split_2]\width <> *bar\button[#__split_b2]\width Or
+               *this\gadget[#__split_2]\height <> *bar\button[#__split_b2]\height 
+              ; Debug "splitter_2_resize " + *this\gadget[#__split_2]
               
-              If *bar\widget\gadget[#__split_2]\type = #__type_window
-                Resize( *bar\widget\gadget[#__split_2], 
-                        *bar\button[#__split_b2]\x - *bar\widget\x[#__c_frame], 
-                        *bar\button[#__split_b2]\y - *bar\widget\y[#__c_frame], 
+              If *this\gadget[#__split_2]\type = #__type_window
+                Resize( *this\gadget[#__split_2], 
+                        *bar\button[#__split_b2]\x - *this\x[#__c_frame], 
+                        *bar\button[#__split_b2]\y - *this\y[#__c_frame], 
                         *bar\button[#__split_b2]\width - #__window_frame_size*2, *bar\button[#__split_b2]\height - #__window_frame_size*2 - #__window_caption_height )
               Else
-                Resize( *bar\widget\gadget[#__split_2], 
-                        *bar\button[#__split_b2]\x - *bar\widget\x[#__c_frame], 
-                        *bar\button[#__split_b2]\y - *bar\widget\y[#__c_frame], 
+                Resize( *this\gadget[#__split_2], 
+                        *bar\button[#__split_b2]\x - *this\x[#__c_frame], 
+                        *bar\button[#__split_b2]\y - *this\y[#__c_frame], 
                         *bar\button[#__split_b2]\width, *bar\button[#__split_b2]\height )
               EndIf
               
@@ -6579,28 +6581,28 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           EndIf   
         EndIf      
         
-        result = Bool( *bar\widget\resize & #__resize_change )
+        result = Bool( *this\resize & #__resize_change )
       EndIf
       
       ;
-      If *bar\widget\type = #__type_TrackBar
+      If *this\type = #__type_TrackBar
         If *bar\direction > 0 
-          If *bar\thumb\pos = *bar\area\end Or *bar\widget\flag & #PB_TrackBar_Ticks
-            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\bar\vertical ) + Bool( *bar\widget\bar\vertical = *bar\invert ) * 2
+          If *bar\thumb\pos = *bar\area\end Or *this\flag & #PB_TrackBar_Ticks
+            *bar\button[#__b_3]\arrow\direction = Bool( Not *this\bar\vertical ) + Bool( *this\bar\vertical = *bar\invert ) * 2
           Else
-            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\bar\vertical ) + Bool( Not *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( *this\bar\vertical ) + Bool( Not *bar\invert ) * 2
           EndIf
         Else
-          If *bar\thumb\pos = *bar\area\pos Or *bar\widget\flag & #PB_TrackBar_Ticks 
-            *bar\button[#__b_3]\arrow\direction = Bool( Not *bar\widget\bar\vertical ) + Bool( *bar\widget\bar\vertical = *bar\invert ) * 2
+          If *bar\thumb\pos = *bar\area\pos Or *this\flag & #PB_TrackBar_Ticks 
+            *bar\button[#__b_3]\arrow\direction = Bool( Not *this\bar\vertical ) + Bool( *this\bar\vertical = *bar\invert ) * 2
           Else
-            *bar\button[#__b_3]\arrow\direction = Bool( *bar\widget\bar\vertical ) + Bool( *bar\invert ) * 2
+            *bar\button[#__b_3]\arrow\direction = Bool( *this\bar\vertical ) + Bool( *bar\invert ) * 2
           EndIf
         EndIf
         
         ; button draw color
         *bar\button[#__b_3]\color\state = #__s_2
-        If Not *bar\widget\flag & #PB_TrackBar_Ticks
+        If Not *this\flag & #PB_TrackBar_Ticks
           If *bar\invert
             *bar\button[#__b_2]\color\state = #__s_2
             ; *bar\button[#__b_1]\color\state = #__s_3
@@ -6611,9 +6613,9 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ; track bar draw coordinate
-        If *bar\widget\bar\vertical
+        If *this\bar\vertical
           If *bar\thumb\len
-            *bar\button[#__b_3]\y      = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos
+            *bar\button[#__b_3]\y      = *this\y[#__c_inner_b] + *bar\thumb\pos
             *bar\button[#__b_3]\height = *bar\thumb\len                              
           EndIf
           
@@ -6621,24 +6623,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *bar\button[#__b_2]\width    = 4
           *bar\button[#__b_3]\width    = *bar\button[#__b_3]\size + ( Bool( *bar\button[#__b_3]\size<10 )**bar\button[#__b_3]\size )
           
-          *bar\button[#__b_1]\y        = *bar\widget\y
+          *bar\button[#__b_1]\y        = *this\y
           *bar\button[#__b_1]\height   = *bar\thumb\pos + *bar\thumb\len/2 
           
-          *bar\button[#__b_2]\y        = *bar\widget\y[#__c_inner_b] + *bar\thumb\pos + *bar\thumb\len/2
-          *bar\button[#__b_2]\height   = *bar\widget\height - ( *bar\thumb\pos + *bar\thumb\len/2 )
+          *bar\button[#__b_2]\y        = *this\y[#__c_inner_b] + *bar\thumb\pos + *bar\thumb\len/2
+          *bar\button[#__b_2]\height   = *this\height - ( *bar\thumb\pos + *bar\thumb\len/2 )
           
           If *bar\invert
-            *bar\button[#__b_1]\x      = *bar\widget\x[#__c_frame] + 6
-            *bar\button[#__b_2]\x      = *bar\widget\x[#__c_frame] + 6
+            *bar\button[#__b_1]\x      = *this\x[#__c_frame] + 6
+            *bar\button[#__b_2]\x      = *this\x[#__c_frame] + 6
             *bar\button[#__b_3]\x      = *bar\button[#__b_1]\x - *bar\button[#__b_3]\width/4 - 1 -  Bool( *bar\button[#__b_3]\size>10 )
           Else
-            *bar\button[#__b_1]\x      = *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] - *bar\button[#__b_1]\width - 6
-            *bar\button[#__b_2]\x      = *bar\widget\x[#__c_frame] + *bar\widget\width[#__c_frame] - *bar\button[#__b_2]\width - 6 
+            *bar\button[#__b_1]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *bar\button[#__b_1]\width - 6
+            *bar\button[#__b_2]\x      = *this\x[#__c_frame] + *this\width[#__c_frame] - *bar\button[#__b_2]\width - 6 
             *bar\button[#__b_3]\x      = *bar\button[#__b_1]\x - *bar\button[#__b_3]\width/2 + Bool( *bar\button[#__b_3]\size>10 )
           EndIf
         Else
           If *bar\thumb\len
-            *bar\button[#__b_3]\x      = *bar\widget\x[#__c_inner_b] + *bar\thumb\pos 
+            *bar\button[#__b_3]\x      = *this\x[#__c_inner_b] + *bar\thumb\pos 
             *bar\button[#__b_3]\width  = *bar\thumb\len                                  
           EndIf
           
@@ -6646,19 +6648,19 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *bar\button[#__b_2]\height   = 4
           *bar\button[#__b_3]\height   = *bar\button[#__b_3]\size + ( Bool( *bar\button[#__b_3]\size<10 )**bar\button[#__b_3]\size )
           
-          *bar\button[#__b_1]\x        = *bar\widget\x[#__c_frame]
+          *bar\button[#__b_1]\x        = *this\x[#__c_frame]
           *bar\button[#__b_1]\width    = *bar\thumb\pos + *bar\thumb\len/2
           
-          *bar\button[#__b_2]\x        = *bar\widget\x[#__c_inner_b] + *bar\thumb\pos + *bar\thumb\len/2
-          *bar\button[#__b_2]\width    = *bar\widget\width[#__c_frame] - ( *bar\thumb\pos + *bar\thumb\len/2 )
+          *bar\button[#__b_2]\x        = *this\x[#__c_inner_b] + *bar\thumb\pos + *bar\thumb\len/2
+          *bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *bar\thumb\pos + *bar\thumb\len/2 )
           
           If *bar\invert
-            *bar\button[#__b_1]\y      = *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] - *bar\button[#__b_1]\height - 6
-            *bar\button[#__b_2]\y      = *bar\widget\y[#__c_frame] + *bar\widget\height[#__c_frame] - *bar\button[#__b_2]\height - 6 
+            *bar\button[#__b_1]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *bar\button[#__b_1]\height - 6
+            *bar\button[#__b_2]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *bar\button[#__b_2]\height - 6 
             *bar\button[#__b_3]\y      = *bar\button[#__b_1]\y - *bar\button[#__b_3]\height/2 + Bool( *bar\button[#__b_3]\size>10 )
           Else
-            *bar\button[#__b_1]\y      = *bar\widget\y[#__c_frame] + 6
-            *bar\button[#__b_2]\y      = *bar\widget\y[#__c_frame] + 6
+            *bar\button[#__b_1]\y      = *this\y[#__c_frame] + 6
+            *bar\button[#__b_2]\y      = *this\y[#__c_frame] + 6
             *bar\button[#__b_3]\y      = *bar\button[#__b_1]\y - *bar\button[#__b_3]\height/4 - 1 -  Bool( *bar\button[#__b_3]\size>10 )
           EndIf
         EndIf
@@ -6670,24 +6672,24 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       ;
       If *bar\page\change <> 0
         ;- widget::Area_Update( )
-        If *bar\widget\parent\widget And *bar\widget\parent\widget\scroll And *bar\widget\type = #__type_ScrollBar
+        If *this\parent\widget And *this\parent\widget\scroll And *this\type = #__type_ScrollBar
           
-          If *bar\widget\bar\vertical
-            If *bar\widget\parent\widget\scroll\v = *bar\widget
-              *bar\widget\parent\widget\change =- 1
-              *bar\widget\parent\widget\y[#__c_required] =- *bar\page\pos
+          If *this\bar\vertical
+            If *this\parent\widget\scroll\v = *this
+              *this\parent\widget\change =- 1
+              *this\parent\widget\y[#__c_required] =- *bar\page\pos
               
               ; Area childrens x&y auto move 
-              If *bar\widget\parent\widget\container
-                If StartEnumerate( *bar\widget\parent\widget ) 
-                  If *bar\widget\parent\widget = Widget( )\parent\widget And 
-                     *bar\widget\parent\widget\scroll\v <> Widget( ) And 
-                     *bar\widget\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
+              If *this\parent\widget\container
+                If StartEnumerate( *this\parent\widget ) 
+                  If *this\parent\widget = Widget( )\parent\widget And 
+                     *this\parent\widget\scroll\v <> Widget( ) And 
+                     *this\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
                     
                     If _is_child_integral_( Widget( ))
                       Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore )
                     Else
-                      Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ) - *bar\widget\parent\widget\y[#__c_required], #PB_Ignore, #PB_Ignore )
+                      Resize( Widget( ), #PB_Ignore, ( Widget( )\y[#__c_container] + *bar\page\change ) - *this\parent\widget\y[#__c_required], #PB_Ignore, #PB_Ignore )
                     EndIf
                   EndIf
                   
@@ -6696,21 +6698,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             EndIf
           Else
-            If *bar\widget\parent\widget\scroll\h = *bar\widget
-              *bar\widget\parent\widget\change =- 2
-              *bar\widget\parent\widget\x[#__c_required] =- *bar\page\pos
+            If *this\parent\widget\scroll\h = *this
+              *this\parent\widget\change =- 2
+              *this\parent\widget\x[#__c_required] =- *bar\page\pos
               
               ; Area childrens x&y auto move 
-              If *bar\widget\parent\widget\container
-                If StartEnumerate( *bar\widget\parent\widget ) 
-                  If *bar\widget\parent\widget = Widget( )\parent\widget And 
-                     *bar\widget\parent\widget\scroll\v <> Widget( ) And 
-                     *bar\widget\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
+              If *this\parent\widget\container
+                If StartEnumerate( *this\parent\widget ) 
+                  If *this\parent\widget = Widget( )\parent\widget And 
+                     *this\parent\widget\scroll\v <> Widget( ) And 
+                     *this\parent\widget\scroll\h <> Widget( ) And Not Widget( )\align
                     
                     If _is_child_integral_( Widget( ))
                       Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     Else
-                      Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ) - *bar\widget\parent\widget\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                      Resize( Widget( ), ( Widget( )\x[#__c_container] + *bar\page\change ) - *this\parent\widget\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     EndIf
                   EndIf
                   
@@ -6723,31 +6725,31 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         EndIf
         
         ;
-        If *bar\widget\type = #__type_Spin Or
-           *bar\widget\type = #__type_ProgressBar
+        If *this\type = #__type_Spin Or
+           *this\type = #__type_ProgressBar
           
           Protected i
           For i = 0 To 3
-            If *bar\widget\scroll\increment = ValF(StrF(*bar\widget\scroll\increment, i))
-              *bar\widget\text\string = StrF(*bar\page\pos, i)
-              *bar\widget\text\change = 1
+            If *this\scroll\increment = ValF(StrF(*this\scroll\increment, i))
+              *this\text\string = StrF(*bar\page\pos, i)
+              *this\text\change = 1
               Break
             EndIf
           Next
         EndIf
         
         ;
-        If *bar\widget\root\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( )) 
-          Debug "bar redraw - "+*bar\widget\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
-          ReDraw( *bar\widget\root ) 
+        If *this\root\canvas\gadget <> PB(EventGadget)( ) And PB(IsGadget)( PB(EventGadget)( )) 
+          Debug "bar redraw - "+*this\root\canvas\gadget +" "+ PB(EventGadget)( ) +" "+ EventGadget( )
+          ReDraw( *this\root ) 
         EndIf
         
-        ;         If _is_child_integral_( *bar\widget )
-        ;           If *bar\widget\type = #__type_ScrollBar ; _is_scrollbars_( *bar\widget )
-        ;             Send( #__event_ScrollChange, *bar\widget\parent\widget, *bar\widget, *bar\page\change )
+        ;         If _is_child_integral_( *this )
+        ;           If *this\type = #__type_ScrollBar ; _is_scrollbars_( *this )
+        ;             Send( #__event_ScrollChange, *this\parent\widget, *this, *bar\page\change )
         ;           EndIf
         ;         Else
-        ;           Send( #__event_Change, *bar\widget, EnteredButton(), *bar\page\change )
+        ;           Send( #__event_Change, *this, EnteredButton(), *bar\page\change )
         ;         EndIf
         
         *bar\page\change = 0
@@ -6755,7 +6757,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; 
       If *bar\thumb\change <> 0
-        If *bar\widget\root\canvas\gadget = PB(EventGadget)( ) 
+        If *this\root\canvas\gadget = PB(EventGadget)( ) 
           result = *bar\thumb\change
         EndIf
         
@@ -6766,20 +6768,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure.b Bar_Update( *bar._s_BAR )
+      Protected *this._s_widget = *bar\widget
       Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i
-      Protected bordersize = 0;*bar\widget\bs
-      Protected width = *bar\widget\width[#__c_frame]
-      Protected height = *bar\widget\height[#__c_frame]
+      Protected bordersize = 0;*this\bs
+      Protected width = *this\width[#__c_frame]
+      Protected height = *this\height[#__c_frame]
       
-      If *bar\widget\type = #__type_Spin 
-        If *bar\widget\bar\vertical
+      If *this\type = #__type_Spin 
+        If *this\bar\vertical
           *bar\area\len = height 
         Else
           *bar\area\len = width 
         EndIf
         
         ; set real spin-buttons height
-        If Not *bar\widget\flag & #__spin_Plus
+        If Not *this\flag & #__spin_Plus
           *bar\button[#__b_1]\size =  height/2 + Bool( height % 2 )
           *bar\button[#__b_2]\size = *bar\button[#__b_1]\size
         EndIf
@@ -6793,21 +6796,21 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
       Else
         ; get area size
-        If *bar\widget\bar\vertical
+        If *this\bar\vertical
           *bar\area\len = height 
         Else
           *bar\area\len = width 
         EndIf
         
-        If *bar\widget\type = #__type_ScrollBar 
+        If *this\type = #__type_ScrollBar 
           ; default button size
           If *bar\max 
             If *bar\button[#__b_1]\size =- 1 And *bar\button[#__b_2]\size =- 1
-              If *bar\widget\bar\vertical And width > 7 And width < 21
+              If *this\bar\vertical And width > 7 And width < 21
                 *bar\button[#__b_1]\size = width - 1
                 *bar\button[#__b_2]\size = width - 1
                 
-              ElseIf Not *bar\widget\bar\vertical And height > 7 And height < 21
+              ElseIf Not *this\bar\vertical And height > 7 And height < 21
                 *bar\button[#__b_1]\size = height - 1
                 *bar\button[#__b_2]\size = height - 1
                 
@@ -6818,13 +6821,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ;           If *bar\button[#__b_3]\size
-            ;             If *bar\widget\bar\vertical
-            ;               If *bar\widget\width = 0
-            ;                 *bar\widget\width = *bar\button[#__b_3]\size
+            ;             If *this\bar\vertical
+            ;               If *this\width = 0
+            ;                 *this\width = *bar\button[#__b_3]\size
             ;               EndIf
             ;             Else
-            ;               If *bar\widget\height = 0
-            ;                 *bar\widget\height = *bar\button[#__b_3]\size
+            ;               If *this\height = 0
+            ;                 *this\height = *bar\button[#__b_3]\size
             ;               EndIf
             ;             EndIf
             ;           EndIf
@@ -6835,7 +6838,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *bar\area\pos = ( *bar\button[#__b_1]\size + *bar\min[1] ) + bordersize
         *bar\thumb\end = *bar\area\len - ( *bar\button[#__b_1]\size + *bar\button[#__b_2]\size ) - bordersize*2
         
-        If ( *bar\widget\type = #__type_TabBar Or *bar\widget\type = #__type_ToolBar )
+        If ( *this\type = #__type_TabBar Or *this\type = #__type_ToolBar )
           If *bar\max
             *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
             *bar\page\end = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
@@ -6908,11 +6911,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         *bar\area\end = *bar\area\len - *bar\thumb\len - ( *bar\button[#__b_2]\size + *bar\min[2] + bordersize )
       EndIf
       
-      ;Debug ""+*bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\widget\class
+      ;Debug ""+*bar\thumb\len +" "+ *bar\thumb\end +" "+ *this\class
       ProcedureReturn 1;Bar_Resize( *bar )  
     EndProcedure
     
     Procedure.b Bar_Change( *bar._s_BAR, ScrollPos.l )
+      Protected *this._s_widget = *bar\widget
       With *this
         ;Debug ""+ScrollPos +" "+ *bar\page\end
         
@@ -6936,12 +6940,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *bar\page\pos = ScrollPos
           
           ; example-scroll(area) fixed
-          If _is_child_integral_( *bar\widget )
-            If *bar\widget\type = #__type_ScrollBar ; _is_scrollbars_( *bar\widget )
-              Send( #__event_ScrollChange, *bar\widget\parent\widget, *bar\widget, *bar\page\change )
+          If _is_child_integral_( *this )
+            If *this\type = #__type_ScrollBar ; _is_scrollbars_( *this )
+              Send( #__event_ScrollChange, *this\parent\widget, *this, *bar\page\change )
             EndIf
           Else
-            Send( #__event_Change, *bar\widget, EnteredButton(), *bar\page\change )
+            Send( #__event_Change, *this, EnteredButton(), *bar\page\change )
           EndIf
           
           ProcedureReturn #True
@@ -6950,8 +6954,8 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure.b Bar_SetState( *bar._s_BAR, state.f )
-      ;       If *bar\widget\type = #__type_TabBar
-      ;         Tab_SetState( *bar\widget, state )
+      ;       If *this\type = #__type_TabBar
+      ;         Tab_SetState( *this, state )
       ;       Else
       If Bar_Change( *bar, state ) 
         Bar_Update( *bar ) 
@@ -6961,6 +6965,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
     EndProcedure
     
     Procedure.b Bar_SetPos( *bar._s_BAR, ThumbPos.i )
+      Protected *this._s_widget = *bar\widget
       Protected ScrollPos.f
       
       If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
@@ -6971,13 +6976,13 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         ScrollPos = _bar_invert_page_pos_( *bar, ScrollPos )
         
         ;
-        If *bar\widget\scroll\increment > 1
-          ScrollPos - Mod( ScrollPos, *bar\widget\scroll\increment )
+        If *this\scroll\increment > 1
+          ScrollPos - Mod( ScrollPos, *this\scroll\increment )
         EndIf
         
         ; thumb move tick steps
-        If *bar\widget\type = #__type_trackbar And 
-           *bar\widget\flag & #PB_TrackBar_Ticks
+        If *this\type = #__type_trackbar And 
+           *this\flag & #PB_TrackBar_Ticks
           ThumbPos = _bar_thumb_pos_( *bar, ScrollPos )
           ThumbPos = _bar_invert_thumb_pos_( *bar, ThumbPos )
         EndIf
@@ -6986,7 +6991,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *bar\thumb\change = *bar\thumb\pos - ThumbPos 
           *bar\thumb\pos = ThumbPos
           If Bar_Change( *bar, ScrollPos )
-            *bar\widget\state\flag | #__s_scroll
+            *this\state\flag | #__s_scroll
           EndIf
           ProcedureReturn Bar_Resize( *bar )
         EndIf
@@ -12840,7 +12845,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               *this\mode\buttons = state
               
               If *this\count\items
-                If *this\flag & #__tree_optionboxes
+                If *this\flag & #__tree_OptionBoxes
                   PushListPosition( RowList( *this ))
                   ForEach RowList( *this )
                     If RowList( *this )\_parent And 
@@ -12853,7 +12858,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
               EndIf
             EndIf
             If flag & #__tree_checkboxes
-              If *this\flag & #__tree_optionboxes
+              If *this\flag & #__tree_OptionBoxes
                 *this\mode\check = Bool( state ) * #__m_optionselect
               Else
                 *this\mode\check = Bool( state )
@@ -12872,7 +12877,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             If flag & #__tree_multiselect
               *this\mode\check = Bool( state ) * #__m_multiselect
             EndIf
-            If flag & #__tree_optionboxes
+            If flag & #__tree_OptionBoxes
               If state 
                 *this\mode\check = #__m_optionselect
               Else
@@ -12915,7 +12920,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             
             
             If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And
-               Not ( *this\flag & #__tree_property Or *this\flag & #__tree_optionboxes )
+               Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
               *this\row\sublevelsize = 18 
             Else
               *this\row\sublevelsize = 0
@@ -13733,14 +13738,14 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       ; - widget::Option_SetState( )
       If *this\type = #__type_Option
-        If *this\OptionGroupWidget And 
+        If *this\OptionBox( ) And 
            *this\_box_\___state <> State
           
-          If *this\OptionGroupWidget\OptionGroupWidget <> *this
-            If *this\OptionGroupWidget\OptionGroupWidget
-              *this\OptionGroupWidget\OptionGroupWidget\_box_\___state = 0
+          If *this\OptionBox( )\OptionBox( ) <> *this
+            If *this\OptionBox( )\OptionBox( )
+              *this\OptionBox( )\OptionBox( )\_box_\___state = 0
             EndIf
-            *this\OptionGroupWidget\OptionGroupWidget = *this
+            *this\OptionBox( )\OptionBox( ) = *this
           EndIf
           *this\_box_\___state = State
           
@@ -15911,7 +15916,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
           *this\bar\button.allocate( BUTTONS, [#__b_1] )
           *this\bar\button.allocate( BUTTONS, [#__b_2] )
           *this\bar\button.allocate( BUTTONS, [#__b_3] )
-          *this\bar\widget = *this ; 
+          *this\bar\widget = *this
           
           *this\scroll\increment = ScrollStep
           
@@ -16097,7 +16102,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             EndIf
             
             ;             If flag & #PB_TrackBar_Ticks = #PB_TrackBar_Ticks
-            ;               *this\bar\widget\flag | #PB_TrackBar_Ticks
+            ;               *this\flag | #PB_TrackBar_Ticks
             ;             EndIf
             
             *this\bar\button[#__b_1]\interact = #True
@@ -16162,7 +16167,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
             *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
             
             ;             If flag & #PB_Splitter_Separator = #PB_Splitter_Separator
-            ;               *this\bar\widget\flag | #PB_Splitter_Separator
+            ;               *this\flag | #PB_Splitter_Separator
             ;             EndIf
             
             If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
@@ -16428,12 +16433,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       If *this\type = #__type_Option
         If Root( )\count\childrens
           If Widget( )\type = #__type_Option
-            *this\OptionGroupWidget = Widget( )\OptionGroupWidget 
+            *this\OptionBox( ) = Widget( )\OptionBox( ) 
           Else
-            *this\OptionGroupWidget = Widget( ) 
+            *this\OptionBox( ) = Widget( ) 
           EndIf
         Else
-          *this\OptionGroupWidget = OpenedWidget( )
+          *this\OptionBox( ) = OpenedWidget( )
         EndIf
       EndIf
       
@@ -16727,12 +16732,12 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
       
       If Root( )\count\childrens
         If Widget( )\type = #__type_Option
-          *this\OptionGroupWidget = Widget( )\OptionGroupWidget 
+          *this\OptionBox( ) = Widget( )\OptionBox( ) 
         Else
-          *this\OptionGroupWidget = Widget( ) 
+          *this\OptionBox( ) = Widget( ) 
         EndIf
       Else
-        *this\OptionGroupWidget = OpenedWidget( )
+        *this\OptionBox( ) = OpenedWidget( )
       EndIf
       
       *this\x[#__c_inner] =- 2147483648
@@ -20936,5 +20941,5 @@ CompilerEndIf
 ;   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------+v---------------------+---2----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

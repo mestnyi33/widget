@@ -706,8 +706,18 @@
     EndIf
     
     
+    Enumeration #PB_Event_FirstCustomValue
+      #PB_Event_Create
+      #PB_Event_MouseMove
+      #PB_Event_LeftButtonDown
+      #PB_Event_LeftButtonUp
+      #PB_Event_Destroy
+    EndEnumeration
+    
     ;- Constant event-type
     Enumeration #PB_EventType_FirstCustomValue
+      #PB_EventType_Create
+      #PB_EventType_Repaint
       CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
         #PB_EventType_Resize
       CompilerEndIf
@@ -720,10 +730,8 @@
       
       #PB_EventType_Draw
       #PB_EventType_Free
-      #PB_EventType_Create
       #PB_EventType_Drop
       
-      #PB_EventType_Repaint
       #PB_EventType_ScrollChange
       
       #PB_EventType_CloseWindow

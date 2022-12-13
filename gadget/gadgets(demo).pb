@@ -16,6 +16,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Global x,y,i
   
+  ;\\ gadget state then disabled
+  Global Disable ; = 1
+  
   Procedure scrolled()
     
   EndProcedure
@@ -95,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
  ;; CloseGadgetList()
   
-  
+  If Disable
     DisableGadget(#PB_GadgetType_Button, 1)
     DisableGadget(#PB_GadgetType_ButtonImage, 1)
     DisableGadget(#PB_GadgetType_Calendar, 1)
@@ -128,7 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     DisableGadget(#PB_GadgetType_TrackBar, 1)
     DisableGadget(#PB_GadgetType_Tree, 1)
     ;;DisableGadget(#PB_GadgetType_Web, 1)
-    
+    EndIf
   
   Repeat
     Define  Event = WaitWindowEvent()
@@ -142,6 +145,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
 ; Folding = --
 ; EnableXP
