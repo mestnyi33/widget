@@ -12276,6 +12276,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           HideWindow( *this\_root( )\canvas\window, 0, #PB_Window_NoActivate )
           ; SetParent( *this, *this\_root( ) )
           ResizeWindow( *this\_root( )\canvas\window, x, y, *display\width, display_height )
+          PostCanvasRepaint( *this\_root( ) )
           
         EndIf
       Else
@@ -12298,6 +12299,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ResizeWindow( *root\canvas\window, x, y, *display\width, display_height )
           SetParent( *this, *root )
+          ; 
+          ChangeCurrentRoot( *display\_root( )\canvas\address )
         EndIf
       EndIf
       
@@ -18995,6 +18998,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PopMapPosition( Root( ) )
       EndIf
       
+;       If PopupWidget( )
+;         ;If EventType <> #PB_EventType_MouseMove
+;         Debug ""+4444+" - "+EventType +" "+ Canvas +" "+ Root( )\class ;canvas\gadget
+;                                                                        ;EndIf    
+;       EndIf
+        
       ;\\
       If Root( ) And Root( )\canvas\gadget = Canvas
         ;\\
@@ -19228,6 +19237,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ElseIf eventtype = #__event_LeftButtonDown Or
                eventtype = #__event_MiddleButtonDown Or
                eventtype = #__event_RightButtonDown
+          
           
           ;\\
           If EnteredWidget( )
@@ -20841,6 +20851,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-4-vdf-------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 19004
+; FirstLine = 18713
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-vff----------8b-8v0vv-------------------------------
 ; EnableXP

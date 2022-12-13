@@ -50,7 +50,11 @@ Module events
       ;             If EventType = #PB_EventType_Repaint
       
       If *setcallback
-        CallFunctionFast(*setcallback, EventGadget(), EventType())
+        Select EventType( )
+          Case #PB_EventType_LeftClick
+          Default
+            CallFunctionFast(*setcallback, EventGadget(), EventType())
+        EndSelect
       EndIf
       ;             EndIf
       
@@ -782,8 +786,8 @@ CompilerIf #PB_Compiler_IsMainFile
     event = events::WaitEvent(WaitWindowEvent())
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 54
-; FirstLine = 42
-; Folding = ----8--------
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 53
+; FirstLine = 40
+; Folding = ----4--------
 ; EnableXP
