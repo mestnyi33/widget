@@ -13994,6 +13994,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *D( )\_root( )   = *parent\_root( )
                 ;; Debug " children - "+ *D( )\data +" - "+ *this\data
                 
+                ;\\ integrall childrens
+                If *D( )\scroll
+                  If *D( )\scroll\v
+                    *D( )\scroll\v\_root( ) = *D( )\_root( )
+                    *D( )\scroll\v\_window( ) = *D( )\_window( )
+                  EndIf
+                  If *D( )\scroll\h
+                    *D( )\scroll\h\_root( ) = *D( )\_root( )
+                    *D( )\scroll\h\_window( ) = *D( )\_window( )
+                  EndIf
+                EndIf
+                
               Wend
               PopListPosition( *this\_widgets( ) )
             EndIf
@@ -14098,19 +14110,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         
-        ;
+        ;\\
         *parent\count\childrens + 1
         If *parent <> *parent\_root( )
           *parent\_root( )\count\childrens + 1
         EndIf
         
-        ;
+        ;\\
         *this\_parent( ) = *parent
         *this\_root( )   = *parent\_root( )
         If is_window_( *parent )
           *this\_window( ) = *parent
         Else
           *this\_window( ) = *parent\_window( )
+        EndIf
+        
+        ;\\ integrall childrens
+        If *this\scroll
+          If *this\scroll\v
+            *this\scroll\v\_root( ) = *this\_root( )
+            *this\scroll\v\_window( ) = *this\_window( )
+          EndIf
+          If *this\scroll\h
+            *this\scroll\h\_root( ) = *this\_root( )
+            *this\scroll\h\_window( ) = *this\_window( )
+          EndIf
         EndIf
         
         ;
@@ -18597,8 +18621,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndSelect
           Else
             ;\\ hide popup widget
-            If eventtype = #__event_Up
-              If Not ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) )
+            If eventtype = #__event_Down
+              If PopupWidget( ) <> *this\_parent( ) And 
+                 ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) ) = 0
                 Display( PopupWidget( ), *this )
                 PopupWidget( ) = #Null
               EndIf
@@ -20839,5 +20864,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+-----------------------------------------------------------------------------fvar-----------------------------f+f----------------------8----v--+-t88-nX------vv0v-3-++df----------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+------------------------------------------------------------------------------fvar-----------------------------f+-----------------------8----v--+-t88-nX------vv0v-3-+-df----------------------------
 ; EnableXP
