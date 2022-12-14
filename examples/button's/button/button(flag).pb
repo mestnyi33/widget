@@ -1,13 +1,14 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
-;XIncludeFile "widget-events.pbi"
+;XIncludeFile "widgets.pbi"
+XIncludeFile "widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  ;cr = "" : text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Button_6, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   Define vert=100, horiz=100, width=400, height=400
   
@@ -17,6 +18,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( )
       Case #PB_EventType_LeftClick
         Select EventWidget( )
+          Case *this
+            If Flag(*this, #__button_toggle)
+              SetState(Button_4, GetState(EventWidget( )))
+            EndIf
+            
           Case Button_type 
             If GetState(EventWidget( ))
               Hide(*this, 1)
@@ -34,44 +40,54 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(Button_type, "gadget")
             EndIf
             
-          Case *this
-            If Flag(*this, #__button_toggle)
-              SetState(Button_4, GetState(EventWidget( )))
-            EndIf
-            
           Case Button_0 : flag = #__button_default
           Case Button_1 : flag = #__button_multiline
           Case Button_2 : flag = #__button_left
           Case Button_3 : flag = #__button_right
+          Case Button_5 : flag = #__text_top
+          Case Button_6 : flag = #__text_bottom
           Case Button_4 : flag = #__button_toggle
         EndSelect
         
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
         EndIf
-        Post(#__event_repaint, #PB_All)
+        ; Post(#__event_repaint, #PB_All)
     EndSelect
     
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
-    HideGadget(gadget,1)
-    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline|#__flag_anchorsgadget) 
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
+    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline);|#__flag_anchorsgadget) 
     
     Define y = 10
     ; flag
     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
     Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__button_toggle) 
     Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__button_toggle) 
-    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "left", #__button_toggle) 
-    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "right", #__button_toggle) 
-    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "toggle", #__button_toggle) 
+    
+    Button_5 = widget::Button(width+45, y+30*3, 100, 26, "top", #__button_toggle) 
+    Button_2 = widget::Button(width+45, y+30*4, 100, 26, "left", #__button_toggle) 
+    Button_3 = widget::Button(width+45, y+30*5, 100, 26, "right", #__button_toggle) 
+    Button_6 = widget::Button(width+45, y+30*6, 100, 26, "bottom", #__button_toggle) 
+    
+    Button_4 = widget::Button(width+45, y+30*7, 100, 26, "toggle", #__button_toggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
     SetState(Button_1, Flag(*this, #__button_multiline))
     Hide(Button_type, 1)
+    
+    ;\\
+    Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    ;         SetState(Splitter_0, vert)
+    ;         SetState(Splitter_1, horiz)
+    SetState(Splitter_3, width-horiz)
+    SetState(Splitter_2, height-vert)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

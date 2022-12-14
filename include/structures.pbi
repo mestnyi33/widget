@@ -452,7 +452,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       check.b  
       
       fullselection.b
-      alwaysselection.b
       
       collapse.b
       
@@ -688,7 +687,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; \image[2] - pressed image
       ; \image[3] - background image
       
-      *flag
+      flag.q
       *data
       *cursor
       

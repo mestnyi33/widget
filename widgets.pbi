@@ -16363,7 +16363,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         *this\mode\check = #__m_multiselect ; multiselect
         *this\mode\fullselection = constants::_check_( Flag, #__flag_fullselection, #False )*7
-        *this\mode\alwaysselection = constants::_check_( Flag, #__flag_alwaysselection )
         *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines ) * 10
         
         *this\row\margin\hide = constants::_check_( Flag, #__text_numeric, #False )
@@ -16536,7 +16535,6 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         
         *this\mode\check = #__m_multiselect ; multiselect
         *this\mode\fullselection = constants::_check_( Flag, #__flag_fullselection, #False )*7
-        *this\mode\alwaysselection = constants::_check_( Flag, #__flag_alwaysselection )
         *this\mode\gridlines = constants::_check_( Flag, #__flag_gridlines ) * 10
         
         *this\row\margin\hide = constants::_check_( Flag, #__text_numeric, #False )
@@ -18300,7 +18298,7 @@ Intersect( Widget( ), transform( )\id[0], [#__c_frame] )
         Case #__type_Tree
           If Flag & #PB_Tree_AlwaysShowSelection = #PB_Tree_AlwaysShowSelection
             Flag &~ #PB_Tree_AlwaysShowSelection
-            flags | #__tree_alwaysselection
+            ;flags | #__tree_alwaysselection
           EndIf
           If Flag & #PB_Tree_CheckBoxes = #PB_Tree_CheckBoxes
             Flag &~ #PB_Tree_CheckBoxes

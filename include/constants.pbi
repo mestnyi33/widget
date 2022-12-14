@@ -273,7 +273,6 @@
     
     ;- Constant create-flags
     EnumerationBinary _c_align 8 ; 2
-      #__flag_vertical           ;= 1
       
       #__flag_Left
       #__flag_top
@@ -295,7 +294,6 @@
       
       #__flag_fullselection
       #__flag_nolines
-      #__flag_nobuttons
       #__flag_checkboxes
       #__flag_optionboxes
       #__flag_gridlines
@@ -303,11 +301,11 @@
       
       ;#__flag_inline
       #__flag_threeState
-      #__flag_clickselect
-      
-      
-      
+      ;#__flag_2
       #__flag_invert
+      
+      
+      
       #__flag_autosize
       ;#__flag_invisible
       ;#__flag_sizegadget
@@ -324,18 +322,29 @@
       
       #__flag_transparent
       #__flag_anchorsgadget
+      #__flag_clickselect
+    
+      
+      ;\\
+      #__flag_vertical 
+      #__flag_nobuttons
+      
       #__flag_Limit
     EndEnumeration
+    ; #__flag_clickselect = 8388608 ; мистика с tree checkboxex
+      
+    ;\\ 
+    #__bar_vertical  = #__flag_vertical
+    #__text_vertical = #__flag_vertical
     
-    ;#__flag_checkboxes = #__flag_clickselect
+    ;\\
     #__flag_nogadgets = #__flag_nobuttons
+    
     ;#__flag_Multiselect = #__flag_Multiline
     
-    #__flag_default         = #__flag_nolines | #__flag_nobuttons | #__flag_checkboxes
-    #__flag_alwaysselection = #__flag_Lowercase | #__flag_uppercase
     
-    #__flag_autoright  = #__flag_autosize | #__flag_Right
-    #__flag_autobottom = #__flag_autosize | #__flag_bottom
+;     #__flag_autoright  = #__flag_autosize | #__flag_Right
+;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
     
     
     ;- _c_align
@@ -392,12 +401,11 @@
       ;#__bar_Reverse
       ;#__bar_ticks
       
-      #__bar_vertical ;= #__flag_vertical
       #__bar_invert    = #__flag_invert
       #__bar_nobuttons = #__flag_nogadgets
     EndEnumeration
     
-    
+      
     #__alignFlagCount = 22
     #__alignFlagValue = 2147483648 >> ( #__alignFlagCount - 1 )
     
@@ -465,8 +473,7 @@
       
      EndEnumeration
      
-     #__text_vertical = 20<<1
-   
+     
     ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     ;       Debug #PB_Text_Right         ; 1  ; 2         ;
     ;       Debug #PB_Text_Center        ; 2  ; 1         ;
@@ -492,10 +499,10 @@
     #__text_border = #__flag_borderless;#PB_text_border
     
     #__text_Left   = #__align_text_Left
-    #__text_top    = #__align_text_top
-    #__text_center = #__align_text_center
+    #__text_Top    = #__align_text_top
+    #__text_Center = #__align_text_center
     #__text_Right  = #__align_text_Right
-    #__text_bottom = #__align_text_bottom
+    #__text_Bottom = #__align_text_bottom
     #__text_Middle = #__text_center
     
     ;     #__text_invert = #__flag_invert
@@ -519,7 +526,7 @@
     #__Mdi_editable = #__flag_anchorsgadget ; win - 4294967296
     
     ;- _c_window
-    ;     #__window_nogadgets = #__flag_nobuttons
+    ;     #__window_nogadgets = #__flag_nogadgets
     ;     #__window_borderless = #__flag_borderless
     ;     #__window_systemmenu = #__flag_systemmenu
     ;     #__window_sizegadget = #__flag_sizegadget
@@ -620,7 +627,6 @@
     #PB_Tree_GridLines   = 128
     ;#PB_Tree_ItemPosition = 256
     
-    #__tree_alwaysselection = #__flag_alwaysselection
     #__tree_nolines         = #PB_Tree_NoLines ; #__flag_nolines
     #__tree_nobuttons       = #PB_Tree_NoButtons ; #__flag_nogadgets
     #__tree_checkboxes      = #PB_Tree_CheckBoxes ; #__flag_checkboxes
@@ -628,7 +634,7 @@
     #__tree_optionboxes     = #PB_Tree_OptionBoxes ; #__flag_optionboxes
     #__tree_gridlines       = #PB_Tree_GridLines     ; #__flag_gridLines
     #__tree_Multiselect     = #__flag_Multiline
-    #__tree_clickselect     = #__flag_clickselect
+    #__tree_clickselect     = #__flag_clickselect  ; #PB_ListView_ClickSelect ; 
     #__tree_collapse        = #PB_Tree_Collapse
     
     #__tree_property = #__flag_numeric
@@ -653,7 +659,6 @@
                                             ;
                                             ;   EnumerationBinary 16
                                             ;     #__tree_collapse
-                                            ;     #__tree_AlwaysSelection
                                             ;     #__tree_clickSelect
                                             ;     #__tree_MultiSelect
                                             ;     #__tree_GridLines
@@ -676,7 +681,6 @@
     #__editor_nomultiline     = #__flag_nolines
     #__editor_numeric         = #__flag_numeric | #__text_Multiline
     #__editor_fullselection   = #__flag_fullselection
-    #__editor_alwaysselection = #__flag_alwaysselection
     #__editor_gridlines       = #__flag_gridLines
     #__editor_borderless      = #__flag_borderless
     
@@ -692,13 +696,18 @@
     #__string_Multiline  = #__text_Multiline
     
     ;- _c_button
+;     Debug #PB_Button_Right ; macos 1
+;     Debug #PB_Button_Left  ; macos 2
+;     Debug #PB_Button_Toggle; macos 4
+;     Debug #PB_Button_Default ; macos 8
+;     Debug #PB_Button_MultiLine ; macos 16
+    #__button_toggle   = #PB_Button_Toggle
+    #__button_default  = #PB_Button_Default
+    #__button_Multiline = #__text_wordwrap ; #PB_Button_MultiLine ; #__text_wordwrap 
     #__button_Left     = #__text_Left
     #__button_Right    = #__text_Right
-    #__button_toggle   = #__flag_threeState ; #__flag_collapsed
-    #__button_default  = #__flag_default
     #__button_vertical = #__text_vertical
     ;#__button_invert = #__flag_invert
-    #__button_Multiline = #__text_wordwrap
     
     
     If (#__flag_Limit >> 1) > 2147483647 ; 8589934592

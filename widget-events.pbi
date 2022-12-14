@@ -280,7 +280,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Debug "-- post --- event -- repaint --1"
       If _root_address_\canvas\repaint = #False
         _root_address_\canvas\repaint = #True
-        ; Debug "-- post --- event -- repaint --2"
+        ; Debug "-- post --- event -- repaint --2 " +_root_address_\class +" "+ #PB_Compiler_Procedure
         If _data_ = #Null
           PostEvent( #PB_Event_Gadget, _root_address_\canvas\window, _root_address_\canvas\gadget, #__event_Repaint, _root_address_ )
         Else
@@ -574,11 +574,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro draw_font_( _draw_address_ )
       ; drawing font
       If _draw_address_\text\fontID = #Null
-        _draw_address_\text\fontID = _draw_address_\_root( )\text\fontID
+        If _draw_address_\_root( )
+          _draw_address_\text\fontID = _draw_address_\_root( )\text\fontID
+        EndIf
         _draw_address_\text\change = #True
       EndIf
       
-      If _draw_address_\_root( )\canvas\fontID <> _draw_address_\text\fontID
+      If _draw_address_\_root( ) And _draw_address_\_root( )\canvas\fontID <> _draw_address_\text\fontID
         _draw_address_\_root( )\canvas\fontID = _draw_address_\text\fontID
         
         ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _draw_address_ + " fontID - "+ _draw_address_\text\fontID
@@ -599,10 +601,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro draw_font_item_( _this_, _item_, _change_ )
       If _item_\text\fontID = #Null
         If _this_\text\fontID = #Null
-          If is_integral_( _this_ )
+          If is_integral_( _this_ ) And _this_\_parent( )
             _this_\text\fontID = _this_\_parent( )\text\fontID
             _this_\text\height = _this_\_parent( )\text\height
-          Else
+          ElseIf _this_\_root( )
             _this_\text\fontID = _this_\_root( )\text\fontID
             _this_\text\height = _this_\_root( )\text\height
           EndIf
@@ -614,7 +616,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       ;Debug ""+_this_\_root( )\canvas\fontID +" "+ _item_\text\fontID
       ; drawing item font
-      If _this_\_root( )\canvas\fontID <> _item_\text\fontID
+      If _this_\_root( ) And _this_\_root( )\canvas\fontID <> _item_\text\fontID
         ;;Debug " item fontID - "+ _item_\text\fontID
         _this_\_root( )\canvas\fontID = _item_\text\fontID
         
@@ -10336,7 +10338,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;-
     ;-  TREE
-    Procedure.l _update_items_( *this._S_widget, _change_ = 1 )
+    Procedure.l update_items_( *this._S_widget, _change_ = 1 )
       Protected state.b, x.l, y.l
       
       With *this
@@ -10547,7 +10549,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       With *this
         If Not \hide
-          _update_items_( *this, *this\change )
+          update_items_( *this, *this\change )
           
           If *this\change < 0
             update_visible_items_( *this )
@@ -12240,10 +12242,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PopupWidget( )\data = *display
         ; *this\state\collapse = #True
         
+        If Not (*this\_root( ) And *this\_root( )\canvas\window <> *display\_root( )\canvas\window)
+          *this\_root( ) = *display\_root( )
+          update_items_( *this, *this\change )
+          update_visible_items_( *this )
+        EndIf
+       
         ForEach *this\_rows( )
-          ;If Not *this\_rows( )\hide
-          display_height + 30;*this\_rows( )\height
-                             ;EndIf
+          display_height + *this\_rows( )\height
           If ( ListIndex(*this\_rows( )) + 1 ) >= 10;30
             Break
           EndIf
@@ -12282,25 +12288,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         If Not *this\hide
           Debug "display - create"
-          
-          Protected *root._s_root
+          Protected window
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            *root = Open( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID( *display\_root( )\canvas\window ) )
-            ; If CocoaMessage(0, WindowID(*root\canvas\window), "hasShadow") = 0
-            ;    CocoaMessage(0, WindowID(*root\canvas\window), "setHasShadow:", 0)
-            ; EndIf
-            ;CocoaMessage(0, WindowID(*root\canvas\window), "borderless:", 1)
-            ; CocoaMessage(0, WindowID(*root\canvas\window), "styleMask") ; get
-            CocoaMessage(0, WindowID(*root\canvas\window), "setStyleMask:", #NSMiniaturizableWindowMask | #NSResizableWindowMask)
+           ; window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID( *display\_root( )\canvas\window ) )
+            window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
+;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
+                CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
+;             EndIf
+;             ;CocoaMessage(0, WindowID(*root\canvas\window), "borderless:", 1)
+;             ; CocoaMessage(0, WindowID(*root\canvas\window), "styleMask") ; get
+            ;CocoaMessage(0, WindowID(window), "setStyleMask:", #NSMiniaturizableWindowMask )
           CompilerElse
-            *root = Open( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
+            window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
           CompilerEndIf
           
-          ResizeWindow( *root\canvas\window, x, y, *display\width, display_height )
+          ResizeWindow( window, x, y, *display\width, display_height )
+          
+          Protected *root._s_root = Open( window )
           SetParent( *this, *root )
           ; 
-          ChangeCurrentRoot( *display\_root( )\canvas\address )
+           ChangeCurrentRoot( *display\_root( )\canvas\address )
+          ; PostCanvasRepaint( *display\_root( ) )
         EndIf
       EndIf
       
@@ -12376,112 +12385,96 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure Flag( *this._S_widget, flag.q = #Null, state.b =  - 1 )
+    Procedure Flag( *this._S_widget, flag.q = #Null, state.b = - 1 )
       Protected result
       
+      ;\\ get widget flags
       If Not flag
         result = *this\flag
-        ;       If *this\type = #__Type_Button
-        ;         ;         If *this\text\align\anchor\left
-        ;         ;           result | #__button_left
-        ;         ;         EndIf
-        ;         ;         If *this\text\align\anchor\right
-        ;         ;           result | #__button_right
-        ;         ;         EndIf
-        ;         ;         If *this\text\multiline
-        ;         ;           result | #__button_multiline
-        ;         ;         EndIf
-        ;         ;         If *this\flag & #__button_toggle
-        ;         ;           result | #__button_toggle
-        ;         ;         EndIf
-        ;       EndIf
       Else
-        If state =  - 1
+        ;\\ is flag on the widget
+        If state = - 1
           result = Bool( *this\flag & flag )
         Else
+          *this\change = 1
+          
+          ;\\ set & remove flags
           If state
             *this\flag | flag
           Else
             *this\flag & ~ flag
           EndIf
-          
+           
+          ;\\
           If *this\type = #__Type_Button Or
+             *this\type = #__Type_Option Or
+             *this\type = #__Type_CheckBox Or
              *this\type = #__Type_Editor Or
              *this\type = #__Type_String Or
              *this\type = #__Type_Text
-            ; commons
-            If Flag & #__flag_vertical
+            
+            If flag & #__text_multiline
+              *this\text\multiline = state
+            EndIf
+            
+            If flag & #__text_wordwrap
+              *this\text\multiline = - state
+            EndIf
+            
+            If flag & #__text_vertical
               *this\text\vertical    = state
-              *this\text\change = #True
             EndIf
             
             If flag & #__text_invert
               *this\text\invert = state
-              *this\text\change = #True
             EndIf
-          EndIf
-          
-          If *this\text\change
-            text_rotate_( *this\text )
-          EndIf
-          
-          If flag & #__text_top
-            *this\text\change              = #__text_update
-            *this\text\align\anchor\bottom = 0
-            *this\text\align\anchor\top    = state
-          EndIf
-          If flag & #__text_bottom
-            *this\text\change              = #__text_update
-            *this\text\align\anchor\top    = 0
-            *this\text\align\anchor\bottom = state
             
-            *this\image\change              = #__text_update
-            *this\image\align\anchor\top    = 0
-            *this\image\align\anchor\bottom = state
-          EndIf
-          If flag & #__text_left
-            *this\text\change             = #__text_update
-            *this\text\align\anchor\right = 0
-            *this\text\align\anchor\left  = state
-          EndIf
-          If flag & #__text_right
-            *this\text\change             = #__text_update
-            *this\text\align\anchor\left  = 0
-            *this\text\align\anchor\right = state
-            
-            *this\image\change             = #__text_update
-            *this\image\align\anchor\left  = 0
-            *this\image\align\anchor\right = state
-          EndIf
-          
-          If flag & #__text_multiline
-            *this\text\change    = #__text_update
-            *this\text\multiline = state
-          EndIf
-          
-          If flag & #__text_wordwrap
-            *this\text\change    = #__text_update
-            *this\text\multiline = - state
-          EndIf
-          
-          If *this\type = #__Type_Button
-            If flag & #__button_default
-              ; *this\text\align\anchor\left = state
+            If flag & #__text_left
+              *this\text\align\anchor\left = state
+              If Not state And *this\flag & #__text_right
+                *this\text\align\anchor\right = #True
+              EndIf
             EndIf
-            ;             If flag & #__button_left
-            ;               *this\text\align\anchor\right = 0
-            ;               *this\text\align\anchor\left = state
-            ;             EndIf
-            ;             If flag & #__button_right
-            ;               *this\text\align\anchor\left = 0
-            ;               *this\text\align\anchor\right = state
-            ;             EndIf
-            ;             If flag & #__button_multiline
-            ;               *this\text\change = #__text_update
-            ;               *this\text\multiline = state
-            ;             EndIf
             
+            If flag & #__text_right
+              *this\text\align\anchor\right = state 
+              If Not state And *this\flag & #__text_left
+                *this\text\align\anchor\left = #True
+              EndIf
+            EndIf
+            
+            If flag & #__text_top
+              *this\text\align\anchor\top = state
+              If Not state And *this\flag & #__text_bottom
+                *this\text\align\anchor\bottom = #True
+              EndIf
+            EndIf
+            
+            If flag & #__text_bottom
+              *this\text\align\anchor\bottom = state 
+              If Not state And *this\flag & #__text_top
+                *this\text\align\anchor\top = #True
+              EndIf
+            EndIf
+            
+            If flag & #__text_center
+              *this\text\align\anchor\left   = #False
+              *this\text\align\anchor\top    = #False
+              *this\text\align\anchor\right  = #False
+              *this\text\align\anchor\bottom = #False
+            EndIf
+          
             ;\\
+;             *this\text\align\anchor\left = Bool( *this\flag & #__text_left )
+;             *this\text\align\anchor\right = Bool( *this\flag & #__text_right )
+;             *this\text\align\anchor\top = Bool( *this\flag & #__text_top )
+;             *this\text\align\anchor\bottom = Bool( *this\flag & #__text_bottom )
+            
+            ;*this\text\change    = #__text_update
+          EndIf
+          
+          ;\\
+          If *this\type = #__Type_Button
             If flag & #__button_toggle
               If state
                 *this\state\toggle = #True
@@ -12492,9 +12485,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            *this\change = 1
+            ;\\ 
+            If *this\text\align\anchor\top = #True And 
+               *this\text\align\anchor\bottom = #True
+              *this\text\align\anchor\top = #False  
+              *this\text\align\anchor\bottom = #False
+            EndIf
+            ;\\ 
+            If *this\text\align\anchor\left = #True And 
+               *this\text\align\anchor\right = #True
+              *this\text\align\anchor\left = #False  
+              *this\text\align\anchor\right = #False
+            EndIf
           EndIf
           
+          ;\\
           If *this\type = #__Type_Tree Or
              *this\type = #__Type_ListView Or
              *this\type = #__Type_property
@@ -12518,7 +12523,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
             EndIf
-            If flag & #__tree_checkboxes
+            If flag & #__tree_checkboxes = #__tree_checkboxes
               If *this\flag & #__tree_OptionBoxes
                 *this\mode\check = Bool( state ) * #__m_optionselect
               Else
@@ -12532,10 +12537,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\mode\threestate = 0
               EndIf
             EndIf
-            If flag & #__tree_clickselect
+            
+            If flag & #__tree_clickselect = #__tree_clickselect
+              ;Debug "#__tree_clickselect "+#__tree_clickselect +" "+#__tree_nobuttons +" "+ #__flag_nobuttons
+                    
               *this\mode\check = Bool( state ) * #__m_clickselect
             EndIf
-            If flag & #__tree_multiselect
+            If flag & #__tree_multiselect = #__tree_multiselect
               *this\mode\check = Bool( state ) * #__m_multiselect
             EndIf
             If flag & #__tree_OptionBoxes
@@ -12592,21 +12600,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          If flag & #__text_center
-            *this\text\align\anchor\left   = 0
-            *this\text\align\anchor\top    = 0
-            *this\text\align\anchor\right  = 0
-            *this\text\align\anchor\bottom = 0
+          ;           If flag & #__text_bottom 
+;             *this\image\change              = #__text_update
+;             *this\image\align\anchor\top    = 0
+;             *this\image\align\anchor\bottom = state
+;           EndIf
+          
+         
+; ;           If flag & #__text_right 
+; ;             *this\image\align\anchor\left  = 0
+; ;             *this\image\change             = #__text_update
+; ;             *this\image\align\anchor\right = state
+; ;           EndIf
+          
+
             
-            ;           Else
-            ;             If Not *this\text\align\anchor\bottom
-            ;               *this\text\align\anchor\top = #True
-            ;             EndIf
-            ;
-            ;             If Not *this\text\align\anchor\right
-            ;               *this\text\align\anchor\left = #True
-            ;             EndIf
+          ;\\
+          If *this\text\change
+            text_rotate_( *this\text )
           EndIf
+          
           
         EndIf
       EndIf
@@ -13247,6 +13260,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *this\flag & #__button_toggle
           If *this\state\toggle <> state
+            *this\state\toggle = state
             If state
               *this\color\state  = #__S_2
             Else
@@ -13256,7 +13270,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\color\state = #__S_0
               EndIf
             EndIf
-            *this\state\toggle = state
             
             Post( *this, #__event_Change )
             PostCanvasRepaint( *this\_root( ) )
@@ -15431,7 +15444,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *this\mode\check           = #__m_multiselect ; multiselect
           *this\mode\fullselection   = constants::_check_( *this\flag, #__flag_fullselection, #False ) * 7
-          *this\mode\alwaysselection = constants::_check_( *this\flag, #__flag_alwaysselection )
           *this\mode\gridlines       = constants::_check_( *this\flag, #__flag_gridlines ) * 10
           
           *this\scroll\bars = Bool( *this\flag & #__flag_noscrollbars = #False )
@@ -15503,6 +15515,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\text\padding\x = 4
           *this\text\padding\y = 4
           
+          ;Debug *this\text\multiline
         EndIf
         
         If *this\type = #__Type_Option
@@ -15641,8 +15654,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         *this\image\padding\x = 2
         *this\text\padding\x  = 4
-        
-        ;*this\text\vertical = Bool( Flag&#__flag_vertical )
         
         If Flag & #__tree_multiselect = #__tree_multiselect
           *this\mode\check = #__m_multiselect
@@ -16840,7 +16851,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;  first update
           If _this_\change > 0 And _this_\scroll And _this_\scroll\v And _this_\scroll\h And ListSize(_this_\_rows( ))
-            _update_items_( _this_, _this_\change )
+            update_items_( _this_, _this_\change )
           EndIf
           
           ;
@@ -17217,17 +17228,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           WidgetEvent( )\data = #Null
         EndIf
         
-        ; draw current popup-widget
-        If PopupWidget( ) And PopupWidget( )\_root( ) = *this\_root( )
-          ; ;           If PopupWidget( )\change > 0 
-          ; ;             _update_items_( PopupWidget( ), PopupWidget( )\change )
-          ; ;           EndIf
-          Draw( PopupWidget( ) )
-          ;Tree_Draw( PopupWidget( ), VisibleRowList( PopupWidget( ) ))
-        EndIf
-        
         ;\\
-        If EnteredButton( )
+        If EnteredButton( ) And 
+           EnteredWidget( ) And EnteredWidget( )\bar And 
+           (EnteredWidget( )\bar\button[1]=EnteredButton( ) Or 
+            EnteredWidget( )\bar\button[2]=EnteredButton( ) Or
+            EnteredWidget( )\bar\button[3]=EnteredButton( ))
+          
           UnclipOutput( )
           ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -17468,23 +17475,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Flag & ~ #PB_Button_Right
             flags | #__button_right
           EndIf
-          If Flag & #PB_Button_MultiLine = #PB_Button_MultiLine
-            Flag & ~ #PB_Button_MultiLine
-            flags | #__button_multiline
-          EndIf
           If Flag & #PB_Button_Toggle = #PB_Button_Toggle
             Flag & ~ #PB_Button_Toggle
             flags | #__button_toggle
-          EndIf
-          If Flag & #PB_Button_Default = #PB_Button_Default
-            Flag & ~ #PB_Button_Default
-            flags | #__button_default
           EndIf
           
         Case #__Type_Tree
           If Flag & #PB_Tree_AlwaysShowSelection = #PB_Tree_AlwaysShowSelection
             Flag & ~ #PB_Tree_AlwaysShowSelection
-            flags | #__tree_alwaysselection
+            ; flags | #__tree_alwaysselection
           EndIf
           If Flag & #PB_Tree_CheckBoxes = #PB_Tree_CheckBoxes
             Flag & ~ #PB_Tree_CheckBoxes
@@ -18313,7 +18312,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
           Case #__event_CursorChange
-            Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
+           ; Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
             
           Case #__event_MouseEnter,
                #__event_MouseLeave,
@@ -18599,12 +18598,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Else
             ;\\ hide popup widget
             If eventtype = #__event_Up
-              ; If PopupWidget( ) <> *this
               If Not ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) )
                 Display( PopupWidget( ), *this )
                 PopupWidget( ) = #Null
               EndIf
-              ; EndIf
             EndIf
           EndIf
         EndIf
@@ -18694,13 +18691,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;
-            If PopupWidget( ) And
-               is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_draw] )
-              *widget = PopupWidget( )
-            Else
-              *widget = *root\_widgets( )
-            EndIf
+            *widget = *root\_widgets( )
             
             ; is integral scroll bar's
             If *widget\scroll
@@ -18867,6 +18858,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;           ChangeCurrentRoot( GadgetID( Canvas ) )
       ;         EndIf
       ;       EndIf
+;       If PopupWidget( )
+;         ;If EventType <> #PB_EventType_MouseMove
+;         Debug ""+4444+" - "+EventType +" "+ Canvas +" "+ Root( )\class ;canvas\gadget
+;                                                                        ;EndIf    
+;       EndIf
+        
       
       ;\\
       If eventtype = #__event_LeftButtonUp Or
@@ -18998,12 +18995,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PopMapPosition( Root( ) )
       EndIf
       
-;       If PopupWidget( )
-;         ;If EventType <> #PB_EventType_MouseMove
-;         Debug ""+4444+" - "+EventType +" "+ Canvas +" "+ Root( )\class ;canvas\gadget
-;                                                                        ;EndIf    
-;       EndIf
-        
       ;\\
       If Root( ) And Root( )\canvas\gadget = Canvas
         ;\\
@@ -19300,15 +19291,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\time And
                DoubleClickTime( ) > ( ElapsedMilliseconds( ) - mouse( )\time )
               mouse( )\click + 1
-              If mouse( )\click > 3
-                DoEvents( PressedWidget( ), eventtype )
-              EndIf
             Else
               mouse( )\click = 1
               DoEvents( PressedWidget( ), eventtype )
             EndIf
             mouse( )\time = ElapsedMilliseconds( )
-            
           EndIf
           
         ElseIf eventtype = #__event_LeftButtonUp Or
@@ -19375,6 +19362,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ do up&click events
             If mouse( )\click
+              ;\\ do up events
+              If mouse( )\click = 1
+                DoEvents( PressedWidget( ), eventtype )
+              EndIf
+              
+              ;\\ do click events
+              If PressedWidget( ) = EnteredWidget( ) And
+                 Not PressedWidget( )\state\drag
+                
+                If eventtype = #__event_LeftButtonUp
+                  DoEvents( PressedWidget( ), #__event_LeftClick )
+                EndIf
+                If eventtype = #__event_RightButtonUp
+                  DoEvents( PressedWidget( ), #__event_RightClick )
+                EndIf
+              EndIf
+              
               If mouse( )\click = 2
                 If eventtype = #__event_LeftButtonUp
                   DoEvents( PressedWidget( ), #__event_Left2Click )
@@ -19388,23 +19392,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 If eventtype = #__event_RightButtonUp
                   DoEvents( PressedWidget( ), #__event_Right3Click )
-                EndIf
-              Else
-                ;\\ do up events
-                ;If mouse( )\click = 1
-                DoEvents( PressedWidget( ), eventtype )
-                ;EndIf
-                
-                ;\\ do click events
-                If PressedWidget( ) = EnteredWidget( ) And
-                   Not PressedWidget( )\state\drag
-                  
-                  If eventtype = #__event_LeftButtonUp
-                    DoEvents( PressedWidget( ), #__event_LeftClick )
-                  EndIf
-                  If eventtype = #__event_RightButtonUp
-                    DoEvents( PressedWidget( ), #__event_RightClick )
-                  EndIf
                 EndIf
               EndIf
             EndIf
@@ -20342,7 +20329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Protected._S_widget *ok, *no, *cancel
       
-      *ok = Button( width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_default )
+      *ok = Button( width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_Default )
       SetAlignment( *ok, 0, 0, 1, 1, 0 )
       
       If Flag & #PB_MessageRequester_YesNo Or
@@ -20548,7 +20535,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   
-  ; OpenRoot0
+  ;\\ Open Root0
   Define *root0._S_widget = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
   ;BindWidgetEvent( *root2, @BindEvents( ) )
   
@@ -20578,7 +20565,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   *g = String(10, 220, 200 + 60, 50, "string gadget text text 1234567890 text text long long very long", #__string_password | #__string_right)
   ;\\Close( )
   
-  
+  ;\\
   Define *root1._S_widget = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
   ;BindWidgetEvent( *root1, @BindEvents( ) )
   
@@ -20589,7 +20576,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   
   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
   String( 60, 20, 60, 40, "String" )
-  *w = ComboBox( 108, 20, 152, 40)
+  *w = ComboBox( 108, 30, 152, 40)
   For i = 1 To 100;0000
     AddItem(*w, i, "text-" + Str(i))
   Next
@@ -20774,14 +20761,14 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
   Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = widget::Splitter(10, 70, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
+  Splitter_5 = widget::Splitter(10, 80, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
   SetState(Splitter_5, 50)
   SetState(Splitter_4, 50)
   SetState(Splitter_3, 40)
   SetState(Splitter_1, 50)
   
-  Spin(10, 200, 250, 25, 5, 30 )
-  Spin(10, 230, 250, 25, 5, 30, #__spin_Plus)
+  Spin(10, 210, 250, 25, 5, 30 )
+  Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
   
   ;\\
   OpenList( *root3 )
@@ -20851,8 +20838,6 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 19004
-; FirstLine = 18713
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-vff----------8b-8v0vv-------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+-----------------------------------------------------------------------------fvar-----------------------------f+f----------------------8----v--+-t88-nX------vv0v-3-++df----------------------------
 ; EnableXP

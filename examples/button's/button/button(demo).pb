@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #Font18R = 18
   Global fs = 9
   Global igFS18.i = fs + Bool( #PB_Compiler_OS=#PB_OS_MacOS )*( fs-7 )
-  Debug igFS18
+  ; Debug igFS18
   LoadFont( #Font18R, "Arial Unicode MS Regular", igFS18 );, #PB_Font_HighQuality )
   ;LoadFont( #Font18R, "Arial", 18-Bool( #PB_Compiler_OS=#PB_OS_Windows )*4 )
   
