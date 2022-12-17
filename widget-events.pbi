@@ -12180,7 +12180,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;-
-    Procedure.l x( *this._S_widget, mode.l = #__c_frame )
+    Procedure.l X( *this._S_widget, mode.l = #__c_frame )
       ProcedureReturn ( Bool( Not *this\hide ) * *this\x[mode] )
     EndProcedure
     
@@ -12237,31 +12237,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\hide ! 1
       
+      ;\\
+      If *display\_box_
+        If *this\hide = 0
+          *display\_box_\arrow\direction = 3
+        Else
+          *display\_box_\arrow\direction = 2
+        EndIf
+      EndIf
+      
+      ;\\
       If Not *this\hide
-        PopupWidget( )       = *this
-        PopupWidget( )\data = *display
-        ; *this\state\collapse = #True
+        PopupWidget( ) = *this
         
-        If Not (*this\_root( ) And *this\_root( )\canvas\window <> *display\_root( )\canvas\window)
+        ;\\ 
+        If Not ( *this\_root( ) And 
+                 *this\_root( )\canvas\window <> *display\_root( )\canvas\window )
           *this\_root( ) = *display\_root( )
+          *this\_parent( ) = *this\_root( )
+          *this\_window( ) = *this\_root( )
           update_items_( *this, *this\change )
           update_visible_items_( *this )
         EndIf
-       
+        
+        ;\\
         ForEach *this\_rows( )
           display_height + *this\_rows( )\height
-          If ( ListIndex(*this\_rows( )) + 1 ) >= 10;30
+          If ( ListIndex(*this\_rows( )) + 1 ) >= 10
             Break
           EndIf
         Next
-        
-        If display_height = 0 
-          display_height = 30
-        EndIf
-        
-        ;Debug ""+ListSize(*this\_rows( ))+" "+display_height +" "+*display\class
       EndIf  
       
+      ;\\
       If x = #PB_Ignore
         x = GadgetX( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
       EndIf
@@ -12269,6 +12277,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         y = GadgetY( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
       EndIf
       
+      ;\\
       If *this\_root( ) And *this\_root( )\canvas\window <> *display\_root( )\canvas\window
         If *this\hide
           Debug "display - hide"
@@ -12291,13 +12300,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Protected window
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-           ; window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID( *display\_root( )\canvas\window ) )
+            ; window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID( *display\_root( )\canvas\window ) )
             window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
-;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
-                CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
-;             EndIf
-;             ;CocoaMessage(0, WindowID(*root\canvas\window), "borderless:", 1)
-;             ; CocoaMessage(0, WindowID(*root\canvas\window), "styleMask") ; get
+            ;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
+            CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
+            ;             EndIf
+            ;             ;CocoaMessage(0, WindowID(*root\canvas\window), "borderless:", 1)
+            ;             ; CocoaMessage(0, WindowID(*root\canvas\window), "styleMask") ; get
             ;CocoaMessage(0, WindowID(window), "setStyleMask:", #NSMiniaturizableWindowMask )
           CompilerElse
             window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
@@ -12306,9 +12315,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ResizeWindow( window, x, y, *display\width, display_height )
           
           Protected *root._s_root = Open( window )
-          SetParent( *this, *root )
+          *this\_root( ) = *root
+          *this\_parent( ) = *root
+          *this\_window( ) = *root
+          *this\_root( )\_parent( ) = *display
+          
+          *this\autosize = 1
+          ; SetParent( *this, *root )
           ; 
-           ChangeCurrentRoot( *display\_root( )\canvas\address )
+          ChangeCurrentRoot( *display\_root( )\canvas\address )
           ; PostCanvasRepaint( *display\_root( ) )
         EndIf
       EndIf
@@ -12404,7 +12419,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Else
             *this\flag & ~ flag
           EndIf
-           
+          
           ;\\
           If *this\type = #__Type_Button Or
              *this\type = #__Type_Option Or
@@ -12463,12 +12478,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\text\align\anchor\right  = #False
               *this\text\align\anchor\bottom = #False
             EndIf
-          
+            
             ;\\
-;             *this\text\align\anchor\left = Bool( *this\flag & #__text_left )
-;             *this\text\align\anchor\right = Bool( *this\flag & #__text_right )
-;             *this\text\align\anchor\top = Bool( *this\flag & #__text_top )
-;             *this\text\align\anchor\bottom = Bool( *this\flag & #__text_bottom )
+            ;             *this\text\align\anchor\left = Bool( *this\flag & #__text_left )
+            ;             *this\text\align\anchor\right = Bool( *this\flag & #__text_right )
+            ;             *this\text\align\anchor\top = Bool( *this\flag & #__text_top )
+            ;             *this\text\align\anchor\bottom = Bool( *this\flag & #__text_bottom )
             
             ;*this\text\change    = #__text_update
           EndIf
@@ -12540,7 +12555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If flag & #__tree_clickselect = #__tree_clickselect
               ;Debug "#__tree_clickselect "+#__tree_clickselect +" "+#__tree_nobuttons +" "+ #__flag_nobuttons
-                    
+              
               *this\mode\check = Bool( state ) * #__m_clickselect
             EndIf
             If flag & #__tree_multiselect = #__tree_multiselect
@@ -12601,20 +12616,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;           If flag & #__text_bottom 
-;             *this\image\change              = #__text_update
-;             *this\image\align\anchor\top    = 0
-;             *this\image\align\anchor\bottom = state
-;           EndIf
+          ;             *this\image\change              = #__text_update
+          ;             *this\image\align\anchor\top    = 0
+          ;             *this\image\align\anchor\bottom = state
+          ;           EndIf
           
-         
-; ;           If flag & #__text_right 
-; ;             *this\image\align\anchor\left  = 0
-; ;             *this\image\change             = #__text_update
-; ;             *this\image\align\anchor\right = state
-; ;           EndIf
           
-
-            
+          ; ;           If flag & #__text_right 
+          ; ;             *this\image\align\anchor\left  = 0
+          ; ;             *this\image\change             = #__text_update
+          ; ;             *this\image\align\anchor\right = state
+          ; ;           EndIf
+          
+          
+          
           ;\\
           If *this\text\change
             text_rotate_( *this\text )
@@ -13229,28 +13244,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If *this\type = #__Type_ComboBox
         If *this\PopupBox( )
-          *this = *this\PopupBox( )
-        EndIf
-        
-        If is_no_select_item_( *this\_rows( ), State )
-          ProcedureReturn #False
-        EndIf
-        
-        If *this\FocusedRow( ) <> *this\_rows( )
           
-          If *this\FocusedRow( )
-            If *this\FocusedRow( )\state\focus
-              *this\FocusedRow( )\state\focus = #False
-            EndIf
-            
-            *this\FocusedRow( )\color\state = #__S_0
+          If is_no_select_item_( *this\PopupBox( )\_rows( ), State )
+            ProcedureReturn #False
           EndIf
           
-          *this\FocusedRow( )             = *this\_rows( )
-          *this\FocusedRow( )\state\focus = #True
-          *this\FocusedRow( )\color\state = #__S_2
-          
-          *this\text\string = *this\FocusedRow( )\text\string
+          If *this\PopupBox( )\FocusedRow( ) <> *this\PopupBox( )\_rows( )
+            
+            If *this\PopupBox( )\FocusedRow( )
+              If *this\PopupBox( )\FocusedRow( )\state\focus
+                *this\PopupBox( )\FocusedRow( )\state\focus = #False
+              EndIf
+              
+              *this\PopupBox( )\FocusedRow( )\color\state = #__S_0
+            EndIf
+            
+            *this\PopupBox( )\FocusedRow( )             = *this\PopupBox( )\_rows( )
+            *this\PopupBox( )\FocusedRow( )\state\focus = #True
+            *this\PopupBox( )\FocusedRow( )\color\state = #__S_2
+            Debug "SETSTATE - combo "
+            ;*this\text\string = *this\PopupBox( )\FocusedRow( )\text\string
+            
+            SetText( *this, GetItemText( *this\PopupBox( ), GetState( *this\PopupBox( ) ) ) )
+            
+          EndIf
         EndIf
       EndIf
       
@@ -13551,6 +13568,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *This\text\string.s = Text.s
           *This\text\change   = #True
           result              = #True
+          PostCanvasRepaint( *This\_root( ) )
         EndIf
       EndIf
       
@@ -16242,43 +16260,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected *parent._S_widget = OpenedWidget( )
       
       If *this\flag & #PB_ComboBox_Editable
-        *this\flag & ~ #PB_ComboBox_Editable
-      Else
-        *this\flag | #__text_readonly
+        *this\text\editable = 1
       EndIf
       
       *this\flag  = Flag
       *this\type  = #__Type_ComboBox
       *this\class = #PB_Compiler_Procedure
       
-      SetParent( *this, *parent, #PB_Default )
-      
-      
-      
-      *this\x[#__c_inner] = - 2147483648
-      *this\y[#__c_inner] = - 2147483648
-      
-      
       *this\fs = 1
       *this\bs = *this\fs
-      
-      *this\row.allocate( ROW )
-      
-      set_text_flag_( *this, *this\flag | #__text_center | ( Bool( Not *this\flag & #__text_center ) * #__text_left ))
-      
-      *this\mode\threestate = constants::_check_( *this\Flag, #PB_CheckBox_ThreeState )
-      ;;*this\text\multiline =- CountString( Text, #LF$ )
-      
+      *this\x[#__c_inner] = #PB_Ignore
+      *this\y[#__c_inner] = #PB_Ignore
       *this\color = _get_colors_( )
       
       *this\_box_.allocate( BUTTONS )
       *this\_box_\color = _get_colors_( )
-      ;*this\_box_\color\back = $ffffffff
-      ;
-      ;       *this\_box_\round = 2
-      ;       *this\_box_\height = 15
-      ;       *this\_box_\width = *this\_box_\height
-      ;       *this\text\padding\x = *this\_box_\width + 8
+      *this\_box_\arrow\direction = 2
       
       If *this\Flag & #__bar_vertical = #False
         *this\fs[2] = height
@@ -16286,22 +16283,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\fs[1] = width
       EndIf
       
-      ; *this\ToolBarHeight = 3
-      
-      ;       ;;;If flag & #__flag_noscrollbars = #False ; bug windows
-      ;       bar_area_create_( *this, 1, 0, 0, 0, 0, Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
-      ;       ;;;EndIf
-      
-      *this\PopupBox( ) = Create( 0, *this\class + "_ListView", #__Type_ListView, 0, 0, width, height, #Null$, #__flag_child|#__flag_borderless )
-      ;*this\PopupBox( ) = ListView(0, 0, width, height, #__flag_child);|#__flag_borderless )
+      *this\PopupBox( ) = Create( 0, *this\class + "_ListView", #__Type_ListView, 0, 0, width, height, #Null$, Flag|#__flag_child|#__flag_borderless )
+      ;;*this\PopupBox( ) = ListView(0, 0, width, height, #__flag_child);|#__flag_borderless )
       *this\PopupBox( )\hide = 1
-      ;*this\PopupBox( )\fs = 1
       
-      
+      SetParent( *this, *parent, #PB_Default )
       Resize( *this, x, y, width, height )
-      ;       If Text.s
-      ;         SetText( *this, Text.s )
-      ;       EndIf
       
       ProcedureReturn *this
     EndProcedure
@@ -16803,8 +16790,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro draw_below_( _this_ )
       If Not _this_\_root( )\autosize
-        ; limit drawing boundaries
-        Clip( _this_, [#__c_draw] ) ; 2
+        ;\\ limit drawing boundaries
+        Clip( _this_, [#__c_draw] )
       EndIf
       
       ; draw widgets
@@ -16873,36 +16860,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _this_\text\y = (_this_\_box_\height - _this_\text\height) / 2
           
           
-          ;  first update
-          If _this_\change > 0 And _this_\scroll And _this_\scroll\v And _this_\scroll\h And ListSize(_this_\_rows( ))
-            update_items_( _this_, _this_\change )
-          EndIf
-          
           ;
           If *this\text\editable
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_( _this_\x[#__c_inner], _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_inner], _this_\fs[2], $ffffffff )
           Else
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradient_( _this_\text\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[Bool( _this_\__state & #__ss_back ) * _this_\color\state], [#__c_frame] )
-          EndIf
-          
-          If _this_\state\collapse
-            If ListSize(_this_\_rows( ))
-              ; Draw scroll bars
-              bar_area_draw_( _this_ )
-            EndIf
-            
-            _this_\_box_\arrow\direction = 3
-          Else
-            _this_\_box_\arrow\direction = 2
+            draw_gradient_( _this_\text\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[_this_\color\state], [#__c_frame] )
           EndIf
           
           If _this_\text\string
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( _this_\x[#__c_frame] + _this_\text\x,
                       _this_\y[#__c_frame] + _this_\text\y,
-                      _this_\text\string, _this_\color\front[_this_\color\state] & $FFFFFF | _this_\color\_alpha << 24 )
+                      _this_\text\string, _this_\color\front & $FFFFFF | _this_\color\_alpha << 24 )
           EndIf
           
           ;
@@ -16915,21 +16886,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_arrows_( _this_\_box_, _this_\_box_\arrow\direction )
           EndIf
           
-          
-          ; Draw combo-popup-menu backcolor
-          drawing_mode_alpha_( #PB_2DDrawing_Default )
-          draw_box_( _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner], $ffffffff )
-          
-          ; Draw combo-popup-menu all rows
-          If _this_\scroll And _this_\scroll\v And _this_\scroll\h And ListSize(_this_\_rows( ))
-            draw_items_( _this_, _this_\VisibleRows( ), _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos )
-          EndIf
-          
           ; frame draw
           If _this_\fs
             drawing_mode_( #PB_2DDrawing_Outlined )
-            draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\fs[2], _this_\color\frame[_this_\color\state] )
-            draw_box_( _this_\x[#__c_frame], _this_\y[#__c_inner] - 1, _this_\width[#__c_frame], _this_\height[#__c_inner] + 2, _this_\color\frame[_this_\color\state] )
+            draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame],  _this_\height[#__c_frame], _this_\color\frame[_this_\color\state] )
           EndIf
           
           
@@ -17047,7 +17007,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *this\height[#__c_draw] > 0
             
             If *this\state\disable = 1
-              *this\state\disable =  - 1
+              *this\state\disable = - 1
               
               If *this\count\childrens
                 DisableChildrens( *this )
@@ -17253,11 +17213,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If EnteredButton( ) And 
-           EnteredWidget( ) And EnteredWidget( )\bar And 
-           (EnteredWidget( )\bar\button[1]=EnteredButton( ) Or 
-            EnteredWidget( )\bar\button[2]=EnteredButton( ) Or
-            EnteredWidget( )\bar\button[3]=EnteredButton( ))
+        If EnteredButton( ) And EnteredWidget( ) And 
+           EnteredWidget( )\bar And EnteredWidget( )\state\enter And  
+           ( EnteredWidget( )\bar\button[1] = EnteredButton( ) Or 
+            EnteredWidget( )\bar\button[2] = EnteredButton( ) Or
+            EnteredWidget( )\bar\button[3] = EnteredButton( ) )
           
           UnclipOutput( )
           ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
@@ -17269,7 +17229,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; draw movable-sizable anchors
+        
+        ;\\ draw movable-sizable anchors
         If a_transform( )
           If a_focus_widget( ) And a_focus_widget( )\_a_\transform And
              a_focus_widget( )\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
@@ -17291,6 +17252,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_transform( )\main\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
             a_draw_sel( a_transform( ) )
           EndIf
+        EndIf
+        
+        
+        ;\\ draw current popup-widget
+        If PopupWidget( ) And PopupWidget( )\_root( ) = *this\_root( )
+          Debug "popup - draw " + *this\_root( )\class
+          ; ;           If PopupWidget( )\change > 0 
+          ; ;             update_items_( PopupWidget( ), PopupWidget( )\change )
+          ; ;           EndIf
+          Draw( PopupWidget( ) )
+          ;Tree_Draw( PopupWidget( ), VisibleRowList( PopupWidget( ) ))
         EndIf
         
         Drawing( ) = 0
@@ -18336,7 +18308,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
           Case #__event_CursorChange
-           ; Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
+            Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
             
           Case #__event_MouseEnter,
                #__event_MouseLeave,
@@ -18482,7 +18454,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Case #__Type_Window
             Window_events( *this, eventtype, mouse_x, mouse_y )
             
-             ;\\
+            ;\\
           Case #__type_combobox
             If eventtype = #__event_Down 
               If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -18492,7 +18464,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-           ;\\
+            ;\\
           Case #__Type_Button
             If *this\state\toggle = #False
               Select eventtype
@@ -18577,53 +18549,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\state\repaint = #True
             EndIf
         EndSelect
-         
+        
         ;\\
         If PopupWidget( ) 
           If PopupWidget( ) = *this
-            Protected *ComboBox._s_widget
-            If *this\data 
-              *ComboBox = *this\data
-            EndIf
-            
             Select eventtype
-              Case #__event_LeftButtonDown
-                ;               If *ComboBox
-                ;                 Debug 87665445
-                ;                 HideWindow( *this\_root( )\canvas\window, 1 )
-                ;                 SetActiveWindow( *ComboBox\_root( )\canvas\window )
-                ;             EndIf
-                
-                ; DisableWindow( GetWindow( *root ), 1 )
               Case #__event_LeftClick
-                If *ComboBox
-                  Protected window = *this\_root( )\canvas\window
+                If *this\_root( )\_parent( ) ; ComboBox( )
+                  SetText( *this\_root( )\_parent( ), GetItemText( PopupWidget( ), GetState( PopupWidget( ) ) ) )
                   
-                  SetText( *ComboBox, GetItemText( *this, GetState( *this ) ) )
-                  
-                  
-                  
-                  PostCanvasRepaint( *ComboBox\_root( ) )
-                  
-                  ;                 SetParent( *this, *ComboBox )
-                  ;                 ; *this\_root( ) = #Null
-                  ;                 ; PostCanvasRepaint( #__event_Free )
-                  
-                  If IsWindow(window)
-                    ;HideWindow( window, 1 )
-                    ;  CloseWindow( window )
-                    Display( *this, *ComboBox )
-                    SetActiveWindow( *ComboBox\_root( )\canvas\window )
+                  If IsWindow( GetWindow( GetRoot( PopupWidget( ) ) ) )
+                    Display( PopupWidget( ), *this\_root( )\_parent( ) )
+                    SetActiveWindow( GetWindow( GetRoot( *this\_root( )\_parent( ) ) ) )
                   EndIf
-                  
                 EndIf
-                
             EndSelect
           Else
             ;\\ hide popup widget
             If eventtype = #__event_Down
               If PopupWidget( ) <> *this\_parent( ) And 
-                 ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) ) = 0
+                 ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) ) = 0 
                 Display( PopupWidget( ), *this )
                 PopupWidget( ) = #Null
               EndIf
@@ -18758,14 +18703,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Until PreviousElement( *root\_widgets( )) = #False
       EndIf
       
-      ; root no enumWidget
+      ;\\ root no enumWidget
       If *widget = 0 And
          is_at_point_( *root, mouse_x, mouse_y, [#__c_frame] ) And
          is_at_point_( *root, mouse_x, mouse_y, [#__c_draw] )
         *widget = *root
       EndIf
       
-      ; do events entered & leaved
+      ;\\ 
+      If PopupWidget( ) 
+        mouse_x = CanvasMouseX(PopupWidget( )\_root( )\canvas\gadget) 
+        mouse_y = CanvasMouseY(PopupWidget( )\_root( )\canvas\gadget) 
+        If is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
+           is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_draw] )
+          *widget = PopupWidget( )
+        EndIf
+      EndIf
+      
+      ;\\ do events entered & leaved
       If *leave <> *widget
         ;If Not ( *widget And is_integral_( *widget ) )
         EnteredWidget( ) = *widget
@@ -18883,12 +18838,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;           ChangeCurrentRoot( GadgetID( Canvas ) )
       ;         EndIf
       ;       EndIf
-;       If PopupWidget( )
-;         ;If EventType <> #PB_EventType_MouseMove
-;         Debug ""+4444+" - "+EventType +" "+ Canvas +" "+ Root( )\class ;canvas\gadget
-;                                                                        ;EndIf    
-;       EndIf
-        
+      ;       If PopupWidget( )
+      ;         ;If EventType <> #PB_EventType_MouseMove
+      ;         Debug ""+4444+" - "+EventType +" "+ Canvas +" "+ Root( )\class ;canvas\gadget
+      ;                                                                        ;EndIf    
+      ;       EndIf
+      
       
       ;\\
       If eventtype = #__event_LeftButtonUp Or
@@ -20605,6 +20560,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   For i = 1 To 100;0000
     AddItem(*w, i, "text-" + Str(i))
   Next
+  SetState( *w, 3 )
   ;\\Close( )
   
   
@@ -20774,6 +20730,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   For i = 1 To 100;0000
     AddItem(Button_2, i, "text-" + Str(i))
   Next
+  SetState( Button_2, 3 )
   
   ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
   Button_3   = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
@@ -20864,5 +20821,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+------------------------------------------------------------------------------fvar-----------------------------f+-----------------------8----v--+-t88-nX------vv0v-3-+-df----------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-H------------------------------------------------------------------------------------
 ; EnableXP

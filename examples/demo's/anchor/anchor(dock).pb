@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets.pbi"
 
-;XIncludeFile "widget-events.pb"
+XIncludeFile "widget-events.pbi"
 
     
 ;-
@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Width, Height
   
     Repeat
-   Define  gEvent = events::WaitEvent( @EventHandler( ), PB(WaitWindowEvent)( ) )
+   Define  gEvent = WaitWindowEvent( ) ;events::WaitEvent( @EventHandler( ), PB(WaitWindowEvent)( ) )
     
     Select gEvent
       Case #PB_Event_CloseWindow

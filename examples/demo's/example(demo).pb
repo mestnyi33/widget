@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../widget-events.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -315,7 +315,6 @@ CompilerIf #PB_Compiler_IsMainFile
       widget::CloseList()
     EndIf
     
-    bind(-1,-1)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
