@@ -4143,7 +4143,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If is_root_container_( *this ) ;??????
         ResizeWindow( *this\_root( )\canvas\window, #PB_Ignore, #PB_Ignore, width, height )
         PB(ResizeGadget)( *this\_root( )\canvas\gadget, #PB_Ignore, #PB_Ignore, width, height )
-        
         x = ( *this\bs * 2 - *this\fs * 2 )
         y = ( *this\bs * 2 - *this\fs * 2 )
         width - ( *this\bs * 2 - *this\fs * 2 ) * 2
@@ -4235,7 +4234,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If *this\_parent( ) And *this <> *this\_parent( )
+        If *this\_parent( ) And *this <> *this\_parent( ) And *this <> *this\_root( ) 
           If Not ( *this\attach And *this\attach\mode = 2 )
             x + *this\_parent( )\x[#__c_inner]
           EndIf
@@ -4258,6 +4257,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
         EndIf
       EndIf
+      
+      ;\\
+      If PopupWidget( )
+        Debug "resize - "+*this\autosize+" "+*this\class +" "+ x +" "+ y +" "+ width +" "+ height
+      EndIf 
       
       ; inner x&y position
       ix      = ( x + *this\fs + *this\fs[1] )
@@ -4320,8 +4324,242 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\height[#__c_inner] = *this\height[#__c_container]
       EndIf
       
+      ;\\
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\state\repaint = #True
+        
+        
+        ;\\
+        If ( Change_width Or Change_height )
+          If *this\type = #__Type_Image Or
+             *this\type = #__Type_ButtonImage
+            *this\image\change = 1
+          EndIf
+          
+          If *this\count\items
+            If Change_height
+              If scroll_height_( *this ) >= *this\height[#__c_inner]
+                *this\change = 1
+              EndIf
+            EndIf
+            
+            If Change_width
+              If scroll_width_( *this ) >= *this\width[#__c_inner]
+                If *this\type <> #__Type_Tree
+                  *this\change | #__resize_width
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ; if the integral scroll bars
+        ;\\ resize vertical&horizontal scrollbars
+        If *this\scroll And *this\scroll\v And *this\scroll\h
+          bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+          
+          ; update inner coordinate
+          *this\width[#__c_inner]  = *this\scroll\h\bar\page\len
+          *this\height[#__c_inner] = *this\scroll\v\bar\page\len
+        EndIf
+        
+        ;\\ if the integral tab bar
+        If *this\TabBox( ) And is_integral_( *this\TabBox( ) )
+          *this\x[#__c_inner] = x ; - *this\fs - *this\fs[1]
+          *this\y[#__c_inner] = y ; - *this\fs - *this\fs[2]
+          
+          ;\\
+          If *this\type = #__Type_Panel
+            If *this\TabBox( )\bar\vertical
+              If *this\fs[1]
+                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\height[#__c_inner] )
+              EndIf
+              If *this\fs[3]
+                Resize( *this\TabBox( ), *this\width[#__c_inner], *this\fs, *this\fs[3], *this\height[#__c_inner] )
+              EndIf
+            Else
+              If *this\fs[2]
+                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\width[#__c_inner], *this\fs[2])
+              EndIf
+              If *this\fs[4]
+                Resize( *this\TabBox( ), *this\fs, *this\height[#__c_inner], *this\width[#__c_inner], *this\fs[4])
+              EndIf
+            EndIf
+          EndIf
+          
+          ;\\
+          If *this\type = #__Type_window
+            ;If *this\TabBox( )
+            Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\width[#__c_frame], *this\ToolBarHeight )
+            ;EndIf
+          EndIf
+          
+          *this\x[#__c_inner] + *this\fs + *this\fs[1]
+          *this\y[#__c_inner] + *this\fs + *this\fs[2]
+        EndIf
+        
+        ;\\
+        If *this\type = #__Type_Window
+          result = Update( *this )
+        EndIf
+        
+        ;\\ if the widgets is composite
+        If *this\type = #__Type_Spin
+          If *this\StringBox( )
+            Resize( *this\StringBox( ), *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner] )
+          EndIf
+        EndIf
+        
+        ;\\ parent mdi
+        If *this\_parent( ) And
+           is_integral_( *this ) And
+           *this\_parent( )\type = #__Type_MDI And
+           *this\_parent( )\scroll And
+           *this\_parent( )\scroll\v <> *this And
+           *this\_parent( )\scroll\h <> *this And
+           *this\_parent( )\scroll\v\bar\page\change = 0 And
+           *this\_parent( )\scroll\h\bar\page\change = 0
+          
+          bar_mdi_update( *this\_parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
+        EndIf
+        
+        ;\\
+        If *this\type = #__Type_Spin Or
+           *this\type = #__Type_TabBar Or
+           *this\type = #__Type_ToolBar Or
+           *this\type = #__Type_TrackBar Or
+           *this\type = #__Type_ScrollBar Or
+           *this\type = #__Type_ProgressBar Or
+           *this\type = #__Type_Splitter
+          
+          If ( Change_width Or Change_height )
+            *this\TabChenge( ) = - 1
+          EndIf
+          
+          ; Debug "-- bar_Update -- "+" "+ *this\class
+          bar_Update( *this, Bool( Change_width Or Change_height ) )
+        EndIf
+        
+        ;- resize childrens
+        ;\\ then move and size parent resize all childrens
+        If *this\count\childrens And *this\container
+          Protected x2, y2, pw, ph, pwd, phd, delta_width, delta_height, frame = #__c_frame
+          
+          If StartEnumerate( *this )
+            If Not is_scrollbars_( enumWidget( ))
+              If enumWidget( )\align
+                x2 = enumWidget( )\align\indent\right
+                y2 = enumWidget( )\align\indent\bottom
+                
+                
+                If enumWidget( )\_parent( )\align
+                  If enumWidget( )\_parent( )\type = #__Type_window
+                    frame = #__c_inner
+                  Else
+                    frame = #__c_frame
+                  EndIf
+                  ;Debug ""+  enumWidget( )\_parent( )\align\width +" "+ enumWidget( )\_parent( )\align\indent\right +" "+ enumWidget( )\_parent( )\align\indent\left
+                  ;delta_width = enumWidget( )\_parent( )\align\width
+                  ;delta_height = enumWidget( )\_parent( )\align\height
+                  delta_width  = enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left ; - enumWidget( )\_parent( )\fs
+                  delta_height = enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top ; - enumWidget( )\_parent( )\fs*2
+                  pw           = ( enumWidget( )\_parent( )\width[frame] - delta_width )
+                  ph           = ( enumWidget( )\_parent( )\height[frame] - delta_height )
+                  pwd          = pw / 2
+                  phd          = ph / 2
+                EndIf
+                
+                ; horizontal
+                If enumWidget( )\align\anchor\right > 0
+                  x = enumWidget( )\align\indent\left
+                  If enumWidget( )\align\anchor\left = 0
+                    x + pw
+                  EndIf
+                  width = x2 + pw
+                Else
+                  If enumWidget( )\align\anchor\left > 0
+                    ; 1
+                    x     = enumWidget( )\align\indent\left
+                    width = x2
+                  Else
+                    If enumWidget( )\align\anchor\right < 0
+                      If enumWidget( )\align\anchor\left < 0
+                        ; 6
+                        x     = enumWidget( )\align\indent\left * enumWidget( )\_parent( )\width[frame] / delta_width
+                        width = x2 * enumWidget( )\_parent( )\width[frame] / delta_width
+                      Else
+                        ; 5
+                        x     = enumWidget( )\align\indent\left + pwd
+                        width = x2 + pw
+                      EndIf
+                    Else
+                      x = enumWidget( )\align\indent\left
+                      If enumWidget( )\align\anchor\left = 0
+                        x + pwd
+                      EndIf
+                      width = x2 + pwd
+                    EndIf
+                  EndIf
+                EndIf
+                
+                ; vertical
+                If enumWidget( )\align\anchor\bottom > 0
+                  y = enumWidget( )\align\indent\top
+                  If enumWidget( )\align\anchor\top = 0
+                    y + ph
+                  EndIf
+                  height = y2 + ph
+                Else
+                  If enumWidget( )\align\anchor\top > 0
+                    ; 1
+                    y      = enumWidget( )\align\indent\top
+                    height = y2
+                  Else
+                    If enumWidget( )\align\anchor\bottom < 0
+                      If enumWidget( )\align\anchor\top < 0
+                        ; 6
+                        y      = enumWidget( )\align\indent\top * enumWidget( )\_parent( )\height[frame] / delta_height
+                        height = y2 * enumWidget( )\_parent( )\height[frame] / delta_height
+                      Else
+                        ; 5
+                        y      = enumWidget( )\align\indent\top + phd
+                        height = y2 + ph
+                      EndIf
+                    Else
+                      y = enumWidget( )\align\indent\top
+                      If enumWidget( )\align\anchor\top = 0
+                        y + phd
+                      EndIf
+                      height = y2 + phd
+                    EndIf
+                  EndIf
+                EndIf
+                
+                Resize( enumWidget( ), x, y, width - x, height - y )
+              Else
+                If (Change_x Or Change_y)
+                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Else
+                  If enumWidget( )\autosize
+                    Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  Else
+                    enumWidget( )\resize | #__resize_change
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+            
+            ;Next
+            StopEnumerate( )
+          EndIf
+        EndIf
+        
+        ;\\
+        If PopupWidget( )
+          If *this = PopupWidget( )\_parent( )
+            Resize( PopupWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          EndIf
+        EndIf 
         
         If *this\_root( ) And *this\_root( )\canvas\ResizeBeginWidget = #Null
           ;Debug "  start - resize"
@@ -4339,226 +4577,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *this\_a_\transform Or *this\container
           Post( *this, #__event_Resize )
-        EndIf
-      EndIf
-      
-      If ( Change_width Or Change_height )
-        If *this\type = #__Type_Image Or
-           *this\type = #__Type_ButtonImage
-          *this\image\change = 1
-        EndIf
-        
-        If *this\count\items
-          If Change_height
-            If scroll_height_( *this ) >= *this\height[#__c_inner]
-              *this\change = 1
-            EndIf
-          EndIf
-          
-          If Change_width
-            If scroll_width_( *this ) >= *this\width[#__c_inner]
-              If *this\type <> #__Type_Tree
-                *this\change | #__resize_width
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-      ; if the integral scroll bars
-      ;\\ resize vertical&horizontal scrollbars
-      If *this\scroll And *this\scroll\v And *this\scroll\h
-        bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-        
-        ; update inner coordinate
-        *this\width[#__c_inner]  = *this\scroll\h\bar\page\len
-        *this\height[#__c_inner] = *this\scroll\v\bar\page\len
-      EndIf
-      
-      ;\\ if the integral tab bar
-      If *this\TabBox( ) And is_integral_( *this\TabBox( ) )
-        *this\x[#__c_inner] = x ; - *this\fs - *this\fs[1]
-        *this\y[#__c_inner] = y ; - *this\fs - *this\fs[2]
-        
-        ;\\
-        If *this\type = #__Type_Panel
-          If *this\TabBox( )\bar\vertical
-            If *this\fs[1]
-              Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\height[#__c_inner] )
-            EndIf
-            If *this\fs[3]
-              Resize( *this\TabBox( ), *this\width[#__c_inner], *this\fs, *this\fs[3], *this\height[#__c_inner] )
-            EndIf
-          Else
-            If *this\fs[2]
-              Resize( *this\TabBox( ), *this\fs, *this\fs, *this\width[#__c_inner], *this\fs[2])
-            EndIf
-            If *this\fs[4]
-              Resize( *this\TabBox( ), *this\fs, *this\height[#__c_inner], *this\width[#__c_inner], *this\fs[4])
-            EndIf
-          EndIf
-        EndIf
-        
-        ;\\
-        If *this\type = #__Type_window
-          Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\width[#__c_frame], *this\ToolBarHeight )
-        EndIf
-        
-        *this\x[#__c_inner] + *this\fs + *this\fs[1]
-        *this\y[#__c_inner] + *this\fs + *this\fs[2]
-      EndIf
-      
-      ;\\
-      If *this\type = #__Type_Window
-        result = Update( *this )
-      EndIf
-      
-      ;\\ if the widgets is composite
-      If *this\type = #__Type_Spin
-        Resize( *this\StringBox( ), *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner] )
-      EndIf
-      
-      ;\\ parent mdi
-      If *this\_parent( ) And
-         is_integral_( *this ) And
-         *this\_parent( )\type = #__Type_MDI And
-         *this\_parent( )\scroll And
-         *this\_parent( )\scroll\v <> *this And
-         *this\_parent( )\scroll\h <> *this And
-         *this\_parent( )\scroll\v\bar\page\change = 0 And
-         *this\_parent( )\scroll\h\bar\page\change = 0
-        
-        bar_mdi_update( *this\_parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
-      EndIf
-      
-      ;\\
-      If *this\type = #__Type_Spin Or
-         *this\type = #__Type_TabBar Or
-         *this\type = #__Type_ToolBar Or
-         *this\type = #__Type_TrackBar Or
-         *this\type = #__Type_ScrollBar Or
-         *this\type = #__Type_ProgressBar Or
-         *this\type = #__Type_Splitter
-        
-        If ( Change_width Or Change_height )
-          *this\TabChenge( ) = - 1
-        EndIf
-        
-        ; Debug "-- bar_Update -- "+" "+ *this\class
-        bar_Update( *this, Bool( Change_width Or Change_height ) )
-      EndIf
-      
-      ;- resize childrens
-      ;\\ then move and size parent resize all childrens
-      If *this\count\childrens And *this\container
-        Protected x2, y2, pw, ph, pwd, phd, delta_width, delta_height, frame = #__c_frame
-        
-        If StartEnumerate( *this )
-          If Not is_scrollbars_( enumWidget( ))
-            If enumWidget( )\align
-              x2 = enumWidget( )\align\indent\right
-              y2 = enumWidget( )\align\indent\bottom
-              
-              
-              If enumWidget( )\_parent( )\align
-                If enumWidget( )\_parent( )\type = #__Type_window
-                  frame = #__c_inner
-                Else
-                  frame = #__c_frame
-                EndIf
-                ;Debug ""+  enumWidget( )\_parent( )\align\width +" "+ enumWidget( )\_parent( )\align\indent\right +" "+ enumWidget( )\_parent( )\align\indent\left
-                ;delta_width = enumWidget( )\_parent( )\align\width
-                ;delta_height = enumWidget( )\_parent( )\align\height
-                delta_width  = enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left ; - enumWidget( )\_parent( )\fs
-                delta_height = enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top ; - enumWidget( )\_parent( )\fs*2
-                pw           = ( enumWidget( )\_parent( )\width[frame] - delta_width )
-                ph           = ( enumWidget( )\_parent( )\height[frame] - delta_height )
-                pwd          = pw / 2
-                phd          = ph / 2
-              EndIf
-              
-              ; horizontal
-              If enumWidget( )\align\anchor\right > 0
-                x = enumWidget( )\align\indent\left
-                If enumWidget( )\align\anchor\left = 0
-                  x + pw
-                EndIf
-                width = x2 + pw
-              Else
-                If enumWidget( )\align\anchor\left > 0
-                  ; 1
-                  x     = enumWidget( )\align\indent\left
-                  width = x2
-                Else
-                  If enumWidget( )\align\anchor\right < 0
-                    If enumWidget( )\align\anchor\left < 0
-                      ; 6
-                      x     = enumWidget( )\align\indent\left * enumWidget( )\_parent( )\width[frame] / delta_width
-                      width = x2 * enumWidget( )\_parent( )\width[frame] / delta_width
-                    Else
-                      ; 5
-                      x     = enumWidget( )\align\indent\left + pwd
-                      width = x2 + pw
-                    EndIf
-                  Else
-                    x = enumWidget( )\align\indent\left
-                    If enumWidget( )\align\anchor\left = 0
-                      x + pwd
-                    EndIf
-                    width = x2 + pwd
-                  EndIf
-                EndIf
-              EndIf
-              
-              ; vertical
-              If enumWidget( )\align\anchor\bottom > 0
-                y = enumWidget( )\align\indent\top
-                If enumWidget( )\align\anchor\top = 0
-                  y + ph
-                EndIf
-                height = y2 + ph
-              Else
-                If enumWidget( )\align\anchor\top > 0
-                  ; 1
-                  y      = enumWidget( )\align\indent\top
-                  height = y2
-                Else
-                  If enumWidget( )\align\anchor\bottom < 0
-                    If enumWidget( )\align\anchor\top < 0
-                      ; 6
-                      y      = enumWidget( )\align\indent\top * enumWidget( )\_parent( )\height[frame] / delta_height
-                      height = y2 * enumWidget( )\_parent( )\height[frame] / delta_height
-                    Else
-                      ; 5
-                      y      = enumWidget( )\align\indent\top + phd
-                      height = y2 + ph
-                    EndIf
-                  Else
-                    y = enumWidget( )\align\indent\top
-                    If enumWidget( )\align\anchor\top = 0
-                      y + phd
-                    EndIf
-                    height = y2 + phd
-                  EndIf
-                EndIf
-              EndIf
-              
-              Resize( enumWidget( ), x, y, width - x, height - y )
-            Else
-              If (Change_x Or Change_y)
-                Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              Else
-                If enumWidget( )\autosize
-                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                Else
-                  enumWidget( )\resize | #__resize_change
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
-          ;Next
-          StopEnumerate( )
         EndIf
       EndIf
       
@@ -12247,7 +12265,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\
-      If Not *this\hide
+      If *this\hide
+        PopupWidget( ) = #Null
+      Else
         PopupWidget( ) = *this
         
         ;\\ 
@@ -12255,9 +12275,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  *this\_root( )\canvas\window <> *display\_root( )\canvas\window )
           *this\_root( ) = *display\_root( )
           *this\_parent( ) = *this\_root( )
-          *this\_window( ) = *this\_root( )
-          update_items_( *this, *this\change )
+          *this\_window( ) = *this\_root( )\_window( )
+          update_items_( *this, 1 )
           update_visible_items_( *this )
+        EndIf
+        
+        ;\\
+        If *this\scroll And *this\scroll\h And Not *this\scroll\h\hide
+          display_height = *this\scroll\h\height
         EndIf
         
         ;\\
@@ -12282,17 +12307,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\hide
           Debug "display - hide"
           
-          HideWindow( *this\_root( )\canvas\window, 1, #PB_Window_NoActivate )
-          ; SetParent( *this, *display )
-          PopupWidget( ) = #Null
+          HideWindow( *this\_root( )\canvas\window, #True, #PB_Window_NoActivate )
         Else
           Debug "display - show"
           
-          HideWindow( *this\_root( )\canvas\window, 0, #PB_Window_NoActivate )
-          ; SetParent( *this, *this\_root( ) )
-          ResizeWindow( *this\_root( )\canvas\window, x, y, *display\width, display_height )
+          HideWindow( *this\_root( )\canvas\window, #False, #PB_Window_NoActivate )
           PostCanvasRepaint( *this\_root( ) )
-          
         EndIf
       Else
         If Not *this\hide
@@ -12312,8 +12332,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
           CompilerEndIf
           
-          ResizeWindow( window, x, y, *display\width, display_height )
-          
           Protected *root._s_root = Open( window )
           *this\_root( ) = *root
           *this\_parent( ) = *root
@@ -12321,7 +12339,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\_root( )\_parent( ) = *display
           
           *this\autosize = 1
-          ; SetParent( *this, *root )
+          ;           ;Resize( *this\_root( ), 0, 0, *display\width, display_height )
+          ;           Resize( *this, 0, 0, *display\width, display_height )
+          ;           ; SetParent( *this, *root )
           ; 
           ChangeCurrentRoot( *display\_root( )\canvas\address )
           ; PostCanvasRepaint( *display\_root( ) )
@@ -12329,15 +12349,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If Not *this\hide
-        Resize( *this, 0, 0, *display\width, display_height )
-        
-        ;       If scroll_height_( *this ) > display_height
-        ;       Else
-        ;         Resize( *this, x, y, #PB_Ignore, scroll_height_( *this ) + *this\barHeight + *this\fs * 2 + *this\ToolBarHeight )
-        ;       EndIf
-        
-        ;       ;*this\change = 1
-        ;       update_visible_items_( *this )
+        ; Resize( *this, 0, 0, *display\width, display_height )
+        ResizeWindow( *this\_root( )\canvas\window, x, y, *display\width, display_height )
       EndIf
     EndProcedure
     
@@ -17216,8 +17229,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If EnteredButton( ) And EnteredWidget( ) And 
            EnteredWidget( )\bar And EnteredWidget( )\state\enter And  
            ( EnteredWidget( )\bar\button[1] = EnteredButton( ) Or 
-            EnteredWidget( )\bar\button[2] = EnteredButton( ) Or
-            EnteredWidget( )\bar\button[3] = EnteredButton( ) )
+             EnteredWidget( )\bar\button[2] = EnteredButton( ) Or
+             EnteredWidget( )\bar\button[3] = EnteredButton( ) )
           
           UnclipOutput( )
           ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
@@ -19669,7 +19682,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; SetActive( Root( ))
         EndIf
         
-        Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height ) ;??
+        If width Or height
+          Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height ) 
+        EndIf
         
         ; post repaint canvas event
         PostCanvasRepaint( Root( ), #__event_Create )
@@ -20821,5 +20836,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-H------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

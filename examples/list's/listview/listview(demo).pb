@@ -168,6 +168,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
     Bind(GetWidget(i), @events_widgets())
   Next
   
+  SetActive(GetWidget(1))
+  SetActiveGadget(1)
+  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

@@ -98,9 +98,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ComboBox(305+10, 40, 250, 21, #PB_ComboBox_Image)
-    AddItem(widget(), -1, "ComboBox item with image1", ImageID(0))
-    AddItem(widget(), -1, "ComboBox item with image2", ImageID(1))
-    AddItem(widget(), -1, "ComboBox item with image3", ImageID(2))
+    AddItem(widget(), -1, "ComboBox item with image1", (0))
+    AddItem(widget(), -1, "ComboBox item with image2", (1))
+    AddItem(widget(), -1, "ComboBox item with image3", (2))
     
     ComboBox(305+10, 70, 250, 21)
     AddItem(widget(), -1, "ComboBox editable...1")
