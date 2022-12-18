@@ -359,10 +359,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _s_BAR
       *widget._s_WIDGET ; TEMP
       
-      fixed.l[3] ; splitter fixed button index  
-      
       max.l
-      min.l[3]
+      min.l[3]   ; fixed min bar size 
+      fixed.l[3] ; splitter fixed bar position  
       
       invert.b
       vertical.b
@@ -373,6 +372,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       page._s_page
       area._s_page
       thumb._s_page  
+      
       *button._s_buttons[4]
       
       List *_s._s_tabs( )

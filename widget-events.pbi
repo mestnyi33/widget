@@ -1112,6 +1112,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro GroupBox( ): GroupWidget: EndMacro
     Macro TabBox( ): tab\widget: EndMacro
     
+    Procedure ChangeParent( *this._S_widget, *parent._S_widget )
+      ;\\
+      *this\_parent( ) = *parent
+      *this\_root( )   = *parent\_root( )
+    
+      ;\\
+      If is_window_( *parent )
+        *this\_window( ) = *parent
+      Else
+        *this\_window( ) = *parent\_window( )
+      EndIf
+      
+      ;\\ is integrall scroll bars
+      If *this\scroll
+        If *this\scroll\v
+          *this\scroll\v\_root( ) = *this\_root( )
+          *this\scroll\v\_window( ) = *this\_window( )
+        EndIf
+        If *this\scroll\h
+          *this\scroll\h\_root( ) = *this\_root( )
+          *this\scroll\h\_window( ) = *this\_window( )
+        EndIf
+      EndIf
+      
+      ;\\ is integrall tab bar
+        If *this\TabBox( ) 
+          *this\TabBox( )\_root( ) = *this\_root( )
+          *this\TabBox( )\_window( ) = *this\_window( )
+        EndIf
+        
+        ;\\ is integrall string bar
+        If *this\StringBox( ) 
+          *this\StringBox( )\_root( ) = *this\_root( )
+          *this\StringBox( )\_window( ) = *this\_window( )
+        EndIf
+    EndProcedure    
+    
     ;-
     Macro row_x_( _this_, _address_ )
       ( _this_\x[#__c_inner] + _address_\x )  ; + scroll_x_( _this_ )
@@ -6248,17 +6285,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure bar_area_update( *this._S_widget )
       Protected result
       
-      ; change vertical scrollbar max
-      If *this\scroll\v And
-         *this\scroll\v\bar\max <> scroll_height_( *this ) And
+      ;\\ change vertical scrollbar max
+      If *this\scroll\v And *this\scroll\v\bar\max <> scroll_height_( *this ) And
          bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, scroll_height_( *this ) - *this\mode\gridlines )
         scroll_height_( *this ) - *this\mode\gridlines
         result = 1;Bool( *this\scroll\v\bar\max >= *this\scroll\v\bar\page\len )
       EndIf
       
-      ; change horizontal scrollbar max
-      If *this\scroll\h And
-         *this\scroll\h\bar\max <> scroll_width_( *this ) And
+      ;\\ change horizontal scrollbar max
+      If *this\scroll\h And *this\scroll\h\bar\max <> scroll_width_( *this ) And
          bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, scroll_width_( *this ) )
         result = 1;Bool( *this\scroll\h\bar\max >= *this\scroll\h\bar\page\len )
       EndIf
@@ -7661,8 +7696,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure bar_Resizes( *this._S_widget, x.l, y.l, width.l, height.l )
+      If ( *this\width = 0 And *this\height = 0)
+        If *this\scroll
+          *this\scroll\v\hide = #True
+          *this\scroll\h\hide = #True
+        EndIf
+        ProcedureReturn 0
+      EndIf
+      
       With *this\scroll
         Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, width1 = #PB_Ignore, height1 = #PB_Ignore, iwidth, iheight, w, h
+        ;Protected v1, h1, x1 = *this\x[#__c_container], y1 = *this\y[#__c_container], width1 = *this\width[#__c_container], height1 = *this\height[#__c_container], iwidth, iheight, w, h
         If Not \v Or Not \h : ProcedureReturn : EndIf
         
         If x = #PB_Ignore
@@ -10495,12 +10539,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
             PopListPosition( *this\_rows( ))
             
+            ; Debug "   " + #PB_Compiler_Procedure + "( )"+*this\width +" "+*this\height+" "+scroll_width_( *this )+" "+scroll_height_( *this )
             bar_area_update( *this )
-            *this\change =  - 2
+            *this\change = - 2
           EndIf
           
           ;\\ SetState( scroll-to-see )
-          If *this\FocusedRow( ) And *this\scroll\state =  - 1
+          If *this\FocusedRow( ) And *this\scroll\state = - 1
             
             row_scroll_y_( *this, *this\FocusedRow( ) )
             
@@ -12265,6 +12310,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\
+      If x = #PB_Ignore
+        x = GadgetX( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
+      EndIf
+      If y = #PB_Ignore
+        y = GadgetY( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
+      EndIf
+      
+      ;\\
       If *this\hide
         PopupWidget( ) = #Null
       Else
@@ -12273,9 +12326,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ 
         If Not ( *this\_root( ) And 
                  *this\_root( )\canvas\window <> *display\_root( )\canvas\window )
-          *this\_root( ) = *display\_root( )
-          *this\_parent( ) = *this\_root( )
-          *this\_window( ) = *this\_root( )\_window( )
+          
+          Debug "display - update"
+          ChangeParent( *this, *display )
           update_items_( *this, 1 )
           update_visible_items_( *this )
         EndIf
@@ -12288,19 +12341,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         ForEach *this\_rows( )
           display_height + *this\_rows( )\height
+          
+          If *this\_rows( )\state\focus
+          ;  y - *this\_rows( )\y - *display\height+*this\_rows( )\height/2
+          EndIf
+          
           If ( ListIndex(*this\_rows( )) + 1 ) >= 10
             Break
           EndIf
         Next
       EndIf  
-      
-      ;\\
-      If x = #PB_Ignore
-        x = GadgetX( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
-      EndIf
-      If y = #PB_Ignore
-        y = GadgetY( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
-      EndIf
       
       ;\\
       If *this\_root( ) And *this\_root( )\canvas\window <> *display\_root( )\canvas\window
@@ -12316,11 +12366,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       Else
         If Not *this\hide
-          Debug "display - create"
           Protected window
+          Protected *root._s_root
+          Debug "display - create"
+          
+          *this\autosize = #True
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ; window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID( *display\_root( )\canvas\window ) )
             window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
             ;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
             CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
@@ -12332,25 +12384,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             window = OpenWindow( #PB_Any, 0,0,0,0, "",  #PB_Window_NoActivate|#PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
           CompilerEndIf
           
-          Protected *root._s_root = Open( window )
-          *this\_root( ) = *root
-          *this\_parent( ) = *root
-          *this\_window( ) = *root
-          *this\_root( )\_parent( ) = *display
+          *root = Open( window )
+          *root\_parent( ) = *display
+          ChangeParent( *this, *root )
           
-          *this\autosize = 1
-          ;           ;Resize( *this\_root( ), 0, 0, *display\width, display_height )
-          ;           Resize( *this, 0, 0, *display\width, display_height )
-          ;           ; SetParent( *this, *root )
-          ; 
           ChangeCurrentRoot( *display\_root( )\canvas\address )
-          ; PostCanvasRepaint( *display\_root( ) )
         EndIf
       EndIf
       
       If Not *this\hide
         ; Resize( *this, 0, 0, *display\width, display_height )
-        ResizeWindow( *this\_root( )\canvas\window, x, y, *display\width, display_height )
+      ;  ResizeWindow( *this\_root( )\canvas\window, x, y, *display\width, display_height )
+        ResizeWindow( *this\_root( )\canvas\window, x+*display\round, y, *display\width-*display\round*2, display_height )
+        ProcedureReturn #True
       EndIf
     EndProcedure
     
@@ -13951,7 +13997,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure SetParent( *this._S_widget, *parent._S_widget, tabindex.l = 0 )
-      Protected ReParent.b, x, y, *last._S_widget, *lastParent._S_widget, NewList *D._S_widget( ), NewList *C._S_widget( )
+      Protected parent, ReParent.b, x, y, *last._S_widget, *lastParent._S_widget, NewList *D._S_widget( ), NewList *C._S_widget( )
       
       If *parent
         If *this\_parent( ) = *parent And
@@ -14020,7 +14066,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
                 AddElement( *D( ) )
-                *D( )            = *this\_widgets( )
+                *D( ) = *this\_widgets( )
+                
                 *D( )\_window( ) = *parent\_window( )
                 *D( )\_root( )   = *parent\_root( )
                 ;; Debug " children - "+ *D( )\data +" - "+ *this\data
@@ -14036,7 +14083,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *D( )\scroll\h\_window( ) = *D( )\_window( )
                   EndIf
                 EndIf
-                
+              
               Wend
               PopListPosition( *this\_widgets( ) )
             EndIf
@@ -14148,25 +14195,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        *this\_parent( ) = *parent
-        *this\_root( )   = *parent\_root( )
-        If is_window_( *parent )
-          *this\_window( ) = *parent
-        Else
-          *this\_window( ) = *parent\_window( )
-        EndIf
-        
-        ;\\ integrall childrens
-        If *this\scroll
-          If *this\scroll\v
-            *this\scroll\v\_root( ) = *this\_root( )
-            *this\scroll\v\_window( ) = *this\_window( )
-          EndIf
-          If *this\scroll\h
-            *this\scroll\h\_root( ) = *this\_root( )
-            *this\scroll\h\_window( ) = *this\_window( )
-          EndIf
-        EndIf
+        ChangeParent( *this, *parent )
+          
+;         *this\_parent( ) = *parent
+;         *this\_root( )   = *parent\_root( )
+;         If is_window_( *parent )
+;           *this\_window( ) = *parent
+;         Else
+;           *this\_window( ) = *parent\_window( )
+;         EndIf
+;         
+;         ;\\ integrall childrens
+;         If *this\scroll
+;           If *this\scroll\v
+;             *this\scroll\v\_root( ) = *this\_root( )
+;             *this\scroll\v\_window( ) = *this\_window( )
+;           EndIf
+;           If *this\scroll\h
+;             *this\scroll\h\_root( ) = *this\_root( )
+;             *this\scroll\h\_window( ) = *this\_window( )
+;           EndIf
+;         EndIf
         
         ;
         *this\level         = *parent\level + 1
@@ -15839,7 +15888,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\size = - 1
             *BB2\size = - 1
           EndIf
-          *BB3\size = size
+          ;*BB3\size = size
           
           ;
           *BB1\interact = #True
@@ -16280,6 +16329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\type  = #__Type_ComboBox
       *this\class = #PB_Compiler_Procedure
       
+      *this\round = 16
       *this\fs = 1
       *this\bs = *this\fs
       *this\x[#__c_inner] = #PB_Ignore
@@ -16296,9 +16346,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\fs[1] = width
       EndIf
       
-      *this\PopupBox( ) = Create( 0, *this\class + "_ListView", #__Type_ListView, 0, 0, width, height, #Null$, Flag|#__flag_child|#__flag_borderless )
+      *this\PopupBox( ) = Create( 0, *this\class + "_ListView", #__Type_ListView, 0,0,0,0, #Null$, Flag|#__flag_child|#__flag_borderless )
       ;;*this\PopupBox( ) = ListView(0, 0, width, height, #__flag_child);|#__flag_borderless )
       *this\PopupBox( )\hide = 1
+;       *this\PopupBox( )\scroll\v\hide = 1
+      
+      *this\PopupBox( )\scroll\h\bar\button[1]\size = 0
+      *this\PopupBox( )\scroll\h\bar\button[2]\size = 0
+      *this\PopupBox( )\scroll\h\bar\button[3]\size = 0
       
       SetParent( *this, *parent, #PB_Default )
       Resize( *this, x, y, width, height )
@@ -16876,7 +16931,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;
           If *this\text\editable
             drawing_mode_alpha_( #PB_2DDrawing_Default )
-            draw_box_( _this_\x[#__c_inner], _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_inner], _this_\fs[2], $ffffffff )
+            draw_roundbox_( _this_\x[#__c_inner], _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_inner], _this_\fs[2], _this_\round, _this_\round, $ffffffff )
           Else
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
             draw_gradient_( _this_\text\vertical, _this_, _this_\color\fore[_this_\color\state], _this_\color\back[_this_\color\state], [#__c_frame] )
@@ -16902,7 +16957,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; frame draw
           If _this_\fs
             drawing_mode_( #PB_2DDrawing_Outlined )
-            draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame],  _this_\height[#__c_frame], _this_\color\frame[_this_\color\state] )
+            draw_roundbox_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame],  _this_\height[#__c_frame], _this_\round, _this_\round, _this_\color\frame[_this_\color\state] )
           EndIf
           
           
@@ -18676,51 +18731,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             *widget = *root\_widgets( )
             
-            ; is integral scroll bar's
-            If *widget\scroll
-              If *widget\scroll\v And Not *widget\scroll\v\hide And *widget\scroll\v\type And
-                 is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
-                 is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_draw] )
-                *widget = *widget\scroll\v ; MouseState( *widget\scroll\v, *leave, mouse_x, mouse_y )
-              EndIf
-              If *widget\scroll\h And Not *widget\scroll\h\hide And *widget\scroll\h\type And
-                 is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
-                 is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_draw] )
-                *widget = *widget\scroll\h ; MouseState( *widget\scroll\h, *leave, mouse_x, mouse_y )
-              EndIf
-            EndIf
-            
-            ; is integral tab bar
-            If *widget\TabBox( ) And Not *widget\TabBox( )\hide And *widget\TabBox( )\type And
-               is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_draw] )
-              *widget = *widget\TabBox( ) ; MouseState( *widget\TabBox( ), *leave, mouse_x, mouse_y )
-            EndIf
-            
-            ; is integral string bar
-            If *widget\StringBox( ) And Not *widget\StringBox( )\hide And *widget\StringBox( )\type And
-               is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_draw] )
-              *widget = *widget\StringBox( ) ; MouseState( *widget\StringBox( ), *leave, mouse_x, mouse_y )
-            EndIf
-            
-            ; entered anchor widget
-            If a_transform( )
-              If a_at_point( *root\canvas\gadget, @*widget, @*leave )
-                *widget = a_enter_widget( )
-              EndIf
-            EndIf
-            
             Break
           EndIf
         Until PreviousElement( *root\_widgets( )) = #False
-      EndIf
-      
-      ;\\ root no enumWidget
-      If *widget = 0 And
-         is_at_point_( *root, mouse_x, mouse_y, [#__c_frame] ) And
-         is_at_point_( *root, mouse_x, mouse_y, [#__c_draw] )
-        *widget = *root
       EndIf
       
       ;\\ 
@@ -18730,6 +18743,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
            is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_draw] )
           *widget = PopupWidget( )
+        EndIf
+      EndIf
+      
+      If *widget
+        ;\\ is integral scroll bar's
+        If *widget\scroll
+          If *widget\scroll\v And Not *widget\scroll\v\hide And *widget\scroll\v\type And
+             is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
+             is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_draw] )
+            *widget = *widget\scroll\v ; MouseState( *widget\scroll\v, *leave, mouse_x, mouse_y )
+          EndIf
+          If *widget\scroll\h And Not *widget\scroll\h\hide And *widget\scroll\h\type And
+             is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
+             is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_draw] )
+            *widget = *widget\scroll\h ; MouseState( *widget\scroll\h, *leave, mouse_x, mouse_y )
+          EndIf
+        EndIf
+        
+        ;\\ is integral tab bar
+        If *widget\TabBox( ) And Not *widget\TabBox( )\hide And *widget\TabBox( )\type And
+           is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_frame] ) And
+           is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_draw] )
+          *widget = *widget\TabBox( ) ; MouseState( *widget\TabBox( ), *leave, mouse_x, mouse_y )
+        EndIf
+        
+        ;\\ is integral string bar
+        If *widget\StringBox( ) And Not *widget\StringBox( )\hide And *widget\StringBox( )\type And
+           is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_frame] ) And
+           is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_draw] )
+          *widget = *widget\StringBox( ) ; MouseState( *widget\StringBox( ), *leave, mouse_x, mouse_y )
+        EndIf
+        
+      Else
+        ;\\ root no enumWidget
+        If is_at_point_( *root, mouse_x, mouse_y, [#__c_frame] ) And
+           is_at_point_( *root, mouse_x, mouse_y, [#__c_draw] )
+          *widget = *root
+        EndIf
+      EndIf
+    
+      ;\\ entered anchor widget
+      If a_transform( )
+        If a_at_point( *root\canvas\gadget, @*widget, @*leave )
+          *widget = a_enter_widget( )
         EndIf
       EndIf
       
@@ -20836,5 +20893,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------4-------------------------------------W4--+00-----------------------------------------------------------------------------------------------------------------
 ; EnableXP
