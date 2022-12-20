@@ -31,13 +31,13 @@ CompilerIf #PB_Compiler_IsMainFile
     *this\fs[4] = 0
     
     If position = 4
-      *this\TabWidget( )\hide = 1
+      *this\TabBox( )\hide = 1
     Else
-      *this\TabWidget( )\hide = 0
+      *this\TabBox( )\hide = 0
     EndIf
     
     If position = 1
-      *this\TabWidget( )\bar\vertical = 1
+      *this\TabBox( )\bar\vertical = 1
       If size = #PB_Default
         *this\fs[1] = #__panel_width
       Else
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If position = 3
-      *this\TabWidget( )\bar\vertical = 1
+      *this\TabBox( )\bar\vertical = 1
       If size = #PB_Default
         *this\fs[3] = #__panel_width
       Else
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If position = 0
-      *this\TabWidget( )\bar\vertical = 0
+      *this\TabBox( )\bar\vertical = 0
       If size = #PB_Default
         *this\fs[2] = #__panel_height
       Else
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If position = 2
-      *this\TabWidget( )\bar\vertical = 0
+      *this\TabBox( )\bar\vertical = 0
       If size = #PB_Default
         *this\fs[4] = #__panel_height
       Else

@@ -47,7 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
               Select EventType()
                 Case #PB_EventType_Change
                   ParentID = GetParent(*CHILD)
-                  
+                  Debug 77777
+          
                   Select GetState(*COMBO)
                     Case  1: *CHILD = Button(30,20,150,30,"Button") 
                     Case  2: *CHILD = String(30,20,150,30,"String") 

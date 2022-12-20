@@ -364,7 +364,7 @@
     #__align_auto                    = #__flag_autosize
     #__align_proportional_horizontal = #__flag_proportional
     #__align_proportional_vertical   = #__flag_vertical
-    
+    Debug #__align_auto
     
     #__align_full_Left   = #__align_Left | #__align_top | #__align_bottom
     #__align_full_Right  = #__align_Right | #__align_top | #__align_bottom
@@ -459,7 +459,6 @@
     #__textFlagValue = 2147483648 >> ( #__textFlagCount - 1 )
     
     EnumerationBinary #__align_text_bottom ; #__textFlagValue
-      #__text_invert
       
       #__text_InLine
       #__text_Multiline
@@ -470,6 +469,7 @@
       #__text_uppercase
       #__text_Lowercase
       #__text_numeric
+      #__text_invert
       
      EndEnumeration
      

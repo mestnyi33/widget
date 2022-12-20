@@ -667,10 +667,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( EventWidget )
-            DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy, #PB_Cursor_Cross )
+            DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy);, #PB_Cursor_Cross )
           EndIf
         Else
-          DragPrivate( #_DD_widget_re_parent, #PB_Drag_Copy, #PB_Cursor_Arrows )
+          DragPrivate( #_DD_widget_re_parent, #PB_Drag_Copy);, #PB_Cursor_Arrows )
         EndIf
         
       Case #PB_EventType_Drop
@@ -782,7 +782,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy, ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
+          DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy);, ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
         EndIf
         
       Case #PB_EventType_Change

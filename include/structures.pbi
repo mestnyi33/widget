@@ -21,13 +21,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       y.l
       x.l
     EndStructure
-    ;--     POSITION
-    Structure _s_POSITION
-      *left
-      *top
-      *right
-      *bottom
-    EndStructure
     ;--     STATE
     Structure _s_STATE
       *flag           ; temp for the widgets.pbi
@@ -121,14 +114,33 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *alpha._s_color
     EndStructure
     
-    ;--     align
-    Structure _s_align 
+    ;--     POSITION
+    Structure _s_ALIGNTYPE
+      anchor.b
+      auto.l
+      indent.l
+    EndStructure
+    Structure _s_POSITION
+      x.l
+      y.l
+      *left
+      *top
+      *right
+      *bottom
+    EndStructure
+    ;--     ALIGN
+    Structure _s_ALIGN 
       width.l
       height.l
-      delta._s_coordinate             
-      anchor._s_position ; align the anchor to the left;right;top;bottom
+      
+      left.b
+      top.b
+      right.b
+      bottom.b
+    
       auto._s_position
       indent._s_position
+      indent1._s_COORDINATE
     EndStructure
     
     ;--     arrow
@@ -783,5 +795,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----6-----
+; Folding = ----z-----
 ; EnableXP

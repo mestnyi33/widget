@@ -7,7 +7,7 @@ XIncludeFile "widget-events.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   EnableExplicit
-  Define a, height=60
+  Define a,i, height=60
   
   UsePNGImageDecoder()
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
@@ -29,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_gadgets()
     Protected ComboBox.s
+    ClearDebugOutput()
     
     Select EventType()
       Case #PB_EventType_Focus
@@ -49,6 +50,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected ComboBox.s
     Protected eventtype = WidgetEventType( )
+    If eventtype = #__event_Draw Or eventtype = #__event_MouseMove
+      ProcedureReturn 
+    EndIf
+    If EventWidget( ) = EventWidget( )\_root( )
+      ProcedureReturn 
+    EndIf
+    
+    ;ClearDebugOutput()
     
     Select eventtype
       Case #PB_EventType_Focus
@@ -62,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If eventtype = #PB_EventType_Focus
       Debug ComboBox.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
-      Debug ComboBox.s +" - widget"
+      Debug ComboBox.s +" - widget " + EventWidget( )\class
     EndIf
     
   EndProcedure
@@ -90,6 +99,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(2, 0)    ; set (beginning with 0) the third item as active one
     
     
+    For i = 0 To 2
+      BindGadgetEvent(i, @events_gadgets())
+    Next
     
     ;\\
     ComboBox(305+10, 10, 250, 21, #PB_ComboBox_Editable)
@@ -110,6 +122,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(getwidget(0), 2)
     SetState(getwidget(1), 1)
     SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
+    
+    For i = 0 To 2
+      Bind(getwidget(i), @events_widgets())
+    Next
     
     WaitClose( ) 
   EndIf

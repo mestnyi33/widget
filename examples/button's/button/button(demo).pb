@@ -103,29 +103,27 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Width = WindowWidth( 11, #PB_Window_InnerCoordinate ) 
     Protected Height = WindowHeight( 11, #PB_Window_InnerCoordinate )
     
-    Resize( *Button_0, Width-85, #PB_Ignore, #PB_Ignore, Height-30 )
-    Resize( *Button_1, #PB_Ignore, #PB_Ignore, Width-100, #PB_Ignore )
-    ResizeGadget( c2, 10, 10, Width-20, Height-20 )
-    SetWindowTitle( 11, Str( *Button_1\width ) )
+    ;ResizeGadget( c2, 10, 10, Width-20, Height-20 )
+    Resize( *Button_0, #PB_Ignore, #PB_Ignore, Width-100, #PB_Ignore )
+    Resize( *Button_1, Width-75, #PB_Ignore, #PB_Ignore, Height-30 )
+    SetWindowTitle( 11, Str( *Button_0\width ) +" - "+ Str( *Button_1\height ) )
   EndProcedure
   
-  If OpenWindow( 11, 0, 0, 260, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
-    Open( 11, 10, 10 , 240, 160 )
-    ;BindEventCanvas( ) 
+  If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
     c2 = GetGadget( Root( ) )
     
-    *Button_0 = Button( 270, 5,  60, 120, "Button ( Vertical )", #__button_multiline|#__button_vertical );|#__button_inverted )
-    SetColor( *Button_0, #__Color_Front, $D56F1A )
-    SetFont( *Button_0, FontID( 10 ) )
+    *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__button_multiline,-1 )
+;     SetColor( *Button_0, #__Color_fore, $0000FF )
+;     SetColor( *Button_0, #__Color_Back, $00FF00 )
+     SetColor( *Button_0, #__Color_Front, $4919D5 ) 
+;     SetFont( *Button_0, FontID( 10 ) )
     
-    *Button_1 = Button( 5, 42, 250,  60, "Button ( Horisontal )", #__button_multiline,-1 )
-    SetColor( *Button_1, #__Color_fore, $0000FF )
-    SetColor( *Button_1, #__Color_Back, $00FF00 )
-    SetColor( *Button_1, #__Color_Front, $FFFFFF ) ; $4919D5 )
-    SetFont( *Button_1, FontID( 10 ) )
+    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__button_multiline|#__text_vertical|#__text_invert )
+     SetColor( *Button_1, #__Color_Front, $FFD56F1A )
+;     SetFont( *Button_1, FontID( 10 ) )
+    
     
     ResizeWindow( 11, #PB_Ignore, WindowY( main )+WindowHeight( main, #PB_Window_FrameCoordinate )+10, #PB_Ignore, #PB_Ignore )
-    
     BindEvent( #PB_Event_SizeWindow, @ResizeCallBack( ), 11 )
     ; PostEvent( #PB_Event_SizeWindow, 11, #PB_Ignore ) ; bug in linux
     ResizeCallBack( )
