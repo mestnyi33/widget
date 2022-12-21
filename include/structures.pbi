@@ -121,8 +121,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       indent.l
     EndStructure
     Structure _s_POSITION
-      x.l
-      y.l
       *left
       *top
       *right
@@ -140,7 +138,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
       auto._s_position
       indent._s_position
-      indent1._s_COORDINATE
     EndStructure
     
     ;--     arrow

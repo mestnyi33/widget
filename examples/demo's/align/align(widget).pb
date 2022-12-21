@@ -179,24 +179,28 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    SetAlignment(Widgets(Hex(1)), #__align_full, #__align_full, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(2)), #__align_full, 0,#__align_full, 0,0 ) 
-    SetAlignment(Widgets(Hex(3)), #__align_full, 0,0,#__align_full, 0 )              
-    SetAlignment(Widgets(Hex(4)), #__align_full, 0,0,0, #__align_full )      
+    SetAlignment(Widgets(Hex(1)), #__align_full|#__align_left ) 
+    SetAlignment(Widgets(Hex(2)), #__align_full|#__align_top ) 
+    SetAlignment(Widgets(Hex(3)), #__align_full|#__align_right )              
+    SetAlignment(Widgets(Hex(4)), #__align_full|#__align_bottom )      
+;     SetAlignment(Widgets(Hex(1)), #__align_full, 1,0,0,0 ) 
+;     SetAlignment(Widgets(Hex(2)), #__align_full, 0,1,0,0 ) 
+;     SetAlignment(Widgets(Hex(3)), #__align_full, 0,0,1,0 )              
+;     SetAlignment(Widgets(Hex(4)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(Widgets(Hex(11)), #__align_full, #__align_full, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(22)), #__align_full, 0,#__align_full, 0,0 ) 
-    SetAlignment(Widgets(Hex(33)), #__align_full, 0,0,#__align_full, 0 )              
-    SetAlignment(Widgets(Hex(44)), #__align_full, 0,0,0, #__align_full )      
+    SetAlignment(Widgets(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlignment(Widgets(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlignment(Widgets(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlignment(Widgets(Hex(44)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(Widgets(Hex(5)), #__align_full ); ,  #__align_full, #__align_full, #__align_full, #__align_full )
+    SetAlignment(Widgets(Hex(5)), #__align_full )
     
-    SetAlignment(Widgets(Hex(51)), #__align_full, #__align_full, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(52)), #__align_full, 0, #__align_full,0,0 ) 
-    SetAlignment(Widgets(Hex(53)), #__align_full, 0,0, #__align_full,0 )              
-    SetAlignment(Widgets(Hex(54)), #__align_full, 0,0,0, #__align_full )      
+    SetAlignment(Widgets(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlignment(Widgets(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlignment(Widgets(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlignment(Widgets(Hex(54)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(Widgets(Hex(55)), #__align_full ); , #__align_full, #__align_full, #__align_full, #__align_full )
+    SetAlignment(Widgets(Hex(55)), #__align_full )
     
     bind(root(), @events())
     
@@ -229,25 +233,29 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    SetAlignment(Widgets(Hex(1)), #__align_auto, #__align_auto, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(2)), #__align_auto, 0,#__align_auto, 0,0 ) 
-    SetAlignment(Widgets(Hex(3)), #__align_auto, 0,0,#__align_auto, 0 )              
-    SetAlignment(Widgets(Hex(4)), #__align_auto, 0,0,0, #__align_auto )      
+    SetAlignment(Widgets(Hex(1)), #__align_auto|#__align_left ) 
+    SetAlignment(Widgets(Hex(2)), #__align_auto|#__align_top ) 
+    SetAlignment(Widgets(Hex(3)), #__align_auto|#__align_right )              
+    SetAlignment(Widgets(Hex(4)), #__align_auto|#__align_bottom )      
+;     SetAlignment(Widgets(Hex(1)), #__align_auto, 1,0,0,0 ) 
+;     SetAlignment(Widgets(Hex(2)), #__align_auto, 0,1,0,0 ) 
+;     SetAlignment(Widgets(Hex(3)), #__align_auto, 0,0,1,0 )              
+;     SetAlignment(Widgets(Hex(4)), #__align_auto, 0,0,0,1 )      
     
-    SetAlignment(Widgets(Hex(11)), #__align_auto, #__align_auto, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(22)), #__align_auto, 0,#__align_auto, 0,0 ) 
-    SetAlignment(Widgets(Hex(33)), #__align_auto, 0,0,#__align_auto, 0 )              
-    SetAlignment(Widgets(Hex(44)), #__align_auto, 0,0,0, #__align_auto )      
+    SetAlignment(Widgets(Hex(11)), #__align_auto, 1,0,0,0 ) 
+    SetAlignment(Widgets(Hex(22)), #__align_auto, 0,1,0,0 ) 
+    SetAlignment(Widgets(Hex(33)), #__align_auto, 0,0,1,0 )              
+    SetAlignment(Widgets(Hex(44)), #__align_auto, 0,0,0,1 )      
     
     
-    SetAlignment(Widgets(Hex(5)), #__align_auto,  #__align_auto, #__align_auto, #__align_auto, #__align_auto )
+    SetAlignment(Widgets(Hex(5)), #__align_auto )
     
-    SetAlignment(Widgets(Hex(51)), #__align_auto, #__align_auto, 0,0,0 ) 
-    SetAlignment(Widgets(Hex(52)), #__align_auto, 0, #__align_auto,0,0 ) 
-    SetAlignment(Widgets(Hex(53)), #__align_auto, 0,0, #__align_auto,0 )              
-    SetAlignment(Widgets(Hex(54)), #__align_auto, 0,0,0, #__align_auto )      
+    SetAlignment(Widgets(Hex(51)), #__align_auto, 1,0,0,0 ) 
+    SetAlignment(Widgets(Hex(52)), #__align_auto, 0,1,0,0 ) 
+    SetAlignment(Widgets(Hex(53)), #__align_auto, 0,0,1,0 )              
+    SetAlignment(Widgets(Hex(54)), #__align_auto, 0,0,0,1 )      
     ;     
-    SetAlignment(Widgets(Hex(55)), #__align_auto, #__align_auto, #__align_auto, #__align_auto, #__align_auto )
+    SetAlignment(Widgets(Hex(55)), #__align_auto )
     
     bind(root(), @events())
     
