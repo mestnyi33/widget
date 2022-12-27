@@ -272,17 +272,7 @@
     EndEnumeration
     
     ;- Constant create-flags
-    EnumerationBinary _c_align 8 ; 2
-      
-      #__flag_Left
-      #__flag_top
-      #__flag_Right
-      #__flag_bottom
-      #__flag_center
-      
-      #__flag_full
-      #__flag_proportional
-      
+    EnumerationBinary _c_align 1024 ; 2
       
       #__flag_numeric
       #__flag_Readonly
@@ -306,7 +296,7 @@
       
       
       
-      #__flag_autosize
+      
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
@@ -329,7 +319,19 @@
       #__flag_vertical 
       #__flag_nobuttons
       
-      #__flag_Limit
+      ;\\
+      #__flag_Left
+      #__flag_Top
+      #__flag_Right
+      #__flag_Bottom
+      #__flag_Center
+      
+      #__flag_Full
+      #__flag_AutoSize
+      #__flag_Proportional
+      
+      
+     #__flag_Limit
     EndEnumeration
     ; #__flag_clickselect = 8388608 ; мистика с tree checkboxex
       
@@ -346,7 +348,6 @@
 ;     #__flag_autoright  = #__flag_autosize | #__flag_Right
 ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
     
-    
     ;- _c_align
     ; align type
     #__align_widget = 1
@@ -355,35 +356,14 @@
     
     #__align_none   = #False
     #__align_Left   = #__flag_Left
-    #__align_top    = #__flag_top
+    #__align_Top    = #__flag_Top
     #__align_Right  = #__flag_Right
-    #__align_bottom = #__flag_bottom
-    #__align_center = #__flag_center
+    #__align_Bottom = #__flag_Bottom
+    #__align_Center = #__flag_Center
     
-    #__align_full                    = #__flag_full
-    #__align_auto                    = #__flag_autosize
-    #__align_proportional_horizontal = #__flag_proportional
-    #__align_proportional_vertical   = #__flag_vertical
-    Debug #__align_auto
-    
-    #__align_full_Left   = #__align_Left | #__align_top | #__align_bottom
-    #__align_full_Right  = #__align_Right | #__align_top | #__align_bottom
-    #__align_full_top    = #__align_top | #__align_Left | #__align_Right
-    #__align_full_bottom = #__align_bottom | #__align_Left | #__align_Right
-    
-    
-    #__align_Left_proportional   = #__align_Left | #__align_proportional_horizontal
-    #__align_top_proportional    = #__align_top | #__align_proportional_vertical
-    #__align_Right_proportional  = #__align_Right | #__align_proportional_horizontal
-    #__align_bottom_proportional = #__align_bottom | #__align_proportional_vertical
-    
-    #__align_Left_Right_proportional = #__align_Left | #__align_Right | #__align_proportional_horizontal
-    #__align_top_bottom_proportional = #__align_top | #__align_bottom | #__align_proportional_vertical
-    
-    
-    #__align_proportional = 3
-    
-    ;;#__align_full = 0;#__align_Left|#__align_top|#__align_Right|#__align_bottom
+    #__align_Full                    = #__flag_Full
+    #__align_Auto                    = #__flag_AutoSize
+    #__align_Proportional            = #__flag_Proportional
     
     
     ;-
@@ -500,9 +480,9 @@
     
     #__text_Left   = #__align_text_Left
     #__text_Top    = #__align_text_top
-    #__text_Center = #__align_text_center
     #__text_Right  = #__align_text_Right
     #__text_Bottom = #__align_text_bottom
+    #__text_Center = #__align_text_center
     #__text_Middle = #__text_center
     
     ;     #__text_invert = #__flag_invert
@@ -516,6 +496,7 @@
     ;     #__text_Lowercase = #__flag_Lowercase
     ;     #__text_uppercase = #__flag_uppercase
     
+    ;- _c_image
     #__image_Left   = #__text_Left
     #__image_top    = #__text_top
     #__image_center = #__text_center
