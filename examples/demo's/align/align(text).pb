@@ -20,8 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ;  Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ;  CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ; Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
-    String(_x_,_y_,_width_,_height_,_text_,_flag_)
+   Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
+  ;  String(_x_,_y_,_width_,_height_,_text_,_flag_)
      
   ;  widget()\text\vertical = 1
   

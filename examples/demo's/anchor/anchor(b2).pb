@@ -1,6 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-;XIncludeFile "../../../CE.pb" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
@@ -69,8 +67,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

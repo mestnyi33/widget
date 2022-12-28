@@ -1,6 +1,4 @@
-﻿  ;XIncludeFile "../../../widgets.pbi" 
-; XIncludeFile "../../../CE.pb" 
- XIncludeFile "../../../widget-events.pbi" 
+﻿  XIncludeFile "../../../widgets.pbi" 
  ; bug scroll area with the anchor_widget 
 ; bug then left anchor moveed and width = 0
 	

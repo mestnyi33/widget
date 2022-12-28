@@ -257,6 +257,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
+    Structure _S_THUMB Extends _s_BUTTONS
+      pos.l
+      len.l
+      *end
+      change.w
+    EndStructure
+    
     ;     ;--     button
     ;     structure _s_button 
     ;       pushed.l
@@ -380,9 +387,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       page._s_page
       area._s_page
-      thumb._s_page  
+      thumb._s_thumb  
       
-      *button._s_buttons[4]
+      *button._s_buttons[3]
       
       List *_s._s_tabs( )
       List *draws._s_tabs( )
@@ -792,5 +799,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----z-----
+; Folding = ----n-----
 ; EnableXP
