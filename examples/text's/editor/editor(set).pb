@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Define time = ElapsedMilliseconds()
-  Define file$ = "../../../widget-events.pbi"
+  Define file$ = "../../../widgets.pbi"
   ; Define file$ = "../../../IDE/ide(form).pb"
   ;  ;//
   ;  If ReadFile(0, file$)   ; if the file could be read, we continue...

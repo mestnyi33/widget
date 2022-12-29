@@ -4342,6 +4342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If *this\type = #__type_Button
             *this\change = #True
+            *this\text\change = #True
           EndIf
           
           If *this\count\items
@@ -6417,6 +6418,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *bar\thumb\len > *bar\thumb\end
                   *bar\thumb\len = *bar\thumb\end
                 EndIf
+                
                 If *bar\thumb\len < *SB\size
                   If *bar\thumb\end > *SB\size + *bar\thumb\len
                     *bar\thumb\len = *SB\size
@@ -6474,6 +6476,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
               EndIf
             EndIf
+            
+            ; Debug ""+*bar\vertical +" "+ *bar\thumb\len +" "+ *SB\size
             
             If *bar\page\end
               ; *bar\percent = ( *bar\thumb\end - *bar\thumb\len-*this\scroll\increment ) / ( *bar\page\end - *bar\min-*this\scroll\increment )
@@ -12381,7 +12385,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\flag & ~ flag
           EndIf
           
-          ;\\
+          ;\\ text align 
           If *this\type = #__type_Button Or
              *this\type = #__type_Option Or
              *this\type = #__type_CheckBox Or
@@ -12440,13 +12444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\text\align\bottom = #False
             EndIf
             
-            ;\\
-            ;             *this\text\align\left = Bool( *this\flag & #__text_left )
-            ;             *this\text\align\right = Bool( *this\flag & #__text_right )
-            ;             *this\text\align\top = Bool( *this\flag & #__text_top )
-            ;             *this\text\align\bottom = Bool( *this\flag & #__text_bottom )
-            
-            ;*this\text\change    = #__text_update
+            *this\text\change    = #__text_update
           EndIf
           
           ;\\
@@ -15316,7 +15314,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Image         = *param_1
           
           set_image_( *this, *this\Image, Image )
-          
+          set_image_( *this, *this\image[#__img_released], Image )
+            
           set_align_( *this\image,
                       constants::_check_( *this\flag, #__image_left ),
                       constants::_check_( *this\flag, #__image_top ),
@@ -15548,7 +15547,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\size = - 1
             *BB2\size = - 1
           EndIf
-          ;*SB\size = size
+          *SB\size = size
           
           ;
           *BB1\interact = #True
@@ -15980,7 +15979,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ButtonImage( x.l, y.l, width.l, height.l, Image.i = -1 , flag.q = 0, round.l = 0 )
-      ProcedureReturn Button( x, y, width, height, "", Flag, Image, round )
+      Button( x, y, width, height, "", Flag, Image, round )
+      widget( )\type = #__type_ButtonImage
+      ProcedureReturn widget( )
     EndProcedure
     
     Procedure.i ComboBox( x.l, y.l, width.l, height.l, flag.q = 0 )
@@ -18115,6 +18116,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
+          Case #__type_ButtonImage
+            If eventtype = #__event_Down
+              If *this\image[#__img_pressed]\id
+                *this\image = *this\image[#__img_pressed]
+              EndIf
+            EndIf   
+            If eventtype = #__event_Up
+              If *this\image[#__img_released]\id
+                *this\image = *this\image[#__img_released]
+              EndIf
+            EndIf   
+             
+             ;\\
           Case #__type_Button
             If *this\state\toggle = #False
               Select eventtype
@@ -18153,11 +18167,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\flag & #__button_toggle
                     If SetState( *this, Bool( *this\state\toggle ! 1 ))
                     EndIf
-                  EndIf
-                  
-                  ;\\
-                  If *this\image[#__img_released]\id Or *this\image[#__img_pressed]\id
-                    *this\image = *this\image[1 + Bool( *this\color\state = #__S_2 )]
                   EndIf
                 EndIf
               EndIf
@@ -20474,5 +20483,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------4----------ef-------------------------------------------------------------------------------------------------------------------------------------------------------v4------------------------------------------------------------------------------X+84----------------------------------------------------------8-v-f----------------------------------------------------
 ; EnableXP

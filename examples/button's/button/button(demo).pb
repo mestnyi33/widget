@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
@@ -56,8 +56,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button" )
     ButtonGadget( 1, 10, 40, 200, 20, "Left button", #PB_Button_Left )
     ButtonGadget( 2, 10, 70, 200, 20, "Right button", #PB_Button_Right )
-    ButtonGadget( 3, 10,100, 200, 60, "Default button and long long long long text", #PB_Button_Default )
-    ButtonGadget( 4, 10,170, 200, 60, "Multiline button  ( longer text gets automatically multiline )", #PB_Button_MultiLine )
+    ButtonGadget( 3, 10,100, 200, 60, "Default button and change font", #PB_Button_Default )
+    SetGadgetFont(3, FontID(0))
+    ButtonGadget( 4, 10,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine )
     ButtonGadget( 5, 10,170+70, 200, 25, "Toggle button", #PB_Button_Toggle ) ; height = 20 bug in mac os 
     
     SetGadgetState( 5, 1 )
@@ -77,8 +78,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222, 10, 200, 20, "Standard button", 0,-1,8 )
     Button( 10+222, 40, 200, 20, "Left button", #__button_left )
     Button( 10+222, 70, 200, 20, "Right button", #__button_right )
-    Button( 10+222,100, 200, 60, "Default button and long long long long text", #__button_default, -1,4 )
-    Button( 10+222,170, 200, 60, "Multiline button  ( longer text gets automatically multiline )", #__button_multiline, -1,4 )
+    Button( 10+222,100, 200, 60, "Default button and change font", #__button_default, -1,4 )
+    SetFont(widget(), FontID(0))
+    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__button_multiline, -1,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__button_toggle )
     
     SetState( GetWidget( 5 ), 1 )

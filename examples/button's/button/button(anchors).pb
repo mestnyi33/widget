@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 DeclareModule AnchorBox
   EnableExplicit
@@ -31,9 +31,9 @@ Module AnchorBox
         
         If *this = Button_10 
           Protected a = widget::GetData(*this)
-;           widget::Hide(a, Bool( Not widget::GetState(*this)))
-;           widget::Resize(a, #PB_Ignore, widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
-          widget::Display(a, *this)
+          widget::Hide(a, Bool( Not widget::GetState(*this)))
+          widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
+         ; widget::Display(a, *this)
         Else
           ;\\
           If *this <> Button_9 ; center 

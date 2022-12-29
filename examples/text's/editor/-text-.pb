@@ -49,7 +49,7 @@
  
 Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress
  
-  Define file$ = "/Users/as/Documents/GitHub/Widget/widget-events.pbi"
+  Define file$ = "/Users/as/Documents/GitHub/Widget/widgets.pbi"
   ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
 If Asc(File$)
     If ReadFile(0, File$, Format)
