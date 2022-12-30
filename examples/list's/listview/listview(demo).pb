@@ -23,8 +23,7 @@
 ; и попытке выделить еще несколько итемов не происходит выделение,
 ; так как при нажатии на выделеном итеме не сбрасываются выделение
 
-;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 
 Uselib(widget)
 

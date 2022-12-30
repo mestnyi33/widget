@@ -19,7 +19,7 @@
 ; fn up/down first/last visible item and selected 
 
 
-XIncludeFile "../../../-widgets.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 ;XIncludeFile "../empty.pb"
 Uselib(widget)
 
@@ -120,32 +120,32 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   listview(270, 30, 250, 120,Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines)
   For a = 0 To 12
     AddItem (GetWidget(0), -1, "listview item " + Str(a)) ; define listview content
-    SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
+    ;SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
   Next
-  SetState(GetWidget(0), 5) 
-  SetState(GetWidget(0), 7) 
-  SetState(GetWidget(0), 9) 
+;   SetState(GetWidget(0), 5) 
+;   SetState(GetWidget(0), 7) 
+;   SetState(GetWidget(0), 9) 
   
   listview(270, 30+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_clickselect)
   For a = 0 To 12
     AddItem (GetWidget(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
-      SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
+      ;SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(GetWidget(1), 5) 
-  SetState(GetWidget(1), 7) 
-  SetState(GetWidget(1), 9) 
+;   SetState(GetWidget(1), 5) 
+;   SetState(GetWidget(1), 7) 
+;   SetState(GetWidget(1), 9) 
   
   listview(270, 30+150+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_multiselect)
   For a = 0 To 12
     AddItem (GetWidget(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2
-      SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
+      ;SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(GetWidget(2), 5) 
-  SetState(GetWidget(2), 7) 
+;   SetState(GetWidget(2), 5) 
+   SetState(GetWidget(2), 7) 
   SetState(GetWidget(2), 9) 
   
   Text(270,10, 250,20, "flag = no")

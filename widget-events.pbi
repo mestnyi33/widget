@@ -220,13 +220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro GroupBox( ): GroupWidget: EndMacro
     Macro TabBox( ): tab\widget: EndMacro
     Macro TabIndex( ): tab\index: EndMacro
-    Macro TabChange( ): tab\change: EndMacro 
-    Macro TextChange( ): text\change: EndMacro ; temp
-    Macro ImageChange( ): image\change: EndMacro ; temp 
-    Macro AreaChange( ): area\change: EndMacro ; temp 
-    Macro PageChange( ): page\change: EndMacro ; temp 
-    Macro ThumbChange( ): thumb\change: EndMacro ; temp 
-    Macro WidgetChange( ): change: EndMacro ; temp 
+    Macro TabChenge( ): tab\change: EndMacro 
     
     
     Macro EnteredTab( ): tab\entered: EndMacro         ; Returns mouse entered tab
@@ -587,7 +581,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If _draw_address_\_root( )
         If _draw_address_\text\fontID = #Null And _draw_address_\_root( )\text\fontID
           _draw_address_\text\fontID = _draw_address_\_root( )\text\fontID
-          _draw_address_\TextChange( ) = #True
+          _draw_address_\text\change = #True
         EndIf
         
         If _draw_address_\_root( )\canvas\fontID <> _draw_address_\text\fontID
@@ -595,11 +589,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _draw_address_ + " fontID - "+ _draw_address_\text\fontID
           DrawingFont( _draw_address_\text\fontID )
-          _draw_address_\TextChange( ) = #True
+          _draw_address_\text\change = #True
         EndIf
       EndIf
       
-      If _draw_address_\TextChange( )
+      If _draw_address_\text\change
         If _draw_address_\text\string
           _draw_address_\text\width = TextWidth( _draw_address_\text\string )
         EndIf
@@ -624,7 +618,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           _item_\text\fontID = _this_\text\fontID
           _item_\text\height = _this_\text\height
-          _item_\TextChange( ) = #True
+          _item_\text\change = #True
         EndIf
         ;Debug ""+_this_\_root( )\canvas\fontID +" "+ _item_\text\fontID
         
@@ -636,17 +630,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Debug "draw current item font - " + #PB_Compiler_Procedure + " " + _this_ + " " + _item_\index + " fontID - " + _item_\text\fontID
           DrawingFont( _item_\text\fontID )
           _item_\text\height = TextHeight( "A" )
-          _item_\TextChange( ) = #True
+          _item_\text\change = #True
         EndIf
       EndIf
       
       ;\\ Получаем один раз после изменения текста
-      If _item_\TextChange( )
+      If _item_\text\change
         If _item_\text\string
           _item_\text\width = TextWidth( _item_\text\string )
         EndIf
         
-        _item_\TextChange( ) = #False
+        _item_\text\change = #False
       EndIf
     EndMacro
     
@@ -3572,7 +3566,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;     EndIf
       
       If _this_\text
-        _this_\TextChange( ) = 1
+        _this_\text\change = 1
         _this_\text\x = _x_
         _this_\text\y = _y_
         
@@ -4343,25 +4337,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If ( Change_width Or Change_height )
           If *this\type = #__type_Image Or
              *this\type = #__type_ButtonImage
-            *this\ImageChange( ) = 1
+            *this\image\change = 1
           EndIf
           
           If *this\type = #__type_Button
-            *this\WidgetChange( ) = #True
-            *this\TextChange( ) = #True
+            *this\change = #True
+            *this\text\change = #True
           EndIf
           
           If *this\count\items
             If Change_height
               If scroll_height_( *this ) >= *this\height[#__c_inner]
-                *this\WidgetChange( ) = 1
+                *this\change = 1
               EndIf
             EndIf
             
             If Change_width
               If scroll_width_( *this ) >= *this\width[#__c_inner]
                 If *this\type <> #__type_Tree
-                  *this\WidgetChange( ) = #__resize_width
+                  *this\change | #__resize_width
                 EndIf
               EndIf
             EndIf
@@ -4446,8 +4440,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\_parent( )\scroll And
            *this\_parent( )\scroll\v <> *this And
            *this\_parent( )\scroll\h <> *this And
-           *this\_parent( )\scroll\v\bar\PageChange( ) = 0 And
-           *this\_parent( )\scroll\h\bar\PageChange( ) = 0
+           *this\_parent( )\scroll\v\bar\page\change = 0 And
+           *this\_parent( )\scroll\h\bar\page\change = 0
           
           bar_mdi_update( *this\_parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
         EndIf
@@ -4462,7 +4456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\type = #__type_Splitter
           
           If ( Change_width Or Change_height )
-            *this\TabChange( ) = - 1
+            *this\TabChenge( ) = - 1
           EndIf
           
           ; Debug "-- bar_Update -- "+" "+ *this\class
@@ -4918,7 +4912,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; TabBar last opened item
         *this\OpenedTabIndex( ) = Item
-        *this\TabChange( ) = #True
+        *this\TabChenge( ) = #True
         
         ; set default selected tab
         If item = 0
@@ -4956,7 +4950,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\FocusedTabIndex( ) <> State
         *this\FocusedTabIndex( ) = State
         
-        *this\TabChange( ) = #True
+        *this\TabChenge( ) = #True
         
         If state = - 1
           *this\FocusedTab( ) = #Null
@@ -5067,7 +5061,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure.i bar_tab_RemoveItem( *this._S_widget, Item.l )
       If SelectElement( *this\_tabs( ), item )
-        *this\TabChange( ) = #True
+        *this\TabChenge( ) = #True
         
         If *this\FocusedTabIndex( ) = *this\_tabs( )\index
           *this\FocusedTabIndex( ) = item - 1
@@ -5089,7 +5083,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure bar_tab_ClearItems( *this._S_widget ) ; Ok
       If *this\count\items <> 0
         
-        *this\TabChange( ) = #True
+        *this\TabChenge( ) = #True
         ClearList( *this\_tabs( ))
         
         If *this\_parent( )\TabBox( ) = *this
@@ -5181,7 +5175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; - widget::bar_tab_update_( )
-          If *this\TabChange( )
+          If *this\TabChenge( )
             *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
             Debug " --- widget::Tab_Update( ) - " + *this\image\x
             
@@ -5276,7 +5270,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             bar_Update( *this, 0 )
             
-            *this\TabChange( ) = #False
+            *this\TabChenge( ) = #False
           EndIf
           
           ;
@@ -6154,7 +6148,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           draw_font_( *this )
           
-          If *this\TextChange( ) Or *this\resize & #__resize_change
+          If *this\text\change Or *this\resize & #__resize_change
             
             Protected _x_ = *this\x[#__c_inner]
             Protected _y_ = *this\y[#__c_inner]
@@ -6226,8 +6220,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;drawing_mode_( #PB_2DDrawing_Outlined ) :draw_box_( *this\x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FF00FF00 )
         
-        If *this\TextChange( ) <> 0
-          *this\TextChange( ) = 0
+        If *this\text\change <> 0
+          *this\text\change = 0
         EndIf
         
       EndWith
@@ -6474,7 +6468,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       EndIf
                     EndIf
                   Else
-                    If *bar\PageChange( ) Or *bar\fixed = 1
+                    If *bar\page\change Or *bar\fixed = 1
                       *bar\page\end = *bar\area\len - *bar\thumb\len
                     EndIf
                   EndIf
@@ -6501,7 +6495,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If mode < 2
         ;\\ get thumb pos
-        If *bar\fixed And Not *bar\PageChange( )
+        If *bar\fixed And Not *bar\page\change
           If *bar\fixed = #__split_1
             ThumbPos = *bar\fixed[*bar\fixed]
             
@@ -6531,7 +6525,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *bar\thumb\pos <> ThumbPos
-            *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+            *bar\thumb\change = *bar\thumb\pos - ThumbPos
             *bar\thumb\pos    = ThumbPos
           EndIf
           
@@ -6559,12 +6553,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; for the scrollarea childrens
             If *bar\page\end And *bar\page\pos > *bar\page\end
               ; Debug " bar end change - " + *bar\page\pos +" "+ *bar\page\end
-              *bar\PageChange( ) = *bar\page\pos - *bar\page\end
+              *bar\page\change = *bar\page\pos - *bar\page\end
               *bar\page\pos    = *bar\page\end
             EndIf
           EndIf
           
-          If Not *bar\ThumbChange( )
+          If Not *bar\thumb\change
             ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
             ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
             
@@ -6572,14 +6566,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
             
             If *bar\thumb\pos <> ThumbPos
-              *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+              *bar\thumb\change = *bar\thumb\pos - ThumbPos
               *bar\thumb\pos    = ThumbPos
             EndIf
           EndIf
         EndIf
         
         ;\\ get fixed size
-        If *bar\fixed And *bar\PageChange( )
+        If *bar\fixed And *bar\page\change
           If *bar\fixed = #__split_1
             *bar\fixed[*bar\fixed] = *bar\thumb\pos
           Else
@@ -7129,7 +7123,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         
         ;\\
-        If *bar\PageChange( ) <> 0
+        If *bar\page\change <> 0
           ;\\
           If *this\type = #__type_ScrollBar
             ;- widget::bar_update_parent_area_( )
@@ -7139,18 +7133,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\_parent( )\change       = - 1
                   scroll_y_( *this\_parent( ) ) = - *bar\page\pos
                   
-; ;                   ; row pos update
-; ;                   If *this\_parent( )\row
-; ;                     If *this\_parent( )\text\editable
-; ;                       Text_Update( *this\_parent( ), *this\_parent( )\_rows( ))
-; ;                     Else
-; ;                       update_visible_items_( *this\_parent( ) )
-; ;                     EndIf
-; ;                     
-; ;                     *this\_parent( )\change = 0
-; ;                   EndIf
+                  ; row pos update
+                  If *this\_parent( )\row
+                    If *this\_parent( )\text\editable
+                      Text_Update( *this\_parent( ), *this\_parent( )\_rows( ))
+                    Else
+                      update_visible_items_( *this\_parent( ) )
+                    EndIf
+                    
+                    *this\_parent( )\change = 0
+                  EndIf
                   
-                  ;\\ Area childrens x&y auto move
+                  ; Area childrens x&y auto move
                   If *this\_parent( )\container
                     If StartEnumerate( *this\_parent( ) )
                       If *this\_parent( ) = enumWidget( )\_parent( ) And
@@ -7158,9 +7152,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          *this\_parent( )\scroll\h <> enumWidget( ) And Not enumWidget( )\align
                         
                         If is_integral_( enumWidget( ))
-                          Resize( enumWidget( ), #PB_Ignore, ( enumWidget( )\y[#__c_container] + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
+                          Resize( enumWidget( ), #PB_Ignore, ( enumWidget( )\y[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( enumWidget( ), #PB_Ignore, ( enumWidget( )\y[#__c_container] + *bar\PageChange( ) ) - scroll_y_( *this\_parent( ) ), #PB_Ignore, #PB_Ignore )
+                          Resize( enumWidget( ), #PB_Ignore, ( enumWidget( )\y[#__c_container] + *bar\page\change ) - scroll_y_( *this\_parent( ) ), #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
@@ -7173,7 +7167,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\_parent( )\change       = - 2
                   scroll_x_( *this\_parent( ) ) = - *bar\page\pos
                   
-                  ;\\ Area childrens x&y auto move
+                  ; Area childrens x&y auto move
                   If *this\_parent( )\container
                     If StartEnumerate( *this\_parent( ) )
                       If *this\_parent( ) = enumWidget( )\_parent( ) And
@@ -7181,9 +7175,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          *this\_parent( )\scroll\h <> enumWidget( ) And Not enumWidget( )\align
                         
                         If is_integral_( enumWidget( ))
-                          Resize( enumWidget( ), ( enumWidget( )\x[#__c_container] + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( enumWidget( ), ( enumWidget( )\x[#__c_container] + *bar\page\change ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( enumWidget( ), ( enumWidget( )\x[#__c_container] + *bar\PageChange( ) ) - scroll_x_( *this\_parent( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( enumWidget( ), ( enumWidget( )\x[#__c_container] + *bar\page\change ) - scroll_x_( *this\_parent( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
@@ -7202,11 +7196,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;\\
           If *this\type = #__type_Spin 
-            Debug " update spin-change "+*bar\PageChange( )
+            Debug " update spin-change "+*bar\page\change
             Protected i
             For i = 0 To 3
               If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                *this\TextChange( ) = 1
+                *this\text\change = 1
                 *this\text\string = StrF( *bar\page\pos, i )
                 If *this\StringBox( )
                   SetText( *this\StringBox( ), *this\text\string )
@@ -7219,22 +7213,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;         ;\\
           ;         If is_integral_( *this )
           ;           If *this\type = #__type_ScrollBar ; is_scrollbars_( *this )
-          ;             Post( *this\_parent( ), #__event_ScrollChange, *this, *bar\PageChange( ) )
+          ;             Post( *this\_parent( ), #__event_ScrollChange, *this, *bar\page\change )
           ;           EndIf
           ;         Else
-          ;           Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+          ;           Post( *this, #__event_Change, EnteredButton( ), *bar\page\change )
           ;         EndIf
           
-          *bar\PageChange( ) = 0
+          *bar\page\change = 0
         EndIf
         
         ;
-        If *bar\ThumbChange( ) <> 0
+        If *bar\thumb\change <> 0
           If *this\_root( ) And *this\_root( )\canvas\gadget = PB(EventGadget)( )
-            result = *bar\ThumbChange( )
+            result = *bar\thumb\change
           EndIf
           
-          *bar\ThumbChange( ) = 0
+          *bar\thumb\change = 0
         EndIf
         
       EndIf
@@ -7274,16 +7268,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *bar\direction = ScrollPos
           EndIf
           
-          *bar\PageChange( ) = *bar\page\pos - ScrollPos
+          *bar\page\change = *bar\page\pos - ScrollPos
           *bar\page\pos    = ScrollPos
           
           ; example-scroll(area) fixed
           If is_integral_( *this )
             If *this\type = #__type_ScrollBar ; is_scrollbars_( *bar\widget )
-              DoEvents( *this\_parent( ), #__event_ScrollChange, *bar\PageChange( ), *this )
+              DoEvents( *this\_parent( ), #__event_ScrollChange, *bar\page\change, *this )
             EndIf
           Else
-            Post( *this, #__event_Change, *bar\PageChange( ), EnteredButton( ) )
+            Post( *this, #__event_Change, *bar\page\change, EnteredButton( ) )
           EndIf
           
           ProcedureReturn #True
@@ -7320,8 +7314,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
         EndIf
         
-        If *bar\ThumbChange( ) <> *bar\thumb\pos - ThumbPos
-          *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+        If *bar\thumb\change <> *bar\thumb\pos - ThumbPos
+          *bar\thumb\change = *bar\thumb\pos - ThumbPos
           *bar\thumb\pos    = ThumbPos
           If bar_Change( *this, ScrollPos )
           EndIf
@@ -7384,7 +7378,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Select Attribute
             Case #__bar_minimum
               If *this\bar\min <> *value ;And Not *value < 0
-                *this\bar\AreaChange( ) = *this\bar\min - value
+                *this\bar\area\change = *this\bar\min - value
                 If *this\bar\page\pos < *value
                   *this\bar\page\pos = *value
                 EndIf
@@ -7395,7 +7389,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
             Case #__bar_maximum
               If *this\bar\max <> *value And Not ( *value < 0 And Not #__bar_minus)
-                *this\bar\AreaChange( ) = *this\bar\max - value
+                *this\bar\area\change = *this\bar\max - value
                 
                 If *this\bar\min > *value And Not #__bar_minus
                   *this\bar\max = *this\bar\min + 1
@@ -7408,13 +7402,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 ; Debug  "   min " + *this\bar\min + " max " + *this\bar\max
                 
-                ;\bar\PageChange( ) = #True
+                ;\bar\page\change = #True
                 result = #True
               EndIf
               
             Case #__bar_pagelength
               If *this\bar\page\len <> *value And Not ( *value < 0 And Not #__bar_minus )
-                *this\bar\AreaChange( ) = *this\bar\page\len - value
+                *this\bar\area\change = *this\bar\page\len - value
                 *this\bar\page\len    = *value
                 
                 If Not *this\bar\max And Not #__bar_minus
@@ -7484,7 +7478,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If result ; And *this\width And *this\height ; есть проблемы с imagegadget и scrollareagadget
-                  ;\bar\PageChange( ) = #True
+                  ;\bar\page\change = #True
                   ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
           
           ;If *this\_root( ) ;And *this\_root( )\canvas\postevent = #False
@@ -7750,7 +7744,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         iheight = height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
         If \v\bar\page\len <> iheight
-          \v\bar\AreaChange( ) = \v\bar\page\len - iheight
+          \v\bar\area\change = \v\bar\page\len - iheight
           \v\bar\page\len    = iheight
           
           If Not \v\bar\max
@@ -7764,7 +7758,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         iwidth = width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
         If \h\bar\page\len <> iwidth
-          \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
+          \h\bar\area\change = \h\bar\page\len - iwidth
           \h\bar\page\len    = iwidth
           
           If Not \h\bar\max
@@ -7841,11 +7835,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         
-        ;         If Bool( \v\bar\AreaChange( ) Or \h\bar\AreaChange( ) )
+        ;         If Bool( \v\bar\area\change Or \h\bar\area\change )
         ;           *this\resize | #__resize_change
         ;         EndIf
         
-        ProcedureReturn Bool( \v\bar\AreaChange( ) Or \h\bar\AreaChange( ) )
+        ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
     EndProcedure
     
@@ -8006,17 +8000,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro edit_text_scroll_x_( _this_ )
       If *this\scroll\h And Not *this\scroll\h\hide And _this_\text\caret\x
-        If bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x[#__c_inner], ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
-          *this\WidgetChange( ) = - 1
-        EndIf
+        ; *this\change =- bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x, ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
+        *this\change = - bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x[#__c_inner], ( _this_\text\padding\x * 2 + _this_\row\margin\width )) ; ok
       EndIf
     EndMacro
     
     Macro edit_text_scroll_y_( _this_ )
       If *this\scroll\v And Not *this\scroll\v\hide
-        If bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\y[#__c_inner], ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
-          *this\WidgetChange( ) = - 1
-        EndIf
+        ;  *this\change =- bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y), ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
+        *this\change = - bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\y[#__c_inner], ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
       EndIf
     EndMacro
     
@@ -8475,7 +8467,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\edit_caret_2( ) = *this\edit_caret_1( )
           
           If count Or *rowLine\index <> *this\PressedRowIndex( )
-            *this\TextChange( ) = - 1
+            *this\text\change = - 1
           EndIf
           
           If *rowLine\text\edit[2]\width <> 0
@@ -8505,7 +8497,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\PressedRowIndex( ) = *this\EnteredRowIndex( )
           
           ;
-          If Not *this\TextChange( )
+          If Not *this\text\change
             If scroll_width_( *this ) < *rowLine\text\width
               scroll_width_( *this ) = *rowLine\text\width
               
@@ -8532,7 +8524,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro edit_change_caret_( _this_, _index_ )
       If _this_\PressedRowIndex( ) <> _index_
-        _this_\TextChange( ) = - 1
+        _this_\text\change = - 1
       EndIf
       
       If _this_\edit_caret_1( ) > _this_\edit_caret_2( )
@@ -8717,7 +8709,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *this\EnteredRowIndex( ) = *rowLine\index - 1
           *this\PressedRowIndex( ) = *this\EnteredRowIndex( )
-          *this\TextChange( )        = - 1
+          *this\text\change        = - 1
           
           edit_change_text_( *rowLine, - remove_chr_len, [1] )
           edit_change_text_( *this, - remove_chr_len, [1] )
@@ -8743,7 +8735,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ElseIf *this\edit_caret_1( ) < *this\text\len ; ok
         If *this\edit_caret_1( ) = *rowLine\text\pos + *rowLine\text\len
           remove_chr_len    = Len( #LF$ )
-          *this\TextChange( ) = - 1
+          *this\text\change = - 1
         Else
           remove_chr_len = 1
         EndIf
@@ -8787,7 +8779,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; Debug ""+*this\edit_caret_1( ) +" "+ *this\edit_caret_2( ) +" "+ *this\EnteredRowIndex( ) +" "+ *this\PressedRowIndex( )
         
         *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
-        *this\TextChange( )   = - 1
+        *this\text\change   = - 1
         
         ;
         ;         _AddItem( *this, *this\PressedRowIndex( ), *rowLine\text\edit[3]\string )
@@ -8797,8 +8789,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;         *rowLine\text\edit[3]\string = #LF$
         ;         *rowLine\text\len = *rowLine\text\edit[1]\len + *rowLine\text\edit[3]\len
         ;         *rowLine\text\string.s = *rowLine\text\edit[1]\string + *rowLine\text\edit[3]\string
-        ;          *this\TextChange( ) = 0
-        ;          *this\WidgetChange( ) = 0
+        ;          *this\text\change = 0
+        ;          *this\change = 0
         ;
         ; ;                 ForEach *this\_rows( )
         ; ;                   Debug *this\_rows( )\text\string
@@ -8854,7 +8846,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       CompilerEndIf
       
-      draw_font_item_( *this, row( ), row( )\TextChange( ) )
+      draw_font_item_( *this, row( ), row( )\text\change )
       
       row( )\height = row( )\text\height ; + 10
       row( )\width  = *this\width[#__c_inner]
@@ -8901,8 +8893,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndIf
       ;
       ;
-      *this\WidgetChange( )    = 0
-      *this\TextChange( )      = 1
+      *this\change           = 0
+      *this\text\change      = 1
       *this\text\edit\string = *this\text\string
       
       ; ;       If scroll_height_( *this ) > *this\height[#__c_inner]; bar_area_update( *this )
@@ -8911,9 +8903,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure edit_ClearItems( *this._S_widget )
-      *this\WidgetChange( )  = - 1
+      *this\change           = - 1
       *this\count\items      = - 1
-      *this\TextChange( )      = - 1
+      *this\text\change      = - 1
       *this\text\string      = ""
       *this\text\edit\string = ""
       
@@ -8934,7 +8926,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\count\items = - 1
         edit_ClearItems( *this )
       Else
-        *this\TextChange( ) = - 1
+        *this\text\change = - 1
         *this\text\string = RemoveString( *this\text\string, StringField( *this\text\string, item + 1, #LF$ ) + #LF$ )
         
         If ListSize( *this\_rows( ) )
@@ -8990,8 +8982,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; ; ;       *this\text\len = Len( string )
       ; ; ;       *this\text\string = string
       ; ; ;       *this\count\items = CountString( String, #LF$ )
-      ; ; ;       *this\TextChange( ) = 1
-      ; ; ;       *this\WidgetChange( ) = 1
+      ; ; ;       *this\text\change = 1
+      ; ; ;       *this\change = 1
       
       *this\text\len    = 0
       *this\text\string = string
@@ -9012,8 +9004,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\text\len - Len( #LF$ )
       *this\text\string = Left( *this\text\string, *this\text\len )
       
-      *this\WidgetChange( )      = 1
-      *this\TextChange( ) = 1
+      *this\change      = 1
+      *this\text\change = 1
       
       If count
         *this\text\edit\string = *this\text\string
@@ -9153,8 +9145,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Wend
       
       *this\text\len - Len( #LF$ )
-      *this\TextChange( ) = 0
-      *this\WidgetChange( )      = 0
+      *this\text\change = 0
+      *this\change      = 0
       
       ProcedureReturn 1
     EndProcedure
@@ -9177,13 +9169,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; *this\max
           If *this\text\vertical
             If scroll_height_( *this ) > *this\height[#__c_inner]
-              *this\TextChange( ) = #__text_update
+              *this\text\change = #__text_update
             EndIf
             Width = *this\height[#__c_inner] - *this\text\padding\x * 2
             
           Else
             If scroll_width_( *this ) > *this\width[#__c_inner]
-              *this\TextChange( ) = #__text_update
+              *this\text\change = #__text_update
             EndIf
             
             width = *this\width[#__c_inner] - *this\text\padding\x * 2
@@ -9271,15 +9263,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If *this\count\items <> CountString
             If *this\count\items > CountString
-              *this\TextChange( ) = 1
+              *this\text\change = 1
             Else
-              *this\TextChange( ) = #__text_update
+              *this\text\change = #__text_update
             EndIf
             
             *this\count\items = CountString
           EndIf
           
-          If *this\TextChange( )
+          If *this\text\change
             *str.Character = @String
             *end.Character = @String
             
@@ -9300,7 +9292,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 ;;row( )\text\width = TextWidth( row( )\text\string )
                 
                 ; drawing item font
-                draw_font_item_( *this, row( ), row( )\TextChange( ) )
+                draw_font_item_( *this, row( ), row( )\text\change )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ))
@@ -9313,7 +9305,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If *this\EnteredRowIndex( ) = row( )\index Or
                    *this\FocusedRowIndex( ) = row( )\index
-                  row( )\TextChange( ) = 1
+                  row( )\text\change = 1
                 EndIf
                 
                 ; make line position
@@ -9388,16 +9380,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
               
               
-              If row( )\TextChange( ) <> 0
+              If row( )\text\change <> 0
                 ; edit_sel_update_( *this )
                 
-                row( )\TextChange( ) = 0
+                row( )\text\change = 0
               EndIf
             Next
           EndIf
         EndIf
         
-        If *this\TextChange( ) 
+        If *this\text\change 
           bar_area_update( *this )
           
           ; make horizontal scroll x
@@ -9417,7 +9409,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           
           ; vertical bar one before displaying
-          If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( )
+          If *this\scroll\v And Not *this\scroll\v\bar\thumb\change
             If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len
               If *this\text\align\bottom
                 If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end )
@@ -9435,7 +9427,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; horizontal bar one before displaying
-          If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( )
+          If *this\scroll\h And Not *this\scroll\h\bar\thumb\change
             If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len
               If *this\text\align\right
                 If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end )
@@ -9465,7 +9457,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         With *this
           ; Make output multi line text
-          If *this\TextChange( )
+          If *this\text\change
             Text_Update( *this, *this\_rows( ))
             
             ;             If *this\EnteredRowIndex( ) >= 0
@@ -9553,7 +9545,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; Draw margin back color
           If *this\row\margin\width > 0
-            If ( *this\TextChange( ) Or *this\resize )
+            If ( *this\text\change Or *this\resize )
               *this\row\margin\x      = *this\x[#__c_inner]
               *this\row\margin\y      = *this\y[#__c_inner]
               *this\row\margin\height = *this\height[#__c_inner]
@@ -9810,8 +9802,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\round : draw_roundbox_( *this\x[#__c_frame], *this\y[#__c_frame] - 1, *this\width[#__c_frame], *this\height[#__c_frame] + 2, *this\round, *this\round, *this\color\front[\color\state] ) : EndIf  ; Сглаживание краев ) ))
           EndIf
           
-          If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
-          If *this\WidgetChange( ) : *this\WidgetChange( ) = 0 : EndIf
+          If *this\text\change : *this\text\change = 0 : EndIf
+          If *this\change : *this\change = 0 : EndIf
           ;;;If *this\resize : *this\resize = 0 : EndIf
         EndWith
       EndIf
@@ -10165,8 +10157,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       EndWith
       
-      If *this\TextChange( )
-        *this\WidgetChange( ) = 1
+      If *this\text\change
+        *this\change = 1
       EndIf
       
       If Repaint
@@ -10174,7 +10166,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PushListPosition( *this\_rows( ) )
         ; DoEvents( *this, #__event_StatusChange);, 0, 0 )
         
-        If *this\TextChange( )
+        If *this\text\change
           DoEvents( *this, #__event_Change);, 0, 0 )
         EndIf
         PopListPosition( *this\_rows( ) )
@@ -10345,7 +10337,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; drawing item font
-                  draw_font_item_( *this, *this\_rows( ), *this\_rows( )\TextChange( ) )
+                  draw_font_item_( *this, *this\_rows( ), *this\_rows( )\text\change )
                   
                   ; draw items height
                   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
@@ -10439,7 +10431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Debug "   " + #PB_Compiler_Procedure + "( )"+*this\width +" "+*this\height+" "+scroll_width_( *this )+" "+scroll_height_( *this )
             bar_area_update( *this )
-            *this\WidgetChange( ) = - 2
+            *this\change = - 2
           EndIf
           
           ;\\ SetState( scroll-to-see )
@@ -10508,15 +10500,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.l Tree_Draw( *this._S_widget )
       Protected state.b, x.l, y.l, scroll_x, scroll_y
       
+      With *this
         If Not *this\hide
-          If *this\WidgetChange( ) =- 2 : *this\WidgetChange( ) = 1 : EndIf
-          If *this\WidgetChange( ) =- 1 : *this\WidgetChange( ) = 1 : EndIf
+          update_items_( *this, *this\change )
           
-          ;;Debug " "+*this\WidgetChange( ) 
-          update_items_( *this, *this\WidgetChange( ) )
-          ;;Debug "   "+*this\WidgetChange( ) 
-          
-          If *this\WidgetChange( ) < 0
+          If *this\change < 0
             update_visible_items_( *this )
           EndIf
           
@@ -10533,8 +10521,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;
+          ;Clip( *this, [#__c_draw2] )
+          
+          
           draw_items_( *this, *this\VisibleRows( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
+          
+          
         EndIf
+      EndWith
       
     EndProcedure
     
@@ -10688,7 +10682,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *rows\color\fore[3] = 0
           
           If Text
-            *rows\TextChange( )      = 1
+            *rows\text\change      = 1
             *rows\text\string      = StringField( Text.s, 1, #LF$ )
             *rows\text\edit\string = StringField( Text.s, 2, #LF$ )
           EndIf
@@ -10709,7 +10703,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\scroll\state = - 1
           EndIf
           *this\count\items + 1
-          *this\WidgetChange( ) = 1
+          *this\change = 1
         EndIf
       EndIf
       ;EndWith
@@ -10728,13 +10722,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Select Keyboard( )\key
               Case #PB_Shortcut_PageUp
                 If bar_SetState( *this\scroll\v, 0 )
-                  *this\WidgetChange( ) = 1
+                  *this\change = 1
                   result       = 1
                 EndIf
                 
               Case #PB_Shortcut_PageDown
                 If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\end )
-                  *this\WidgetChange( ) = 1
+                  *this\change = 1
                   result       = 1
                 EndIf
                 
@@ -10744,7 +10738,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ( Keyboard( )\key[1] & #PB_Canvas_Alt ) And
                      ( Keyboard( )\key[1] & #PB_Canvas_Control )
                     If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - 18 )
-                      *this\WidgetChange( ) = 1
+                      *this\change = 1
                       result       = 1
                     EndIf
                     
@@ -10764,9 +10758,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       *rows_selected                  = *this\_rows( )
                       
                       If *this\_rows( )\y + scroll_y_( *this ) <= 0
-                        If row_scroll_y_( *this, *this\FocusedRow( ) )
-                          *this\WidgetChange( ) = - 1
-                        EndIf
+                        *this\change = - row_scroll_y_( *this, *this\FocusedRow( ) )
                       EndIf
                       
                       Post( *this, #__event_Change, *this\_rows( )\index )
@@ -10784,7 +10776,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ( Keyboard( )\key[1] & #PB_Canvas_Control )
                     
                     If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos + 18 )
-                      *this\WidgetChange( ) = 1
+                      *this\change = 1
                       result       = 1
                     EndIf
                     
@@ -10804,9 +10796,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       *rows_selected                  = *this\_rows( )
                       
                       If *this\_rows( )\y >= *this\height[#__c_inner]
-                        If row_scroll_y_( *this, *this\FocusedRow( ) )
-                          *this\WidgetChange( ) = - 1
-                        EndIf
+                        *this\change = - row_scroll_y_( *this, *this\FocusedRow( ) )
                       EndIf
                       
                       Post( *this, #__event_Change, *this\_rows( )\index )
@@ -10821,9 +10811,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If ( Keyboard( )\key[1] & #PB_Canvas_Alt ) And
                    ( Keyboard( )\key[1] & #PB_Canvas_Control )
                   
-                  If bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / 10 ))
-                    *this\WidgetChange( ) = 1
-                  EndIf
+                  *this\change = bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / 10 ))
                   result       = 1
                 EndIf
                 
@@ -10831,9 +10819,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If ( Keyboard( )\key[1] & #PB_Canvas_Alt ) And
                    ( Keyboard( )\key[1] & #PB_Canvas_Control )
                   
-                  If bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / 10 ))
-                    *this\WidgetChange( ) = 1
-                  EndIf
+                  *this\change = bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / 10 ))
                   result       = 1
                 EndIf
                 
@@ -11313,9 +11299,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *this\VisibleRows( )\color\state = #__S_2
                   *this\FocusedRow( )              = *this\VisibleRows( )
-                  ; if row_scroll_y_( *this\scroll\v, *this\FocusedRow( ) )
-                  ;   *this\WidgetChange( ) =- 1
-                  ; endif 
+                  ; *this\change =- row_scroll_y_( *this\scroll\v, *this\FocusedRow( ) )
                   Repaint | #True
                 EndIf
               EndIf
@@ -11390,14 +11374,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #PB_Shortcut_PageUp
               ; TODO scroll to first visible
               If bar_SetState( *this\scroll\v, 0 )
-                *this\WidgetChange( ) = 1
+                *this\change = 1
                 Repaint      = 1
               EndIf
               
             Case #PB_Shortcut_PageDown
               ; TODO scroll to last visible
               If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\end )
-                *this\WidgetChange( ) = 1
+                *this\change = 1
                 Repaint      = 1
               EndIf
               
@@ -11410,7 +11394,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; scroll to top
                   If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - 18 )
-                    *this\WidgetChange( ) = 1
+                    *this\change = 1
                     Repaint      = 1
                   EndIf
                   
@@ -11442,9 +11426,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                     
                     *current     = *this\_rows( )
-                    If row_scroll_y_( *this, *current )
-                      *this\WidgetChange( ) = - 1
-                    EndIf
+                    *this\change = - row_scroll_y_( *this, *current )
                     Post( *this, #__event_Change, *current\index )
                     Repaint = 1
                   EndIf
@@ -11460,7 +11442,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    ( Keyboard( )\key[1] & #PB_Canvas_Control )
                   
                   If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos + 18 )
-                    *this\WidgetChange( ) = 1
+                    *this\change = 1
                     Repaint      = 1
                   EndIf
                   
@@ -11492,9 +11474,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                     
                     *current     = *this\_rows( )
-                    If row_scroll_y_( *this, *current )
-                      *this\WidgetChange( ) = - 1
-                    EndIf
+                    *this\change = - row_scroll_y_( *this, *current )
                     Post( *this, #__event_Change, *current\index )
                     Repaint = 1
                   EndIf
@@ -11507,9 +11487,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If ( Keyboard( )\key[1] & #PB_Canvas_Alt ) And
                  ( Keyboard( )\key[1] & #PB_Canvas_Control )
                 
-                If bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / 10 ))
-                  *this\WidgetChange( ) = 1
-                EndIf
+                *this\change = bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / 10 ))
                 Repaint      = 1
               EndIf
               
@@ -11517,9 +11495,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If ( Keyboard( )\key[1] & #PB_Canvas_Alt ) And
                  ( Keyboard( )\key[1] & #PB_Canvas_Control )
                 
-                If bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / 10 ))
-                  *this\WidgetChange( ) = 1
-                EndIf
+                *this\change = bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / 10 ))
                 Repaint      = 1
               EndIf
               
@@ -12400,7 +12376,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If state = - 1
           result = Bool( *this\flag & flag )
         Else
-          *this\WidgetChange( ) = 1
+          *this\change = 1
           
           ;\\ set & remove flags
           If state
@@ -12468,7 +12444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\text\align\bottom = #False
             EndIf
             
-            *this\TextChange( )    = #__text_update
+            *this\text\change    = #__text_update
           EndIf
           
           ;\\
@@ -12594,12 +12570,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\count\items
-              *this\WidgetChange( ) = 1
+              *this\change = 1
             EndIf
           EndIf
           
           ;           If flag & #__text_bottom 
-          ;             *this\ImageChange( )              = #__text_update
+          ;             *this\image\change              = #__text_update
           ;             *this\image\align\top    = 0
           ;             *this\image\align\bottom = state
           ;           EndIf
@@ -12607,14 +12583,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; ;           If flag & #__text_right 
           ; ;             *this\image\align\left  = 0
-          ; ;             *this\ImageChange( )             = #__text_update
+          ; ;             *this\image\change             = #__text_update
           ; ;             *this\image\align\right = state
           ; ;           EndIf
           
           
           
           ;\\
-          If *this\TextChange( )
+          If *this\text\change
             text_rotate_( *this\text )
           EndIf
           
@@ -12636,7 +12612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;         ;       Position = ListIndex( *this\Columns( ))
         ;
         ;         *this\Columns( )\text\string.s = Text.s
-        ;         *this\Columns( )\TextChange( ) = 1
+        ;         *this\Columns( )\text\change = 1
         ;         *this\Columns( )\x = scroll_width_( *this )
         ;         *this\Columns( )\width = Width
         ;         *this\Columns( )\height = 24
@@ -12806,7 +12782,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        *this\WidgetChange( ) = 1
+        *this\change = 1
         *this\count\items - 1
         DeleteElement( *this\_rows( ))
         PostCanvasRepaint( *this\_root( ) )
@@ -12844,7 +12820,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\count\items <> 0
           ;; Post( *this, #__event_Change, #PB_All ) ;
           
-          *this\WidgetChange( )      = 1
+          *this\change      = 1
           *this\row\count   = 0
           *this\count\items = 0
           
@@ -13389,7 +13365,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedRow( ) = *this\_rows( )
             *this\scroll\state  = - 1
             
-            ;*this\WidgetChange( ) = 1
+            ;*this\change = 1
             ProcedureReturn #True
           EndIf
         EndIf
@@ -13534,7 +13510,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; ProcedureReturn edit_SetText( *this, Text )
           If *This\text\string.s <> Text.s
             *This\text\string.s = Text.s
-            *This\TextChange( )   = #True
+            *This\text\change   = #True
             result              = #True
             PostCanvasRepaint( *This\_root( ) )
           EndIf
@@ -13562,13 +13538,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *This\text\string.s <> Text.s
           *This\text\string.s = Text.s
-          *This\TextChange( )   = #True
+          *This\text\change   = #True
           result              = #True
           PostCanvasRepaint( *This\_root( ) )
         EndIf
       EndIf
       
-      *this\WidgetChange( ) = 1
+      *this\change = 1
       
       ProcedureReturn result
     EndProcedure
@@ -13580,7 +13556,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\text\fontID = FontID
         
         If *this\type = #__type_Editor
-          *this\TextChange( ) = 1
+          *this\text\change = 1
           
           If Not Bool( *this\row\count And *this\row\count <> *this\count\items )
             Redraw( *this )
@@ -14888,7 +14864,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
-        *this\TabChange( )    = #True
+        *this\TabChenge( )    = #True
         *this\_tabs( )\text\string = Text.s
         *this\state\repaint        = #True
       EndIf
@@ -14911,9 +14887,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\_rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
-        *this\_rows( )\TextChange( ) = 1
-        *this\WidgetChange( )        = 1
-        result                       = #True
+        *this\_rows( )\text\change = 1
+        *this\change               = 1
+        result                     = #True
         
       ElseIf *this\type = #__type_Panel
         result = SetItemText( *this\TabBox( ), Item, Text, Column )
@@ -14923,8 +14899,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
            SelectElement( *this\_tabs( ), Item ) And
            *this\_tabs( )\text\string <> Text
           *this\_tabs( )\text\string = Text
-          *this\_tabs( )\TextChange( ) = 1
-          *this\WidgetChange( )               = 1
+          *this\_tabs( )\text\change = 1
+          *this\change               = 1
           result                     = #True
         EndIf
         
@@ -14947,7 +14923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If is_item_( *this, item ) And SelectElement( *this\_rows( ), Item )
           If *this\_rows( )\image\img <> Image
             set_image_( *this, *this\_rows( )\Image, Image )
-            *this\WidgetChange( ) = 1
+            *this\change = 1
             ;;PostCanvasRepaint( *this\_root( ) )
           EndIf
         EndIf
@@ -14968,8 +14944,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
            SelectElement( *this\_rows( ), Item ) And
            *this\_rows( )\text\fontID <> FontID
           *this\_rows( )\text\fontID = FontID
-          ;       *this\_rows( )\TextChange( ) = 1
-          ;       *this\WidgetChange( ) = 1
+          ;       *this\_rows( )\text\change = 1
+          ;       *this\change = 1
           result = #True
         EndIf
         
@@ -14988,8 +14964,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
            SelectElement( *TabBar\_tabs( ), Item ) And
            *TabBar\_tabs( )\text\fontID <> FontID
           *TabBar\_tabs( )\text\fontID = FontID
-          ;       *this\_rows( )\TextChange( ) = 1
-          ;       *this\WidgetChange( ) = 1
+          ;       *this\_rows( )\text\change = 1
+          ;       *this\change = 1
           result = #True
         EndIf
         
@@ -15060,7 +15036,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If State & #__tree_expanded = #__tree_expanded Or
                State & #__tree_collapsed = #__tree_collapsed
               
-              *this\WidgetChange( )                        = #True
+              *this\change                        = #True
               *this\_rows( )\collapsebox\___state = Bool( State & #__tree_collapsed )
               
               PushListPosition( *this\_rows( ))
@@ -15455,12 +15431,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\color\frame[#__S_0] = _get_colors_( )\frame
         
         ;Row( *this )\index =- 1
-        *this\WidgetChange( ) = 1
+        *this\change = 1
         
         *this\interact = 1
         ;*this\round = round
         
-        *this\TextChange( ) = 1
+        *this\text\change = 1
         *this\text\height = 18
         
         *this\image\padding\x = 2
@@ -15540,7 +15516,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\bar\button.allocate( BUTTONS, [#__b_1] )
         *this\bar\button.allocate( BUTTONS, [#__b_2] )
         
-        *this\bar\PageChange( ) = 1 
+        *this\bar\page\change = 1 
         *this\scroll\increment = ScrollStep
         Protected._s_BUTTONS *BB1, *BB2, *SB
         *SB = *this\bar\button
@@ -15685,7 +15661,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\type = #__type_TabBar Or
            *this\type = #__type_ToolBar
           
-          ;;*this\TextChange( ) = 1
+          ;;*this\text\change = 1
           *this\color\back = - 1
           *BB1\color     = _get_colors_( )
           *BB2\color     = _get_colors_( )
@@ -15729,7 +15705,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;           EndIf
           
           *this\color       = _get_colors_( )
-          *this\TextChange( ) = #True
+          *this\text\change = #True
           
           ;           *BB1\round = *this\round
           ;           *BB2\round = *this\round
@@ -16275,12 +16251,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; update text
-        If *this\WidgetChange( )
+        If *this\change
           Text_Update( *this, *this\_rows( ))
           ; Text_Update( *this, *this\_rows( ))
         EndIf
         
-        If *this\ImageChange( )
+        If *this\image\change
           *this\image\padding\x = *this\text\padding\x
           *this\image\padding\y = *this\text\padding\y
           
@@ -16309,7 +16285,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\type = #__type_CheckBox
           
           ; update widget ( option&checkbox ) position
-          If *this\WidgetChange( )
+          If *this\change
             *this\_box_\y = *this\y[#__c_inner] + ( *this\height[#__c_inner] - *this\_box_\height ) / 2
             
             If *this\text\align\right
@@ -16487,10 +16463,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         
         If *this\image\id Or *this\image[#__img_background]\id
-          If *this\ImageChange( ) <> 0
+          If *this\image\change <> 0
             set_align_x_( *this\image, *this\image, *this\width[#__c_inner], 0 )
             set_align_y_( *this\image, *this\image, *this\height[#__c_inner], 270 )
-            *this\ImageChange( ) = 0
+            *this\image\change = 0
           EndIf
           
           drawing_mode_alpha_( #PB_2DDrawing_Default )
@@ -16565,7 +16541,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_Editor : Editor_Draw( _this_ )
           
         Case #__type_Tree : Tree_Draw( _this_ )
-        Case #__type_Property : Tree_Draw( _this_ )
+        Case #__type_property : Tree_Draw( _this_ )
         Case #__type_ListView : Tree_Draw( _this_ )
           
         Case #__type_Text : draw_Button( _this_ )
@@ -16779,14 +16755,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If Not *this\hide
           ; reset values
-          If *this\WidgetChange( ) <> 0
-            *this\WidgetChange( ) = 0
+          If *this\change <> 0
+            *this\change = 0
           EndIf
-          If *this\TextChange( ) <> 0
-            *this\TextChange( ) = 0
+          If *this\text\change <> 0
+            *this\text\change = 0
           EndIf
-          If *this\ImageChange( ) <> 0
-            *this\ImageChange( ) = 0
+          If *this\image\change <> 0
+            *this\image\change = 0
           EndIf
           If *this\resize & #__resize_change
             *this\resize & ~ #__resize_change
@@ -16926,8 +16902,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ draw current popup-widget
         If PopupWidget( ) And PopupWidget( )\_root( ) = *this\_root( )
           Debug "popup - draw " + *this\_root( )\class
-          
+          ; ;           If PopupWidget( )\change > 0 
+          ; ;             update_items_( PopupWidget( ), PopupWidget( )\change )
+          ; ;           EndIf
           Draw( PopupWidget( ) )
+          ;Tree_Draw( PopupWidget( ), VisibleRowList( PopupWidget( ) ))
         EndIf
         
         Drawing( ) = 0
@@ -18023,26 +18002,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ entered state position
             If *this And *this\state\enter > 0 
-              If is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_inner] )
-                If *this\type = #__type_Splitter
-                  If is_at_point_( *this\bar\button, mouse( )\x, mouse( )\y )
-                    If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
-                  Else
-                    If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
+              
+              If ( *this\type <> #__type_Splitter And is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_draw] )) Or
+                 ( *this\type = #__type_Splitter And *this\bar\button\interact And *this\bar\button\hide = 0 And is_at_point_( *this\bar\button, mouse( )\x, mouse( )\y ))
+                
+;                 ;           If *this\type = #__type_Editor Or 
+;                 ;              *this\type = #__type_String Or 
+;                 ;              *this\type = #__type_HyperLink
+;                 If *this\row
+;                   ;             If is_at_point_( *this, mouse_x - *this\x, mouse_y - *this\y, [#__c_Required] )
+;                   ;               If *this\state\enter = 1
+;                   ;                 *this\state\enter = 2
+;                   ;                 *this\state\repaint = 1
+;                   ;               EndIf
+;                   ;             Else
+;                   ;               If *this\state\enter = 2
+;                   ;                 *this\state\enter = 1
+;                   ;                 *this\state\repaint = 1
+;                   ;               EndIf
+;                   ;             EndIf
+;                 Else
+                  If *this\state\enter = 1
+                    *this\state\enter = 2
+                    *this\state\repaint = 1
                   EndIf
-                  
-                ElseIf *this\type = #__type_HyperLink  
-                  If is_at_point_( *this, mouse( )\x - *this\x, mouse( )\y - *this\y, [#__c_Required] )
-                    If *this\state\enter = 1 : *this\state\enter = 2 : *this\state\repaint = 1 : EndIf
-                  Else
-                    If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
-                  EndIf
-                  
-                Else
-                  If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
-                EndIf
+;                 EndIf
               Else
-                If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
+                If *this\state\enter = 2
+                  *this\state\enter = 1
+                  *this\state\repaint = 1
+                EndIf
               EndIf
             EndIf
             
@@ -20539,5 +20528,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

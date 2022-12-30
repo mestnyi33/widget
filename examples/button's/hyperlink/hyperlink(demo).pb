@@ -22,14 +22,14 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 270,0,270,100)
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     LoadFont(5, "Arial", 16)
   CompilerElse
     LoadFont(5, "Arial", 12)
   CompilerEndIf
   
+; Shows possible flags of ButtonGadget in action...
+If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 270,0,270,100)
   HyperLinkGadget(0, 10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
   HyperLinkGadget(1, 10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
   SetGadgetFont(1, FontID(5))
@@ -49,11 +49,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_Sy
   ;Bind(#PB_All, @events_widgets())
   
   For i = 0 To 1
-    Bind(GetWidget(i), @events_widgets())
+    Bind(GetWidget(i), @events_widgets(), #PB_EventType_LeftClick)
   Next
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
