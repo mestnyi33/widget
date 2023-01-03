@@ -152,24 +152,24 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag & #__text_right
           flags + "#PB_Button_Right | "
         EndIf
-        If flag & #__text_border
-          flags + "#PB_Text_Border | "
-        EndIf
+;         If flag & #__text_border
+;           flags + "#PB_Text_Border | "
+;         EndIf
         
       Case #__Type_Button
-        If flag & #__button_left
+        If flag & #PB_Button_Left
           flags + "#PB_Button_Left | "
         EndIf
-        If flag & #__button_right
+        If flag & #PB_Button_Right
           flags + "#PB_Button_Right | "
         EndIf
-        If flag & #__button_multiline
+        If flag & #PB_Button_MultiLine
           flags + "#PB_Button_MultiLine | "
         EndIf
-        If flag & #__button_toggle
+        If flag & #PB_Button_Toggle
           flags + "#PB_Button_Toggle | "
         EndIf
-        If flag & #__button_default
+        If flag & #PB_button_default
           flags + "#PB_Button_Default | "
         EndIf
         
@@ -1072,7 +1072,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
     ; id_inspector_help_text
-    id_i_help_text  = Text( 0,0,0,0, "help for the inspector", #__text_border )
+    id_i_help_text  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border )
     ;\\\ close inspector gadgets 
     
     ;
@@ -1251,5 +1251,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f+------+--S--7
+; Folding = -----P------f--fp--9
 ; EnableXP

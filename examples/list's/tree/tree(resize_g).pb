@@ -1,11 +1,11 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib(widget)
- CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure GadgetsClipCallBack( GadgetID, lParam )
       If GadgetID
         Protected Gadget = GetProp_( GadgetID, "PB_ID" )
@@ -255,13 +255,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
-     
-;     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
-;     g = Tree(0,0,0,0, #__flag_autosize)
-     Gadget(#PB_GadgetType_Tree, #w_tree, 0, 0, 0, 0)
-     g = GetGadgetData(#w_tree)
-     If Not g : g = Root( ) : EndIf
-     
+    
+    ;     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
+    ;     g = Tree(0,0,0,0, #__flag_autosize)
+    Gadget(#__type_Tree, #w_tree, 0, 0, 0, 0)
+    g = GetGadgetData(#w_tree)
+    If Not g : g = Root( ) : EndIf
+    
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -304,5 +304,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0f8--0--
+; Folding = --------
 ; EnableXP

@@ -252,7 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 20, 210, th, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+    *g = Tree(450, 20, 210, th);|#__tree_Collapsed)                                         
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", 0, 1) 
     AddItem(*g, 2, "Tree_2", -1, 2) 

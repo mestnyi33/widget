@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
           Case button_default   : flag = #PB_Button_Default
-          Case button_multiline : flag = #PB_Button_MultiLine
+          Case button_multiline : flag = #__text_MultiLine
             ;
           Case button_top,
                button_left,
@@ -100,62 +100,37 @@ CompilerIf #PB_Compiler_IsMainFile
                button_bottom,
                button_center
             
-            
-            Flag(*this, #PB_Button_Left|#PB_Button_Right|#__text_top|#__text_bottom, 0)
             ;
-            If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
+            If EventWidget <> button_top 
+              Flag(*this, #__text_top, 0)
               SetState(button_top,0) 
             EndIf
-            If EventWidget <> button_left And EventWidget <> button_top And EventWidget <> button_bottom 
+            If EventWidget <> button_left 
+              Flag(*this, #__text_Left, 0)
               SetState(button_left,0) 
             EndIf
-            If EventWidget <> button_right And EventWidget <> button_top And EventWidget <> button_bottom  
+            If EventWidget <> button_right 
+              Flag(*this, #__text_right, 0)
               SetState(button_right,0) 
             EndIf
-            If EventWidget <> button_bottom And EventWidget <> button_left And EventWidget <> button_right 
+            If EventWidget <> button_bottom 
+              Flag(*this, #__text_bottom, 0)
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__text_center, 0)
+              Flag(*this, #__text_Center, 0)
               SetState(button_center,0) 
             EndIf
             
-            If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Left|#__text_bottom, 1)
-            ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Right|#__text_bottom, 1)
-            ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #PB_Button_Left|#__text_top, 1)
-            ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #PB_Button_Right|#__text_top, 1)
-            ElseIf GetState(button_left)
-              Flag(*this, #PB_Button_Left, 1)
-            ElseIf GetState(button_right) 
-              Flag(*this, #PB_Button_Right, 1)
-            ElseIf GetState(button_bottom)
-              Flag(*this, #__text_bottom, 1)
-            ElseIf GetState(button_top)
-              Flag(*this, #__text_top, 1)
-            EndIf
-            
-            If GetState(button_left)=0 And 
-               GetState(button_top)=0 And 
-               GetState(button_right)=0 And
-               GetState(button_bottom)=0
-              SetState(button_center,1) 
-              Flag(*this, #__text_center, 1)
-            EndIf
-            
-            ;
             Select EventWidget
               Case button_top       : flag = #__text_top     
-              Case button_left      : flag = #PB_Button_Left
-              Case button_right     : flag = #PB_Button_Right
+              Case button_left      : flag = #__text_Left
+              Case button_right     : flag = #__text_right
               Case button_bottom    : flag = #__text_bottom
-              Case button_center    : flag = #__text_center
+              Case button_center    : flag = #__text_Center
             EndSelect
             ;
-          Case button_toggle    : flag = #PB_Button_Toggle
+          ;Case button_toggle    : flag = #PB_ComboBox_ThreeState
           Case button_invert    : flag = #__text_invert
           Case button_vertical  : flag = #__text_vertical
         EndSelect
@@ -192,8 +167,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-    *this  = widget::Button(100, 100, 250, 200, text, #PB_Button_MultiLine);|#__flag_anchorsgadget)
+    gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
+    *this  = widget::ComboBox(100, 100, 250, 200, #__text_MultiLine);|#__flag_anchorsgadget)
+    AddItem( *this, -1, text )
     
     Define y  = 10
     Define bh = 24
@@ -211,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile
     button_invert    = widget::Button(width + 45, y + bh * 10, 100, 26, "invert", #PB_Button_Toggle)
     
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_OptionBoxes | #__tree_CheckBoxes | #__Tree_threestate)
+;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_ComboBoxBoxes | #__tree_ComboBoxes | #__Tree_threestate)
 ;     AddItem(tree, #tree_item_default, "default")
 ;     AddItem(tree, #tree_item_multiline, "multiline")
 ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -227,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #PB_Button_MultiLine))
+    SetState(button_multiline, Flag(*this, #__text_MultiLine))
     SetState(button_center, Flag(*this, #__text_center))
     Hide(Button_type, 1)
     
@@ -247,5 +223,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0---
+; Folding = ---
 ; EnableXP

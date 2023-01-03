@@ -235,6 +235,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro OpenedTabIndex( ): index[#__tab_1]: EndMacro ; parent\
     Macro FocusedTabIndex( ): index[#__tab_2]: EndMacro;
+    Macro TabBoxFocusedIndex( ): TabBox( )\FocusedTabIndex( ): EndMacro;
     
     Macro LeavedRow( ): row\leaved: EndMacro  ; Returns mouse entered widget
     Macro EnteredRow( ): row\entered: EndMacro; Returns mouse entered widget
@@ -369,7 +370,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
     
     Macro is_parent_( _this_, _parent_ )
-      Bool( _parent_ = _this_\_parent( ) And ( _parent_\TabBox( ) And _this_\TabIndex( ) = _parent_\TabBox( )\FocusedTabIndex( ) ))
+      Bool( _parent_ = _this_\_parent( ) And ( _parent_\TabBox( ) And _this_\TabIndex( ) = _parent_\TabBoxFocusedIndex( ) ))
     EndMacro
     Macro is_parent_one_( _address_1, _address_2 )
       Bool( _address_1 <> _address_2 And _address_1\_parent( ) = _address_2\_parent( ) And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
@@ -1945,8 +1946,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           a_transform( )\grid\widget = _this_
           
           If _this_\container > 0 And _this_\type <> #__type_MDI
-            _this_\image[#__img_background]\x = - _this_\fs
-            _this_\image[#__img_background]\y = - _this_\fs
+            _this_\image[#__image_background]\x = - _this_\fs
+            _this_\image[#__image_background]\y = - _this_\fs
           EndIf
           
           If a_transform( )\grid\size > 1
@@ -3440,28 +3441,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;-
-    Macro set_align_( _address_, _left_, _top_, _right_, _bottom_, _center_ )
-      _address_\align\left  = _left_
-      _address_\align\right = _right_
-      
-      _address_\align\top    = _top_
-      _address_\align\bottom = _bottom_
-      
-      If Not _center_ And
-         Not _address_\align\top And
-         Not _address_\align\left And
-         Not _address_\align\right And
-         Not _address_\align\bottom
-        
-        If Not _address_\align\right
-          _address_\align\left = #True
-        EndIf
-        If Not _address_\align\bottom
-          _address_\align\top = #True
-        EndIf
-      EndIf
-    EndMacro
-    
     Macro set_align_x_( _this_, _address_, _width_, _rotate_ )
       If _rotate_ = 180
         If _this_\align\right
@@ -3584,12 +3563,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\text\vertical = constants::_check_( _flag_, #__text_vertical )
         
         ;
-        set_align_( _this_\text,
-                    constants::_check_( _flag_, #__text_left ),
-                    constants::_check_( _flag_, #__text_top ),
-                    constants::_check_( _flag_, #__text_right ),
-                    constants::_check_( _flag_, #__text_bottom ),
-                    constants::_check_( _flag_, #__text_center ))
+        _this_\text\align\left  = constants::_check_( _flag_, #__text_left )
+        _this_\text\align\right = constants::_check_( _flag_, #__text_right )
+        
+        _this_\text\align\top    = constants::_check_( _flag_, #__text_top )
+        _this_\text\align\bottom = constants::_check_( _flag_, #__text_bottom )
+        
+        If Not _this_\text\align\top And
+           Not _this_\text\align\left And
+           Not _this_\text\align\right And
+           Not _this_\text\align\bottom And
+           Not constants::_check_( _flag_, #__text_center )
+           
+          If Not _this_\text\align\right
+            _this_\flag | #__text_left
+            _this_\text\align\left = #True
+          EndIf
+          If Not _this_\text\align\bottom
+            _this_\flag | #__text_top
+            _this_\text\align\top = #True
+          EndIf
+        EndIf
         
         
         If constants::_check_( _flag_, #__text_wordwrap )
@@ -4618,7 +4612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _this_\hide = Bool( _this_\state\hide Or
                           _this_\_parent( )\hide Or
                           ( _this_\_parent( )\TabBox( ) And
-                            _this_\_parent( )\TabBox( )\FocusedTabIndex( ) <> _this_\TabIndex( ) ))
+                            _this_\_parent( )\TabBoxFocusedIndex( ) <> _this_\TabIndex( ) ))
       _this_\resize | #__resize_change
     EndMacro
     
@@ -4656,7 +4650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       _this_\disable = Bool( _this_\state\disable Or
       ;                           _this_\_parent( )\disable Or
       ;                           ( _this_\_parent( )\TabBox( ) And
-      ;                             _this_\_parent( )\TabBox( )\FocusedTabIndex( ) <> _this_\TabIndex( ) ))
+      ;                             _this_\_parent( )\TabBoxFocusedIndex( ) <> _this_\TabIndex( ) ))
       ;       _this_\resize | #__resize_change
     EndMacro
     
@@ -4874,70 +4868,64 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure bar_tab_AddItem( *this._S_widget, Item.i, Text.s, Image.i = -1, sublevel.i = 0 )
       Protected result
       
-      With *this
-        If Item = - 1 Or
-           Item > *this\count\items - 1
-          LastElement( *this\_tabs( ))
-          AddElement( *this\_tabs( ))
-          Item = ListIndex( *this\_tabs( ))
-        Else
-          If SelectElement( *this\_tabs( ), Item )
-            If *this\FocusedTabIndex( ) >= Item
-              *this\FocusedTabIndex( ) + 1
-            EndIf
-            
-            If *this = *this\_parent( )\TabBox( )
-              If StartEnumerate( *this\_parent( ) )
-                If enumWidget( )\_parent( ) = *this\_parent( ) And
-                   enumWidget( )\TabIndex( ) = Item
-                  enumWidget( )\TabIndex( ) + 1
-                EndIf
-                
-                set_hide_state_( enumWidget( ) )
-                StopEnumerate( )
-              EndIf
-            EndIf
-            
-            InsertElement( *this\_tabs( ))
-            
-            PushListPosition( *this\_tabs( ))
-            While NextElement( *this\_tabs( ))
-              *this\_tabs( )\index = ListIndex( *this\_tabs( ))
-            Wend
-            PopListPosition( *this\_tabs( ))
-          EndIf
-        EndIf
-        
-        ;
-        *this\count\items + 1
-        *this\bar\_s.allocate( TABS, ( ))
-        *this\_tabs( )\color       = _get_colors_( )
-        *this\_tabs( )\height      = *this\height - 1
-        *this\_tabs( )\text\string = Text.s
-        *this\_tabs( )\index       = item
-        
-        ; TabBar last opened item
-        *this\OpenedTabIndex( ) = Item
-        *this\TabChange( ) = #True
-        
-        ; set default selected tab
-        If item = 0
-          If *this\FocusedTab( )
-            *this\FocusedTab( )\state\focus = #False
+      If Item = - 1 Or
+         Item > *this\count\items - 1
+        LastElement( *this\_tabs( ))
+        AddElement( *this\_tabs( ))
+        Item = ListIndex( *this\_tabs( ))
+      Else
+        If SelectElement( *this\_tabs( ), Item )
+          If *this\FocusedTabIndex( ) >= Item
+            *this\FocusedTabIndex( ) + 1
           EndIf
           
-          *this\FocusedTabIndex( )        = 0
-          *this\FocusedTab( )             = *this\_tabs( )
-          *this\FocusedTab( )\state\focus = - 1 ; scroll to active tab
+          If *this = *this\_parent( )\TabBox( )
+            If StartEnumerate( *this\_parent( ) )
+              If enumWidget( )\_parent( ) = *this\_parent( ) And
+                 enumWidget( )\TabIndex( ) = Item
+                enumWidget( )\TabIndex( ) + 1
+              EndIf
+              
+              set_hide_state_( enumWidget( ) )
+              StopEnumerate( )
+            EndIf
+          EndIf
+          
+          InsertElement( *this\_tabs( ))
+          
+          PushListPosition( *this\_tabs( ))
+          While NextElement( *this\_tabs( ))
+            *this\_tabs( )\index = ListIndex( *this\_tabs( ))
+          Wend
+          PopListPosition( *this\_tabs( ))
+        EndIf
+      EndIf
+      
+      ;\\ TabBar last opened item
+      *this\OpenedTabIndex( ) = Item
+      *this\TabChange( ) = #True
+      *this\count\items + 1
+      
+      ;\\
+      *this\bar\_s.allocate( TABS, ( ))
+      *this\_tabs( )\color       = _get_colors_( )
+      *this\_tabs( )\height      = *this\height - 1
+      *this\_tabs( )\text\string = Text.s
+      *this\_tabs( )\index       = item
+      
+      ;\\ set default selected tab
+      If item = 0
+        If *this\FocusedTab( )
+          *this\FocusedTab( )\state\focus = #False
         EndIf
         
-        If is_integral_( *this )
-          *this\_parent( )\count\items + 1
-        EndIf
-        
-        set_image_( *this, *this\_tabs( )\Image, Image )
-        PostCanvasRepaint( *this\_root( ) )
-      EndWith
+        *this\FocusedTabIndex( )        = 0
+        *this\FocusedTab( )             = *this\_tabs( )
+        *this\FocusedTab( )\state\focus = - 1 ; scroll to active tab
+      EndIf
+      
+      set_image_( *this, *this\_tabs( )\Image, Image )
+      PostCanvasRepaint( *this\_root( ) )
       
       ProcedureReturn Item
     EndProcedure
@@ -5077,7 +5065,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *this\_parent( )\TabBox( ) = *this
           Post( *this\_parent( ), #__event_CloseItem, Item )
-          *this\_parent( )\count\items - 1
         Else
           Post( *this, #__event_CloseItem, Item )
         EndIf
@@ -5094,7 +5081,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *this\_parent( )\TabBox( ) = *this
           Post( *this\_parent( ), #__event_CloseItem, #PB_All )
-          *this\_parent( )\count\items = 0
         Else
           Post( *this, #__event_CloseItem, #PB_All )
         EndIf
@@ -5215,7 +5201,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\_tabs( )\width = *SB\width - 1
                 EndIf
                 
-                *this\text\x = ( *this\_tabs( )\width - *this\_tabs( )\text\width ) / 2 ; - Bool(*this\FocusedTabIndex( ) <> *this\_tabs( )\index And typ)*2
+                *this\text\x = ( *this\_tabs( )\width - *this\_tabs( )\text\width ) / 2 
                 
                 *this\_tabs( )\text\y = *this\text\y + *this\_tabs( )\y
                 *this\_tabs( )\text\x = *this\text\x + *this\_tabs( )\x
@@ -5299,7 +5285,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;           drawing_mode_alpha_( #PB_2DDrawing_Default )
           ;                 color = *this\_parent( )\color\frame[0]
-          ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs-1, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
+          ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs-1, color);*this\color\frame )
           
           ; draw all visible items
           ForEach *this\_tabs( )
@@ -5388,9 +5374,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 
                 color = *this\_parent( )\color\frame[0]
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame )
+                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame )
+                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) 
               EndIf
             Else
               ; frame on the selected item
@@ -5427,20 +5413,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ;;drawing_mode_alpha_( #PB_2DDrawing_Default )
                 color = *this\_parent( )\color\frame[0]
-                ;Box( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs+*this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;Box( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_frame], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs+*this\_parent( )\fs[2], color);*this\color\frame ) 
                 
-                ; ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ; ;                draw_box_( *this\_parent( )\x[#__c_frame] + *this\_parent( )\width[#__c_frame] - (*this\_parent( )\fs + pos), *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner]+1, *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ; ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) 
+                ; ;                draw_box_( *this\_parent( )\x[#__c_frame] + *this\_parent( )\width[#__c_frame] - (*this\_parent( )\fs + pos), *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs, *this\_parent( )\fs + pos, *this\_parent( )\fs, color);*this\color\frame ) 
+                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) 
+                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner]+1, *this\_parent( )\y[#__c_inner] - *this\_parent( )\fs[2] - 1, *this\_parent( )\fs-1, *this\_parent( )\fs[2], color);*this\color\frame ) 
                 ;
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
-                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( )  <>-1 )*2 ] )
+                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) 
+                ;                draw_box_( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, *this\_parent( )\fs, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) 
+                ;                draw_box_( *this\_parent( )\x[#__c_frame], *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_frame], *this\_parent( )\fs, color);*this\color\frame ) 
                 
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
-                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) ; [Bool( *this\TabBox( )\FocusedTabIndex( ) <>-1 )*2 ] )
+                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) 
+                Line( *this\_parent( )\x[#__c_inner] + *this\_parent( )\width[#__c_inner], *this\_parent( )\y[#__c_inner] - 1, 1, *this\_parent( )\height[#__c_inner] + 2, color);*this\color\frame ) 
+                Line( *this\_parent( )\x[#__c_inner] - 1, *this\_parent( )\y[#__c_inner] + *this\_parent( )\height[#__c_inner], *this\_parent( )\width[#__c_inner] + 2, 1, color);*this\color\frame ) 
                 
               EndIf
             EndIf
@@ -6811,12 +6797,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bar\vertical
               *SB\x      = *this\x[#__c_frame] + 1 ; white line size
               *SB\width  = *this\width[#__c_frame] - 1 ; white line size
-              *SB\y      = *this\y[#__c_inner_b] + *bar\thumb\pos
+              *SB\y      = *this\y[#__c_inner] + *bar\thumb\pos
               *SB\height = *bar\thumb\len
             Else
               *SB\y      = *this\y[#__c_frame] + 1 ; white line size
               *SB\height = *this\height[#__c_frame] - 1 ; white line size
-              *SB\x      = *this\x[#__c_inner_b] + *bar\thumb\pos
+              *SB\x      = *this\x[#__c_inner] + *bar\thumb\pos
               *SB\width  = *bar\thumb\len
             EndIf
           EndIf
@@ -6958,7 +6944,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *bar\thumb\len
               *SB\x      = *this\x[#__c_frame]
               *SB\width  = *this\width[#__c_frame]
-              *SB\y      = *this\y[#__c_inner_b] + *bar\thumb\pos
+              *SB\y      = *this\y[#__c_inner] + *bar\thumb\pos
               *SB\height = *bar\thumb\len
             EndIf
             
@@ -6978,7 +6964,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *bar\thumb\len
               *SB\y      = *this\y[#__c_frame]
               *SB\height = *this\height[#__c_frame]
-              *SB\x      = *this\x[#__c_inner_b] + *bar\thumb\pos
+              *SB\x      = *this\x[#__c_inner] + *bar\thumb\pos
               *SB\width  = *bar\thumb\len
             EndIf
           EndIf
@@ -10662,7 +10648,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; properties
-          If *this\flag & #__tree_property
+          If *this\flag & #__list_property
             If *parent_row And Not *parent_row\sublevel And Not *parent_row\text\fontID
               *parent_row\color\back     = $FFF9F9F9
               *parent_row\color\back[1]  = *parent_row\color\back
@@ -10859,9 +10845,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
              is_at_point_( *this\EnteredRow( )\collapsebox, mouse_x - *this\EnteredRow( )\x, mouse_y - *this\EnteredRow( )\y )
             
             If *this\EnteredRow( )\collapsebox\___state
-              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__tree_expanded )
+              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__list_expanded )
             Else
-              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__tree_collapsed )
+              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__list_collapsed )
             EndIf
           Else
             ; change box ( option&check )
@@ -11724,11 +11710,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;Clip( *this, [#__c_draw2] )
         
         ; background image draw
-        If *this\image[#__img_background]\id
+        If *this\image[#__image_background]\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *this\image[#__img_background]\id,
-                          *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
+          DrawAlphaImage( *this\image[#__image_background]\id,
+                          *this\x[#__c_inner] + *this\image[#__image_background]\x,
+                          *this\y[#__c_inner] + *this\image[#__image_background]\y, *this\color\_alpha )
         EndIf
         
         ;Clip( *this, [#__c_draw] )
@@ -11868,11 +11854,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;Clip( *this, [#__c_draw2] )
         
         ; background image draw
-        If *this\image[#__img_background]\id
+        If *this\image[#__image_background]\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *this\image[#__img_background]\id,
-                          *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
+          DrawAlphaImage( *this\image[#__image_background]\id,
+                          *this\x[#__c_inner] + *this\image[#__image_background]\x,
+                          *this\y[#__c_inner] + *this\image[#__image_background]\y, *this\color\_alpha )
         EndIf
         
         ;Clip( *this, [#__c_draw] )
@@ -11917,7 +11903,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; Clip( *this, [#__c_draw2] )
         
-        If Not ( *this\image[#__img_background]\id And *this\image[#__img_background]\depth > 31 ) ; *this\image[#__img_background]\transparent )
+        If Not ( *this\image[#__image_background]\id And *this\image[#__image_background]\depth > 31 ) ; *this\image[#__image_background]\transparent )
           drawing_mode_alpha_( #PB_2DDrawing_Default )
           draw_box_( *this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner] + 2, *this\height[#__c_inner] + 2, *this\color\back[0] )
         EndIf
@@ -12001,14 +11987,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; Clip( *this, [#__c_draw] ) ; 2
         
         ; background image draw
-        If *this\image[#__img_background]\id
+        If *this\image[#__image_background]\id
           drawing_mode_alpha_( #PB_2DDrawing_Default )
-          DrawAlphaImage( *this\image[#__img_background]\id,
-                          *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
-          ;                   DrawImage( *this\image[#__img_background]\id,
-          ;                                   *this\x[#__c_inner] + *this\image[#__img_background]\x,
-          ;                                   *this\y[#__c_inner] + *this\image[#__img_background]\y)
+          DrawAlphaImage( *this\image[#__image_background]\id,
+                          *this\x[#__c_inner] + *this\image[#__image_background]\x,
+                          *this\y[#__c_inner] + *this\image[#__image_background]\y, *this\color\_alpha )
+          ;                   DrawImage( *this\image[#__image_background]\id,
+          ;                                   *this\x[#__c_inner] + *this\image[#__image_background]\x,
+          ;                                   *this\y[#__c_inner] + *this\image[#__image_background]\y)
         EndIf
         
         
@@ -12043,8 +12029,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\resize | #__resize_restore
           
           SetAlignment( *this, 0,0,0,0,0 )
-          Resize( *this, *this\_root( )\x[#__c_rootrestore], *this\_root( )\y[#__c_rootrestore],
-                  *this\_root( )\width[#__c_rootrestore], *this\_root( )\height[#__c_rootrestore] )
+          Resize( *this, *this\_root( )\x[#__c_restore], *this\_root( )\y[#__c_restore],
+                  *this\_root( )\width[#__c_restore], *this\_root( )\height[#__c_restore] )
           
           If is_root_(*this )
             PostEvent( #PB_Event_RestoreWindow, *this\_root( )\canvas\window, *this )
@@ -12058,10 +12044,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If state = #__Window_Maximize
         If Not Post( *this, #__event_MaximizeWindow )
           If Not *this\resize & #__resize_minimize
-            *this\_root( )\x[#__c_rootrestore]      = *this\x[#__c_container]
-            *this\_root( )\y[#__c_rootrestore]      = *this\y[#__c_container]
-            *this\_root( )\width[#__c_rootrestore]  = *this\width[#__c_frame]
-            *this\_root( )\height[#__c_rootrestore] = *this\height[#__c_frame]
+            *this\_root( )\x[#__c_restore]      = *this\x[#__c_container]
+            *this\_root( )\y[#__c_restore]      = *this\y[#__c_container]
+            *this\_root( )\width[#__c_restore]  = *this\width[#__c_frame]
+            *this\_root( )\height[#__c_restore] = *this\height[#__c_frame]
           EndIf
           
           *this\resize | #__resize_maximize
@@ -12079,10 +12065,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If state = #__Window_Minimize
         If Not Post( *this, #__event_MinimizeWindow )
           If Not *this\resize & #__resize_maximize
-            *this\_root( )\x[#__c_rootrestore]      = *this\x[#__c_container]
-            *this\_root( )\y[#__c_rootrestore]      = *this\y[#__c_container]
-            *this\_root( )\width[#__c_rootrestore]  = *this\width[#__c_frame]
-            *this\_root( )\height[#__c_rootrestore] = *this\height[#__c_frame]
+            *this\_root( )\x[#__c_restore]      = *this\x[#__c_container]
+            *this\_root( )\y[#__c_restore]      = *this\y[#__c_container]
+            *this\_root( )\width[#__c_restore]  = *this\width[#__c_frame]
+            *this\_root( )\height[#__c_restore] = *this\height[#__c_frame]
           EndIf
           
           *this\caption\button[#__wb_close]\hide = 1
@@ -12091,7 +12077,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           *this\resize | #__resize_minimize
           
-          Resize( *this, *this\_root( )\x[#__c_rootrestore], *this\_parent( )\height[#__c_container] - *this\fs[2], *this\_root( )\width[#__c_rootrestore], *this\fs[2] )
+          Resize( *this, *this\_root( )\x[#__c_restore], *this\_parent( )\height[#__c_container] - *this\fs[2], *this\_root( )\width[#__c_restore], *this\fs[2] )
           SetAlignment( *this,0, 0,0,0,1 )
           
           If is_root_(*this )
@@ -12389,13 +12375,103 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+    Procedure FromPBFlag( Type, PBFlag )
+      Protected flags = PBFlag
+      
+      Select Type
+        Case #__type_CheckBox
+          If PBFlag & #PB_CheckBox_Right = #PB_CheckBox_Right
+            flags & ~ #PB_CheckBox_Right
+            flags | #__text_right
+          EndIf
+          If PBFlag & #PB_CheckBox_Center = #PB_CheckBox_Center
+            flags & ~ #PB_CheckBox_Center
+            flags | #__text_center
+          EndIf
+          
+        Case #__type_Text
+          If PBFlag & #PB_Text_Center = #PB_Text_Center
+            flags & ~ #PB_Text_Center
+            flags | #__text_center
+          EndIf
+          If PBFlag & #PB_Text_Right = #PB_Text_Right
+            flags & ~ #PB_Text_Right
+            flags | #__text_right
+          EndIf
+          
+        Case #__type_Button
+          If PBFlag & #PB_Button_MultiLine
+            flags &~ #PB_Button_MultiLine
+            flags | #__text_wordwrap
+          EndIf
+          If PBFlag & #PB_Button_Left = #PB_Button_Left
+            flags & ~ #PB_Button_Left
+            flags | #__text_left
+          EndIf
+          If PBFlag & #PB_Button_Right = #PB_Button_Right
+            flags & ~ #PB_Button_Right
+            flags | #__text_right
+          EndIf
+          
+        Case #__type_Tree
+          If PBFlag & #PB_Tree_AlwaysShowSelection = #PB_Tree_AlwaysShowSelection
+            flags & ~ #PB_Tree_AlwaysShowSelection
+          EndIf
+          If PBFlag & #PB_Tree_CheckBoxes = #PB_Tree_CheckBoxes
+            flags & ~ #PB_Tree_CheckBoxes
+            flags | #__list_checkboxes
+          EndIf
+          If PBFlag & #PB_Tree_ThreeState = #PB_Tree_ThreeState
+            flags & ~ #PB_Tree_ThreeState
+            flags | #__list_threestate
+          EndIf
+          If PBFlag & #PB_Tree_NoButtons = #PB_Tree_NoButtons
+            flags & ~ #PB_Tree_NoButtons
+            flags | #__list_nobuttons
+          EndIf
+          If PBFlag & #PB_Tree_NoLines = #PB_Tree_NoLines
+            flags & ~ #PB_Tree_NoLines
+            flags | #__list_nolines
+          EndIf
+          
+      EndSelect
+      
+      ProcedureReturn flags
+    EndProcedure
+    
+    Procedure ToPBFlag( Type, Flag )
+      Protected flags = Flag
+      
+      Select Type
+        Case #__type_Button
+          If Flag & #__text_wordwrap = #__text_wordwrap
+            flags &~ #__text_wordwrap
+            flag | #PB_Button_MultiLine
+          EndIf
+          If Flag & #__text_left = #__text_left
+            flags & ~ #__text_left
+            flags | #PB_Button_Left
+          EndIf
+          If Flag & #__text_right = #__text_right
+            flags & ~ #__text_right
+            flags | #PB_Button_Right
+          EndIf
+      EndSelect
+      
+      ProcedureReturn flags
+    EndProcedure
+    
     Procedure Flag( *this._S_widget, flag.q = #Null, state.b = - 1 )
       Protected result
-      
+            
       ;\\ get widget flags
       If Not flag
-        result = *this\flag
+        ;result = *this\flag
+        result = ToPBFlag( *this\type, *this\flag )
       Else
+        ;\\ replace pb flag
+        flag = FromPBFlag( *this\type, flag )
+        
         ;\\ is flag on the widget
         If state = - 1
           result = Bool( *this\flag & flag )
@@ -12410,12 +12486,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\ text align 
-          If *this\type = #__type_Button Or
-             *this\type = #__type_Option Or
-             *this\type = #__type_CheckBox Or
+          If *this\type = #__type_Text Or
              *this\type = #__type_Editor Or
              *this\type = #__type_String Or
-             *this\type = #__type_Text
+             *this\type = #__type_Button Or
+             *this\type = #__type_Option Or
+             *this\type = #__type_Hyperlink Or
+             *this\type = #__type_CheckBox
             
             If flag & #__text_multiline
               *this\text\multiline = state
@@ -12468,34 +12545,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\text\align\bottom = #False
             EndIf
             
-            *this\TextChange( )    = #__text_update
-          EndIf
-          
-          ;\\
-          If *this\type = #__type_Button
-            If flag & #__button_toggle
-              If state
-                *this\state\toggle = #True
-                *this\color\state  = #__S_2
-              Else
-                *this\state\toggle = #False
-                *this\color\state  = #__S_0
+            ;\\
+            If *this\type = #__type_Button
+              If flag & #PB_Button_Toggle
+                If state
+                  *this\state\toggle = #True
+                  *this\color\state  = #__S_2
+                Else
+                  *this\state\toggle = #False
+                  *this\color\state  = #__S_0
+                EndIf
+              EndIf
+              
+              ;\\ 
+              If *this\text\align\top = #True And 
+                 *this\text\align\bottom = #True
+                *this\text\align\top = #False  
+                *this\text\align\bottom = #False
+              EndIf
+              If *this\text\align\left = #True And 
+                 *this\text\align\right = #True
+                *this\text\align\left = #False  
+                *this\text\align\right = #False
               EndIf
             EndIf
             
-            ;\\ 
-            If *this\text\align\top = #True And 
-               *this\text\align\bottom = #True
-              *this\text\align\top = #False  
-              *this\text\align\bottom = #False
-            EndIf
-            ;\\ 
-            If *this\text\align\left = #True And 
-               *this\text\align\right = #True
-              *this\text\align\left = #False  
-              *this\text\align\right = #False
-            EndIf
+            *this\TextChange( )       = #__text_update
           EndIf
+          
           
           ;\\
           If *this\type = #__type_Tree Or
@@ -12503,13 +12580,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *this\type = #__type_property
             
             If flag & #__list_nolines
-              *this\mode\lines = Bool( state ) * #__tree_linesize
+              *this\mode\lines = Bool( state ) 
             EndIf
-            If flag & #__tree_nobuttons
+            If flag & #__list_nobuttons
               *this\mode\buttons = state
               
               If *this\count\items
-                If *this\flag & #__tree_OptionBoxes
+                If *this\flag & #__list_OptionBoxes
                   PushListPosition( *this\_rows( ))
                   ForEach *this\_rows( )
                     If *this\_rows( )\parent\row And
@@ -12521,34 +12598,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
             EndIf
-            If flag & #__tree_checkboxes = #__tree_checkboxes
-              If *this\flag & #__tree_OptionBoxes
+            If flag & #__list_checkboxes = #__list_checkboxes
+              If *this\flag & #__list_OptionBoxes
                 *this\mode\check = Bool( state ) * #__m_optionselect
               Else
                 *this\mode\check = Bool( state )
               EndIf
             EndIf
-            If flag & #__tree_threestate
-              If *this\flag & #__tree_checkboxes
+            If flag & #__list_threestate
+              If *this\flag & #__list_checkboxes
                 *this\mode\threestate = state
               Else
                 *this\mode\threestate = 0
               EndIf
             EndIf
             
-            If flag & #__tree_clickselect = #__tree_clickselect
-              ;Debug "#__tree_clickselect "+#__tree_clickselect +" "+#__tree_nobuttons +" "+ #__flag_nobuttons
+            If flag & #__list_clickselect = #__list_clickselect
+              ;Debug "#__list_clickselect "+#__list_clickselect +" "+#__list_nobuttons +" "+ #__flag_nobuttons
               
               *this\mode\check = Bool( state ) * #__m_clickselect
             EndIf
-            If flag & #__tree_multiselect = #__tree_multiselect
+            If flag & #__list_multiselect = #__list_multiselect
               *this\mode\check = Bool( state ) * #__m_multiselect
             EndIf
-            If flag & #__tree_OptionBoxes
+            If flag & #__list_OptionBoxes
               If state
                 *this\mode\check = #__m_optionselect
               Else
-                *this\mode\check = Bool( *this\flag & #__tree_checkboxes )
+                *this\mode\check = Bool( *this\flag & #__list_checkboxes )
               EndIf
               
               ; set option group
@@ -12563,10 +12640,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 PopListPosition( *this\_rows( ))
               EndIf
             EndIf
-            If flag & #__tree_gridlines
+            If flag & #__list_gridlines
               *this\mode\gridlines = state
             EndIf
-            If flag & #__tree_collapse
+            If flag & #__list_collapse
               *this\mode\collapse = state
               
               If *this\count\items
@@ -12587,7 +12664,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And
-               Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
+               Not ( *this\flag & #__list_property Or *this\flag & #__list_OptionBoxes )
               *this\row\sublevelsize = 6;18
             Else
               *this\row\sublevelsize = 0
@@ -13063,7 +13140,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected result.i
       
       If *this\type = #__type_Tree
-        If Attribute = #__tree_collapsed
+        If Attribute = #__list_collapsed
           result = *this\mode\collapse
         EndIf
       EndIf
@@ -13135,7 +13212,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If *this\type = #__type_Panel
-        ProcedureReturn *this\TabBox( )\FocusedTabIndex( )
+        ProcedureReturn *this\TabBoxFocusedIndex( )
       EndIf
       
       If *this\type = #__type_TabBar Or
@@ -13257,7 +13334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\type = #__type_Button Or
          *this\type = #__type_ButtonImage
         
-        If *this\flag & #__button_toggle
+        If *this\flag & #PB_Button_Toggle
           If *this\state\toggle <> state
             *this\state\toggle = state
             If state
@@ -13441,10 +13518,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Select Attribute
           Case #PB_Button_Image
             set_image_( *this, *this\image, *value )
-            set_image_( *this, *this\image[#__img_released], *value )
+            set_image_( *this, *this\image[#__image_released], *value )
             
           Case #PB_Button_PressedImage
-            set_image_( *this, *this\image[#__img_pressed], *value )
+            set_image_( *this, *this\image[#__image_pressed], *value )
             
         EndSelect
       EndIf
@@ -13607,7 +13684,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure SetBackgroundImage( *this._S_widget, *image )
-      set_image_( *this, *this\Image[#__img_background], *image )
+      set_image_( *this, *this\Image[#__image_background], *image )
     EndProcedure
     
     Procedure SetData( *this._S_widget, *data )
@@ -13977,7 +14054,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\hide = #True
         ElseIf *parent\TabBox( )
           ; hide all children except the selected tab
-          *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> tabindex)
+          *this\hide = Bool(*parent\TabBoxFocusedIndex( ) <> tabindex)
         EndIf
         
         If *parent\last\widget
@@ -14360,12 +14437,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
         right  = #True
         flag | #__align_full
       EndIf
-      If left > 0 And top > 0 And right > 0 And bottom > 0
+      If mode And 
+         left > 0 And top > 0 And right > 0 And bottom > 0
         flag | #__align_full
       EndIf
       
       ;\\
       If *this\_parent( )
+        ;\\
+        If Not *this\_parent( )\align
+          *this\_parent( )\align.allocate( ALIGN )
+        EndIf
+        If Not *this\align
+          *this\align.allocate( ALIGN )
+        EndIf
+        
         ;\\
         If *this\_parent( )\type = #__type_window
           parent_width  = *this\_parent( )\width[#__c_inner]
@@ -14375,27 +14461,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
           parent_height = *this\_parent( )\height[#__c_frame]
         EndIf
         
+        ;\\ auto stick reset
+        If *this\align\left And Not *this\align\right
+          *this\_parent( )\align\auto\left - *this\align\indent\right
+        EndIf
+        If *this\align\right And Not *this\align\left
+          *this\_parent( )\align\auto\right - ( ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left )
+        EndIf
+        If *this\align\top And Not *this\align\bottom
+          *this\_parent( )\align\auto\top - *this\align\indent\bottom
+        EndIf
+        If *this\align\bottom And Not *this\align\top
+          *this\_parent( )\align\auto\bottom - ( ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top )
+        EndIf
+        
         ;\\
-        If Not *this\_parent( )\align
-          *this\_parent( )\align.allocate( ALIGN )
+        If Not *this\_parent( )\align\indent\right
+          *this\_parent( )\align\indent\left  = *this\_parent( )\x[#__c_container]
+          *this\_parent( )\align\indent\right = *this\_parent( )\x[#__c_container] + parent_width
         EndIf
-        If Not *this\align
-          *this\align.allocate( ALIGN )
-        Else
-          ;\\ auto stick reset
-          If *this\align\left And Not *this\align\right
-            *this\_parent( )\align\auto\left - *this\align\indent\right
-          EndIf
-          If *this\align\right And Not *this\align\left
-            *this\_parent( )\align\auto\right - ( ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left )
-          EndIf
-          If *this\align\top And Not *this\align\bottom
-            *this\_parent( )\align\auto\top - *this\align\indent\bottom
-          EndIf
-          If *this\align\bottom And Not *this\align\top
-            *this\_parent( )\align\auto\bottom - ( ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top )
-          EndIf
+        If Not *this\_parent( )\align\indent\bottom
+          *this\_parent( )\align\indent\top    = *this\_parent( )\y[#__c_container]
+          *this\_parent( )\align\indent\bottom = *this\_parent( )\y[#__c_container] + parent_height
         EndIf
+        
         
         ;\\ horizontal
         If left Or ( Not right And flag & #__align_full = #__align_full )
@@ -14438,13 +14527,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If Not *this\_parent( )\align\indent\right
-          *this\_parent( )\align\indent\left  = *this\_parent( )\x[#__c_container]
-          *this\_parent( )\align\indent\right = *this\_parent( )\align\indent\left + parent_width
-        EndIf
-        If Not *this\_parent( )\align\indent\bottom
-          *this\_parent( )\align\indent\top    = *this\_parent( )\y[#__c_container]
-          *this\_parent( )\align\indent\bottom = *this\_parent( )\align\indent\top + parent_height
+        If Not mode
+          *this\align\indent\left  = *this\x[#__c_container]
+          *this\align\indent\right = *this\x[#__c_container] + *this\width
+          
+          *this\align\indent\top    = *this\y[#__c_container]
+          *this\align\indent\bottom = *this\y[#__c_container] + *this\height
         EndIf
         
         ;\\
@@ -14507,99 +14595,95 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\align\indent\bottom = *this\align\indent\top + *this\height
             EndIf
           EndIf
-        Else
-          *this\align\indent\left  = *this\x[#__c_container]
-          *this\align\indent\right = *this\align\indent\left + *this\width
-          
-          *this\align\indent\top    = *this\y[#__c_container]
-          *this\align\indent\bottom = *this\align\indent\top + *this\height
         EndIf
       EndIf
       
       ;\\
       If *this\align
-        ; auto stick set
-        If *this\_parent( )\align
-          If left = #__align_auto And
-             *this\_parent( )\align\auto\left
-            left = - *this\_parent( )\align\auto\left
-          EndIf
-          If right = #__align_auto And
-             *this\_parent( )\align\auto\right
-            right = - *this\_parent( )\align\auto\right
-          EndIf
-          If left < 0 Or right < 0
-            If left And right
-              *this\align\indent\left - left
-              *this\align\indent\right + right
-            Else
-              *this\align\indent\left - left + right
-              *this\align\indent\right - left + right
+        If mode
+          ; auto stick set
+          If *this\_parent( )\align
+            If left = #__align_auto And
+               *this\_parent( )\align\auto\left
+              left = - *this\_parent( )\align\auto\left
+            EndIf
+            If right = #__align_auto And
+               *this\_parent( )\align\auto\right
+              right = - *this\_parent( )\align\auto\right
+            EndIf
+            If left < 0 Or right < 0
+              If left And right
+                *this\align\indent\left - left
+                *this\align\indent\right + right
+              Else
+                *this\align\indent\left - left + right
+                *this\align\indent\right - left + right
+              EndIf
+            EndIf
+            
+            If top = #__align_auto And
+               *this\_parent( )\align\auto\top
+              top = - *this\_parent( )\align\auto\top
+            EndIf
+            If bottom = #__align_auto And
+               *this\_parent( )\align\auto\bottom
+              bottom = - *this\_parent( )\align\auto\bottom
+            EndIf
+            If top < 0 Or bottom < 0
+              If top And bottom
+                *this\align\indent\top - top
+                *this\align\indent\bottom + bottom
+              Else
+                *this\align\indent\top - top + bottom
+                *this\align\indent\bottom - top + bottom
+              EndIf
             EndIf
           EndIf
           
-          If top = #__align_auto And
-             *this\_parent( )\align\auto\top
-            top = - *this\_parent( )\align\auto\top
+          ; auto stick get
+          If *this\align\left And *this\align\right = 0
+            *this\_parent( )\align\auto\left = *this\align\indent\right
           EndIf
-          If bottom = #__align_auto And
-             *this\_parent( )\align\auto\bottom
-            bottom = - *this\_parent( )\align\auto\bottom
+          If *this\align\right And *this\align\left = 0
+            *this\_parent( )\align\auto\right = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left
           EndIf
-          If top < 0 Or bottom < 0
-            If top And bottom
-              *this\align\indent\top - top
-              *this\align\indent\bottom + bottom
-            Else
-              *this\align\indent\top - top + bottom
-              *this\align\indent\bottom - top + bottom
-            EndIf
+          If *this\align\top And *this\align\bottom = 0
+            *this\_parent( )\align\auto\top = *this\align\indent\bottom
           EndIf
-        EndIf
-        
-        ; auto stick get
-        If *this\align\left And *this\align\right = 0
-          *this\_parent( )\align\auto\left = *this\align\indent\right
-        EndIf
-        If *this\align\right And *this\align\left = 0
-          *this\_parent( )\align\auto\right = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left
-        EndIf
-        If *this\align\top And *this\align\bottom = 0
-          *this\_parent( )\align\auto\top = *this\align\indent\bottom
-        EndIf
-        If *this\align\bottom And *this\align\top = 0
-          *this\_parent( )\align\auto\bottom = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top
+          If *this\align\bottom And *this\align\top = 0
+            *this\_parent( )\align\auto\bottom = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top
+          EndIf
         EndIf
         
         ;\\
-        If ( *this\_parent( )\align\auto\left Or
-             *this\_parent( )\align\auto\top Or
-             *this\_parent( )\align\auto\right Or
-             *this\_parent( )\align\auto\bottom )
-          
-          ; loop enumerate widgets
-          If StartEnumerate( *this\_parent( ) )
-            If enumWidget( )\align
-              If enumWidget( )\align\left And enumWidget( )\align\right And
-                 enumWidget( )\align\top And enumWidget( )\align\bottom
+        If flag & #__align_full = #__align_full
+          If ( *this\_parent( )\align\auto\left Or
+               *this\_parent( )\align\auto\top Or
+               *this\_parent( )\align\auto\right Or
+               *this\_parent( )\align\auto\bottom )
+            
+            ; loop enumerate widgets
+            If StartEnumerate( *this\_parent( ) )
+              If enumWidget( )\align
+                If enumWidget( )\align\left And enumWidget( )\align\right And
+                   enumWidget( )\align\top And enumWidget( )\align\bottom
+                  
+                  enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
+                  enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom
+                  enumWidget( )\align\indent\left   = enumWidget( )\_parent( )\align\auto\left
+                  enumWidget( )\align\indent\right  = parent_width - enumWidget( )\_parent( )\align\auto\right
+                  
+                  Debug "" + #PB_Compiler_Procedure + " " + enumWidget( )\class + "" + enumWidget( )\_parent( )\align\auto\left + " " + enumWidget( )\_parent( )\align\auto\right
+                EndIf
                 
-                enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
-                enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom
-                enumWidget( )\align\indent\left   = enumWidget( )\_parent( )\align\auto\left
-                enumWidget( )\align\indent\right  = parent_width - enumWidget( )\_parent( )\align\auto\right
-                
-                Debug "" + #PB_Compiler_Procedure + " " + enumWidget( )\class + "" + enumWidget( )\_parent( )\align\auto\left + " " + enumWidget( )\_parent( )\align\auto\right
-              EndIf
-              
-              If flag & #__align_full = #__align_full
                 If ( enumWidget( )\align\left = 0 Or enumWidget( )\align\right = 0 ) And
                    ( enumWidget( )\align\top = 1 And enumWidget( )\align\bottom = 1 )
                   enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
                   enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom
                 EndIf
               EndIf
+              StopEnumerate( )
             EndIf
-            StopEnumerate( )
           EndIf
         EndIf
         
@@ -14802,23 +14886,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ElseIf *this\type = #__type_Tree
         If is_item_( *this, item ) And SelectElement( *this\_rows( ), Item )
           If *this\_rows( )\color\state
-            result | #__tree_selected
+            result | #__list_selected
           EndIf
           
           If *this\_rows( )\checkbox\___state
             If *this\mode\threestate And
                *this\_rows( )\checkbox\___state = #PB_Checkbox_Inbetween
-              result | #__tree_Inbetween
+              result | #__list_Inbetween
             Else
-              result | #__tree_checked
+              result | #__list_checked
             EndIf
           EndIf
           
           If *this\_rows( )\count\childrens And
              *this\_rows( )\collapsebox\___state = 0
-            result | #__tree_expanded
+            result | #__list_expanded
           Else
-            result | #__tree_collapsed
+            result | #__list_collapsed
           EndIf
         EndIf
         
@@ -14861,7 +14945,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         Select Attribute
-          Case #__tree_sublevel
+          Case #__list_sublevel
             result = *this\_rows( )\sublevel
         EndSelect
       EndIf
@@ -15007,7 +15091,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
-        If State & #__tree_selected = #__tree_selected
+        If State & #__list_selected = #__list_selected
           ;           If *this\FocusedRow( ) <> *this\_tabs( )
           ;             *this\FocusedRow( ) = *this\_tabs( )
           ;             *this\FocusedRow( )\state\focus = #true
@@ -15016,9 +15100,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           bar_tab_SetState( *this, Item )
         EndIf
         
-        If State & #__tree_inbetween = #__tree_inbetween
+        If State & #__list_inbetween = #__list_inbetween
           *this\_tabs( )\checkbox\___state = #PB_Checkbox_Inbetween
-        ElseIf State & #__tree_checked = #__tree_checked
+        ElseIf State & #__list_checked = #__list_checked
           *this\_tabs( )\checkbox\___state = #PB_Checkbox_Checked
         EndIf
         
@@ -15042,7 +15126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           Protected *this_current_row._S_rows = *this\_rows( )
           
-          If State & #__tree_selected = #__tree_selected
+          If State & #__list_selected = #__list_selected
             If *this\FocusedRow( ) <> *this\_rows( )
               *this\FocusedRow( )             = *this\_rows( )
               *this\FocusedRow( )\state\focus = - 1
@@ -15050,18 +15134,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          If State & #__tree_inbetween = #__tree_inbetween
+          If State & #__list_inbetween = #__list_inbetween
             *this\_rows( )\checkbox\___state = #PB_Checkbox_Inbetween
-          ElseIf State & #__tree_checked = #__tree_checked
+          ElseIf State & #__list_checked = #__list_checked
             *this\_rows( )\checkbox\___state = #PB_Checkbox_Checked
           EndIf
           
           If *this\_rows( )\count\childrens
-            If State & #__tree_expanded = #__tree_expanded Or
-               State & #__tree_collapsed = #__tree_collapsed
+            If State & #__list_expanded = #__list_expanded Or
+               State & #__list_collapsed = #__list_collapsed
               
               *this\WidgetChange( )                        = #True
-              *this\_rows( )\collapsebox\___state = Bool( State & #__tree_collapsed )
+              *this\_rows( )\collapsebox\___state = Bool( State & #__list_collapsed )
               
               PushListPosition( *this\_rows( ))
               While NextElement( *this\_rows( ))
@@ -15121,13 +15205,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       ElseIf *this\type = #__type_Tree
         Select Attribute
-          Case #__tree_collapsed
+          Case #__list_collapsed
             *this\mode\collapse = Bool( Not *value )
             
-          Case #__tree_OptionBoxes
+          Case #__list_OptionBoxes
             *this\mode\check = Bool( *value ) * #__m_clickselect
             
-          Case #__tree_sublevel
+          Case #__list_sublevel
             If is_no_select_item_( *this\_rows( ), Item )
               ProcedureReturn #False
             EndIf
@@ -15185,6 +15269,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\y[#__c_frame]      = #PB_Ignore
       *this\width[#__c_frame]  = #PB_Ignore
       *this\height[#__c_frame] = #PB_Ignore
+      
+      ;\\ replace pb flag
+      flag = FromPBFlag( *this\type, flag )
       
       ;\\ Flags
       *this\flag = Flag
@@ -15252,7 +15339,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       If *this\type = #__type_Text
-        *this\fs = Bool( Flag & #__text_border = #__text_border )
+        *this\fs = Bool( Flag & #PB_Text_Border = #PB_Text_Border )
       EndIf
       *this\bs = *this\fs
       
@@ -15335,18 +15422,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; - Create Button
         If *this\type = #__type_Button
-          Image         = *param_1
-          
-          set_image_( *this, *this\Image, Image )
-          set_image_( *this, *this\image[#__img_released], Image )
-            
-          set_align_( *this\image,
-                      constants::_check_( *this\flag, #__image_left ),
-                      constants::_check_( *this\flag, #__image_top ),
-                      constants::_check_( *this\flag, #__image_right ),
-                      constants::_check_( *this\flag, #__image_bottom ),
-                      constants::_check_( *this\flag, #__image_center ))
-          
           *this\text\padding\x = 4
           *this\text\padding\y = 4
         EndIf
@@ -15466,7 +15541,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\image\padding\x = 2
         *this\text\padding\x  = 4
         
-        If Flag & #__tree_multiselect = #__tree_multiselect
+        If Flag & #__list_multiselect = #__list_multiselect
           *this\mode\check = #__m_multiselect
         EndIf
         
@@ -15476,10 +15551,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           flag | #__list_nolines
         EndIf
         
-        If flag & #__tree_NoButtons
-          flag & ~ #__tree_NoButtons
+        If flag & #__list_NoButtons
+          flag & ~ #__list_NoButtons
         Else
-          flag | #__tree_NoButtons
+          flag | #__list_NoButtons
         EndIf
         
         If flag
@@ -15792,19 +15867,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\ - Create image
       If *this\type = #__type_Image
         *this\color\back = $FFF9F9F9
-        If *this\image\img <> *param_3
-          set_image_( *this, *this\Image, *param_3 )
-        EndIf
-        
-        set_align_( *this\image,
-                    constants::_check_( Flag, #__image_left ),
-                    constants::_check_( Flag, #__image_top ),
-                    constants::_check_( Flag, #__image_right ),
-                    constants::_check_( Flag, #__image_bottom ),
-                    constants::_check_( Flag, #__image_center ))
-        
-        *param_1 = *this\image\width
-        *param_2 = *this\image\height
       EndIf
       
       ;\\ - Create ComboBox
@@ -15851,6 +15913,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
+      ;\\ Set image 
+      If *this\type = #__type_Image Or 
+         *this\type = #__type_Button
+        
+        Image         = *param_1
+        set_image_( *this, *this\Image, Image )
+        set_image_( *this, *this\image[#__image_released], Image )
+        
+        *this\image\align\left  = constants::_check_( *this\flag, #__image_left )
+        *this\image\align\right = constants::_check_( *this\flag, #__image_right )
+        *this\image\align\top    = constants::_check_( *this\flag, #__image_top )
+        *this\image\align\bottom = constants::_check_( *this\flag, #__image_bottom )
+        
+        If Not *this\image\align\top And
+           Not *this\image\align\left And
+           Not *this\image\align\right And
+           Not *this\image\align\bottom And
+           Not constants::_check_( *this\flag, #__image_center )
+           
+          If Not *this\image\align\right
+            *this\flag | #__image_left
+            *this\image\align\left = #True
+          EndIf
+          If Not *this\image\align\bottom
+            *this\flag | #__image_top
+            *this\image\align\top = #True
+          EndIf
+        EndIf
+      EndIf
+      
       ;\\ Cursor
       If *this\type = #__type_Editor Or 
          *this\type = #__type_String
@@ -15878,11 +15970,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\type = #__type_Property
           
           bar_area_create_( *this, 1, 0, 0, 0, 0, Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
-        ElseIf *this\type = #__type_MDI Or 
-               *this\type = #__type_Image Or
+        ElseIf *this\type = #__type_MDI Or
+               *this\type = #__type_Image Or 
                *this\type = #__type_ScrollArea 
-          
-          bar_area_create_( *this, 1, *param_1, *param_2, 0, 0 )
+          If *this\type = #__type_Image
+            bar_area_create_( *this, 1, *this\image\width, *this\image\height, 0, 0 )
+          Else
+            bar_area_create_( *this, 1, *param_1, *param_2, 0, 0 )
+          EndIf
         EndIf
       EndIf
       
@@ -15931,7 +16026,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Spin, x, y, width, height, #Null$, flag, min, max, 0, #__spin_buttonsize, round, Increment )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Spin, x, y, width, height, #Null$, flag, min, max, 0, #__spin_barsize, round, Increment )
     EndProcedure
     
     Procedure.i Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
@@ -15957,7 +16052,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ListView( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListView, x, y, width, height, "", Flag | #__tree_nobuttons | #__list_nolines )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListView, x, y, width, height, "", Flag | #__list_nobuttons | #__list_nolines )
     EndProcedure
     
     Procedure.i ListIcon( x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
@@ -15965,7 +16060,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ExplorerList( x.l, y.l, width.l, height.l, Directory.s, flag.q = 0 )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__tree_nobuttons | #__list_nolines )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__list_nobuttons | #__list_nolines )
     EndProcedure
     
     Procedure.i Tree_properties( x.l, y.l, width.l, height.l, flag.q = 0 )
@@ -16034,7 +16129,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i Image( x.l, y.l, width.l, height.l, image.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Image, x, y, width, height, #Null$, flag, 0, 0, image, #__scroll_buttonsize, 0, 1 )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_Image, x, y, width, height, #Null$, flag, image, 0, 0, #__scroll_buttonsize, 0, 1 )
     EndProcedure
     
     ;-
@@ -16078,7 +16173,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; Draw selector back
           ;;If Not *this\drop ; *this\drop
-          If *rows( )\count\childrens And *this\flag & #__tree_property
+          If *rows( )\count\childrens And *this\flag & #__list_property
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_roundbox_( x, y, *this\width[#__c_inner], *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back )
             ;draw_roundbox_( *this\x[#__c_inner] + *this\row\sublevelsize,Y,*this\width[#__c_inner] - *this\row\sublevelsize,*rows( )\height,*rows( )\round,*rows( )\round,*rows( )\color\back[state] )
@@ -16125,7 +16220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; Draw selector frame
           ;;If Not *this\drop
-          If *rows( )\count\childrens And *this\flag & #__tree_property
+          If *rows( )\count\childrens And *this\flag & #__list_property
           Else
             If *rows( )\color\frame[state]
               drawing_mode_( #PB_2DDrawing_Outlined )
@@ -16336,10 +16431,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         y = *this\y[#__c_inner] + scroll_y_( *this )
         
         ; background draw
-        If *this\image[#__img_background]\id
+        If *this\image[#__image_background]\id
           ; background image draw
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *this\image[#__img_background]\id, x + *this\image[#__img_background]\x, x + *this\image[#__img_background]\y, *this\color\_alpha )
+          DrawAlphaImage( *this\image[#__image_background]\id, x + *this\image[#__image_background]\x, x + *this\image[#__image_background]\y, *this\color\_alpha )
         Else
           If *this\color\back <>  - 1
             If *this\color\fore <>  - 1
@@ -16390,13 +16485,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; defaul focus widget frame draw
-        If *this\flag & #__button_default
-          drawing_mode_( #PB_2DDrawing_Outlined )
-          ;; draw_roundbox_( *this\x[#__c_inner]+2-1,\Y[#__c_inner]+2-1,\width[#__c_inner]-4+2,\height[#__c_inner]-4+2,\round,\round,*this\color\frame[1] )
-          If *this\round
-            draw_roundbox_( *this\x[#__c_inner] + 2, *this\Y[#__c_inner] + 2 - 1, *this\width[#__c_inner] - 4, *this\height[#__c_inner] - 4 + 2, *this\round, *this\round, *this\color\frame[1] )
+        If *this\type = #__type_Button
+          If *this\flag & #PB_Button_Default
+            drawing_mode_( #PB_2DDrawing_Outlined )
+            ;; draw_roundbox_( *this\x[#__c_inner]+2-1,\Y[#__c_inner]+2-1,\width[#__c_inner]-4+2,\height[#__c_inner]-4+2,\round,\round,*this\color\frame[1] )
+            If *this\round
+              draw_roundbox_( *this\x[#__c_inner] + 2, *this\Y[#__c_inner] + 2 - 1, *this\width[#__c_inner] - 4, *this\height[#__c_inner] - 4 + 2, *this\round, *this\round, *this\color\frame[1] )
+            EndIf
+            draw_roundbox_( *this\x[#__c_inner] + 2, *this\Y[#__c_inner] + 2, *this\width[#__c_inner] - 4, *this\height[#__c_inner] - 4, *this\round, *this\round, *this\color\frame[1] )
           EndIf
-          draw_roundbox_( *this\x[#__c_inner] + 2, *this\Y[#__c_inner] + 2, *this\width[#__c_inner] - 4, *this\height[#__c_inner] - 4, *this\round, *this\round, *this\color\frame[1] )
         EndIf
         
         ; Draw frames
@@ -16486,7 +16583,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         draw_roundbox_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back[*this\color\state] )
         
         
-        If *this\image\id Or *this\image[#__img_background]\id
+        If *this\image\id Or *this\image[#__image_background]\id
           If *this\ImageChange( ) <> 0
             set_align_x_( *this\image, *this\image, *this\width[#__c_inner], 0 )
             set_align_y_( *this\image, *this\image, *this\height[#__c_inner], 270 )
@@ -16496,10 +16593,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           drawing_mode_alpha_( #PB_2DDrawing_Default )
           
           ; background image draw
-          If *this\image[#__img_background]\id
-            DrawAlphaImage( *this\image[#__img_background]\id,
-                            *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                            *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\_alpha )
+          If *this\image[#__image_background]\id
+            DrawAlphaImage( *this\image[#__image_background]\id,
+                            *this\x[#__c_inner] + *this\image[#__image_background]\x,
+                            *this\y[#__c_inner] + *this\image[#__image_background]\y, *this\color\_alpha )
           EndIf
           
           ; scroll image draw
@@ -16552,7 +16649,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;              draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\color\back[0] )
           ;
           ;               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-          ;              draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\color\frame[Bool( _this_\TabBox( )\FocusedTabIndex( ) <>- 1 )*2 ] )
+          ;              draw_box_( _this_\x[#__c_frame], _this_\y[#__c_frame], _this_\width[#__c_frame], _this_\height[#__c_frame], _this_\color\frame )
           ;             EndIf
           
           ;- widget::_draw_String( )
@@ -17094,86 +17191,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Next
         EndIf
       EndIf
-    EndProcedure
-    
-    
-    Procedure PBFlag( Type, Flag )
-      Protected flags
-      
-      Select Type
-          ;         Case #__type_Splitter
-          ;           If Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical
-          ;             Flag &~ #PB_Splitter_Vertical
-          ;             flags | #__bar_vertical
-          ;           EndIf
-          ;           If Flag & #PB_Splitter_Separator = #PB_Splitter_Separator
-          ;             Flag &~ #PB_Splitter_Separator
-          ;           EndIf
-          
-        Case #__type_CheckBox
-          If Flag & #PB_CheckBox_Right = #PB_CheckBox_Right
-            Flag & ~ #PB_CheckBox_Right
-            flags | #__text_right
-          EndIf
-          If Flag & #PB_CheckBox_Center = #PB_CheckBox_Center
-            Flag & ~ #PB_CheckBox_Center
-            flags | #__text_center
-          EndIf
-          
-        Case #__type_Text
-          If Flag & #PB_Text_Border = #PB_Text_Border
-            Flag & ~ #PB_Text_Border
-            flags | #__text_border
-          EndIf
-          If Flag & #PB_Text_Center = #PB_Text_Center
-            Flag & ~ #PB_Text_Center
-            flags | #__text_center
-          EndIf
-          If Flag & #PB_Text_Right = #PB_Text_Right
-            Flag & ~ #PB_Text_Right
-            flags | #__text_right
-          EndIf
-          
-        Case #__type_Button
-          If Flag & #PB_Button_Left = #PB_Button_Left
-            Flag & ~ #PB_Button_Left
-            flags | #__button_left
-          EndIf
-          If Flag & #PB_Button_Right = #PB_Button_Right
-            Flag & ~ #PB_Button_Right
-            flags | #__button_right
-          EndIf
-          If Flag & #PB_Button_Toggle = #PB_Button_Toggle
-            Flag & ~ #PB_Button_Toggle
-            flags | #__button_toggle
-          EndIf
-          
-        Case #__type_Tree
-          If Flag & #PB_Tree_AlwaysShowSelection = #PB_Tree_AlwaysShowSelection
-            Flag & ~ #PB_Tree_AlwaysShowSelection
-            ; flags | #__tree_alwaysselection
-          EndIf
-          If Flag & #PB_Tree_CheckBoxes = #PB_Tree_CheckBoxes
-            Flag & ~ #PB_Tree_CheckBoxes
-            flags | #__tree_checkboxes
-          EndIf
-          If Flag & #PB_Tree_ThreeState = #PB_Tree_ThreeState
-            Flag & ~ #PB_Tree_ThreeState
-            flags | #__tree_threestate
-          EndIf
-          If Flag & #PB_Tree_NoButtons = #PB_Tree_NoButtons
-            Flag & ~ #PB_Tree_NoButtons
-            flags | #__tree_nobuttons
-          EndIf
-          If Flag & #PB_Tree_NoLines = #PB_Tree_NoLines
-            Flag & ~ #PB_Tree_NoLines
-            flags | #__list_nolines
-          EndIf
-          
-      EndSelect
-      
-      flags | Flag
-      ProcedureReturn flags
     EndProcedure
     
     
@@ -18166,13 +18183,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
           Case #__type_ButtonImage
             If eventtype = #__event_Down
-              If *this\image[#__img_pressed]\id
-                *this\image = *this\image[#__img_pressed]
+              If *this\image[#__image_pressed]\id
+                *this\image = *this\image[#__image_pressed]
               EndIf
             EndIf   
             If eventtype = #__event_Up
-              If *this\image[#__img_released]\id
-                *this\image = *this\image[#__img_released]
+              If *this\image[#__image_released]\id
+                *this\image = *this\image[#__image_released]
               EndIf
             EndIf   
              
@@ -18212,7 +18229,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\state\enter
                 If mouse( )\buttons & #PB_Canvas_LeftButton
                   ;\\
-                  If *this\flag & #__button_toggle
+                  If *this\flag & #PB_Button_Toggle
                     If SetState( *this, Bool( *this\state\toggle ! 1 ))
                     EndIf
                   EndIf
@@ -18392,10 +18409,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
              is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_draw] )
             
             ; get alpha
-            If *root\_widgets( )\_a_\transform = 0 And (*root\_widgets( )\image[#__img_background]\id And
-                                                        *root\_widgets( )\image[#__img_background]\depth > 31 And
+            If *root\_widgets( )\_a_\transform = 0 And (*root\_widgets( )\image[#__image_background]\id And
+                                                        *root\_widgets( )\image[#__image_background]\depth > 31 And
                                                         is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_inner] ) And
-                                                        StartDrawing( ImageOutput( *root\_widgets( )\image[#__img_background]\img )))
+                                                        StartDrawing( ImageOutput( *root\_widgets( )\image[#__image_background]\img )))
               
               drawing_mode_( #PB_2DDrawing_AlphaChannel )
               If Not Alpha( Point( ( mouse( )\x - *root\_widgets( )\x[#__c_inner] ) - 1,
@@ -18782,9 +18799,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; ;                   ;                   ; enter-widget mouse pos
           ; ;                   ;                   If is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_inner] )
           ; ;                   ;                     ; get alpha
-          ; ;                   ;                     If *root\_widgets( )\image[#__img_background]\id And
-          ; ;                   ;                        *root\_widgets( )\image[#__img_background]\depth > 31 And
-          ; ;                   ;                        StartDrawing( ImageOutput( *root\_widgets( )\image[#__img_background]\img ) )
+          ; ;                   ;                     If *root\_widgets( )\image[#__image_background]\id And
+          ; ;                   ;                        *root\_widgets( )\image[#__image_background]\depth > 31 And
+          ; ;                   ;                        StartDrawing( ImageOutput( *root\_widgets( )\image[#__image_background]\img ) )
           ; ;                   ;
           ; ;                   ;                       drawing_mode_( #PB_2DDrawing_AlphaChannel )
           ; ;                   ;
@@ -19609,9 +19626,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Window = GetActiveWindow( )
       EndIf
       ;;Debug Window
-      Flag = PBFlag( Type, Flag ) | #__flag_autosize
+      Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
       
-      Open( Window, x, y, width, height, "", #PB_Canvas_Container, *CallBack, Gadget )
+      Open( Window, x, y, width, height, "", #PB_Canvas_Container, 0, *CallBack, Gadget )
       
       Select Type
         Case #__type_Tree : *this = Tree( 0, 0, width, height, flag )
@@ -19629,7 +19646,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Gadget = GetGadget( Root( ))
         g      = Gadget
       Else
-        g = GadgetID( Gadget )
+        g      = GadgetID( Gadget )
       EndIf
       
       ProcedureReturn g
@@ -20472,7 +20489,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   
   ;\\
   OpenList( *root3 )
-  *w = Tree( 10, 20, 150, 200, #__tree_multiselect)
+  *w = Tree( 10, 20, 150, 200, #__list_multiselect)
   For i = 1 To 100;0000
     AddItem(*w, i, "text-" + Str(i))
   Next
@@ -20486,7 +20503,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Next
   
   ;\\
-  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes )
+  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__list_checkboxes )
   For i = 1 To 100;0000
     If (i & 5)
       AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -20539,5 +20556,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------8--------------------------------------------------------0------------------------------------------------------vf-g-X2----------------------+-+00--f0-------------------------------------------------------------------------------------------------------------
 ; EnableXP

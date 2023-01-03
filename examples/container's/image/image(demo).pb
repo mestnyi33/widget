@@ -28,9 +28,8 @@ UseLib(widget)
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
-  Global.i Window_0, g_Canvas
   Global.i gEvent, gQuit
-  Global *Image_0
+  Global *Image, *Button, *ComboBox
   
   UsePNGImageDecoder()
   
@@ -42,43 +41,47 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure Canvas_0_Resize()
-    Protected g_Canvas = EventGadget()
-    
-    Select EventType()
-      Case #PB_EventType_Resize : ResizeGadget(g_Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        If Resize(*Image_0, #PB_Ignore, #PB_Ignore, GadgetWidth(g_Canvas)-20, GadgetHeight(g_Canvas)-85)
-          ; redraw(root())
-        EndIf
+  Procedure widget_events( )
+    Select EventWidget( )
+      Case *Button
+        SetState( *Image, GetState( *Button ) )
+        
+      Case *ComboBox
+        SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
         
     EndSelect
-    
   EndProcedure
   
-  Procedure Window_0_Resize()
-    ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
-    ResizeGadget(1, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
-    ; ResizeGadget(g_Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-80)
+  Procedure Window_0_Resize( )
+    Protected width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
+    Protected height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
+    
+    Resize(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
+    Resize(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
+    Resize(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
   EndProcedure
   
   Procedure Window_0()
-    If OpenWindow(0, 0, 0, 250, 280+30, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    If OpenWindow(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       Open(0)
-      ButtonGadget   (0,    5,   245, 240,  30, "change image", #PB_Button_Toggle)
-      ComboBoxGadget   (1,    5,   245+35, 240,  30)
-      AddGadgetItem(1, -1, "Default")
-      AddGadgetItem(1, -1, "Center")
-      AddGadgetItem(1, -1, "Mosaic")
-      AddGadgetItem(1, -1, "Stretch")
-      AddGadgetItem(1, -1, "Proportionally")
+      *Button = Button( 5,   245, 240,  25, "change image", #PB_Button_Toggle)
+      *ComboBox = ComboBox( 5,   245+30, 240,  30)
+      AddItem(*ComboBox, -1, "Default")
+      AddItem(*ComboBox, -1, "Center")
+      AddItem(*ComboBox, -1, "Mosaic")
+      AddItem(*ComboBox, -1, "Stretch")
+      AddItem(*ComboBox, -1, "Proportionally")
+      SetState(*ComboBox, 0)
       
-      g_Canvas = GetGadget(root())
-      *Image_0 = Image(10, 10, 210,  210, 10)
+      *Image = Image(10, 10, 230,  225, 10)
       
-      redraw(root())
+      Bind( *Button, @widget_events( ), #PB_EventType_LeftClick )
+      Bind( *ComboBox, @widget_events( ), #PB_EventType_Change )
       
-      BindGadgetEvent(g_Canvas, @Canvas_0_Resize(), #PB_EventType_Resize)
-      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize())
+      SetAlignment(*Image, 0, 1,1,1,1 )
+      SetAlignment(*Button, 0, 1,0,1,1 )
+      SetAlignment(*ComboBox, 0, 1,0,1,1 )
+      ; BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
   
@@ -90,20 +93,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Select gEvent
       Case #PB_Event_CloseWindow
         gQuit= #True
-        
-      Case #PB_Event_Gadget
-        
-        Select EventGadget()
-          Case 0
-            SetState(*Image_0, GetGadgetState(EventGadget()))
-            redraw(root())
-            
-          Case 1
-            SetAttribute(*Image_0, #__DisplayMode, GetGadgetState(EventGadget()))
-            redraw(root())
-            
-        EndSelect
-        
     EndSelect
     
   Until gQuit

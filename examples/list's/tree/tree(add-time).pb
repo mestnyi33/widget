@@ -1,14 +1,34 @@
-﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+﻿; macos
+; update_items_( )
+; 2303
+; 2559
+; 2815
+; 3071
+; 3327
+; 3583
+; 3839
+; 4095
+; 95 - add widget items time count - 5001
+; 2303
+; 2559
+; 2815
+; 3071
+; 3327
+; 3583
+; 3839
+; 4095
+; 3814 - add gadget items time count - 5001
+; update_items_( )
+
+XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
   Uselib(Widget)
   EnableExplicit
   Define *w,a, Event
-  Define gLN=5000;0      ;0; количесвто итемов 
-  Define LN=5000;0;0
+  Define gLN=5000
+  Define LN=gLN
 
   If Open(OpenWindow(#PB_Any, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu))
     *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
@@ -50,5 +70,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-
+; Folding = --
 ; EnableXP

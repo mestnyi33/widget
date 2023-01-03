@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "gadget/gadgets.pbi"
+; XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -42,9 +42,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_tree_widget()
-    ;Debug " widget - "+this()\widget+" "+this()\event
-    Protected EventGadget = this()\widget
-    Protected EventType = this()\event
+    ;Debug " widget - "+EventWidget( )+" "+this()\event
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEventType( )
     Protected EventData; = this()\data
     Protected EventItem = GetState(EventGadget)
     
@@ -114,13 +114,13 @@ CompilerIf #PB_Compiler_IsMainFile
             *parent = *this\row\last
             *parent\childrens = 1
             
-          ElseIf *this\row\last\parent 
-            If sublevel > *this\row\last\parent\sublevel 
-              *parent = *this\row\last\parent
+          ElseIf *this\row\last\_parent 
+            If sublevel > *this\row\last\_parent\sublevel 
+              *parent = *this\row\last\_parent
               
             ElseIf sublevel < *this\row\last\sublevel 
-              If *this\row\last\parent\parent
-                *parent = *this\row\last\parent\parent
+              If *this\row\last\_parent\_parent
+                *parent = *this\row\last\_parent\_parent
                 
                 While *parent 
                   If sublevel >= *parent\sublevel 
@@ -129,19 +129,19 @@ CompilerIf #PB_Compiler_IsMainFile
                     EndIf
                     Break
                   Else
-                    *parent = *parent\parent
+                    *parent = *parent\_parent
                   EndIf
                 Wend
               EndIf
               
               ;; ; for the editor( )
-              If *this\row\last\parent 
-                If *this\row\last\parent\sublevel = sublevel 
-; ;                   *last = *this\row\last\parent
-; ;                   *parent = *this\row\last\parent
+              If *this\row\last\_parent 
+                If *this\row\last\_parent\sublevel = sublevel 
+; ;                   *last = *this\row\last\_parent
+; ;                   *parent = *this\row\last\_parent
 ; ; ;                   *parent\last = *this\row\_s( )
 ; ;                    *this\row\last = *parent
-                  *this\row\last\parent\after = *this\row\_s( )
+                  *this\row\last\_parent\after = *this\row\_s( )
                   ;*this\row\last = *parent
                   Debug Text
                 EndIf
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\row\_s( )\parent = *parent
+        *this\row\_s( )\_parent = *parent
         
         If *last
          ; *this\row\last = *last
@@ -160,9 +160,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ; for the tree( )
-        If *this\row\last\parent And 
-           *this\row\last\parent\sublevel < sublevel
-          *this\row\last\parent\last = *this\row\last
+        If *this\row\last\_parent And 
+           *this\row\last\_parent\sublevel < sublevel
+          *this\row\last\_parent\last = *this\row\last
         EndIf
         
         If sublevel = 0
@@ -201,6 +201,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ProcedureReturn *this\count\items - 1
   EndProcedure
+  
+  LoadFont(5, "Arial", 16)
+  LoadFont(6, "Arial", 25)
+    
   
   Open(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
@@ -292,7 +296,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 10, 210, 210, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+    *g = Tree(450, 10, 210, 210);|#__tree_Collapsed)                                         
     add(*g, 0, "Tree_0", -1 )
     add(*g, 1, "Tree_1_1", 0, 1) 
     add(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -352,13 +356,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
-    LoadFont(5, "Arial", 16)
+    
+    ;LoadFont(5, "Arial", 16)
+    
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
     SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
     SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
-    LoadFont(6, "Arial", 25)
+    
+    ;LoadFont(6, "Arial", 25)
+    
     SetItemFont(*g, 4, 6)
     SetItemText(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
@@ -370,7 +378,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
-    *g = Tree(10, 230, 210, 400, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+    *g = Tree(10, 230, 210, 400);|#__tree_Collapsed)                                         
   
     ;  2_example
     add(*g, 0, "Structure widget", -1, 0)
@@ -452,8 +460,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Next i
   
 ;   ForEach *g\row\_s()
-;     If *g\row\_s()\parent ;And *g\row\_s()\parent\last = *g\row\_s()
-;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
+;     If *g\row\_s()\_parent ;And *g\row\_s()\_parent\last = *g\row\_s()
+;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\_parent\text\string +" l "+ *g\row\_s()\_parent\last\text\string
 ;     EndIf
 ;   Next
 ;   Debug ""

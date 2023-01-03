@@ -177,6 +177,8 @@ Repeat
           mouse.SPoint\x = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX )
           mouse.SPoint\y = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY )
           *dragpoint.SPoint = FindClosestLineEnd(mouse)
+          UpdateIntersections()
+          Repaint(EventGadget())
           
         Case #PB_EventType_LeftButtonUp
           drag = 0
@@ -191,13 +193,13 @@ Repeat
       EndSelect
       
     Case #PB_Event_Repaint
+      UpdateIntersections()
       Repaint(0)
       
     Case #PB_Event_CloseWindow
       Break
   EndSelect
 ForEver
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -----
 ; EnableXP

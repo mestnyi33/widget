@@ -1,6 +1,6 @@
 ﻿
 IncludePath "../../../"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 ;XIncludeFile "widgets.pbi"
 
@@ -10,13 +10,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
   Global tree_view
+  Global *this._s_widget
   Global NewMap Widgets.i()
   Global.i Window_0, Canvas_0, gEvent, gQuit, x=10,y=10
-  Global *this._s_widget
-  
-  Macro AnchorLeft(_this_)
-    _this_\align\left
-  EndMacro
   
   Procedure events()
     Select WidgetEventType()
@@ -65,6 +61,9 @@ CompilerIf #PB_Compiler_IsMainFile
         
     EndSelect
   EndProcedure
+  
+  #__button_left = #__text_left
+  #__button_right = #__text_right
   
   ; proportional
   Procedure example_1()
@@ -270,16 +269,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure example_demo()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 440, 100, 150, "docking", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 440, 100, 150, "test", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
     tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
     
-    CloseList()
-    
-    
-    ;bind(-1,-1)
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,200)
   EndProcedure
   
@@ -297,5 +292,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --+
 ; EnableXP

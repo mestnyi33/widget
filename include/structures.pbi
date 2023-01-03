@@ -309,8 +309,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
                         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
-      *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       *_parent._s_rows
+      *first._s_rows           ;TEMP first elemnt in the list 
+      *after._s_rows           ;TEMP first elemnt in the list 
+      *before._s_rows           ;TEMP first elemnt in the list 
+      childrens.b
+      
+      *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       parent._s_objecttype
       
       *OptionGroupRow._s_rows ; option group row 
@@ -799,5 +804,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----n-----
+; Folding = ----v-----
 ; EnableXP

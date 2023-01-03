@@ -14,60 +14,60 @@
     
     Enumeration - 1
       #SelectionStyle_Default
-      #SelectionStyle_None
-      #SelectionStyle_Solid
+      #SelectionStyle_none
+      #SelectionStyle_solid
       #SelectionStyle_Dotted
       #SelectionStyle_Dashed
     EndEnumeration
-    #SelectionStyle_Mode       = $100
-    #SelectionStyle_Completely = 0
-    #SelectionStyle_Partially  = $100
-    #SelectionStyle_Ignore     = #PB_Ignore
+    #SelectionStyle_mode       = $100
+    #SelectionStyle_completely = 0
+    #SelectionStyle_partially  = $100
+    #SelectionStyle_ignore     = #PB_Ignore
     
     Enumeration 1
-      #Boundary_MinX
-      #Boundary_MinY
-      #Boundary_MaxX
-      #Boundary_MaxY
-      #Boundary_MinWidth
-      #Boundary_MinHeight
-      #Boundary_MaxWidth
-      #Boundary_MaxHeight
+      #Boundary_minX
+      #Boundary_minY
+      #Boundary_maxX
+      #Boundary_maxY
+      #Boundary_minWidth
+      #Boundary_minHeight
+      #Boundary_maxWidth
+      #Boundary_maxHeight
     EndEnumeration
-    #Boundary_Ignore         = - $80000000    ; 0b10000000...
+    #Boundary_ignore         = - $80000000    ; 0b10000000...
     #Boundary_Default        = - $7FFFFFFF    ; 0b01111111...
-    #Boundary_None           = $3FFFFFFF    ; 0b00111111...
-    #Boundary_ParentSize     = $60000000    ; 0b01100000...
-    #Boundary_ParentSizeMask = $C0000000    ; 0b11000000...
+    #Boundary_none           = $3FFFFFFF      ; 0b00111111...
+    #Boundary_parentSize     = $60000000      ; 0b01100000...
+    #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
     
     Enumeration
       #_b_caption
-      #_b_Menu
+      #_b_menu
       #_b_tool
     EndEnumeration
     
     ; list mode
-    #__M_checkselect  = 1
-    #__M_clickselect  = 2
-    #__M_Multiselect  = 3
-    #__M_optionselect = 4
+    #__m_checkselect  = 1
+    #__m_clickselect  = 2
+    #__m_multiselect  = 3
+    #__m_optionselect = 4
     
     ;- _c_anchors
-    #__a_Left         = 1
-    #__a_Right        = 3
+    #__a_left         = 1
+    #__a_right        = 3
     #__a_top          = 2
     #__a_bottom       = 4
-    #__a_Left_top     = 5
-    #__a_Left_bottom  = 8
-    #__a_Right_top    = 6
-    #__a_Right_bottom = 7
+    #__a_left_top     = 5
+    #__a_left_bottom  = 8
+    #__a_right_top    = 6
+    #__a_right_bottom = 7
     
-    #__a_Line_Left   = 10
-    #__a_Line_Right  = 11
-    #__a_Line_top    = 12
-    #__a_Line_bottom = 13
+    #__a_line_left   = 10
+    #__a_line_right  = 11
+    #__a_line_top    = 12
+    #__a_line_bottom = 13
     
-    ; a_Mode_
+    ; a_mode_
     EnumerationBinary 1
       #__a_position
       #__a_width
@@ -78,8 +78,8 @@
     #__a_full = #__a_position | #__a_corner | #__a_edge
     
     #__a_size  = 7
-    #__a_Moved = 9
-    #__a_count = #__a_Moved + 4
+    #__a_moved = 9
+    #__a_count = #__a_moved + 4
     
     ;
     ; default values
@@ -91,9 +91,9 @@
     #__panel_height = 24 ;+ 4
     #__panel_width  = 85
     
-    #__Menu_height = 25
+    #__menu_height = 25
     
-    #__from_Mouse_state = 0
+    #__from_mouse_state = 0
     #__focus_state      = 1
     
     ;#__splitter_buttonsize = 9
@@ -113,9 +113,7 @@
     
     #__sOC = SizeOf(Character)
     
-    #__bar_Minus = 1
     
-    #__tab_0 = 0
     ; splitter
     #__split_0 = 0
     #__split_1 = 1
@@ -125,34 +123,25 @@
     #__split_b2 = 2
     #__split_b3 = 3
     
-    ; panel
-    #__panel_1 = 1
-    #__panel_2 = 2
-    
+    ;
     #__tab_1 = 1 ; entered item
     #__tab_2 = 2 ; selected item
     
-    ; option
-    #__option_1 = 2
-    
-    
-    #__tree_Linesize = 5
-    
-    ; errors
+    ;-\\ Errors editor
     Enumeration 1
       #__error_text_input
       #__error_text_back
-      #__error_text_Return
+      #__error_text_return
     EndEnumeration
     
-    ;images
-    Enumeration
-      #__img_Released   = 1
-      #__img_pressed    = 2
-      #__img_background = 3
-    EndEnumeration
+    ;-\\  Constant edit selection
+    #__sel_to_line   = 1
+    #__sel_to_first  = 2
+    #__sel_to_remove = - 1
+    #__sel_to_last   = - 2
+    #__sel_to_set    = 5
     
-    ;bar buttons
+    ;-\\ Bar buttons
     Enumeration
       #__b_1 = 1
       #__b_2 = 2
@@ -162,79 +151,31 @@
     ;window bar buttons
     Enumeration
       #__wb_close
-      #__wb_Maxi
-      #__wb_Mini
+      #__wb_maxi
+      #__wb_mini
       #__wb_help
     EndEnumeration
     
-    ;- coordinate
+    ;-\\ Coordinate (pos & size)
     Enumeration _c_coordinate
-      ; pos & size
       #__c_screen    = 0 ; screen
       #__c_frame     = 1 ; frame screen
       #__c_inner     = 2 ; inner screen
       #__c_container = 3 ; container
-      #__c_Required  = 4 ; required
-      
-      #__c_draw  = 5 ; clip screen
-      #__c_draw1 = 6 ; clip frame
-      #__c_draw2 = 7 ; clip inner
-      
-      #__c_window      = 8 ; window ; pos
-      #__c_Rootrestore = 9
+      #__c_required  = 4 ; required
+      #__c_window    = 5 ; window
+      #__c_draw      = 6 ; clip screen
+      #__c_draw1     = 7 ; clip frame
+      #__c_draw2     = 8 ; clip inner
+      #__c_restore   = 9
       #__c
     EndEnumeration
     
-    ;
-    #__c_clip  = #__c_draw ; temp
-    #__c_clip2 = #__c_draw2 ; temp
-    
-    ;#__c_inner2 = #__c_inner
-    ;     #__ci_frame = #__c_draw
-    ;     #__ci_container = #__c_draw
-    #__c_inner_b = #__c_inner
-    
-    ;- temp for the widgets.pbi
-    Enumeration
-      #__s_normal    = 0 << 0  ; 0
-      #__s_select    = 1 << 0    ; 1
-      #__s_expand    = 1 << 1    ; 2
-      #__s_check     = 1 << 2    ; 4
-      #__s_collapse  = 1 << 3   ; 8
-      #__s_inbetween = 1 << 4  ; 16
-      
-      #__s_enter   = 1 << 5  ; 32
-      #__s_disable = 1 << 6 ; 64
-      #__s_focus   = 1 << 7  ; 128 ; keyboard focus
-      #__s_scroll  = 1 << 8  ; 256
-      
-      #__s_drag    = 1 << 9  ; 512
-      #__s_drop    = 1 << 10
-      #__s_current = 1 << 11 ;
-    EndEnumeration
-    
-    ; \__state
-    EnumerationBinary 1
-      #__ss_front
-      #__ss_back
-      #__ss_frame
-      #__ss_fore
-      #__ss_Line
-    EndEnumeration
-    
-    ;color state
-    Enumeration
-      #__s_0
-      #__s_1
-      #__s_2
-      #__s_3
-    EndEnumeration
-    
-    ;- _c_color
+    ;-\\ Color
     Enumeration 1
       #__color_front
       #__color_back
-      #__color_Line
+      #__color_line
       #__color_titlefront
       #__color_titleback
       #__color_graytext
@@ -242,111 +183,96 @@
       #__color_fore
     EndEnumeration
     
+    ;-\\ Color (state)
     Enumeration
-      #__color_state_default
-      #__color_state_entered
-      #__color_state_selected
+      #__s_0
+      #__s_1
+      #__s_2
+      #__s_3
     EndEnumeration
     
-    ;
-    ;   ; Set/Get Attribute
+    ;-\\ Attribute
     #__displayMode = 1 << 13
-    ;   #PB_Image = 1<<13
+    ;   #PB_image = 1<<13
     ;   #PB_text = 1<<14
     ;   #PB_flag = 1<<15
-    ;   #PB_State = 1<<16
+    ;   #PB_state = 1<<16
     
-    ;- _c_Resize
+    ;-\\ Resize (state)
     EnumerationBinary
-      #__Resize_x
-      #__Resize_y
-      #__Resize_width
-      #__Resize_height
+      #__resize_x
+      #__resize_y
+      #__resize_width
+      #__resize_height
       
-      #__Resize_change
+      #__resize_change
       
-      #__Resize_Restore
-      #__Resize_Minimize
-      #__Resize_Maximize
-      #__Resize_start
+      #__resize_restore
+      #__resize_minimize
+      #__resize_maximize
+      #__resize_start
     EndEnumeration
     
-    ;- Constant create-flags
-    EnumerationBinary _c_align 1024 ; 2
+    ;-\\ Constant create-flags
+    EnumerationBinary 4096 ; 2
       
       #__flag_numeric
-      #__flag_Readonly
-      #__flag_Lowercase
+      #__flag_readonly
+      #__flag_lowercase
       #__flag_uppercase
       #__flag_password
       #__flag_wordwrap
-      #__flag_Multiline
+      #__flag_multiline
       
       #__flag_fullselection
       #__flag_nolines
+      #__flag_nobuttons
       #__flag_checkboxes
       #__flag_optionboxes
       #__flag_gridlines
-      
+      #__flag_threeState
+      #__flag_clickselect
       
       ;#__flag_inline
-      #__flag_threeState
-      ;#__flag_2
-      #__flag_invert
-      
-      
-      
-      
       ;#__flag_invisible
       ;#__flag_sizegadget
-      ;#__flag_systemmenu
-      #__flag_noscrollbars
+      
+      
+      ;\\
       #__flag_child
+      #__flag_invert
+      #__flag_vertical
       
-      #__flag_borderless
-      ;#__flag_flat
-      ;#__flag_double
-      ;#__flag_Raised
-      ;#__flag_single
-      
-      
+      ;\\
       #__flag_transparent
+      #__flag_noscrollbars
       #__flag_anchorsgadget
-      #__flag_clickselect
-    
       
       ;\\
-      #__flag_vertical 
-      #__flag_nobuttons
+      #__flag_borderless
+      #__flag_flat
+      #__flag_double
+      #__flag_raised
+      #__flag_single
       
       ;\\
-      #__flag_Left
-      #__flag_Top
-      #__flag_Right
-      #__flag_Bottom
-      #__flag_Center
+      #__flag_left
+      #__flag_top
+      #__flag_right
+      #__flag_bottom
+      #__flag_center
+      #__flag_full
+      #__flag_autoSize
+      #__flag_proportional
       
-      #__flag_Full
-      #__flag_AutoSize
-      #__flag_Proportional
-      
-      
-     #__flag_Limit
+      #__flag_limit
     EndEnumeration
-    ; #__flag_clickselect = 8388608 ; мистика с tree checkboxex
-      
-    ;\\ 
-    #__bar_vertical  = #__flag_vertical
-    #__text_vertical = #__flag_vertical
     
     ;\\
     #__flag_nogadgets = #__flag_nobuttons
     
-    ;#__flag_Multiselect = #__flag_Multiline
-    
-    
-;     #__flag_autoright  = #__flag_autosize | #__flag_Right
-;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
+    ;     #__flag_autoright  = #__flag_autosize | #__flag_right
+    ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
     
     ;- _c_align
     ; align type
@@ -354,159 +280,86 @@
     #__align_text   = 2
     #__align_image  = 3
     
-    #__align_none   = #False
-    #__align_Left   = #__flag_Left
-    #__align_Top    = #__flag_Top
-    #__align_Right  = #__flag_Right
-    #__align_Bottom = #__flag_Bottom
-    #__align_Center = #__flag_Center
+    #__align_none   = 0
+    #__align_left   = #__flag_left
+    #__align_top    = #__flag_top
+    #__align_right  = #__flag_right
+    #__align_bottom = #__flag_bottom
+    #__align_center = #__flag_center
     
-    #__align_Full                    = #__flag_Full
-    #__align_Auto                    = #__flag_AutoSize
-    #__align_Proportional            = #__flag_Proportional
+    #__align_full         = #__flag_full
+    #__align_auto         = #__flag_autoSize
+    #__align_proportional = #__flag_proportional
     
     
     ;-
-    ;- _c_bar
-    #__bar_Minimum    = 1
-    #__bar_Maximum    = 2
+    ;-\\ Bar
+    #__bar_minus      = 1
+    #__bar_minimum    = 1
+    #__bar_maximum    = 2
     #__bar_pagelength = 3
     #__bar_scrollstep = 5
     
-    EnumerationBinary 8
-      #__bar_buttonsize
-      #__bar_direction
-      
-      ;#__bar_arrowSize
-      ;#__bar_Reverse
-      ;#__bar_ticks
-      
-      #__bar_invert    = #__flag_invert
-      #__bar_nobuttons = #__flag_nogadgets
-    EndEnumeration
+    ;\\ binary
+    #__bar_buttonsize = 8
+    #__bar_direction  = 16
+    #__bar_invert     = #__flag_invert
+    #__bar_vertical   = #__flag_vertical
+    #__bar_nobuttons  = #__flag_nogadgets
     
-      
-    #__alignFlagCount = 22
-    #__alignFlagValue = 2147483648 >> ( #__alignFlagCount - 1 )
     
-    EnumerationBinary #__alignFlagValue
-      ;EnumerationBinary 64
-      #__align_text_Left
-      #__align_text_top
-      #__align_text_center
-      #__align_text_Right
-      #__align_text_bottom
-      
-      #__align_image_Left
-      #__align_image_top
-      #__align_image_center
-      #__align_image_Right
-      #__align_image_bottom
-      #__align_image_full
-      
-      #__align_image_proportional
-      #__align_image_proportional_vertical
-      
-      #__align_widget_Left
-      #__align_widget_top
-      #__align_widget_center
-      #__align_widget_Right
-      #__align_widget_bottom
-      #__align_widget_auto
-      #__align_widget_full
-      
-      #__align_widget_proportional
-      #__align_widget_proportional_vertical
-    EndEnumeration
+    ;-\\ Text
+    #__text_left      = #__flag_left
+    #__text_top       = #__flag_top
+    #__text_right     = #__flag_right
+    #__text_bottom    = #__flag_bottom
+    #__text_center    = #__flag_center
+    #__text_invert    = #__flag_invert
+    #__text_vertical  = #__flag_vertical
+    #__text_multiline = #__flag_multiline
+    #__text_wordwrap  = #__flag_wordwrap
+    #__text_numeric   = #__flag_numeric
+    #__text_password  = #__flag_password
+    #__text_readonly  = #__flag_readonly
+    #__text_lowercase = #__flag_lowercase
+    #__text_uppercase = #__flag_uppercase
     
-    ;     #__ImageFlagCount = 2
-    ;     #__imageFlagValue = 2147483648 >> ( #__imageFlagCount - 1 )
+    ;     ;                            ; m/l ; w         ;
+    ;     Debug #PB_text_right         ;  1  ; 2         ;
+    ;     Debug #PB_text_center        ;  2  ; 1         ;
+    ;     Debug #PB_text_border        ;  4  ; 131072    ;
     ;
-    ;     EnumerationBinary #__imageFlagValue
-    ;       #__image_vertical
-    ;       #__image_invert
-    ;     EndEnumeration
-    
-    ;-  Constant sel-edit
-    #__sel_to_line   = 1
-    #__sel_to_first  = 2
-    #__sel_to_remove = - 1
-    #__sel_to_last   = - 2
-    #__sel_to_set    = 5
-    
-    ;- _c_text
-    #__textFlagCount = 10
-    #__textFlagValue = 2147483648 >> ( #__textFlagCount - 1 )
-    
-    EnumerationBinary #__align_text_bottom ; #__textFlagValue
-      
-      #__text_InLine
-      #__text_Multiline
-      #__text_wordwrap
-      
-      #__text_password
-      #__text_Readonly
-      #__text_uppercase
-      #__text_Lowercase
-      #__text_numeric
-      #__text_invert
-      
-     EndEnumeration
-     
-     
-    ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    ;       Debug #PB_Text_Right         ; 1  ; 2         ;
-    ;       Debug #PB_Text_Center        ; 2  ; 1         ;
-    ;       Debug #PB_Text_Border        ; 4  ; 131072    ;
+    ;     Debug #PB_button_right       ;  1  ; 512       ;
+    ;     Debug #PB_button_left        ;  2  ; 256       ;
+    ;     Debug #PB_button_toggle      ;  4  ; 4099      ;
+    ;     Debug #PB_button_Default     ;  8  ; 1         ;
+    ;     Debug #PB_button_multiLine   ;  16 ; 8192      ;
     ;
-    ;       Debug #PB_Button_Right       ; 1  ; 512       ;
-    ;       Debug #PB_Button_Left        ; 2  ; 256       ;
-    ;       Debug #PB_Button_Toggle      ; 4  ; 4099      ;
-    ;       Debug #PB_Button_Default     ; 8  ; 1         ;
-    ;       Debug #PB_Button_MultiLine   ; 16 ; 8192      ;
+    ;     Debug #PB_string_password    ;  1  ; 32        ;
+    ;     Debug #PB_string_readOnly    ;  2  ; 2048      ;
+    ;     Debug #PB_string_UpperCase   ;  4  ; 8         ;
+    ;     Debug #PB_string_lowerCase   ;  8  ; 16        ;
+    ;     Debug #PB_string_numeric     ;  16 ; 8192      ;
+    ;     Debug #PB_string_borderLess  ;  32 ; 131072    ;
     ;
-    ;       Debug #PB_String_Password    ; 1  ; 32        ;
-    ;       Debug #PB_String_ReadOnly    ; 2  ; 2048      ;
-    ;       Debug #PB_String_UpperCase   ; 4  ; 8         ;
-    ;       Debug #PB_String_LowerCase   ; 8  ; 16        ;
-    ;       Debug #PB_String_Numeric     ; 16 ; 8192      ;
-    ;       Debug #PB_String_BorderLess  ; 32 ; 131072    ;
-    ;
-    ;       Debug #PB_Editor_ReadOnly    ; 1  ; 2048      ;
-    ;       Debug #PB_Editor_WordWrap    ; 2  ; 268435456 ;
-    ;     CompilerEndIf
+    ;     Debug #PB_Editor_readOnly    ;  1  ; 2048      ;
+    ;     Debug #PB_Editor_wordWrap    ;  2  ; 268435456 ;
     
-    #__text_border = #__flag_borderless;#PB_text_border
     
-    #__text_Left   = #__align_text_Left
-    #__text_Top    = #__align_text_top
-    #__text_Right  = #__align_text_Right
-    #__text_Bottom = #__align_text_bottom
-    #__text_Center = #__align_text_center
-    #__text_Middle = #__text_center
+    ;-\\ Image
+    #__image_released   = 1
+    #__image_pressed    = 2
+    #__image_background = 3
+    #__image_left       = #__flag_left
+    #__image_top        = #__flag_top
+    #__image_center     = #__flag_center
+    #__image_right      = #__flag_right
+    #__image_bottom     = #__flag_bottom
     
-    ;     #__text_invert = #__flag_invert
-    ;     #__text_vertical = #__flag_vertical
-    ;
-    ;     #__text_Multiline = #__flag_Multiline
-    ;     #__text_wordwrap = #__flag_wordwrap
-    ;     #__text_numeric = #__flag_numeric
-    ;     #__text_password = #__flag_password
-    ;     #__text_Readonly = #__flag_Readonly
-    ;     #__text_Lowercase = #__flag_Lowercase
-    ;     #__text_uppercase = #__flag_uppercase
+    ;-\\ MDI
+    #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
     
-    ;- _c_image
-    #__image_Left   = #__text_Left
-    #__image_top    = #__text_top
-    #__image_center = #__text_center
-    #__image_Right  = #__text_Right
-    #__image_bottom = #__text_bottom
-    
-    ;- _c_Mdi
-    #__Mdi_editable = #__flag_anchorsgadget ; win - 4294967296
-    
-    ;- _c_window
+    ;-\\ Window
     ;     #__window_nogadgets = #__flag_nogadgets
     ;     #__window_borderless = #__flag_borderless
     ;     #__window_systemmenu = #__flag_systemmenu
@@ -514,351 +367,323 @@
     ;     #__window_screencentered = #__align_center
     
     #__window_child          = #__flag_child
-    #__Window_Normal         = #PB_Window_Normal
-    #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-    #__Window_Close          = #__Window_SystemMenu
-    #__Window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
-    #__Window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
-                                                         ; (MacOS only ; #PB_Window_SizeGadget will be also automatically added).
-    #__Window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
-    #__Window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
-    #__Window_titleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
-    #__Window_tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
-    #__Window_borderLess     = #PB_Window_BorderLess     ; Creates a window without any borders.
-    #__Window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
-    #__Window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-    #__Window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
-    #__Window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
-    #__Window_NoGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-    #__Window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
-                                                         ;     #__Window_closeGadget    = #PB_Window_NoActivate<<2
-                                                         ;     #__Window_close          = #PB_Window_NoActivate<<2
-                                                         ;#PB_Window                 = #PB_Window_NoActivate<<2
+    #__window_normal         = #PB_Window_Normal
+    #__window_systemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+    #__window_close          = #__window_systemMenu
+    #__window_minimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_systemMenu is automatically added.
+    #__window_maximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_systemMenu is automatically added.
+                                                         ; (MacOS only ; #PB_window_sizeGadget will be also automatically added).
+    #__window_sizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
+    #__window_invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
+    #__window_titleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
+    #__window_tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
+    #__window_borderLess     = #PB_Window_BorderLess     ; Creates a window without any borders.
+    #__window_screenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    #__window_windowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
+    #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+    #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+    #__window_noGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+    #__window_noActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
+                                                         ;     #__window_closeGadget    = #PB_window_noActivate<<2
+                                                         ;     #__window_close          = #PB_window_noActivate<<2
+                                                         ;#PB_window                 = #PB_window_noActivate<<2
     
-    ;-  SPIN
-    #__spin_padding_text = 3
-    #__spin_buttonsize   = #__scroll_buttonsize + 3
-    
-    #__spin_TextLeft   = #__text_Left
-    #__spin_TextRight  = #__text_Right
-    #__spin_TextCenter = #__text_center
-    
-    #__spin_Numeric  = #__text_numeric
-    #__spin_Vertical = #__bar_vertical
-    #__spin_Left     = 1 << 1
-    #__spin_Right    = 1 << 2
-    #__spin_Plus     = 1 << 3
+    ;-\\  Spin
+    #__spin_barsize      = #__scroll_buttonsize + 3
+    #__spin_vertical     = #__bar_vertical
+    #__spin_left         = 1 << 1
+    #__spin_right        = 1 << 2
+    #__spin_plus         = 1 << 3
     
     ;     ;-
-    ; Debug #PB_Checkbox_Unchecked ; 0
-    ; Debug #PB_Checkbox_Checked   ; 1
-    ; Debug #PB_Checkbox_Inbetween ; -1
-    ; Debug #PB_CheckBox_ThreeState ; 4
+    ; Debug #PB_checkbox_Unchecked ; 0
+    ; Debug #PB_checkbox_checked   ; 1
+    ; Debug #PB_checkbox_inbetween ; -1
+    ; Debug #PB_checkBox_threeState ; 4
+
+    ;-\\ Tree
+    #PB_tree_collapse    = 32
+    #PB_tree_OptionBoxes = 64
+    #PB_tree_GridLines   = 128
+    ;#PB_tree_itemPosition = 256
     
+    #__list_nolines     = #__flag_nolines
+    #__list_nobuttons   = #__flag_nogadgets
+    #__list_checkboxes  = #__flag_checkboxes
+    #__list_threestate  = #__flag_threeState
+    #__list_optionboxes = #__flag_optionboxes
+    #__list_gridlines   = #__flag_gridLines
+    #__list_multiselect = #__flag_multiline
     
-    ;- LIST_ELEMENT
-    ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    ;       Debug #PB_ListView_MultiSelect  ; 1
-    ;       Debug #PB_ListView_ClickSelect  ; 2
+    #__list_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
+    #__list_collapse    = #PB_tree_collapse
     
-    ;       Debug #PB_Tree_AlwaysShowSelection ; 0
-    ;       Debug #PB_Tree_NoLines    ; 1
-    ;       Debug #PB_Tree_Selected   ; 1
-    ;       Debug #PB_Tree_SubLevel   ; 1
-    ;       Debug #PB_Tree_NoButtons  ; 2
-    ;       Debug #PB_Tree_Expanded   ; 2
-    ;       Debug #PB_Tree_CheckBoxes ; 4
-    ;       Debug #PB_Tree_Checked    ; 4
-    ;       Debug #PB_Tree_ThreeState ; 8
-    ;       Debug #PB_Tree_Collapsed  ; 8
-    ;       Debug #PB_Tree_Inbetween  ; 16
-    
-    ;       Debug #PB_ListIcon_AlwaysShowSelection ; 0
-    ;       Debug #PB_ListIcon_Selected   ; 1
-    ;       Debug #PB_ListIcon_CheckBoxes ; 2
-    ;       Debug #PB_ListIcon_Checked    ; 2
-    ;       Debug #PB_ListIcon_Inbetween  ; 4
-    ;       Debug #PB_ListIcon_ThreeState ; 8
-    ;     CompilerEndIf
-    
-    #__ListFlagCount = 10
-    #__ListFlagValue = 2147483648 >> ( #__ListFlagCount - 1 )
-    
-    EnumerationBinary #__ListFlagValue
-      #__List_vertical
-      #__List_NoLines
-      #__List_SubLevel
-      #__List_NoButtons
-      #__List_CheckBoxes
-      #__List_ThreeState
-      
-      #__List_ClickSelect
-      #__List_MultiSelect
-      
-      #__List_Collapsed
-      #__List_Expanded
-      ;       #__List_Checked
-      ;       #__List_Selected
-      ;       #__List_Inbetween
-    EndEnumeration
-    
-    ;- _c_tree
-    #PB_Tree_Collapse    = 32
-    #PB_Tree_OptionBoxes = 64
-    #PB_Tree_GridLines   = 128
-    ;#PB_Tree_ItemPosition = 256
-    
-    #__tree_nolines         = #PB_Tree_NoLines ; #__flag_nolines
-    #__tree_nobuttons       = #PB_Tree_NoButtons ; #__flag_nogadgets
-    #__tree_checkboxes      = #PB_Tree_CheckBoxes ; #__flag_checkboxes
-    #__tree_threestate      = #PB_Tree_ThreeState ; #__flag_threeState
-    #__tree_optionboxes     = #PB_Tree_OptionBoxes ; #__flag_optionboxes
-    #__tree_gridlines       = #PB_Tree_GridLines     ; #__flag_gridLines
-    #__tree_Multiselect     = #__flag_Multiline
-    #__tree_clickselect     = #__flag_clickselect  ; #PB_ListView_ClickSelect ; 
-    #__tree_collapse        = #PB_Tree_Collapse
-    
-    #__tree_property = #__flag_numeric
-    #__tree_Listview = #__flag_Readonly
-    #__tree_toolbar  = #__flag_password
+    #__list_property = #__flag_numeric
+    #__list_listview = #__flag_readonly
+    #__list_toolbar  = #__flag_password
     
     ; tree attribute
-    #__tree_sublevel = #PB_Tree_SubLevel   ; 1
+    #__list_sublevel = #PB_Tree_SubLevel   ; 1
     
     ; tree state
-    #__tree_selected  = #PB_Tree_Selected   ; 1
-    #__tree_expanded  = #PB_Tree_Expanded   ; 2
-    #__tree_checked   = #PB_Tree_Checked    ; 4
-    #__tree_collapsed = #PB_Tree_Collapsed  ; 8
-    #__tree_inbetween = #PB_Tree_Inbetween  ; 16
+    #__list_selected  = #PB_Tree_Selected   ; 1
+    #__list_expanded  = #PB_Tree_Expanded   ; 2
+    #__list_checked   = #PB_Tree_Checked    ; 4
+    #__list_collapsed = #PB_Tree_Collapsed  ; 8
+    #__list_inbetween = #PB_Tree_Inbetween  ; 16
                                             ;
                                             ;     ;- TREE CONSTANTs
-                                            ;   #__tree_NoLines = #PB_tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-                                            ;   #__tree_NoButtons = #PB_tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-                                            ;   #__tree_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
-                                            ;   #__tree_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
+                                            ;   #__list_noLines = #PB_tree_noLines                         ; 1 2 Hide the little lines between each nodes.
+                                            ;   #__list_noButtons = #PB_tree_noButtons                     ; 2 1 Hide the '+' node buttons.
+                                            ;   #__list_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
+                                            ;   #__list_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
                                             ;
                                             ;   EnumerationBinary 16
-                                            ;     #__tree_collapse
-                                            ;     #__tree_clickSelect
-                                            ;     #__tree_MultiSelect
-                                            ;     #__tree_GridLines
-                                            ;     #__tree_OptionBoxes
-                                            ;     #__tree_borderLess
-                                            ;     #__tree_FullSelection
+                                            ;     #__list_collapse
+                                            ;     #__list_clickSelect
+                                            ;     #__list_multiSelect
+                                            ;     #__list_GridLines
+                                            ;     #__list_OptionBoxes
+                                            ;     #__list_borderLess
+                                            ;     #__list_fullSelection
                                             ;   EndEnumeration
                                             ;
-                                            ;   #PB_tree_collapse = #__tree_collapse
-                                            ;   #PB_tree_GridLines = #__tree_GridLines
+                                            ;   #PB_tree_collapse = #__list_collapse
+                                            ;   #PB_tree_GridLines = #__list_GridLines
     
-    ;- _c_Listview
-    #__Listview_clickselect = #__tree_clickselect
-    #__Listview_Multiselect = #__tree_Multiselect
+    ; LIST_ELEMENT
+    ;     CompilerIf #PB_compiler_OS = #PB_OS_macOS
+    ;       Debug #PB_listView_multiSelect  ; 1
+    ;       Debug #PB_listView_clickSelect  ; 2
     
-    ;- _c_editor
-    ;#__editor_inline = #__flag_InLine
-    #__editor_Readonly        = #__text_Readonly
-    #__editor_wordwrap        = #__text_wordwrap
-    #__editor_nomultiline     = #__flag_nolines
-    #__editor_numeric         = #__flag_numeric | #__text_Multiline
-    #__editor_fullselection   = #__flag_fullselection
-    #__editor_gridlines       = #__flag_gridLines
-    #__editor_borderless      = #__flag_borderless
+    ;       Debug #PB_tree_alwaysShowSelection ; 0
+    ;       Debug #PB_tree_noLines    ; 1
+    ;       Debug #PB_tree_selected   ; 1
+    ;       Debug #PB_tree_subLevel   ; 1
+    ;       Debug #PB_tree_noButtons  ; 2
+    ;       Debug #PB_tree_Expanded   ; 2
+    ;       Debug #PB_tree_checkBoxes ; 4
+    ;       Debug #PB_tree_checked    ; 4
+    ;       Debug #PB_tree_threeState ; 8
+    ;       Debug #PB_tree_collapsed  ; 8
+    ;       Debug #PB_tree_inbetween  ; 16
+    
+    ;       Debug #PB_listIcon_alwaysShowSelection ; 0
+    ;       Debug #PB_listIcon_selected   ; 1
+    ;       Debug #PB_listIcon_checkBoxes ; 2
+    ;       Debug #PB_listIcon_checked    ; 2
+    ;       Debug #PB_listIcon_inbetween  ; 4
+    ;       Debug #PB_listIcon_threeState ; 8
+    ;     CompilerEndIf
+    
+    ;- _c_listview
+    #__listview_clickselect = #__list_clickselect
+    #__listview_multiselect = #__list_multiselect
+    
+    ;-\\ Editor
+    ;#__editor_inline = #__flag_inLine
+    #__editor_readonly      = #__text_readonly
+    #__editor_wordwrap      = #__text_wordwrap
+    ;#__editor_nomultiline   = #__flag_nolines
+    ;#__editor_numeric       = #__flag_numeric | #__text_multiline
+    ;#__editor_fullselection = #__flag_fullselection
+    ;#__editor_gridlines     = #__flag_gridLines
+    #__editor_borderless    = #__flag_borderless
     
     ;- _c_string
-    #__string_Right      = #__text_Right
+    #__string_right      = #__text_right
     #__string_center     = #__text_center
     #__string_numeric    = #__text_numeric
     #__string_password   = #__text_password
-    #__string_Readonly   = #__text_Readonly
+    #__string_readonly   = #__text_readonly
     #__string_uppercase  = #__text_uppercase
-    #__string_Lowercase  = #__text_Lowercase
+    #__string_lowercase  = #__text_lowercase
     #__string_borderless = #__flag_borderless
-    #__string_Multiline  = #__text_Multiline
+    #__string_multiline  = #__text_multiline
     
-    ;- _c_button
-;     Debug #PB_Button_Right ; macos 1
-;     Debug #PB_Button_Left  ; macos 2
-;     Debug #PB_Button_Toggle; macos 4
-;     Debug #PB_Button_Default ; macos 8
-;     Debug #PB_Button_MultiLine ; macos 16
-    #__button_toggle   = #PB_Button_Toggle
-    #__button_default  = #PB_Button_Default
-    #__button_Multiline = #__text_wordwrap ; #PB_Button_MultiLine ; #__text_wordwrap 
-    #__button_Left     = #__text_Left
-    #__button_Right    = #__text_Right
-    #__button_vertical = #__text_vertical
-    ;#__button_invert = #__flag_invert
+    ;-\\ Button
+    ;     Debug #PB_button_right ; macos 1
+    ;     Debug #PB_button_left  ; macos 2
+    ;     Debug #PB_button_toggle; macos 4
+    ;     Debug #PB_button_Default ; macos 8
+    ;     Debug #PB_button_multiLine ; macos 16
+;     #__button_toggle    = #PB_Button_Toggle
+;     #__button_default   = #PB_Button_Default
+;     #__button_multiline = #__text_wordwrap ; #PB_button_multiLine ; #__text_wordwrap
+;     #__button_left      = #__text_left
+;     #__button_right     = #__text_right
+;     #__button_vertical  = #__text_vertical
+;     ;#__button_invert = #__flag_invert
     
     
-    If (#__flag_Limit >> 1) > 2147483647 ; 8589934592
-      Debug "Исчерпан лимит в x32 (" + Str(#__flag_Limit >> 1) + ")"
+    If (#__flag_limit >> 1) > 2147483647 ; 8589934592
+      Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
     EndIf
     
     
     Enumeration #PB_Event_FirstCustomValue
-      #PB_Event_Create
-      #PB_Event_MouseMove
-      #PB_Event_LeftButtonDown
-      #PB_Event_LeftButtonUp
+      #PB_Event_create
+      #PB_Event_mouseMove
+      #PB_Event_leftButtonDown
+      #PB_Event_leftButtonUp
       #PB_Event_Destroy
     EndEnumeration
     
     ;- Constant event-type
     Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Create
-      #PB_EventType_Repaint
-      CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
+      #PB_EventType_create
+      #PB_EventType_repaint
+      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
         #PB_EventType_Resize
       CompilerEndIf
-      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
-        #PB_EventType_ReturnKey
+      CompilerIf Not Defined(PB_EventType_returnKey, #PB_Constant)
+        #PB_EventType_returnKey
       CompilerEndIf
       
-      #PB_EventType_ResizeBegin
-      #PB_EventType_ResizeEnd
+      #PB_EventType_resizeBegin
+      #PB_EventType_resizeEnd
       
       #PB_EventType_Draw
-      #PB_EventType_Free
+      #PB_EventType_free
       #PB_EventType_Drop
       
-      #PB_EventType_ScrollChange
+      #PB_EventType_scrollChange
       
-      #PB_EventType_CloseWindow
-      #PB_EventType_MaximizeWindow
-      #PB_EventType_MinimizeWindow
-      #PB_EventType_RestoreWindow
+      #PB_EventType_closeWindow
+      #PB_EventType_maximizeWindow
+      #PB_EventType_minimizeWindow
+      #PB_EventType_restoreWindow
       
-      #PB_EventType_MouseWheelX
-      #PB_EventType_MouseWheelY
+      #PB_EventType_mouseWheelX
+      #PB_EventType_mouseWheelY
       
-      #PB_EventType_Left3Click
-      #PB_EventType_Right3Click
+      #PB_EventType_left3Click
+      #PB_EventType_right3Click
       
-      #PB_EventType_MouseStatus ; temp
-      #PB_EventType_StatusChangeEdit
-      ;       #PB_EventType_TimerStart
-      ;       #PB_EventType_TimerStop
-      ;;;; #PB_EventType_ColorChange
-     ; #PB_EventType_CursorUpdate
-      #PB_EventType_CursorChange
+      #PB_EventType_mouseStatus ; temp
+      #PB_EventType_statusChangeEdit
+      ;       #PB_EventType_timerStart
+      ;       #PB_EventType_timerStop
+      ;;;; #PB_EventType_colorChange
+      ; #PB_EventType_cursorUpdate
+      #PB_EventType_cursorChange
     EndEnumeration
     
-    #__event_CursorChange = #PB_EventType_CursorChange
-    #__event_ResizeBegin = #PB_EventType_ResizeBegin
-    #__event_ResizeEnd = #PB_EventType_ResizeEnd
+    #__event_cursorChange = #PB_EventType_cursorChange
+    #__event_resizeBegin  = #PB_EventType_resizeBegin
+    #__event_resizeEnd    = #PB_EventType_resizeEnd
     
-    #__event_Free     = #PB_EventType_Free
+    #__event_free     = #PB_EventType_free
     #__event_Drop     = #PB_EventType_Drop
-    #__event_Create   = #PB_EventType_Create
-    #__event_Sizeitem = #PB_EventType_SizeItem
+    #__event_create   = #PB_EventType_create
+    #__event_sizeitem = #PB_EventType_SizeItem
     
-    #__event_Repaint      = #PB_EventType_Repaint
-    #__event_ResizeEnd    = #PB_EventType_ResizeEnd
-    #__event_ScrollChange = #PB_EventType_ScrollChange
+    #__event_repaint      = #PB_EventType_repaint
+    #__event_resizeEnd    = #PB_EventType_resizeEnd
+    #__event_scrollChange = #PB_EventType_scrollChange
     
-    #__event_CloseWindow    = #PB_EventType_CloseWindow
-    #__event_Maximizewindow = #PB_EventType_MaximizeWindow
-    #__event_Minimizewindow = #PB_EventType_MinimizeWindow
-    #__event_Restorewindow  = #PB_EventType_RestoreWindow
+    #__event_closeWindow    = #PB_EventType_closeWindow
+    #__event_maximizewindow = #PB_EventType_maximizeWindow
+    #__event_minimizewindow = #PB_EventType_minimizeWindow
+    #__event_restorewindow  = #PB_EventType_restoreWindow
     
-    #__event_MouseEnter      = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
-    #__event_MouseLeave      = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
-    #__event_MouseMove       = #PB_EventType_MouseMove        ; The mouse cursor moved
-    #__event_MouseWheel      = #PB_EventType_MouseWheel       ; The mouse wheel was moved
-    #__event_LeftButtonDown  = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
-    #__event_LeftButtonUp    = #PB_EventType_LeftButtonUp     ; The left mouse button was released
-    #__event_LeftDoubleClick = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__event_Left3Click      = #PB_EventType_Left3Click       ; A click With the left mouse button
-    #__event_Left2Click      = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__event_LeftClick       = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__event_mouseEnter      = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
+    #__event_mouseLeave      = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
+    #__event_mouseMove       = #PB_EventType_MouseMove        ; The mouse cursor moved
+    #__event_mouseWheel      = #PB_EventType_MouseWheel       ; The mouse wheel was moved
+    #__event_leftButtonDown  = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
+    #__event_leftButtonUp    = #PB_EventType_LeftButtonUp     ; The left mouse button was released
+    #__event_leftDoubleClick = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
+    #__event_left3Click      = #PB_EventType_left3Click       ; A click With the left mouse button
+    #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
+    #__event_leftClick       = #PB_EventType_LeftClick        ; A click With the left mouse button
     
-    #__event_RightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
-    #__event_RightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
-    #__event_RightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__event_Right3Click      = #PB_EventType_Right3Click       ; A click With the right mouse button
-    #__event_Right2Click      = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__event_RightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__event_rightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
+    #__event_rightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
+    #__event_rightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
+    #__event_right3Click      = #PB_EventType_right3Click      ; A click With the right mouse button
+    #__event_right2Click      = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
+    #__event_rightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
     
-    #__event_MiddleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
-    #__event_MiddleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
-    #__event_Focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
-    #__event_LostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
+    #__event_middleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
+    #__event_middleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
+    #__event_focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
+    #__event_lostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
     #__event_KeyDown          = #PB_EventType_KeyDown          ; A key was pressed
     #__event_KeyUp            = #PB_EventType_KeyUp            ; A key was released
-    #__event_Input            = #PB_EventType_Input            ; Text input was generated
-    #__event_Resize           = #PB_EventType_Resize           ; The gadget has been resized
-    #__event_StatusChange     = #PB_EventType_StatusChange
-    #__event_TitleChange      = #PB_EventType_TitleChange
-    #__event_Change           = #PB_EventType_Change
+    #__event_input            = #PB_EventType_Input            ; Text input was generated
+    #__event_resize           = #PB_EventType_Resize           ; The gadget has been resized
+    #__event_statusChange     = #PB_EventType_StatusChange
+    #__event_titleChange      = #PB_EventType_TitleChange
+    #__event_change           = #PB_EventType_Change
     #__event_DragStart        = #PB_EventType_DragStart
-    #__event_ReturnKey        = #PB_EventType_ReturnKey
-    #__event_CloseItem        = #PB_EventType_CloseItem
+    #__event_returnKey        = #PB_EventType_returnKey
+    #__event_closeItem        = #PB_EventType_CloseItem
     
     #__event_Down = #PB_EventType_Down
     #__event_Up   = #PB_EventType_Up
     
-    #__event_MouseWheelX = #PB_EventType_MouseWheelX
-    #__event_MouseWheelY = #PB_EventType_MouseWheelY
+    #__event_mouseWheelX = #PB_EventType_mouseWheelX
+    #__event_mouseWheelY = #PB_EventType_mouseWheelY
     
     #__event_Draw = #PB_EventType_Draw
     
     
     ;- Constant create-type
     Enumeration - 1
-      #__Type_All
-      #__Type_Unknown       = #PB_GadgetType_Unknown       ; 0
-      #__Type_Button        = #PB_GadgetType_Button        ; 1
-      #__Type_String        = #PB_GadgetType_String        ; 2
-      #__Type_Text          = #PB_GadgetType_Text          ; 3
-      #__Type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
-      #__Type_Option        = #PB_GadgetType_Option        ; 5
-      #__Type_ListView      = #PB_GadgetType_ListView      ; 6
-      #__Type_Frame         = #PB_GadgetType_Frame         ; 7
-      #__Type_ComboBox      = #PB_GadgetType_ComboBox      ; 8
-      #__Type_Image         = #PB_GadgetType_Image         ; 9
-      #__Type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
-      #__Type_Container     = #PB_GadgetType_Container     ; 11
-      #__Type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
-      #__Type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
-      #__Type_ProgressBar   = #PB_GadgetType_ProgressBar   ; 14
-      #__Type_ScrollBar     = #PB_GadgetType_ScrollBar     ; 15
-      #__Type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
-      #__Type_TrackBar      = #PB_GadgetType_TrackBar      ; 17
-      #__Type_Web           = #PB_GadgetType_Web           ; 18
-      #__Type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
-      #__Type_Calendar      = #PB_GadgetType_Calendar      ; 20
-      #__Type_Date          = #PB_GadgetType_Date          ; 21
-      #__Type_Editor        = #PB_GadgetType_Editor        ; 22
-      #__Type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
-      #__Type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
-      #__Type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
-      #__Type_Spin          = #PB_GadgetType_Spin          ; 26
-      #__Type_Tree          = #PB_GadgetType_Tree          ; 27
-      #__Type_Panel         = #PB_GadgetType_Panel         ; 28
-      #__Type_Splitter      = #PB_GadgetType_Splitter      ; 29
-      #__Type_MDI           = #PB_GadgetType_MDI           ; 30
-      #__Type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
-      #__Type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
-      #__Type_Canvas        = #PB_GadgetType_Canvas        ; 33
-      #__Type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+      #__type_all
+      #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
+      #__type_button        = #PB_GadgetType_Button        ; 1
+      #__type_string        = #PB_GadgetType_String        ; 2
+      #__type_text          = #PB_GadgetType_Text          ; 3
+      #__type_checkBox      = #PB_GadgetType_CheckBox      ; 4
+      #__type_Option        = #PB_GadgetType_Option        ; 5
+      #__type_listView      = #PB_GadgetType_ListView      ; 6
+      #__type_frame         = #PB_GadgetType_Frame         ; 7
+      #__type_comboBox      = #PB_GadgetType_ComboBox      ; 8
+      #__type_image         = #PB_GadgetType_Image         ; 9
+      #__type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
+      #__type_container     = #PB_GadgetType_Container     ; 11
+      #__type_listIcon      = #PB_GadgetType_ListIcon      ; 12
+      #__type_iPAddress     = #PB_GadgetType_IPAddress     ; 13
+      #__type_progressBar   = #PB_GadgetType_ProgressBar   ; 14
+      #__type_scrollBar     = #PB_GadgetType_ScrollBar     ; 15
+      #__type_scrollArea    = #PB_GadgetType_ScrollArea    ; 16
+      #__type_trackBar      = #PB_GadgetType_TrackBar      ; 17
+      #__type_web           = #PB_GadgetType_Web           ; 18
+      #__type_buttonImage   = #PB_GadgetType_ButtonImage   ; 19
+      #__type_calendar      = #PB_GadgetType_Calendar      ; 20
+      #__type_Date          = #PB_GadgetType_Date          ; 21
+      #__type_Editor        = #PB_GadgetType_Editor        ; 22
+      #__type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
+      #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
+      #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
+      #__type_spin          = #PB_GadgetType_Spin          ; 26
+      #__type_tree          = #PB_GadgetType_Tree          ; 27
+      #__type_panel         = #PB_GadgetType_Panel         ; 28
+      #__type_splitter      = #PB_GadgetType_Splitter      ; 29
+      #__type_mDI           = #PB_GadgetType_MDI           ; 30
+      #__type_scintilla     = #PB_GadgetType_Scintilla     ; 31
+      #__type_shortcut      = #PB_GadgetType_Shortcut      ; 32
+      #__type_canvas        = #PB_GadgetType_Canvas        ; 33
+      #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
       
-      #__Type_TabBar = 50
-      #__Type_ToolBar
-      #__Type_StatusBar
+      #__type_tabBar = 50
+      #__type_toolBar
+      #__type_statusBar
       
-      #__Type_Toggled
-      #__Type_Property
-      #__Type_ImageButton
-      #__Type_StringButton
+      #__type_toggled
+      #__type_property
+      #__type_imageButton
+      #__type_stringButton
       
-      #__Type_Menu
-      #__Type_PopupMenu
-      #__Type_Window
-      #__Type_Message
-      #__Type_Root
+      #__type_menu
+      #__type_popupMenu
+      #__type_window
+      #__type_message
+      #__type_root
       
-      #__Type_Hiasm
+      #__type_Hiasm
     EndEnumeration
     
     ;}
@@ -895,40 +720,40 @@
     #__test_scrollbar_size = 0
     
     #debug_update_text = 0
-    #debug_Multiline   = 0
-    #debug_Repaint     = 0 ; Debug " - -  Canvas repaint - -  "
-                       ;-
-                       ;- GLOBAL
-                       ;-
+    #debug_multiline   = 0
+    #debug_repaint     = 0 ; Debug " - -  Canvas repaint - -  "
+                           ;-
+                           ;- GLOBAL
+                           ;-
     
     Global test_draw_box_clip_type  = #PB_All
     Global test_draw_box_clip1_type = #PB_All
     Global test_draw_box_clip2_type = #PB_All
     
-    Global test_draw_box_screen_type ;= #PB_All
-    Global test_draw_box_inner_type  ;= #PB_All
-    Global test_draw_box_frame_type  ;= #PB_All
+    Global test_draw_box_screen_type ;= #PB_all
+    Global test_draw_box_inner_type  ;= #PB_all
+    Global test_draw_box_frame_type  ;= #PB_all
     
-    ;     test_draw_box_clip_type = #__Type_Listview
-    ;     test_draw_box_clip1_type = #__Type_Listview
-    ;     test_draw_box_clip2_type = #__Type_Listview
+    ;     test_draw_box_clip_type = #__type_listview
+    ;     test_draw_box_clip1_type = #__type_listview
+    ;     test_draw_box_clip2_type = #__type_listview
     
-    ;     test_draw_box_clip_type = #__Type_tree
-    ;     test_draw_box_clip1_type = #__Type_tree
-    ;     test_draw_box_clip2_type = #__Type_tree
+    ;     test_draw_box_clip_type = #__type_tree
+    ;     test_draw_box_clip1_type = #__type_tree
+    ;     test_draw_box_clip2_type = #__type_tree
     ;
-    ;     test_draw_box_clip_type = #__Type_Mdi
-    ;     test_draw_box_clip1_type = #__Type_Mdi
-    ;     test_draw_box_clip2_type = #__Type_Mdi
+    ;     test_draw_box_clip_type = #__type_mdi
+    ;     test_draw_box_clip1_type = #__type_mdi
+    ;     test_draw_box_clip2_type = #__type_mdi
     
-    ;     test_draw_box_clip_type = #__Type_scrollarea
-    ;     test_draw_box_clip1_type = #__Type_scrollarea
-    ;     test_draw_box_clip2_type = #__Type_scrollarea
+    ;     test_draw_box_clip_type = #__type_scrollarea
+    ;     test_draw_box_clip1_type = #__type_scrollarea
+    ;     test_draw_box_clip2_type = #__type_scrollarea
     
     
-    test_draw_box_clip_type  = #__Type_scrollbar
-    test_draw_box_clip1_type = #__Type_scrollbar
-    test_draw_box_clip2_type = #__Type_scrollbar
+    test_draw_box_clip_type  = #__type_scrollbar
+    test_draw_box_clip1_type = #__type_scrollbar
+    test_draw_box_clip2_type = #__type_scrollbar
     
     
     
@@ -940,252 +765,252 @@
     ; ;
     ; ;
     ; ;     EnumerationBinary
-    ; ;       #__SystemMenu
+    ; ;       #__systemMenu
     ; ;
-    ; ;       #__TitleBar
-    ; ;       #__SizeGadget
-    ; ;       #__MaximizeGadget
-    ; ;       #__MinimizeGadget
+    ; ;       #__titleBar
+    ; ;       #__sizeGadget
+    ; ;       #__maximizeGadget
+    ; ;       #__minimizeGadget
     ; ;
-    ; ;       #__ScreenCentered
-    ; ;       #__Tool
+    ; ;       #__screenCentered
+    ; ;       #__tool
     ; ;
     ; ;       #__Default
     ; ;
-    ; ;       #__Minimize
-    ; ;       #__Maximize
-    ; ;       #__Invisible
+    ; ;       #__minimize
+    ; ;       #__maximize
+    ; ;       #__invisible
     ; ;
-    ; ;       #__Vertical
-    ; ;       #__Left
-    ; ;       #__Top
-    ; ;       #__Center
-    ; ;       #__Right
-    ; ;       #__Bottom
+    ; ;       #__vertical
+    ; ;       #__left
+    ; ;       #__top
+    ; ;       #__center
+    ; ;       #__right
+    ; ;       #__bottom
     ; ;
     ; ;       #__Editable
-    ; ;       #__Numeric
-    ; ;       #__Password
-    ; ;       #__ReadOnly
-    ; ;       #__LowerCase
+    ; ;       #__numeric
+    ; ;       #__password
+    ; ;       #__readOnly
+    ; ;       #__lowerCase
     ; ;       #__UpperCase
     ; ;
     ; ;
-    ; ;       #__BorderLess
-    ; ;       #__Border
-    ; ;       #__Flat
-    ; ;       #__Raised
-    ; ;       #__Single
+    ; ;       #__borderLess
+    ; ;       #__border
+    ; ;       #__flat
+    ; ;       #__raised
+    ; ;       #__single
     ; ;       #__Double
     ; ;
-    ; ;       #__WordWrap
-    ; ;       #__MultiLine
+    ; ;       #__wordWrap
+    ; ;       #__multiLine
     ; ;
-    ; ;       #__ThreeState
-    ; ;       #__MultiSelect
-    ; ;       #__ClickSelect
+    ; ;       #__threeState
+    ; ;       #__multiSelect
+    ; ;       #__clickSelect
     ; ;
     ; ;
-    ; ;       #__Image
+    ; ;       #__image
     ; ;
     ; ;       #__Underline
     ; ;
-    ; ;       #__CheckBoxes
+    ; ;       #__checkBoxes
     ; ;
     ; ;
     ; ;       #__GridLines
     ; ;       #__HeaderDragDrop
-    ; ;       #__FullRowSelect
-    ; ;       #__AlwaysShowSelection
+    ; ;       #__fullRowSelect
+    ; ;       #__alwaysShowSelection
     ; ;
     ; ;
-    ; ;       #__NoLines
-    ; ;       #__NoButtons
-    ; ;       #__NoFiles
-    ; ;       #__NoFolders
-    ; ;       #__NoParentFolder
-    ; ;       #__NoDirectoryChange
-    ; ;       #__NoDriveRequester
-    ; ;       #__NoMyDocuments
-    ; ;       #__NoSort
-    ; ;       #__AutoSort
+    ; ;       #__noLines
+    ; ;       #__noButtons
+    ; ;       #__noFiles
+    ; ;       #__noFolders
+    ; ;       #__noParentFolder
+    ; ;       #__noDirectoryChange
+    ; ;       #__noDriveRequester
+    ; ;       #__noMyDocuments
+    ; ;       #__noSort
+    ; ;       #__autoSort
     ; ;       #__HiddenFiles
     ; ;
-    ; ;       #__Separator
-    ; ;       #__FirstFixed
-    ; ;       #__SecondFixed
+    ; ;       #__separator
+    ; ;       #__firstFixed
+    ; ;       #__secondFixed
     ; ;
-    ; ;       #__Container
-    ; ;       #__ClipMouse
+    ; ;       #__container
+    ; ;       #__clipMouse
     ; ;
     ; ;       #__Keyboard
     ; ;       #__DrawFocus
     ; ;
     ; ;       ;;;;;;;;;;;
-    ; ;       #__flag_Limit
+    ; ;       #__flag_limit
     ; ;
     ; ;
     ; ;     EndEnumeration
     ; ;
-    ; ;     #__Normal  = #__Default
-    ; ;     #__WindowCentered = #__Center
+    ; ;     #__normal  = #__Default
+    ; ;     #__windowCentered = #__center
     ; ;
-    ; ;     #__NoActivate = #__NoLines
-    ; ;     #__NoGadgets = #__NoButtons
+    ; ;     #__noActivate = #__noLines
+    ; ;     #__noGadgets = #__noButtons
     ; ;
-    ; ;     #__Toggle = #__DrawFocus
+    ; ;     #__toggle = #__DrawFocus
     ; ;
-    ; ;     #__Ticks = #__DrawFocus
-    ; ;     #__Smooth = #__DrawFocus
+    ; ;     #__ticks = #__DrawFocus
+    ; ;     #__smooth = #__DrawFocus
     ; ;
     ; ;     #__UpDown = #__DrawFocus
     ; ;
-    ; ;     Debug #__flag_Limit>>1
-    ; ;     If (#__flag_Limit>>1) > 2147483647 ; 8589934592
-    ; ;       Debug "Исчерпан лимит в x32 ("+Str(#__flag_Limit>>1)+")"
+    ; ;     Debug #__flag_limit>>1
+    ; ;     If (#__flag_limit>>1) > 2147483647 ; 8589934592
+    ; ;       Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
     ; ;     EndIf
     
     
     ; ;
-    ; ;   #PB_Window_TitleBar
-    ; ;   #PB_Window_BorderLess
-    ; ;   #PB_Window_SystemMenu
-    ; ;   #PB_Window_MaximizeGadget
-    ; ;   #PB_Window_MinimizeGadget
-    ; ;   #PB_Window_ScreenCentered
-    ; ;   #PB_Window_SizeGadget
-    ; ;   #PB_Window_WindowCentered
-    ; ;   #PB_Window_Tool
-    ; ;   #PB_Window_Normal
-    ; ;   #PB_Window_Minimize
-    ; ;   #PB_Window_Maximize
-    ; ;   #PB_Window_Invisible
-    ; ;   #PB_Window_NoActivate
-    ; ;   #PB_Window_NoGadgets
+    ; ;   #PB_window_titleBar
+    ; ;   #PB_window_borderLess
+    ; ;   #PB_window_systemMenu
+    ; ;   #PB_window_maximizeGadget
+    ; ;   #PB_window_minimizeGadget
+    ; ;   #PB_window_screenCentered
+    ; ;   #PB_window_sizeGadget
+    ; ;   #PB_window_windowCentered
+    ; ;   #PB_window_tool
+    ; ;   #PB_window_normal
+    ; ;   #PB_window_minimize
+    ; ;   #PB_window_maximize
+    ; ;   #PB_window_invisible
+    ; ;   #PB_window_noActivate
+    ; ;   #PB_window_noGadgets
     ; ;
-    ; ;   #PB_Button_Default
-    ; ;   #PB_Button_Toggle
-    ; ;   #PB_Button_Left
-    ; ;   #PB_Button_Center
-    ; ;   #PB_Button_Right
-    ; ;   #PB_Button_MultiLine
+    ; ;   #PB_button_Default
+    ; ;   #PB_button_toggle
+    ; ;   #PB_button_left
+    ; ;   #PB_button_center
+    ; ;   #PB_button_right
+    ; ;   #PB_button_multiLine
     ; ;
-    ; ;   #PB_String_BorderLess
-    ; ;   #PB_String_Numeric
-    ; ;   #PB_String_Password
-    ; ;   #PB_String_ReadOnly
-    ; ;   #PB_String_LowerCase
-    ; ;   #PB_String_UpperCase
+    ; ;   #PB_string_borderLess
+    ; ;   #PB_string_numeric
+    ; ;   #PB_string_password
+    ; ;   #PB_string_readOnly
+    ; ;   #PB_string_lowerCase
+    ; ;   #PB_string_UpperCase
     ; ;
-    ; ;   #PB_Text_Left
-    ; ;   #PB_Text_Center
-    ; ;   #PB_Text_Right
-    ; ;   #PB_Text_Border
+    ; ;   #PB_text_left
+    ; ;   #PB_text_center
+    ; ;   #PB_text_right
+    ; ;   #PB_text_border
     ; ;
-    ; ;   #PB_CheckBox_Right
-    ; ;   #PB_CheckBox_Center
-    ; ;   #PB_CheckBox_ThreeState
+    ; ;   #PB_checkBox_right
+    ; ;   #PB_checkBox_center
+    ; ;   #PB_checkBox_threeState
     ; ;
-    ; ;   #PB_ListView_MultiSelect
-    ; ;   #PB_ListView_ClickSelect
+    ; ;   #PB_listView_multiSelect
+    ; ;   #PB_listView_clickSelect
     ; ;
-    ; ;   #PB_Frame_Single
-    ; ;   #PB_Frame_Double
-    ; ;   #PB_Frame_Flat
+    ; ;   #PB_frame_single
+    ; ;   #PB_frame_Double
+    ; ;   #PB_frame_flat
     ; ;
-    ; ;   #PB_ComboBox_Editable
-    ; ;   #PB_ComboBox_LowerCase
-    ; ;   #PB_ComboBox_UpperCase
-    ; ;   #PB_ComboBox_Image
+    ; ;   #PB_comboBox_Editable
+    ; ;   #PB_comboBox_lowerCase
+    ; ;   #PB_comboBox_UpperCase
+    ; ;   #PB_comboBox_image
     ; ;
-    ; ;   #PB_Image_Border
-    ; ;   #PB_Image_Raised
+    ; ;   #PB_image_border
+    ; ;   #PB_image_raised
     ; ;
     ; ;   #PB_HyperLink_Underline
     ; ;
-    ; ;   #PB_ListIcon_CheckBoxes
-    ; ;   #PB_ListIcon_ThreeState
-    ; ;   #PB_ListIcon_MultiSelect
-    ; ;   #PB_ListIcon_GridLines
-    ; ;   #PB_ListIcon_FullRowSelect
-    ; ;   #PB_ListIcon_HeaderDragDrop
-    ; ;   #PB_ListIcon_AlwaysShowSelection
+    ; ;   #PB_listIcon_checkBoxes
+    ; ;   #PB_listIcon_threeState
+    ; ;   #PB_listIcon_multiSelect
+    ; ;   #PB_listIcon_GridLines
+    ; ;   #PB_listIcon_fullRowSelect
+    ; ;   #PB_listIcon_HeaderDragDrop
+    ; ;   #PB_listIcon_alwaysShowSelection
     ; ;
-    ; ;   #PB_ProgressBar_Smooth
-    ; ;   #PB_ProgressBar_Vertical
+    ; ;   #PB_progressBar_smooth
+    ; ;   #PB_progressBar_vertical
     ; ;
-    ; ;   #PB_ScrollBar_Vertical
+    ; ;   #PB_scrollBar_vertical
     ; ;
-    ; ;   #PB_Container_BorderLess
-    ; ;   #PB_Container_Flat
-    ; ;   #PB_Container_Raised
-    ; ;   #PB_Container_Single
-    ; ;   #PB_Container_Double
+    ; ;   #PB_container_borderLess
+    ; ;   #PB_container_flat
+    ; ;   #PB_container_raised
+    ; ;   #PB_container_single
+    ; ;   #PB_container_Double
     ; ;
-    ; ;   #PB_ScrollArea_BorderLess
-    ; ;   #PB_ScrollArea_Flat
-    ; ;   #PB_ScrollArea_Raised
-    ; ;   #PB_ScrollArea_Single
-    ; ;   #PB_ScrollArea_Center
+    ; ;   #PB_scrollArea_borderLess
+    ; ;   #PB_scrollArea_flat
+    ; ;   #PB_scrollArea_raised
+    ; ;   #PB_scrollArea_single
+    ; ;   #PB_scrollArea_center
     ; ;
-    ; ;   #PB_TrackBar_Ticks
-    ; ;   #PB_TrackBar_Vertical
+    ; ;   #PB_trackBar_ticks
+    ; ;   #PB_trackBar_vertical
     ; ;
-    ; ;   #PB_Calendar_Borderless
+    ; ;   #PB_calendar_borderless
     ; ;
     ; ;   #PB_Date_UpDown
     ; ;
-    ; ;   #PB_Editor_ReadOnly
-    ; ;   #PB_Editor_WordWrap
+    ; ;   #PB_Editor_readOnly
+    ; ;   #PB_Editor_wordWrap
     ; ;
-    ; ;   #PB_Explorer_BorderLess
-    ; ;   #PB_Explorer_AlwaysShowSelection
-    ; ;   #PB_Explorer_MultiSelect
+    ; ;   #PB_Explorer_borderLess
+    ; ;   #PB_Explorer_alwaysShowSelection
+    ; ;   #PB_Explorer_multiSelect
     ; ;   #PB_Explorer_GridLines
     ; ;   #PB_Explorer_HeaderDragDrop
-    ; ;   #PB_Explorer_FullRowSelect
-    ; ;   #PB_Explorer_NoFiles
-    ; ;   #PB_Explorer_NoFolders
-    ; ;   #PB_Explorer_NoParentFolder
-    ; ;   #PB_Explorer_NoDirectoryChange
-    ; ;   #PB_Explorer_NoDriveRequester
-    ; ;   #PB_Explorer_NoSort
-    ; ;   #PB_Explorer_NoMyDocuments
-    ; ;   #PB_Explorer_AutoSort
+    ; ;   #PB_Explorer_fullRowSelect
+    ; ;   #PB_Explorer_noFiles
+    ; ;   #PB_Explorer_noFolders
+    ; ;   #PB_Explorer_noParentFolder
+    ; ;   #PB_Explorer_noDirectoryChange
+    ; ;   #PB_Explorer_noDriveRequester
+    ; ;   #PB_Explorer_noSort
+    ; ;   #PB_Explorer_noMyDocuments
+    ; ;   #PB_Explorer_autoSort
     ; ;   #PB_Explorer_HiddenFiles
     ; ;
-    ; ;   #PB_Tree_AlwaysShowSelection
-    ; ;   #PB_Tree_NoLines
-    ; ;   #PB_Tree_NoButtons
-    ; ;   #PB_Tree_CheckBoxes
-    ; ;   #PB_Tree_ThreeState
+    ; ;   #PB_tree_alwaysShowSelection
+    ; ;   #PB_tree_noLines
+    ; ;   #PB_tree_noButtons
+    ; ;   #PB_tree_checkBoxes
+    ; ;   #PB_tree_threeState
     ; ;
-    ; ;   #PB_Splitter_Vertical
-    ; ;   #PB_Splitter_Separator
-    ; ;   #PB_Splitter_FirstFixed
-    ; ;   #PB_Splitter_SecondFixed
+    ; ;   #PB_splitter_vertical
+    ; ;   #PB_splitter_separator
+    ; ;   #PB_splitter_firstFixed
+    ; ;   #PB_splitter_secondFixed
     ; ;
-    ; ;   #PB_Canvas_Border
-    ; ;   #PB_Canvas_Container
-    ; ;   #PB_Canvas_ClipMouse
-    ; ;   #PB_Canvas_Keyboard
-    ; ;   #PB_Canvas_DrawFocus
+    ; ;   #PB_canvas_border
+    ; ;   #PB_canvas_container
+    ; ;   #PB_canvas_clipMouse
+    ; ;   #PB_canvas_Keyboard
+    ; ;   #PB_canvas_DrawFocus
     ; ;
     
     
-    CompilerIf Not Defined(PB_ToolBar_Small, #PB_Constant)
+    CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
       #PB_ToolBar_Small = 1 << 0
     CompilerEndIf
-    CompilerIf Not Defined(PB_MessageRequester_Info, #PB_Constant)
+    CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
       #PB_MessageRequester_Info = 1 << 2
     CompilerEndIf
-    CompilerIf Not Defined(PB_MessageRequester_Error, #PB_Constant)
+    CompilerIf Not Defined(PB_messageRequester_Error, #PB_Constant)
       #PB_MessageRequester_Error = 1 << 3
     CompilerEndIf
-    CompilerIf Not Defined(PB_MessageRequester_Warning, #PB_Constant)
+    CompilerIf Not Defined(PB_messageRequester_warning, #PB_Constant)
       #PB_MessageRequester_Warning = 1 << 4
     CompilerEndIf
-    CompilerIf Not Defined(PB_Canvas_Container, #PB_Constant)
+    CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
       #PB_Canvas_Container = 1 << 5
     CompilerEndIf
   EndDeclareModule

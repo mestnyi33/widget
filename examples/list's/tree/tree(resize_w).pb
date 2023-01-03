@@ -1,7 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
-
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -16,20 +14,20 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
-  If gadget =- 1 : gadget = g : EndIf
+    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+    If gadget =- 1 : gadget = g : EndIf
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Define RowHeight.CGFloat = 20
+      ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+      CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    CompilerElse
+    CompilerEndIf
+    
+    ProcedureReturn gadget
+  EndProcedure
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Define RowHeight.CGFloat = 20
-    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
-    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
-  CompilerElse
-  CompilerEndIf
-  
-  ProcedureReturn gadget
-EndProcedure
-
-If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     g_Canvas = GetGadget(Open(0))
     
     g = TreeGadget_(#PB_Any, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         

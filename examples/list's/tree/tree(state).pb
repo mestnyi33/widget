@@ -1,10 +1,8 @@
 ﻿; 
 ; demo state
-; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
 
 IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -16,7 +14,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
+       ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
+       ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
         If state >= 0
           CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", state )
         EndIf

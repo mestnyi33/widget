@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
+﻿XIncludeFile "../../../widget-events.pbi"
 ;XIncludeFile "../empty.pb"
 UseLib(widget)
 

@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -58,6 +57,6 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

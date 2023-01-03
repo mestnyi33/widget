@@ -100,19 +100,21 @@ CompilerIf #PB_Compiler_IsMainFile
                button_bottom,
                button_center
             
-            
-            Flag(*this, #PB_Button_Left|#PB_Button_Right|#__text_top|#__text_bottom, 0)
             ;
-            If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
+            If EventWidget <> button_top 
+              Flag(*this, #__text_top, 0)
               SetState(button_top,0) 
             EndIf
-            If EventWidget <> button_left And EventWidget <> button_top And EventWidget <> button_bottom 
+            If EventWidget <> button_left 
+              Flag(*this, #PB_Button_Left, 0)
               SetState(button_left,0) 
             EndIf
-            If EventWidget <> button_right And EventWidget <> button_top And EventWidget <> button_bottom  
+            If EventWidget <> button_right 
+              Flag(*this, #PB_Button_Right, 0)
               SetState(button_right,0) 
             EndIf
-            If EventWidget <> button_bottom And EventWidget <> button_left And EventWidget <> button_right 
+            If EventWidget <> button_bottom 
+              Flag(*this, #__text_bottom, 0)
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
@@ -120,33 +122,6 @@ CompilerIf #PB_Compiler_IsMainFile
               SetState(button_center,0) 
             EndIf
             
-            If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Left|#__text_bottom, 1)
-            ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Right|#__text_bottom, 1)
-            ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #PB_Button_Left|#__text_top, 1)
-            ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #PB_Button_Right|#__text_top, 1)
-            ElseIf GetState(button_left)
-              Flag(*this, #PB_Button_Left, 1)
-            ElseIf GetState(button_right) 
-              Flag(*this, #PB_Button_Right, 1)
-            ElseIf GetState(button_bottom)
-              Flag(*this, #__text_bottom, 1)
-            ElseIf GetState(button_top)
-              Flag(*this, #__text_top, 1)
-            EndIf
-            
-            If GetState(button_left)=0 And 
-               GetState(button_top)=0 And 
-               GetState(button_right)=0 And
-               GetState(button_bottom)=0
-              SetState(button_center,1) 
-              Flag(*this, #__text_center, 1)
-            EndIf
-            
-            ;
             Select EventWidget
               Case button_top       : flag = #__text_top     
               Case button_left      : flag = #PB_Button_Left
@@ -247,5 +222,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0---
+; Folding = ---
 ; EnableXP

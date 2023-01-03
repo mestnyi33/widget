@@ -173,13 +173,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    ;  Bind(GetWidget(i), @events_widgets())
+    Bind(GetWidget(i), @events_widgets())
   Next
   
   Bind(*g, @events_widgets())
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP
