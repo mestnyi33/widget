@@ -50,11 +50,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10,150,60,75,"text_bottom",#Null,11)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack( ), 11)
+    ResizeWindow(11, #PB_Ignore, #PB_Ignore, 300, #PB_Ignore)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

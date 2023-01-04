@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
@@ -512,7 +511,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+; ;     *g = Tree(10, 100, 210, 210, #__list_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -537,7 +536,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 10, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 10, 210, 100, #__list_CheckBoxes)                                         
     add(*g, -1, "Node "+Str(a), 0, 0)                                         
     add(*g, -1, "Sub-Item 1", -1, 1)                                           
     add(*g, -1, "Sub-Item 3", -1, 3)
@@ -545,7 +544,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, -1, "Sub-Item 4", -1, 4)
     
     ; 2_example
-    *g = Tree(10, 10+110, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 10+110, 210, 100, #__list_CheckBoxes)                                         
     add(*g, 0, "Node "+Str(a), 0, 0)                                         
     add(*g, 1, "Sub-Item 1", -1, 1)                                           
     add(*g, 3, "Sub-Item 3", -1, 3)
@@ -553,7 +552,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, 4, "Sub-Item 4", -1, 4)
     
     ;{  5_example
-    *g5 = Tree(230, 10, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
+    *g5 = Tree(230, 10, 103, 210, #__list_NoButtons|#__list_Collapsed)                                         
     add(*g5, 0, "Tree_0", -1 )
     add(*g5, 1, "Tree_1", -1, 0) 
     add(*g5, 2, "Tree_2", -1, 0) 
@@ -577,7 +576,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__tree_Collapsed)                                         
+    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__list_Collapsed)                                         
     
     add(*g6, 0, "Tree_1", -1, 1) 
     add(*g6, 0, "Tree_2_1", -1, 2) 
@@ -598,7 +597,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 10, 210, 210);|#__tree_Collapsed)                                         
+    *g = Tree(450, 10, 210, 210);|#__list_Collapsed)                                         
     add(*g, 0, "Tree_0", -1 )
     add(*g, 1, "Tree_1_1", 0, 1) 
     add(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -619,7 +618,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 10, 210, 210, #__tree_NoLines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 10, 210, 210, #__list_NoLines);|#__list_OptionBoxes|#__list_NoButtons) ;                                        
         add(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         add(*g, 1, "Tree_1", -1, 1) 
         add(*g, 2, "Tree_2_2", -1, 2) 
@@ -646,7 +645,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 10, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 10, 210, 210, #__list_CheckBoxes|#__list_NoLines|#__list_NoButtons|#__list_GridLines | #__list_ThreeState | #__list_OptionBoxes)                            
     add(*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 ;Or i%3=0
@@ -676,7 +675,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
-    *g = Tree(10, 230, 210, 400);|#__tree_Collapsed)                                         
+    *g = Tree(10, 230, 210, 400);|#__list_Collapsed)                                         
   
     ;  2_example
     add(*g, 0, "Structure widget", -1, 0)

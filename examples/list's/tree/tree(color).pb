@@ -3,13 +3,16 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-UseLib(widget)
-Global *w._S_widget
-Define i
-Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
-Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
-
-If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  #__color_state_entered = 1
+  #__color_state_selected = 2
+  
+  UseLib(widget)
+  Global *w._S_widget
+  Define i
+  Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
+  Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
+  
+  If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
     
     Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
@@ -17,7 +20,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     
     For i = 1 To 10
       AddGadgetItem(0, -1, "Text_"+Str(i));+Chr(10)+"Text 2")
-      AddItem(*w, -1, "Text_"+Str(i));+Chr(10)+"Text 2")
+      AddItem(*w, -1, "Text_"+Str(i))     ;+Chr(10)+"Text 2")
     Next
     
     SetGadgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
@@ -27,8 +30,8 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemFont(*w, 3, font1)
     SetItemFont(*w, 7, font2)
     
-;     ; index-3 item default text-color 
-;     SetItemColor(*w, 3, #__Color_Front, $FF00FF00)
+    ;     ; index-3 item default text-color 
+    ;     SetItemColor(*w, 3, #__Color_Front, $FF00FF00)
     
     ; index-3 item default frame-color
     SetItemColor(*w, 3, #__Color_Frame,  $FF0000f0)
@@ -56,7 +59,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     
     WaitClose( )
   EndIf
-  CompilerEndIf
+CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

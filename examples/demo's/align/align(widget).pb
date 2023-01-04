@@ -236,6 +236,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(55)) = Window(0, 0, 80, 20, "center", #__flag_nogadgets, Widgets(Hex(5)))   
     
     CloseList()
+;     SetFrame(Widgets(Hex(5)), 10 )
+;     SetFrame(Widgets(Hex(1)), 10 )
+;     SetFrame(Widgets(Hex(55)), 1 )
     
     SetAlignment(Widgets(Hex(1)), #__align_full|#__align_left ) 
     SetAlignment(Widgets(Hex(2)), #__align_full|#__align_top ) 

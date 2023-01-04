@@ -168,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-    *this  = widget::Button(100, 100, 250, 200, text, #PB_Button_MultiLine);|#__flag_anchorsgadget)
+    *this  = widget::Image(100, 100, 250, 200, -1);|#__flag_anchorsgadget)
     
     Define y  = 10
     Define bh = 24

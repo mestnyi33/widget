@@ -169,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag & #PB_Button_Toggle
           flags + "#PB_Button_Toggle | "
         EndIf
-        If flag & #PB_button_default
+        If flag & #PB_Button_Default
           flags + "#PB_Button_Default | "
         EndIf
         
@@ -983,7 +983,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     toolbar_design = ToolBar( toolbar_design )
-    group_select = ToolBarButton( #_tb_group_select, - 1, #__button_Toggle )
+    group_select = ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle )
     SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
     SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
     Separator( )
