@@ -4474,18 +4474,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 x2 = enumWidget( )\align\indent\right
                 y2 = enumWidget( )\align\indent\bottom
                 
-                
+                ;\\
                 If enumWidget( )\_parent( )\align
                   If enumWidget( )\_parent( )\type = #__type_window
                     frame = #__c_inner
                   Else
                     frame = #__c_frame
                   EndIf
-                  ;Debug ""+  enumWidget( )\_parent( )\align\width +" "+ enumWidget( )\_parent( )\align\indent\right +" "+ enumWidget( )\_parent( )\align\indent\left
-                  ;delta_width = enumWidget( )\_parent( )\align\width
-                  ;delta_height = enumWidget( )\_parent( )\align\height
-                  delta_width  = enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left ; - enumWidget( )\_parent( )\fs
-                  delta_height = enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top ; - enumWidget( )\_parent( )\fs*2
+                  delta_width  = ( enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left ); - enumWidget( )\_parent( )\fs*2)
+                  delta_height = ( enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top  ); - enumWidget( )\_parent( )\fs*2)
                   pw           = ( enumWidget( )\_parent( )\width[frame] - delta_width )
                   ph           = ( enumWidget( )\_parent( )\height[frame] - delta_height )
                   pwd          = pw / 2
@@ -14444,7 +14441,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If *this\_parent( )
-        ;\\
         If Not *this\_parent( )\align
           *this\_parent( )\align.allocate( ALIGN )
         EndIf
@@ -14453,243 +14449,242 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If *this\_parent( )\type = #__type_window
-          parent_width  = *this\_parent( )\width[#__c_inner]
-          parent_height = *this\_parent( )\height[#__c_inner]
-        Else
-          parent_width  = *this\_parent( )\width[#__c_frame]
-          parent_height = *this\_parent( )\height[#__c_frame]
-        EndIf
-        
-        ;\\ auto stick reset
-        If *this\align\left And Not *this\align\right
-          *this\_parent( )\align\auto\left - *this\align\indent\right
-        EndIf
-        If *this\align\right And Not *this\align\left
-          *this\_parent( )\align\auto\right - ( ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left )
-        EndIf
-        If *this\align\top And Not *this\align\bottom
-          *this\_parent( )\align\auto\top - *this\align\indent\bottom
-        EndIf
-        If *this\align\bottom And Not *this\align\top
-          *this\_parent( )\align\auto\bottom - ( ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top )
-        EndIf
-        
-        ;\\
-        If Not *this\_parent( )\align\indent\right
-          *this\_parent( )\align\indent\left  = *this\_parent( )\x[#__c_container]
-          *this\_parent( )\align\indent\right = *this\_parent( )\x[#__c_container] + parent_width
-        EndIf
-        If Not *this\_parent( )\align\indent\bottom
-          *this\_parent( )\align\indent\top    = *this\_parent( )\y[#__c_container]
-          *this\_parent( )\align\indent\bottom = *this\_parent( )\y[#__c_container] + parent_height
-        EndIf
-        
-        
-        ;\\ horizontal
-        If left Or ( Not right And flag & #__align_full = #__align_full )
-          If left = #__align_proportional
-            *this\align\left = - 1
-          Else
-            *this\align\left = 1
-          EndIf
-        Else
-          *this\align\left = 0
-        EndIf
-        If right Or ( Not left And flag & #__align_full = #__align_full )
-          If right = #__align_proportional
-            *this\align\right = - 1
-          Else
-            *this\align\right = 1
-          EndIf
-        Else
-          *this\align\right = 0
-        EndIf
-        
-        ;\\ vertical
-        If top Or ( Not bottom And flag & #__align_full = #__align_full )
-          If top = #__align_proportional
-            *this\align\top = - 1
-          Else
-            *this\align\top = 1
-          EndIf
-        Else
-          *this\align\top = 0
-        EndIf
-        If bottom Or ( Not top And flag & #__align_full = #__align_full )
-          If bottom = #__align_proportional
-            *this\align\bottom = - 1
-          Else
-            *this\align\bottom = 1
-          EndIf
-        Else
-          *this\align\bottom = 0
-        EndIf
-        
-        ;\\
-        If Not mode
-          *this\align\indent\left  = *this\x[#__c_container]
-          *this\align\indent\right = *this\x[#__c_container] + *this\width
-          
-          *this\align\indent\top    = *this\y[#__c_container]
-          *this\align\indent\bottom = *this\y[#__c_container] + *this\height
-        EndIf
-        
-        ;\\
-        If mode
-          parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 )
-          parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 )
-          
-          ;\\ full horizontal
-          If *this\align\right = 1 And *this\align\left = 1
-            If Not *this\align\width
-              *this\align\width = *this\width
+        If *this\align
+          ;\\ horizontal
+          If left Or ( Not right And flag & #__align_full = #__align_full )
+            If left = #__align_proportional
+              *this\align\left = - 1
+            Else
+              *this\align\left = 1
             EndIf
-            *this\align\indent\left  = 0
-            *this\align\indent\right = *this\align\indent\left + parent_width
           Else
-            If *this\align\width
-              *this\width       = *this\align\width
-              *this\align\width = 0
+            *this\align\left = 0
+          EndIf
+          If right Or ( Not left And flag & #__align_full = #__align_full )
+            If right = #__align_proportional
+              *this\align\right = - 1
+            Else
+              *this\align\right = 1
             EndIf
-            
-            ; left
-            If *this\align\right = 0 And *this\align\left = 1
+          Else
+            *this\align\right = 0
+          EndIf
+          
+          ;\\ vertical
+          If top Or ( Not bottom And flag & #__align_full = #__align_full )
+            If top = #__align_proportional
+              *this\align\top = - 1
+            Else
+              *this\align\top = 1
+            EndIf
+          Else
+            *this\align\top = 0
+          EndIf
+          If bottom Or ( Not top And flag & #__align_full = #__align_full )
+            If bottom = #__align_proportional
+              *this\align\bottom = - 1
+            Else
+              *this\align\bottom = 1
+            EndIf
+          Else
+            *this\align\bottom = 0
+          EndIf
+          
+          ;\\
+          If Not mode
+            *this\align\indent\left  = *this\x[#__c_container]
+            *this\align\indent\top   = *this\y[#__c_container]
+            ;\\
+            If *this\type = #__type_window
+              *this\align\indent\right = *this\x[#__c_container] + *this\width[#__c_inner]
+              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_inner]
+            Else
+              *this\align\indent\right = *this\x[#__c_container] + *this\width[#__c_frame]
+              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_frame]
+            EndIf
+          EndIf
+          
+          ;\\
+          If *this\_parent( )\type = #__type_window
+            parent_width  = *this\_parent( )\width[#__c_inner]
+            parent_height = *this\_parent( )\height[#__c_inner]
+          Else
+            parent_width  = *this\_parent( )\width[#__c_frame]
+            parent_height = *this\_parent( )\height[#__c_frame]
+          EndIf
+          If Not *this\_parent( )\align\indent\right
+            *this\_parent( )\align\indent\left  = *this\_parent( )\x[#__c_container]
+            *this\_parent( )\align\indent\right = *this\_parent( )\x[#__c_container] + parent_width
+          EndIf
+          If Not *this\_parent( )\align\indent\bottom
+            *this\_parent( )\align\indent\top    = *this\_parent( )\y[#__c_container]
+            *this\_parent( )\align\indent\bottom = *this\_parent( )\y[#__c_container] + parent_height
+          EndIf
+          
+          ;
+          ;\\
+          If mode
+            If *this\_parent( )\type = #__type_window
+              parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left )
+              parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top )
+            Else
+              parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 )
+              parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 )
+            EndIf
+          
+            ;\\ full horizontal
+            If *this\align\right = 1 And *this\align\left = 1
               *this\align\indent\left  = 0
+              If *this\type = #__type_window
+                *this\align\indent\right = parent_width - *this\fs * 2
+              Else
+                *this\align\indent\right = parent_width
+              EndIf
+            Else
+              ; left
+              If *this\align\right = 0 And *this\align\left = 1
+                *this\align\indent\left  = 0
+                ; center
+              ElseIf *this\align\right = 0 And *this\align\left = 0
+                *this\align\indent\left  = ( parent_width - *this\width ) / 2
+                ; right
+              ElseIf *this\align\right = 1 And *this\align\left = 0
+                *this\align\indent\left  = parent_width - *this\width 
+                If *this\type = #__type_window
+                  *this\align\indent\left - *this\fs * 2
+                EndIf
+              EndIf
               *this\align\indent\right = *this\align\indent\left + *this\width
-              ; center
-            ElseIf *this\align\right = 0 And *this\align\left = 0
-              *this\align\indent\left  = ( parent_width - *this\width ) / 2
-              *this\align\indent\right = *this\align\indent\left + *this\width
-              ; right
-            ElseIf *this\align\right = 1 And *this\align\left = 0
-              *this\align\indent\left  = parent_width - *this\width
-              *this\align\indent\right = *this\align\indent\left + *this\width
-            EndIf
-          EndIf
-          
-          ;\\ full vertical
-          If *this\align\bottom = 1 And *this\align\top = 1
-            If Not *this\align\height
-              *this\align\height = *this\height
-            EndIf
-            *this\align\indent\top    = 0
-            *this\align\indent\bottom = *this\align\indent\top + parent_height
-          Else
-            If *this\align\height
-              *this\height       = *this\align\height
-              *this\align\height = 0
             EndIf
             
-            ; top
-            If *this\align\bottom = 0 And *this\align\top = 1
+            ;\\ full vertical
+            If *this\align\bottom = 1 And *this\align\top = 1
               *this\align\indent\top    = 0
-              *this\align\indent\bottom = *this\align\indent\top + *this\height
-              ; center
-            ElseIf *this\align\bottom = 0 And *this\align\top = 0
-              *this\align\indent\top    = ( parent_height - *this\height ) / 2
-              *this\align\indent\bottom = *this\align\indent\top + *this\height
-              ; bottom
-            ElseIf *this\align\bottom = 1
-              *this\align\indent\top    = parent_height - *this\height
-              *this\align\indent\bottom = *this\align\indent\top + *this\height
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-      ;\\
-      If *this\align
-        If mode
-          ; auto stick set
-          If *this\_parent( )\align
-            If left = #__align_auto And
-               *this\_parent( )\align\auto\left
-              left = - *this\_parent( )\align\auto\left
-            EndIf
-            If right = #__align_auto And
-               *this\_parent( )\align\auto\right
-              right = - *this\_parent( )\align\auto\right
-            EndIf
-            If left < 0 Or right < 0
-              If left And right
-                *this\align\indent\left - left
-                *this\align\indent\right + right
+              If *this\type = #__type_window
+                *this\align\indent\bottom = parent_height - *this\fs * 2
               Else
-                *this\align\indent\left - left + right
-                *this\align\indent\right - left + right
+                *this\align\indent\bottom = parent_height
+              EndIf
+           Else
+              ; top
+              If *this\align\bottom = 0 And *this\align\top = 1
+                *this\align\indent\top    = 0
+                ; center
+              ElseIf *this\align\bottom = 0 And *this\align\top = 0
+                *this\align\indent\top    = ( parent_height - *this\height ) / 2
+                ; bottom
+              ElseIf *this\align\bottom = 1
+                *this\align\indent\top  = parent_height - *this\height 
+                If *this\type = #__type_window
+                  *this\align\indent\top - *this\fs * 2
+                EndIf
+              EndIf
+              *this\align\indent\bottom = *this\align\indent\top + *this\height
+            EndIf
+            
+            ;
+            ;\\ auto stick set
+            If *this\_parent( )\align
+              If left = #__align_auto And
+                 *this\_parent( )\align\auto\left
+                left = - *this\_parent( )\align\auto\left
+              EndIf
+              If right = #__align_auto And
+                 *this\_parent( )\align\auto\right
+                right = - *this\_parent( )\align\auto\right
+              EndIf
+              If left < 0 Or right < 0
+                If left And right
+                  *this\align\indent\left - left
+                  *this\align\indent\right + right
+                Else
+                  *this\align\indent\left - left + right
+                  *this\align\indent\right - left + right
+                EndIf
+              EndIf
+              
+              If top = #__align_auto And
+                 *this\_parent( )\align\auto\top
+                top = - *this\_parent( )\align\auto\top
+              EndIf
+              If bottom = #__align_auto And
+                 *this\_parent( )\align\auto\bottom
+                bottom = - *this\_parent( )\align\auto\bottom
+              EndIf
+              If top < 0 Or bottom < 0
+                If top And bottom
+                  *this\align\indent\top - top
+                  *this\align\indent\bottom + bottom
+                Else
+                  *this\align\indent\top - top + bottom
+                  *this\align\indent\bottom - top + bottom
+                EndIf
               EndIf
             EndIf
             
-            If top = #__align_auto And
-               *this\_parent( )\align\auto\top
-              top = - *this\_parent( )\align\auto\top
-            EndIf
-            If bottom = #__align_auto And
-               *this\_parent( )\align\auto\bottom
-              bottom = - *this\_parent( )\align\auto\bottom
-            EndIf
-            If top < 0 Or bottom < 0
-              If top And bottom
-                *this\align\indent\top - top
-                *this\align\indent\bottom + bottom
+            ;\\ auto stick get
+            If *this\align\left And *this\align\right = 0
+              If *this\type = #__type_window
+                *this\_parent( )\align\auto\left = *this\align\indent\right + *this\fs * 2
               Else
-                *this\align\indent\top - top + bottom
-                *this\align\indent\bottom - top + bottom
+                *this\_parent( )\align\auto\left = *this\align\indent\right
+              EndIf
+            EndIf
+            If *this\align\top And *this\align\bottom = 0
+              If *this\type = #__type_window
+                *this\_parent( )\align\auto\top = *this\align\indent\bottom + *this\fs * 2
+              Else
+                *this\_parent( )\align\auto\top = *this\align\indent\bottom
+              EndIf
+            EndIf
+            If *this\align\right And *this\align\left = 0
+              *this\_parent( )\align\auto\right = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left
+            EndIf
+            If *this\align\bottom And *this\align\top = 0
+              *this\_parent( )\align\auto\bottom = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top
+            EndIf
+          EndIf
+          
+          ;\\
+          If flag & #__align_full = #__align_full
+            If ( *this\_parent( )\align\auto\left Or
+                 *this\_parent( )\align\auto\top Or
+                 *this\_parent( )\align\auto\right Or
+                 *this\_parent( )\align\auto\bottom )
+              
+              ; loop enumerate widgets
+              If StartEnumerate( *this\_parent( ) )
+                If enumWidget( )\align
+                  If enumWidget( )\align\top And enumWidget( )\align\bottom
+                    parent_width  = ( enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left - enumWidget( )\_parent( )\fs * 2 )
+                    parent_height = ( enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top - enumWidget( )\_parent( )\fs * 2 )
+                    enumWidget( )\align\indent\top = enumWidget( )\_parent( )\align\auto\top
+                    
+                    If enumWidget( )\align\left And enumWidget( )\align\right
+                      enumWidget( )\align\indent\left = enumWidget( )\_parent( )\align\auto\left
+                      If enumWidget( )\type = #__type_window
+                        enumWidget( )\align\indent\right  = parent_width - enumWidget( )\_parent( )\align\auto\right - enumWidget( )\fs * 2
+                      Else
+                        enumWidget( )\align\indent\right  = parent_width - enumWidget( )\_parent( )\align\auto\right
+                      EndIf
+                    EndIf
+                    
+                    If enumWidget( )\type = #__type_window
+                      enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom - enumWidget( )\fs * 2
+                    Else
+                      enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom 
+                    EndIf
+                  EndIf
+                EndIf
+                StopEnumerate( )
               EndIf
             EndIf
           EndIf
           
-          ; auto stick get
-          If *this\align\left And *this\align\right = 0
-            *this\_parent( )\align\auto\left = *this\align\indent\right
-          EndIf
-          If *this\align\right And *this\align\left = 0
-            *this\_parent( )\align\auto\right = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left
-          EndIf
-          If *this\align\top And *this\align\bottom = 0
-            *this\_parent( )\align\auto\top = *this\align\indent\bottom
-          EndIf
-          If *this\align\bottom And *this\align\top = 0
-            *this\_parent( )\align\auto\bottom = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top
-          EndIf
+          ; update parent childrens coordinate
+          Resize( *this\_parent( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          PostCanvasRepaint( *this\_root( ) )
         EndIf
-        
-        ;\\
-        If flag & #__align_full = #__align_full
-          If ( *this\_parent( )\align\auto\left Or
-               *this\_parent( )\align\auto\top Or
-               *this\_parent( )\align\auto\right Or
-               *this\_parent( )\align\auto\bottom )
-            
-            ; loop enumerate widgets
-            If StartEnumerate( *this\_parent( ) )
-              If enumWidget( )\align
-                If enumWidget( )\align\left And enumWidget( )\align\right And
-                   enumWidget( )\align\top And enumWidget( )\align\bottom
-                  
-                  enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
-                  enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom
-                  enumWidget( )\align\indent\left   = enumWidget( )\_parent( )\align\auto\left
-                  enumWidget( )\align\indent\right  = parent_width - enumWidget( )\_parent( )\align\auto\right
-                  
-                  Debug "" + #PB_Compiler_Procedure + " " + enumWidget( )\class + "" + enumWidget( )\_parent( )\align\auto\left + " " + enumWidget( )\_parent( )\align\auto\right
-                EndIf
-                
-                If ( enumWidget( )\align\left = 0 Or enumWidget( )\align\right = 0 ) And
-                   ( enumWidget( )\align\top = 1 And enumWidget( )\align\bottom = 1 )
-                  enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
-                  enumWidget( )\align\indent\bottom = parent_height - enumWidget( )\_parent( )\align\auto\bottom
-                EndIf
-              EndIf
-              StopEnumerate( )
-            EndIf
-          EndIf
-        EndIf
-        
-        ; update parent childrens coordinate
-        Resize( *this\_parent( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-        PostCanvasRepaint( *this\_root( ) )
       EndIf
       
     EndProcedure
@@ -20556,5 +20551,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------8--------------------------------------------------------0------------------------------------------------------vf-g-X2----------------------+-+00--f0-------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------v0+----Vt-6Pz--f-----------------------------------------------------------------------------------------------------------------------------------+---------8--------------------------------------------------------0------------------------------------------------------vf-gX2--8-f------------------0-088---7-------------------------------------------------------------------------------------------------------------
 ; EnableXP

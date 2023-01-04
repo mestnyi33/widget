@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; proportional
   Procedure example_1()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 30, 30, 190, 200, "example_1 proportional", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 30, 30, 190, 200, "proportional-alignment (alexample_1)", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; auto alignment
   Procedure example_2()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 130, 190, 200, "example_2 alignment", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 130, 190, 200, "indent-auto-alignment (example_2)", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; auto docking
   Procedure example_3()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 650, 260, 390, 200, "example_3 docking", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 650, 260, 390, 200, "auto-docking (example_3)", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
@@ -168,13 +168,72 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(22)) = Button(0, 0, 80, 20, "top2")   
     Widgets(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
     
-    Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    Widgets(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    ;SetFrame(Widgets(Hex(5)), 1 )
+    
     Widgets(Hex(51)) = Button(0, 0, 60, 20, "left3")  
     Widgets(Hex(52)) = Button(0, 0, 80, 40, "top3")   
     Widgets(Hex(53)) = Button(0, 0, 60, 20, "right3")    
     Widgets(Hex(54)) = Button(0, 0, 80, 20, "bottom3")   
     
     Widgets(Hex(55)) = Button(0, 0, 80, 20, "center")   
+    
+    CloseList()
+    
+    
+     SetAlignment(Widgets(Hex(1)), #__align_full|#__align_left ) 
+     SetAlignment(Widgets(Hex(2)), #__align_full|#__align_top ) 
+     SetAlignment(Widgets(Hex(3)), #__align_full|#__align_right )              
+     SetAlignment(Widgets(Hex(4)), #__align_full|#__align_bottom )      
+     ;     SetAlignment(Widgets(Hex(1)), #__align_full, 1,0,0,0 ) 
+     ;     SetAlignment(Widgets(Hex(2)), #__align_full, 0,1,0,0 ) 
+     ;     SetAlignment(Widgets(Hex(3)), #__align_full, 0,0,1,0 )              
+     ;     SetAlignment(Widgets(Hex(4)), #__align_full, 0,0,0,1 )      
+     
+     SetAlignment(Widgets(Hex(11)), #__align_full, 1,0,0,0 ) 
+     SetAlignment(Widgets(Hex(22)), #__align_full, 0,1,0,0 ) 
+     SetAlignment(Widgets(Hex(33)), #__align_full, 0,0,1,0 )              
+     SetAlignment(Widgets(Hex(44)), #__align_full, 0,0,0,1 )      
+    
+    SetAlignment(Widgets(Hex(5)), #__align_full )
+    
+    SetAlignment(Widgets(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlignment(Widgets(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlignment(Widgets(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlignment(Widgets(Hex(54)), #__align_full, 0,0,0,1 )      
+    
+    SetAlignment(Widgets(Hex(55)), #__align_full )
+    
+    bind(root(), @events())
+    
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
+  EndProcedure
+  
+  Procedure example_5()
+    ;ProcedureReturn 
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 450, 460, 390, 200, "auto-docking (example_3)", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    Widgets(Hex(1)) = Window(0, 0, 60, 20, "left1", #__flag_nogadgets)  
+    Widgets(Hex(2)) = Window(0, 0, 80, 40, "top1", #__flag_nogadgets)   
+    Widgets(Hex(3)) = Window(0, 0, 40, 20, "right1", #__flag_nogadgets)    
+    Widgets(Hex(4)) = Window(0, 0, 80, 20, "bottom1", #__flag_nogadgets)   
+    
+    Widgets(Hex(11)) = Window(0, 0, 40, 20, "left2", #__flag_nogadgets)   
+    Widgets(Hex(33)) = Window(0, 0, 60, 40, "right2", #__flag_nogadgets)   
+    Widgets(Hex(22)) = Window(0, 0, 80, 20, "top2", #__flag_nogadgets)   
+    Widgets(Hex(44)) = Window(0, 0, 80, 40, "bottom2", #__flag_nogadgets)   
+    
+    Widgets(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    Widgets(Hex(51)) = Window(0, 0, 60, 20, "left3", #__flag_nogadgets, Widgets(Hex(5)))  
+    Widgets(Hex(52)) = Window(0, 0, 80, 40, "top3", #__flag_nogadgets, Widgets(Hex(5)))   
+    Widgets(Hex(53)) = Window(0, 0, 60, 20, "right3", #__flag_nogadgets, Widgets(Hex(5)))    
+    Widgets(Hex(54)) = Window(0, 0, 80, 20, "bottom3", #__flag_nogadgets, Widgets(Hex(5)))   
+    
+    Widgets(Hex(55)) = Window(0, 0, 80, 20, "center", #__flag_nogadgets, Widgets(Hex(5)))   
     
     CloseList()
     
@@ -208,7 +267,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; 
   Procedure example_4()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 850, 460, 390, 200, "example_4 auto", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 850, 460, 390, 200, "auto-alignment (example_4)", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
@@ -222,7 +281,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(22)) = Button(0, 0, 80, 20, "top2")   
     Widgets(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
     
-    Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    Widgets(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;Widgets(Hex(5)) = Container(0, 0, 80, 20)   
     Widgets(Hex(51)) = Button(0, 0, 60, 20, "left3")  
     Widgets(Hex(52)) = Button(0, 0, 80, 40, "top3")   
     Widgets(Hex(53)) = Button(0, 0, 60, 20, "right3")    
@@ -266,6 +326,7 @@ CompilerIf #PB_Compiler_IsMainFile
   example_2()
   example_3()
   example_4()
+  example_5()
   
   
   Procedure example_demo()
@@ -292,5 +353,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --+
+; Folding = ---
 ; EnableXP

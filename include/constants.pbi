@@ -40,11 +40,6 @@
     #Boundary_parentSize     = $60000000      ; 0b01100000...
     #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
     
-    Enumeration
-      #_b_caption
-      #_b_menu
-      #_b_tool
-    EndEnumeration
     
     ; list mode
     #__m_checkselect  = 1
@@ -52,7 +47,7 @@
     #__m_multiselect  = 3
     #__m_optionselect = 4
     
-    ;- _c_anchors
+    ;-\\ Anchors
     #__a_left         = 1
     #__a_right        = 3
     #__a_top          = 2
@@ -61,12 +56,11 @@
     #__a_left_bottom  = 8
     #__a_right_top    = 6
     #__a_right_bottom = 7
-    
+    ;
     #__a_line_left   = 10
     #__a_line_right  = 11
     #__a_line_top    = 12
     #__a_line_bottom = 13
-    
     ; a_mode_
     EnumerationBinary 1
       #__a_position
@@ -76,7 +70,7 @@
     EndEnumeration
     #__a_edge = #__a_width | #__a_height
     #__a_full = #__a_position | #__a_corner | #__a_edge
-    
+    ;
     #__a_size  = 7
     #__a_moved = 9
     #__a_count = #__a_moved + 4
