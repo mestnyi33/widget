@@ -168,8 +168,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(22)) = Button(0, 0, 80, 20, "top2")   
     Widgets(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
     
-    Widgets(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;Widgets(Hex(5)) = Window(0, 0, 80, 20, "")   
     ;Widgets(Hex(5)) = Container(0, 0, 80, 20)   
+    Widgets(Hex(5)) = ScrollArea(0, 0, 80, 20, 500,500,1)   
     ;SetFrame(Widgets(Hex(5)), 1 )
     
     Widgets(Hex(51)) = Button(0, 0, 60, 20, "left3")  
@@ -356,5 +357,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = -f-
 ; EnableXP

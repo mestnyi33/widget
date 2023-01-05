@@ -4466,7 +4466,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;- resize childrens
         ;\\ then move and size parent resize all childrens
         If *this\count\childrens And *this\container
-          Protected x2, y2, pw, ph, pwd, phd, delta_width, delta_height, frame = #__c_frame
+          Protected x2, y2, pw, ph, delta_width, delta_height
           
           If StartEnumerate( *this )
             If Not is_scrollbars_( enumWidget( ))
@@ -4476,17 +4476,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ;\\
                 If enumWidget( )\_parent( )\align
-                  If enumWidget( )\_parent( )\type = #__type_window
-                    frame = #__c_inner
-                  Else
-                    frame = #__c_frame
-                  EndIf
-                  delta_width  = ( enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left ); - enumWidget( )\_parent( )\fs*2)
-                  delta_height = ( enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top ); - enumWidget( )\_parent( )\fs*2)
-                  pw           = ( enumWidget( )\_parent( )\width[frame] - delta_width )
-                  ph           = ( enumWidget( )\_parent( )\height[frame] - delta_height )
-                  pwd          = pw / 2
-                  phd          = ph / 2
+                  delta_width  = ( enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left )
+                  delta_height = ( enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top )
+                  pw           = ( enumWidget( )\_parent( )\width[#__c_inner] - delta_width )
+                  ph           = ( enumWidget( )\_parent( )\height[#__c_inner] - delta_height )
                 EndIf
                 
                 ; horizontal
@@ -4505,19 +4498,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     If enumWidget( )\align\right < 0
                       If enumWidget( )\align\left < 0
                         ; 6
-                        x     = enumWidget( )\align\indent\left * enumWidget( )\_parent( )\width[frame] / delta_width
-                        width = x2 * enumWidget( )\_parent( )\width[frame] / delta_width
+                        x     = enumWidget( )\align\indent\left * enumWidget( )\_parent( )\width[#__c_inner] / delta_width
+                        width = x2 * enumWidget( )\_parent( )\width[#__c_inner] / delta_width
                       Else
                         ; 5
-                        x     = enumWidget( )\align\indent\left + pwd
+                        x     = enumWidget( )\align\indent\left + pw / 2
                         width = x2 + pw
                       EndIf
                     Else
                       x = enumWidget( )\align\indent\left
                       If enumWidget( )\align\left = 0
-                        x + pwd
+                        x + pw / 2
                       EndIf
-                      width = x2 + pwd
+                      width = x2 + pw / 2
                     EndIf
                   EndIf
                 EndIf
@@ -4538,19 +4531,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     If enumWidget( )\align\bottom < 0
                       If enumWidget( )\align\top < 0
                         ; 6
-                        y      = enumWidget( )\align\indent\top * enumWidget( )\_parent( )\height[frame] / delta_height
-                        height = y2 * enumWidget( )\_parent( )\height[frame] / delta_height
+                        y      = enumWidget( )\align\indent\top * enumWidget( )\_parent( )\height[#__c_inner] / delta_height
+                        height = y2 * enumWidget( )\_parent( )\height[#__c_inner] / delta_height
                       Else
                         ; 5
-                        y      = enumWidget( )\align\indent\top + phd
+                        y      = enumWidget( )\align\indent\top + ph / 2
                         height = y2 + ph
                       EndIf
                     Else
                       y = enumWidget( )\align\indent\top
                       If enumWidget( )\align\top = 0
-                        y + phd
+                        y + ph / 2
                       EndIf
-                      height = y2 + phd
+                      height = y2 + ph / 2
                     EndIf
                   EndIf
                 EndIf
@@ -14490,47 +14483,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\align\bottom = 0
           EndIf
           
-          ;\\
-          If Not mode
-            *this\align\indent\left = *this\x[#__c_container]
-            *this\align\indent\top  = *this\y[#__c_container]
-            ;\\
-            If *this\type = #__type_window
-              *this\align\indent\right  = *this\x[#__c_container] + *this\width[#__c_inner]
-              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_inner]
-            Else
-              *this\align\indent\right  = *this\x[#__c_container] + *this\width[#__c_frame]
-              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_frame]
-            EndIf
-          EndIf
-          
-          ;\\
-          If *this\_parent( )\type = #__type_window
-            parent_width  = *this\_parent( )\width[#__c_inner]
-            parent_height = *this\_parent( )\height[#__c_inner]
-          Else
-            parent_width  = *this\_parent( )\width[#__c_frame]
-            parent_height = *this\_parent( )\height[#__c_frame]
-          EndIf
+          ;\\ ?-надо тестировать
           If Not *this\_parent( )\align\indent\right
             *this\_parent( )\align\indent\left  = *this\_parent( )\x[#__c_container]
-            *this\_parent( )\align\indent\right = *this\_parent( )\x[#__c_container] + parent_width
+            *this\_parent( )\align\indent\right = *this\_parent( )\align\indent\left + *this\_parent( )\width[#__c_frame]
+            If *this\_parent( )\type = #__type_window
+              *this\_parent( )\align\indent\left + *this\_parent( )\fs
+              *this\_parent( )\align\indent\right - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[1] + *this\_parent( )\fs[3] )
+            EndIf
           EndIf
           If Not *this\_parent( )\align\indent\bottom
             *this\_parent( )\align\indent\top    = *this\_parent( )\y[#__c_container]
-            *this\_parent( )\align\indent\bottom = *this\_parent( )\y[#__c_container] + parent_height
+            *this\_parent( )\align\indent\bottom = *this\_parent( )\align\indent\top + *this\_parent( )\height[#__c_frame]
+            If *this\_parent( )\type = #__type_window
+              *this\_parent( )\align\indent\top + *this\_parent( )\fs
+              *this\_parent( )\align\indent\bottom - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[2] + *this\_parent( )\fs[4] )
+            EndIf
           EndIf
           
-          ;
           ;\\
           If mode
-            If *this\_parent( )\type = #__type_window
-              parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left )
-              parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top )
-            Else
-              parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 )
-              parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 )
-            EndIf
+            parent_width  = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left )
+            parent_height = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top )
             
             ;\\ full horizontal
             If *this\align\right = 1 And *this\align\left = 1
@@ -14545,15 +14519,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\align\indent\left = 0
                 ; center
               ElseIf *this\align\right = 0 And *this\align\left = 0
-                *this\align\indent\left = ( parent_width - *this\width ) / 2
+                *this\align\indent\left = ( parent_width - *this\width[#__c_frame] ) / 2
                 ; right
               ElseIf *this\align\right = 1 And *this\align\left = 0
-                *this\align\indent\left = parent_width - *this\width
+                *this\align\indent\left = parent_width - *this\width[#__c_frame]
                 If *this\type = #__type_window
                   *this\align\indent\left - *this\fs * 2
                 EndIf
               EndIf
-              *this\align\indent\right = *this\align\indent\left + *this\width
+              *this\align\indent\right = *this\align\indent\left + *this\width[#__c_frame]
             EndIf
             
             ;\\ full vertical
@@ -14569,19 +14543,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\align\indent\top = 0
                 ; center
               ElseIf *this\align\bottom = 0 And *this\align\top = 0
-                *this\align\indent\top = ( parent_height - *this\height ) / 2
+                *this\align\indent\top = ( parent_height - *this\height[#__c_frame] ) / 2
                 ; bottom
               ElseIf *this\align\bottom = 1
-                *this\align\indent\top = parent_height - *this\height
+                *this\align\indent\top = parent_height - *this\height[#__c_frame]
                 If *this\type = #__type_window
                   *this\align\indent\top - *this\fs * 2
                 EndIf
               EndIf
-              *this\align\indent\bottom = *this\align\indent\top + *this\height
+              *this\align\indent\bottom = *this\align\indent\top + *this\height[#__c_frame]
             EndIf
             
             ;
-            ;\\ auto stick set
+            ;\\ auto stick change
             If *this\_parent( )\align
               If left = #__align_auto And
                  *this\_parent( )\align\auto\left
@@ -14620,7 +14594,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            ;\\ auto stick get
+            ;\\ auto stick position
             If Not *this\align\right And *this\align\left
               *this\_parent( )\align\auto\left = *this\align\indent\right
               If *this\type = #__type_window
@@ -14634,43 +14608,57 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             If Not *this\align\left And *this\align\right
-              *this\_parent( )\align\auto\right = ( *this\_parent( )\align\indent\right - *this\_parent( )\align\indent\left - *this\_parent( )\fs * 2 ) - *this\align\indent\left
+              *this\_parent( )\align\auto\right = *this\_parent( )\width[#__c_inner] - *this\align\indent\left
             EndIf
             If Not *this\align\top And *this\align\bottom
-              *this\_parent( )\align\auto\bottom = ( *this\_parent( )\align\indent\bottom - *this\_parent( )\align\indent\top - *this\_parent( )\fs * 2 ) - *this\align\indent\top
+              *this\_parent( )\align\auto\bottom = *this\_parent( )\height[#__c_inner] - *this\align\indent\top
+            EndIf
+          
+            ;\\ auto stick update 
+            If flag & #__align_full = #__align_full
+              If ( *this\_parent( )\align\auto\left Or
+                   *this\_parent( )\align\auto\top Or
+                   *this\_parent( )\align\auto\right Or
+                   *this\_parent( )\align\auto\bottom )
+                
+                ; loop enumerate widgets
+                If StartEnumerate( *this\_parent( ) )
+                  If enumWidget( )\align
+                    If enumWidget( )\align\top And enumWidget( )\align\bottom
+                      enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
+                      enumWidget( )\align\indent\bottom = enumWidget( )\_parent( )\height[#__c_inner] - enumWidget( )\_parent( )\align\auto\bottom
+                      
+                      If enumWidget( )\align\left And enumWidget( )\align\right
+                        enumWidget( )\align\indent\left  = enumWidget( )\_parent( )\align\auto\left
+                        enumWidget( )\align\indent\right = enumWidget( )\_parent( )\width[#__c_inner] - enumWidget( )\_parent( )\align\auto\right
+                        
+                        If enumWidget( )\type = #__type_window
+                          enumWidget( )\align\indent\right - enumWidget( )\fs * 2
+                        EndIf
+                      EndIf
+                      
+                      If enumWidget( )\type = #__type_window
+                        enumWidget( )\align\indent\bottom - enumWidget( )\fs * 2
+                      EndIf
+                    EndIf
+                  EndIf
+                  StopEnumerate( )
+                EndIf
+              EndIf
             EndIf
           EndIf
           
           ;\\
-          If flag & #__align_full = #__align_full
-            If ( *this\_parent( )\align\auto\left Or
-                 *this\_parent( )\align\auto\top Or
-                 *this\_parent( )\align\auto\right Or
-                 *this\_parent( )\align\auto\bottom )
-              
-              ; loop enumerate widgets
-              If StartEnumerate( *this\_parent( ) )
-                If enumWidget( )\align
-                  If enumWidget( )\align\top And enumWidget( )\align\bottom
-                    enumWidget( )\align\indent\top    = enumWidget( )\_parent( )\align\auto\top
-                    enumWidget( )\align\indent\bottom = ( enumWidget( )\_parent( )\align\indent\bottom - enumWidget( )\_parent( )\align\indent\top - enumWidget( )\_parent( )\fs * 2 ) - enumWidget( )\_parent( )\align\auto\bottom
-                    
-                    If enumWidget( )\align\left And enumWidget( )\align\right
-                      enumWidget( )\align\indent\left  = enumWidget( )\_parent( )\align\auto\left
-                      enumWidget( )\align\indent\right = ( enumWidget( )\_parent( )\align\indent\right - enumWidget( )\_parent( )\align\indent\left - enumWidget( )\_parent( )\fs * 2 ) - enumWidget( )\_parent( )\align\auto\right
-                      
-                      If enumWidget( )\type = #__type_window
-                        enumWidget( )\align\indent\right - enumWidget( )\fs * 2
-                      EndIf
-                    EndIf
-                    
-                    If enumWidget( )\type = #__type_window
-                      enumWidget( )\align\indent\bottom - enumWidget( )\fs * 2
-                    EndIf
-                  EndIf
-                EndIf
-                StopEnumerate( )
-              EndIf
+          If Not mode
+            *this\align\indent\left = *this\x[#__c_container]
+            *this\align\indent\top  = *this\y[#__c_container]
+            ;\\
+            If *this\type = #__type_window
+              *this\align\indent\right  = *this\x[#__c_container] + *this\width[#__c_inner]
+              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_inner]
+            Else
+              *this\align\indent\right  = *this\x[#__c_container] + *this\width[#__c_frame]
+              *this\align\indent\bottom = *this\y[#__c_container] + *this\height[#__c_frame]
             EndIf
           EndIf
           
@@ -20544,5 +20532,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------v0+----Vt-6Pz--f-----------------------------------------------------------------------------------------------------------------------------------+---------8--------------------------------------------------------0------------------------------------------------------vf-g----h5-------------------+-+00--f0-------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------vt+--v-Vt-6Px-------------------------------------------------------------------------------------------------------------------------------------f----------0--------------------------------------------------------+------------------------------------------------------4vfwr7fHEr9-----------------f-f-++--v+-------------------------------------------------------------------------------------------------------------
 ; EnableXP
