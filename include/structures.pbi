@@ -128,6 +128,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     ALIGN
     Structure _s_ALIGN 
+      x.l
+      y.l
       width.l
       height.l
       

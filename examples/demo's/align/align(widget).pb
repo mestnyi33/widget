@@ -15,50 +15,53 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i Window_0, Canvas_0, gEvent, gQuit, x=10,y=10
   
   Procedure events()
+    Protected *eventWidget._s_widget = EventWidget()
     Select WidgetEventType()
-      Case #__event_leftclick
-        
-        ;Debug EventWidget()
-        ClearItems(tree_view)
-        ;Debug EventWidget()
-        If EventWidget() And EventWidget()\align
-          ;Debug AnchorLeft(EventWidget())
-          If GetText(EventWidget()) = "parent stretch"
-            EventWidget() = EventWidget()\parent
+      Case #__event_mouseenter ; leftclick
+        If tree_view
+          ;Debug *eventWidget
+          ClearItems(tree_view)
+          ;Debug *eventWidget
+          If *eventWidget And *eventWidget\align
+            ;Debug AnchorLeft(*eventWidget)
+            If GetText(*eventWidget) = "parent stretch"
+              ; *eventWidget = *eventWidget\parent
+            EndIf
+            
+            If *eventWidget And *eventWidget\align
+              If *eventWidget\align\left > 0
+                AddItem(tree_view, -1, "LEFT")
+              ElseIf *eventWidget\align\left < 0
+                AddItem(tree_view, -1, "LEFT-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\right > 0
+                AddItem(tree_view, -1, "RIGHT")
+              ElseIf *eventWidget\align\right < 0
+                AddItem(tree_view, -1, "RIGHT-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\top > 0
+                AddItem(tree_view, -1, "TOP")
+              ElseIf *eventWidget\align\top < 0
+                AddItem(tree_view, -1, "TOP-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\bottom > 0
+                AddItem(tree_view, -1, "BOTTOM")
+              ElseIf *eventWidget\align\bottom < 0
+                AddItem(tree_view, -1, "BOTTOM-PROPORTIONAL")
+              EndIf
+              
+;               If CountItems(tree_view) = 0
+;                 AddItem(tree_view, -1, "CENTER")
+;               EndIf
+;               
+;               ; SetItemState(tree_view, CountItems(tree_view), 1)
+;               ; ReDraw(tree_view)
+            EndIf
           EndIf
-          
-          If EventWidget()\align\left > 0
-            AddItem(tree_view, -1, "LEFT")
-          ElseIf EventWidget()\align\left < 0
-            AddItem(tree_view, -1, "LEFT-PROPORTIONAL")
-          EndIf
-          
-          If EventWidget()\align\right > 0
-            AddItem(tree_view, -1, "RIGHT")
-          ElseIf EventWidget()\align\right < 0
-            AddItem(tree_view, -1, "RIGHT-PROPORTIONAL")
-          EndIf
-          
-          If EventWidget()\align\top > 0
-            AddItem(tree_view, -1, "TOP")
-          ElseIf EventWidget()\align\top < 0
-            AddItem(tree_view, -1, "TOP-PROPORTIONAL")
-          EndIf
-          
-          If EventWidget()\align\bottom > 0
-            AddItem(tree_view, -1, "BOTTOM")
-          ElseIf EventWidget()\align\bottom < 0
-            AddItem(tree_view, -1, "BOTTOM-PROPORTIONAL")
-          EndIf
-          
-          If CountItems(tree_view) = 0
-            AddItem(tree_view, -1, "CENTER")
-          EndIf
-          
-          ; SetItemState(tree_view, CountItems(tree_view), 1)
-          ; ReDraw(tree_view)
         EndIf
-        
     EndSelect
   EndProcedure
   
@@ -334,13 +337,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure example_demo()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 440, 100, 150, "test", #PB_Window_SizeGadget))
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 120, 540, 250, 410, "test", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
-    tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
+;     ;\\
+;     tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
     
-    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,200)
+    ;\\
+    Define tree_button1 = Button( 5,   345, 240,  25, "")
+    Define tree_button2 = Button( 5,   345+30, 240, 30,"")
+    Define tree_container = Window( 10, 10, 230-#__window_frame_size*2,  325-#__window_frame_size*2-#__window_caption_height, "", #PB_Window_SystemMenu)
+    tree_view = Tree(10, 10, 230-20-#__window_frame_size*2,  325-20-#__window_frame_size*2-#__window_caption_height)  : CloseList( )
+    
+    SetAlignment(tree_container, 0, 1,1,1,1 )
+    SetAlignment(tree_view, 0, 1,1,1,1 )
+    
+    SetAlignment(tree_button1, 0, 1,0,1,1 )
+    SetAlignment(tree_button2, 0, 1,0,1,1 )
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
+    bind(root(), @events())
   EndProcedure
   
   example_demo()
@@ -357,5 +373,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -f-
+; Folding = --+
 ; EnableXP
