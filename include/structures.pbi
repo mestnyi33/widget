@@ -114,32 +114,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *alpha._s_color
     EndStructure
     
-    ;--     POSITION
-    Structure _s_ALIGNTYPE
-      anchor.b
-      auto.l
-      indent.l
-    EndStructure
-    Structure _s_POSITION
-      *left
-      *top
-      *right
-      *bottom
-    EndStructure
     ;--     ALIGN
-    Structure _s_ALIGN 
-      x.l
-      y.l
-      width.l
-      height.l
-      
+    Structure _s_ALIGN Extends _s_COORDINATE
       left.b
       top.b
       right.b
       bottom.b
-    
-      auto._s_position
-      indent._s_position
+      
+      autodock._s_COORDINATE
     EndStructure
     
     ;--     arrow
@@ -806,5 +788,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----v-----
+; Folding = ----8-----
 ; EnableXP
