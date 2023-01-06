@@ -4112,7 +4112,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Bool( *this\width[#__c_draw] > 0 And *this\height[#__c_draw] > 0 )
     EndProcedure
     
-    Procedure.b Resize( *this._S_widget, x.l, y.l, width.l, height.l )
+    Procedure.b _Resize( *this._S_widget, x.l, y.l, width.l, height.l )
       Protected.b result
       Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
       ; Debug " resize - "+*this\class
@@ -4471,8 +4471,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If StartEnumerate( *this )
             If Not is_scrollbars_( enumWidget( ))
               If enumWidget( )\align
-                x2 = enumWidget( )\align\x + enumWidget( )\align\width
-                y2 = enumWidget( )\align\y + enumWidget( )\align\height
+                x2 = ( enumWidget( )\align\x + enumWidget( )\align\width )
+                y2 = ( enumWidget( )\align\y + enumWidget( )\align\height )
                 
                 ;\\
                 If enumWidget( )\_parent( )\align
@@ -4547,6 +4547,500 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
                 Resize( enumWidget( ), x, y, width - x, height - y )
+              Else
+                If (Change_x Or Change_y)
+                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Else
+                  If enumWidget( )\autosize
+                    Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  Else
+                    enumWidget( )\resize | #__resize_change
+                  EndIf
+                EndIf
+              EndIf
+            EndIf
+            
+            ;Next
+            StopEnumerate( )
+          EndIf
+        EndIf
+        
+        ;\\
+        If PopupWidget( )
+          If *this = PopupWidget( )\_parent( )
+            Resize( PopupWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          EndIf
+        EndIf
+        
+        If *this\_root( ) And *this\_root( )\canvas\ResizeBeginWidget = #Null
+          ;Debug "  start - resize"
+          *this\_root( )\canvas\ResizeBeginWidget = *this
+          Post( *this, #__event_ResizeBegin )
+        EndIf
+        
+        If *this\_a_ And *this\_a_\id And *this\_a_\transform
+          a_move( *this\_a_\id,
+                  *this\x[#__c_screen],
+                  *this\y[#__c_screen],
+                  *this\width[#__c_screen],
+                  *this\height[#__c_screen], *this\container )
+        EndIf
+        
+        If *this\_a_\transform Or *this\container
+          Post( *this, #__event_Resize )
+        EndIf
+      EndIf
+      
+      ;
+      ProcedureReturn *this\state\repaint
+    EndProcedure
+    
+    Procedure.b Resize( *this._S_widget, x.l, y.l, width.l, height.l )
+      Protected.b result
+      Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
+      ; Debug " resize - "+*this\class
+      
+      ;       If *this\resize & #__resize_start = #False
+      ;         *this\resize | #__resize_start
+      ;         Debug "resize - start "+*this\class
+      ;       EndIf
+      ;
+      If *this\_a_\transform And a_transform( )
+        If *this\bs < *this\fs + a_pos( *this )
+          *this\bs = *this\fs + a_pos( *this )
+        EndIf
+      Else
+        If *this\bs < *this\fs
+          *this\bs = *this\fs
+        EndIf
+      EndIf
+      
+      If *this\type = #__type_Window Or
+         *this\type = #__type_Container
+        If *this\barHeight
+          Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\ToolBarHeight
+        EndIf
+        
+        If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+          *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+        EndIf
+      EndIf
+      
+      ;
+      If is_root_container_( *this ) ;??????
+        ResizeWindow( *this\_root( )\canvas\window, #PB_Ignore, #PB_Ignore, width, height )
+        PB(ResizeGadget)( *this\_root( )\canvas\gadget, #PB_Ignore, #PB_Ignore, width, height )
+        x = ( *this\bs * 2 - *this\fs * 2 )
+        y = ( *this\bs * 2 - *this\fs * 2 )
+        width - ( *this\bs * 2 - *this\fs * 2 ) * 2
+        height - ( *this\bs * 2 - *this\fs * 2 ) * 2
+        
+        *this\x[#__c_frame] = #PB_Ignore
+        *this\y[#__c_frame] = #PB_Ignore
+        ;           *this\width[#__c_frame] = #PB_Ignore
+        ;           *this\height[#__c_frame] = #PB_Ignore
+      ElseIf *this\autosize
+        If *this\_parent( ) And *this <> *this\_parent( )
+          x      = *this\_parent( )\x[#__c_inner]
+          Y      = *this\_parent( )\y[#__c_inner]
+          width  = *this\_parent( )\width[#__c_inner]
+          height = *this\_parent( )\height[#__c_inner]
+        EndIf
+        
+      Else
+        If a_transform( ) And
+           a_transform( )\grid\size > 1 And
+           *this = a_focus_widget( ) And
+           *this <> a_transform( )\main
+          
+          If x <> #PB_Ignore
+            x + ( x % a_transform( )\grid\size )
+            x = ( x / a_transform( )\grid\size ) * a_transform( )\grid\size
+          EndIf
+          
+          If y <> #PB_Ignore
+            y + ( y % a_transform( )\grid\size )
+            y = ( y / a_transform( )\grid\size ) * a_transform( )\grid\size
+          EndIf
+          
+          If width <> #PB_Ignore
+            width + ( width % a_transform( )\grid\size )
+            width = ( width / a_transform( )\grid\size ) * a_transform( )\grid\size + 1
+          EndIf
+          
+          If height <> #PB_Ignore
+            height + ( height % a_transform( )\grid\size )
+            height = ( height / a_transform( )\grid\size ) * a_transform( )\grid\size + 1
+          EndIf
+        EndIf
+        
+        ;
+        If x = #PB_Ignore
+          x = *this\x[#__c_container]
+        Else
+          If *this\_parent( )
+            If Not is_integral_( *this )
+              x + scroll_x_( *this\_parent( ) )
+            EndIf
+            *this\x[#__c_container] = x
+          EndIf
+        EndIf
+        If y = #PB_Ignore
+          y = *this\y[#__c_container]
+        Else
+          If *this\_parent( )
+            If Not is_integral_( *this )
+              y + scroll_y_( *this\_parent( ) )
+            EndIf
+            *this\y[#__c_container] = y
+          EndIf
+        EndIf
+        
+        ;
+        If width = #PB_Ignore
+          If *this\type = #__type_window
+            width = *this\width[#__c_container]
+          Else
+            width = *this\width[#__c_frame]
+          EndIf
+        EndIf
+        If height = #PB_Ignore
+          If *this\type = #__type_window
+            height = *this\height[#__c_container]
+          Else
+            height = *this\height[#__c_frame]
+          EndIf
+        EndIf
+        
+        ;
+        If width < 0
+          width = 0
+        EndIf
+        If Height < 0
+          Height = 0
+        EndIf
+        
+        ;
+        If *this\_parent( ) And *this <> *this\_parent( ) And *this <> *this\_root( )
+          If Not ( *this\attach And *this\attach\mode = 2 )
+            x + *this\_parent( )\x[#__c_inner]
+          EndIf
+          If Not ( *this\attach And *this\attach\mode = 1 )
+            y + *this\_parent( )\y[#__c_inner]
+          EndIf
+          
+          ; потому что точки внутри контейнера перемешаем надо перемести и детей
+          If *this\_a_\transform And
+             (*this\_parent( )\container > 0 And
+              *this\_parent( )\type <> #__type_MDI)
+            y - *this\_parent( )\fs
+            x - *this\_parent( )\fs
+          EndIf
+        EndIf
+        
+        ; потому что окну задаются внутренные размеры
+        If *this\type = #__type_window
+          width + *this\fs * 2 + ( *this\fs[1] + *this\fs[3] )
+          Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
+        EndIf
+      EndIf
+      
+      ;\\
+      If PopupWidget( )
+        Debug "resize - " + *this\autosize + " " + *this\class + " " + x + " " + y + " " + width + " " + height
+      EndIf
+      
+      ; inner x&y position
+      ix      = ( x + *this\fs + *this\fs[1] )
+      iy      = ( y + *this\fs + *this\fs[2] )
+      iwidth  = width - *this\fs * 2 - ( *this\fs[1] + *this\fs[3] )
+      iheight = height - *this\fs * 2 - ( *this\fs[2] + *this\fs[4] )
+      
+      ;
+      If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
+      If *this\y[#__c_frame] <> y : Change_y = y - *this\y[#__c_frame] : EndIf
+      If *this\width[#__c_frame] <> width : Change_width = width - *this\width[#__c_frame] : EndIf
+      If *this\height[#__c_frame] <> height : Change_height = height - *this\height[#__c_frame] : EndIf
+      
+      If *this\x[#__c_inner] <> ix : Change_x = ix - *this\x[#__c_inner] : EndIf
+      If *this\y[#__c_inner] <> iy : Change_y = iy - *this\y[#__c_inner] : EndIf
+      If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf
+      If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf
+      
+      ;
+      If Change_x
+        *this\resize | #__resize_x | #__resize_change
+        
+        *this\x[#__c_frame]  = x
+        *this\x[#__c_inner]  = ix
+        *this\x[#__c_screen] = x - ( *this\bs - *this\fs )
+        If *this\_window( )
+          *this\x[#__c_window] = x - *this\_window( )\x[#__c_inner]
+        EndIf
+      EndIf
+      If Change_y
+        *this\resize | #__resize_y | #__resize_change
+        
+        *this\y[#__c_frame]  = y
+        *this\y[#__c_inner]  = iy
+        *this\y[#__c_screen] = y - ( *this\bs - *this\fs )
+        If *this\_window( )
+          *this\y[#__c_window] = y - *this\_window( )\y[#__c_inner]
+        EndIf
+      EndIf
+      If Change_width
+        *this\resize | #__resize_width | #__resize_change
+        
+        *this\width[#__c_frame]     = width
+        *this\width[#__c_container] = iwidth
+        *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
+        If *this\width[#__c_container] < 0
+          *this\width[#__c_container] = 0
+        EndIf
+        *this\width[#__c_inner] = *this\width[#__c_container]
+      EndIf
+      If Change_height
+        *this\resize | #__resize_height | #__resize_change
+        
+        *this\height[#__c_frame]     = height
+        *this\height[#__c_container] = iheight
+        *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
+        If *this\height[#__c_container] < 0
+          *this\height[#__c_container] = 0
+        EndIf
+        *this\height[#__c_inner] = *this\height[#__c_container]
+      EndIf
+      
+      ;\\
+      If ( Change_x Or Change_y Or Change_width Or Change_height )
+        *this\state\repaint = #True
+        
+        
+        ;\\
+        If ( Change_width Or Change_height )
+          If *this\type = #__type_Image Or
+             *this\type = #__type_ButtonImage
+            *this\ImageChange( ) = 1
+          EndIf
+          
+          If *this\type = #__type_Button
+            *this\WidgetChange( ) = #True
+            *this\TextChange( )   = #True
+          EndIf
+          
+          If *this\count\items
+            If Change_height
+              If scroll_height_( *this ) >= *this\height[#__c_inner]
+                *this\WidgetChange( ) = 1
+              EndIf
+            EndIf
+            
+            If Change_width
+              If scroll_width_( *this ) >= *this\width[#__c_inner]
+                If *this\type <> #__type_Tree
+                  *this\WidgetChange( ) = #__resize_width
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ; if the integral scroll bars
+        ;\\ resize vertical&horizontal scrollbars
+        If *this\scroll And *this\scroll\v And *this\scroll\h
+          bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+          
+          ; update inner coordinate
+          *this\width[#__c_inner]  = *this\scroll\h\bar\page\len
+          *this\height[#__c_inner] = *this\scroll\v\bar\page\len
+        EndIf
+        
+        ;\\ if the integral tab bar
+        If *this\TabBox( ) And is_integral_( *this\TabBox( ) )
+          *this\x[#__c_inner] = x ; - *this\fs - *this\fs[1]
+          *this\y[#__c_inner] = y ; - *this\fs - *this\fs[2]
+          
+          ;\\
+          If *this\type = #__type_Panel
+            If *this\TabBox( )\bar\vertical
+              If *this\fs[1]
+                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\height[#__c_inner] )
+              EndIf
+              If *this\fs[3]
+                Resize( *this\TabBox( ), *this\width[#__c_inner], *this\fs, *this\fs[3], *this\height[#__c_inner] )
+              EndIf
+            Else
+              If *this\fs[2]
+                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\width[#__c_inner], *this\fs[2])
+              EndIf
+              If *this\fs[4]
+                Resize( *this\TabBox( ), *this\fs, *this\height[#__c_inner], *this\width[#__c_inner], *this\fs[4])
+              EndIf
+            EndIf
+          EndIf
+          
+          ;\\
+          If *this\type = #__type_window
+            ;If *this\TabBox( )
+            Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\width[#__c_frame], *this\ToolBarHeight )
+            ;EndIf
+          EndIf
+          
+          *this\x[#__c_inner] + *this\fs + *this\fs[1]
+          *this\y[#__c_inner] + *this\fs + *this\fs[2]
+        EndIf
+        
+        ;\\
+        If *this\type = #__type_Window
+          result = Update( *this )
+        EndIf
+        
+        ;\\
+        If *this\type = #__type_ComboBox
+          If *this\StringBox( )
+            *this\_box_\width = *this\fs[3]
+            *this\_box_\x     = *this\x + *this\width - *this\_box_\width
+          Else
+            *this\_box_\width = *this\width[#__c_inner]
+            *this\_box_\x     = *this\x[#__c_inner]
+          EndIf
+          
+          *this\_box_\y      = *this\y[#__c_inner]
+          *this\_box_\height = *this\height[#__c_inner]
+        EndIf
+        
+        ;\\ if the widgets is composite
+        ;If *this\type = #__type_Spin
+        If *this\StringBox( )
+          Resize( *this\StringBox( ), *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner] )
+        EndIf
+        ;EndIf
+        
+        ;\\ parent mdi
+        If *this\_parent( ) And
+           is_integral_( *this ) And
+           *this\_parent( )\type = #__type_MDI And
+           *this\_parent( )\scroll And
+           *this\_parent( )\scroll\v <> *this And
+           *this\_parent( )\scroll\h <> *this And
+           *this\_parent( )\scroll\v\bar\PageChange( ) = 0 And
+           *this\_parent( )\scroll\h\bar\PageChange( ) = 0
+          
+          bar_mdi_update( *this\_parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
+        EndIf
+        
+        ;\\
+        If *this\type = #__type_Spin Or
+           *this\type = #__type_TabBar Or
+           *this\type = #__type_ToolBar Or
+           *this\type = #__type_TrackBar Or
+           *this\type = #__type_ScrollBar Or
+           *this\type = #__type_ProgressBar Or
+           *this\type = #__type_Splitter
+          
+          If ( Change_width Or Change_height )
+            *this\TabChange( ) = - 1
+          EndIf
+          
+          ; Debug "-- bar_Update -- "+" "+ *this\class
+          bar_Update( *this, Bool( Change_width Or Change_height ) )
+        EndIf
+        
+        ;-\\ childrens resize 
+        ;\\ then move and size parent resize all childrens
+        If *this\count\childrens And *this\container
+          Protected pw, ph
+          
+          If StartEnumerate( *this )
+            If Not is_scrollbars_( enumWidget( ))
+              If enumWidget( )\align
+                ;\\
+                If enumWidget( )\_parent( )\align
+                  pw = ( enumWidget( )\_parent( )\width[#__c_inner] - enumWidget( )\_parent( )\align\width )
+                  ph = ( enumWidget( )\_parent( )\height[#__c_inner] - enumWidget( )\_parent( )\align\height )
+                EndIf
+                
+                ; horizontal
+                If enumWidget( )\align\right > 0
+                  x     = enumWidget( )\align\x
+                  width = enumWidget( )\align\width
+                  If enumWidget( )\align\left
+                    width + pw
+                  Else
+                    x + pw
+                  EndIf
+                  ; width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
+                Else
+                  If enumWidget( )\align\left > 0
+                    x     = enumWidget( )\align\x
+                    width = enumWidget( )\align\width
+                  Else
+                    If enumWidget( )\align\right < 0
+                      If enumWidget( )\align\left < 0
+                        ;\\ proportional ( left&right )
+                        x     = ( enumWidget( )\align\x * enumWidget( )\_parent( )\width[#__c_inner] ) / enumWidget( )\_parent( )\align\width
+                        width = ((( enumWidget( )\align\x + enumWidget( )\align\width ) * enumWidget( )\_parent( )\width[#__c_inner] ) / enumWidget( )\_parent( )\align\width) - x
+                        ; width = ( enumWidget( )\align\width * enumWidget( )\_parent( )\width[#__c_inner] ) / enumWidget( )\_parent( )\align\width
+                      Else
+                        ;\\ proportional ( right )
+                        x     = enumWidget( )\align\x + pw / 2
+                        width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
+                        ; width = enumWidget( )\align\width + pw / 2
+                      EndIf
+                    Else
+                      x = enumWidget( )\align\x
+                      width = enumWidget( )\align\width
+                      If enumWidget( )\align\left
+                        width + pw / 2
+                      Else
+                        x + pw / 2
+                      EndIf
+                      ; width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
+                    EndIf
+                  EndIf
+                EndIf
+                
+                ; vertical
+                If enumWidget( )\align\bottom > 0
+                  y = enumWidget( )\align\y
+                  height = enumWidget( )\align\height
+                  If enumWidget( )\align\top
+                    height + ph
+                  Else
+                    y + ph
+                  EndIf
+                  ; height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
+                Else
+                  If enumWidget( )\align\top > 0
+                    y      = enumWidget( )\align\y
+                    height = enumWidget( )\align\height
+                  Else
+                    If enumWidget( )\align\bottom < 0
+                      If enumWidget( )\align\top < 0
+                        ;\\ proportional ( top&bottom )
+                        y      = ( enumWidget( )\align\y * enumWidget( )\_parent( )\height[#__c_inner] ) / enumWidget( )\_parent( )\align\height
+                        height = ((( enumWidget( )\align\y + enumWidget( )\align\height ) * enumWidget( )\_parent( )\height[#__c_inner] ) / enumWidget( )\_parent( )\align\height ) - y
+                        ; height = ( enumWidget( )\align\height * enumWidget( )\_parent( )\height[#__c_inner] ) / enumWidget( )\_parent( )\align\height
+                      Else
+                        ;\\ proportional ( bottom )
+                        y      = enumWidget( )\align\y + ph / 2
+                        height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
+                        ; height = enumWidget( )\align\height + ph / 2
+                      EndIf
+                    Else
+                      y = enumWidget( )\align\y
+                      height = enumWidget( )\align\height
+                      If enumWidget( )\align\top
+                        height + ph / 2
+                      Else
+                        y + ph / 2
+                      EndIf
+                      ; height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
+                    EndIf
+                  EndIf
+                EndIf
+                
+                Resize( enumWidget( ), x, y, width, height )
               Else
                 If (Change_x Or Change_y)
                   Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -10636,7 +11130,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; properties
-          If *this\flag & #__list_property
+          If *this\flag & #__tree_property
             If *parent_row And Not *parent_row\sublevel And Not *parent_row\text\fontID
               *parent_row\color\back     = $FFF9F9F9
               *parent_row\color\back[1]  = *parent_row\color\back
@@ -10833,9 +11327,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
              is_at_point_( *this\EnteredRow( )\collapsebox, mouse_x - *this\EnteredRow( )\x, mouse_y - *this\EnteredRow( )\y )
             
             If *this\EnteredRow( )\collapsebox\___state
-              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__list_expanded )
+              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__tree_expanded )
             Else
-              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__list_collapsed )
+              Repaint | SetItemState( *this, *this\EnteredRow( )\index, #__tree_collapsed )
             EndIf
           Else
             ; change box ( option&check )
@@ -12407,19 +12901,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           If PBFlag & #PB_Tree_CheckBoxes = #PB_Tree_CheckBoxes
             flags & ~ #PB_Tree_CheckBoxes
-            flags | #__list_checkboxes
+            flags | #__tree_checkboxes
           EndIf
           If PBFlag & #PB_Tree_ThreeState = #PB_Tree_ThreeState
             flags & ~ #PB_Tree_ThreeState
-            flags | #__list_threestate
+            flags | #__tree_threestate
           EndIf
           If PBFlag & #PB_Tree_NoButtons = #PB_Tree_NoButtons
             flags & ~ #PB_Tree_NoButtons
-            flags | #__list_nobuttons
+            flags | #__tree_nobuttons
           EndIf
           If PBFlag & #PB_Tree_NoLines = #PB_Tree_NoLines
             flags & ~ #PB_Tree_NoLines
-            flags | #__list_nolines
+            flags | #__tree_nolines
           EndIf
           
       EndSelect
@@ -12567,14 +13061,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *this\type = #__type_ListView Or
              *this\type = #__type_property
             
-            If flag & #__list_nolines
+            If flag & #__tree_nolines
               *this\mode\lines = Bool( state )
             EndIf
-            If flag & #__list_nobuttons
+            If flag & #__tree_nobuttons
               *this\mode\buttons = state
               
               If *this\count\items
-                If *this\flag & #__list_OptionBoxes
+                If *this\flag & #__tree_OptionBoxes
                   PushListPosition( *this\_rows( ))
                   ForEach *this\_rows( )
                     If *this\_rows( )\parent\row And
@@ -12586,34 +13080,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
             EndIf
-            If flag & #__list_checkboxes = #__list_checkboxes
-              If *this\flag & #__list_OptionBoxes
+            If flag & #__tree_checkboxes = #__tree_checkboxes
+              If *this\flag & #__tree_OptionBoxes
                 *this\mode\check = Bool( state ) * #__m_optionselect
               Else
                 *this\mode\check = Bool( state )
               EndIf
             EndIf
-            If flag & #__list_threestate
-              If *this\flag & #__list_checkboxes
+            If flag & #__tree_threestate
+              If *this\flag & #__tree_checkboxes
                 *this\mode\threestate = state
               Else
                 *this\mode\threestate = 0
               EndIf
             EndIf
             
-            If flag & #__list_clickselect = #__list_clickselect
-              ;Debug "#__list_clickselect "+#__list_clickselect +" "+#__list_nobuttons +" "+ #__flag_nobuttons
+            If flag & #__tree_clickselect = #__tree_clickselect
+              ;Debug "#__tree_clickselect "+#__tree_clickselect +" "+#__tree_nobuttons +" "+ #__flag_nobuttons
               
               *this\mode\check = Bool( state ) * #__m_clickselect
             EndIf
-            If flag & #__list_multiselect = #__list_multiselect
+            If flag & #__tree_multiselect = #__tree_multiselect
               *this\mode\check = Bool( state ) * #__m_multiselect
             EndIf
-            If flag & #__list_OptionBoxes
+            If flag & #__tree_OptionBoxes
               If state
                 *this\mode\check = #__m_optionselect
               Else
-                *this\mode\check = Bool( *this\flag & #__list_checkboxes )
+                *this\mode\check = Bool( *this\flag & #__tree_checkboxes )
               EndIf
               
               ; set option group
@@ -12628,10 +13122,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 PopListPosition( *this\_rows( ))
               EndIf
             EndIf
-            If flag & #__list_gridlines
+            If flag & #__tree_gridlines
               *this\mode\gridlines = state
             EndIf
-            If flag & #__list_collapse
+            If flag & #__tree_collapse
               *this\mode\collapse = state
               
               If *this\count\items
@@ -12652,7 +13146,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And
-               Not ( *this\flag & #__list_property Or *this\flag & #__list_OptionBoxes )
+               Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
               *this\row\sublevelsize = 6;18
             Else
               *this\row\sublevelsize = 0
@@ -13128,7 +13622,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected result.i
       
       If *this\type = #__type_Tree
-        If Attribute = #__list_collapsed
+        If Attribute = #__tree_collapsed
           result = *this\mode\collapse
         EndIf
       EndIf
@@ -14563,6 +15057,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If left < 0 Or right < 0
                 If left And right
                   *this\align\x - left
+                  *this\align\width - *this\align\x + right
                 Else
                   *this\align\x - left + right
                 EndIf
@@ -14578,7 +15073,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
               If top < 0 Or bottom < 0
                 If top And bottom
-                  *this\align\y - top
+                  *this\align\y - top 
+                  *this\align\height - *this\align\y + bottom
                 Else
                   *this\align\y - top + bottom
                 EndIf
@@ -14853,23 +15349,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ElseIf *this\type = #__type_Tree
         If is_item_( *this, item ) And SelectElement( *this\_rows( ), Item )
           If *this\_rows( )\color\state
-            result | #__list_selected
+            result | #__tree_selected
           EndIf
           
           If *this\_rows( )\checkbox\___state
             If *this\mode\threestate And
                *this\_rows( )\checkbox\___state = #PB_Checkbox_Inbetween
-              result | #__list_Inbetween
+              result | #__tree_Inbetween
             Else
-              result | #__list_checked
+              result | #__tree_checked
             EndIf
           EndIf
           
           If *this\_rows( )\count\childrens And
              *this\_rows( )\collapsebox\___state = 0
-            result | #__list_expanded
+            result | #__tree_expanded
           Else
-            result | #__list_collapsed
+            result | #__tree_collapsed
           EndIf
         EndIf
         
@@ -14912,7 +15408,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         Select Attribute
-          Case #__list_sublevel
+          Case #__tree_sublevel
             result = *this\_rows( )\sublevel
         EndSelect
       EndIf
@@ -15058,7 +15554,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
-        If State & #__list_selected = #__list_selected
+        If State & #__tree_selected = #__tree_selected
           ;           If *this\FocusedRow( ) <> *this\_tabs( )
           ;             *this\FocusedRow( ) = *this\_tabs( )
           ;             *this\FocusedRow( )\state\focus = #true
@@ -15067,9 +15563,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           bar_tab_SetState( *this, Item )
         EndIf
         
-        If State & #__list_inbetween = #__list_inbetween
+        If State & #__tree_inbetween = #__tree_inbetween
           *this\_tabs( )\checkbox\___state = #PB_Checkbox_Inbetween
-        ElseIf State & #__list_checked = #__list_checked
+        ElseIf State & #__tree_checked = #__tree_checked
           *this\_tabs( )\checkbox\___state = #PB_Checkbox_Checked
         EndIf
         
@@ -15093,7 +15589,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           Protected *this_current_row._S_rows = *this\_rows( )
           
-          If State & #__list_selected = #__list_selected
+          If State & #__tree_selected = #__tree_selected
             If *this\FocusedRow( ) <> *this\_rows( )
               *this\FocusedRow( )             = *this\_rows( )
               *this\FocusedRow( )\state\focus = - 1
@@ -15101,18 +15597,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          If State & #__list_inbetween = #__list_inbetween
+          If State & #__tree_inbetween = #__tree_inbetween
             *this\_rows( )\checkbox\___state = #PB_Checkbox_Inbetween
-          ElseIf State & #__list_checked = #__list_checked
+          ElseIf State & #__tree_checked = #__tree_checked
             *this\_rows( )\checkbox\___state = #PB_Checkbox_Checked
           EndIf
           
           If *this\_rows( )\count\childrens
-            If State & #__list_expanded = #__list_expanded Or
-               State & #__list_collapsed = #__list_collapsed
+            If State & #__tree_expanded = #__tree_expanded Or
+               State & #__tree_collapsed = #__tree_collapsed
               
               *this\WidgetChange( )               = #True
-              *this\_rows( )\collapsebox\___state = Bool( State & #__list_collapsed )
+              *this\_rows( )\collapsebox\___state = Bool( State & #__tree_collapsed )
               
               PushListPosition( *this\_rows( ))
               While NextElement( *this\_rows( ))
@@ -15172,13 +15668,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       ElseIf *this\type = #__type_Tree
         Select Attribute
-          Case #__list_collapsed
+          Case #__tree_collapsed
             *this\mode\collapse = Bool( Not *value )
             
-          Case #__list_OptionBoxes
+          Case #__tree_OptionBoxes
             *this\mode\check = Bool( *value ) * #__m_clickselect
             
-          Case #__list_sublevel
+          Case #__tree_sublevel
             If is_no_select_item_( *this\_rows( ), Item )
               ProcedureReturn #False
             EndIf
@@ -15508,20 +16004,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\image\padding\x = 2
         *this\text\padding\x  = 4
         
-        If Flag & #__list_multiselect = #__list_multiselect
+        If Flag & #__tree_multiselect = #__tree_multiselect
           *this\mode\check = #__m_multiselect
         EndIf
         
-        If flag & #__list_nolines
-          flag & ~ #__list_nolines
+        If flag & #__tree_nolines
+          flag & ~ #__tree_nolines
         Else
-          flag | #__list_nolines
+          flag | #__tree_nolines
         EndIf
         
-        If flag & #__list_NoButtons
-          flag & ~ #__list_NoButtons
+        If flag & #__tree_NoButtons
+          flag & ~ #__tree_NoButtons
         Else
-          flag | #__list_NoButtons
+          flag | #__tree_NoButtons
         EndIf
         
         If flag
@@ -16019,7 +16515,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ListView( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListView, x, y, width, height, "", Flag | #__list_nobuttons | #__list_nolines )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ListView, x, y, width, height, "", Flag | #__tree_nobuttons | #__tree_nolines )
     EndProcedure
     
     Procedure.i ListIcon( x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
@@ -16027,7 +16523,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ExplorerList( x.l, y.l, width.l, height.l, Directory.s, flag.q = 0 )
-      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__list_nobuttons | #__list_nolines )
+      ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__tree_nobuttons | #__tree_nolines )
     EndProcedure
     
     Procedure.i Tree_properties( x.l, y.l, width.l, height.l, flag.q = 0 )
@@ -16140,7 +16636,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; Draw selector back
           ;;If Not *this\drop ; *this\drop
-          If *rows( )\count\childrens And *this\flag & #__list_property
+          If *rows( )\count\childrens And *this\flag & #__tree_property
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             draw_roundbox_( x, y, *this\width[#__c_inner], *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back )
             ;draw_roundbox_( *this\x[#__c_inner] + *this\row\sublevelsize,Y,*this\width[#__c_inner] - *this\row\sublevelsize,*rows( )\height,*rows( )\round,*rows( )\round,*rows( )\color\back[state] )
@@ -16187,7 +16683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; Draw selector frame
           ;;If Not *this\drop
-          If *rows( )\count\childrens And *this\flag & #__list_property
+          If *rows( )\count\childrens And *this\flag & #__tree_property
           Else
             If *rows( )\color\frame[state]
               drawing_mode_( #PB_2DDrawing_Outlined )
@@ -20456,7 +20952,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   
   ;\\
   OpenList( *root3 )
-  *w = Tree( 10, 20, 150, 200, #__list_multiselect)
+  *w = Tree( 10, 20, 150, 200, #__tree_multiselect)
   For i = 1 To 100;0000
     AddItem(*w, i, "text-" + Str(i))
   Next
@@ -20470,7 +20966,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Next
   
   ;\\
-  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__list_checkboxes )
+  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes )
   For i = 1 To 100;0000
     If (i & 5)
       AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -20523,5 +21019,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4vfwr7---------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-+Bvq----v-----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

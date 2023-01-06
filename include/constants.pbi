@@ -396,54 +396,54 @@
     ; Debug #PB_checkBox_threeState ; 4
 
     ;-\\ Tree
-    #PB_tree_collapse    = 32
+    #PB_tree_Collapse    = 32
     #PB_tree_OptionBoxes = 64
     #PB_tree_GridLines   = 128
     ;#PB_tree_itemPosition = 256
     
-    #__list_nolines     = #__flag_nolines
-    #__list_nobuttons   = #__flag_nogadgets
-    #__list_checkboxes  = #__flag_checkboxes
-    #__list_threestate  = #__flag_threeState
-    #__list_optionboxes = #__flag_optionboxes
-    #__list_gridlines   = #__flag_gridLines
-    #__list_multiselect = #__flag_multiline
+    #__tree_nolines     = #__flag_nolines
+    #__tree_nobuttons   = #__flag_nogadgets
+    #__tree_checkboxes  = #__flag_checkboxes
+    #__tree_threestate  = #__flag_threeState
+    #__tree_optionboxes = #__flag_optionboxes
+    #__tree_gridlines   = #__flag_gridLines
+    #__tree_multiselect = #__flag_multiline
     
-    #__list_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
-    #__list_collapse    = #PB_tree_collapse
+    #__tree_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
+    #__tree_collapse    = #PB_tree_collapse
     
-    #__list_property = #__flag_numeric
-    #__list_listview = #__flag_readonly
-    #__list_toolbar  = #__flag_password
+    #__tree_property = #__flag_numeric
+    #__tree_listview = #__flag_readonly
+    #__tree_toolbar  = #__flag_password
     
     ; tree attribute
-    #__list_sublevel = #PB_Tree_SubLevel   ; 1
+    #__tree_sublevel = #PB_Tree_SubLevel   ; 1
     
     ; tree state
-    #__list_selected  = #PB_Tree_Selected   ; 1
-    #__list_expanded  = #PB_Tree_Expanded   ; 2
-    #__list_checked   = #PB_Tree_Checked    ; 4
-    #__list_collapsed = #PB_Tree_Collapsed  ; 8
-    #__list_inbetween = #PB_Tree_Inbetween  ; 16
+    #__tree_selected  = #PB_Tree_Selected   ; 1
+    #__tree_expanded  = #PB_Tree_Expanded   ; 2
+    #__tree_checked   = #PB_Tree_Checked    ; 4
+    #__tree_collapsed = #PB_Tree_Collapsed  ; 8
+    #__tree_inbetween = #PB_Tree_Inbetween  ; 16
                                             ;
                                             ;     ;- TREE CONSTANTs
-                                            ;   #__list_noLines = #PB_tree_noLines                         ; 1 2 Hide the little lines between each nodes.
-                                            ;   #__list_noButtons = #PB_tree_noButtons                     ; 2 1 Hide the '+' node buttons.
-                                            ;   #__list_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
-                                            ;   #__list_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
+                                            ;   #__tree_noLines = #PB_tree_noLines                         ; 1 2 Hide the little lines between each nodes.
+                                            ;   #__tree_noButtons = #PB_tree_noButtons                     ; 2 1 Hide the '+' node buttons.
+                                            ;   #__tree_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
+                                            ;   #__tree_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
                                             ;
                                             ;   EnumerationBinary 16
-                                            ;     #__list_collapse
-                                            ;     #__list_clickSelect
-                                            ;     #__list_multiSelect
-                                            ;     #__list_GridLines
-                                            ;     #__list_OptionBoxes
-                                            ;     #__list_borderLess
-                                            ;     #__list_fullSelection
+                                            ;     #__tree_collapse
+                                            ;     #__tree_clickSelect
+                                            ;     #__tree_multiSelect
+                                            ;     #__tree_GridLines
+                                            ;     #__tree_OptionBoxes
+                                            ;     #__tree_borderLess
+                                            ;     #__tree_fullSelection
                                             ;   EndEnumeration
                                             ;
-                                            ;   #PB_tree_collapse = #__list_collapse
-                                            ;   #PB_tree_GridLines = #__list_GridLines
+                                            ;   #PB_tree_collapse = #__tree_collapse
+                                            ;   #PB_tree_GridLines = #__tree_GridLines
     
     ; LIST_ELEMENT
     ;     CompilerIf #PB_compiler_OS = #PB_OS_macOS
@@ -471,8 +471,8 @@
     ;     CompilerEndIf
     
     ;- _c_listview
-    #__listview_clickselect = #__list_clickselect
-    #__listview_multiselect = #__list_multiselect
+    #__listview_clickselect = #__tree_clickselect
+    #__listview_multiselect = #__tree_multiselect
     
     ;-\\ Editor
     ;#__editor_inline = #__flag_inLine
@@ -496,18 +496,13 @@
     #__string_multiline  = #__text_multiline
     
     ;-\\ Button
-    ;     Debug #PB_button_right ; macos 1
-    ;     Debug #PB_button_left  ; macos 2
-    ;     Debug #PB_button_toggle; macos 4
-    ;     Debug #PB_button_Default ; macos 8
-    ;     Debug #PB_button_multiLine ; macos 16
-;     #__button_toggle    = #PB_Button_Toggle
-;     #__button_default   = #PB_Button_Default
-;     #__button_multiline = #__text_wordwrap ; #PB_button_multiLine ; #__text_wordwrap
-;     #__button_left      = #__text_left
-;     #__button_right     = #__text_right
-;     #__button_vertical  = #__text_vertical
-;     ;#__button_invert = #__flag_invert
+    #__button_toggle    = #PB_Button_Toggle
+    #__button_default   = #PB_Button_Default
+    #__button_multiline = #PB_Button_MultiLine
+    #__button_left      = #__text_left
+    #__button_right     = #__text_right
+    #__button_vertical  = #__text_vertical
+    #__button_invert    = #__text_invert
     
     
     If (#__flag_limit >> 1) > 2147483647 ; 8589934592
