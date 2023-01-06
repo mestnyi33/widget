@@ -23,7 +23,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     STATE
     Structure _s_STATE
-      *flag           ; temp for the widgets.pbi
+      flag.q           ; temp for the widgets.pbi
+      
       hide.b          ; panel childrens real hide state
       disable.b
       create.b
@@ -787,6 +788,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 27
+; FirstLine = 12
 ; Folding = ----8-----
 ; EnableXP

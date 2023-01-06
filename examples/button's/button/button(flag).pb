@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define width = 560, height = 560, pos = 60
   
   Procedure events_widgets()
-    Protected flag, EventWidget = EventWidget( )
+    Protected flag.q, EventWidget = EventWidget( )
     
     Select WidgetEventType( )
       Case #PB_EventType_LeftClick
@@ -246,6 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 65
+; FirstLine = 41
 ; Folding = 0---
 ; EnableXP

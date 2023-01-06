@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i, x = 220, panel, butt1, butt2
   Global._s_WIDGET *root, *panel, *butt0, *butt1, *butt2
   
-  If Bind( Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ), #PB_Default )
+  If Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
    panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
     For i = 0 To 5 
@@ -91,6 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
    
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 9
+; FirstLine = 1
 ; Folding = --
 ; EnableXP

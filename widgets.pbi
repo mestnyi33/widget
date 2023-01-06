@@ -931,7 +931,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare a_update( *parent )
     
     Declare.i SetAttachment( *this, *parent, mode.a )
-    Declare.i SetAlignment( *this, mode.i, left.i = 0, top.i = 0, right.i = 0, bottom.i = 0 )
+    Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
     Declare SetFrame( *this, size.a, mode.i = 0 )
     Declare a_object( x.l, y.l, width.l, height.l, text.s, Color.l, flag.q = #Null, framesize = 1 )
     
@@ -954,7 +954,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Declare.b Update( *this )
     Declare IsChild( *this, *parent )
-    Declare Flag( *this, flag.q = #Null, state.b = #PB_Default )
+    Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
     Declare MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
     Declare SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
@@ -12358,8 +12358,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure FromPBFlag( Type, PBFlag )
-      Protected flags = PBFlag
+    Procedure.q FromPBFlag( Type, PBFlag.q )
+      Protected flags.q = PBFlag
       
       Select Type
         Case #__type_CheckBox
@@ -12422,8 +12422,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn flags
     EndProcedure
     
-    Procedure ToPBFlag( Type, Flag )
-      Protected flags = Flag
+    Procedure.q ToPBFlag( Type, Flag.q )
+      Protected flags.q = Flag
       
       Select Type
         Case #__type_Button
@@ -12444,8 +12444,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn flags
     EndProcedure
     
-    Procedure Flag( *this._S_widget, flag.q = #Null, state.b = - 1 )
-      Protected result
+    Procedure.q Flag( *this._S_widget, flag.q = #Null, state.b = - 1 )
+      Protected result.q
       
       ;\\ get widget flags
       If Not flag
@@ -14350,8 +14350,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure SetAlignment( *this._S_widget, mode.i, left.i = 0, top.i = 0, right.i = 0, bottom.i = 0 )
-      Protected flag
+    Procedure SetAlignment( *this._S_widget, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+      Protected flag.q
       
       ;\\
       If mode & #__align_auto
@@ -20519,6 +20519,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4vfwr7----8----------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 956
+; FirstLine = 953
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--+---------------------------------------------------------wr7----8----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
