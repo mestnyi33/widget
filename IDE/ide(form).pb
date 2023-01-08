@@ -1033,7 +1033,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; id_inspector_panel_item_1
     AddItem( id_i_container_panel, -1, "elements", 0, 0 ) 
-    id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
+    id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless )
     If id_elements_tree
       ide_add_image_list( id_elements_tree, GetCurrentDirectory( )+"Themes/" )
     EndIf
@@ -1251,5 +1251,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----P------f--fp--9
+; Folding = -----P------f--fp--+
 ; EnableXP

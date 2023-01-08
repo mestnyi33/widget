@@ -48,6 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   SetGadgetFont( #PB_Any, FontID( #Font18R ) )
+  Debug FontID(0)
   
   If Open( OpenWindow( #PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) )
     Global main = GetWindow( Root( ) )
@@ -95,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Global c2
-  LoadFont( 10, "Arial", 16 + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 )
+  ;LoadFont( 10, "Arial", 16 + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 )
   
 ;     Procedure ResizeCallBack( )
 ;       ResizeGadget( 1, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( ), #PB_Window_InnerCoordinate )-20, WindowHeight( EventWindow( ), #PB_Window_InnerCoordinate )-20 )
@@ -106,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Height = WindowHeight( 11, #PB_Window_InnerCoordinate )
     
     ;ResizeGadget( c2, 10, 10, Width-20, Height-20 )
-    Resize( *Button_0, #PB_Ignore, #PB_Ignore, Width-100, #PB_Ignore )
-    Resize( *Button_1, Width-75, #PB_Ignore, #PB_Ignore, Height-30 )
+    Resize( *Button_0, #PB_Ignore, #PB_Ignore, Width-125, #PB_Ignore )
+    Resize( *Button_1, Width-75, #PB_Ignore, #PB_Ignore, Height-50 )
     SetWindowTitle( 11, Str( *Button_0\width ) +" - "+ Str( *Button_1\height ) )
   EndProcedure
   

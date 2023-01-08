@@ -1,4 +1,5 @@
-﻿;- 
+﻿
+;- 
 ;- example list-icon
 ;-
 ; CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
@@ -114,20 +115,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
           End 
-;         Case #PB_Event_Widget
-;           Select EventGadget()
-;             Case 13
-;               Select EventType()
-;                 Case #PB_EventType_ScrollChange : Debug "widget ScrollChange" +" "+ EventData()
-;                 Case #PB_EventType_DragStart : Debug "widget dragStart"
-;                 Case #PB_EventType_Change, #PB_EventType_LeftClick
-;                   Debug "widget id = " + GetState(EventGadget())
-;                   
-;                   If EventType() = #PB_EventType_Change
-;                     Debug "  widget change"
-;                   EndIf
-;               EndSelect
-;           EndSelect
+          ;         Case #PB_Event_Widget
+          ;           Select EventGadget()
+          ;             Case 13
+          ;               Select EventType()
+          ;                 Case #PB_EventType_ScrollChange : Debug "widget ScrollChange" +" "+ EventData()
+          ;                 Case #PB_EventType_DragStart : Debug "widget dragStart"
+          ;                 Case #PB_EventType_Change, #PB_EventType_LeftClick
+          ;                   Debug "widget id = " + GetState(EventGadget())
+          ;                   
+          ;                   If EventType() = #PB_EventType_Change
+          ;                     Debug "  widget change"
+          ;                   EndIf
+          ;               EndSelect
+          ;           EndSelect
           
         Case #PB_Event_Gadget
           Select EventGadget()

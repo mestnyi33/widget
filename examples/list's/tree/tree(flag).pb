@@ -27,14 +27,14 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget( )
           Case Button_type 
             
-          Case Button_0 : flag = #__list_nolines
-          Case Button_1 : flag = #__list_nobuttons
-          Case Button_2 : flag = #__list_checkboxes
-          Case Button_3 : flag = #__list_optionboxes
-          Case Button_4 : flag = #__list_threestate
-          Case Button_5 : flag = #__list_collapsed
-          Case Button_6 : flag = #__list_expanded
-          Case Button_7 : flag = #__list_gridlines
+          Case Button_0 : flag = #__tree_nolines
+          Case Button_1 : flag = #__tree_nobuttons
+          Case Button_2 : flag = #__tree_checkboxes
+          Case Button_3 : flag = #__tree_optionboxes
+          Case Button_4 : flag = #__tree_threestate
+          Case Button_5 : flag = #__tree_collapsed
+          Case Button_6 : flag = #__tree_expanded
+          Case Button_7 : flag = #__tree_gridlines
         EndSelect
         
         If flag
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__list_optionBoxes | #__list_nolines | #__list_nobuttons );| #__list_OptionBoxes)  ; |#__list_GridLines
+    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__tree_optionBoxes | #__tree_nolines | #__tree_nobuttons );| #__tree_OptionBoxes)  ; |#__tree_GridLines
     CloseList()
     
     ; ;     Define i
@@ -97,19 +97,19 @@ CompilerIf #PB_Compiler_IsMainFile
     Button_4 = widget::Button(width+45, y+30*5, 100, 26, "threestate", #PB_Button_Toggle) 
     Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #PB_Button_Toggle) 
     ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #pb_button_toggle) 
-    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #pb_button_toggle) 
+    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #PB_Button_Toggle) 
     
     ; set button toggled state
-    SetState(Button_0, Flag(*this, #__list_nolines))
-    SetState(Button_1, Flag(*this, #__list_nobuttons))
-    SetState(Button_2, Flag(*this, #__list_checkboxes))
-    SetState(Button_3, Flag(*this, #__list_optionboxes))
-    SetState(Button_4, Flag(*this, #__list_threestate))
-    SetState(Button_5, Flag(*this, #__list_collapsed))
-    ;SetState(Button_6, Flag(*this, #__list_expanded))
-    SetState(Button_7, Flag(*this, #__list_gridlines))
-    ;     SetState(Button_8, Flag(*this, #__list_nolines))
-    ;     SetState(Button_9, Flag(*this, #__list_nobuttons))
+    SetState(Button_0, Flag(*this, #__tree_nolines))
+    SetState(Button_1, Flag(*this, #__tree_nobuttons))
+    SetState(Button_2, Flag(*this, #__tree_checkboxes))
+    SetState(Button_3, Flag(*this, #__tree_optionboxes))
+    SetState(Button_4, Flag(*this, #__tree_threestate))
+    SetState(Button_5, Flag(*this, #__tree_collapsed))
+    ;SetState(Button_6, Flag(*this, #__tree_expanded))
+    SetState(Button_7, Flag(*this, #__tree_gridlines))
+    ;     SetState(Button_8, Flag(*this, #__tree_nolines))
+    ;     SetState(Button_9, Flag(*this, #__tree_nobuttons))
     Hide(Button_type, 1)
     
     Button(10, height+20, 60, 24,"remove")

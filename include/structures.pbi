@@ -29,18 +29,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
       disable.b
       create.b
       
+      repaint.b
       enter.b
       press.b
       focus.b
       drag.b
       
-      toggle.b 
-      collapse.b
+      check.b
       
-      change.b
-      repaint.b
       
-      ; check.b
+      ; change.b
+      ; collapse.b
       ; click.b
       ; move.b
       ; size.b
@@ -230,8 +229,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       index.l ; - anchors
       *cursor ; anchor buttons
       
-      ___state.l  ; temp
-      
       size.l 
       
       hide.b
@@ -262,45 +259,52 @@ CompilerIf Not Defined(Structures, #PB_Module)
       hide.b
     EndStructure
     
+    ;--     TAB
+    Structure _s_TAB
+      *widget._s_WIDGET
+      index.i 
+      change.b
+      
+      ; tab
+      *entered._s_rows 
+      *pressed._s_rows
+      *focused._s_rows 
+    EndStructure
+    
     ;--     TABS
-    Structure _s_TABS ;extends _s_coordinate
-      y.l[constants::#__c]
-      x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
-      
-      state._s_state
-      
+    Structure _s_TABS Extends _s_coordinate
       index.l  ; Index of new list element
+      
       hide.b
       visible.b
-      round.a
+      round.a ; ?- 
       
+      state._s_state
       text._s_text
       image._s_image
       color._s_color
       
-      checkbox._s_buttons ; \box[1]\ -> \checkbox\
     EndStructure
     
     ;--     ROWS
     Structure _s_ROWS Extends _s_TABS
-      count._s_count
+       checkbox._s_buttons ; \box[1]\ -> \checkbox\
+       collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
       
       sublevel.w
       sublevelsize.a
+       childrens.w ; Row( )\ ; rows( )\ ; row\
       
-          button._s_buttons ;temp \box[0]\ -> \button\
-      collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
+      ;button._s_buttons ;temp \box[0]\ -> \button\
                         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
-      *_parent._s_rows
-      *first._s_rows           ;TEMP first elemnt in the list 
-      *after._s_rows           ;TEMP first elemnt in the list 
-      *before._s_rows           ;TEMP first elemnt in the list 
-      childrens.b
+      ;*_parent._s_rows
       
+;       *first._s_rows           ;TEMP first elemnt in the list 
+;       *after._s_rows           ;TEMP first elemnt in the list 
+;       *before._s_rows          ;TEMP first elemnt in the list 
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
+      
       parent._s_objecttype
       
       *OptionGroupRow._s_rows ; option group row 
@@ -317,18 +321,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *_s._s_rows( )      ; all draw-elements
     EndStructure
     
-    ;--     TAB
-    Structure _s_TAB
-      *widget._s_WIDGET
-      index.i 
-      change.b
-      
-      ; tab
-      *entered._s_rows 
-      *pressed._s_rows
-      *focused._s_rows 
-    EndStructure
-    
     ;--     ROW
     Structure _s_ROW
       sublevel.w
@@ -336,7 +328,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       *_tt._s_tt
       
-      List _s._s_rows( )
       
       *first._s_rows           ; first elemnt in the list 
       *last._s_rows            ; last elemnt in the list 
@@ -351,19 +342,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       margin._s_margin
       
-      count.l
-      box._s_buttons           ; editor - edit rectangle
-      
-    EndStructure
-    
-    ;--     column
-    Structure _s_column Extends _s_coordinate
+      ;box._s_buttons          
+      ;List _s._s_rows( )
       
     EndStructure
     
     ;--     BAR
     Structure _s_BAR
-      *widget._s_WIDGET ; TEMP
+     ; *widget._s_WIDGET ; TEMP
       
       max.l
       min.l[3]   ; fixed min bar size 
@@ -597,10 +583,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *move._s_BOUNDMOVE
       *size._s_BOUNDSIZE
     EndStructure
-    ;--     attach
-    Structure _s_attach Extends _s_coordinate
+    ;--     ATTACH
+    Structure _s_ATTACH Extends _s_COORDINATE
       mode.a
       parent._s_objecttype
+    EndStructure
+    
+    ;--     COLUMN
+    Structure _s_COLUMN Extends _s_COORDINATE
+      index.i
+      
+      text._s_TEXT
+      image._s_image
+      
+      List items._s_rows( )
     EndStructure
     
     ;--     WIDGET
@@ -716,7 +712,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       *event._s_event
       
-      List *column._s_column( )
+      List columns._s_column( )
       *root._s_ROOT     ; TEMP
       *window._s_WIDGET ; TEMP
     EndStructure
@@ -788,8 +784,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 27
-; FirstLine = 12
-; Folding = ----8-----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ----4-----
 ; EnableXP
