@@ -291,8 +291,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
        checkbox._s_buttons ; \box[1]\ -> \checkbox\
        collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
       
-      sublevel.w
-      sublevelsize.a
        childrens.w ; Row( )\ ; rows( )\ ; row\
       
       ;button._s_buttons ;temp \box[0]\ -> \button\
@@ -313,6 +311,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       margin._s_edit
       
       *data  ; set/get item data
+      sublevel.w
     EndStructure
     
     Structure _s_VISIBLEITEMS
@@ -323,15 +322,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     ROW
     Structure _s_ROW
-      sublevel.w
-      sublevelsize.a
-      
-      *_tt._s_tt
-      
+      column.a
+        sublevelpos.a
+    sublevelsize.a
       
       *first._s_rows           ; first elemnt in the list 
       *last._s_rows            ; last elemnt in the list 
-      *last_add._s_rows        ; last added last element
+      *added._s_rows        ; last added last element
       
       *active._s_rows          ; focused item
       *pressed._s_rows         ; pushed item
@@ -342,6 +339,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       margin._s_margin
       
+      *_tt._s_tt
+      
       ;box._s_buttons          
       ;List _s._s_rows( )
       
@@ -349,8 +348,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     BAR
     Structure _s_BAR
-     ; *widget._s_WIDGET ; TEMP
-      
       max.l
       min.l[3]   ; fixed min bar size 
       fixed.l[3] ; splitter fixed bar position  
