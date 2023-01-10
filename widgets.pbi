@@ -1125,43 +1125,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare Text_Update( *this._S_widget, List row._S_rows( ))
     
     
-    Procedure ChangeParent( *this._S_widget, *parent._S_widget )
-      ;\\
-      *this\_parent( ) = *parent
-      *this\_root( )   = *parent\_root( )
-      
-      ;\\
-      If is_window_( *parent )
-        *this\_window( ) = *parent
-      Else
-        *this\_window( ) = *parent\_window( )
-      EndIf
-      
-      ;\\ is integrall scroll bars
-      If *this\scroll
-        If *this\scroll\v
-          *this\scroll\v\_root( )   = *this\_root( )
-          *this\scroll\v\_window( ) = *this\_window( )
-        EndIf
-        If *this\scroll\h
-          *this\scroll\h\_root( )   = *this\_root( )
-          *this\scroll\h\_window( ) = *this\_window( )
-        EndIf
-      EndIf
-      
-      ;\\ is integrall tab bar
-      If *this\TabBox( )
-        *this\TabBox( )\_root( )   = *this\_root( )
-        *this\TabBox( )\_window( ) = *this\_window( )
-      EndIf
-      
-      ;\\ is integrall string bar
-      If *this\StringBox( )
-        *this\StringBox( )\_root( )   = *this\_root( )
-        *this\StringBox( )\_window( ) = *this\_window( )
-      EndIf
-    EndProcedure
-    
     ;-
     Macro row_x_( _this_, _address_ )
       ( _this_\x[#__c_inner] + _address_\x )  ; + scroll_x_( _this_ )
@@ -9547,6 +9510,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\scroll\h
             scroll_x_ = *this\scroll\h\bar\page\pos
           EndIf
+          scroll_x = scroll_x_( *this )
+          scroll_y = scroll_y_( *this )
+          
+          ; Debug ""+ scroll_x +" "+ scroll_x_ +" "+ scroll_y +" "+ scroll_y_
+          
           
           If Not visible_items_y
             visible_items_y = 0;*this\y[#__c_inner] ; *this\y[#__c_draw] ;
@@ -9558,11 +9526,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               visible_items_height = *this\height[#__c_draw]
             EndIf
           EndIf
-          
-          scroll_x = scroll_x_( *this )
-          scroll_y = scroll_y_( *this )
-          
-          ; Debug ""+ scroll_x +" "+ scroll_x_ +" "+ scroll_y +" "+ scroll_y_
           
           ; Draw Lines text
           If *this\count\items
@@ -10278,16 +10241,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ if the item list has changed
-            ;scroll_y_( *this ) =- *this\scroll\v\bar\page\pos
-            ;scroll_x_( *this )      = 0
-            ;scroll_y_( *this )      = 0
             scroll_width_( *this )  = 0
             If ListSize( *this\columns( ) )
               scroll_height_( *this ) = *this\columns( )\height
             Else
               scroll_height_( *this ) = 0
             EndIf
-            ;*this\scroll\v\bar\page\pos = 0
             
             ; reset item z - order
             Protected buttonpos = 6
@@ -10679,24 +10638,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         
-        ; Draw background
+        ;\\ Draw background
         If *this\color\_alpha
           drawing_mode_alpha_( #PB_2DDrawing_Default )
           ;draw_roundbox_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back);[*this\color\state] )
           draw_roundbox_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\round, *this\round, *this\color\back )
         EndIf
         
-        ; Draw background image
+        ;\\ Draw background image
         If *this\image\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
         EndIf
         
-        Debug ""+*this\scroll\v\bar\page\pos +" "+ scroll_y_( *this )
-        ;
+        ;\\
         draw_items_( *this, *this\VisibleRows( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
         
-        ; draw frames
+        ;\\ draw frames
         If *this\bs
           drawing_mode_( #PB_2DDrawing_Outlined )
           draw_roundbox_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\round, *this\round, *this\color\frame[*this\color\state] )
@@ -12378,6 +12336,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+    Procedure   ChangeParent( *this._S_widget, *parent._S_widget )
+      ;\\
+      *this\_parent( ) = *parent
+      *this\_root( )   = *parent\_root( )
+      
+      ;\\
+      If is_window_( *parent )
+        *this\_window( ) = *parent
+      Else
+        *this\_window( ) = *parent\_window( )
+      EndIf
+      
+      ;\\ is integrall scroll bars
+      If *this\scroll
+        If *this\scroll\v
+          *this\scroll\v\_root( )   = *this\_root( )
+          *this\scroll\v\_window( ) = *this\_window( )
+        EndIf
+        If *this\scroll\h
+          *this\scroll\h\_root( )   = *this\_root( )
+          *this\scroll\h\_window( ) = *this\_window( )
+        EndIf
+      EndIf
+      
+      ;\\ is integrall tab bar
+      If *this\TabBox( )
+        *this\TabBox( )\_root( )   = *this\_root( )
+        *this\TabBox( )\_window( ) = *this\_window( )
+      EndIf
+      
+      ;\\ is integrall string bar
+      If *this\StringBox( )
+        *this\StringBox( )\_root( )   = *this\_root( )
+        *this\StringBox( )\_window( ) = *this\_window( )
+      EndIf
+    EndProcedure
+    
     Procedure.i Display( *this._S_widget, *display._S_widget, x = #PB_Ignore, y = #PB_Ignore )
       Protected display_width
       Protected display_height
@@ -12438,7 +12433,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If display_mode
               If *this\_rows( )\state\focus
-                y = GadgetY( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - *this\_rows( )\y - *this\_rows( )\height / 2 )
+                y = GadgetY( *display\_root( )\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\_rows( ) ) - *this\_rows( )\height / 2 )
               EndIf
             EndIf
             
@@ -14391,40 +14386,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         
         ;\\
+        ChangeParent( *this, *parent )
+        
+        ;\\
         *parent\count\childrens + 1
         If *parent <> *parent\_root( )
           *parent\_root( )\count\childrens + 1
         EndIf
         
         ;\\
-        ChangeParent( *this, *parent )
-        
-        ;         *this\_parent( ) = *parent
-        ;         *this\_root( )   = *parent\_root( )
-        ;         If is_window_( *parent )
-        ;           *this\_window( ) = *parent
-        ;         Else
-        ;           *this\_window( ) = *parent\_window( )
-        ;         EndIf
-        ;
-        ;         ;\\ integrall childrens
-        ;         If *this\scroll
-        ;           If *this\scroll\v
-        ;             *this\scroll\v\_root( ) = *this\_root( )
-        ;             *this\scroll\v\_window( ) = *this\_window( )
-        ;           EndIf
-        ;           If *this\scroll\h
-        ;             *this\scroll\h\_root( ) = *this\_root( )
-        ;             *this\scroll\h\_window( ) = *this\_window( )
-        ;           EndIf
-        ;         EndIf
-        
-        ;
         *this\level         = *parent\level + 1
         *this\count\parents = *parent\count\parents + 1
         
         
-        ; TODO
+        ;\\ TODO
         If *this\_window( )
           Static NewMap typeCount.l( )
           typeCount( Hex( *this\_window( ) + *this\type ) ) + 1
@@ -18193,7 +18168,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\row
               Protected mouse_x, mouse_y
-              mouse_x = mouse( )\x - *this\x[#__c_inner] ; - scroll_x_( *this )
+              mouse_x = mouse( )\x - *this\x[#__c_inner]
               mouse_y = mouse( )\y - *this\y[#__c_inner] - scroll_y_( *this )
               
               If *this\type = #__type_Editor Or
@@ -20640,5 +20615,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------x------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------+------------------+-----------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------
 ; EnableXP
