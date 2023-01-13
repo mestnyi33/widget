@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_FullSelection|#__Flag_GridLines|#__Flag_CheckBoxes) ;: *g = GetGadgetData(g)                                          
+    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__Flag_FullSelection|: *g = GetGadgetData(g)                                          
     
     ;HideListIcon(g,1)
     For i=1 To 2
@@ -148,6 +148,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
 ; Folding = ---
 ; EnableXP

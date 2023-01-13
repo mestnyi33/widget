@@ -21,6 +21,23 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
     CompilerEndSelect
     
+    CompilerSelect #PB_Compiler_OS
+			CompilerCase #PB_OS_Windows
+				Select GadgetType(gadget)
+					Case #PB_GadgetType_ListView
+						SendMessage_(GadgetID(gadget), #LB_SETTOPINDEX, CountGadgetItems(gadget) - 1, #Null)
+					Case #PB_GadgetType_ListIcon
+						SendMessage_(GadgetID(gadget), #LVM_ENSUREVISIBLE, CountGadgetItems(gadget) - 1, #False)
+					Case #PB_GadgetType_Editor
+						SendMessage_(GadgetID(gadget), #EM_SCROLLCARET, #SB_BOTTOM, 0)
+				EndSelect
+			CompilerCase #PB_OS_Linux
+				Protected *Adjustment.GtkAdjustment
+				*Adjustment = gtk_scrolled_window_get_vadjustment_(gtk_widget_get_parent_(GadgetID(gadget)))
+				*Adjustment\value = *Adjustment\upper
+				gtk_adjustment_value_changed_(*Adjustment)
+		CompilerEndSelect 
+		
     SetGadgetState(gadget, state)
   EndProcedure
   
@@ -31,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         If GetGadgetState(gadget) >= 0
-          SetGadgetState_(gadget, CountGadgetItems(gadget) - 1)
+          SetGadgetState_( gadget, CountGadgetItems(gadget) - 1 )
         EndIf
     CompilerEndSelect
   EndProcedure
@@ -153,5 +170,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
     Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
-    Define pos = 80
+    Define pos = 30
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
     SetState(Splitter_3, width-pos-#__splitter_buttonsize)

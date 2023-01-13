@@ -322,9 +322,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     ROW
     Structure _s_ROW
+      sublevelcolumn.a
       column.a
-        sublevelpos.a
-    sublevelsize.a
+      sublevelpos.a
+      sublevelsize.a
       
       *first._s_rows           ; first elemnt in the list 
       *last._s_rows            ; last elemnt in the list 
