@@ -69,6 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__button_right = #__text_right
   
   Procedure _SetAlignment( *this._S_widget, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    ;ProcedureReturn SetAlignment( *this, mode, left, top, right, bottom )
     Protected flag.q
     ;\\
     If mode & #__align_auto
@@ -150,19 +151,19 @@ CompilerIf #PB_Compiler_IsMainFile
       If bottom  : bottom = #__align_proportional : EndIf
       
       If mode & #__align_right
-        left = #__align_proportional
-      EndIf
-      
-      If mode & #__align_left
         right = #__align_proportional
       EndIf
       
+      If mode & #__align_left
+        left = #__align_proportional
+      EndIf
+      
       If mode & #__align_top
-        bottom = #__align_proportional
+        top = #__align_proportional
       EndIf
       
       If mode & #__align_bottom
-        top = #__align_proportional
+        bottom = #__align_proportional
       EndIf
       
       If left = 0 And right = 0 
@@ -695,33 +696,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(9)) = Button(width-130, height-50, 120, 40, "bottom&right")
     
     
-    ;\\ example - 1
-    _SetAlignment( Widgets(Hex(6)), #__align_proportional|#__align_bottom|#__align_right )
-    _SetAlignment( Widgets(Hex(2)), #__align_proportional|#__align_bottom )
-    _SetAlignment( Widgets(Hex(7)), #__align_proportional|#__align_bottom|#__align_left )
+    ;\\ OK example - 1
+    _SetAlignment( Widgets(Hex(6)), #__align_proportional|#__align_top|#__align_left )
+    _SetAlignment( Widgets(Hex(2)), #__align_proportional|#__align_top )
+    _SetAlignment( Widgets(Hex(7)), #__align_proportional|#__align_top|#__align_right )
     
-    _SetAlignment( Widgets(Hex(1)), #__align_proportional|#__align_right )
+    _SetAlignment( Widgets(Hex(1)), #__align_proportional|#__align_left )
     _SetAlignment( Widgets(Hex(5)), #__align_proportional )
-    _SetAlignment( Widgets(Hex(3)), #__align_proportional|#__align_left )
+    _SetAlignment( Widgets(Hex(3)), #__align_proportional|#__align_right )
     
-    _SetAlignment( Widgets(Hex(8)), #__align_proportional|#__align_top|#__align_right )
-    _SetAlignment( Widgets(Hex(4)), #__align_proportional|#__align_top )
-    _SetAlignment( Widgets(Hex(9)), #__align_proportional|#__align_top|#__align_left )
-    
-;     ;\\ example - 2
-;     _SetAlignment( Widgets(Hex(6)), 0, 1                    ,1,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(2)), 0, #__align_proportional,1,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(7)), 0, #__align_proportional,1,1                    ,#__align_proportional )
-;     
-;     _SetAlignment( Widgets(Hex(1)), 0, 1                    ,#__align_proportional,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(3)), 0, #__align_proportional,#__align_proportional,1                    ,#__align_proportional )
-;     
-;     _SetAlignment( Widgets(Hex(8)), 0, 1                    ,#__align_proportional,#__align_proportional,1 )
-;     _SetAlignment( Widgets(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,1 )
-;     _SetAlignment( Widgets(Hex(9)), 0, #__align_proportional,#__align_proportional,1                    ,1 )
-;     
-;     ;\\ example - 3
+    _SetAlignment( Widgets(Hex(8)), #__align_proportional|#__align_bottom|#__align_left )
+    _SetAlignment( Widgets(Hex(4)), #__align_proportional|#__align_bottom )
+    _SetAlignment( Widgets(Hex(9)), #__align_proportional|#__align_bottom|#__align_right )
+   
+;     ;\\ OK example - 2
 ;     _SetAlignment( Widgets(Hex(6)), #__align_proportional, 1,1,0,0 )
 ;     _SetAlignment( Widgets(Hex(2)), #__align_proportional, 0,1,0,0 )
 ;     _SetAlignment( Widgets(Hex(7)), #__align_proportional, 0,1,1,0 )
@@ -733,6 +721,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     _SetAlignment( Widgets(Hex(8)), #__align_proportional, 1,0,0,1 )
 ;     _SetAlignment( Widgets(Hex(4)), #__align_proportional, 0,0,0,1 )
 ;     _SetAlignment( Widgets(Hex(9)), #__align_proportional, 0,0,1,1 )
+;     
+;     ;\\ example - 3
+;     _SetAlignment( Widgets(Hex(6)), 0, 1                    ,1,#__align_proportional,#__align_proportional )
+;     _SetAlignment( Widgets(Hex(2)), 0, #__align_proportional,1,#__align_proportional,#__align_proportional )
+;     _SetAlignment( Widgets(Hex(7)), 0, #__align_proportional,1,1                    ,#__align_proportional )
+;     
+;     _SetAlignment( Widgets(Hex(1)), 0, 1                    ,#__align_proportional,#__align_proportional,#__align_proportional )
+;     _SetAlignment( Widgets(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
+;     _SetAlignment( Widgets(Hex(3)), 0, #__align_proportional,#__align_proportional,1                    ,#__align_proportional )
+;     
+;     _SetAlignment( Widgets(Hex(8)), 0, 1                    ,#__align_proportional,#__align_proportional,1 )
+;     _SetAlignment( Widgets(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,1 )
+;     _SetAlignment( Widgets(Hex(9)), 0, #__align_proportional,#__align_proportional,1                    ,1 )
 ;     
 ;     ;\\ example - 4
 ;     _SetAlignment( Widgets(Hex(6)), #__align_proportional, -5,-5,0,0 )
@@ -749,6 +750,50 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;  ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 90,90)
+  EndProcedure
+  
+  Procedure example_7()
+    Protected width = 384
+    Protected height = 144
+    
+    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 130, width, height, "indent-auto-alignment (example_2)", #PB_Window_SizeGadget))
+    Canvas_0 = GetGadget(*w)
+    Window_0 = GetWindow(*w)
+    
+    ;\\
+    Widgets(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
+    Widgets(Hex(2)) = Button((width-120)/2, 10, 120, 40, "top")
+    Widgets(Hex(7)) = Button(width-130, 10, 120, 40, "top&right") 
+    
+    Widgets(Hex(1)) = Button(10, (height-40)/2, 120, 40, "left") 
+    Widgets(Hex(5)) = Button((width-120)/2, (height-40)/2, 120, 40, "center")
+    Widgets(Hex(3)) = Button(width-130, (height-40)/2, 120, 40, "right")
+    
+    Widgets(Hex(8)) = Button(10, height-50, 120, 40, "left&bottom")
+    Widgets(Hex(4)) = Button((width-120)/2, height-50, 120, 40, "bottom")
+    Widgets(Hex(9)) = Button(width-130, height-50, 120, 40, "bottom&right")
+    
+;      ;\\ Ok example - 1
+;     _SetAlignment( Widgets(Hex(2)), #__align_center|#__align_proportional|#__align_top )
+;     _SetAlignment( Widgets(Hex(1)), #__align_center|#__align_proportional|#__align_left )
+;     _SetAlignment( Widgets(Hex(5)), #__align_center )
+;     _SetAlignment( Widgets(Hex(3)), #__align_center|#__align_proportional|#__align_right )
+;     _SetAlignment( Widgets(Hex(4)), #__align_center|#__align_proportional|#__align_bottom )
+   
+    ;\\ OK example - 3
+    _SetAlignment( Widgets(Hex(6)), 0, #__align_proportional,#__align_proportional,1,1 )
+    _SetAlignment( Widgets(Hex(2)), 0, 0,#__align_proportional,0,1 )
+    _SetAlignment( Widgets(Hex(7)), 0, 1,#__align_proportional,#__align_proportional,1 )
+    
+    _SetAlignment( Widgets(Hex(1)), 0, #__align_proportional,0,1,0 )
+    _SetAlignment( Widgets(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    _SetAlignment( Widgets(Hex(3)), 0, 1,0,#__align_proportional,0 )
+    
+    _SetAlignment( Widgets(Hex(8)), 0, #__align_proportional,1,1,#__align_proportional )
+    _SetAlignment( Widgets(Hex(4)), 0, 0,1,0,#__align_proportional )
+    _SetAlignment( Widgets(Hex(9)), 0, 1,1,#__align_proportional,#__align_proportional )
+    
+      ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 690,490)
   EndProcedure
   
   example_1()
@@ -796,5 +841,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0--------------v+
+; Folding = 0--------------v9
 ; EnableXP
