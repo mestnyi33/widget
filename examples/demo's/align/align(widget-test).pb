@@ -425,45 +425,45 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(9)) = Button(width-130, height-50, 120, 40, "bottom&right")
     
     
-    ;\\ example - 1
-    _SetAlignment( Widgets(Hex(6)), #__align_proportional|#__align_bottom|#__align_right )
-    _SetAlignment( Widgets(Hex(2)), #__align_proportional|#__align_bottom )
-    _SetAlignment( Widgets(Hex(7)), #__align_proportional|#__align_bottom|#__align_left )
+;     ;\\ example - 1
+;     _SetAlignment( Widgets(Hex(6)), #__align_proportional|#__align_bottom|#__align_right )
+;     _SetAlignment( Widgets(Hex(2)), #__align_proportional|#__align_bottom )
+;     _SetAlignment( Widgets(Hex(7)), #__align_proportional|#__align_bottom|#__align_left )
+;     
+;     _SetAlignment( Widgets(Hex(1)), #__align_proportional|#__align_right )
+;     _SetAlignment( Widgets(Hex(5)), #__align_proportional )
+;     _SetAlignment( Widgets(Hex(3)), #__align_proportional|#__align_left )
+;     
+;     _SetAlignment( Widgets(Hex(8)), #__align_proportional|#__align_top|#__align_right )
+;     _SetAlignment( Widgets(Hex(4)), #__align_proportional|#__align_top )
+;     _SetAlignment( Widgets(Hex(9)), #__align_proportional|#__align_top|#__align_left )
     
-    _SetAlignment( Widgets(Hex(1)), #__align_proportional|#__align_right )
-    _SetAlignment( Widgets(Hex(5)), #__align_proportional )
-    _SetAlignment( Widgets(Hex(3)), #__align_proportional|#__align_left )
+; ; ; ; ;     ;\\ example - 2
+; ; ; ; ;     _SetAlignment( Widgets(Hex(9)), 0, 1                    ,1,#__align_proportional,#__align_proportional )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(4)), 0, #__align_proportional,1,#__align_proportional,#__align_proportional )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(8)), 0, #__align_proportional,1,1                    ,#__align_proportional )
+; ; ; ; ;     
+; ; ; ; ;     _SetAlignment( Widgets(Hex(3)), 0, 1                    ,#__align_proportional,#__align_proportional,#__align_proportional )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(1)), 0, #__align_proportional,#__align_proportional,1                    ,#__align_proportional )
+; ; ; ; ;     
+; ; ; ; ;     _SetAlignment( Widgets(Hex(7)), 0, 1                    ,#__align_proportional,#__align_proportional,1 )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(2)), 0, #__align_proportional,#__align_proportional,#__align_proportional,1 )
+; ; ; ; ;     _SetAlignment( Widgets(Hex(6)), 0, #__align_proportional,#__align_proportional,1                    ,1 )
     
-    _SetAlignment( Widgets(Hex(8)), #__align_proportional|#__align_top|#__align_right )
-    _SetAlignment( Widgets(Hex(4)), #__align_proportional|#__align_top )
-    _SetAlignment( Widgets(Hex(9)), #__align_proportional|#__align_top|#__align_left )
+    ;\\ example - 3
+    _SetAlignment( Widgets(Hex(6)), #__align_proportional, 1,1,0,0 )
+    _SetAlignment( Widgets(Hex(2)), #__align_proportional, 0,1,0,0 )
+    _SetAlignment( Widgets(Hex(7)), #__align_proportional, 0,1,1,0 )
     
-;     ;\\ example - 2
-;     _SetAlignment( Widgets(Hex(6)), 0, 1                    ,1,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(2)), 0, #__align_proportional,1,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(7)), 0, #__align_proportional,1,1                    ,#__align_proportional )
-;     
-;     _SetAlignment( Widgets(Hex(1)), 0, 1                    ,#__align_proportional,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
-;     _SetAlignment( Widgets(Hex(3)), 0, #__align_proportional,#__align_proportional,1                    ,#__align_proportional )
-;     
-;     _SetAlignment( Widgets(Hex(8)), 0, 1                    ,#__align_proportional,#__align_proportional,1 )
-;     _SetAlignment( Widgets(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,1 )
-;     _SetAlignment( Widgets(Hex(9)), 0, #__align_proportional,#__align_proportional,1                    ,1 )
-;     
-;     ;\\ example - 3
-;     _SetAlignment( Widgets(Hex(6)), #__align_proportional, 1,1,0,0 )
-;     _SetAlignment( Widgets(Hex(2)), #__align_proportional, 0,1,0,0 )
-;     _SetAlignment( Widgets(Hex(7)), #__align_proportional, 0,1,1,0 )
-;     
-;     _SetAlignment( Widgets(Hex(1)), #__align_proportional, 1,0,0,0 )
-;     _SetAlignment( Widgets(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
-;     _SetAlignment( Widgets(Hex(3)), #__align_proportional, 0,0,1,0 )
-;     
-;     _SetAlignment( Widgets(Hex(8)), #__align_proportional, 1,0,0,1 )
-;     _SetAlignment( Widgets(Hex(4)), #__align_proportional, 0,0,0,1 )
-;     _SetAlignment( Widgets(Hex(9)), #__align_proportional, 0,0,1,1 )
-;     
+    _SetAlignment( Widgets(Hex(1)), #__align_proportional, 1,0,0,0 )
+    _SetAlignment( Widgets(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
+    _SetAlignment( Widgets(Hex(3)), #__align_proportional, 0,0,1,0 )
+    
+    _SetAlignment( Widgets(Hex(8)), #__align_proportional, 1,0,0,1 )
+    _SetAlignment( Widgets(Hex(4)), #__align_proportional, 0,0,0,1 )
+    _SetAlignment( Widgets(Hex(9)), #__align_proportional, 0,0,1,1 )
+    
 ;     ;\\ example - 4
 ;     _SetAlignment( Widgets(Hex(6)), #__align_proportional, -5,-5,0,0 )
 ;     _SetAlignment( Widgets(Hex(2)), #__align_proportional, 0,-5,0,0 )
@@ -688,5 +688,5 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 64P5-------------
+; Folding = 84P5-------------
 ; EnableXP

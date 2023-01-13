@@ -4903,9 +4903,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ph = ( enumWidget( )\_parent( )\height[#__c_inner] - enumWidget( )\_parent( )\align\height )
                 EndIf
                 
+                ;\\
                 ;\\ horizontal
+                ;\\
                 If enumWidget( )\align\left > 0 
                   x = enumWidget( )\align\x
+                  If enumWidget( )\align\right < 0 
+                    ;\\ ( left = proportional & right = 1 )
+                    x      = enumWidget( )\align\x + pw / 2
+                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
+                  EndIf
                 EndIf
                 If Not enumWidget( )\align\right
                   width = enumWidget( )\align\width
@@ -4919,49 +4926,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 If enumWidget( )\align\right > 0
-                  x = enumWidget( )\align\x
-                  If enumWidget( )\align\left = 0
-                    x + pw
+                  x      = enumWidget( )\align\x
+                  If enumWidget( )\align\left < 0 
+                    Debug "22222 "+enumWidget( )\text\string
+                    If enumWidget( )\align\left = 0
+                      x + pw / 2
+                    EndIf
+                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
+                  Else
+                    If enumWidget( )\align\left = 0
+                      x + pw
+                    EndIf
+                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
                   EndIf
-                  width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
                 EndIf
-                
                 ;\\ horizontal proportional
-                If enumWidget( )\align\left < 0 Or
-                   enumWidget( )\align\right < 0
+                If ( enumWidget( )\align\left < 0 And enumWidget( )\align\right <= 0 ) Or
+                   ( enumWidget( )\align\right < 0 And enumWidget( )\align\left <= 0 )
                   Protected ScaleX.f = enumWidget( )\_parent( )\width[#__c_inner] / enumWidget( )\_parent( )\align\width 
                   width = ScaleX * enumWidget( )\align\width 
-                EndIf
-                ;\\ center proportional
-                If enumWidget( )\align\left < 0 And enumWidget( )\align\right < 0
-                  x = ( enumWidget( )\_parent( )\width[#__c_inner] - width ) / 2
-                ElseIf enumWidget( )\align\left < 0 And enumWidget( )\align\right = 0
-                  ;\\ left proportional
-                  x = enumWidget( )\align\x
-                ElseIf ( enumWidget( )\align\right < 0 And enumWidget( )\align\left = 0 ) Or 
-                       ( enumWidget( )\align\right > 0 And enumWidget( )\align\left < 0 )
-                  ;\\ right proportional
-                  x = enumWidget( )\_parent( )\width[#__c_inner] - ( enumWidget( )\_parent( )\align\width - enumWidget( )\align\x - enumWidget( )\align\width ) - width
-                EndIf
-                
-                If enumWidget( )\align\right > 0 And enumWidget( )\align\left < 0
-                  x      = enumWidget( )\align\x
-                  If enumWidget( )\align\left = 0
-                    x + pw / 2
+                  ;\\ center proportional
+                  If enumWidget( )\align\left < 0 And enumWidget( )\align\right < 0
+                    x = ( enumWidget( )\_parent( )\width[#__c_inner] - width ) / 2
+                  ElseIf enumWidget( )\align\left < 0 And enumWidget( )\align\right = 0
+                    ;\\ left proportional
+                    x = enumWidget( )\align\x
+                  ElseIf ( enumWidget( )\align\right < 0 And enumWidget( )\align\left = 0 )
+                    ;\\ right proportional
+                    x = enumWidget( )\_parent( )\width[#__c_inner] - ( enumWidget( )\_parent( )\align\width - enumWidget( )\align\x - enumWidget( )\align\width ) - width
                   EndIf
-                  width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
-                EndIf
-              
-                If enumWidget( )\align\right < 0 And enumWidget( )\align\left > 0
-                  ;\\ proportional ( right )
-                  x      = enumWidget( )\align\x + pw / 2
-                  width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
                 EndIf
                 
-                
+                ;\\
                 ;\\ vertical
+                ;\\
                 If enumWidget( )\align\top > 0 
                   y = enumWidget( )\align\y
+                  If enumWidget( )\align\bottom < 0 
+                    ;\\ ( top = proportional & bottom = 1 )
+                    y      = enumWidget( )\align\y + ph / 2
+                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
+                  EndIf
                 EndIf
                 If Not enumWidget( )\align\bottom
                   height = enumWidget( )\align\height
@@ -4975,43 +4980,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 If enumWidget( )\align\bottom > 0
-                  y = enumWidget( )\align\y
-                  If enumWidget( )\align\top = 0
-                    y + ph
+                  y      = enumWidget( )\align\y
+                  If enumWidget( )\align\top < 0 
+                    Debug "44444 "+enumWidget( )\text\string
+                    If enumWidget( )\align\top = 0
+                      y + ph / 2
+                    EndIf
+                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
+                  Else
+                    If enumWidget( )\align\top = 0
+                      y + ph
+                    EndIf
+                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
                   EndIf
-                  height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
                 EndIf
-                
                 ;\\ vertical proportional
-                If enumWidget( )\align\top < 0 Or
-                   enumWidget( )\align\bottom < 0
+                If ( enumWidget( )\align\top < 0 And enumWidget( )\align\bottom <= 0 ) Or
+                   ( enumWidget( )\align\bottom < 0 And enumWidget( )\align\top <= 0 )
                   Protected ScaleY.f = enumWidget( )\_parent( )\height[#__c_inner] / enumWidget( )\_parent( )\align\height 
                   height = ScaleY * enumWidget( )\align\height 
-                EndIf
-                ;\\ center proportional
-                If enumWidget( )\align\top < 0 And enumWidget( )\align\bottom < 0
-                  y = ( enumWidget( )\_parent( )\height[#__c_inner] - height ) / 2
-                ElseIf enumWidget( )\align\top < 0 And enumWidget( )\align\bottom = 0
-                  ;\\ left proportional
-                  y = enumWidget( )\align\y
-                ElseIf ( enumWidget( )\align\bottom < 0 And enumWidget( )\align\top = 0 ) Or 
-                       ( enumWidget( )\align\bottom > 0 And enumWidget( )\align\top < 0 )
-                  ;\\ right proportional
-                  y = enumWidget( )\_parent( )\height[#__c_inner] - ( enumWidget( )\_parent( )\align\height - enumWidget( )\align\y - enumWidget( )\align\height ) - height
-                EndIf
-                
-                If enumWidget( )\align\bottom > 0 And enumWidget( )\align\top < 0
-                  y      = enumWidget( )\align\y
-                  If enumWidget( )\align\top = 0
-                    y + ph / 2
+                  ;\\ center proportional
+                  If enumWidget( )\align\top < 0 And enumWidget( )\align\bottom < 0
+                    y = ( enumWidget( )\_parent( )\height[#__c_inner] - height ) / 2
+                  ElseIf enumWidget( )\align\top < 0 And enumWidget( )\align\bottom = 0
+                    ;\\ top proportional
+                    y = enumWidget( )\align\y
+                  ElseIf ( enumWidget( )\align\bottom < 0 And enumWidget( )\align\top = 0 )
+                    ;\\ bottom proportional
+                    y = enumWidget( )\_parent( )\height[#__c_inner] - ( enumWidget( )\_parent( )\align\height - enumWidget( )\align\y - enumWidget( )\align\height ) - height
                   EndIf
-                  height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
-                EndIf
-              
-                If enumWidget( )\align\bottom < 0 And enumWidget( )\align\top > 0
-                  ;\\ proportional ( bottom )
-                  y      = enumWidget( )\align\y + ph / 2
-                  height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
                 EndIf
                 
                       
@@ -21239,5 +21236,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------43---4-q3-9n5--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------43---4-q3-9n5X8q------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
