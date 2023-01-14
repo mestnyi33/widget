@@ -4066,481 +4066,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Bool( *this\width[#__c_draw] > 0 And *this\height[#__c_draw] > 0 )
     EndProcedure
     
-    Procedure.b _Resize( *this._S_widget, x.l, y.l, width.l, height.l )
-      Protected.b result
-      Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-      ; Debug " resize - "+*this\class
-      
-      ;       If *this\resize & #__resize_start = #False
-      ;         *this\resize | #__resize_start
-      ;         Debug "resize - start "+*this\class
-      ;       EndIf
-      ;
-      If *this\_a_\transform And a_transform( )
-        If *this\bs < *this\fs + a_pos( *this )
-          *this\bs = *this\fs + a_pos( *this )
-        EndIf
-      Else
-        If *this\bs < *this\fs
-          *this\bs = *this\fs
-        EndIf
-      EndIf
-      
-      If *this\type = #__type_Window Or
-         *this\type = #__type_Container
-        If *this\barHeight
-          Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\ToolBarHeight
-        EndIf
-        
-        If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-          *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-        EndIf
-      EndIf
-      
-      ;
-      If is_root_container_( *this ) ;??????
-        ResizeWindow( *this\_root( )\canvas\window, #PB_Ignore, #PB_Ignore, width, height )
-        PB(ResizeGadget)( *this\_root( )\canvas\gadget, #PB_Ignore, #PB_Ignore, width, height )
-        x = ( *this\bs * 2 - *this\fs * 2 )
-        y = ( *this\bs * 2 - *this\fs * 2 )
-        width - ( *this\bs * 2 - *this\fs * 2 ) * 2
-        height - ( *this\bs * 2 - *this\fs * 2 ) * 2
-        
-        *this\x[#__c_frame] = #PB_Ignore
-        *this\y[#__c_frame] = #PB_Ignore
-        ;           *this\width[#__c_frame] = #PB_Ignore
-        ;           *this\height[#__c_frame] = #PB_Ignore
-      ElseIf *this\autosize
-        If *this\_parent( ) And *this <> *this\_parent( )
-          x      = *this\_parent( )\x[#__c_inner]
-          Y      = *this\_parent( )\y[#__c_inner]
-          width  = *this\_parent( )\width[#__c_inner]
-          height = *this\_parent( )\height[#__c_inner]
-        EndIf
-        
-      Else
-        If a_transform( ) And
-           a_transform( )\grid\size > 1 And
-           *this = a_focus_widget( ) And
-           *this <> a_transform( )\main
-          
-          If x <> #PB_Ignore
-            x + ( x % a_transform( )\grid\size )
-            x = ( x / a_transform( )\grid\size ) * a_transform( )\grid\size
-          EndIf
-          
-          If y <> #PB_Ignore
-            y + ( y % a_transform( )\grid\size )
-            y = ( y / a_transform( )\grid\size ) * a_transform( )\grid\size
-          EndIf
-          
-          If width <> #PB_Ignore
-            width + ( width % a_transform( )\grid\size )
-            width = ( width / a_transform( )\grid\size ) * a_transform( )\grid\size + 1
-          EndIf
-          
-          If height <> #PB_Ignore
-            height + ( height % a_transform( )\grid\size )
-            height = ( height / a_transform( )\grid\size ) * a_transform( )\grid\size + 1
-          EndIf
-        EndIf
-        
-        ;
-        If x = #PB_Ignore
-          x = *this\x[#__c_container]
-        Else
-          If *this\_parent( )
-            If Not is_integral_( *this )
-              x + scroll_x_( *this\_parent( ) )
-            EndIf
-            *this\x[#__c_container] = x
-          EndIf
-        EndIf
-        If y = #PB_Ignore
-          y = *this\y[#__c_container]
-        Else
-          If *this\_parent( )
-            If Not is_integral_( *this )
-              y + scroll_y_( *this\_parent( ) )
-            EndIf
-            *this\y[#__c_container] = y
-          EndIf
-        EndIf
-        
-        ;
-        If width = #PB_Ignore
-          If *this\type = #__type_window
-            width = *this\width[#__c_container]
-          Else
-            width = *this\width[#__c_frame]
-          EndIf
-        EndIf
-        If height = #PB_Ignore
-          If *this\type = #__type_window
-            height = *this\height[#__c_container]
-          Else
-            height = *this\height[#__c_frame]
-          EndIf
-        EndIf
-        
-        ;
-        If width < 0
-          width = 0
-        EndIf
-        If Height < 0
-          Height = 0
-        EndIf
-        
-        ;
-        If *this\_parent( ) And *this <> *this\_parent( ) And *this <> *this\_root( )
-          If Not ( *this\attach And *this\attach\mode = 2 )
-            x + *this\_parent( )\x[#__c_inner]
-          EndIf
-          If Not ( *this\attach And *this\attach\mode = 1 )
-            y + *this\_parent( )\y[#__c_inner]
-          EndIf
-          
-          ; потому что точки внутри контейнера перемешаем надо перемести и детей
-          If *this\_a_\transform And
-             (*this\_parent( )\container > 0 And
-              *this\_parent( )\type <> #__type_MDI)
-            y - *this\_parent( )\fs
-            x - *this\_parent( )\fs
-          EndIf
-        EndIf
-        
-        ; потому что окну задаются внутренные размеры
-        If *this\type = #__type_window
-          width + *this\fs * 2 + ( *this\fs[1] + *this\fs[3] )
-          Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
-        EndIf
-      EndIf
-      
-      ;\\
-      If PopupWidget( )
-        Debug "resize - " + *this\autosize + " " + *this\class + " " + x + " " + y + " " + width + " " + height
-      EndIf
-      
-      ; inner x&y position
-      ix      = ( x + *this\fs + *this\fs[1] )
-      iy      = ( y + *this\fs + *this\fs[2] )
-      iwidth  = width - *this\fs * 2 - ( *this\fs[1] + *this\fs[3] )
-      iheight = height - *this\fs * 2 - ( *this\fs[2] + *this\fs[4] )
-      
-      ;
-      If *this\x[#__c_frame] <> x : Change_x = x - *this\x[#__c_frame] : EndIf
-      If *this\y[#__c_frame] <> y : Change_y = y - *this\y[#__c_frame] : EndIf
-      If *this\width[#__c_frame] <> width : Change_width = width - *this\width[#__c_frame] : EndIf
-      If *this\height[#__c_frame] <> height : Change_height = height - *this\height[#__c_frame] : EndIf
-      
-      If *this\x[#__c_inner] <> ix : Change_x = ix - *this\x[#__c_inner] : EndIf
-      If *this\y[#__c_inner] <> iy : Change_y = iy - *this\y[#__c_inner] : EndIf
-      If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf
-      If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf
-      
-      ;
-      If Change_x
-        *this\resize | #__resize_x
-        
-        *this\x[#__c_frame]  = x
-        *this\x[#__c_inner]  = ix
-        *this\x[#__c_screen] = x - ( *this\bs - *this\fs )
-        If *this\_window( )
-          *this\x[#__c_window] = x - *this\_window( )\x[#__c_inner]
-        EndIf
-      EndIf
-      If Change_y
-        *this\resize | #__resize_y 
-        
-        *this\y[#__c_frame]  = y
-        *this\y[#__c_inner]  = iy
-        *this\y[#__c_screen] = y - ( *this\bs - *this\fs )
-        If *this\_window( )
-          *this\y[#__c_window] = y - *this\_window( )\y[#__c_inner]
-        EndIf
-      EndIf
-      If Change_width
-        *this\resize | #__resize_width
-        
-        *this\width[#__c_frame]     = width
-        *this\width[#__c_container] = iwidth
-        *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
-        If *this\width[#__c_container] < 0
-          *this\width[#__c_container] = 0
-        EndIf
-        *this\width[#__c_inner] = *this\width[#__c_container]
-      EndIf
-      If Change_height
-        *this\resize | #__resize_height
-        
-        *this\height[#__c_frame]     = height
-        *this\height[#__c_container] = iheight
-        *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
-        If *this\height[#__c_container] < 0
-          *this\height[#__c_container] = 0
-        EndIf
-        *this\height[#__c_inner] = *this\height[#__c_container]
-      EndIf
-      
-      ;\\
-      If ( Change_x Or Change_y Or Change_width Or Change_height )
-        *this\resize | #__resize_change
-        *this\state\repaint = #True
-        
-        
-        ;\\
-        If ( Change_width Or Change_height )
-          If *this\type = #__type_Image Or
-             *this\type = #__type_ButtonImage
-            *this\ImageChange( ) = 1
-          EndIf
-          
-          If *this\type = #__type_Button
-            *this\WidgetChange( ) = #True
-            *this\TextChange( )   = #True
-          EndIf
-          
-          If *this\count\items
-            If Change_height
-              If scroll_height_( *this ) >= *this\height[#__c_inner]
-                *this\WidgetChange( ) = 1
-              EndIf
-            EndIf
-            
-            If Change_width
-              If scroll_width_( *this ) >= *this\width[#__c_inner]
-                If *this\type <> #__type_Tree
-                  *this\WidgetChange( ) = #__resize_width
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-        ; if the integral scroll bars
-        ;\\ resize vertical&horizontal scrollbars
-        If *this\scroll And *this\scroll\v And *this\scroll\h
-          bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-        EndIf
-        
-        ;\\ if the integral tab bar
-        If *this\TabBox( ) And is_integral_( *this\TabBox( ) )
-          *this\x[#__c_inner] = x ; - *this\fs - *this\fs[1]
-          *this\y[#__c_inner] = y ; - *this\fs - *this\fs[2]
-          
-          ;\\
-          If *this\type = #__type_Panel
-            If *this\TabBox( )\bar\vertical
-              If *this\fs[1]
-                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\height[#__c_inner] )
-              EndIf
-              If *this\fs[3]
-                Resize( *this\TabBox( ), *this\width[#__c_inner], *this\fs, *this\fs[3], *this\height[#__c_inner] )
-              EndIf
-            Else
-              If *this\fs[2]
-                Resize( *this\TabBox( ), *this\fs, *this\fs, *this\width[#__c_inner], *this\fs[2])
-              EndIf
-              If *this\fs[4]
-                Resize( *this\TabBox( ), *this\fs, *this\height[#__c_inner], *this\width[#__c_inner], *this\fs[4])
-              EndIf
-            EndIf
-          EndIf
-          
-          ;\\
-          If *this\type = #__type_window
-            ;If *this\TabBox( )
-            Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\width[#__c_frame], *this\ToolBarHeight )
-            ;EndIf
-          EndIf
-          
-          *this\x[#__c_inner] + *this\fs + *this\fs[1]
-          *this\y[#__c_inner] + *this\fs + *this\fs[2]
-        EndIf
-        
-        ;\\
-        If *this\type = #__type_Window
-          result = Update( *this )
-        EndIf
-        
-        ;\\
-        If *this\type = #__type_ComboBox
-          If *this\StringBox( )
-            *this\_box_\width = *this\fs[3]
-            *this\_box_\x     = *this\x + *this\width - *this\_box_\width
-          Else
-            *this\_box_\width = *this\width[#__c_inner]
-            *this\_box_\x     = *this\x[#__c_inner]
-          EndIf
-          
-          *this\_box_\y      = *this\y[#__c_inner]
-          *this\_box_\height = *this\height[#__c_inner]
-        EndIf
-        
-        ;\\ if the widgets is composite
-        ;If *this\type = #__type_Spin
-        If *this\StringBox( )
-          Resize( *this\StringBox( ), *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner] )
-        EndIf
-        ;EndIf
-        
-        ;\\ parent mdi
-        If *this\_parent( ) And
-           is_integral_( *this ) And
-           *this\_parent( )\type = #__type_MDI And
-           *this\_parent( )\scroll And
-           *this\_parent( )\scroll\v <> *this And
-           *this\_parent( )\scroll\h <> *this And
-           *this\_parent( )\scroll\v\bar\PageChange( ) = 0 And
-           *this\_parent( )\scroll\h\bar\PageChange( ) = 0
-          
-          bar_mdi_update( *this\_parent( ), *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
-        EndIf
-        
-        ;\\
-        If *this\type = #__type_Spin Or
-           *this\type = #__type_TabBar Or
-           *this\type = #__type_ToolBar Or
-           *this\type = #__type_TrackBar Or
-           *this\type = #__type_ScrollBar Or
-           *this\type = #__type_ProgressBar Or
-           *this\type = #__type_Splitter
-          
-          If ( Change_width Or Change_height )
-            *this\TabChange( ) = - 1
-          EndIf
-          
-          ; Debug "-- bar_Update -- "+" "+ *this\class
-          bar_Update( *this, Bool( Change_width Or Change_height ) )
-        EndIf
-        
-        ;-\\ childrens resize
-        ;\\ then move and size parent resize all childrens
-        If *this\count\childrens And *this\container
-          Protected pw, ph
-          
-          If StartEnumerate( *this )
-            If Not is_scrollbars_( enumWidget( ))
-              If enumWidget( )\align
-                ;\\
-                If enumWidget( )\_parent( )\align
-                  pw = ( enumWidget( )\_parent( )\width[#__c_inner] - enumWidget( )\_parent( )\align\width )
-                  ph = ( enumWidget( )\_parent( )\height[#__c_inner] - enumWidget( )\_parent( )\align\height )
-                EndIf
-                
-                ; horizontal
-                If enumWidget( )\align\right > 0
-                  x     = enumWidget( )\align\x
-                  If enumWidget( )\align\left = 0
-                    x + pw
-                  EndIf
-                  width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
-                Else
-                  If enumWidget( )\align\left > 0
-                    x     = enumWidget( )\align\x
-                    width = enumWidget( )\align\width
-                  Else
-                    If enumWidget( )\align\right < 0
-                      If enumWidget( )\align\left < 0
-                        ;\\ proportional ( left&right )
-                        x     = ( enumWidget( )\align\x * enumWidget( )\_parent( )\width[#__c_inner] ) / enumWidget( )\_parent( )\align\width
-                        width = ((( enumWidget( )\align\x + enumWidget( )\align\width ) * enumWidget( )\_parent( )\width[#__c_inner] ) / enumWidget( )\_parent( )\align\width) - x
-                      Else
-                        ;\\ proportional ( right )
-                        x     = enumWidget( )\align\x + pw / 2
-                        width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
-                      EndIf
-                    Else
-                      x     = enumWidget( )\align\x
-                      If enumWidget( )\align\left = 0
-                        x + pw / 2
-                      EndIf
-                      width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
-                    EndIf
-                  EndIf
-                EndIf
-                
-                ; vertical
-                If enumWidget( )\align\bottom > 0
-                  y      = enumWidget( )\align\y
-                  If enumWidget( )\align\top = 0
-                    y + ph
-                  EndIf
-                  height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
-                Else
-                  If enumWidget( )\align\top > 0
-                    y      = enumWidget( )\align\y
-                    height = enumWidget( )\align\height
-                  Else
-                    If enumWidget( )\align\bottom < 0
-                      If enumWidget( )\align\top < 0
-                        ;\\ proportional ( top&bottom )
-                        y      = ( enumWidget( )\align\y * enumWidget( )\_parent( )\height[#__c_inner] ) / enumWidget( )\_parent( )\align\height
-                        height = ((( enumWidget( )\align\y + enumWidget( )\align\height ) * enumWidget( )\_parent( )\height[#__c_inner] ) / enumWidget( )\_parent( )\align\height ) - y
-                      Else
-                        ;\\ proportional ( bottom )
-                        y      = enumWidget( )\align\y + ph / 2
-                        height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
-                      EndIf
-                    Else
-                      y      = enumWidget( )\align\y
-                      If enumWidget( )\align\top = 0
-                        y + ph / 2
-                      EndIf
-                      height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
-                    EndIf
-                  EndIf
-                EndIf
-                
-                Resize( enumWidget( ), x, y, width, height )
-              Else
-                If (Change_x Or Change_y)
-                  Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                Else
-                  If enumWidget( )\autosize
-                    Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  Else
-                    enumWidget( )\resize | #__resize_change
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ;Next
-            StopEnumerate( )
-          EndIf
-        EndIf
-        
-        ;\\
-        If PopupWidget( )
-          If *this = PopupWidget( )\_parent( )
-            Resize( PopupWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          EndIf
-        EndIf
-        
-        If *this\_root( ) And *this\_root( )\canvas\ResizeBeginWidget = #Null
-          ;Debug "  start - resize"
-          *this\_root( )\canvas\ResizeBeginWidget = *this
-          Post( *this, #__event_ResizeBegin )
-        EndIf
-        
-        If *this\_a_ And *this\_a_\id And *this\_a_\transform
-          a_move( *this\_a_\id,
-                  *this\x[#__c_screen],
-                  *this\y[#__c_screen],
-                  *this\width[#__c_screen],
-                  *this\height[#__c_screen], *this\container )
-        EndIf
-        
-        If *this\_a_\transform Or *this\container
-          Post( *this, #__event_Resize )
-        EndIf
-      EndIf
-      
-      ;
-      ProcedureReturn *this\state\repaint
-    EndProcedure
-    
     Procedure.b Resize( *this._S_widget, x.l, y.l, width.l, height.l )
       Protected.b result
       Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
@@ -4909,9 +4434,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If enumWidget( )\align\left > 0 
                   x = enumWidget( )\align\x
                   If enumWidget( )\align\right < 0 
-                    ;\\ ( left = proportional & right = 1 )
-                    x      = enumWidget( )\align\x + pw / 2
-                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
+                    If enumWidget( )\align\left = 0
+                      x + pw / 2
+                    EndIf
+                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
                   EndIf
                 EndIf
                 If Not enumWidget( )\align\right
@@ -4928,11 +4454,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If enumWidget( )\align\right > 0
                   x      = enumWidget( )\align\x
                   If enumWidget( )\align\left < 0 
-                    Debug "22222 "+enumWidget( )\text\string
-                    If enumWidget( )\align\left = 0
-                      x + pw / 2
-                    EndIf
-                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw / 2 ) - x
+                    ;\\ ( left = proportional & right = 1 )
+                    x      = enumWidget( )\align\x + pw / 2
+                    width = (( enumWidget( )\align\x + enumWidget( )\align\width ) + pw ) - x
                   Else
                     If enumWidget( )\align\left = 0
                       x + pw
@@ -4949,11 +4473,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If enumWidget( )\align\left < 0 And enumWidget( )\align\right < 0
                     x = ( enumWidget( )\_parent( )\width[#__c_inner] - width ) / 2
                   ElseIf enumWidget( )\align\left < 0 And enumWidget( )\align\right = 0
-                    ;\\ left proportional
-                    x = enumWidget( )\align\x
-                  ElseIf ( enumWidget( )\align\right < 0 And enumWidget( )\align\left = 0 )
                     ;\\ right proportional
                     x = enumWidget( )\_parent( )\width[#__c_inner] - ( enumWidget( )\_parent( )\align\width - enumWidget( )\align\x - enumWidget( )\align\width ) - width
+                  ElseIf ( enumWidget( )\align\right < 0 And enumWidget( )\align\left = 0 )
+                    ;\\ left proportional
+                    x = enumWidget( )\align\x
                   EndIf
                 EndIf
                 
@@ -4963,9 +4487,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If enumWidget( )\align\top > 0 
                   y = enumWidget( )\align\y
                   If enumWidget( )\align\bottom < 0 
-                    ;\\ ( top = proportional & bottom = 1 )
-                    y      = enumWidget( )\align\y + ph / 2
-                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
+                    If enumWidget( )\align\top = 0
+                      y + ph / 2
+                    EndIf
+                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
                   EndIf
                 EndIf
                 If Not enumWidget( )\align\bottom
@@ -4982,12 +4507,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If enumWidget( )\align\bottom > 0
                   y      = enumWidget( )\align\y
                   If enumWidget( )\align\top < 0 
-                    Debug "44444 "+enumWidget( )\text\string
-                    If enumWidget( )\align\top = 0
-                      y + ph / 2
-                    EndIf
-                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph / 2 ) - y
-                  Else
+                    ;\\ ( top = proportional & bottom = 1 )
+                    y      = enumWidget( )\align\y + ph / 2
+                    height = (( enumWidget( )\align\y + enumWidget( )\align\height ) + ph ) - y
+                    Else
                     If enumWidget( )\align\top = 0
                       y + ph
                     EndIf
@@ -5003,11 +4526,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If enumWidget( )\align\top < 0 And enumWidget( )\align\bottom < 0
                     y = ( enumWidget( )\_parent( )\height[#__c_inner] - height ) / 2
                   ElseIf enumWidget( )\align\top < 0 And enumWidget( )\align\bottom = 0
-                    ;\\ top proportional
-                    y = enumWidget( )\align\y
-                  ElseIf ( enumWidget( )\align\bottom < 0 And enumWidget( )\align\top = 0 )
                     ;\\ bottom proportional
                     y = enumWidget( )\_parent( )\height[#__c_inner] - ( enumWidget( )\_parent( )\align\height - enumWidget( )\align\y - enumWidget( )\align\height ) - height
+                  ElseIf ( enumWidget( )\align\bottom < 0 And enumWidget( )\align\top = 0 )
+                    ;\\ top proportional
+                    y = enumWidget( )\align\y
                   EndIf
                 EndIf
                 
@@ -15114,311 +14637,364 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure SetAlignment( *this._S_widget, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-      Protected flag.q
+    Protected flag.q
+    ;\\
+    If mode & #__align_auto
+      If left = 0 And top = 0 And right = 0 And bottom = 0
+        If mode & #__align_left : left = #__align_auto
+        ElseIf mode & #__align_top : top = #__align_auto
+        ElseIf mode & #__align_right : right = #__align_auto
+        ElseIf mode & #__align_bottom : bottom = #__align_auto
+        Else
+          left   = #__align_auto
+          top    = #__align_auto
+          right  = #__align_auto
+          bottom = #__align_auto
+        EndIf
+      Else
+        If left > 0 : left = #__align_auto : EndIf
+        If top > 0 : top = #__align_auto : EndIf
+        If right > 0 : right = #__align_auto : EndIf
+        If bottom > 0 : bottom = #__align_auto : EndIf
+      EndIf
+    EndIf
+    
+    ;\\
+    If mode & #__align_full
+      If left = 0 And top = 0 And right = 0 And bottom = 0
+        If mode & #__align_left : left = #__align_full
+        ElseIf mode & #__align_top : top = #__align_full
+        ElseIf mode & #__align_right : right = #__align_full
+        ElseIf mode & #__align_bottom : bottom = #__align_full
+        Else
+          left   = #__align_full
+          top    = #__align_full
+          right  = #__align_full
+          bottom = #__align_full
+        EndIf
+      Else
+        If left > 0 : left = #__align_full : EndIf
+        If top > 0 : top = #__align_full : EndIf
+        If right > 0 : right = #__align_full : EndIf
+        If bottom > 0 : bottom = #__align_full : EndIf
+      EndIf
+    EndIf
+    
+    ;\\
+    If left = #__align_full
+      left   = #__align_auto
+      top    = #True
+      bottom = #True
+      flag | #__align_full
+    EndIf
+    If right = #__align_full
+      right  = #__align_auto
+      top    = #True
+      bottom = #True
+      flag | #__align_full
+    EndIf
+    If top = #__align_full
+      top   = #__align_auto
+      left  = #True
+      right = #True
+      flag | #__align_full
+    EndIf
+    If bottom = #__align_full
+      bottom = #__align_auto
+      left   = #True
+      right  = #True
+      flag | #__align_full
+    EndIf
+    If mode And
+       left > 0 And top > 0 And right > 0 And bottom > 0
+      flag | #__align_full
+    EndIf
+    
+    ;\\
+    If mode & #__align_proportional 
+      If left = 0 And right = 0 
+        left = #__align_proportional 
+        right = #__align_proportional
+      EndIf
+      If top = 0 And bottom = 0 
+        top = #__align_proportional 
+        bottom = #__align_proportional
+      EndIf
+      
+      If left And left <> #__align_proportional
+        If right = 0
+          left = 0
+        EndIf
+        right = #__align_proportional 
+      EndIf
+      If top And top <> #__align_proportional 
+        If bottom = 0
+          top = 0
+        EndIf
+        bottom = #__align_proportional 
+      EndIf
+      If right And right <> #__align_proportional 
+        If left = 0
+          right = 0
+        EndIf
+        left = #__align_proportional 
+      EndIf
+      If bottom And bottom <> #__align_proportional 
+        If top = 0
+          bottom = 0 
+        EndIf
+        top = #__align_proportional 
+      EndIf
+      
+      If mode & #__align_right
+        left = #__align_proportional
+      EndIf
+      
+      If mode & #__align_left
+        right = #__align_proportional
+      EndIf
+      
+      If mode & #__align_top
+        bottom = #__align_proportional
+      EndIf
+      
+      If mode & #__align_bottom
+        top = #__align_proportional
+      EndIf
+      
+      mode = 0
+    EndIf
+    
+    ;\\
+    If *this\_parent( )
+      If Not *this\_parent( )\align
+        *this\_parent( )\align.allocate( ALIGN )
+      EndIf
+      If Not *this\align
+        *this\align.allocate( ALIGN )
+      EndIf
       
       ;\\
-      If mode & #__align_auto
-        If left = 0 And top = 0 And right = 0 And bottom = 0
-          If mode & #__align_left : left = #__align_auto
-          ElseIf mode & #__align_top : top = #__align_auto
-          ElseIf mode & #__align_right : right = #__align_auto
-          ElseIf mode & #__align_bottom : bottom = #__align_auto
+      If *this\align
+        ;\\ horizontal
+        If left Or ( Not right And flag & #__align_full = #__align_full )
+          If left = #__align_proportional ;Or ( left And mode & #__align_proportional = #__align_proportional )
+            *this\align\left = - 1
           Else
-            left   = #__align_auto
-            top    = #__align_auto
-            right  = #__align_auto
-            bottom = #__align_auto
+            *this\align\left = 1
           EndIf
         Else
-          If left > 0 : left = #__align_auto : EndIf
-          If top > 0 : top = #__align_auto : EndIf
-          If right > 0 : right = #__align_auto : EndIf
-          If bottom > 0 : bottom = #__align_auto : EndIf
+          *this\align\left = 0
         EndIf
-      EndIf
-      
-      ;\\
-      If mode & #__align_full
-        If left = 0 And top = 0 And right = 0 And bottom = 0
-          If mode & #__align_left : left = #__align_full
-          ElseIf mode & #__align_top : top = #__align_full
-          ElseIf mode & #__align_right : right = #__align_full
-          ElseIf mode & #__align_bottom : bottom = #__align_full
+        If right Or ( Not left And flag & #__align_full = #__align_full )
+          If right = #__align_proportional ;Or ( right And mode & #__align_proportional = #__align_proportional )
+            *this\align\right = - 1
           Else
-            left   = #__align_full
-            top    = #__align_full
-            right  = #__align_full
-            bottom = #__align_full
+            *this\align\right = 1
           EndIf
         Else
-          If left > 0 : left = #__align_full : EndIf
-          If top > 0 : top = #__align_full : EndIf
-          If right > 0 : right = #__align_full : EndIf
-          If bottom > 0 : bottom = #__align_full : EndIf
+          *this\align\right = 0
         EndIf
-      EndIf
-      
-      ;\\
-      If left = #__align_full
-        left   = #__align_auto
-        top    = #True
-        bottom = #True
-        flag | #__align_full
-      EndIf
-      If right = #__align_full
-        right  = #__align_auto
-        top    = #True
-        bottom = #True
-        flag | #__align_full
-      EndIf
-      If top = #__align_full
-        top   = #__align_auto
-        left  = #True
-        right = #True
-        flag | #__align_full
-      EndIf
-      If bottom = #__align_full
-        bottom = #__align_auto
-        left   = #True
-        right  = #True
-        flag | #__align_full
-      EndIf
-      If mode And
-         left > 0 And top > 0 And right > 0 And bottom > 0
-        flag | #__align_full
-      EndIf
-      
-      ;\\
-      If *this\_parent( )
-        If Not *this\_parent( )\align
-          *this\_parent( )\align.allocate( ALIGN )
+        
+        ;\\ vertical
+        If top Or ( Not bottom And flag & #__align_full = #__align_full )
+          If top = #__align_proportional ;Or ( top And mode & #__align_proportional = #__align_proportional )
+            *this\align\top = - 1
+          Else
+            *this\align\top = 1
+          EndIf
+        Else
+          *this\align\top = 0
         EndIf
-        If Not *this\align
-          *this\align.allocate( ALIGN )
+        If bottom Or ( Not top And flag & #__align_full = #__align_full )
+          If bottom = #__align_proportional ;Or ( bottom And mode & #__align_proportional = #__align_proportional )
+            *this\align\bottom = - 1
+          Else
+            *this\align\bottom = 1
+          EndIf
+        Else
+          *this\align\bottom = 0
+        EndIf
+        
+        ;\\ ?-надо тестировать
+        If Not *this\_parent( )\align\width
+          *this\_parent( )\align\x     = *this\_parent( )\x[#__c_container]
+          *this\_parent( )\align\width = *this\_parent( )\width[#__c_frame]
+          If *this\_parent( )\type = #__type_window
+            *this\_parent( )\align\x + *this\_parent( )\fs
+            *this\_parent( )\align\width - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[1] + *this\_parent( )\fs[3] )
+          EndIf
+        EndIf
+        If Not *this\_parent( )\align\height
+          *this\_parent( )\align\y      = *this\_parent( )\y[#__c_container]
+          *this\_parent( )\align\height = *this\_parent( )\height[#__c_frame]
+          If *this\_parent( )\type = #__type_window
+            *this\_parent( )\align\y + *this\_parent( )\fs
+            *this\_parent( )\align\height - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[2] + *this\_parent( )\fs[4] )
+          EndIf
         EndIf
         
         ;\\
-        If *this\align
-          ;\\ horizontal
-          If left Or ( Not right And flag & #__align_full = #__align_full )
-            If left = #__align_proportional
-              *this\align\left = - 1
-            Else
-              *this\align\left = 1
+        If mode
+          ;\\ full horizontal
+          If *this\align\right And *this\align\left
+            *this\align\x     = 0
+            *this\align\width = *this\_parent( )\align\width
+            If *this\type = #__type_window
+              *this\align\width - *this\fs * 2
             EndIf
           Else
-            *this\align\left = 0
-          EndIf
-          If right Or ( Not left And flag & #__align_full = #__align_full )
-            If right = #__align_proportional
-              *this\align\right = - 1
-            Else
-              *this\align\right = 1
-            EndIf
-          Else
-            *this\align\right = 0
-          EndIf
-          
-          ;\\ vertical
-          If top Or ( Not bottom And flag & #__align_full = #__align_full )
-            If top = #__align_proportional
-              *this\align\top = - 1
-            Else
-              *this\align\top = 1
-            EndIf
-          Else
-            *this\align\top = 0
-          EndIf
-          If bottom Or ( Not top And flag & #__align_full = #__align_full )
-            If bottom = #__align_proportional
-              *this\align\bottom = - 1
-            Else
-              *this\align\bottom = 1
-            EndIf
-          Else
-            *this\align\bottom = 0
-          EndIf
-          
-          ;\\ ?-надо тестировать
-          If Not *this\_parent( )\align\width
-            *this\_parent( )\align\x     = *this\_parent( )\x[#__c_container]
-            *this\_parent( )\align\width = *this\_parent( )\width[#__c_frame]
-            If *this\_parent( )\type = #__type_window
-              *this\_parent( )\align\x + *this\_parent( )\fs
-              *this\_parent( )\align\width - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[1] + *this\_parent( )\fs[3] )
-            EndIf
-          EndIf
-          If Not *this\_parent( )\align\height
-            *this\_parent( )\align\y      = *this\_parent( )\y[#__c_container]
-            *this\_parent( )\align\height = *this\_parent( )\height[#__c_frame]
-            If *this\_parent( )\type = #__type_window
-              *this\_parent( )\align\y + *this\_parent( )\fs
-              *this\_parent( )\align\height - *this\_parent( )\fs * 2 - ( *this\_parent( )\fs[2] + *this\_parent( )\fs[4] )
-            EndIf
-          EndIf
-          
-          ;\\
-          If mode
-            ;\\ full horizontal
-            If *this\align\right = 1 And *this\align\left = 1
-              *this\align\x     = 0
-              *this\align\width = *this\_parent( )\align\width
-              If *this\type = #__type_window
-                *this\align\width - *this\fs * 2
-              EndIf
-            Else
-              *this\align\width = *this\width[#__c_frame]
-              ; left
-              If *this\align\right = 0 And *this\align\left = 1
-                *this\align\x = 0
-                ; center
-              ElseIf *this\align\right = 0 And *this\align\left = 0
-                *this\align\x = ( *this\_parent( )\align\width - *this\width[#__c_frame] ) / 2
-                ; right
-              ElseIf *this\align\right = 1 And *this\align\left = 0
-                *this\align\x = *this\_parent( )\align\width - *this\width[#__c_frame]
-                If *this\type = #__type_window
-                  *this\align\x - *this\fs * 2
-                EndIf
-              EndIf
-            EndIf
-            
-            ;\\ full vertical
-            If *this\align\bottom = 1 And *this\align\top = 1
-              *this\align\y      = 0
-              *this\align\height = *this\_parent( )\align\height
-              If *this\type = #__type_window
-                *this\align\height - *this\fs * 2
-              EndIf
-            Else
-              *this\align\height = *this\height[#__c_frame]
-              ; top
-              If *this\align\bottom = 0 And *this\align\top = 1
-                *this\align\y = 0
-                ; center
-              ElseIf *this\align\bottom = 0 And *this\align\top = 0
-                *this\align\y = ( *this\_parent( )\align\height - *this\height[#__c_frame] ) / 2
-                ; bottom
-              ElseIf *this\align\bottom = 1
-                *this\align\y = *this\_parent( )\align\height - *this\height[#__c_frame]
-                If *this\type = #__type_window
-                  *this\align\y - *this\fs * 2
-                EndIf
-              EndIf
-            EndIf
-            
-            ;
-            ;\\ auto stick change
-            If *this\_parent( )\align
-              If left = #__align_auto And
-                 *this\_parent( )\align\autodock\x
-                left = - *this\_parent( )\align\autodock\x
-              EndIf
-              If right = #__align_auto And
-                 *this\_parent( )\align\autodock\width
-                right = - *this\_parent( )\align\autodock\width
-              EndIf
-              If left < 0 Or right < 0
-                If left And right
-                  *this\align\x - left
-                  *this\align\width - *this\align\x + right
-                Else
-                  *this\align\x - left + right
-                EndIf
-              EndIf
-              
-              If top = #__align_auto And
-                 *this\_parent( )\align\autodock\y
-                top = - *this\_parent( )\align\autodock\y
-              EndIf
-              If bottom = #__align_auto And
-                 *this\_parent( )\align\autodock\height
-                bottom = - *this\_parent( )\align\autodock\height
-              EndIf
-              If top < 0 Or bottom < 0
-                If top And bottom
-                  *this\align\y - top
-                  *this\align\height - *this\align\y + bottom
-                Else
-                  *this\align\y - top + bottom
-                EndIf
-              EndIf
-            EndIf
-            
-            ;\\ auto stick position
+            *this\align\width = *this\width[#__c_frame]
             If Not *this\align\right And *this\align\left
-              *this\_parent( )\align\autodock\x = *this\align\x + *this\align\width
+              ; left
+              *this\align\x = 0
+            ElseIf Not *this\align\right And Not *this\align\left
+              ; center
+              *this\align\x = ( *this\_parent( )\align\width - *this\width[#__c_frame] ) / 2
+            ElseIf *this\align\right And Not *this\align\left
+              ; right
+              *this\align\x = *this\_parent( )\align\width - *this\width[#__c_frame]
               If *this\type = #__type_window
-                *this\_parent( )\align\autodock\x + *this\fs * 2
+                *this\align\x - *this\fs * 2
               EndIf
             EndIf
+          EndIf
+          
+          ;\\ full vertical
+          If *this\align\bottom And *this\align\top
+            *this\align\y      = 0
+            *this\align\height = *this\_parent( )\align\height
+            If *this\type = #__type_window
+              *this\align\height - *this\fs * 2
+            EndIf
+          Else
+            *this\align\height = *this\height[#__c_frame]
             If Not *this\align\bottom And *this\align\top
-              *this\_parent( )\align\autodock\y = *this\align\y + *this\align\height
+              ; top
+              *this\align\y = 0
+            ElseIf Not *this\align\bottom And Not *this\align\top
+              ; center
+              *this\align\y = ( *this\_parent( )\align\height - *this\height[#__c_frame] ) / 2
+            ElseIf *this\align\bottom And Not *this\align\top
+              ; bottom
+              *this\align\y = *this\_parent( )\align\height - *this\height[#__c_frame]
               If *this\type = #__type_window
-                *this\_parent( )\align\autodock\y + *this\fs * 2
+                *this\align\y - *this\fs * 2
               EndIf
             EndIf
-            If Not *this\align\left And *this\align\right
-              *this\_parent( )\align\autodock\width = *this\_parent( )\width[#__c_inner] - *this\align\x
+          EndIf
+          
+          ;
+          ;\\ auto stick change
+          If *this\_parent( )\align
+            If left = #__align_auto And
+               *this\_parent( )\align\autodock\x
+              left = - *this\_parent( )\align\autodock\x
             EndIf
-            If Not *this\align\top And *this\align\bottom
-              *this\_parent( )\align\autodock\height = *this\_parent( )\height[#__c_inner] - *this\align\y
+            If right = #__align_auto And
+               *this\_parent( )\align\autodock\width
+              right = - *this\_parent( )\align\autodock\width
+            EndIf
+            If left < 0 Or right < 0
+              If left And right
+                *this\align\x - left
+                *this\align\width - *this\align\x + right
+              Else
+                *this\align\x - left + right
+              EndIf
             EndIf
             
-            ;\\ auto stick update
-            If flag & #__align_full = #__align_full
-              If ( *this\_parent( )\align\autodock\x Or
-                   *this\_parent( )\align\autodock\y Or
-                   *this\_parent( )\align\autodock\width Or
-                   *this\_parent( )\align\autodock\height )
-                
-                ; loop enumerate widgets
-                If StartEnumerate( *this\_parent( ) )
-                  If enumWidget( )\align
-                    If enumWidget( )\align\top And enumWidget( )\align\bottom
-                      enumWidget( )\align\y      = enumWidget( )\_parent( )\align\autodock\y
-                      enumWidget( )\align\height = enumWidget( )\_parent( )\height[#__c_inner] - ( enumWidget( )\_parent( )\align\autodock\y + enumWidget( )\_parent( )\align\autodock\height )
-                      
-                      If enumWidget( )\align\left And enumWidget( )\align\right
-                        enumWidget( )\align\x     = enumWidget( )\_parent( )\align\autodock\x
-                        enumWidget( )\align\width = enumWidget( )\_parent( )\width[#__c_inner] - ( enumWidget( )\_parent( )\align\autodock\x + enumWidget( )\_parent( )\align\autodock\width )
-                        
-                        If enumWidget( )\type = #__type_window
-                          enumWidget( )\align\width - enumWidget( )\fs * 2
-                        EndIf
-                      EndIf
+            If top = #__align_auto And
+               *this\_parent( )\align\autodock\y
+              top = - *this\_parent( )\align\autodock\y
+            EndIf
+            If bottom = #__align_auto And
+               *this\_parent( )\align\autodock\height
+              bottom = - *this\_parent( )\align\autodock\height
+            EndIf
+            If top < 0 Or bottom < 0
+              If top And bottom
+                *this\align\y - top
+                *this\align\height - *this\align\y + bottom
+              Else
+                *this\align\y - top + bottom
+              EndIf
+            EndIf
+          EndIf
+          
+          ;\\ auto stick position
+          If Not *this\align\right And *this\align\left
+            *this\_parent( )\align\autodock\x = *this\align\x + *this\align\width
+            If *this\type = #__type_window
+              *this\_parent( )\align\autodock\x + *this\fs * 2
+            EndIf
+          EndIf
+          If Not *this\align\bottom And *this\align\top
+            *this\_parent( )\align\autodock\y = *this\align\y + *this\align\height
+            If *this\type = #__type_window
+              *this\_parent( )\align\autodock\y + *this\fs * 2
+            EndIf
+          EndIf
+          If Not *this\align\left And *this\align\right
+            *this\_parent( )\align\autodock\width = *this\_parent( )\width[#__c_inner] - *this\align\x
+          EndIf
+          If Not *this\align\top And *this\align\bottom
+            *this\_parent( )\align\autodock\height = *this\_parent( )\height[#__c_inner] - *this\align\y
+          EndIf
+          
+          ;\\ auto stick update
+          If flag & #__align_full = #__align_full
+            If ( *this\_parent( )\align\autodock\x Or
+                 *this\_parent( )\align\autodock\y Or
+                 *this\_parent( )\align\autodock\width Or
+                 *this\_parent( )\align\autodock\height )
+              
+              ; loop enumerate widgets
+              If StartEnumerate( *this\_parent( ) )
+                If enumWidget( )\align
+                  If enumWidget( )\align\top And enumWidget( )\align\bottom
+                    enumWidget( )\align\y      = enumWidget( )\_parent( )\align\autodock\y
+                    enumWidget( )\align\height = enumWidget( )\_parent( )\height[#__c_inner] - ( enumWidget( )\_parent( )\align\autodock\y + enumWidget( )\_parent( )\align\autodock\height )
+                    
+                    If enumWidget( )\align\left And enumWidget( )\align\right
+                      enumWidget( )\align\x     = enumWidget( )\_parent( )\align\autodock\x
+                      enumWidget( )\align\width = enumWidget( )\_parent( )\width[#__c_inner] - ( enumWidget( )\_parent( )\align\autodock\x + enumWidget( )\_parent( )\align\autodock\width )
                       
                       If enumWidget( )\type = #__type_window
-                        enumWidget( )\align\height - enumWidget( )\fs * 2
+                        enumWidget( )\align\width - enumWidget( )\fs * 2
                       EndIf
                     EndIf
+                    
+                    If enumWidget( )\type = #__type_window
+                      enumWidget( )\align\height - enumWidget( )\fs * 2
+                    EndIf
                   EndIf
-                  StopEnumerate( )
                 EndIf
+                StopEnumerate( )
               EndIf
             EndIf
           EndIf
-          
-          ;\\
-          If Not mode
-            *this\align\x = *this\x[#__c_container]
-            *this\align\y = *this\y[#__c_container]
-            ;\\
-            If *this\type = #__type_window
-              *this\align\width  = *this\width[#__c_inner]
-              *this\align\height = *this\height[#__c_inner]
-            Else
-              *this\align\width  = *this\width[#__c_frame]
-              *this\align\height = *this\height[#__c_frame]
-            EndIf
-          EndIf
-          
-          ; update parent childrens coordinate
-          Resize( *this\_parent( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          PostCanvasRepaint( *this\_root( ) )
         EndIf
+        
+        ;\\
+        If Not mode
+          *this\align\x = *this\x[#__c_container]
+          *this\align\y = *this\y[#__c_container]
+          ;\\
+          If *this\type = #__type_window
+            *this\align\width  = *this\width[#__c_inner]
+            *this\align\height = *this\height[#__c_inner]
+          Else
+            *this\align\width  = *this\width[#__c_frame]
+            *this\align\height = *this\height[#__c_frame]
+          EndIf
+        EndIf
+        
+        ; update parent childrens coordinate
+        Resize( *this\_parent( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+        PostCanvasRepaint( *this\_root( ) )
       EndIf
-      
+    EndIf
     EndProcedure
     
     ;-
@@ -21236,5 +20812,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------43---4-q3-9n5X8q------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------t0---0vq0P-J+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
