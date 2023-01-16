@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-; XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -44,11 +43,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Case  *RETURN:  SetParent(*CHILD, *window_20)
               
             Case *COMBO
-              Select EventType()
+              Select EventType
                 Case #PB_EventType_Change
                   ParentID = GetParent(*CHILD)
-                  Debug 77777
-          
+                  Free( *CHILD )
+                  
                   Select GetState(*COMBO)
                     Case  1: *CHILD = Button(30,20,150,30,"Button") 
                     Case  2: *CHILD = String(30,20,150,30,"String") 

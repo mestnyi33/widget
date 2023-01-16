@@ -26,19 +26,24 @@ DeclareModule Cursor
     #PB_Cursor_Arrows          ; = 6  ; GDK_FLEUR
     #PB_Cursor_LeftRight       ; = 7  ;GDK_SB_H_DOUBLE_ARROW ; GDK_SB_LEFT_ARROW ; GDK_SB_RIGHT_ARROW
     #PB_Cursor_UpDown          ; = 8  ; GDK_SB_V_DOUBLE_ARROW ; GDK_SB_UP_ARROW ; GDK_SB_DOWN_ARROW
-
+    
     #PB_Cursor_LeftUpRightDown ; = 9 ; GDK_UL_ANGLE ; GDK_TOP_LEFT_CORNER ; GDK_LR_ANGLE ; GDK_BOTTOM_RIGHT_CORNER
     #PB_Cursor_LeftDownRightUp ; = 10 ; GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
     #PB_Cursor_Invisible       ; = 11 ; GDK_BLANK_CURSOR
-    #PB_Cursor_Left                  ; GDK_LEFT_TEE ; GDK_LEFT_SIDE
-    #PB_Cursor_Right                 ; GDK_RIGHT_TEE ; GDK_RIGHT_SIDE
-    #PB_Cursor_Up                    ; GDK_TOP_TEE ; GDK_TOP_SIDE
-    #PB_Cursor_Down                  ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE
+    #PB_Cursor_Left            ; GDK_LEFT_TEE ; GDK_LEFT_SIDE
+    #PB_Cursor_Right           ; GDK_RIGHT_TEE ; GDK_RIGHT_SIDE
+    #PB_Cursor_Up              ; GDK_TOP_TEE ; GDK_TOP_SIDE
+    #PB_Cursor_Down            ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE
     #PB_Cursor_Grab            
     #PB_Cursor_Grabbing
     #PB_Cursor_Drag
     #PB_Cursor_Drop
     #PB_Cursor_VIBeam
+    
+    #PB_Cursor_TopLeft
+    #PB_Cursor_TopRight
+    #PB_Cursor_BottomLeft
+    #PB_Cursor_BottomRight
   EndEnumeration
   
   UsePNGImageDecoder()
@@ -60,98 +65,98 @@ EndDeclareModule
 Module Cursor 
   ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php#GdkCursorType
   ;--- LINUX:
-;   GDK_X_CURSOR 		  = 0,
-;   GDK_ARROW 		  = 2,
-;   GDK_BASED_ARROW_DOWN    = 4,
-;   GDK_BASED_ARROW_UP 	  = 6,
-;   GDK_BOAT 		  = 8,
-;   GDK_BOGOSITY 		  = 10,
-;   GDK_BOTTOM_LEFT_CORNER  = 12,
-;   GDK_BOTTOM_RIGHT_CORNER = 14,
-;   GDK_BOTTOM_SIDE 	  = 16,
-;   GDK_BOTTOM_TEE 	  = 18,
-;   GDK_BOX_SPIRAL 	  = 20,
-;   GDK_CENTER_PTR 	  = 22,
-;   GDK_CIRCLE 		  = 24,
-;   GDK_CLOCK	 	  = 26,
-;   GDK_COFFEE_MUG 	  = 28,
-;   GDK_CROSS 		  = 30,
-;   GDK_CROSS_REVERSE 	  = 32,
-;   GDK_CROSSHAIR 	  = 34,
-;   GDK_DIAMOND_CROSS 	  = 36,
-;   GDK_DOT 		  = 38,
-;   GDK_DOTBOX 		  = 40,
-;   GDK_DOUBLE_ARROW 	  = 42,
-;   GDK_DRAFT_LARGE 	  = 44,
-;   GDK_DRAFT_SMALL 	  = 46,
-;   GDK_DRAPED_BOX 	  = 48,
-;   GDK_EXCHANGE 		  = 50,
-;   GDK_FLEUR 		  = 52,
-;   GDK_GOBBLER 		  = 54,
-;   GDK_GUMBY 		  = 56,
-;   GDK_HAND1 		  = 58,
-;   GDK_HAND2 		  = 60,
-;   GDK_HEART 		  = 62,
-;   GDK_ICON 		  = 64,
-;   GDK_IRON_CROSS 	  = 66,
-;   GDK_LEFT_PTR 		  = 68,
-;   GDK_LEFT_SIDE 	  = 70,
-;   GDK_LEFT_TEE 		  = 72,
-;   GDK_LEFTBUTTON 	  = 74,
-;   GDK_LL_ANGLE 		  = 76,
-;   GDK_LR_ANGLE 	 	  = 78,
-;   GDK_MAN 		  = 80,
-;   GDK_MIDDLEBUTTON 	  = 82,
-;   GDK_MOUSE 		  = 84,
-;   GDK_PENCIL 		  = 86,
-;   GDK_PIRATE 		  = 88,
-;   GDK_PLUS 		  = 90,
-;   GDK_QUESTION_ARROW 	  = 92,
-;   GDK_RIGHT_PTR 	  = 94,
-;   GDK_RIGHT_SIDE 	  = 96,
-;   GDK_RIGHT_TEE 	  = 98,
-;   GDK_RIGHTBUTTON 	  = 100,
-;   GDK_RTL_LOGO 		  = 102,
-;   GDK_SAILBOAT 		  = 104,
-;   GDK_SB_DOWN_ARROW 	  = 106,
-;   GDK_SB_H_DOUBLE_ARROW   = 108,
-;   GDK_SB_LEFT_ARROW 	  = 110,
-;   GDK_SB_RIGHT_ARROW 	  = 112,
-;   GDK_SB_UP_ARROW 	  = 114,
-;   GDK_SB_V_DOUBLE_ARROW   = 116,
-;   GDK_SHUTTLE 		  = 118,
-;   GDK_SIZING 		  = 120,
-;   GDK_SPIDER		  = 122,
-;   GDK_SPRAYCAN 		  = 124,
-;   GDK_STAR 		  = 126,
-;   GDK_TARGET 		  = 128,
-;   GDK_TCROSS 		  = 130,
-;   GDK_TOP_LEFT_ARROW 	  = 132,
-;   GDK_TOP_LEFT_CORNER 	  = 134,
-;   GDK_TOP_RIGHT_CORNER 	  = 136,
-;   GDK_TOP_SIDE 		  = 138,
-;   GDK_TOP_TEE 		  = 140,
-;   GDK_TREK 		  = 142,
-;   GDK_UL_ANGLE 		  = 144,
-;   GDK_UMBRELLA 		  = 146,
-;   GDK_UR_ANGLE 		  = 148,
-;   GDK_WATCH 		  = 150,
-;   GDK_XTERM 		  = 152
-   #GDK_BLANK_CURSOR = -2 ; пустой курсор
-;   GDK_CURSOR_IS_PIXMAP = -1
+  ;   GDK_X_CURSOR 		  = 0,
+  ;   GDK_ARROW 		  = 2,
+  ;   GDK_BASED_ARROW_DOWN    = 4,
+  ;   GDK_BASED_ARROW_UP 	  = 6,
+  ;   GDK_BOAT 		  = 8,
+  ;   GDK_BOGOSITY 		  = 10,
+  ;   GDK_BOTTOM_LEFT_CORNER  = 12,
+  ;   GDK_BOTTOM_RIGHT_CORNER = 14,
+  ;   GDK_BOTTOM_SIDE 	  = 16,
+  ;   GDK_BOTTOM_TEE 	  = 18,
+  ;   GDK_BOX_SPIRAL 	  = 20,
+  ;   GDK_CENTER_PTR 	  = 22,
+  ;   GDK_CIRCLE 		  = 24,
+  ;   GDK_CLOCK	 	  = 26,
+  ;   GDK_COFFEE_MUG 	  = 28,
+  ;   GDK_CROSS 		  = 30,
+  ;   GDK_CROSS_REVERSE 	  = 32,
+  ;   GDK_CROSSHAIR 	  = 34,
+  ;   GDK_DIAMOND_CROSS 	  = 36,
+  ;   GDK_DOT 		  = 38,
+  ;   GDK_DOTBOX 		  = 40,
+  ;   GDK_DOUBLE_ARROW 	  = 42,
+  ;   GDK_DRAFT_LARGE 	  = 44,
+  ;   GDK_DRAFT_SMALL 	  = 46,
+  ;   GDK_DRAPED_BOX 	  = 48,
+  ;   GDK_EXCHANGE 		  = 50,
+  ;   GDK_FLEUR 		  = 52,
+  ;   GDK_GOBBLER 		  = 54,
+  ;   GDK_GUMBY 		  = 56,
+  ;   GDK_HAND1 		  = 58,
+  ;   GDK_HAND2 		  = 60,
+  ;   GDK_HEART 		  = 62,
+  ;   GDK_ICON 		  = 64,
+  ;   GDK_IRON_CROSS 	  = 66,
+  ;   GDK_LEFT_PTR 		  = 68,
+  ;   GDK_LEFT_SIDE 	  = 70,
+  ;   GDK_LEFT_TEE 		  = 72,
+  ;   GDK_LEFTBUTTON 	  = 74,
+  ;   GDK_LL_ANGLE 		  = 76,
+  ;   GDK_LR_ANGLE 	 	  = 78,
+  ;   GDK_MAN 		  = 80,
+  ;   GDK_MIDDLEBUTTON 	  = 82,
+  ;   GDK_MOUSE 		  = 84,
+  ;   GDK_PENCIL 		  = 86,
+  ;   GDK_PIRATE 		  = 88,
+  ;   GDK_PLUS 		  = 90,
+  ;   GDK_QUESTION_ARROW 	  = 92,
+  ;   GDK_RIGHT_PTR 	  = 94,
+  ;   GDK_RIGHT_SIDE 	  = 96,
+  ;   GDK_RIGHT_TEE 	  = 98,
+  ;   GDK_RIGHTBUTTON 	  = 100,
+  ;   GDK_RTL_LOGO 		  = 102,
+  ;   GDK_SAILBOAT 		  = 104,
+  ;   GDK_SB_DOWN_ARROW 	  = 106,
+  ;   GDK_SB_H_DOUBLE_ARROW   = 108,
+  ;   GDK_SB_LEFT_ARROW 	  = 110,
+  ;   GDK_SB_RIGHT_ARROW 	  = 112,
+  ;   GDK_SB_UP_ARROW 	  = 114,
+  ;   GDK_SB_V_DOUBLE_ARROW   = 116,
+  ;   GDK_SHUTTLE 		  = 118,
+  ;   GDK_SIZING 		  = 120,
+  ;   GDK_SPIDER		  = 122,
+  ;   GDK_SPRAYCAN 		  = 124,
+  ;   GDK_STAR 		  = 126,
+  ;   GDK_TARGET 		  = 128,
+  ;   GDK_TCROSS 		  = 130,
+  ;   GDK_TOP_LEFT_ARROW 	  = 132,
+  ;   GDK_TOP_LEFT_CORNER 	  = 134,
+  ;   GDK_TOP_RIGHT_CORNER 	  = 136,
+  ;   GDK_TOP_SIDE 		  = 138,
+  ;   GDK_TOP_TEE 		  = 140,
+  ;   GDK_TREK 		  = 142,
+  ;   GDK_UL_ANGLE 		  = 144,
+  ;   GDK_UMBRELLA 		  = 146,
+  ;   GDK_UR_ANGLE 		  = 148,
+  ;   GDK_WATCH 		  = 150,
+  ;   GDK_XTERM 		  = 152
+  #GDK_BLANK_CURSOR = -2 ; пустой курсор
+                         ;   GDK_CURSOR_IS_PIXMAP = -1
   
-; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php 
-;   GdkКурсор  *	gdk_cursor_new  ()
-;   GdkКурсор  *	gdk_cursor_new_from_pixbuf  ()
-;   GdkКурсор  *	gdk_cursor_new_from_surface  ()
-;   GdkКурсор  *	gdk_cursor_new_from_name  ()
-;   GdkКурсор  *	gdk_cursor_new_for_display  ()
-;   GdkDisplay  *	gdk_cursor_get_display  ()
-;   GdkPixbuf  *	gdk_cursor_get_image  ()
-;   cairo_surface_t  *	gdk_cursor_get_surface  ()
-;   GdkCursorType	gdk_cursor_get_cursor_type  ()
-;   GdkКурсор  *	gdk_cursor_ref  ()
-;                	gdk_cursor_unref  ()
+  ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php 
+  ;   GdkКурсор  *	gdk_cursor_new  ()
+  ;   GdkКурсор  *	gdk_cursor_new_from_pixbuf  ()
+  ;   GdkКурсор  *	gdk_cursor_new_from_surface  ()
+  ;   GdkКурсор  *	gdk_cursor_new_from_name  ()
+  ;   GdkКурсор  *	gdk_cursor_new_for_display  ()
+  ;   GdkDisplay  *	gdk_cursor_get_display  ()
+  ;   GdkPixbuf  *	gdk_cursor_get_image  ()
+  ;   cairo_surface_t  *	gdk_cursor_get_surface  ()
+  ;   GdkCursorType	gdk_cursor_get_cursor_type  ()
+  ;   GdkКурсор  *	gdk_cursor_ref  ()
+  ;                	gdk_cursor_unref  ()
   
   ; gdk_cursor_get_image( GdkCursor *cursor);  Возвращает GdkPixbuf с изображением, используемым для отображения курсора.
   
@@ -161,14 +166,14 @@ Module Cursor
     gdk_window_get_cursor(*widget.GtkWidget)
     g_object_set_data(*Widget.GtkWidget, strData.p-utf8, *userdata)
   EndImport
-;     ImportC "" ; -gtk"
-;     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
-;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
-;   EndImport
-
+  ;     ImportC "" ; -gtk"
+  ;     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
+  ;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
+  ;   EndImport
+  
   Procedure   Free(hCursor.i)
-;     ; Используйте g_object_unref()
-;     ProcedureReturn gdk_cursor_unref_(hCursor)
+    ;     ; Используйте g_object_unref()
+    ;     ProcedureReturn gdk_cursor_unref_(hCursor)
   EndProcedure
   
   Procedure   isHiden()
@@ -176,17 +181,17 @@ Module Cursor
   EndProcedure
   
   Procedure   Hide(state.b)
-;     ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
-;     If state
-;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_BLANK_CURSOR))
-;       ;gdk_cursor_new_from_name("none")
-;     Else
-;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_ARROW))
-;     EndIf
+    ;     ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
+    ;     If state
+    ;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_BLANK_CURSOR))
+    ;       ;gdk_cursor_new_from_name("none")
+    ;     Else
+    ;       gdk_cursor_new_for_display_(gdk_display_get_default_(),gdk_cursor_new_(#GDK_ARROW))
+    ;     EndIf
   EndProcedure
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
-;     ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
+    ;     ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
@@ -198,111 +203,120 @@ Module Cursor
     If *cursor And 
        *cursor\hcursor  
       
-;       ; reset
-;       If state = 0 
-;         gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
-;       EndIf
-;       
-;       ; set
-;       If state = 1 
-;         gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
-;       EndIf
+      ; reset
+      If state = 0 
+        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
+      EndIf
+      
+      ; set
+      If state = 1 
+        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
+      EndIf
     EndIf
     
   EndProcedure
   
   Procedure Set(Gadget.i, cursor.i)
-    ProcedureReturn
-    If Gadget >= 0
+    If IsGadget( Gadget )
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
       CompilerIf #PB_Compiler_IsMainFile
         Debug "setCursor"
       CompilerEndIf
       
-;       *cursor = g_object_get_data_(GadgetID, "__cursor")
-;       
-;       If Not *cursor
-;         *cursor = AllocateStructure(_s_cursor)
-;         *cursor\windowID = ID::GetWindowID(GadgetID)
-;         g_object_set_data(GadgetID, "__cursor", *cursor) 
-;       EndIf
-;       
-;       If *cursor\icursor <> cursor
-;         *cursor\icursor = cursor
-;         
-;         If cursor >= 0 And cursor <= 255
-;           Select cursor
-;             Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR)
-;             Case #PB_Cursor_Busy 
-;             Case #PB_Cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR)
-;             Case #PB_Cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
-;               
-;             Case #PB_Cursor_Drag      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_Drop      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
-;               
-;             Case #PB_Cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS)
-;             Case #PB_Cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2)
-;             Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;               
-;             Case #PB_Cursor_Arrows   : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
-;             Case #PB_Cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_LeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;               
-;             Case #PB_Cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;             Case #PB_Cursor_UpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-;           EndSelect 
-;         Else
-;           If cursor
-;             *cursor\hcursor = Create(cursor)
-;           EndIf
-;         EndIf
-;       EndIf
+      *cursor = g_object_get_data_(GadgetID, "__cursor")
       
-;       If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
-;         Change( GadgetID, 1 )
-;         ProcedureReturn #True
-;       EndIf
+      If Not *cursor
+        *cursor = AllocateStructure(_s_cursor)
+        *cursor\windowID = ID::GetWindowID(GadgetID)
+        g_object_set_data(GadgetID, "__cursor", *cursor) 
+      EndIf
+      
+      If *cursor\icursor <> cursor
+        *cursor\icursor = cursor
+        
+        If cursor >= 0 And cursor <= 255
+          Select cursor
+            ;;Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BLANK_CURSOR)
+            Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR)
+              Debug 888
+            Case #PB_Cursor_Busy    : *cursor\hcursor = gdk_cursor_new_(#GDK_WATCH)
+            Case #PB_Cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR)
+            Case #PB_Cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
+              
+            Case #PB_Cursor_Drag      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #PB_Cursor_Drop      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #PB_Cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
+              
+            Case #PB_Cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS)
+            Case #PB_Cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2)
+            Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+              
+            Case #PB_Cursor_Arrows   : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
+            Case #PB_Cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; #GDK_SB_LEFT_ARROW
+            Case #PB_Cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE) ; #GDK_SB_RIGHT_ARROW
+            Case #PB_Cursor_LeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW)
+              
+            Case #PB_Cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_SIDE)
+            Case #PB_Cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE)
+            Case #PB_Cursor_UpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW)
+              
+            Case #PB_Cursor_LeftUpRightDown  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
+            Case #PB_Cursor_LeftDownRightUp  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
+              
+            Case #PB_Cursor_TopLeft          : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
+            Case #PB_Cursor_TopRight         : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
+            Case #PB_Cursor_BottomLeft       : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_LEFT_CORNER)
+            Case #PB_Cursor_BottomRight      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_RIGHT_CORNER)
+          EndSelect 
+        Else
+          If cursor
+            *cursor\hcursor = Create(cursor)
+          EndIf
+        EndIf
+      EndIf
+      
+      If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID)
+        Change( GadgetID, 1 )
+        ProcedureReturn #True
+      EndIf
     EndIf
   EndProcedure
   
   Procedure   Get()
-;    ; gdk_cursor_get_cursor_type_(GdkCursor *cursor) ; Возвращает тип курсора для этого курсора.
-;     Protected result.i, currentSystemCursor
-;     
-;     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
-;     
-;     If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
-;       result = #PB_Cursor_Invisible
-;     Else
-;       Select gdk_window_get_cursor( gdk_display_get_default_() )
-;         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
-;         Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
-;           
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drop
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drag
-;         Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #PB_Cursor_Denied
-;           
-;         Case gdk_cursor_new_(#GDK_CROSS) : result = #PB_Cursor_Cross
-;         Case gdk_cursor_new_(#GDK_HAND2) : result = #PB_Cursor_Hand
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grab
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grabbing
-;           
-;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #PB_Cursor_Arrows
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Up
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Down
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_UpDown
-;           
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Left
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Right
-;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_LeftRight
-;       EndSelect 
-;     EndIf
-;     
+    ;    ; gdk_cursor_get_cursor_type_(GdkCursor *cursor) ; Возвращает тип курсора для этого курсора.
+    ;     Protected result.i, currentSystemCursor
+    ;     
+    ;     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
+    ;     
+    ;     If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
+    ;       result = #PB_Cursor_Invisible
+    ;     Else
+    ;       Select gdk_window_get_cursor( gdk_display_get_default_() )
+    ;         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
+    ;         Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
+    ;           
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drop
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drag
+    ;         Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #PB_Cursor_Denied
+    ;           
+    ;         Case gdk_cursor_new_(#GDK_CROSS) : result = #PB_Cursor_Cross
+    ;         Case gdk_cursor_new_(#GDK_HAND2) : result = #PB_Cursor_Hand
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grab
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grabbing
+    ;           
+    ;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #PB_Cursor_Arrows
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Up
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Down
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_UpDown
+    ;           
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Left
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Right
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_LeftRight
+    ;       EndSelect 
+    ;     EndIf
+    ;     
     ProcedureReturn result
   EndProcedure
   
@@ -324,7 +338,7 @@ Module Cursor
 EndModule   
 
 ;-\\ example
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile ;= 99
   UseModule constants
   ;UseModule events
   
@@ -584,21 +598,25 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-  Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  Cursor::Set((lt), Cursor::#PB_Cursor_TopLeft ) 
+  Cursor::Set((rb), Cursor::#PB_Cursor_BottomRight ) 
   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
-  Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  Cursor::Set((rt), Cursor::#PB_Cursor_TopRight ) 
+  Cursor::Set((lb), Cursor::#PB_Cursor_BottomLeft ) 
   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
-  Cursor::Set((c), Cursor::#PB_Cursor_Up ) 
+  Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
-  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Drag ) 
+  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
-  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Busy ) 
   
   Macro DrawUp(x, y, size, bcolor, fcolor)
     Line(x+7, y, 2, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -1045,22 +1063,22 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Define EnteredGadget =- 1
   Define LeavedGadget =- 1 
   Define buttons = 0
+  Define WindowID
+  Define gadgetID
   
   Repeat 
     event = WaitWindowEvent()
-    EnteredGadget = ID::Gadget(Mouse::Gadget(Mouse::Window()))
+    EnteredGadget = ID::Gadget( Mouse::Gadget( Mouse::Window( ) ) )
     
     If LeavedGadget <> EnteredGadget And buttons = 0
-     ; Debug  CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "NSEvent")
-      
-      If LeavedGadget >= 0
+      If IsGadget(LeavedGadget)
         ; Debug GetGadgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
         EventHandler(LeavedGadget, #PB_EventType_MouseLeave, 0)
         ;Cursor::Change(GadgetID(LeavedGadget), 0 )
         PostEvent(#PB_Event_Gadget, EventWindow(), LeavedGadget, #PB_EventType_CursorChange, 0)
       EndIf
       
-      If EnteredGadget >= 0
+      If IsGadget(EnteredGadget)
         ; Debug GetGadgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
         EventHandler(EnteredGadget, #PB_EventType_MouseEnter, 1)
         ;Cursor::Change(GadgetID(EnteredGadget), 1 )
@@ -1068,6 +1086,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       EndIf
       LeavedGadget = EnteredGadget
     EndIf
+    
     
     If event = #PB_Event_Gadget
       Select EventType()
@@ -1085,7 +1104,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 326
-; FirstLine = 313
-; Folding = --------------
+; CursorPosition = 618
+; FirstLine = 608
+; Folding = ---------------
 ; EnableXP

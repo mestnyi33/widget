@@ -317,7 +317,7 @@ Procedure GadgetParent( Gadget, ParentID = #PB_Ignore ) ; Returns gadget parent 
           GadgetX = GadgetX + *GtkWidget\parent\allocation\x
           GadgetY = GadgetY + *GtkWidget\parent\allocation\y 
         EndIf
-        gtk_widget_set_uposition_( *GtkWidget, GadgetX, GadgetY )
+        ;gtk_widget_set_uposition_( *GtkWidget, GadgetX, GadgetY )
       EndIf
       
       ProcedureReturn ParentID
@@ -444,7 +444,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case 15 :ScrollBarGadget(20,30,20,150,30,5,5,9)
           Case 16 :ScrollAreaGadget(20,30,20,150,30,305,305,9,#PB_ScrollArea_Flat) :ButtonGadget(-1,0,0,80,20,"ButtonGadget") :CloseGadgetList()
           Case 17 :TrackBarGadget(20,30,20,150,30,0,5)
-          Case 18 :WebGadget(20,30,20,150,30,"") ; bug 531 linux
+          ;Case 18 :WebGadget(20,30,20,150,30,"") ; bug 531 linux
           Case 19 :ButtonImageGadget(20,30,20,150,30,0)
           Case 20 :CalendarGadget(20,30,20,150,30) 
           Case  21 :DateGadget(20,30,20,150,30)
@@ -482,7 +482,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf  
   Until Event=#PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 14
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 319
+; FirstLine = 309
 ; Folding = --------
 ; EnableXP

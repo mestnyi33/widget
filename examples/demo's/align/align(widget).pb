@@ -438,17 +438,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     _SetAlignment( Widgets(Hex(4)), #__align_center|#__align_proportional|#__align_bottom )
     
     ;\\ OK example - 3
-    _SetAlignment( Widgets(Hex(6)), 0, #__align_proportional,#__align_proportional,1,1 )
-    _SetAlignment( Widgets(Hex(2)), 0, 0,#__align_proportional,0,1 )
-    _SetAlignment( Widgets(Hex(7)), 0, 1,#__align_proportional,#__align_proportional,1 )
+    _SetAlignment( Widgets(Hex(6)), 0, 1,1,#__align_proportional,#__align_proportional )
+    _SetAlignment( Widgets(Hex(2)), 0, 0,1,0,#__align_proportional )
+    _SetAlignment( Widgets(Hex(7)), 0, #__align_proportional,1,1,#__align_proportional )
     
-    _SetAlignment( Widgets(Hex(1)), 0, #__align_proportional,0,1,0 )
+    _SetAlignment( Widgets(Hex(1)), 0, 1,0,#__align_proportional,0 )
     _SetAlignment( Widgets(Hex(5)), #__align_center ) ; , 0,0,0,0 )
-    _SetAlignment( Widgets(Hex(3)), 0, 1,0,#__align_proportional,0 )
+    _SetAlignment( Widgets(Hex(3)), 0, #__align_proportional,0,1,0 )
     
-    _SetAlignment( Widgets(Hex(8)), 0, #__align_proportional,1,1,#__align_proportional )
-    _SetAlignment( Widgets(Hex(4)), 0, 0,1,0,#__align_proportional )
-    _SetAlignment( Widgets(Hex(9)), 0, 1,1,#__align_proportional,#__align_proportional )
+    _SetAlignment( Widgets(Hex(8)), 0, 1,#__align_proportional,#__align_proportional,1 )
+    _SetAlignment( Widgets(Hex(4)), 0, 0,#__align_proportional,0,1 )
+    _SetAlignment( Widgets(Hex(9)), 0, #__align_proportional,#__align_proportional,1,1 )
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 690,490)
   EndProcedure
@@ -459,6 +459,7 @@ CompilerIf #PB_Compiler_IsMainFile
   example_4()
   example_5()
   example_6()
+  example_7()
   
   
   Procedure example_demo()
@@ -497,6 +498,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     
   ;   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 442
+; FirstLine = 437
 ; Folding = ----
 ; EnableXP

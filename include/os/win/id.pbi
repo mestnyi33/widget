@@ -24,19 +24,27 @@ Module ID
   EndProcedure
   
   Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-    Protected Window = GetProp_( WindowID, "PB_WindowID" ) - 1
-    If IsWindow( Window ) And WindowID( Window ) = WindowID
-      ProcedureReturn Window
+    If WindowID
+      Protected Window = GetProp_( WindowID, "PB_WindowID" ) - 1
+      If IsWindow( Window ) And WindowID( Window ) = WindowID
+        ProcedureReturn Window
+      EndIf
+      ProcedureReturn - 1
+    Else
+      ProcedureReturn - 1
     EndIf
-    ProcedureReturn - 1
   EndProcedure
   
   Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
-    Protected gadget = GetProp_( GadgetID, "PB_ID" )
-    If IsGadget( gadget ) And GadgetID( gadget ) = GadgetID
-      ProcedureReturn gadget
+    If GadgetID
+      Protected Gadget = GetProp_( GadgetID, "PB_ID" )
+      If IsGadget( Gadget ) And GadgetID( Gadget ) = GadgetID
+        ProcedureReturn Gadget
+      EndIf
+      ProcedureReturn - 1
+    Else
+      ProcedureReturn - 1
     EndIf
-    ProcedureReturn - 1
   EndProcedure
 EndModule
 
@@ -54,6 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 40
+; FirstLine = 22
+; Folding = ---
 ; EnableXP

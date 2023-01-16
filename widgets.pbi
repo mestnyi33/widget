@@ -12551,6 +12551,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", #PB_Window_NoActivate | #PB_Window_BorderLess, WindowID( *display\_root( )\canvas\window ) )
           CompilerEndIf
           
+          ; StickyWindow( window, #True )
+          
           *root            = Open( window )
           *root\_parent( ) = *display
           ChangeParent( *this, *root )
@@ -12560,6 +12562,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If Not *this\hide
+        ;\\
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          ; var windowLevel: UIWindow.Level { get set }
+          CocoaMessage(0, WindowID(*this\_root( )\canvas\window), "setLevel:",3) ; stay on top
+          ; Debug CocoaMessage(0, WindowID(*this\_root( )\canvas\window), "level")
+        CompilerEndIf
+        
+        ;\\
         ; Resize( *this, 0, 0, display_width, display_height )
         ResizeWindow( *this\_root( )\canvas\window, x, y, display_width, display_height )
         ;  ResizeWindow( *this\_root( )\canvas\window, x+*display\round, y, display_width-*display\round*2, display_height )
@@ -13490,6 +13500,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
+      If *this\type = #__type_ComboBox And *this\PopupBox( )
+        If *this\PopupBox( )\FocusedRow( )
+          ProcedureReturn *this\PopupBox( )\FocusedRow( )\index
+        Else
+          ProcedureReturn - 1
+        EndIf
+      EndIf
+      
       If *this\type = #__type_Button Or
          *this\type = #__type_ButtonImage Or
          *this\type = #__type_Option Or
@@ -14101,6 +14119,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           SetActiveGadget( *this\_root( )\canvas\gadget )
         EndIf
         If a_transform_( *this ) Or is_root_( *this ) ;
+          ProcedureReturn 0
+        EndIf
+        
+        If *this = PopupWidget( )
+          Debug " PopupWidget( activate ) "
+          ; *this = *this\PopupBox( )
           ProcedureReturn 0
         EndIf
         
@@ -17139,7 +17163,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
               ; good transparent canvas
               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+;             CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
             CompilerElse
+;               Protected *style.GtkStyle, *color.GdkColor
+;               *style = gtk_widget_get_style_(WindowID(*this\_root( )\canvas\window)) 
+;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
+;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
             CompilerEndIf
             ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*this\_root( )\canvas\window))
@@ -20812,5 +20842,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------t0---0vq0P-J+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------t0---0vq0P-J+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v26+-+00--v------------------------------------------------------------------------------------------------------------
 ; EnableXP

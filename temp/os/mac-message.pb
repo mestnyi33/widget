@@ -23,6 +23,6 @@ CocoaMessage(@MyTransformStruct, MyTransForm, "transformStruct"); get the transf
 Debug MyTransformStruct\m11; debug outputs 5.5
 
 
-CocoaMessage(0, MyTransForm, "HIViewSetVisible:@", @view);, "true:@",1); scale x by 5.5, y by 20
+;CocoaMessage(0, MyTransForm, "HIViewSetVisible:@", @view);, "true:@",1); scale x by 5.5, y by 20
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; EnableXP

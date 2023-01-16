@@ -15,21 +15,39 @@ Module ID
   EndProcedure
   
   Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
-    ProcedureReturn gtk_widget_get_toplevel_( handle )
+    If handle
+      ProcedureReturn gtk_widget_get_toplevel_( handle )
+    EndIf
   EndProcedure
   
   Procedure.i IsWindowID( handle.i )
-    If ClassName( handle ) = "PBWindow"
+    If handle And ClassName( handle ) = "PBWindow"
       ProcedureReturn 1
     EndIf
   EndProcedure
   
   Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-    ProcedureReturn g_object_get_data_( WindowID, "pb_id" )
+    If WindowID 
+      Protected Window = g_object_get_data_( WindowID, "pb_id" )
+      If IsWindow( Window ) And WindowID( Window ) = WindowID
+        ProcedureReturn Window
+      EndIf
+      ProcedureReturn - 1
+    Else
+      ProcedureReturn - 1
+    EndIf
   EndProcedure
   
   Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
-    ProcedureReturn g_object_get_data_( GadgetID, "pb_id" ) - 1 
+    If GadgetID
+      Protected Gadget = g_object_get_data_( GadgetID, "pb_id" ) - 1 
+      If IsGadget( Gadget ) And GadgetID( Gadget ) = GadgetID
+        ProcedureReturn Gadget
+      EndIf
+      ProcedureReturn - 1
+    Else
+      ProcedureReturn - 1
+    EndIf
   EndProcedure
 EndModule
 
@@ -47,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 31
-; FirstLine = 22
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 23
+; FirstLine = 40
+; Folding = ---
 ; EnableXP

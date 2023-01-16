@@ -1,7 +1,7 @@
 ﻿EnableExplicit
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-  ImportC "-gtk"
+  ImportC "";-gtk"
     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
   EndImport
@@ -187,6 +187,7 @@ Procedure WidgetParent(GadgetID)
     EndIf  
   Until Event=#PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 3
 ; Folding = -----
 ; EnableXP

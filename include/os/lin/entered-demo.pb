@@ -1,4 +1,4 @@
-﻿IncludePath "../../os/mac/"
+﻿IncludePath "../../os/lin/"
 XIncludeFile "id.pbi"
 XIncludeFile "mouse.pbi"
 XIncludeFile "cursor.pbi"
@@ -548,6 +548,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
 ; Folding = ----------
 ; EnableXP

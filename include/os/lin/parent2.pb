@@ -203,7 +203,7 @@ ProcedureDLL SetParent(ChildID,ParentID) ;Set Parent
           x+gtk_notebook_get_tab_vborder(gtk_widget_get_parent_(GtkContainer(ChildID)))
           y+GetGadgetAttribute(IDGadget(gtk_widget_get_parent_(GtkContainer(ChildID))), #PB_Panel_TabHeight)
         EndIf
-        gtk_widget_set_uposition_( GtkWidget, x,y )
+        ;gtk_widget_set_uposition_( GtkWidget, x,y )
       EndIf
     Else
       ;{       If ParentID =0;не получается переместить на рабочий стол
@@ -308,7 +308,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf  
   Until Event=#PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 205
+; FirstLine = 199
 ; Folding = ---------
 ; EnableXP

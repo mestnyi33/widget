@@ -1,6 +1,25 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
+
+; CompilerSelect #PB_Compiler_OS
+; 			CompilerCase #PB_OS_Windows
+; 				Select GadgetType(GadgetID)
+; 					Case #PB_GadgetType_ListView
+; 						SendMessage_(GadgetID(GadgetID), #LB_SETTOPINDEX, CountGadgetItems(GadgetID) - 1, #Null)
+; 					Case #PB_GadgetType_ListIcon
+; 						SendMessage_(GadgetID(GadgetID), #LVM_ENSUREVISIBLE, CountGadgetItems(GadgetID) - 1, #False)
+; 					Case #PB_GadgetType_Editor
+; 						SendMessage_(GadgetID(GadgetID), #EM_SCROLLCARET, #SB_BOTTOM, 0)
+; 				EndSelect
+; 			CompilerCase #PB_OS_Linux
+; 				Protected *Adjustment.GtkAdjustment
+; 				*Adjustment = gtk_scrolled_window_get_vadjustment_(gtk_widget_get_parent_(GadgetID(Gadget)))
+; 				*Adjustment\value = *Adjustment\upper
+; 				gtk_adjustment_value_changed_(*Adjustment)
+; 		CompilerEndSelect 
+		
+		
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)

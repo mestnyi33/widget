@@ -438,8 +438,8 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
                     Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
                     Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget", #PB_Text_Border ) 
-                    Case  4: OptionGadget( #CHILD,30,20,150,30,"Optiongadget" ) 
-                    Case  5: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
+                    Case  5: OptionGadget( #CHILD,30,20,150,30,"Optiongadget" ) 
+                    Case  4: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
                     Case  6: ListViewGadget( #CHILD,30,20,150,30 ) 
                     Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
                     Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
@@ -452,7 +452,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case 15: ScrollBarGadget( #CHILD,30,20,150,30,5,335,9 )
                     Case 16: ScrollAreaGadget( #CHILD,30,20,150,30,305,305,9,#PB_ScrollArea_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( )
                     Case 17: TrackBarGadget( #CHILD,30,20,150,30,0,5 )
-                    Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
+                    ;Case 18: WebGadget( #CHILD,30,20,150,30,"" ) ; bug 531 linux
                     Case 19: ButtonImageGadget( #CHILD,30,20,150,30,0 )
                     Case 20: CalendarGadget( #CHILD,30,20,150,30 ) 
                     Case 21: DateGadget( #CHILD,30,20,150,30 )
@@ -506,6 +506,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 441
+; FirstLine = 428
 ; Folding = ------------
 ; EnableXP

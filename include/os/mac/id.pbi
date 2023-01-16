@@ -32,12 +32,24 @@ Module ID
   EndProcedure
   
   Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
-    ProcedureReturn PB_Window_GetID( WindowID )
+    If WindowID
+      Protected Window = PB_Window_GetID( WindowID )
+      If IsWindow( Window ) And WindowID( Window ) = WindowID
+        ProcedureReturn Window
+      EndIf
+      ProcedureReturn - 1
+    Else
+      ProcedureReturn - 1
+    EndIf
   EndProcedure
   
   Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
     If GadgetID
-      ProcedureReturn CocoaMessage(0, GadgetID, "tag")
+      Protected Gadget = CocoaMessage(0, GadgetID, "tag")
+      If IsGadget( Gadget ) And GadgetID( Gadget ) = GadgetID
+        ProcedureReturn Gadget
+      EndIf
+      ProcedureReturn - 1
     Else
       ProcedureReturn - 1
     EndIf
@@ -58,6 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 48
+; FirstLine = 29
+; Folding = ---
 ; EnableXP

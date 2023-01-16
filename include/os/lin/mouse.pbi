@@ -8,6 +8,8 @@ DeclareModule Mouse
 EndDeclareModule
 
 Module Mouse
+  ; no good all gadgets
+  
   Macro gtk_children( _handle_, _children_ = 0 ) : g_list_nth_data_( gtk_container_get_children_( _handle_ ), _children_ ) : EndMacro
   Macro gtk_bin( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_bin_get_type_ ( ) ) : EndMacro
   Macro gtk_box( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_box_get_type_ ( ) ) : EndMacro
@@ -72,9 +74,9 @@ Module Mouse
               handle = gtk_widget_get_parent_( handle )
               handle = gtk_widget_get_parent_( handle )
               ;handle = gtk_children(handle)
-              Debug "eee "+ClassName(handle)
+              ;Debug "eee "+ClassName(handle)
               ;handle = gtk_children(handle)
-              
+              ;ProcedureReturn 0
             Else
 ;               Debug ""
 ;               Debug ClassName(handle)
@@ -211,8 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Linux - x64)
-; CursorPosition = 86
-; FirstLine = 69
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 11
 ; Folding = -------
 ; EnableXP

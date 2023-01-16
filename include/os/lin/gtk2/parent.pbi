@@ -344,8 +344,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow( 20, WindowX( 10 )-210, WindowY( 10 ), 240, 350, "old parent", Flags, WindowID( 10 ) )
   
-  ;SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
-   SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
+     ButtonGadget( #CHILD,30,10,160,70,"Buttongadget" )
+;   SpinGadget( #CHILD,30,10,160,70,0,100);"Buttongadget" ) 
 ;   ButtonGadget( 201,0,0,30,30,"1" )
 ;   ButtonGadget( 202,0,0,30,30,"2" )
 ;   SplitterGadget( #CHILD,30,20,150,30,201,202 )
@@ -429,8 +429,8 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
                     Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
                     Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget");, #PB_Text_Border ) 
-                    Case  4: OptionGadget( #CHILD,30,20,150,30,"Optiongadget" ) 
-                    Case  5: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
+                    Case  5: OptionGadget( #CHILD,30,20,150,30,"Optiongadget" ) 
+                    Case  4: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
                     Case  6: ListViewGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ListViewGadget" )
                     Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
                     Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
@@ -496,7 +496,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 346
+; FirstLine = 330
 ; Folding = -----------
 ; EnableXP
 ; SubSystem = gtk2

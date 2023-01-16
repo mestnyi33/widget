@@ -69,7 +69,10 @@ CompilerIf #PB_Compiler_IsMainFile
     If eventtype = #PB_EventType_Focus
       Debug ComboBox.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
-      Debug ComboBox.s +" - widget " + EventWidget( )\class
+      If ComboBox.s <> "" 
+        Debug ComboBox.s +" - widget " + EventWidget( )\class
+        ComboBox.s = ""
+      EndIf
     EndIf
     
   EndProcedure
@@ -129,5 +132,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +-
+; Folding = ---
 ; EnableXP

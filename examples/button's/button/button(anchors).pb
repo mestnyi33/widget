@@ -169,7 +169,7 @@ Module AnchorBox
   
   Procedure Create(x,y,width,height)
     Protected width1 = width-size*2; -2
-    Protected box_height = width
+    Protected box_height = width/2
     Protected height1 = box_height-size*2 ; -2
     
     Button_10 = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__button_toggle);,-1,radius)
@@ -221,7 +221,7 @@ EndModule
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  If widget::Open( #PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
+  If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
     
     AnchorBox::Create(30,30,250,30)
     
