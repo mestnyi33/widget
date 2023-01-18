@@ -1,63 +1,6 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
-  DeclareModule constants
-    Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Drop
-      #PB_EventType_CursorChange
-      #PB_EventType_MouseWheelX
-      #PB_EventType_MouseWheelY
-    EndEnumeration
-  EndDeclareModule
-  Module constants
-  EndModule
-CompilerEndIf
+﻿;\\
+XIncludeFile "../cursors.pbi"
 
-XIncludeFile "id.pbi"
-XIncludeFile "mouse.pbi"
-XIncludeFile "parent.pbi"
-
-DeclareModule Cursor
-  EnableExplicit
-  
-  Enumeration 
-    #PB_Cursor_Default         ; = 0
-    #PB_Cursor_Cross           ; = 1
-    #PB_Cursor_IBeam           ; = 2
-    #PB_Cursor_Hand            ; = 3
-    #PB_Cursor_Busy            ; = 4
-    #PB_Cursor_Denied          ; = 5
-    #PB_Cursor_Arrows          ; = 6
-    #PB_Cursor_LeftRight       ; = 7
-    #PB_Cursor_UpDown          ; = 8
-    #PB_Cursor_LeftUpRightDown ; = 9
-    #PB_Cursor_LeftDownRightUp ; = 10
-    #PB_Cursor_Invisible       ; = 11
-    #PB_Cursor_Left
-    #PB_Cursor_Right
-    #PB_Cursor_Up
-    #PB_Cursor_Down
-    #PB_Cursor_Grab
-    #PB_Cursor_Grabbing
-    #PB_Cursor_Drag
-    #PB_Cursor_Drop
-    #PB_Cursor_VIBeam
-  EndEnumeration
-  
-  UsePNGImageDecoder()
-  
-  Structure _s_cursor
-    icursor.a
-    *hcursor
-    *windowID
-  EndStructure
-  
-  Declare   isHiden()
-  Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
-  Declare   Free(hCursor.i)
-  Declare   Hide(state.b)
-  Declare   Get()
-  Declare   Change(GadgetID.i, state.b )
-  Declare   Set(Gadget.i, cursor.i)
-EndDeclareModule
 Module Cursor 
   #kThemeArrowCursor                   = 0
   #kThemeCopyArrowCursor               = 1
@@ -348,8 +291,10 @@ Module Cursor
             Case #PB_Cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
             Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
               
-            Case #PB_Cursor_LeftDownRightUp : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-            Case #PB_Cursor_LeftUpRightDown : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            Case #PB_Cursor_LeftDownRightUp, #PB_Cursor_LeftDown, #PB_Cursor_RightUp
+              *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            Case #PB_Cursor_LeftUpRightDown, #PB_Cursor_LeftUp, #PB_Cursor_RightDown 
+              *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
               
             Case #PB_Cursor_Drag      : *cursor\hcursor = Create(Cursors( #PB_Cursor_Drag ))
             ;Case #PB_Cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
@@ -687,27 +632,55 @@ CompilerIf #PB_Compiler_IsMainFile
   ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
   Define Canvas_192 = CanvasGadget(#PB_Any, 264, 264, 56, 56)
   
-  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
+;   Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
+;   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
+;   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
+;   
+;   ;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+; ;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
+;   Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
+;   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
+;   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
+; ;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+; ;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
+;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
+; 
+;   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
+;   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
+;   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
+;   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
+;   Cursor::Set((left3), Cursor::#PB_Cursor_Left ) 
+;   Cursor::Set((up3), Cursor::#PB_Cursor_Up ) 
+;   Cursor::Set((Right3), Cursor::#PB_Cursor_Right ) 
+;   Cursor::Set((down3), Cursor::#PB_Cursor_Down ) 
+;   Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
+;   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
+;   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
+;   Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  
   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-  Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
+  Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
-  Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
+  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
-  Cursor::Set((left3), Cursor::#PB_Cursor_Left ) 
-  Cursor::Set((up3), Cursor::#PB_Cursor_Up ) 
-  Cursor::Set((Right3), Cursor::#PB_Cursor_Right ) 
-  Cursor::Set((down3), Cursor::#PB_Cursor_Down ) 
   Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
+  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
-  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Busy ) 
   
   ;-
   Macro DrawUp(x, y, size, bcolor, fcolor)
@@ -1196,5 +1169,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -Xq-+--------------
+; Folding = vU-0--------------
 ; EnableXP

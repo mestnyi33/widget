@@ -1,61 +1,6 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
-  DeclareModule constants
-    Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Drop
-      #PB_EventType_CursorChange
-      #PB_EventType_MouseWheelX
-      #PB_EventType_MouseWheelY
-    EndEnumeration
-  EndDeclareModule
-  Module constants
-  EndModule
-CompilerEndIf
+﻿;\\
+XIncludeFile "../cursors.pbi"
 
-XIncludeFile "id.pbi"
-XIncludeFile "mouse.pbi"
-XIncludeFile "parent.pbi"
-
-DeclareModule Cursor
-  Enumeration 
-    #PB_Cursor_Default         ; = 0
-    #PB_Cursor_Cross           ; = 1
-    #PB_Cursor_IBeam           ; = 2
-    #PB_Cursor_Hand            ; = 3
-    #PB_Cursor_Busy            ; = 4
-    #PB_Cursor_Denied          ; = 5
-    #PB_Cursor_Arrows          ; = 6
-    #PB_Cursor_LeftRight       ; = 7
-    #PB_Cursor_UpDown          ; = 8
-    #PB_Cursor_LeftUpRightDown ; = 9
-    #PB_Cursor_LeftDownRightUp ; = 10
-    #PB_Cursor_Invisible       ; = 11
-    #PB_Cursor_Left
-    #PB_Cursor_Right
-    #PB_Cursor_Up
-    #PB_Cursor_Down
-    #PB_Cursor_Grab
-    #PB_Cursor_Grabbing
-    #PB_Cursor_Drag
-    #PB_Cursor_Drop
-    #PB_Cursor_VIBeam
-  EndEnumeration
-  
-  UsePNGImageDecoder()
-  
-  Structure _s_cursor
-    icursor.a
-    *hcursor
-    *windowID
-  EndStructure
-  
-  Declare   isHiden()
-  Declare   Hide(state.b)
-  Declare   Free(hCursor.i)
-  Declare   Get()
-  Declare   Set(Gadget.i, cursor.i)
-  Declare   Change(GadgetID.i, state.b )
-  Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
-EndDeclareModule
 Module Cursor 
   Procedure   Free(hCursor.i)
     ProcedureReturn DestroyCursor_( hCursor )
@@ -1034,5 +979,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------fAA9
+; Folding = ------------AA5-
 ; EnableXP

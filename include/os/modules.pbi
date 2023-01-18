@@ -6,8 +6,8 @@ CompilerEndSelect
 
 XIncludeFile "id.pbi"
 XIncludeFile "mouse.pbi"
-XIncludeFile "cursor.pbi"
 XIncludeFile "parent.pbi"
+XIncludeFile "cursor.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile 
   EnableExplicit
