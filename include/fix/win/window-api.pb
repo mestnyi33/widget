@@ -21,16 +21,20 @@ wc\lpfnWndProc  = @WindowCallback()
 wc\lpszClassName  = @WindowClass 
 RegisterClassEx_(@wc) 
 
-screenx = GetSystemMetrics_(#SM_CXSCREEN)/2-320/2
-screeny = GetSystemMetrics_(#SM_CYSCREEN)/2-240/2
+Define width.i = 320
+Define height.i = 240
 
-hWndMain  = CreateWindow_( WindowClass, "Test Window", #Style, screenx, screeny, 320, 240, 0, 0, 0, 0) 
+screenx = GetSystemMetrics_(#SM_CXSCREEN)/2-width/2
+screeny = GetSystemMetrics_(#SM_CYSCREEN)/2-height/2
+
+hWndMain  = CreateWindow_( WindowClass, "Test Window", #Style, screenx, screeny, width, height, 0, 0, 0, 0) 
 
 
 While GetMessage_(msg.MSG, #Null, 0, 0 ) 
   TranslateMessage_(msg) 
   DispatchMessage_(msg) 
 Wend 
-; IDE Options = PureBasic 5.72 (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 24
 ; Folding = -
 ; EnableXP

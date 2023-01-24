@@ -412,7 +412,7 @@ CompilerSelect  #PB_Compiler_OS
     #kEventHIObjectGetInitParameters     = 8
     #kHIViewClassID = "com.apple.hiview"
     
-    ImportC "/System/Library/Frameworks/Carbon.framework/Carbon"
+    ImportC "";/System/Library/Frameworks/Carbon.framework/Carbon"
       GetEventClass.i(inEvent.i)
       HIViewNewTrackingArea(inView.i, inShape.i, inID.q, *outRef)
     EndImport

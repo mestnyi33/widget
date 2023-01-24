@@ -1,4 +1,5 @@
-﻿EnableExplicit
+﻿; https://www.purebasic.fr/english/viewtopic.php?p=462631#p462631
+EnableExplicit
 
   #Win          = 0
   #Bar          = 0

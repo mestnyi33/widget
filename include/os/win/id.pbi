@@ -18,7 +18,7 @@ Module ID
   EndProcedure
   
   Procedure.i IsWindowID( handle.i )
-    If ClassName( handle ) = "PBWindow"
+    If Left(ClassName( handle ), 11) = "WindowClass"
       ProcedureReturn 1
     EndIf
   EndProcedure
@@ -58,12 +58,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug "gadget - "+GadgetID(1) +" >> "+ ID::Gadget(GadgetID(1))
   Debug "window - "+WindowID(1) +" >> "+ ID::Window(WindowID(1))
   
+  Debug "is windowID - "+GadgetID(1) +" >> " + ID::IsWindowID( GadgetID(1) )
+  Debug "is windowID - "+WindowID(1) +" >> " + ID::IsWindowID( WindowID(1) )
+  
   Repeat
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 40
-; FirstLine = 22
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 20
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP

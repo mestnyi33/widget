@@ -47,8 +47,7 @@ Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID 
   #MASK = #NSTitledWindowMask | #NSClosableWindowMask | #NSMiniaturizableWindowMask | #NSResizableWindowMask
   
   CocoaMessage(0, win, "initWithContentRect:@", @rect, "styleMask:", #MASK, "backing:", 2, "defer:", #NO)
-  CocoaMessage(0, win, "makeKeyWindow")
-  CocoaMessage(0, win, "makeKeyAndOrderFront:", app)
+  CocoaMessage(0, win, "makeKeyAndOrderFront:")
   CocoaMessage(0, win, "setTitle:$", @title)
   ;   CocoaMessage(0, win, "setMinSize:@", @size)
   ;   CocoaMessage(0, win, "center")

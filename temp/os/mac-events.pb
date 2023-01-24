@@ -16,7 +16,7 @@ If OpenWindow(0, 0, 0, 320, 230, "Test modifierFlags", #PB_Window_SystemMenu | #
   EditorGadget(0, 10, 10, 300, 100)
   CanvasGadget(10, 10, 110, 300, 100)
   
-  Repeat
+  Repeat;/
     
     Event = WaitWindowEvent()
     currentEvent = CocoaMessage(0, sharedApplication, "currentEvent")

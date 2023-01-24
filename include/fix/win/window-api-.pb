@@ -83,12 +83,36 @@
   
   Procedure Window1Callback(hWnd, uMsg, wParam, lParam) 
     Select uMsg 
+      Case #WM_CREATE
+        Debug "#WM_CREATE"
+      
       Case #WM_CLOSE 
-        Debug "closes"
+        Debug "#WM_CLOSE"
         DestroyWindow_(hWnd) 
+        
       Case #WM_DESTROY 
         PostQuitMessage_(0) 
         Result  = 0 
+        
+      Default 
+        Result  = #PB_ProcessPureBasicEvents
+    EndSelect 
+    ProcedureReturn Result 
+  EndProcedure 
+  
+  Procedure Window1Callback2(hWnd, uMsg, wParam, lParam) 
+    Select uMsg 
+      Case #WM_CREATE
+        Debug "2#WM_CREATE"
+      
+      Case #WM_CLOSE 
+        Debug "2#WM_CLOSE"
+        DestroyWindow_(hWnd) 
+        
+      Case #WM_DESTROY 
+        PostQuitMessage_(0) 
+        Result  = 0 
+        
       Default 
         Result  = #PB_ProcessPureBasicEvents
     EndSelect 
@@ -110,6 +134,10 @@
   Macro OpenWindow(window, x,y,width,height, title, flag=0)
     OpenWindow_(window, x,y,width,height, title, flag)
   EndMacro
+  
+  
+  SetWindowCallback(@Window1Callback());,1)
+  SetWindowCallback(@Window1Callback2());,1)
   
   ;;events::SetCallback(@EventHandler())
   ;/// first
@@ -201,7 +229,6 @@
   ;   Repeat 
   ;     event = WaitWindowEvent()
   ;   Until event = #PB_Event_CloseWindow
-  SetWindowCallback(@Window1Callback());,1)
   
   While GetMessage_(msg.MSG, #Null, 0, 0 ) 
     TranslateMessage_(msg) 
@@ -209,8 +236,8 @@
   Wend 
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 104
-; FirstLine = 97
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 137
+; FirstLine = 126
 ; Folding = --
 ; EnableXP

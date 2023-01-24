@@ -142,11 +142,12 @@ Module Parent
         CocoaMessage ( 0, ParentID, "addSubview:", GadgetID ) 
       Else
 ;         ; to desktop move
-;         ParentID = CocoaMessage(0,0,"NSScreen mainScreen")
+         ParentID = CocoaMessage(0,0,"NSScreen mainScreen")
 ;         
 ;         
 ;         ParentID = CocoaMessage(  0, ParentID, "subviews" )
 ;         CocoaMessage ( 0, ParentID, "addSubview:", GadgetID ) 
+        ; CocoaMessage(0, CocoaMessage(0, GadgetID, "window"), "setParentWindow:", ParentID)
       EndIf
       
       ProcedureReturn ParentID

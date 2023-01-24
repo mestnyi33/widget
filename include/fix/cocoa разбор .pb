@@ -4,7 +4,13 @@
 ; Многие другие методы являются методами экземпляра, помеченными знаком 
 ; (-), для работы с которыми требуется экземпляр класса.
 
+; https://developer.apple.com/documentation/appkit/nswindow/1419078-stylemask?language=objc
+; @property CGFloat alphaValue;
+; @property(copy) NSColor *backgroundColor;
 
+CocoaMessage(0, CocoaMessage(0, Alert, "window"), "setParentWindow:", WindowID(#ParentWindow))
+
+CocoaMessage(0, CocoaMessage(0, Alert, "window"), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor yellowColor"))
 
 Macro GetCocoa( objectCocoa, funcCocoa, paramCocoa )
     CocoaMessage(0, objectCocoa, funcCocoa+":@", @paramCocoa)

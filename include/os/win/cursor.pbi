@@ -19,7 +19,9 @@ Module Cursor
   
   Procedure Change( GadgetID.i, state.b )
     Protected result, *cursor._s_cursor = GetProp_(GadgetID, "__cursor")
-    If *cursor And *cursor\hcursor
+    If *cursor And
+       *cursor\hcursor
+      
       ; reset
       If state = 0 
         ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
@@ -51,6 +53,7 @@ Module Cursor
   
   Global OldProc
   Procedure Proc(hWnd, uMsg, wParam, lParam)
+    Protected result
     ; oldproc = GetProp_(hWnd, "__oldproc")
     
     Protected *cursor._s_cursor
@@ -71,8 +74,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
   
-  Procedure Set(Gadget.i, cursor.i)
-    ; Debug ""+Gadget +" "+ cursor
+  Procedure Set(Gadget.i, icursor.i)
+    ; Debug ""+Gadget +" "+ icursor
     
     If Gadget >= 0
       Protected *cursor._s_cursor
@@ -92,11 +95,11 @@ Module Cursor
         ; SetProp_(GadgetID,"__oldproc", SetWindowLongPtr_(GadgetID,#GWL_WNDPROC,@Proc()))
       EndIf
       
-      If *cursor\icursor <> cursor
-        *cursor\icursor = cursor
+      If *cursor\icursor <> icursor
+        *cursor\icursor = icursor
         
-        If cursor >= 0 And cursor <= 255
-          Select cursor
+        If icursor >= 0 And icursor <= 255
+          Select icursor
             Case #PB_Cursor_Invisible : *cursor\hcursor =- 1
             Case #PB_Cursor_Default   : *cursor\hcursor = LoadCursor_(0,#IDC_ARROW)
             Case #PB_Cursor_IBeam     : *cursor\hcursor = LoadCursor_(0,#IDC_IBEAM)
@@ -105,6 +108,9 @@ Module Cursor
             Case #PB_Cursor_Hand      : *cursor\hcursor = LoadCursor_(0,#IDC_HAND)
               
             Case #PB_Cursor_Up        ;: *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+              Case #PB_Cursor_UpDown       
+              
+              
               Define x = 0
               Define y = 0
               Define width = 16
@@ -125,7 +131,7 @@ Module Cursor
                 Plot(x, y+7, fcolor ) : Line(x+1, y+7, width-2, 1, bcolor) : Plot(x+width-1, y+7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
               EndMacro
               If StartDrawing(ImageOutput(img))
-                DrawingMode(#PB_2DDrawing_AlphaChannel)
+                DrawingMode(#PB_2DDrawing_AlphaBlend)
                 Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
                 ; up                                                 
                 DrawUp2(x, y, width, bcolor, fcolor)
@@ -135,10 +141,10 @@ Module Cursor
                 StopDrawing()
               EndIf
               
-              *cursor\hcursor = Create(ImageID(img))
-              
+              *cursor\hcursor = Create(ImageID(img), width/2, height/2)
+             
             Case #PB_Cursor_Down      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
-            Case #PB_Cursor_UpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            ;Case #PB_Cursor_UpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
               
             Case #PB_Cursor_Left      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
             Case #PB_Cursor_Right     : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
@@ -157,8 +163,8 @@ Module Cursor
               
           EndSelect 
         Else
-          If cursor
-            *cursor\hcursor = Create(cursor)
+          If icursor
+            *cursor\hcursor = Create(icursor)
           EndIf
         EndIf
       EndIf
@@ -244,7 +250,6 @@ EndModule
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  XIncludeFile "ClipGadgets.pbi"
   UseModule constants
   ;UseModule events
   
@@ -342,11 +347,11 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_LeftDoubleClick " 
         
       Case #PB_EventType_MouseEnter
-        Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
+        ;Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
         DrawCanvasFrame(eventobject, $00A600)
         
       Case #PB_EventType_MouseLeave
-        Debug ""+eventobject + " #PB_EventType_MouseLeave "
+        ;Debug ""+eventobject + " #PB_EventType_MouseLeave "
         DrawCanvasFrame(eventobject, 0)
         
       Case #PB_EventType_Resize
@@ -414,7 +419,8 @@ CompilerIf #PB_Compiler_IsMainFile
                      #PB_MessageRequester_Error)
     End
   EndIf
-  If cursor::Set((0), ImageID(0))
+  ;If cursor::Set((0), ImageID(0))
+  If cursor::Set((0), cursor::#PB_Cursor_drop)
     Debug "setCursorImage"           
   EndIf       
   
@@ -427,7 +433,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf       
   
   
-  ClipGadgets(UseGadgetList(0))
   ;/// second
   OpenWindow(2, 450, 200, 220, 220, "window_2", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   Define g1=StringGadget(-1,0,0,0,0,"StringGadget")
@@ -448,7 +453,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   EndIf       
   
   
-  ClipGadgets(UseGadgetList(0))
   ;/// third
   OpenWindow(3, 450+50, 200+50, 220, 220, "window_3", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
   g1=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
@@ -468,7 +472,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
   ;;events::SetCallback(@EventHandler())
   
-  OpenWindow(#PB_Any, 550, 300, 328, 328, "window_1", #PB_Window_SystemMenu)
+  OpenWindow(#PB_Any, 550, 300, 328, 328, "window_4", #PB_Window_SystemMenu)
   Define Canvas_0 = CanvasGadget(#PB_Any, 8, 8, 86, 86)
   ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
   Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56)
@@ -503,29 +507,56 @@ CompilerIf #PB_Compiler_IsMainFile
   ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
   Define Canvas_192 = CanvasGadget(#PB_Any, 264, 264, 56, 56)
   
-  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
+;   Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
+;   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
+;   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
+;   
+;   ;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+; ;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
+;   Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
+;   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
+;   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
+; ;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+; ;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
+;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
+; 
+;   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
+;   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
+;   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
+;   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
+;   Cursor::Set((left3), Cursor::#PB_Cursor_Left ) 
+;   Cursor::Set((up3), Cursor::#PB_Cursor_Up ) 
+;   Cursor::Set((Right3), Cursor::#PB_Cursor_Right ) 
+;   Cursor::Set((down3), Cursor::#PB_Cursor_Down ) 
+;   Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
+;   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
+;   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
+;   Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  
   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-  Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
+  Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
-  Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
+  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
-  Cursor::Set((left3), Cursor::#PB_Cursor_Left ) 
-  Cursor::Set((up3), Cursor::#PB_Cursor_Up ) 
-  Cursor::Set((Right3), Cursor::#PB_Cursor_Right ) 
-  Cursor::Set((down3), Cursor::#PB_Cursor_Down ) 
   Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
+  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
-  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
+  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Busy ) 
   
-  ClipGadgets(UseGadgetList(0))
   ;-
   Macro DrawUp(x, y, size, bcolor, fcolor)
     Line(x+7, y, 2, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -976,8 +1007,44 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat 
     event = WaitWindowEvent()
+    EnteredGadget = ID::Gadget(Mouse::Gadget(Mouse::Window()))
+    
+    If LeavedGadget <> EnteredGadget And buttons = 0
+      ; Debug  CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "NSEvent")
+      
+      If LeavedGadget >= 0
+        ; Debug GetGadgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
+        EventHandler(LeavedGadget, #PB_EventType_MouseLeave, 0)
+        ;Cursor::Change(GadgetID(LeavedGadget), 0 )
+        ; PostEvent(#PB_Event_Gadget, EventWindow(), LeavedGadget, #PB_EventType_CursorChange, 0)
+      EndIf
+      
+      If EnteredGadget >= 0
+        ; Debug GetGadgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
+        EventHandler(EnteredGadget, #PB_EventType_MouseEnter, 1)
+        ;Cursor::Change(GadgetID(EnteredGadget), 1 )
+        ; PostEvent(#PB_Event_Gadget, EventWindow(), EnteredGadget, #PB_EventType_CursorChange, 1)
+      EndIf
+      LeavedGadget = EnteredGadget
+    EndIf
+    
+    If event = #PB_Event_Gadget
+      Select EventType()
+        Case #PB_EventType_CursorChange
+          ; Cursor::Change(GadgetID(EventGadget()), EventData() )
+          
+        Case #PB_EventType_LeftButtonDown
+          buttons = 1
+          
+        Case #PB_EventType_LeftButtonUp
+          buttons = 0
+      EndSelect
+    EndIf
+    
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------AA5-
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 55
+; FirstLine = 44
+; Folding = ----------------
 ; EnableXP

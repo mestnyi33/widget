@@ -9,7 +9,7 @@ EndDeclareModule
 Module ID
   ; XIncludeFile "../import.pbi"
   Import ""
-    PB_Window_GetID(hWnd) 
+    PB_Window_GetID( WindowID.i ) 
   EndImport
     
   Procedure.s ClassName( handle.i )
@@ -66,12 +66,13 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug "gadget - "+GadgetID(1) +" >> "+ ID::Gadget(GadgetID(1))
   Debug "window - "+WindowID(1) +" >> "+ ID::Window(WindowID(1))
   
+  Debug "is windowID - "+GadgetID(1) +" >> " + ID::IsWindowID( GadgetID(1) )
+  Debug "is windowID - "+WindowID(1) +" >> " + ID::IsWindowID( WindowID(1) )
+  
   Repeat
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 48
-; FirstLine = 29
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

@@ -34,9 +34,12 @@
 ; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
 #RegEx_Pattern_FindFunction = ~"(?P<Comments>;).*|(?:(?P<Handle>\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(?P<Function>\\w+)\\s*\\((?P<Arguments>(?>(?R)|[^)(])*)\\))" ; "(;).*|\b(?:.*(=)\s*\w*\(.*\)|([A-Za-z0-9_.]*)\b[^:\n\(]*\s*\((?>[^)(]|(?R))*\))"
 
-
-; Найти Enumeration
+; Найти
 ; https://regex101.com/r/u60Wqt/1
+; https://regex101.com/r/rQCwws/3
+; https://regex101.com/r/RFubVd/22
+; https://regex101.com/r/D4Jxuh/24
+; https://regex101.com/r/mBkJTA/29
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -147,49 +150,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     ;-  Drag & Drop
-    Macro EventDropX( ): DD_DropX( ): EndMacro
-    Macro EventDropY( ): DD_DropY( ): EndMacro
-    Macro EventDropWidth( ): DD_DropWidth( ): EndMacro
-    Macro EventDropHeight( ): DD_DropHeight( ): EndMacro
+    Macro EventDropX( ): DropX( ): EndMacro
+    Macro EventDropY( ): DropY( ): EndMacro
+    Macro EventDropWidth( ): DropWidth( ): EndMacro
+    Macro EventDropHeight( ): DropHeight( ): EndMacro
     
-    Macro EventDropType( ): DD_DropType( ): EndMacro
-    Macro EventDropAction( ): DD_DropAction( ): EndMacro
-    Macro EventDropPrivate( ): DD_DropPrivate( ): EndMacro
-    Macro EventDropFiles( ): DD_DropFiles( ): EndMacro
-    Macro EventDropText( ): DD_DropText( ): EndMacro
-    Macro EventDropImage( Image = - 1, Depth = 24 ): DD_DropImage( Image, Depth ): EndMacro
+    Macro EventDropType( ): DropType( ): EndMacro
+    Macro EventDropAction( ): DropAction( ): EndMacro
+    Macro EventDropPrivate( ): DropPrivate( ): EndMacro
+    Macro EventDropFiles( ): DropFiles( ): EndMacro
+    Macro EventDropText( ): DropText( ): EndMacro
+    Macro EventDropImage( Image = - 1, Depth = 24 ): DropImage( Image, Depth ): EndMacro
     
     Macro DragType( )
       EventWidget( )\state\drag
     EndMacro
-    Macro DragText( Text, Actions = #PB_Drag_Copy ): DD_DragText( Text, Actions ): EndMacro
-    Macro DragImage( Image, Actions = #PB_Drag_Copy ): DD_DragImage( Image, Actions ): EndMacro
-    Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DD_DragFiles( Files, Actions ): EndMacro
-    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DD_DragPrivate( PrivateType, Actions ): EndMacro
+    Macro DragText( Text, Actions = #PB_Drag_Copy ): DragText_( Text, Actions ): EndMacro
+    Macro DragImage( Image, Actions = #PB_Drag_Copy ): DragImage_( Image, Actions ): EndMacro
+    Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DragFiles_( Files, Actions ): EndMacro
+    Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DragPrivate_( PrivateType, Actions ): EndMacro
     
-    Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Widget, Format, Actions, PrivateType ) : EndMacro
-    Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Gadget, Format, Actions, PrivateType ) : EndMacro
-    Macro EnableWindowDrop( Window, Format, Actions, PrivateType = 0 ) : DD_DropEnable( Window, Format, Actions, PrivateType ) : EndMacro
+    Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : DropEnable( Widget, Format, Actions, PrivateType ) : EndMacro
+    Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : DropEnable( Gadget, Format, Actions, PrivateType ) : EndMacro
+    Macro EnableWindowDrop( Window, Format, Actions, PrivateType = 0 ) : DropEnable( Window, Format, Actions, PrivateType ) : EndMacro
     
-    Declare.l DD_DropX( )
-    Declare.l DD_DropY( )
-    Declare.l DD_DropWidth( )
-    Declare.l DD_DropHeight( )
+    Declare.l DropX( )
+    Declare.l DropY( )
+    Declare.l DropWidth( )
+    Declare.l DropHeight( )
     
-    Declare.s DD_DropFiles( )
-    Declare.s DD_DropText( )
-    Declare.i DD_DropType( )
-    Declare.i DD_DropAction( )
-    Declare.i DD_DropPrivate( )
-    Declare.i DD_DropImage( Image.i = -1, Depth.i = 24 )
+    Declare.s DropFiles( )
+    Declare.s DropText( )
+    Declare.i DropType( )
+    Declare.i DropAction( )
+    Declare.i DropPrivate( )
+    Declare.i DropImage( Image.i = -1, Depth.i = 24 )
     
     Declare.i DragCursor( Cursor.i )
-    Declare.i DD_DragText( Text.S, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_DragImage( Image.i, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_DragPrivate( Type.i, Actions.i = #PB_Drag_Copy )
-    Declare.i DD_DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
+    Declare.i DragText_( Text.S, Actions.i = #PB_Drag_Copy )
+    Declare.i DragImage_( Image.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DragPrivate_( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DragFiles_( Files.s, Actions.i = #PB_Drag_Copy )
     
-    Declare.i DD_DropEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
+    Declare.i DropEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
     
     ;-
     Macro allocate( _struct_name_, _struct_type_ = )
@@ -1921,17 +1924,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     ;- DD
-    Procedure.i DragCursor( cursor.i )
-      If Not mouse( )\drag
-        mouse( )\drag.allocate( DD )
-      EndIf
-      If mouse( )\drag\cursor <> cursor
-        mouse( )\drag\cursor = cursor
-        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, cursor )
-      EndIf
-    EndProcedure
-    
-    Procedure DD_Draw( *this._S_widget )
+    Procedure DropDraw( *this._S_widget )
       Protected *e._S_widget = EnteredWidget( )
       Protected jj = 2, ss = 7, tt = 3
       Protected j = 5, s = 3, t = 1
@@ -2011,53 +2004,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure.l DD_DropX( )
+    Procedure.l DropX( )
       ProcedureReturn mouse( )\drag\x
     EndProcedure
     
-    Procedure.l DD_DropY( )
+    Procedure.l DropY( )
       ProcedureReturn mouse( )\drag\y
     EndProcedure
     
-    Procedure.l DD_DropWidth( )
+    Procedure.l DropWidth( )
       ProcedureReturn mouse( )\drag\width
     EndProcedure
     
-    Procedure.l DD_DropHeight( )
+    Procedure.l DropHeight( )
       ProcedureReturn mouse( )\drag\height
     EndProcedure
     
-    Procedure.i DD_DropType( ) ; Ok
+    Procedure.i DropType( ) ; Ok
                                ; эта функция возвращает формат отброшенных данных.
                                ; после того, как произошло событие #__event_Drop
       ProcedureReturn mouse( )\drag\format
     EndProcedure
     
-    Procedure.i DD_DropAction( ) ; Ok
+    Procedure.i DropAction( ) ; Ok
                                  ; эта функция возвращает действие, которое следует выполнить с данными.
                                  ; после того, как произошло событие #__event_Drop
       ProcedureReturn mouse( )\drag\actions
     EndProcedure
     
-    Procedure.s DD_DropFiles( )
+    Procedure.s DropFiles( )
       ; эта функция возвращает имена файлов, который был сброшен.
       ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Files (можно получить с помощью EventDropType( ))
       ; ProcedureReturn mouse( )\drag\files
     EndProcedure
     
-    Procedure.s DD_DropText( )
+    Procedure.s DropText( )
       ; эта функция возвращает текст, который был сброшен.
       ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Text (можно получить с помощью EventDropType( ))
       ProcedureReturn mouse( )\drag\string
     EndProcedure
     
-    Procedure.i DD_DropPrivate( )
+    Procedure.i DropPrivate( )
       ; эта функция возвращает 'PrivateType', который был сброшен.
       ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Private (можно получить с помощью EventDropType( ))
       ProcedureReturn mouse( )\drag\PrivateType
     EndProcedure
     
-    Procedure.i DD_DropImage( Image.i = -1, Depth.i = 24 )
+    Procedure.i DropImage( Image.i = -1, Depth.i = 24 )
       ; эта функция возвращает изображения, который был сброшен.
       ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Image (можно получить с помощью EventDropType( ))
       If mouse( )\drag\imageID
@@ -2078,7 +2071,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_DropEnable( *this._S_widget, Format.i, Actions.i, PrivateType.i = 0 )
+    Procedure.i DropEnable( *this._S_widget, Format.i, Actions.i, PrivateType.i = 0 )
       ;                        ; windows ;    macos   ; linux ;
       ; = Format
       ; #PB_Drop_Text          ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
@@ -2114,8 +2107,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\drop\PrivateType = PrivateType
     EndProcedure
     
+    Procedure.i DragCursor( cursor.i )
+      If Not mouse( )\drag
+        mouse( )\drag.allocate( DD )
+      EndIf
+      If mouse( )\drag\cursor <> cursor
+        mouse( )\drag\cursor = cursor
+        Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, cursor )
+      EndIf
+    EndProcedure
     
-    Procedure.i DD_DragText( Text.s, Actions.i = #PB_Drag_Copy )
+    Procedure.i DragText_( Text.s, Actions.i = #PB_Drag_Copy )
       Debug "  drag text - " + Text
       
       If Text
@@ -2128,7 +2130,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_DragImage( Image.i, Actions.i = #PB_Drag_Copy )
+    Procedure.i DragImage_( Image.i, Actions.i = #PB_Drag_Copy )
       Debug "  drag image - " + Image
       
       If IsImage( Image )
@@ -2143,7 +2145,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure.i DD_DragFiles( Files.s, Actions.i = #PB_Drag_Copy )
+    Procedure.i DragFiles_( Files.s, Actions.i = #PB_Drag_Copy )
       ;       Debug "  drag files - " + Files
       ;
       ;       If Files
@@ -2156,7 +2158,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndIf
     EndProcedure
     
-    Procedure.i DD_DragPrivate( PrivateType.i, Actions.i = #PB_Drag_Copy )
+    Procedure.i DragPrivate_( PrivateType.i, Actions.i = #PB_Drag_Copy )
       Debug "  drag private - " + PrivateType
       
       If PrivateType
@@ -17096,7 +17098,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\state\enter And
            Not *this\state\disable And mouse( )\drag
           
-          DD_draw( *this )
+          DropDraw( *this )
         EndIf
         
         ;         ; draw above drawing
@@ -18043,7 +18045,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; change enter/leave state
         If *this\EnteredRow( ) <> *item ;And *item
-                                        ; lost-focus state
+          
+          ; lost-focus state
           If *this\state\drag = #PB_Drag_Link
             If *this\FocusedRow( )
               If *this\FocusedRow( )\state\focus
@@ -18076,6 +18079,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\EnteredRow( )
+            
             ; focus state
             If *this\state\drag = #PB_Drag_Link
               If *this\FocusedRow( )
@@ -20842,5 +20846,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------t0---0vq0P-J+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v26+-+00--v------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------t0---0vq0P-J+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------8--+---------------------------------------------------------------------------------------------------------------------------v26+-+00--v-----------------------------------------t080---------------------------------------------------------------
 ; EnableXP

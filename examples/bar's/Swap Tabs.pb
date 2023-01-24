@@ -1,4 +1,5 @@
-﻿; http://forums.purebasic.com/english/viewtopic.php?p=462631&hilit=swap+tabs&sid=354dadea542b23efb68a54fa13ceb495#p462631
+﻿; https://www.purebasic.fr/english/viewtopic.php?p=462631#p462631
+; http://forums.purebasic.com/english/viewtopic.php?p=462631&hilit=swap+tabs&sid=354dadea542b23efb68a54fa13ceb495#p462631
 EnableExplicit
 
   #Win          = 0

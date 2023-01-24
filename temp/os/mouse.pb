@@ -352,18 +352,21 @@ Module System
     If window < 0
       ProcedureReturn 0
     EndIf
+    
     ; Get handle under mouse
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
         Protected pt.q
         GetCursorPos_(@pt)
         handle = WindowFromPoint_(pt)
+        
       CompilerCase #PB_OS_MacOS
         Protected win_id, win_cv, pt.NSPoint
         win_id = WindowID(window)
         win_cv = CocoaMessage(0, win_id, "contentView")
         CocoaMessage(@pt, win_id, "mouseLocationOutsideOfEventStream")
         handle = CocoaMessage(0, win_cv, "hitTest:@", @pt)
+        
       CompilerCase #PB_OS_Linux
         Protected desktop_x, desktop_y, *GdkWindow.GdkWindowObject
         *GdkWindow.GdkWindowObject = gdk_window_at_pointer_(@desktop_x,@desktop_y)
@@ -496,7 +499,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf
 CompilerEndIf
-
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ----------
 ; EnableXP

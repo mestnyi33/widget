@@ -18,6 +18,8 @@ ProcedureC winShouldClose(obj.i, sel.i, win.i) ; call 1
   
   ; CocoaMessage(@appDelegate, app, "delegate")
   ; CocoaMessage(@appDelegateClass, appDelegate, "class")
+  
+  CocoaMessage(0, app, "terminate:", win) ;?
   CocoaMessage(0, app, "stop:", win)
   ; CloseWindow_(win)
   ;End
@@ -32,24 +34,34 @@ Procedure InitRect(*rect.NSRect,x,y,width,height)
     *rect\size\height = height
   EndIf
 EndProcedure
+Structure NSEdgeInsets
+  left.i
+  top.i
+  right.i
+  bottom.i
+EndStructure
 
 Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID = 0 )
   Protected.i win, view, myWindowDelegateClass, myWindowDelegate, NSObjectClass
   
   Protected.NSRect rect, frame, visibleFrame
   Protected mainScreen = CocoaMessage(0,0,"NSScreen mainScreen")
-  CocoaMessage(@visibleFrame.NSRect, mainScreen,"visibleFrame")
-  CocoaMessage(@frame.NSRect, mainScreen,"frame")
-  
+  CocoaMessage(@visibleFrame, mainScreen,"visibleFrame")
+  CocoaMessage(@frame, mainScreen,"frame")
   
   ;\\
-;   rect\origin\x = x
-;   rect\origin\y = (Frame\size\height - visibleFrame\origin\y)-height-y
-;   rect\size\width = width
-;   rect\size\height = height
+  ;   rect\origin\x = x
+  ;   rect\origin\y = (Frame\size\height - visibleFrame\origin\y)-height-y
+  ;   rect\size\width = width
+  ;   rect\size\height = height
   InitRect(@rect,x,(frame\size\height-visibleFrame\origin\y)-height-y,width,height)
   
-  #MASK = #NSTitledWindowMask | #NSClosableWindowMask | #NSMiniaturizableWindowMask | #NSResizableWindowMask
+  ;\\
+  If flags & #PB_Window_BorderLess = #PB_Window_BorderLess
+    #MASK = #NSBorderlessWindowMask;|#NSTitledWindowMask | #NSClosableWindowMask | #NSMiniaturizableWindowMask | #NSResizableWindowMask
+  Else
+    ;#MASK = #NSTitledWindowMask | #NSClosableWindowMask | #NSMiniaturizableWindowMask | #NSResizableWindowMask
+  EndIf
   
   CocoaMessage(@win, 0, "NSWindow alloc")
   NSObjectClass = objc_getClass_("NSObject")
@@ -65,18 +77,26 @@ Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID 
   CocoaMessage(0, win, "setPreventsApplicationTerminationWhenModal:", #NO)
   CocoaMessage(0, win, "setReleasedWhenClosed:", #YES)
   
-;   CocoaMessage(@view,0,"NSView alloc")
-;   If view
-;     InitRect(@rect,0,0,width,height)
-;     CocoaMessage(@view,view,"initWithFrame:@",@rect)
-;     CocoaMessage(0,win,"setContentView:",view)
-;   EndIf
-        
   ;   CocoaMessage(0, win, "center")
   CocoaMessage(0, win, "update")
   CocoaMessage(0, win, "display")
   
   CocoaMessage(0, win, "setDelegate:", myWindowDelegate)
+  
+  ;             ;CocoaMessage(0, Win, "borderless:", 1)
+  ;             ; CocoaMessage(0, Win, "styleMask") ; get
+  ;CocoaMessage(0, Win, "setStyleMask:", #NSMiniaturizableWindowMask )
+  
+  ;\\ var windowLevel: UIWindow.Level { get set }
+  If CocoaMessage(0, win, "level") <> 5
+    CocoaMessage(0, win, "setLevel:", 5 ) ; stay on top
+  EndIf
+  
+  ;\\ @property BOOL hasShadow;
+  If Not CocoaMessage(0, win, "hasShadow") 
+    CocoaMessage(0, win, "setHasShadow:", 1 )
+  EndIf
+  
   ProcedureReturn win
 EndProcedure
 
@@ -91,58 +111,112 @@ Procedure WaitClose_( )
   ; CocoaMessage(0, currentApplication, "activateWithOptions:", #NSApplicationActivateAllWindows | #NSApplicationActivateIgnoringOtherApps)
   
   ;	CocoaMessage(0,runapp, "activateWithOptions:",  #NSApplicationActivateIgnoringOtherApps )
-		
-  CocoaMessage(0, app, "run")
-  ; CocoaMessage(0, app, "terminate:", app)
   
+  CocoaMessage(0, app, "run")
 EndProcedure
 
+Procedure EventsMessage( )
+  Debug "message " + EventType( ) +" "+ EventGadget() +" " + EventWindow()
+  
+  Select EventType()
+    Case #PB_EventType_LeftButtonDown
+      SetActiveWindow(0)
+  EndSelect
+EndProcedure
 
 Procedure OpenMessage( )
-  Define win = OpenWindow_(10, 50, 50, 200, 200, "mac-win", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
+  Define win = OpenWindow_(10, 260, 50, 200, 200, "mac-win", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   Protected UseGadgetList = UseGadgetList(win)
   Protected gadget = CanvasGadget(-1, 10, 20-10, 180, 180)
-  UseGadgetList(UseGadgetList)
-  
   
   StartDrawing(CanvasOutput(gadget))
   Box(10,10,30,30,$ff0000)
   StopDrawing()
   
-  ; var windowLevel: UIWindow.Level { get set }
-  CocoaMessage(0, Win, "setLevel:",5) ; stay on top
-                                      ; Debug CocoaMessage(0, Win, "level")
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_MouseEnter )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_MouseLeave )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftButtonDown )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftButtonUp )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftClick )
+  
+  
+  UseGadgetList(UseGadgetList)
   WaitClose_( )
   
   ;FreeGadget( gadget )
+  Debug "Quit MESSAGE"
+EndProcedure
+
+Procedure OpenPopup( ParentID )
+  Define win = OpenWindow(10, 260, 50, 200, 200, "mac-win", #PB_Window_BorderLess|#PB_Window_NoActivate, ParentID)
+  Protected UseGadgetList = UseGadgetList(win)
+  Protected gadget = CanvasGadget(-1, 10, 20-10, 180, 180)
+  
+  StartDrawing(CanvasOutput(gadget))
+  Box(10,10,30,30,$ff0000)
+  StopDrawing()
+  
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_MouseEnter )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_MouseLeave )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftButtonDown )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftButtonUp )
+  BindGadgetEvent( gadget, @EventsMessage(), #PB_EventType_LeftClick )
+  
+  #NSWindowStyleMaskBorderless = 0
+  #NSWindowStyleMaskResizable = 1 << 3
+  #NSWindowStyleMaskDocModalWindow = 1 << 6
+  #NSWindowStyleMaskNonactivatingPanel = 1 << 7
+  #NSWindowStyleMaskHUDWindow = 1 << 13
+  
+  CocoaMessage(0, Win, "setStyleMask:", #NSWindowStyleMaskBorderless )
+  
+  ;\\ var windowLevel: UIWindow.Level { get set }
+  If CocoaMessage(0, win, "level") <> 5
+    CocoaMessage(0, win, "setLevel:", 5 ) ; stay on top
+  EndIf
+  
+  ;\\ @property BOOL hasShadow;
+  If Not CocoaMessage(0, win, "hasShadow") 
+    CocoaMessage(0, win, "setHasShadow:", 1 )
+  EndIf
+  
+     ; SetActiveWindow(0)
+  UseGadgetList(UseGadgetList)
 EndProcedure
 
 ;\\
 Procedure gadget_event( )
-  Select EventGadget()
-    Case 0
-      Debug "click"
-      OpenMessage( )
-      
-    Case 1
-      Select EventType()
-        Case #PB_EventType_LeftButtonDown
-          Debug "down " + EventWindow()
-        Case #PB_EventType_LeftButtonUp
-          Debug "up "+EventWindow()
+  Select EventType()
+    Case #PB_EventType_LeftButtonDown
+      Select EventGadget()
+        Case 0
+          Debug "messageCreate"
+          OpenPopup( WindowID(EventWindow()))
+          ;OpenMessage( )
+          
       EndSelect
+      
+    Case #PB_EventType_MouseEnter
+      Debug "enter " + EventType( ) +" "+ EventGadget() +" " + EventWindow()
+    Case #PB_EventType_MouseLeave
+      Debug "leave " + EventType( ) +" "+ EventGadget() +" " + EventWindow()
   EndSelect
 EndProcedure
 
 OpenWindow(0, 50, 50, 200, 200, "pb-win", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
-ButtonGadget(0, 10, 10, 180, 180, "button_0")
+CanvasGadget(0, 10, 10, 180, 180)
+StartDrawing(CanvasOutput(0))
+DrawText( 30,45, "button_0")
+StopDrawing()
 
 BindEvent(#PB_Event_Gadget, @gadget_event())
 
 Repeat
   Event = WaitWindowEvent()
-  
+  If Event = #PB_Event_LeftClick
+    Debug " pb_window_leftclick"
+  EndIf
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Folding = 8-+-
 ; EnableXP

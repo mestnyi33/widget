@@ -1,9 +1,12 @@
 ﻿Procedure WindowCallback(hWnd, uMsg, wParam, lParam) 
   Select uMsg 
     Case #WM_CREATE
-      Debug "create"
+      Debug "#WM_CREATE"
+      
     Case #WM_CLOSE 
+      Debug "#WM_CLOSE"
       DestroyWindow_(hWnd) 
+      
     Case #WM_DESTROY 
       PostQuitMessage_(0) 
       Result  = 0 
@@ -13,6 +16,27 @@
   ProcedureReturn Result 
 EndProcedure 
 
+Procedure WindowCallback2(hWnd, uMsg, wParam, lParam) 
+  Select uMsg 
+    Case #WM_CREATE
+      Debug "2#WM_CREATE"
+      
+    Case #WM_CLOSE 
+      Debug "2#WM_CLOSE"
+      DestroyWindow_(hWnd) 
+      
+    Case #WM_DESTROY 
+      PostQuitMessage_(0) 
+      Result  = 0 
+    Default 
+      Result  = DefWindowProc_(hWnd, uMsg, wParam, lParam) 
+  EndSelect 
+  ProcedureReturn Result 
+EndProcedure 
+
+
+SetWindowCallback(@WindowCallback2());,1)
+  
 ;///1
 #Style1  = #WS_VISIBLE | #WS_CAPTION | #WS_SYSMENU 
 WindowClass.s  = "WindowClass_1_" 
@@ -98,6 +122,8 @@ While GetMessage_(msg.MSG, #Null, 0, 0 )
   TranslateMessage_(msg) 
   DispatchMessage_(msg) 
 Wend 
-; IDE Options = PureBasic 5.72 (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 37
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
