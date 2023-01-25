@@ -396,6 +396,8 @@
     ; Debug #PB_checkBox_threeState ; 4
 
     ;-\\ Tree
+    #PB_Item_Sublevel = #PB_Tree_SubLevel
+    
     #PB_tree_Collapse    = 32
     #PB_tree_OptionBoxes = 64
     #PB_tree_GridLines   = 128
@@ -1011,8 +1013,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 259
-; FirstLine = 236
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

@@ -65,11 +65,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *cursor
       format.i
       actions.i
-      privatetype.i
+      private.i
       
       *imageID
       string.s
       ; files.s
+      
       state.b
     EndStructure
     ;--     MOUSE

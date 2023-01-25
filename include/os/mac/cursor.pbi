@@ -213,7 +213,7 @@ Module Cursor
     EndIf
   EndProcedure
   
-  Procedure Set(Gadget.i, icursor.i)
+  Procedure Set(Gadget.i, icursor.i, x.i = 0, y.i = 0 )
     If Gadget >= 0
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
@@ -310,7 +310,7 @@ Module Cursor
             EndSelect 
         Else
           If icursor
-            *cursor\hcursor = Create(icursor)
+            *cursor\hcursor = Create( icursor, x, y )
           EndIf
         EndIf
       EndIf

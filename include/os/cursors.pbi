@@ -79,7 +79,7 @@ DeclareModule Cursor
   ;Declare   Hide(state.b)
   ;Declare   Free(hCursor.i)
   ;Declare   Get( )
-  Declare   Set(Gadget.i, icursor.i)
+  Declare   Set(Gadget.i, icursor.i, x.i = 0, y.i = 0)
   Declare   Change(GadgetID.i, state.b )
   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
 EndDeclareModule
@@ -907,8 +907,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 325
-; FirstLine = 296
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -------------
 ; EnableXP

@@ -425,6 +425,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *new\container 
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_New|#_DD_Move|#_DD_Copy|#_DD_Group )
+;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_New )
+;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Move )
+;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Copy )
+;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
         EndIf
         
         ;
@@ -498,41 +502,48 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( *eventWidget )
-            DragCursor( #PB_Cursor_Cross )
-            DragPrivate( #_DD_New, #PB_Drag_Copy )
+            If DragPrivate( #_DD_New, #PB_Drag_Copy )
+              DragCursor( #PB_Cursor_Cross )
+            EndIf
           EndIf
         Else
           Select DragType( ) 
             Case #PB_Drag_Copy
-              DragCursor( #PB_Cursor_Hand )
-              DragPrivate( #_DD_Copy, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Copy, #PB_Drag_Copy )
+                DragCursor( #PB_Cursor_Hand )
+              EndIf
               
             Case #PB_Drag_Move 
-              DragCursor( #PB_Cursor_Arrows )
-              DragPrivate( #_DD_Move, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Move, #PB_Drag_Copy )
+                DragCursor( #PB_Cursor_Arrows )
+              EndIf
               
             Case #PB_Drag_Link 
-              DragCursor( #PB_Cursor_Cross )
-              DragPrivate( #_DD_Group, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Group, #PB_Drag_Copy )
+                DragCursor( #PB_Cursor_Cross )
+              EndIf
+              
           EndSelect
         EndIf
         
       Case #PB_EventType_Drop
         Select EventDropPrivate( )
           Case #_DD_Group
-            Debug " ----- group ----- "
+            Debug " ----- DD_group ----- "
             
           Case #_DD_New 
+            Debug " ----- DD_new ----- "+ GetText( id_elements_tree )
             widget_add( *eventWidget, GetText( id_elements_tree ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
             
           Case #_DD_Move
+            Debug " ----- DD_move ----- "
             If SetParent( PressedWidget( ), EnteredWidget( ) )
               Debug "re-parent"
             EndIf
             
           Case #_DD_Copy
-            Debug " ----- copy ----- " + GetText( PressedWidget( ) )
+            Debug " ----- DD_copy ----- " + GetText( PressedWidget( ) )
             
            *new = widget_add( *eventWidget, GetClass( PressedWidget( ) ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
@@ -777,13 +788,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Select e_type
       Case #PB_EventType_DragStart
         If EventWidget = id_elements_tree
-          Debug " ------ drag - "
+          Debug " ------ drag ide_events() ----- "
           ;         DD_EventDragWidth( ) 
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) )
-          DragPrivate( #_DD_New, #PB_Drag_Copy )
+          If DragPrivate( #_DD_New, #PB_Drag_Copy )
+            DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) )
+          EndIf
         EndIf
         
       Case #PB_EventType_StatusChange
@@ -1251,5 +1263,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----P------f--fp--+
+; Folding = -----f-------4--v1-f-
 ; EnableXP

@@ -1,6 +1,6 @@
 ﻿; ------------------------------------------------------------------
 ;
-;   Example for Drag & Drop inside a TreeGadget to reorder items.
+;   Example for Drag & Drop inside a PanelGadget to reorder items.
 ;
 ;   Requires 4.10 beta or newer to run
 ;
@@ -11,7 +11,7 @@ XIncludeFile "widgets.pbi"
 EnableExplicit
 Uselib(widget)
 
-Global *tree 
+Global *Panel 
 Global ChildCount
 Global SourceItem, SourceLevel
 Global TargetItem, TargetLevel
@@ -30,7 +30,7 @@ Global TargetItem, TargetLevel
 Procedure events( )
   Protected i, Text$, Level, CountItems
   
-  If EventWidget( ) = *tree                     
+  If EventWidget( ) = *Panel                     
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart 
         ; 
@@ -42,20 +42,9 @@ Procedure events( )
         ; хочет начать тащить его. Мы сохраняем этот элемент для последующего использования и
         ; начать нашу частную перетаскивание
         ;
-        SourceItem = GetState(*tree)
-        If DragPrivate(#PrivateType, #PB_Drag_Move)
-          Protected img =- 1
-          SelectElement(EventWidget( )\_rows( ), SourceItem)
-          img = CreateImage(#PB_Any, EventWidget( )\_rows( )\text\width, EventWidget( )\_rows( )\text\height, 32, #PB_Image_Transparent )
-          StartDrawing(ImageOutput(img))
-          DrawingMode( #PB_2DDrawing_AllChannels)
-          DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
-          StopDrawing()
-          If IsImage(img)
-            DragCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2)
-          EndIf
-        EndIf
-      
+        SourceItem = GetState(*Panel)
+        DragPrivate(#PrivateType, #PB_Drag_Move)
+        
       Case #PB_EventType_Drop 
         ;
         ; Here we get a drop event. Make sure it is on the right gadget and of right type,
@@ -65,14 +54,14 @@ Procedure events( )
         ; особенно если в вашей программе есть несколько элементов Drag & Drop.
         ;
         If EventDropType( ) = #PB_Drop_Private And EventDropPrivate( ) = #PrivateType
-          TargetItem = GetState(*tree)        
+          TargetItem = GetState(*Panel)        
           
           ; nothing to do if source and target are equal
           ;
           ; ничего не делать, если источник и цель равны
           ;
           If SourceItem <> TargetItem        
-            CountItems = CountItems(*tree) - 1
+            CountItems = CountItems(*Panel) - 1
             ; Find out to which index and sublevel to move the item
             ;
             ; Узнайте, на какой индекс и подуровень переместить элемент
@@ -84,11 +73,11 @@ Procedure events( )
               TargetItem  = CountItems + 1
               TargetLevel = 0
               
-            ElseIf Left( GetItemText(*tree, TargetItem), 4 ) = "Item"      
+            ElseIf Left( GetItemText(*Panel, TargetItem), 4 ) = "Item"      
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
-              TargetLevel = GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel)
+              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel)
               TargetItem  + 1
               
             Else
@@ -97,9 +86,9 @@ Procedure events( )
               ;
               ; если вы попали в «Каталог», перейдите в каталог и в его конец
               ; все это можно легко сделать, изучив подуровень
-              TargetLevel = GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) + 1
+              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) + 1
               TargetItem + 1
-              While GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
+              While GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) >= TargetLevel
                 TargetItem + 1
               Wend
             EndIf
@@ -116,10 +105,10 @@ Procedure events( )
             ;
             ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
             ;
-            SourceLevel = GetItemAttribute(*tree, SourceItem, #PB_Tree_SubLevel)          
+            SourceLevel = GetItemAttribute(*Panel, SourceItem, #PB_Item_Sublevel)          
             ChildCount  = 0
             For i = SourceItem+1 To CountItems
-              If GetItemAttribute(*tree, i, #PB_Tree_SubLevel) > SourceLevel 
+              If GetItemAttribute(*Panel, i, #PB_Item_Sublevel) > SourceLevel 
                 ChildCount + 1
               Else
                 Break
@@ -154,9 +143,9 @@ Procedure events( )
                 ; copy everything here (also colors and GetItemData() etc if you use that)                
                 ;
                 ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                Text$ = GetItemText(*tree, SourceItem+i)              
-                Level = GetItemAttribute(*tree, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
-                AddItem(*tree, TargetItem+i, Text$, 0, Level)              
+                Text$ = GetItemText(*Panel, SourceItem+i)              
+                Level = GetItemAttribute(*Panel, SourceItem+i, #PB_Item_Sublevel) - SourceLevel + TargetLevel
+                AddItem(*Panel, TargetItem+i, Text$, 0, Level)              
               Next i
               
               ; We apply the state of each item AFTER all items are copied.
@@ -167,19 +156,19 @@ Procedure events( )
               ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
               ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
               For i = 0 To ChildCount
-                SetItemState(*tree, TargetItem+i, GetItemState(*tree, SourceItem+i))
+                SetItemState(*Panel, TargetItem+i, GetItemState(*Panel, SourceItem+i))
               Next i
               
               ; remove the source item. This automatically removes all children as well.
               ; удалить исходный элемент. Это также автоматически удаляет всех детей.
-              RemoveItem(*tree, SourceItem)
+              RemoveItem(*Panel, SourceItem)
               
               ; select the target. Note that the index is now 'ChildCount+1' less
               ; because of the remove of the source which was before the target
               ;
               ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
               ; из-за удаления источника, который был до цели
-              SetState(*tree, TargetItem - ChildCount - 1)
+              SetState(*Panel, TargetItem - ChildCount - 1)
               
             ElseIf TargetItem <= SourceItem
               ; 
@@ -192,9 +181,9 @@ Procedure events( )
               ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
               ;
               For i = 0 To ChildCount
-                Text$ = GetItemText(*tree, SourceItem+i*2)
-                Level = GetItemAttribute(*tree, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
-                AddItem(*tree, TargetItem+i, Text$, 0, Level)
+                Text$ = GetItemText(*Panel, SourceItem+i*2)
+                Level = GetItemAttribute(*Panel, SourceItem+i*2, #PB_Item_Sublevel) - SourceLevel + TargetLevel
+                AddItem(*Panel, TargetItem+i, Text$, 0, Level)
               Next i
               
               ; Loop for the states. Note that here the index of the sourceitems is 
@@ -204,14 +193,14 @@ Procedure events( )
               ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
               ;
               For i = 0 To ChildCount
-                SetItemState(*tree, TargetItem+i, GetItemState(*tree, SourceItem+ChildCount+1+i))
+                SetItemState(*Panel, TargetItem+i, GetItemState(*Panel, SourceItem+ChildCount+1+i))
               Next i            
               
               ; remove source and select target. Here the target index is not affected by the remove as it is lower
               ;
               ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
-              RemoveItem(*tree, SourceItem+ChildCount+1)          
-              SetState(*tree, TargetItem)
+              RemoveItem(*Panel, SourceItem+ChildCount+1)          
+              SetState(*Panel, TargetItem)
               
             EndIf
             
@@ -225,7 +214,7 @@ Procedure events( )
 EndProcedure
 
 If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
-  *tree = Tree( 10, 10, 280, 480)
+  *Panel = Panel( 10, 10, 280, 480)
   
   ; Add some items. We will be able to move items into the
   ; "Directory" ones.
@@ -236,17 +225,17 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   Define i, event
   For i = 0 To 20
     If i % 5 = 0
-      AddItem(*tree, -1, "Directory" + Str(i), 0, 0)
+      AddItem(*Panel, -1, "Directory" + Str(i), 0, 0)
     Else
-      AddItem(*tree, -1, "Item" + Str(i), 0, 0)
+      AddItem(*Panel, -1, "Item" + Str(i), 0, 0)
     EndIf
   Next i
   
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
-  EnableDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
+  EnableDrop(*Panel, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
-  Bind( *tree, @events( ) )
+  Bind( *Panel, @events( ) )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
@@ -254,5 +243,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --
 ; EnableXP

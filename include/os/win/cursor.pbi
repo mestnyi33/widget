@@ -74,7 +74,7 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
   
-  Procedure Set(Gadget.i, icursor.i)
+  Procedure Set(Gadget.i, icursor.i, x.i = 0, y.i = 0)
     ; Debug ""+Gadget +" "+ icursor
     
     If Gadget >= 0
@@ -164,7 +164,7 @@ Module Cursor
           EndSelect 
         Else
           If icursor
-            *cursor\hcursor = Create(icursor)
+            *cursor\hcursor = Create(icursor, x, y)
           EndIf
         EndIf
       EndIf
@@ -1043,8 +1043,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 55
-; FirstLine = 44
-; Folding = ----------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = ---8------------
 ; EnableXP
