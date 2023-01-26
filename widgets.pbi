@@ -1925,16 +1925,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;- DD
     Procedure DropDraw( *this._S_widget )
-      Protected *e._S_widget = EnteredWidget( )
       Protected jj = 2, ss = 7, tt = 3
       Protected j = 5, s = 3, t = 1
       
-      ; if you drag to the widget-dropped
-      If mouse( )\drag And *e
-        drawing_mode_alpha_( #PB_2DDrawing_Default )
+      ;\\ if you drag to the widget-dropped
+      If mouse( )\drag 
+        If is_scrollbars_( *this )
+          *this = *this\_parent( )
+        EndIf
         
-        If *e\drop
-          If *e\state\enter = 2
+        ;\\ first draw backgraund color
+        drawing_mode_alpha_( #PB_2DDrawing_Default )
+        If *this\drop
+          If *this\state\enter = 2
             If mouse( )\drag\state = #PB_Drag_Enter
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $1000ff00 )
               
@@ -1956,21 +1959,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $10ff0000 )
             EndIf
+          Else
+           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $10ff0000 )
           EndIf
         Else
           If *this\state\enter = 2
             If *this\state\drag
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $10ff00ff )
             Else
-               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $100000ff )
+             ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $100000ff )
             EndIf
+          Else
+           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $100000ff )
           EndIf
         EndIf
         
+        ;\\ second draw frame color
         drawing_mode_( #PB_2DDrawing_Outlined )
-        
-        If *e\drop ; *this\drop
-          If *e\state\enter = 2
+        If *this\drop
+          If *this\state\enter = 2
             If mouse( )\drag\state = #PB_Drag_Enter
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff00ff00 )
               
@@ -1992,14 +1999,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ffff0000 )
             EndIf
+          Else
+           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ffff0000 )
           EndIf
         Else
           If *this\state\enter = 2
             If *this\state\drag
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ffff00ff )
             Else
-              draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff0000ff )
+             ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff0000ff )
             EndIf
+          Else
+           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff0000ff )
           EndIf
         EndIf
       EndIf
@@ -17097,14 +17108,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             ;         EndIf
           EndIf
         EndIf
-        
-        ; draw drag & drop
-        If *this\state\enter And
-           Not *this\state\disable And mouse( )\drag
-          
-          DropDraw( *this )
-        EndIf
-        
+                 
         ;         ; draw above drawing
         ;         If Not *this\last\widget
         ;           draw_above_( *this )
@@ -17227,6 +17231,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           WidgetEvent( )\type = #PB_All
           WidgetEvent( )\item = #PB_All
           WidgetEvent( )\data = #Null
+        EndIf
+        
+        ;\\ draw drag & drop
+        If mouse( )\drag And 
+           EnteredWidget( ) And 
+           EnteredWidget( )\state\enter And
+           Not EnteredWidget( )\state\disable
+          
+          DropDraw( EnteredWidget( ) )
         EndIf
         
         ;\\
@@ -18008,8 +18021,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         Protected focus = Bool( *this\state\drag = #PB_Drag_Link And ( Not Mouse( )\drag Or PressedWidget( )\drop ))
-          
-          ;
+        
+        ;
         If *this\state\drag
           If *item = #Null And focus
             If mouse( )\y < mouse( )\delta\y And mouse( )\y <= *this\y[#__c_inner]
@@ -18046,7 +18059,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; change enter/leave state
         If *this\EnteredRow( ) <> *item ;And *item
-          ; lost-focus state
+                                        ; lost-focus state
           If focus
             If *this\FocusedRow( )
               If *this\FocusedRow( )\state\focus
@@ -18195,37 +18208,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\ drag & drop state
-          If mouse( )\drag And *this = EnteredWidget( )  
-            If *this\state\enter = 2 
-              If ( *this\drop And
-                   *this\drop\format = mouse( )\drag\format And
-                   *this\drop\actions & mouse( )\drag\actions And 
-                   ( *this\drop\private = mouse( )\drag\private Or 
-                     *this\drop\private & mouse( )\drag\private ))
-                
-                If mouse( )\drag\state <> #PB_Drag_Enter
-                  mouse( )\drag\state = #PB_Drag_Enter
+          If *this = EnteredWidget( )  
+            If mouse( )\drag 
+              If *this\state\enter = 2 
+                If ( *this\drop And
+                     *this\drop\format = mouse( )\drag\format And
+                     *this\drop\actions & mouse( )\drag\actions And 
+                     ( *this\drop\private = mouse( )\drag\private Or 
+                       *this\drop\private & mouse( )\drag\private ))
                   
-                  If mouse( )\drag\cursor = Cursor::#PB_Cursor_Drag 
-;                     mouse( )\drag\cursor = Cursor::#PB_Cursor_Drop
-;                     Cursor::Set( *this\_root( )\canvas\gadget, Cursor::#PB_Cursor_Drop )
-                    DragCursor( Cursor::#PB_Cursor_Drop )
+                  If mouse( )\drag\state <> #PB_Drag_Enter
+                    mouse( )\drag\state = #PB_Drag_Enter
+                    
+                    If mouse( )\drag\cursor = Cursor::#PB_Cursor_Drag 
+                      DragCursor( Cursor::#PB_Cursor_Drop )
+                    EndIf
+                    
+                    *this\state\repaint = #True
+                  EndIf
+                EndIf
+              Else
+                If mouse( )\drag\state <> #PB_Drag_Leave
+                  mouse( )\drag\state = #PB_Drag_Leave
+                  
+                  If mouse( )\drag\cursor = Cursor::#PB_Cursor_Drop
+                    DragCursor( Cursor::#PB_Cursor_Drag )
                   EndIf
                   
                   *this\state\repaint = #True
                 EndIf
-              EndIf
-            Else
-              If mouse( )\drag\state <> #PB_Drag_Leave
-                mouse( )\drag\state = #PB_Drag_Leave
-                
-                If mouse( )\drag\cursor = Cursor::#PB_Cursor_Drop
-;                   mouse( )\drag\cursor = Cursor::#PB_Cursor_Drag
-;                   Cursor::Set( *this\_root( )\canvas\gadget, Cursor::#PB_Cursor_Drag )
-                  DragCursor( Cursor::#PB_Cursor_Drag )
-                EndIf
-                
-                *this\state\repaint = #True
               EndIf
             EndIf
           EndIf
@@ -18770,8 +18781,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *leave And ;Not ( *widget And is_integral_( *widget ) ) And
              *leave\state\enter <> 0
             *leave\state\enter = 0
+            
+            ;\\
+            If mouse( )\drag And is_scrollbars_( *leave ) ;\child And *leave\type = #__type_ScrollBar
+              *leave\_parent( )\state\enter = 0
+            EndIf
+            
+            ;\\
             repaint | DoEvents( *leave, #__event_MouseLeave )
             
+            ;\\
             If Not is_interact_row_( *leave ) And Not a_transform_( *leave )
               If Not IsChild( *widget, *leave )
                 ;
@@ -18806,8 +18825,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *widget\state\enter = 0
             *widget\state\enter = 1
             
+            ;\\
             DoEvents( *widget, #__event_MouseEnter )
             
+            ;\\
+            If mouse( )\drag And is_scrollbars_( *widget ) ;\child And *widget\type = #__type_ScrollBar
+              *widget\_parent( )\state\enter = 1
+            EndIf
+            
+            ;\\
             If Not is_interact_row_( *widget ) And Not a_transform_( *widget )
               If *widget\address And Not *widget\attach
                 ForEach *widget\_widgets( )
@@ -19220,7 +19246,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
             EndIf
-                  
+            
             ;                 EndIf
           EndIf
           
@@ -19356,10 +19382,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ;\\ reset dragged cursor
               If EnteredWidget( ) And EnteredWidget( )\cursor
                 mouse( )\cursor = EnteredWidget( )\cursor
+                Cursor::Set( EnteredWidget( )\_root( )\canvas\gadget, mouse( )\cursor )
               Else
                 mouse( )\cursor = PressedWidget( )\cursor
+                Cursor::Set( PressedWidget( )\_root( )\canvas\gadget, mouse( )\cursor )
               EndIf
-              Cursor::Set( EnteredWidget( )\_root( )\canvas\gadget, mouse( )\cursor )
               
               ;\\ reset
               FreeStructure( mouse( )\drag)
@@ -20893,5 +20920,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------4+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----f--f4---------f-----8b-8v+----------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-0-----------------+3-+r-----------------------------------
 ; EnableXP
