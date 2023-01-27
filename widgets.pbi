@@ -405,16 +405,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             is_at_plane_( _position_y_, _size_height_, _mouse_y_ ) )
     EndMacro
     
-    Macro is_at_point_y_( _address_, _mouse_y_, _mode_ = )
+    Macro is_at_point_vertical_( _address_, _mouse_y_, _mode_ = )
       is_at_plane_( _address_\y#_mode_, _address_\height#_mode_, _mouse_y_ )
     EndMacro
     
-    Macro is_at_point_x_( _address_, _mouse_x_, _mode_ = )
+    Macro is_at_point_horizontal_( _address_, _mouse_x_, _mode_ = )
       is_at_plane_( _address_\x#_mode_, _address_\width#_mode_, _mouse_x_ )
     EndMacro
     
     Macro is_at_point_( _address_, _mouse_x_, _mouse_y_, _mode_ = )
-      Bool( is_at_point_x_( _address_, _mouse_x_, _mode_ ) And is_at_point_y_( _address_, _mouse_y_, _mode_ ))
+      Bool( is_at_point_horizontal_( _address_, _mouse_x_, _mode_ ) And is_at_point_vertical_( _address_, _mouse_y_, _mode_ ))
     EndMacro
     
     Macro is_inter_rect_( _address_1_x_, _address_1_y_, _address_1_width_, _address_1_height_,
@@ -1942,11 +1942,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $1000ff00 )
               
               If *this\row
-                If *this\EnteredRow( ) And *this\EnteredRow( )\state\enter
-                  If *this\EnteredRow( )\state\enter < 0
-                    draw_box_( row_x_( *this, *this\EnteredRow( ) ) + jj, row_y_( *this, *this\EnteredRow( ) ) - tt, *this\EnteredRow( )\width - jj * 2, ss, $2000ff00 )
+                If *this\FocusedRow( ) And *this\FocusedRow( )\state\enter
+                  If *this\FocusedRow( )\state\enter < 0
+                    draw_box_( row_x_( *this, *this\FocusedRow( ) ) + jj, row_y_( *this, *this\FocusedRow( ) ) - tt, *this\FocusedRow( )\width - jj * 2, ss, $2000ff00 )
                   Else
-                    draw_box_( row_x_( *this, *this\EnteredRow( ) ) + jj, row_y_( *this, *this\EnteredRow( ) ) + *this\EnteredRow( )\height - tt, *this\EnteredRow( )\width - jj * 2, ss, $2000ff00 )
+                    draw_box_( row_x_( *this, *this\FocusedRow( ) ) + jj, row_y_( *this, *this\FocusedRow( ) ) + *this\FocusedRow( )\height - tt, *this\FocusedRow( )\width - jj * 2, ss, $2000ff00 )
                   EndIf
                 Else
                   If *this\count\items And *this\VisibleLastRow( )
@@ -1960,17 +1960,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $10ff0000 )
             EndIf
           Else
-           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $10ff0000 )
+            ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $10ff0000 )
           EndIf
         Else
           If *this\state\enter = 2
             If *this\state\drag
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $10ff00ff )
             Else
-             ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $100000ff )
+              ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $100000ff )
             EndIf
           Else
-           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $100000ff )
+            ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $100000ff )
           EndIf
         EndIf
         
@@ -1982,11 +1982,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff00ff00 )
               
               If *this\row
-                If *this\EnteredRow( ) And *this\EnteredRow( )\state\enter
-                  If *this\EnteredRow( )\state\enter < 0
-                    draw_box_( row_x_( *this, *this\EnteredRow( ) ) + j, row_y_( *this, *this\EnteredRow( ) ) - t, *this\EnteredRow( )\width - j * 2, s, $ff00ff00 )
+                If *this\FocusedRow( ) And *this\FocusedRow( )\state\enter
+                  If *this\FocusedRow( )\state\enter < 0
+                    draw_box_( row_x_( *this, *this\FocusedRow( ) ) + j, row_y_( *this, *this\FocusedRow( ) ) - t, *this\FocusedRow( )\width - j * 2, s, $ff00ff00 )
                   Else
-                    draw_box_( row_x_( *this, *this\EnteredRow( ) ) + j, row_y_( *this, *this\EnteredRow( ) ) + *this\EnteredRow( )\height - t, *this\EnteredRow( )\width - j * 2, s, $ff00ff00 )
+                    draw_box_( row_x_( *this, *this\FocusedRow( ) ) + j, row_y_( *this, *this\FocusedRow( ) ) + *this\FocusedRow( )\height - t, *this\FocusedRow( )\width - j * 2, s, $ff00ff00 )
                   EndIf
                 Else
                   If *this\count\items And *this\VisibleLastRow( )
@@ -2000,17 +2000,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ffff0000 )
             EndIf
           Else
-           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ffff0000 )
+            ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ffff0000 )
           EndIf
         Else
           If *this\state\enter = 2
             If *this\state\drag
               draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ffff00ff )
             Else
-             ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff0000ff )
+              ; draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff0000ff )
             EndIf
           Else
-           ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff0000ff )
+            ; draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $ff0000ff )
           EndIf
         EndIf
       EndIf
@@ -4991,7 +4991,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\EnteredTab( )\visible And
                      *this\EnteredTab( )\hide = 0 And
                      ( ( *this\state\enter And is_at_point_( *this\EnteredTab( ), mouse_x, mouse_y )) Or
-                       ( *this\state\drag And is_at_point_x_( *this\EnteredTab( ), mouse_x )) ))
+                       ( *this\state\drag And is_at_point_horizontal_( *this\EnteredTab( ), mouse_x )) ))
               
               ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
               ; search entered item
@@ -5000,7 +5000,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *this\_tabs( )\visible And
                    *this\_tabs( )\hide = 0 And
                    ( ( *this\state\enter And is_at_point_( *this\_tabs( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_x_( *this\_tabs( ), mouse_x )) )
+                     ( *this\state\drag And is_at_point_horizontal_( *this\_tabs( ), mouse_x )) )
                   *tabRow = *this\_tabs( )
                   Break
                 EndIf
@@ -10917,6 +10917,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             set_image_( *this, *rows\Image, Image )
             
             If *this\FocusedRow( )
+              *this\FocusedRow( )\state\focus = 0
               *this\FocusedRow( )\color\state = #__S_0
               
               *this\FocusedRow( )             = *rows
@@ -13171,7 +13172,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; if the item to be removed is selected,
         ; then we set the next item of its level as selected
         If *this\FocusedRow( ) = *this\_rows( )
-          *this\FocusedRow( )\state\press = #False
+          If *this\FocusedRow( )\state\press
+            *this\FocusedRow( )\state\press = 0
+          EndIf
+          *this\FocusedRow( )\state\focus = 0 ;???
           
           ; if he is a parent then we find the next item of his level
           PushListPosition( *this\_rows( ))
@@ -13187,6 +13191,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Else
             *this\FocusedRow( ) = *this\_rows( )
           EndIf
+          
           PopListPosition( *this\_rows( ))
           
           If *this\FocusedRow( )
@@ -13195,7 +13200,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\FocusedRow( ) = *this\FocusedRow( )\parent\row
             EndIf
             
+            ;;;*this\PressedRow( ) = *this\FocusedRow( ) ; ?
             *this\FocusedRow( )\state\press = #True
+            *this\FocusedRow( )\state\focus = 1
             *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
           EndIf
         EndIf
@@ -13766,33 +13773,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\FocusedRow( )\color\state = #__S_0
             EndIf
             
-            ; click select mode
-            If *this\mode\check = #__m_clickselect
-              If *this\_rows( )\state\focus
-                *this\_rows( )\state\focus = #False
-                *this\_rows( )\color\state = #__S_0
-              Else
-                *this\_rows( )\state\focus = #True
-                *this\_rows( )\color\state = #__S_3
-              EndIf
-              
-              Post( *this, #__event_Change, *this\_rows( )\index )
-            Else
-              If *this\_rows( )\state\focus = #False
-                *this\_rows( )\state\focus = #True
-                ; multi select mode
-                If *this\mode\check = #__m_multiselect
-                  Post( *this, #__event_Change, *this\_rows( )\index, 1 )
-                EndIf
-              EndIf
-              
-              *this\_rows( )\color\state = #__S_3
-            EndIf
-            
             *this\FocusedRow( ) = *this\_rows( )
             *this\scroll\state  = - 1
             
-            ;*this\WidgetChange( ) = 1
+            ; click select mode
+            If *this\mode\check = #__m_clickselect
+              If *this\FocusedRow( )\state\focus
+                *this\FocusedRow( )\state\focus = 0
+                *this\FocusedRow( )\color\state = #__S_0
+              Else
+                *this\FocusedRow( )\state\focus = 1
+                *this\FocusedRow( )\color\state = #__S_3
+              EndIf
+              
+              Post( *this, #__event_Change, *this\FocusedRow( )\index )
+            Else
+              If *this\FocusedRow( )\state\focus = 0 ; ???
+                *this\FocusedRow( )\state\focus = 1
+                ; multi select mode
+                If *this\mode\check = #__m_multiselect
+                  Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
+                EndIf
+              EndIf
+              
+              *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
+            EndIf
+            
             ProcedureReturn #True
           EndIf
         EndIf
@@ -17108,7 +17114,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             ;         EndIf
           EndIf
         EndIf
-                 
+        
         ;         ; draw above drawing
         ;         If Not *this\last\widget
         ;           draw_above_( *this )
@@ -17124,6 +17130,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Not *this\hide And *this\data And *this\container
           drawing_mode_( #PB_2DDrawing_Transparent )
           DrawText( *this\x, *this\y, Str( *this\data ), 0)
+        EndIf
+        
+        ;\\ draw drag & drop
+        If mouse( )\drag And 
+           *this\state\enter And
+           Not *this\state\disable
+          
+          DropDraw( *this )
         EndIf
         
         ;\\ draw disable state
@@ -17231,15 +17245,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           WidgetEvent( )\type = #PB_All
           WidgetEvent( )\item = #PB_All
           WidgetEvent( )\data = #Null
-        EndIf
-        
-        ;\\ draw drag & drop
-        If mouse( )\drag And 
-           EnteredWidget( ) And 
-           EnteredWidget( )\state\enter And
-           Not EnteredWidget( )\state\disable
-          
-          DropDraw( EnteredWidget( ) )
         EndIf
         
         ;\\
@@ -17472,7 +17477,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           mouse( )\y = CanvasMouseY( *this\_root( )\canvas\gadget )
         EndIf
         
-        If Not is_at_point_y_( *this, mouse( )\y, [#__c_inner] ) And *this\scroll\v
+        If Not is_at_point_vertical_( *this, mouse( )\y, [#__c_inner] ) And *this\scroll\v
           If mouse( )\y < mouse( )\delta\y
             If Not bar_in_start_( *this\scroll\v\bar )
               scroll_y = mouse( )\y - ( *this\y[#__c_inner] )
@@ -17527,7 +17532,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If Not is_at_point_x_( *this, mouse( )\x, [#__c_inner] ) And *this\scroll\h
+        If Not is_at_point_horizontal_( *this, mouse( )\x, [#__c_inner] ) And *this\scroll\h
           If mouse( )\x < mouse( )\delta\x
             If Not bar_in_start_( *this\scroll\h\bar )
               scroll_x = mouse( )\x - ( *this\x[#__c_inner] )
@@ -17695,7 +17700,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    *this\EnteredRow( )\visible And
                    *this\EnteredRow( )\hide = 0 And
                    ( ( *this\state\enter And is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_y_( *this\EnteredRow( ), mouse_y )) ))
+                     ( *this\state\drag And is_at_point_vertical_( *this\EnteredRow( ), mouse_y )) ))
             
             ; search entered item
             LastElement( *this\VisibleRows( ))
@@ -17703,7 +17708,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\VisibleRows( )\visible And
                  *this\VisibleRows( )\hide = 0 And
                  ( ( *this\state\enter And is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )) Or
-                   ( *this\state\drag And is_at_point_y_( *this\VisibleRows( ), mouse_y )) )
+                   ( *this\state\drag And is_at_point_vertical_( *this\VisibleRows( ), mouse_y )) )
                 *item = *this\VisibleRows( )
                 Break
               EndIf
@@ -17716,7 +17721,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    *this\EnteredRow( )\visible And
                    *this\EnteredRow( )\hide = 0 And
                    ( ( *this\state\enter And is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_y_( *this\EnteredRow( ), mouse_y )) ))
+                     ( *this\state\drag And is_at_point_vertical_( *this\EnteredRow( ), mouse_y )) ))
             
             ; search entered item
             LastElement( *this\_rows( ))
@@ -17724,7 +17729,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\_rows( )\visible And
                  *this\_rows( )\hide = 0 And
                  ( ( *this\state\enter And is_at_point_( *this\_rows( ), mouse_x, mouse_y )) Or
-                   ( *this\state\drag And is_at_point_y_( *this\_rows( ), mouse_y )) )
+                   ( *this\state\drag And is_at_point_vertical_( *this\_rows( ), mouse_y )) )
                 *item = *this\_rows( )
                 Break
               EndIf
@@ -17906,238 +17911,196 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       If *this\row
-        ;       ;
-        If eventtype = #__event_Focus
-          If *this\FocusedRow( )
-            If *this\FocusedRow( )\state\focus
-              *this\FocusedRow( )\color\state = #__S_2
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #__event_LostFocus
-          If *this\FocusedRow( )
-            If *this\FocusedRow( )\state\focus
-              *this\FocusedRow( )\color\state = #__S_3
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #__event_LeftButtonDown ; Ok
-          If *this\EnteredRow( )
-            *this\PressedRow( ) = *this\EnteredRow( )
-            
-            If *this\PressedRow( )\state\press = #False
-              *this\PressedRow( )\state\press = #True
+        ;\\ get at point items
+        If *this\state\enter  
+          If ListSize( *this\VisibleRows( ) )
+            If Not ( *this\EnteredRow( ) And
+                     *this\EnteredRow( )\visible And
+                     *this\EnteredRow( )\hide = 0 And
+                     is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y ))
               
-              *this\PressedRow( )\color\state                                 = #__S_2
-              *this\PressedRow( )\color\back[*this\PressedRow( )\color\state] = $FF2C70F5 ; TEMP
-            EndIf
-            
-            If *this\FocusedRow( ) <> *this\EnteredRow( )
-              If *this\FocusedRow( )
-                If *this\FocusedRow( )\state\focus
-                  *this\FocusedRow( )\state\focus = #False
+              ; search entered item
+              LastElement( *this\VisibleRows( ))
+              Repeat
+                If *this\VisibleRows( )\visible And
+                   *this\VisibleRows( )\hide = 0 And
+                   is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )
                   
-                  *this\FocusedRow( )\color\state = #__S_0
+                  *item = *this\VisibleRows( )
+                  Break
+                EndIf
+              Until PreviousElement( *this\VisibleRows( )) = #False
+            Else
+              *item = *this\EnteredRow( )
+            EndIf
+          ElseIf ListSize( *this\_rows( ) )
+            If Not ( *this\EnteredRow( ) And
+                     *this\EnteredRow( )\visible And
+                     *this\EnteredRow( )\hide = 0 And
+                     is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y ))
+              
+              ; search entered item
+              LastElement( *this\_rows( ))
+              Repeat
+                If *this\_rows( )\visible And
+                   *this\_rows( )\hide = 0 And
+                   is_at_point_( *this\_rows( ), mouse_x, mouse_y )
                   
+                  *item = *this\_rows( )
+                  Break
                 EndIf
-              EndIf
-              
-              *this\FocusedRow( ) = *this\EnteredRow( )
-              
-              If *this\FocusedRow( )\state\focus = #False
-                *this\FocusedRow( )\state\focus = #True
-                ;Debug "status-change - focus - LeftButtonDown"
-                ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
-                DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-        ;
-        If eventtype = #__event_LeftButtonUp ; Ok
-          If *this\PressedRow( )
-            If *this\PressedRow( )\state\press = #True
-              *this\PressedRow( )\state\press = #False
-              
-              If *this\PressedRow( )\state\focus = #False
-                If *this\PressedRow( )\state\enter
-                  *this\PressedRow( )\color\state = #__S_1
-                Else
-                  *this\PressedRow( )\color\state = #__S_0
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-        ; get at point items
-        If ListSize( *this\VisibleRows( ) )
-          If Not ( *this\EnteredRow( ) And
-                   *this\EnteredRow( )\visible And
-                   *this\EnteredRow( )\hide = 0 And
-                   ( ( *this\state\enter And is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_y_( *this\EnteredRow( ), mouse_y )) ))
-            
-            ; search entered item
-            LastElement( *this\VisibleRows( ))
-            Repeat
-              If *this\VisibleRows( )\visible And
-                 *this\VisibleRows( )\hide = 0 And
-                 ( ( *this\state\enter And is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )) Or
-                   ( *this\state\drag And is_at_point_y_( *this\VisibleRows( ), mouse_y )) )
-                *item = *this\VisibleRows( )
-                Break
-              EndIf
-            Until PreviousElement( *this\VisibleRows( )) = #False
-          Else
-            *item = *this\EnteredRow( )
-          EndIf
-        ElseIf ListSize( *this\_rows( ) )
-          If Not ( *this\EnteredRow( ) And
-                   *this\EnteredRow( )\visible And
-                   *this\EnteredRow( )\hide = 0 And
-                   ( ( *this\state\enter And is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )) Or
-                     ( *this\state\drag And is_at_point_y_( *this\EnteredRow( ), mouse_y )) ))
-            
-            ; search entered item
-            LastElement( *this\_rows( ))
-            Repeat
-              If *this\_rows( )\visible And
-                 *this\_rows( )\hide = 0 And
-                 ( ( *this\state\enter And is_at_point_( *this\_rows( ), mouse_x, mouse_y )) Or
-                   ( *this\state\drag And is_at_point_y_( *this\_rows( ), mouse_y )) )
-                *item = *this\_rows( )
-                Break
-              EndIf
-            Until PreviousElement( *this\_rows( )) = #False
-          Else
-            *item = *this\EnteredRow( )
-          EndIf
-        EndIf
-        
-        Protected focus = Bool( *this\state\drag = #PB_Drag_Link And ( Not Mouse( )\drag Or PressedWidget( )\drop ))
-        
-        ;
-        If *this\state\drag
-          If *item = #Null And focus
-            If mouse( )\y < mouse( )\delta\y And mouse( )\y <= *this\y[#__c_inner]
-              If *this\VisibleFirstRow( ) And Not bar_in_start_( *this\scroll\v\bar )
-                ChangeCurrentElement( *this\_rows( ), *this\VisibleFirstRow( ))
-                *item = PreviousElement( *this\_rows( ) )
-                
-                If *item
-                  row_scroll_y_( *this, *item )
-                EndIf
-              Else
-                *item = *this\VisibleFirstRow( )
-              EndIf
-            ElseIf mouse( )\y > mouse( )\delta\y And ( mouse( )\y > *this\y[#__c_inner] + *this\height[#__c_inner] )
-              If *this\VisibleLastRow( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                ChangeCurrentElement( *this\_rows( ), *this\VisibleLastRow( ))
-                *item = NextElement( *this\_rows( ) )
-                
-                If *item
-                  row_scroll_y_( *this, *item )
-                EndIf
-              Else
-                *item = *this\VisibleLastRow( )
-              EndIf
+              Until PreviousElement( *this\_rows( )) = #False
+            Else
+              *item = *this\EnteredRow( )
             EndIf
           EndIf
         Else
-          If eventtype = #__event_MouseMove
-            If *this\state\enter = #False
-              *item = #Null
-            EndIf
-          EndIf
+          *item = #Null
         EndIf
         
-        ; change enter/leave state
-        If *this\EnteredRow( ) <> *item ;And *item
-                                        ; lost-focus state
-          If focus
-            If *this\FocusedRow( )
-              If *this\FocusedRow( )\state\focus
-                *this\FocusedRow( )\state\focus = #False
-                
-                ;If *this\FocusedRow( )\state\press = #False
-                *this\FocusedRow( )\color\state = #__S_0
-                ;EndIf
-                *this\state\repaint = #True
+        ;\\
+        If *this\state\drag
+          ;\\
+          If eventtype = #__event_MouseMove
+            If *this\state\drag = #PB_Drag_Link And ( Not Mouse( )\drag Or PressedWidget( )\drop )
+              ;\\
+              If *item = #Null And is_at_point_horizontal_( *this, mouse_x )
+                If mouse( )\y < mouse( )\delta\y And mouse( )\y <= *this\y[#__c_inner]
+                  If *this\VisibleFirstRow( ) And Not bar_in_start_( *this\scroll\v\bar )
+                    ChangeCurrentElement( *this\_rows( ), *this\VisibleFirstRow( ))
+                    *item = PreviousElement( *this\_rows( ) )
+                    
+                    If *item
+                      row_scroll_y_( *this, *item )
+                    EndIf
+                  Else
+                    *item = *this\VisibleFirstRow( )
+                  EndIf
+                ElseIf mouse( )\y > mouse( )\delta\y And ( mouse( )\y > *this\y[#__c_inner] + *this\height[#__c_inner] )
+                  If *this\VisibleLastRow( ) And Not bar_in_stop_( *this\scroll\v\bar )
+                    ChangeCurrentElement( *this\_rows( ), *this\VisibleLastRow( ))
+                    *item = NextElement( *this\_rows( ) )
+                    
+                    If *item
+                      row_scroll_y_( *this, *item )
+                    EndIf
+                  Else
+                    *item = *this\VisibleLastRow( )
+                  EndIf
+                EndIf
               EndIf
-            EndIf
-          EndIf
-          
-          ; leave state
-          If *this\EnteredRow( )
-            If *this\EnteredRow( )\state\enter
-              *this\EnteredRow( )\state\enter = #False
               
-              If *this\EnteredRow( )\color\state = #__S_1
-                *this\EnteredRow( )\color\state = #__S_0
-              EndIf
-            EndIf
-          EndIf
-          
-          ; Debug "items - "+*item+" "+*this\EnteredRow( )
-          *this\LeavedRow( )  = *this\EnteredRow( )
-          *this\EnteredRow( ) = *item
-          
-          If focus
-            *this\FocusedRow( ) = *item
-          EndIf
-          
-          If *this\EnteredRow( )
-            
-            ; focus state
-            If focus
-              If *this\FocusedRow( )
-                If *this\FocusedRow( )\state\focus = #False
-                  *this\FocusedRow( )\state\focus = #True
+              *this\EnteredRow( )  = *item ;???
+              
+              ;\\ focus & lostfocus state
+              If *item
+                If *this\FocusedRow( ) <> *item
+                  ;\\ lost-focus state
+                  If *this\FocusedRow( )
+                    If *this\FocusedRow( )\state\focus
+                      *this\FocusedRow( )\state\focus = 0
+                      *this\FocusedRow( )\state\enter = 0
+                      
+                      If *this\FocusedRow( )\state\press = #False
+                        *this\FocusedRow( )\color\state = #__S_0
+                      EndIf
+                      
+                      *this\state\repaint = #True
+                    EndIf
+                  EndIf
                   
-                  ;If *this\FocusedRow( )\state\press = #False
-                  *this\FocusedRow( )\color\state = #__S_2
-                  ;EndIf
-                  *this\FocusedRow( )\color\back[*this\FocusedRow( )\color\state] = $FF2C70F5 ; TEMP
-                  *this\state\repaint = #True
+                  *this\FocusedRow( ) = *item
+                  
+                  ;\\ focus state
+                  If *this\FocusedRow( )
+                    ; Debug *this\FocusedRow( )\state\focus
+                    If *this\FocusedRow( )\state\focus = 0
+                      *this\FocusedRow( )\state\focus = 1
+                      *this\FocusedRow( )\state\enter = 1
+                      
+                      *this\FocusedRow( )\color\state = #__S_2
+                      DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                    EndIf
+                  EndIf
                 EndIf
+              Else
+                If *this\FocusedRow( )  
+                  If *this\FocusedRow( ) <> *this\PressedRow( )
+                    If *this\FocusedRow( )\state\enter 
+                      *this\FocusedRow( )\state\enter = 0
+                      *this\FocusedRow( )\state\focus = 0
+                      *this\FocusedRow( )\color\state = #__s_0
+                      
+                      Debug 88888
+                      *this\FocusedRow( ) = 0;*this\PressedRow( )
+                                             ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                    EndIf
+                  EndIf
+                EndIf  
               EndIf
-            EndIf
-            
-            ; enter state
-            If *this\state\enter
-              If *this\EnteredRow( )\state\enter = #False
-                ; drag & drop state
-                If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
-                  *this\EnteredRow( )\state\enter = 1
-                  ; mouse( )\enter =- 1
-                  ;Debug "-1 (+1)"
+              
+              ;\\ drag & drop state
+              If *this\FocusedRow( ) And 
+                 *this\FocusedRow( )\state\enter
+                
+                If ( mouse_y - *this\FocusedRow( )\y ) > *this\FocusedRow( )\height / 2
+                  If *this\FocusedRow( )\state\enter <> 1
+                    *this\FocusedRow( )\state\enter = 1
+                    ; mouse( )\enter =- 1
+                    ;Debug "-1 (+1)"
+                    *this\state\repaint = 1
+                  EndIf
                 Else
-                  ;Debug "+1 (-1)"
-                  ; mouse( )\enter = 1
-                  *this\EnteredRow( )\state\enter = - 1
+                  If *this\FocusedRow( )\state\enter <> - 1
+                    *this\FocusedRow( )\state\enter = - 1
+                    ;Debug "+1 (-1)"
+                    ; mouse( )\enter = 1
+                    *this\state\repaint = 1
+                  EndIf
                 EndIf
+              EndIf
+            EndIf 
+          EndIf
+        Else
+          ;\\ change enter/leave state
+          If *this\EnteredRow( ) <> *item ;And *item
+            
+            ;\\ leave state
+            If *this\EnteredRow( )
+              If *this\EnteredRow( )\state\enter
+                *this\EnteredRow( )\state\enter = 0
                 
-                If *this\EnteredRow( )\color\state = #__S_0
-                  *this\EnteredRow( )\color\state = #__S_1
-                EndIf
-                
-                ; update non-focus status
-                If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ))
-                  ; Debug " items status change enter"
-                  
-                  DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                If *this\EnteredRow( )\color\state = #__S_1
+                  *this\EnteredRow( )\color\state = #__S_0
                 EndIf
               EndIf
             EndIf
-          Else
-            ;
-            If *this\FocusedRow( ) <> *this\LeavedRow( )
+            
+            ; Debug "items - "+*item+" "+*this\EnteredRow( )
+            *this\LeavedRow( )  = *this\EnteredRow( )
+            *this\EnteredRow( ) = *item
+            
+            If *this\EnteredRow( )
+              ;\\ enter state
+              If *this\state\enter
+                If *this\EnteredRow( )\state\enter = 0
+                  *this\EnteredRow( )\state\enter = 1
+                  
+                  If *this\EnteredRow( )\color\state = #__S_0
+                    *this\EnteredRow( )\color\state = #__S_1
+                  EndIf
+                  
+                  ;\\ update non-focus status
+                  If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ))
+                    ; Debug " items status change enter"
+                    
+                    DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                  EndIf
+                EndIf
+              EndIf
+              
+              ;\\
+            ElseIf *this\FocusedRow( ) <> *this\LeavedRow( )
               ; Debug " items status change leave"
               
               If *this\FocusedRow( )
@@ -18149,26 +18112,122 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        
-        ;         If *this\EnteredRow( ) And *this\EnteredRow( )\state\enter
-        ;           If ( mouse_y - *this\EnteredRow( )\y ) > *this\EnteredRow( )\height / 2
-        ;             *this\EnteredRow( )\state\enter = 1
-        ;             *this\state\repaint = 1
-        ;             ;Debug "-1 (+1)"
-        ;           Else
-        ;             ;Debug "+1 (-1)"
-        ;             *this\state\repaint = 1
-        ;             *this\EnteredRow( )\state\enter =- 1
-        ;           EndIf
-        ;         EndIf
-        
-        ;
+        ;\\
         If eventtype = #__event_MouseEnter
           If *this\FocusedRow( ) And
-             ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) ) = 0
+             Not ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) )
             DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
           EndIf
         EndIf
+        
+        ;\\
+        If eventtype = #__event_LeftButtonDown ; Ok
+          If *this\EnteredRow( )
+            *this\PressedRow( ) = *this\EnteredRow( )
+            *this\PressedRow( )\color\state = #__S_2
+            *this\PressedRow( )\state\press = 1
+            
+            If *this\FocusedRow( ) <> *this\EnteredRow( )
+              If *this\FocusedRow( ) And 
+                 *this\FocusedRow( )\state\focus
+                *this\FocusedRow( )\state\focus = 0
+                *this\FocusedRow( )\color\state = #__S_0
+              EndIf
+              
+              *this\FocusedRow( ) = *this\EnteredRow( )
+              
+              If *this\FocusedRow( )\state\focus = 0
+                *this\FocusedRow( )\state\focus = 1
+                DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ;\\       
+        If eventtype = #__event_Focus
+          If *this\FocusedRow( )
+            If *this\FocusedRow( )\state\focus
+              *this\FocusedRow( )\color\state = #__S_2
+              If *this\FocusedRow( )\state\focus = - 1
+                *this\FocusedRow( )\state\focus = 1
+                DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ;\\
+        If eventtype = #__event_LostFocus
+          If *this\FocusedRow( )
+            If *this\FocusedRow( )\state\focus
+              *this\FocusedRow( )\color\state = #__S_3
+            EndIf
+          EndIf
+        EndIf
+        
+        ;\\
+        If eventtype = #__event_Drop ; Ok
+          If *this\FocusedRow( )
+            Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
+            ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
+            Debug "drop f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\state\focus
+            
+            If *this\FocusedRow( )\index > *this\PressedRow( )\index
+              *this\FocusedRow( )\state\enter = 0
+            EndIf
+            *this\FocusedRow( )\state\focus = 0
+            *this\FocusedRow( )\state\press = 0
+            *this\FocusedRow( )\color\state = 0
+          EndIf
+        EndIf
+        
+        ;\\
+        If eventtype = #__event_LeftButtonUp 
+          If *this\EnteredRow( )
+            Debug "up e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
+          EndIf
+          
+          ;\\
+          If *this\PressedRow( )
+            Debug "up p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
+            *this\PressedRow( )\state\press = 0
+          EndIf
+          
+          ;\\
+          If *this\FocusedRow( )
+            Debug "up f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\state\focus
+            
+            If *this\PressedRow( ) = *this\FocusedRow( )
+              If Not *this\FocusedRow( )\state\enter
+                
+              EndIf
+            Else
+              If *this\PressedRow( )
+                *this\PressedRow( )\state\focus = 0
+                *this\PressedRow( )\state\enter = 0
+                *this\PressedRow( )\color\state = #__s_0
+                *this\PressedRow( ) = 0
+              EndIf
+              
+              ;               *this\FocusedRow( )\state\press = 0
+              ;               *this\FocusedRow( )\state\focus = 0
+              ;               *this\FocusedRow( )\state\enter = 0
+              
+              
+              ;\\ 
+              DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
+              DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+            EndIf
+          Else
+            If *this\PressedRow( )
+              *this\FocusedRow( ) = *this\PressedRow( ) 
+              *this\FocusedRow( )\state\focus = 1
+            EndIf   
+          EndIf
+        EndIf
+        
       EndIf
       
     EndProcedure
@@ -18182,33 +18241,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If eventtype = #__event_MouseEnter Or
            eventtype = #__event_MouseMove
           
-          ;\\ entered position state
-          If *this And *this\state\enter > 0
-            If is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_inner] )
-              If *this\type = #__type_Splitter
-                If is_at_point_( *this\bar\button, mouse( )\x, mouse( )\y )
-                  If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
-                Else
-                  If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
-                EndIf
-                
-              ElseIf *this\type = #__type_HyperLink
-                If is_at_point_( *this, mouse( )\x - *this\x, mouse( )\y - *this\y, [#__c_Required] )
-                  If *this\state\enter = 1 : *this\state\enter = 2 : *this\state\repaint = 1 : EndIf
-                Else
-                  If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
-                EndIf
-                
-              Else
-                If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
-              EndIf
-            Else
-              If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
-            EndIf
-          EndIf
-          
-          ;\\ drag & drop state
           If *this = EnteredWidget( )  
+            ;\\ entered position state
+            If *this\state\enter > 0
+              If is_at_point_( *this, mouse( )\x, mouse( )\y, [#__c_inner] )
+                If *this\type = #__type_Splitter
+                  If is_at_point_( *this\bar\button, mouse( )\x, mouse( )\y )
+                    If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
+                  Else
+                    If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
+                  EndIf
+                  
+                ElseIf *this\type = #__type_HyperLink
+                  If is_at_point_( *this, mouse( )\x - *this\x, mouse( )\y - *this\y, [#__c_Required] )
+                    If *this\state\enter = 1 : *this\state\enter = 2 : *this\state\repaint = 1 : EndIf
+                  Else
+                    If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
+                  EndIf
+                  
+                Else
+                  If *this\state\enter = 1 : *this\state\repaint = 1 : *this\state\enter = 2 : EndIf
+                EndIf
+              Else
+                If *this\state\enter = 2 : *this\state\enter = 1 : *this\state\repaint = 1 : EndIf
+              EndIf
+            EndIf
+            
+            ;\\ drag & drop state
             If mouse( )\drag 
               If *this\state\enter = 2 
                 If ( *this\drop And
@@ -18293,8 +18352,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             *this\state\repaint = #True
             
+          Case #__event_Change
+            If *this\row
+              Debug "change "+*button
+            EndIf
+            
           Case #__event_StatusChange
             If *this\row
+              If *this\FocusedRow( ) 
+                If *this\FocusedRow( )\state\focus ; ???
+                  If *this\FocusedRow( )\state\focus = 1
+                    *this\FocusedRow( )\state\focus = - 1
+                    If *this\FocusedRow( )\color\state <> 3
+                      ;Debug *button
+                      *this\FocusedRow( )\color\back[*this\FocusedRow( )\color\state] = $FF2C70F5 ; TEMP
+                    EndIf
+                  EndIf
+                Else
+                  Debug "no focus statechange"
+                EndIf
+              EndIf
               *this\state\repaint = #True
             EndIf
             
@@ -18426,7 +18503,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #__event_LeftButtonUp,
                #__event_LeftDoubleClick,
                #__event_Left3Click,
-               #__event_LeftClick
+               #__event_LeftClick,
+               #__event_Drop 
             
             
             If *this\row
@@ -20920,5 +20998,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-0-----------------+3-+r-----------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------
 ; EnableXP

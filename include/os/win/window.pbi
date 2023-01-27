@@ -1,4 +1,6 @@
-﻿EnableExplicit
+﻿; https://www.rsbasic.de/winapi-library/
+
+EnableExplicit
 XIncludeFile "id.pbi"
 XIncludeFile "clipgadgets.pbi"
 
@@ -455,8 +457,6 @@ Repeat
     Debug " pb_window_leftclick"
   EndIf
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 178
-; FirstLine = 149
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -----
 ; EnableXP

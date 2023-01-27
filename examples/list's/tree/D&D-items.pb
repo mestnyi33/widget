@@ -32,6 +32,9 @@ Procedure events( )
   
   If EventWidget( ) = *tree                     
     Select WidgetEventType( ) 
+      Case #PB_EventType_Change
+        Debug "change - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+        
       Case #PB_EventType_DragStart 
         ; 
         ; The DragStart event tells us that the user clicked on an item and
@@ -55,7 +58,7 @@ Procedure events( )
             DragCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2)
           EndIf
         EndIf
-      
+        
       Case #PB_EventType_Drop 
         ;
         ; Here we get a drop event. Make sure it is on the right gadget and of right type,
@@ -64,7 +67,10 @@ Procedure events( )
         ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
         ; особенно если в вашей программе есть несколько элементов Drag & Drop.
         ;
-        If EventDropType( ) = #PB_Drop_Private And EventDropPrivate( ) = #PrivateType
+        If EventDropType( ) = #PB_Drop_Private And
+           EventDropPrivate( ) = #PrivateType
+          Debug "start drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+          
           TargetItem = GetState(*tree)        
           
           ; nothing to do if source and target are equal
@@ -216,7 +222,10 @@ Procedure events( )
             EndIf
             
           EndIf      
+          Debug "stop drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
         EndIf
+        
+        
     EndSelect
     
   EndIf

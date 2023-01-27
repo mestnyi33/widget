@@ -802,21 +802,36 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventWidget = listview_debug
           
           ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
+        EndIf
+        
+        If e_item = - 1
+          ;SetText( id_i_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
         Else
-          If e_item = -1
-            ;SetText( id_i_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
-          Else
-            ; If EventWidget = id_elements_tree
+          If EventWidget = id_i_view_tree
             SetText( id_i_help_text, GetItemText( EventWidget, e_item ) )
-            ; EndIf
+            
+            ;\\ TEMP change visible
+            *this._s_widget = EventWidget
+            If *this\FocusedRow( ) 
+              If *this\FocusedRow( )\color\state <> 3
+                *this\FocusedRow( )\color\back[*this\FocusedRow( )\color\state] = *this\color\back[*this\FocusedRow( )\color\state] ; $FFF5702C ; TEMP
+              EndIf
+            EndIf
+;             If *this\EnteredRow( )
+;               If *this\EnteredRow( )\color\state <> 3
+;                 *this\EnteredRow( )\color\back[*this\EnteredRow( )\color\state] = $FF70F52C ; TEMP
+;                 *this\EnteredRow( )\color\front[*this\EnteredRow( )\color\state] = $FFffffff ; TEMP
+;               EndIf
+;             EndIf
+            
+          EndIf
+          
+          If EventWidget = id_elements_tree
+            SetText( id_i_help_text, GetItemText( EventWidget, e_item ) )
           EndIf
         EndIf
         
       Case #PB_EventType_Change
-        If EventWidget = id_elements_tree
-          a_transform( )\type = GetState( EventWidget )
-        EndIf
-        
         If EventWidget = id_i_view_tree
           *this = GetItemData( EventWidget, GetState( EventWidget ) )
           
@@ -825,6 +840,10 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;;SetActive( *this )
+        EndIf
+        
+        If EventWidget = id_elements_tree
+          a_transform( )\type = GetState( EventWidget )
         EndIf
         
         If EventWidget = listview_debug
@@ -1187,6 +1206,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
     
     
+    
     ; example 3
     ;   ;OpenList(id_design_form)
     SetState(group_select, 1) 
@@ -1263,5 +1283,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f-------4--v1-f-
+; Folding = -----f-------4---v9-4-
 ; EnableXP

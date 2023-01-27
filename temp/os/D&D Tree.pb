@@ -6,6 +6,12 @@
 ;
 ; ------------------------------------------------------------------
 
+; linux & window
+; change - 2 Item2 Item2
+; change - 4 Item4 Item4
+; start drop - 4 Item4 Item4
+; stop drop - 4 Item2 Item2
+
 #Tree = 0
 #Window = 0
 
@@ -24,8 +30,8 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
   ; "Directory" ones.
   ;
   ; Добавьте несколько предметов. Мы сможем перемещать предметы в
-   ; "справочные".
-   ;
+  ; "справочные".
+  ;
   For i = 0 To 20
     If i % 5 = 0
       AddGadgetItem(#Tree, -1, "Directory" + Str(i), 0, 0)
@@ -55,28 +61,33 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
         SourceItem = GetGadgetState(#Tree)
         DragPrivate(#PrivateType, #PB_Drag_Move)
       EndIf
-    
+      
+      If EventGadget() = #Tree And EventType() = #PB_EventType_Change
+        Debug "change - "+ GetGadgetState(#Tree) +" "+ GetGadgetText(#Tree) +" "+ GetGadgetItemText(#Tree, GetGadgetState(#Tree))
+      EndIf
+      
     ElseIf Event = #PB_Event_GadgetDrop
       ;
       ; Here we get a drop event. Make sure it is on the right gadget and of right type,
       ; especially if you have multiple Drag & Drop stuff in your program.
       ;
       ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
-       ; особенно если в вашей программе есть несколько элементов Drag & Drop.
-       ;
+      ; особенно если в вашей программе есть несколько элементов Drag & Drop.
+      ;
       If EventGadget() = #Tree And EventDropType() = #PB_Drop_Private And EventDropPrivate() = #PrivateType
+        Debug "start drop - "+ GetGadgetState(#Tree) +" "+ GetGadgetText(#Tree) +" "+ GetGadgetItemText(#Tree, GetGadgetState(#Tree))
         TargetItem = GetGadgetState(#Tree)        
         
         ; nothing to do if source and target are equal
         ;
         ; ничего не делать, если источник и цель равны
-         ;
+        ;
         If SourceItem <> TargetItem        
-        
+          
           ; Find out to which index and sublevel to move the item
           ;
           ; Узнайте, на какой индекс и подуровень переместить элемент
-           ;
+          ;
           If TargetItem = -1
             ; if dropped on the empty area, append at the end
             ; если упал на пустое место, добавить в конце
@@ -88,7 +99,7 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; если упал на «предмет», переместиться сразу после этого предмета
             TargetLevel = GetGadgetItemAttribute(#Tree, TargetItem, #PB_Tree_SubLevel)
             TargetItem  + 1
-          
+            
           Else
             ; if dropped on a "Directory", move into the directory and to the end of it
             ; all this can be easily done by examining the sublevel
@@ -110,11 +121,11 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
           ; childnodes are all directly following ones with a higher level
           ;
           ; Узнайте, сколько дочерних элементов имеет наш исходный элемент, поскольку мы хотим
-           ; переместить их всех. Если вы не разрешаете перемещение узлов каталога, он получает
-           ; намного проще, так как есть только одно удаление + добавление.
-           ;
-           ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
-           ;
+          ; переместить их всех. Если вы не разрешаете перемещение узлов каталога, он получает
+          ; намного проще, так как есть только одно удаление + добавление.
+          ;
+          ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
+          ;
           SourceLevel = GetGadgetItemAttribute(#Tree, SourceItem, #PB_Tree_SubLevel)          
           ChildCount  = 0
           For i = SourceItem+1 To CountGadgetItems(#Tree)-1
@@ -134,22 +145,22 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
           ; delete the source item.
           ;
           ; Примечание: поскольку при добавлении новых элементов изменяется индекс наших старых,
-           ; нам нужно сделать различие здесь, перемещаемся ли мы до или после нашего старого элемента.
-           ; Обратите также внимание, что мы не можем переместить элемент в один из его дочерних элементов, что мы
-           ; предотвратить с помощью этой проверки, а также.
-           ;
-           ; Сначала мы копируем исходный элемент и все дочерние элементы в новое место, а затем
-           ; удалить исходный элемент.
-           ;
+          ; нам нужно сделать различие здесь, перемещаемся ли мы до или после нашего старого элемента.
+          ; Обратите также внимание, что мы не можем переместить элемент в один из его дочерних элементов, что мы
+          ; предотвратить с помощью этой проверки, а также.
+          ;
+          ; Сначала мы копируем исходный элемент и все дочерние элементы в новое место, а затем
+          ; удалить исходный элемент.
+          ;
           If TargetItem > SourceItem + ChildCount + 1
             ;
             ; The target index is higher than the source one, so the source items are not
             ; affected by adding the new items in this case...
             ;
             ;
-             ; Целевой индекс выше исходного, поэтому исходные элементы не
-             ; затронуты добавлением новых элементов в этом случае...
-             ;
+            ; Целевой индекс выше исходного, поэтому исходные элементы не
+            ; затронуты добавлением новых элементов в этом случае...
+            ;
             For i = 0 To ChildCount  
               ; copy everything here (also colors and GetGadgetItemData() etc if you use that)                
               ; скопируйте все сюда (также цвета и GetGadgetItemData() и т. д., если вы используете это)
@@ -162,8 +173,8 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; This must be in a separate loop, as else the "expanded" state of the items is 
             ; not preserved, as the childs were not added yet in the above loop.
             ; Мы применяем состояние каждого элемента ПОСЛЕ того, как все элементы скопированы.
-             ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
-             ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
+            ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
+            ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
             For i = 0 To ChildCount
               SetGadgetItemState(#Tree, TargetItem+i, GetGadgetItemState(#Tree, SourceItem+i))
             Next i
@@ -177,7 +188,7 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
             ; из-за удаления источника, который был до цели
             SetGadgetState(#Tree, TargetItem-ChildCount-1)
-          
+            
           ElseIf TargetItem <= SourceItem
             ; 
             ; Second case: Target is lower than source. This means that each time
@@ -185,10 +196,10 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; this is why we read the source items with the "SourceItem+i*2"
             ;
             ;
-             ; Второй случай: цель ниже источника. Это означает, что каждый раз
-             ; мы добавляем целевой элемент, индекс исходных элементов также увеличивается на 1,
-             ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
-             ;
+            ; Второй случай: цель ниже источника. Это означает, что каждый раз
+            ; мы добавляем целевой элемент, индекс исходных элементов также увеличивается на 1,
+            ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
+            ;
             For i = 0 To ChildCount
               Text$ = GetGadgetItemText(#Tree, SourceItem+i*2)
               Level = GetGadgetItemAttribute(#Tree, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
@@ -199,8 +210,8 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; 'ChildCount+1' higher than before because of the added targets
             ;
             ; Цикл для состояний. Обратите внимание, что здесь индекс исходных элементов
-             ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
-             ;
+            ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
+            ;
             For i = 0 To ChildCount
               SetGadgetItemState(#Tree, TargetItem+i, GetGadgetItemState(#Tree, SourceItem+ChildCount+1+i))
             Next i            
@@ -209,19 +220,20 @@ If OpenWindow(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_Scre
             ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
             RemoveGadgetItem(#Tree, SourceItem+ChildCount+1)          
             SetGadgetState(#Tree, TargetItem)
-          
+            
           EndIf
           
         EndIf      
+        
+        Debug "stop drop - "+ GetGadgetState(#Tree) +" "+ GetGadgetText(#Tree) +" "+ GetGadgetItemText(#Tree, GetGadgetState(#Tree))
       EndIf
-    
+      
     EndIf
     
   Until Event = #PB_Event_CloseWindow
 EndIf
 
 End
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
