@@ -18024,17 +18024,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
               Else
-                If *this\FocusedRow( )  
+                If *this\FocusedRow( ) And
+                   *this\FocusedRow( )\state\enter 
+                  *this\FocusedRow( )\state\enter = 0
+                  
                   If *this\FocusedRow( ) <> *this\PressedRow( )
-                    If *this\FocusedRow( )\state\enter 
-                      *this\FocusedRow( )\state\enter = 0
-                      *this\FocusedRow( )\state\focus = 0
-                      *this\FocusedRow( )\color\state = #__s_0
-                      
-                      Debug 88888
-                      *this\FocusedRow( ) = 0;*this\PressedRow( )
-                                             ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
-                    EndIf
+                    ;Debug 88888
+                    *this\FocusedRow( )\state\focus = 0
+                    *this\FocusedRow( )\color\state = #__s_0
+                    *this\FocusedRow( ) = 0;*this\PressedRow( )
+                                           ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                    
                   EndIf
                 EndIf  
               EndIf
@@ -18063,7 +18063,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         Else
           ;\\ change enter/leave state
-          If *this\EnteredRow( ) <> *item ;And *item
+          If *this\EnteredRow( ) <> *item 
             
             ;\\ leave state
             If *this\EnteredRow( )
@@ -18121,7 +18121,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If eventtype = #__event_LeftButtonDown ; Ok
+        If eventtype = #__event_LeftButtonDown 
           If *this\EnteredRow( )
             *this\PressedRow( ) = *this\EnteredRow( )
             *this\PressedRow( )\color\state = #__S_2
@@ -18179,7 +18179,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             *this\FocusedRow( )\state\focus = 0
             *this\FocusedRow( )\state\press = 0
-            *this\FocusedRow( )\color\state = 0
+            *this\FocusedRow( )\color\state = #__s_0
           EndIf
         EndIf
         
@@ -18210,11 +18210,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\PressedRow( )\color\state = #__s_0
                 *this\PressedRow( ) = 0
               EndIf
-              
-              ;               *this\FocusedRow( )\state\press = 0
-              ;               *this\FocusedRow( )\state\focus = 0
-              ;               *this\FocusedRow( )\state\enter = 0
-              
               
               ;\\ 
               DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -20998,5 +20993,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4-28+--------------------------------------------------------------
 ; EnableXP
