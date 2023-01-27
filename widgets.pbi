@@ -13132,6 +13132,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
+        ;         ;\\ тормозить удаление итемов 
+        ;         ; поэтому изменения сделал в setState
+;         PushListPosition( *this\_rows( ))
+;         While NextElement( *this\_rows( ))
+;           *this\_rows( )\index - 1
+;         Wend
+;         PopListPosition( *this\_rows( ))
+        
+        ;\\
         Protected sublevel = *this\_rows( )\sublevel
         Protected *parent_row._S_rows = *this\_rows( )\parent\row
         
@@ -13759,7 +13768,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn #False
         EndIf
         
+        ;\\
         If *this\count\items
+          ;\\ example file "D&D-items"
+          If *this\PressedRow( )
+            If *this\FocusedRow( ) = *this\_rows( )
+              If *this\_rows( )\index <> State
+                *this\_rows( )\index = State
+              EndIf
+              
+              PushListPosition( *this\_rows( ))
+              If *this\_rows( )\index > *this\PressedRow( )\index
+                While PreviousElement( *this\_rows( ))
+                  If *this\_rows( )\index > *this\PressedRow( )\index
+                    *this\_rows( )\index - 1 - *this\PressedRow( )\childrens
+                  EndIf
+                Wend
+              ElseIf *this\_rows( )\index < *this\PressedRow( )\index
+                While NextElement( *this\_rows( ))
+                  If *this\_rows( )\index < *this\PressedRow( )\index
+                    *this\_rows( )\index + 1 + *this\PressedRow( )\childrens
+                  EndIf
+                Wend
+              EndIf
+              PopListPosition( *this\_rows( ))
+            EndIf
+          EndIf
+          
+          ;\\
           If *this\FocusedRow( ) <> *this\_rows( )
             If *this\FocusedRow( )
               If *this\FocusedRow( )\state\focus
@@ -20993,5 +21029,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4-28+--------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t-------------------------------------------------------------------------------------------------------f----4-28+--------------------------------------------------------------
 ; EnableXP

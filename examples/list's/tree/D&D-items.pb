@@ -223,6 +223,13 @@ Procedure events( )
             
           EndIf      
           Debug "stop drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+          
+          Debug ""
+          ClearDebugOutput()
+          Define *this._s_widget = *tree
+          ForEach *this\_rows( )
+            Debug ""+ *this\_rows( )\index +" "+ ListIndex(*this\_rows( )) +" "+ *this\_rows( )\text\string +""
+          Next
         EndIf
         
         
