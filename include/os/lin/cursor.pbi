@@ -110,9 +110,91 @@ Module Cursor
   ;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
   ;   EndImport
   
+  
+  Global NewMap images.i()
+  
+  ;-\\
+  Procedure Image( type.i = 0 )
+    Protected image
+    
+    If type = #PB_Cursor_Drop
+      image = CatchImage( #PB_Any, ?add, 601 )
+    ElseIf type = #PB_Cursor_Drag
+      image = CatchImage( #PB_Any, ?copy, 530 )
+    EndIf
+    
+    If Not image
+      image = CreateImage( #PB_Any, 16, 16, 32, #PB_Image_Transparent )
+    EndIf
+    
+    DataSection
+      add: ; memory_size - ( 601 )
+      Data.q $0A1A0A0D474E5089, $524448490D000000, $1A00000017000000, $0FBDF60000000408, $4D416704000000F5, $61FC0B8FB1000041,
+             $5248632000000005, $800000267A00004D, $80000000FA000084, $EA000030750000E8, $170000983A000060, $0000003C51BA9C70,
+             $87FF0044474B6202, $7009000000BFCC8F, $00C8000000735948, $ADE7FA6300C80000, $454D497407000000, $450A0F0B1308E307,
+             $63100000000C6AC0, $0020000000764E61, $0002000000200000, $000C8D7E6F010000, $3854414449300100, $1051034ABB528DCB,
+             $58DB084146C5293D, $82361609B441886C, $AA4910922C455E92, $C2C105F996362274, $FC2FF417B0504FC2, $DEF7BB3BB9ACF1A0,
+             $B99CE66596067119, $2DB03A16C1101E67, $12D0B4D87B0D0B8F, $11607145542B450C, $190D04A4766FDCAA, $4129428FD14DCD04,
+             $98F0D525AEFE8865, $A1C4924AD95B44D0, $26A2499413E13040, $F4F9F612B8726298, $62A6ED92C07D5B54, $E13897C2BE814222,
+             $A75C5C6365448A6C, $D792BBFAE41D2925, $1A790C0B8161DC2F, $224D78F4C611BD60, $A1E8C72566AB9F6F, $2023A32BDB05D21B,
+             $0E3BC7FEBAF316E4, $8E25C73B08CF01B1, $385C7629FEB45FBE, $8BB5746D80621D9F, $9A5AC7132FE2EC2B, $956786C4AE73CBF3,
+             $FE99E13C707BB5EB, $C2EA47199109BF48, $01FE0FA33F4D71EF, $EE0F55B370F8C437, $F12CD29C356ED20C, $CBC4BD4A70C833B1,
+             $FFCD97200103FC1C, $742500000019D443, $3A65746164745845, $3200657461657263, $312D38302D393130, $3A35313A31315439,
+             $30303A30302B3930, $25000000B3ACC875, $6574616474584574, $00796669646F6D3A, $2D38302D39313032, $35313A3131543931,
+             $303A30302B35303A, $0000007B7E35C330, $6042AE444E454900
+      Data.b $82
+      add_end:
+      ;     EndDataSection
+      ;
+      ;     DataSection
+      copy: ; memory_size - ( 530 )
+      Data.q $0A1A0A0D474E5089, $524448490D000000, $1A00000010000000, $1461140000000408, $4D4167040000008C, $61FC0B8FB1000041,
+             $5248632000000005, $800000267A00004D, $80000000FA000084, $EA000030750000E8, $170000983A000060, $0000003C51BA9C70,
+             $87FF0044474B6202, $7009000000BFCC8F, $00C8000000735948, $ADE7FA6300C80000, $454D497407000000, $450A0F0B1308E307,
+             $63100000000C6AC0, $0020000000764E61, $0002000000200000, $000C8D7E6F010000, $2854414449E90000, $1040C20A31D27DCF,
+             $8B08226C529FD005, $961623685304458D, $05E8A288B1157A4A, $785858208E413C44, $AD03C2DE8803C505, $74CCDD93664D9893,
+             $5C25206CCCECC7D9, $0AF51740A487B038, $E4950624ACF41B10, $0B03925602882A0F, $504520607448C0E1, $714E75682A0F7A22,
+             $1EC4707FBC91940F, $EF1F26F801E80C33, $6FE840E84635C148, $47D13D78D54EC071, $5BDF86398A726F4D, $7DD0539F268C6356,
+             $39B40B3759101A3E, $2EEB2D02D7DBC170, $49172CA44A415AD2, $52B82E69FF1E0AC0, $CC0D0D97E9B7299E, $046FA509CA4B09C0,
+             $CB03993630382B86, $5E4840261A49AA98, $D3951E21331B30CF, $262C1B127F8F8BD3, $250000007DB05216, $6574616474584574,
+             $006574616572633A, $2D38302D39313032, $35313A3131543931, $303A30302B37303A, $000000EED7F72530, $7461647458457425,
+             $796669646F6D3A65, $38302D3931303200, $313A31315439312D, $3A30302B35303A35, $00007B7E35C33030, $42AE444E45490000
+      Data.b $60, $82
+      copy_end:
+    EndDataSection
+    
+    ProcedureReturn image
+  EndProcedure
+   
+  Procedure New( icursor.i )
+    If Not FindMapElement(images(), Str(icursor))
+      AddMapElement(images(), Str(icursor))
+      images() = Create(ImageID(Image( icursor )))
+    EndIf
+    
+    ProcedureReturn images()
+  EndProcedure
+  
   Procedure   Free(hCursor.i)
+    Debug "cursor-free "+hCursor
+    
+    If hCursor >= 0 And hCursor <= 255
+      If FindMapElement(images(), Str(hCursor))
+        DeleteMapElement(images());, Str(hCursor))
+      EndIf
+    Else
+      If MapSize(images())
+        PushMapPosition(images())
+        ForEach images()
+          If hCursor = images()
+            DeleteMapElement(images())
+          EndIf
+        Next
+        PopMapPosition(images())
+      EndIf
     ;     ; Используйте g_object_unref()
     ;     ProcedureReturn gdk_cursor_unref_(hCursor)
+    EndIf
   EndProcedure
   
   Procedure   isHiden()
@@ -130,7 +212,7 @@ Module Cursor
   EndProcedure
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
-     ProcedureReturn gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
+     ProcedureReturn gdk_cursor_new_from_pixbuf_( gdk_display_get_default_(), ImageID, x, y)
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
@@ -154,7 +236,7 @@ Module Cursor
     EndIf
   EndProcedure
   
-  Procedure Set(Gadget.i, icursor.i, x.i = 0, y.i = 0)
+  Procedure Set(Gadget.i, icursor.i)
     If IsGadget( Gadget )
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
@@ -236,15 +318,14 @@ Module Cursor
             Case #PB_Cursor_LeftDown       : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_LEFT_CORNER)
             Case #PB_Cursor_RightDown      : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_RIGHT_CORNER)
                
-            Case #PB_Cursor_Drag      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Drop      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #PB_Cursor_Drag : *cursor\hcursor = New( icursor )
+            Case #PB_Cursor_Drop : *cursor\hcursor = New( icursor )
+              
             Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
             Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
          EndSelect 
         Else
-          If icursor
-            *cursor\hcursor = Create(icursor, x, y)
-          EndIf
+          *cursor\hcursor = icursor 
         EndIf
       EndIf
       
@@ -290,24 +371,7 @@ Module Cursor
     ;     
     ProcedureReturn result
   EndProcedure
-  
-  ;       DataSection
-  ;         cross:
-  ;         ;IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/cross.png"
-  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/cross1.png"
-  ;         cross_end:
-  ;         
-  ;         hand:
-  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/hand2.png"
-  ;         hand_end:
-  ;         
-  ;         move:
-  ;         IncludeBinary "/Users/as/Documents/GitHub/widget/include/cursors/macOSBigSur/hand1.png"
-  ;         move_end:
-  ;         
-  ;       EndDataSection
 EndModule  
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --v-
+; Folding = 0-w---
 ; EnableXP

@@ -503,24 +503,24 @@ CompilerIf #PB_Compiler_IsMainFile
         If GetState( id_elements_tree) > 0 
           If IsContainer( *eventWidget )
             If DragPrivate( #_DD_New, #PB_Drag_Copy )
-              DragCursor( #PB_Cursor_Cross )
+              SetCursor( *eventWidget, #PB_Cursor_Cross )
             EndIf
           EndIf
         Else
           Select DragType( ) 
             Case #PB_Drag_Copy
               If DragPrivate( #_DD_Copy, #PB_Drag_Copy )
-                DragCursor( #PB_Cursor_Hand )
+                SetCursor( *eventWidget, #PB_Cursor_Hand )
               EndIf
               
             Case #PB_Drag_Move 
               If DragPrivate( #_DD_Move, #PB_Drag_Copy )
-                DragCursor( #PB_Cursor_Arrows )
+                SetCursor( *eventWidget, #PB_Cursor_Arrows )
               EndIf
               
             Case #PB_Drag_Link 
               If DragPrivate( #_DD_Group, #PB_Drag_Copy )
-                DragCursor( #PB_Cursor_Cross )
+                SetCursor( *eventWidget, #PB_Cursor_Cross )
               EndIf
               
           EndSelect
@@ -555,7 +555,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; end new create
         If GetState( id_elements_tree) > 0 
           SetState( id_elements_tree, 0 )
-          SetCursor( *eventWidget, #PB_Cursor_Default )
+           SetCursor( *eventWidget, #PB_Cursor_Default )
         EndIf
         
       Case #PB_EventType_LeftButtonDown
@@ -578,8 +578,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             SetState( id_elements_tree, 0 )
 ;           EndIf
         EndIf
+       ;; ProcedureReturn #PB_Ignore
         
       Case #PB_EventType_LeftButtonUp
+        ; end new create
+        If GetState( id_elements_tree) > 0 
+          SetState( id_elements_tree, 0 )
+          SetCursor( *eventWidget, #PB_Cursor_Default )
+        EndIf
+        
         ; then group select
         If IsContainer( *eventWidget )
           If a_transform( ) And a_widget( ) And a_widget( )\_a_transform =- 1
@@ -604,7 +611,7 @@ CompilerIf #PB_Compiler_IsMainFile
           SetCursor( *eventWidget, #PB_Cursor_Default )
         EndIf
         
-      Case #PB_EventType_MouseEnter, 
+      Case #PB_EventType_MouseEnter,
            #PB_EventType_MouseMove
         
         If Not GetButtons( )
@@ -794,7 +801,7 @@ CompilerIf #PB_Compiler_IsMainFile
           
           a_transform( )\type = 0
           If DragPrivate( #_DD_New, #PB_Drag_Copy )
-            DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) )
+            SetCursor( EventWidget, CreateCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) ) )
           EndIf
         EndIf
         
@@ -909,13 +916,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseLeave
         ; Debug "id_elements - leave"
         ;       If a_transform( )\type > 0 
-        ;         SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) )
+        ;         SetCursor( EventWidget( ), CreateCursor( ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) ))
         ;       EndIf
         
       Case #PB_EventType_LeftClick
         If EventWidget = id_elements_tree
           ; Debug "click"
-          ; SetCursor( EventWidget( ), ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) )
+          ; SetCursor( EventWidget( ), CreateCursor( ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) ))
         EndIf
         
         If getclass( EventWidget ) = "ToolBar"
@@ -1283,5 +1290,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f-------4---v9-4-
+; Folding = -----f--vf---v---f6-v-
 ; EnableXP

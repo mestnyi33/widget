@@ -55,7 +55,7 @@ Procedure events( )
           DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            DragCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2)
+            SetCursor( *tree, CreateCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
           EndIf
         EndIf
         
@@ -318,5 +318,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = f-
 ; EnableXP

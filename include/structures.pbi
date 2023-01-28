@@ -61,8 +61,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *button._s_BUTTONS
     EndStructure
     ;--     D&D
-    Structure _s_DD Extends _s_COORDINATE
-      *cursor
+    Structure _s_DROP 
       format.i
       actions.i
       private.i
@@ -70,7 +69,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *imageID
       string.s
       ; files.s
-      
+    EndStructure
+    Structure _s_DRAG Extends _s_DROP
+      y.l
+      x.l
+      width.l
+      height.l
+      *cursor
       state.b
     EndStructure
     ;--     MOUSE
@@ -84,7 +89,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       buttons.l                  ; mouse clicked button
       change.b                   ; mouse moved state
       
-      *drag._s_DD
+      *drag._s_DRAG
       wheel._s_POINT
       delta._s_POINT
       
@@ -607,7 +612,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       bs.a    ; border size
       
       *_tt._s_tt          ; notification = уведомление
-      *drop._s_dd
+      *drop._s_DROP
       *attach._s_ATTACH
       *align._s_ALIGN
       
@@ -784,5 +789,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----4-----
+; Folding = ----v-----
 ; EnableXP

@@ -70,16 +70,17 @@ DeclareModule Cursor
   EndEnumeration
   
   Structure _s_cursor
-    icursor.a
+    icursor.i
     *hcursor
     *windowID
   EndStructure
   
   ;Declare   isHiden( )
   ;Declare   Hide(state.b)
-  ;Declare   Free(hCursor.i)
+  Declare   Free(hCursor.i)
   ;Declare   Get( )
-  Declare   Set(Gadget.i, icursor.i, x.i = 0, y.i = 0)
+  Declare   Image( type.i = 0 )
+  Declare   Set(Gadget.i, icursor.i);, x.i = 0, y.i = 0)
   Declare   Change(GadgetID.i, state.b )
   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
 EndDeclareModule
