@@ -71,24 +71,24 @@ CompilerIf #PB_Compiler_IsMainFile
     Define time = ElapsedMilliseconds()
     count = CountGadgetItems(0) : For a = 0 To count : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
     
+;       Debug ""
+;       Define item = 3
+;       Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 3"
+;       Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 3"
+;       
+;       item = 7
+;       SetItemData(*w, item, 555)
+;       SetGadgetItemData(0, item, 555)
+;       
+;       Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 7"
+;       Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 7"
+;       
     ;   Debug ""
-    ;   Define item = 3
-    ;   Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 3"
-    ;   Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 3"
+    ;   Define time = ElapsedMilliseconds()
+    ;   Define count = CountItems(*w) : For a = count To 0 Step - 1 : RemoveItem(*w, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + CountItems(*w)
     ;   
-    ;   item = 7
-    ;   SetItemData(*w, item, 555)
-    ;   SetGadgetItemData(0, item, 555)
-    ;   
-    ;   Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 7"
-    ;   Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 7"
-    ;   
-    ; ;   Debug ""
-    ; ;   Define time = ElapsedMilliseconds()
-    ; ;   Define count = CountItems(*w) : For a = count To 0 Step - 1 : RemoveItem(*w, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + CountItems(*w)
-    ; ;   
-    ; ;   Define time = ElapsedMilliseconds()
-    ; ;   count = CountGadgetItems(0) : For a = count To 0 Step - 1 : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
+    ;   Define time = ElapsedMilliseconds()
+    ;   count = CountGadgetItems(0) : For a = count To 0 Step - 1 : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
     
     
     ;Redraw(root())
@@ -96,7 +96,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until  Event= #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

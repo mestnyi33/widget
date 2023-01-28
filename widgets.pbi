@@ -16694,7 +16694,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected x, y
       With *this
         Protected state
-        If *this\type = #__type_Button
+        If *this\type = #__type_Button Or
+           *this\type = #__type_ButtonImage
           state = *this\color\state
           If *this\state\check
             state = #__s_2
@@ -18599,20 +18600,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-          Case #__type_ButtonImage
-            If eventtype = #__event_Down
-              If *this\image[#__image_pressed]\id
-                *this\image = *this\image[#__image_pressed]
-              EndIf
-            EndIf
-            If eventtype = #__event_Up
-              If *this\image[#__image_released]\id
-                *this\image = *this\image[#__image_released]
-              EndIf
-            EndIf
-            
-            ;\\
-          Case #__type_Button
+          Case #__type_Button, #__type_ButtonImage
             If *this\state\check = #False
               Select eventtype
                 Case #__event_MouseEnter
@@ -18631,6 +18619,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If mouse( )\buttons & #PB_Canvas_LeftButton
                     *this\color\state = #__S_2
                   EndIf
+                  If *this\type = #__type_ButtonImage
+                    If *this\image[#__image_pressed]\id
+                      *this\image = *this\image[#__image_pressed]
+                    EndIf
+                  EndIf
                   
                 Case #__event_Up
                   If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -18640,6 +18633,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       *this\color\state = #__S_0
                     EndIf
                   EndIf
+                  If *this\type = #__type_ButtonImage
+                    If *this\image[#__image_released]\id
+                      *this\image = *this\image[#__image_released]
+                    EndIf
+                  EndIf
+            
               EndSelect
             EndIf
             
@@ -21058,5 +21057,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-040f--3---vf-------44+4f0------bC--------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-040f--+---vf-------44+4f0------bC--------------------------
 ; EnableXP
