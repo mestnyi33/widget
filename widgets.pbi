@@ -13134,11 +13134,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;         ;\\ тормозить удаление итемов 
         ;         ; поэтому изменения сделал в setState
-;         PushListPosition( *this\_rows( ))
-;         While NextElement( *this\_rows( ))
-;           *this\_rows( )\index - 1
-;         Wend
-;         PopListPosition( *this\_rows( ))
+        ;         PushListPosition( *this\_rows( ))
+        ;         While NextElement( *this\_rows( ))
+        ;           *this\_rows( )\index - 1
+        ;         Wend
+        ;         PopListPosition( *this\_rows( ))
         
         ;\\
         Protected sublevel = *this\_rows( )\sublevel
@@ -13772,27 +13772,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\count\items
           ;\\ example file "D&D-items"
           If *this\PressedRow( )
-            If *this\FocusedRow( ) = *this\_rows( )
-              If *this\_rows( )\index <> State
-                *this\_rows( )\index = State
-              EndIf
-              
-              PushListPosition( *this\_rows( ))
-              If *this\_rows( )\index > *this\PressedRow( )\index
-                While PreviousElement( *this\_rows( ))
-                  If *this\_rows( )\index > *this\PressedRow( )\index
-                    *this\_rows( )\index - 1 - *this\PressedRow( )\childrens
-                  EndIf
-                Wend
-              ElseIf *this\_rows( )\index < *this\PressedRow( )\index
-                While NextElement( *this\_rows( ))
-                  If *this\_rows( )\index < *this\PressedRow( )\index
-                    *this\_rows( )\index + 1 + *this\PressedRow( )\childrens
-                  EndIf
-                Wend
-              EndIf
-              PopListPosition( *this\_rows( ))
+            If *this\_rows( )\index <> State
+              *this\_rows( )\index = State
             EndIf
+            Protected position
+            Debug "*this\PressedRow( )\childrens "+*this\PressedRow( )\childrens
+            
+            PushListPosition( *this\_rows( ))
+            If *this\_rows( )\index > *this\PressedRow( )\index
+              ;\\ drag up and drop down
+              While PreviousElement( *this\_rows( ))
+                If *this\_rows( )\index > *this\PressedRow( )\index 
+                  *this\_rows( )\index - 1 - *this\PressedRow( )\childrens
+                EndIf
+              Wend
+            ElseIf *this\_rows( )\index < *this\PressedRow( )\index
+              ;\\ drag down and drop up
+              While NextElement( *this\_rows( ))
+                If *this\_rows( )\index < *this\PressedRow( )\index
+                  *this\_rows( )\index + 1 + *this\PressedRow( )\childrens
+                EndIf
+              Wend
+            EndIf
+            PopListPosition( *this\_rows( ))
+            position = state
+            PushListPosition( *this\_rows( ))
+            While NextElement( *this\_rows( ))
+              If *this\_rows( )\sublevel = *this\PressedRow( )\sublevel
+                Break
+              EndIf
+              If *this\_rows( )\sublevel > *this\PressedRow( )\sublevel
+                position + 1
+                *this\_rows( )\index = position
+              EndIf
+            Wend
+            PopListPosition( *this\_rows( ))
           EndIf
           
           ;\\
@@ -17947,58 +17961,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       If *this\row
-        ;\\ get at point items
-        If *this\state\enter  
+        ;\\ search at point entered items
+        If Not *this\state\enter
+          *item = #Null
+        Else
           If ListSize( *this\VisibleRows( ) )
-            If Not ( *this\EnteredRow( ) And
-                     *this\EnteredRow( )\visible And
-                     *this\EnteredRow( )\hide = 0 And
-                     is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y ))
-              
-              ; search entered item
+            If *this\EnteredRow( ) And
+               *this\EnteredRow( )\visible And
+               Not *this\EnteredRow( )\hide  And
+               is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
+              *item = *this\EnteredRow( )
+            Else
               LastElement( *this\VisibleRows( ))
               Repeat
                 If *this\VisibleRows( )\visible And
-                   *this\VisibleRows( )\hide = 0 And
+                   Not *this\VisibleRows( )\hide And
                    is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )
-                  
                   *item = *this\VisibleRows( )
                   Break
                 EndIf
               Until PreviousElement( *this\VisibleRows( )) = #False
-            Else
-              *item = *this\EnteredRow( )
             EndIf
+            
           ElseIf ListSize( *this\_rows( ) )
-            If Not ( *this\EnteredRow( ) And
-                     *this\EnteredRow( )\visible And
-                     *this\EnteredRow( )\hide = 0 And
-                     is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y ))
-              
-              ; search entered item
+            If *this\EnteredRow( ) And
+               *this\EnteredRow( )\visible And 
+               Not *this\EnteredRow( )\hide And
+               is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
+              *item = *this\EnteredRow( )
+            Else
               LastElement( *this\_rows( ))
               Repeat
                 If *this\_rows( )\visible And
-                   *this\_rows( )\hide = 0 And
+                   Not *this\_rows( )\hide And 
                    is_at_point_( *this\_rows( ), mouse_x, mouse_y )
-                  
                   *item = *this\_rows( )
                   Break
                 EndIf
               Until PreviousElement( *this\_rows( )) = #False
-            Else
-              *item = *this\EnteredRow( )
             EndIf
           EndIf
-        Else
-          *item = #Null
         EndIf
         
-        ;\\
-        If *this\state\drag
-          ;\\
+        ;\\ do enter & leave items events
+        If *this\state\drag ; = #PB_Drag_Link
+                            ;\\
           If eventtype = #__event_MouseMove
-            If *this\state\drag = #PB_Drag_Link And ( Not Mouse( )\drag Or PressedWidget( )\drop )
+            If Not Mouse( )\drag Or PressedWidget( )\drop
               ;\\
               If *item = #Null And is_at_point_horizontal_( *this, mouse_x )
                 If mouse( )\y < mouse( )\delta\y And mouse( )\y <= *this\y[#__c_inner]
@@ -21029,5 +21038,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t-------------------------------------------------------------------------------------------------------f----4-28+--------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

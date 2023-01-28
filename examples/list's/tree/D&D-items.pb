@@ -132,6 +132,8 @@ Procedure events( )
               EndIf
             Next i
             
+            ;Debug "   ChildCount "+ ChildCount +" "+ SourceItem
+            
             ; Note: because by adding new items, the index of our old ones changes,
             ;   we need to make a distinction here wether we move before or after our old item.
             ;   Note also that we cannot move an item into one of its childs, which we
@@ -225,7 +227,7 @@ Procedure events( )
           Debug "stop drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
           
           Debug ""
-          ClearDebugOutput()
+          ;ClearDebugOutput()
           Define *this._s_widget = *tree
           ForEach *this\_rows( )
             Debug ""+ *this\_rows( )\index +" "+ ListIndex(*this\_rows( )) +" "+ *this\_rows( )\text\string +""
@@ -250,14 +252,60 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ; "справочные".
   ;
   Define i, event
-  For i = 0 To 20
-    If i % 5 = 0
-      AddItem(*tree, -1, "Directory" + Str(i), 0, 0)
-    Else
-      AddItem(*tree, -1, "Item" + Str(i), 0, 0)
-    EndIf
-  Next i
+;   For i = 0 To 20
+;     If i % 5 = 0
+;       AddItem(*tree, -1, "Directory" + Str(i), 0, 0)
+;     Else
+;       AddItem(*tree, -1, "Item" + Str(i), 0, 0)
+;     EndIf
+;   Next i
   
+;   AddItem(*tree, -1, "Directory" + Str(0), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(1), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(2), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(3), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(4), 0, 0)
+;   AddItem(*tree, -1, "Directory" + Str(5), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(6), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(7), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(8), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(9), 0, 0)
+;   AddItem(*tree, -1, "Directory" + Str(10), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(11), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(12), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(13), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(14), 0, 0)
+;   AddItem(*tree, -1, "Directory" + Str(15), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(16), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(17), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(18), 0, 0)
+;   AddItem(*tree, -1, "Item" + Str(19), 0, 0)
+;   AddItem(*tree, -1, "Directory" + Str(20), 0, 0)
+;   
+  
+  AddItem(*tree, -1, "Directory" + Str(0), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(1), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(2), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(3), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(7), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(8), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(9), 0, 0)
+  AddItem(*tree, -1, "Directory" + Str(10), 0, 0)
+  AddItem(*tree, -1, "Directory" + Str(5), 0, 1)
+  AddItem(*tree, -1, "Item" + Str(4), 0, 1)
+  AddItem(*tree, -1, "Item" + Str(6), 0, 1)
+  AddItem(*tree, -1, "Item" + Str(11), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(12), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(13), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(14), 0, 0)
+  AddItem(*tree, -1, "Directory" + Str(15), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(16), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(17), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(18), 0, 0)
+  AddItem(*tree, -1, "Item" + Str(19), 0, 0)
+  AddItem(*tree, -1, "Directory" + Str(20), 0, 0)
+  
+
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
   EnableDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
