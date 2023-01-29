@@ -290,6 +290,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       image._s_image
       color._s_color
       
+      OffsetMove   .i
+  OffsetMoveMin.i
+  OffsetMoveMax.i
+  
     EndStructure
     
     ;--     ROWS

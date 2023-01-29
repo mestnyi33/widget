@@ -60,7 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetColumn(g, i,"Column_"+Str(i+1),90)
     Next
     ; 1_example
-    For i=0 To 15
+    AddGadgetItem(g, -1, Chr(10)+"ListIcon_"+Str(i)) 
+    For i=1 To 15
       AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
     Next
     ;HideListIcon(g,0)
@@ -95,7 +96,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddColumn(*g, i,"Column_"+Str(i+1),90)
     Next
     ; 1_example
-    For i=0 To 15
+    AddItem(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
+    For i=1 To 15
       AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                         
     Next
     ;HideListIcon(g,0)
@@ -148,6 +150,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

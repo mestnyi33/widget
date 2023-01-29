@@ -400,7 +400,7 @@
     
     #PB_tree_Collapse    = 32
     #PB_tree_OptionBoxes = 64
-    #PB_tree_GridLines   = 128
+    #PB_tree_GridLines   = #__flag_gridlines;128
     ;#PB_tree_itemPosition = 256
     
     #__tree_nolines     = #__flag_nolines

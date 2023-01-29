@@ -11,6 +11,9 @@ XIncludeFile "widgets.pbi"
 EnableExplicit
 Uselib(widget)
 
+
+
+
 Global *tree 
 Global ChildCount
 Global SourceItem, SourceLevel
@@ -26,6 +29,203 @@ Global TargetItem, TargetLevel
 ; вы можете использовать здесь разные значения, чтобы события не сталкивались.
 ; (т.е. чтобы пользователь не мог перетащить не тот гаджет)
 #PrivateType = 0
+
+#TabsDistance = 0
+
+#ColTab = 8421504
+#ColSwp = 255
+#ColBar = 16777215
+
+Structure TAB
+  height.i
+  y.i
+  OffsetMove   .i
+  OffsetMoveMin.i
+  OffsetMoveMax.i
+  Text         .s
+EndStructure
+
+;Global NewList Tabs.TAB()
+Global *TabSwap    ._s_ROWS
+Global *Tab        ._s_ROWS
+Global BarWi       .i
+Global MouseX      .i
+Global MouseY      .i
+Global MouseDownX  .i
+Global MouseDownY  .i
+Global TabsWi      .i
+
+Macro Tabs( )
+  *this\_rows( )
+EndMacro
+
+Procedure DrawBar (*this._s_widget)
+  Protected Y.i, x
+  Protected *Tab      ._s_ROWS
+  ;ProcedureReturn 
+  ;Calc Y
+;   If *TabSwap = 0
+;     ForEach Tabs()
+;       Tabs()\Y = Y + *this\y[#__c_inner]
+;       Y + Tabs()\height + #TabsDistance
+;     Next
+;   EndIf
+  
+ ; StartDrawing (CanvasOutput (*this\_root( )\canvas\gadget))
+  x = *this\x[#__c_inner]
+  y = *this\y[#__c_inner]
+  
+  ;Draw background
+  DrawingMode (#PB_2DDrawing_Default)
+  ;Box (0, 0, GadgetWidth (*this\_root( )\canvas\gadget), GadgetHeight (*this\_root( )\canvas\gadget), #ColBar)
+  
+;   ;Draw tabs
+;   ForEach  Tabs() 
+;     If Tabs() <> *TabSwap
+;       DrawingMode (#PB_2DDrawing_Default)
+;       Box      ( x+Tabs()\x, y+Tabs()\Y + Tabs()\OffsetMove, 280-20, Tabs()\height, #ColTab)
+;       DrawingMode (#PB_2DDrawing_Transparent)
+;       DrawText ( x+Tabs()\x + Tabs()\text\x, y+Tabs()\y + Tabs()\text\y + Tabs()\OffsetMove + 2, Tabs()\text\string)
+;     EndIf
+;   Next
+  
+  ;Draw swapping tab
+  If *TabSwap
+    DrawingMode (#PB_2DDrawing_AlphaBlend)
+    Box      ( x+*TabSwap\x, y+*TabSwap\Y + *TabSwap\OffsetMove, 280-20, *TabSwap\height, $70000000 | #ColSwp)
+    DrawingMode (#PB_2DDrawing_Transparent)
+    DrawText ( x+*TabSwap\x + *TabSwap\text\x, y+*TabSwap\Y + *TabSwap\text\y + *TabSwap\OffsetMove + 2, *TabSwap\text\string)
+  EndIf
+  
+ ; StopDrawing ()
+  
+EndProcedure
+
+
+Procedure DrawBarEvents( )
+  Protected y, *this._s_widget = EventWidget( )
+  Protected EventType = WidgetEventType( )
+  
+  MouseX = Mouse()\x 
+  MouseY = Mouse()\y 
+  ;Debug MouseY
+  
+    
+  ;_________
+  ;Left down
+  ;¯¯¯¯¯¯¯¯¯
+  
+  If EventType = #PB_EventType_LeftButtonDown
+    ;\\ Store MouseDown
+    MouseDownX = MouseX
+    MouseDownY = MouseY
+    
+;     ;\\ Find TabSwap
+;     ForEach Tabs() 
+;       If MouseX >= Tabs()\Y And 
+;          MouseX < Tabs()\Y + Tabs()\height
+;         *TabSwap = @Tabs()
+;       EndIf
+;     Next
+    
+    *TabSwap = *this\EnteredRow( )
+    
+    If *TabSwap
+;       ;\\ Align all tabs to bottom (without TabSwap)
+;       ForEach Tabs() 
+;         If Tabs() = *TabSwap 
+;           Break 
+;         EndIf
+;         Tabs()\Y + *TabSwap\height + #TabsDistance
+;       Next
+      
+      ;Calc OffsetMoveMin/Max
+      ForEach Tabs() 
+        If Tabs() <> *TabSwap
+          Tabs()\OffsetMoveMin = scroll_height_( *this ) - Tabs()\Y
+          Tabs()\OffsetMoveMax = 0;Tabs()\OffsetMoveMin + *TabSwap\height + #TabsDistance
+          ;TabsWi = scroll_height_( *this ) ;+ Tabs()\height + #TabsDistance
+          Debug "  Min/Max "+Tabs()\OffsetMoveMin +" "+ Tabs()\OffsetMoveMax
+        EndIf
+      Next
+      
+      ;Calc OffsetMoveMin/Max for TabSwap
+      *TabSwap\OffsetMoveMin = - *TabSwap\Y
+      *TabSwap\OffsetMoveMax = *TabSwap\OffsetMoveMin - *TabSwap\height + scroll_height_( *this )
+      Debug "Min/Max "+MouseY+" "+*TabSwap\OffsetMoveMin +" "+ *TabSwap\OffsetMoveMax
+    EndIf
+    
+  EndIf
+  
+  ;__________
+  ;Mouse move
+  ;¯¯¯¯¯¯¯¯¯¯
+  
+  If EventType = #PB_EventType_MouseMove
+    If *TabSwap
+      ;*TabSwap\OffsetMove = (MouseY - MouseDownY)
+      
+      ForEach Tabs() 
+        ;\\ Calc OffsetMove
+        If Tabs() = *TabSwap
+          Tabs()\OffsetMove = (MouseY - MouseDownY)
+        Else
+          Tabs()\OffsetMove = Tabs()\Y - *TabSwap\OffsetMove 
+          Tabs()\OffsetMove - *TabSwap\Y - (*TabSwap\height + #TabsDistance)
+          Tabs()\OffsetMove * (*TabSwap\height + #TabsDistance) / (Tabs()\height + #TabsDistance)
+        EndIf
+        
+        ;Limit OffsetMove to minimum
+        If Tabs()\OffsetMove < Tabs()\OffsetMoveMin
+          Tabs()\OffsetMove = Tabs()\OffsetMoveMin
+        EndIf
+        
+        ;Limit OffsetMove to maximum
+        If Tabs()\OffsetMove > Tabs()\OffsetMoveMax
+          Tabs()\OffsetMove = Tabs()\OffsetMoveMax
+        EndIf
+      Next
+      
+      ;     ;\\ Draw bar
+      ;     DrawBar (*this)
+    EndIf
+  EndIf
+  
+  ;_______
+  ;Left up
+  ;¯¯¯¯¯¯¯
+  
+  If EventType = #PB_EventType_LeftButtonUp
+    
+    ;Sum-up Offsets and sort list
+    ForEach Tabs()
+      Tabs()\Y + Tabs()\OffsetMove
+      ;Debug ""+Tabs()\OffsetMove+" "+Tabs()\text\string
+      Tabs()\OffsetMove = 0
+    Next
+    
+    SortStructuredList (Tabs(), #PB_Sort_Ascending, OffsetOf (Tab\Y), TypeOf (Tab\Y))
+    
+    ;Resets variables
+    TabsWi         = 0
+    *TabSwap       = 0
+    MouseDownX     = 0
+    MouseDownY     = 0
+    
+;     ;Draw bar
+;     DrawBar (*this)
+    
+  EndIf
+  
+  
+  If EventType = #__event_Draw
+    If *this
+      ;Draw bar
+    DrawBar (*this)
+  EndIf
+EndIf
+  
+EndProcedure
 
 Procedure events( )
   Protected i, Text$, Level, CountItems
@@ -243,7 +443,7 @@ Procedure events( )
 EndProcedure
 
 If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
-  *tree = Tree( 10, 10, 280, 480)
+  *tree = Tree( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#PB_tree_GridLines)
   
   ; Add some items. We will be able to move items into the
   ; "Directory" ones.
@@ -252,25 +452,48 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ; "справочные".
   ;
   Define i, event
-;   For i = 0 To 20
-;     If i % 5 = 0
-;       AddItem(*tree, -1, "Directory" + Str(i), 0, 0)
-;     Else
-;       AddItem(*tree, -1, "Item" + Str(i), 0, 0)
-;     EndIf
-;   Next i
+  ;   For i = 0 To 20
+  ;     If i % 5 = 0
+  ;       AddItem(*tree, -1, "Directory" + Str(i), 0, 0)
+  ;     Else
+  ;       AddItem(*tree, -1, "Item" + Str(i), 0, 0)
+  ;     EndIf
+  ;   Next i
+  
+  ;   AddItem(*tree, -1, "Directory" + Str(0), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(1), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(2), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(3), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(4), 0, 0)
+  ;   AddItem(*tree, -1, "Directory" + Str(5), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(6), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(7), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(8), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(9), 0, 0)
+  ;   AddItem(*tree, -1, "Directory" + Str(10), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(11), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(12), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(13), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(14), 0, 0)
+  ;   AddItem(*tree, -1, "Directory" + Str(15), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(16), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(17), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(18), 0, 0)
+  ;   AddItem(*tree, -1, "Item" + Str(19), 0, 0)
+  ;   AddItem(*tree, -1, "Directory" + Str(20), 0, 0)
+  ;   
   
 ;   AddItem(*tree, -1, "Directory" + Str(0), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(1), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(2), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(3), 0, 0)
-;   AddItem(*tree, -1, "Item" + Str(4), 0, 0)
-;   AddItem(*tree, -1, "Directory" + Str(5), 0, 0)
-;   AddItem(*tree, -1, "Item" + Str(6), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(7), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(8), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(9), 0, 0)
 ;   AddItem(*tree, -1, "Directory" + Str(10), 0, 0)
+;   AddItem(*tree, -1, "Directory" + Str(5), 0, 1)
+;   AddItem(*tree, -1, "Item" + Str(4), 0, 1)
+;   AddItem(*tree, -1, "Item" + Str(6), 0, 1)
 ;   AddItem(*tree, -1, "Item" + Str(11), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(12), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(13), 0, 0)
@@ -281,36 +504,24 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
 ;   AddItem(*tree, -1, "Item" + Str(18), 0, 0)
 ;   AddItem(*tree, -1, "Item" + Str(19), 0, 0)
 ;   AddItem(*tree, -1, "Directory" + Str(20), 0, 0)
-;   
   
-  AddItem(*tree, -1, "Directory" + Str(0), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(1), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(2), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(3), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(7), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(8), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(9), 0, 0)
-  AddItem(*tree, -1, "Directory" + Str(10), 0, 0)
-  AddItem(*tree, -1, "Directory" + Str(5), 0, 1)
-  AddItem(*tree, -1, "Item" + Str(4), 0, 1)
-  AddItem(*tree, -1, "Item" + Str(6), 0, 1)
-  AddItem(*tree, -1, "Item" + Str(11), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(12), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(13), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(14), 0, 0)
-  AddItem(*tree, -1, "Directory" + Str(15), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(16), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(17), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(18), 0, 0)
-  AddItem(*tree, -1, "Item" + Str(19), 0, 0)
-  AddItem(*tree, -1, "Directory" + Str(20), 0, 0)
+  AddItem(*tree, -1, "0 - 20", 0, 0)
+  AddItem(*tree, -1, "1 - 20", 0, 0)
+  AddItem(*tree, -1, "2 - 20", 0, 0)
+  AddItem(*tree, -1, "3 - 20", 0, 0)
+  AddItem(*tree, -1, "4 - 20", 0, 0)
+  SetFrame(*tree, 0)
   
-
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
   EnableDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
-  Bind( *tree, @events( ) )
+  ;Bind( *tree, @events( ) )
+  
+  Bind( *tree, @DrawBarEvents( ), #__event_Draw )
+  Bind( *tree, @DrawBarEvents( ), #PB_EventType_LeftButtonDown )
+  Bind( *tree, @DrawBarEvents( ), #PB_EventType_LeftButtonUp )
+  Bind( *tree, @DrawBarEvents( ), #PB_EventType_MouseMove )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
@@ -318,5 +529,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = f-
+; Folding = --v--
 ; EnableXP

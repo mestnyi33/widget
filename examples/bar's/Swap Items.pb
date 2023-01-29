@@ -3,7 +3,7 @@ EnableExplicit
 
   #Win          = 0
   #Bar          = 0
-  #TabsDistance = 2
+  #TabsDistance = 10
 
   #ColTab = 8421504
   #ColSwp = 255
@@ -29,13 +29,20 @@ EnableExplicit
   Define MouseDownY  .i
   Define TabsWi      .i
 
+;   ;Add tabs to list
+;   AddElement (Tabs()) : Tabs()\height =  40 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+;   AddElement (Tabs()) : Tabs()\height = 100 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+;   AddElement (Tabs()) : Tabs()\height =  70 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+;   AddElement (Tabs()) : Tabs()\height = 140 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+;   
+;   AddElement (Tabs()) : Tabs()\height = 150 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
   ;Add tabs to list
-  AddElement (Tabs()) : Tabs()\height =  40 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
-  AddElement (Tabs()) : Tabs()\height = 100 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
-  AddElement (Tabs()) : Tabs()\height =  70 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
-  AddElement (Tabs()) : Tabs()\height = 140 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+  AddElement (Tabs()) : Tabs()\height =  20 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+  AddElement (Tabs()) : Tabs()\height = 20 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+  AddElement (Tabs()) : Tabs()\height =  20 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+  AddElement (Tabs()) : Tabs()\height = 20 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
   
-  AddElement (Tabs()) : Tabs()\height = 150 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
+  AddElement (Tabs()) : Tabs()\height = 20 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\height
 
  ;Calc bar width
 ;   ForEach Tabs()
@@ -77,7 +84,8 @@ EnableExplicit
 
      ;Draw swapping tab
       If *TabSwap
-        DrawingMode (#PB_2DDrawing_AlphaBlend)
+        Debug *TabSwap\OffsetMove
+    DrawingMode (#PB_2DDrawing_AlphaBlend)
         Box      ( 0,*TabSwap\Y + *TabSwap\OffsetMove, 280-20, *TabSwap\height, $70000000 | #ColSwp)
         DrawingMode (#PB_2DDrawing_Transparent)
         DrawText (2, *TabSwap\Y + *TabSwap\OffsetMove + 2, *TabSwap\Text)
@@ -97,8 +105,8 @@ EnableExplicit
         
     If Event = #PB_Event_Gadget And EventGadget() = #Bar 
 
-      MouseX = GetGadgetAttribute(0, #PB_Canvas_MouseY)
-      MouseY = GetGadgetAttribute(0, #PB_Canvas_MouseX)
+      MouseX = GetGadgetAttribute(0, #PB_Canvas_MouseX)
+      MouseY = GetGadgetAttribute(0, #PB_Canvas_MouseY)
 
      ;_________
      ;Left down
@@ -112,8 +120,8 @@ EnableExplicit
 
        ;Find TabSwap
         ForEach Tabs() 
-          If MouseX >= Tabs()\Y And 
-             MouseX < Tabs()\Y + Tabs()\height
+          If MouseY >= Tabs()\Y And 
+             MouseY < Tabs()\Y + Tabs()\height
             *TabSwap = @Tabs()
           EndIf
         Next
@@ -139,6 +147,7 @@ EnableExplicit
          ;Calc OffsetMoveMin/Max for TabSwap
           *TabSwap\OffsetMoveMin = - *TabSwap\Y
           *TabSwap\OffsetMoveMax = - *TabSwap\Y + TabsWi
+          Debug "Min/Max"+*TabSwap\OffsetMoveMin +" "+ *TabSwap\OffsetMoveMax
         EndIf
 
       EndIf
@@ -152,7 +161,7 @@ EnableExplicit
           ForEach Tabs() 
             ;Calc OffsetMove
             If Tabs() = *TabSwap
-              Tabs()\OffsetMove = MouseX - MouseDownX
+              Tabs()\OffsetMove = MouseY - MouseDownY
             Else
               Tabs()\OffsetMove = Tabs()\Y - *TabSwap\OffsetMove 
               Tabs()\OffsetMove - *TabSwap\Y - (*TabSwap\height + #TabsDistance)
