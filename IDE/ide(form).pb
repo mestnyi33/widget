@@ -294,18 +294,18 @@ CompilerIf #PB_Compiler_IsMainFile
       *copy.allocate( GROUP, ( ) )
       *copy( )\widget = a_widget( )
     Else
-      ;       ForEach a_transform( )\group( )
+      ;       ForEach a_group( )
       ;         AddElement( *copy( ) ) 
       ;         *copy.allocate( GROUP, ( ) )
-      ;         *copy( )\widget = a_transform( )\group( )\widget
+      ;         *copy( )\widget = a_group( )\widget
       ;       Next
       
-      CopyList( a_transform( )\group( ), *copy( ) )
+      CopyList( a_group( ), *copy( ) )
       
     EndIf
     
-    a_transform( )\id[0]\x = a_transform( )\grid\size
-    a_transform( )\id[0]\y = a_transform( )\grid\size
+    a_selector( )\x = a_transform( )\grid\size
+    a_selector( )\y = a_transform( )\grid\size
   EndMacro
   
   Macro widget_delete( )
@@ -316,13 +316,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       a_Set( GetItemData( id_i_view_tree, GetState( id_i_view_tree ) ) )
     Else
-      ForEach a_transform( )\group( )
-        RemoveItem( id_i_view_tree, GetData( a_transform( )\group( )\widget ) )
-        Free( a_transform( )\group( )\widget )
-        DeleteElement( a_transform( )\group( ) )
+      ForEach a_group( )
+        RemoveItem( id_i_view_tree, GetData( a_group( )\widget ) )
+        Free( a_group( )\widget )
+        DeleteElement( a_group( ) )
       Next
       
-      ClearList( a_transform( )\group( ) )
+      ClearList( a_group( ) )
     EndIf
     
     ; a_set( transform )
@@ -333,21 +333,21 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEach *copy( )
         widget_add( *copy( )\widget\parent, 
                     *copy( )\widget\class, 
-                    *copy( )\widget\x[#__c_container] + ( a_transform( )\id[0]\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-                    *copy( )\widget\y[#__c_container] + ( a_transform( )\id[0]\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+                    *copy( )\widget\x[#__c_container] + ( a_selector( )\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+                    *copy( )\widget\y[#__c_container] + ( a_selector( )\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
                     *copy( )\widget\width[#__c_frame],
                     *copy( )\widget\height[#__c_frame] )
       Next
       
-      a_transform( )\id[0]\x + a_transform( )\grid\size
-      a_transform( )\id[0]\y + a_transform( )\grid\size
+      a_selector( )\x + a_transform( )\grid\size
+      a_selector( )\y + a_transform( )\grid\size
       
-      ClearList( a_transform( )\group( ) )
-      CopyList( *copy( ), a_transform( )\group( ) )
+      ClearList( a_group( ) )
+      CopyList( *copy( ), a_group( ) )
     EndIf
     
-    ForEach a_transform( )\group( )
-      Debug " group "+a_transform( )\group( )\widget
+    ForEach a_group( )
+      Debug " group "+a_group( )\widget
     Next
     
     ;a_update( a_widget( ) )
@@ -568,8 +568,8 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;           If a_widget( )\transform <> 1
-          ;             ForEach a_transform( )\group( )
-          ;               SetItemState( id_i_view_tree, GetData( a_transform( )\group( )\widget ), 0 )
+          ;             ForEach a_group( )
+          ;               SetItemState( id_i_view_tree, GetData( a_group( )\widget ), 0 )
           ;             Next
           ;           EndIf
         Else
@@ -595,10 +595,10 @@ CompilerIf #PB_Compiler_IsMainFile
               SetGadgetState( id_design_code, - 1 )
             EndIf
             
-            ForEach a_transform( )\group( )
-              SetItemState( id_i_view_tree, GetData( a_transform( )\group( )\widget ), #PB_Tree_Selected )
+            ForEach a_group( )
+              SetItemState( id_i_view_tree, GetData( a_group( )\widget ), #PB_Tree_Selected )
               If IsGadget( id_design_code )
-                SetGadgetItemState( id_design_code, GetData( a_transform( )\group( )\widget ), #PB_Tree_Selected )
+                SetGadgetItemState( id_design_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
               EndIf
             Next
           EndIf
@@ -906,25 +906,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
         EndIf
         
-        
-      Case #PB_EventType_MouseEnter
-        ; Debug "id_elements - enter"
-        ;       If a_transform( )\type > 0 
-        ;         SetCursor( EventWidget( ), #PB_Cursor_Default )
-        ;       EndIf
-        
-      Case #PB_EventType_MouseLeave
-        ; Debug "id_elements - leave"
-        ;       If a_transform( )\type > 0 
-        ;         SetCursor( EventWidget( ), CreateCursor( ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) ))
-        ;       EndIf
-        
       Case #PB_EventType_LeftClick
-        If EventWidget = id_elements_tree
-          ; Debug "click"
-          ; SetCursor( EventWidget( ), CreateCursor( ImageID( GetItemData( id_elements_tree, a_transform( )\type ) ) ))
-        EndIf
-        
         If getclass( EventWidget ) = "ToolBar"
           Protected transform, move_x, move_y, toolbarbutton = GetData( EventWidget )
           Static NewList *copy._s_group( )
@@ -941,8 +923,8 @@ CompilerIf #PB_Compiler_IsMainFile
                 group_select = 0
               EndIf
               
-              ForEach a_transform( )\group( )
-                Debug a_transform( )\group( )\widget\x
+              ForEach a_group( )
+                Debug a_group( )\widget\x
                 
               Next
               
@@ -960,6 +942,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Case #_tb_widget_delete
               widget_delete( )
               
+              
             Case #_tb_group_left,
                  #_tb_group_right, 
                  #_tb_group_top, 
@@ -967,36 +950,37 @@ CompilerIf #PB_Compiler_IsMainFile
                  #_tb_group_width, 
                  #_tb_group_height
               
-              move_x = a_transform( )\id[0]\x - a_widget( )\x[#__c_inner]
-              move_y = a_transform( )\id[0]\y - a_widget( )\y[#__c_inner]
+              ;\\ toolbar buttons events
+              move_x = a_selector( )\x - a_widget( )\x[#__c_inner]
+              move_y = a_selector( )\y - a_widget( )\y[#__c_inner]
               
-              ForEach a_transform( )\group( )
+              ForEach a_group( )
                 Select toolbarbutton
                   Case #_tb_group_left ; left
-                                       ;a_transform( )\id[0]\x = 0
-                    a_transform( )\id[0]\width = 0
-                    Resize( a_transform( )\group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                       ;a_selector( )\x = 0
+                    a_selector( )\width = 0
+                    Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     
                   Case #_tb_group_right ; right
-                    a_transform( )\id[0]\x = 0
-                    a_transform( )\id[0]\width = 0
-                    Resize( a_transform( )\group( )\widget, move_x + a_transform( )\group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                    a_selector( )\x = 0
+                    a_selector( )\width = 0
+                    Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                     
                   Case #_tb_group_top ; top
-                                      ;a_transform( )\id[0]\y = 0
-                    a_transform( )\id[0]\height = 0
-                    Resize( a_transform( )\group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
+                                      ;a_selector( )\y = 0
+                    a_selector( )\height = 0
+                    Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
                     
                   Case #_tb_group_bottom ; bottom
-                    a_transform( )\id[0]\y = 0
-                    a_transform( )\id[0]\height = 0
-                    Resize( a_transform( )\group( )\widget, #PB_Ignore, move_y + a_transform( )\group( )\height, #PB_Ignore, #PB_Ignore )
+                    a_selector( )\y = 0
+                    a_selector( )\height = 0
+                    Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
                     
                   Case #_tb_group_width ; stretch horizontal
-                    Resize( a_transform( )\group( )\widget, #PB_Ignore, #PB_Ignore, a_transform( )\id[0]\width, #PB_Ignore )
+                    Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width, #PB_Ignore )
                     
                   Case #_tb_group_height ; stretch vertical
-                    Resize( a_transform( )\group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_transform( )\id[0]\height )
+                    Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height )
                     
                 EndSelect
               Next
@@ -1290,5 +1274,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f--vf---v---f6-v-
+; Folding = -----f--v----v---f8-3-
 ; EnableXP

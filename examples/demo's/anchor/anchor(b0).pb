@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         Select WaitWindowEvent( _time_ ) 
           Case #PB_Event_Gadget
             If Root( )\canvas\bindevent = #False
-              Root( )\repaint = #True
+              ;Root( )\repaint = #True
               EventHandler( )
             EndIf
             

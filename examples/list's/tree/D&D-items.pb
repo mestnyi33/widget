@@ -142,17 +142,17 @@ Procedure DrawBarEvents( )
       ;Calc OffsetMoveMin/Max
       ForEach Tabs() 
         If Tabs() <> *TabSwap
-          Tabs()\OffsetMoveMin = scroll_height_( *this ) - Tabs()\Y
+          Tabs()\OffsetMoveMin = *this\scroll_height( ) - Tabs()\Y
           Tabs()\OffsetMoveMax = 0;Tabs()\OffsetMoveMin + *TabSwap\height + #TabsDistance
-          ;TabsWi = scroll_height_( *this ) ;+ Tabs()\height + #TabsDistance
+          ;TabsWi = *this\scroll_height( ) ;+ Tabs()\height + #TabsDistance
           Debug "  Min/Max "+Tabs()\OffsetMoveMin +" "+ Tabs()\OffsetMoveMax
         EndIf
       Next
       
       ;Calc OffsetMoveMin/Max for TabSwap
       *TabSwap\OffsetMoveMin = - *TabSwap\Y
-      *TabSwap\OffsetMoveMax = *TabSwap\OffsetMoveMin - *TabSwap\height + scroll_height_( *this )
-      Debug "Min/Max "+MouseY+" "+*TabSwap\OffsetMoveMin +" "+ *TabSwap\OffsetMoveMax
+      *TabSwap\OffsetMoveMax = *TabSwap\OffsetMoveMin - *TabSwap\height + *this\scroll_height( )
+      Debug "Min/Max "+*TabSwap\OffsetMoveMin +" "+ *TabSwap\OffsetMoveMax
     EndIf
     
   EndIf
