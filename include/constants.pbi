@@ -5,6 +5,8 @@
     EndMacro
     
     ;- - CONSTANTs
+    #PB_Drag_Drop = 1<<5
+    
     ;{
     
     Enumeration

@@ -502,24 +502,24 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( *eventWidget )
-            If DragPrivate( #_DD_New, #PB_Drag_Copy )
+            If DragPrivate( #_DD_New, #PB_Drag_Drop )
               SetCursor( *eventWidget, #PB_Cursor_Cross )
             EndIf
           EndIf
         Else
           Select DragType( ) 
             Case #PB_Drag_Copy
-              If DragPrivate( #_DD_Copy, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Copy )
                 SetCursor( *eventWidget, #PB_Cursor_Hand )
               EndIf
               
             Case #PB_Drag_Move 
-              If DragPrivate( #_DD_Move, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Move )
                 SetCursor( *eventWidget, #PB_Cursor_Arrows )
               EndIf
               
             Case #PB_Drag_Link 
-              If DragPrivate( #_DD_Group, #PB_Drag_Copy )
+              If DragPrivate( #_DD_Group )
                 SetCursor( *eventWidget, #PB_Cursor_Cross )
               EndIf
               
@@ -1274,5 +1274,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----f--v----v---f8-3-
+; Folding = -----f-------v---f8-3-
 ; EnableXP

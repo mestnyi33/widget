@@ -18595,7 +18595,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\state\repaint = #True
             
           Case #__event_CursorChange
-            ; Debug "event_CursorChange - setCursor " + mouse( )\cursor
             Cursor::Set( *this\_root( )\canvas\gadget, mouse( )\cursor )
             
           Case #__event_Change
@@ -19000,39 +18999,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\ then drop if create new widget
       If eventtype = #__event_Drop
         If *this <> Widget( )
+          mouse( )\interact = #True
           ; ReDraw(Root( ))
           Reclip(Widget( ))
-          GetAtPoint(Root( ), mouse( )\x, mouse( )\y)
         EndIf
       EndIf
       
       ;\\ cursor change
       Select eventtype
-        Case #__event_MouseEnter, #__event_MouseMove, #__event_Up ;, #__event_Drop
-          If mouse( )\buttons And PressedWidget( ) And eventtype <> #__event_Up
-            
+        Case #__event_MouseEnter, #__event_MouseMove, #__event_Up 
+          If PressedWidget( ) And PressedWidget( )\state\press
             If mouse( )\cursor <> PressedWidget( )\cursor
-              Debug " cursor-press-change - " + mouse( )\cursor + " >> " + PressedWidget( )\cursor
+              Debug " cursor-press-change - " + mouse( )\cursor + " >> " + PressedWidget( )\cursor 
               mouse( )\cursor = PressedWidget( )\cursor
               DoEvents( PressedWidget( ), #__event_CursorChange )
             EndIf
             
-          ElseIf EnteredWidget( ) And
-                 EnteredWidget( )\state\enter = 2
-            
-            If mouse( )\cursor <> EnteredWidget( )\cursor
-              Debug " cursor-change - " + mouse( )\cursor + " >> " + EnteredWidget( )\cursor
-              mouse( )\cursor = EnteredWidget( )\cursor
-              DoEvents( EnteredWidget( ), #__event_CursorChange )
+          ElseIf *this\state\enter = 2
+            If mouse( )\cursor <> *this\cursor
+              Debug " cursor-change - " + mouse( )\cursor + " >> " + *this\cursor
+              mouse( )\cursor = *this\cursor
+              DoEvents( *this, #__event_CursorChange )
             EndIf
             
-          ElseIf mouse( )\cursor <> #PB_Cursor_Default
-            Debug " cursor-reset-leave - " + #PB_Cursor_Default + " << " + mouse( )\cursor + " " + *this\state\enter
-            mouse( )\cursor = #PB_Cursor_Default
-            DoEvents( *this, #__event_CursorChange )
+          ElseIf PressedWidget( )
+            If mouse( )\cursor <> #PB_Cursor_Default
+              Debug " cursor-reset-leave - " + mouse( )\cursor + " >> " + #PB_Cursor_Default 
+              mouse( )\cursor = #PB_Cursor_Default
+              DoEvents( PressedWidget( ), #__event_CursorChange )
+            EndIf
+            
           EndIf
       EndSelect
       
+      ;\\ post repaint canvas
       If Not *this\state\disable
         If *this\_root( )
           ;\\
@@ -19042,11 +19042,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
       EndIf
-      
-      
     EndProcedure
     
-    Procedure EventHandler( Canvas = - 1, EventType = - 1 )
+    Procedure EventHandler( Canvas = - 1, eventtype = - 1 )
       Protected Repaint, mouse_x , mouse_y
       
       ;       If eventtype = #__event_Create
@@ -19076,17 +19074,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If mouse( )\interact
-          mouse( )\interact = #False
-          
-          ;
-          If EnteredGadget( ) >= 0 And
-             EnteredGadget( ) <> Canvas
-            ;PostEvent( #PB_Event_Gadget, EventWindow( ), EnteredGadget( ), #__event_MouseEnter )
-            EventHandler( Canvas, #__event_LeftButtonUp )
-            ProcedureReturn EventHandler( EnteredGadget( ), #__event_MouseEnter )
-          EndIf
-        EndIf
+;         ; ?????
+;         If mouse( )\interact
+;           mouse( )\interact = #False
+;           
+;           ;
+;           If EnteredGadget( ) >= 0 And
+;              EnteredGadget( ) <> Canvas
+;             EventHandler( Canvas, #__event_LeftButtonUp )
+;             ProcedureReturn EventHandler( EnteredGadget( ), #__event_MouseEnter )
+;           EndIf
+;         EndIf
       EndIf
       
       ;\\
@@ -19403,6 +19401,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             DoEvents( PressedWidget( ), #__event_DragStart )
+            If mouse( )\drag And 
+               mouse( )\drag\actions & #PB_Drag_Drop
+              mouse( )\interact = #True
+            EndIf
           EndIf
           
           ;\\ mouse-pressed-widget move event
@@ -19499,14 +19501,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ do drop events
             If mouse( )\drag
-              If mouse( )\drag\state = #PB_Drag_Enter
-                If EnteredWidget( )\drop
-                  DoEvents( EnteredWidget( ), #__event_Drop )
-                EndIf
-              EndIf
-              If PressedWidget( ) <> EnteredWidget( )
+              If mouse( )\drag\actions & #PB_Drag_Drop
                 If PressedWidget( )\drop 
                   DoEvents( PressedWidget( ), #__event_Drop )
+                EndIf
+              ElseIf mouse( )\drag\state = #PB_Drag_Enter
+                If EnteredWidget( )\drop
+                  DoEvents( EnteredWidget( ), #__event_Drop )
                 EndIf
               EndIf
               
@@ -19527,51 +19528,59 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\ do up&click events
-          If mouse( )\click
-            ;\\ do up events
-            If mouse( )\click = 1
-              DoEvents( PressedWidget( ), eventtype )
-            EndIf
-            
-            ;\\ do 1click events
-            If Not PressedWidget( )\state\drag
-              If PressedWidget( ) = EnteredWidget( )
+          If PressedWidget( )\state\press
+            If mouse( )\click
+              ;\\ do up events
+              If mouse( )\click = 1
+                DoEvents( PressedWidget( ), eventtype )
+              EndIf
+              
+              ;\\ do 3click events
+              If mouse( )\click = 3
                 If eventtype = #__event_LeftButtonUp
-                  DoEvents( PressedWidget( ), #__event_LeftClick )
+                  DoEvents( PressedWidget( ), #__event_Left3Click )
                 EndIf
                 If eventtype = #__event_RightButtonUp
-                  DoEvents( PressedWidget( ), #__event_RightClick )
+                  DoEvents( PressedWidget( ), #__event_Right3Click )
+                EndIf
+                
+                ;\\ do 2click events
+              ElseIf mouse( )\click = 2
+                If eventtype = #__event_LeftButtonUp
+                  DoEvents( PressedWidget( ), #__event_Left2Click )
+                EndIf
+                If eventtype = #__event_RightButtonUp
+                  DoEvents( PressedWidget( ), #__event_Right2Click )
+                EndIf
+                
+                ;\\ do 1click events
+              Else
+                If Not PressedWidget( )\state\drag
+                  If PressedWidget( ) = EnteredWidget( )
+                    If eventtype = #__event_LeftButtonUp
+                      DoEvents( PressedWidget( ), #__event_LeftClick )
+                    EndIf
+                    If eventtype = #__event_RightButtonUp
+                      DoEvents( PressedWidget( ), #__event_RightClick )
+                    EndIf
+                  EndIf
                 EndIf
               EndIf
             EndIf
             
-            ;\\ do 2click events
-            If mouse( )\click = 2
-              If eventtype = #__event_LeftButtonUp
-                DoEvents( PressedWidget( ), #__event_Left2Click )
-              EndIf
-              If eventtype = #__event_RightButtonUp
-                DoEvents( PressedWidget( ), #__event_Right2Click )
-              EndIf
-            EndIf
+            ;\\ reset state
+            PressedWidget( )\state\drag = #PB_Drag_None
+            PressedWidget( )\state\press = #False
             
-            ;\\ do 3click events
-            If mouse( )\click = 3
-              If eventtype = #__event_LeftButtonUp
-                DoEvents( PressedWidget( ), #__event_Left3Click )
-              EndIf
-              If eventtype = #__event_RightButtonUp
-                DoEvents( PressedWidget( ), #__event_Right3Click )
-              EndIf
-            EndIf
+            ;\\
+            DoEvents( PressedWidget( ), #__event_Up )
           EndIf
           
-          ;\\ reset state
-          PressedWidget( )\state\drag = #PB_Drag_None
-          PressedWidget( )\state\press = #False
-          
           ;\\
-          DoEvents( PressedWidget( ), #__event_Up )
+          If mouse( )\interact
+            GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+            mouse( )\interact = #False
+          EndIf
         EndIf
         
         
@@ -21053,5 +21062,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------v-------X-089----v--------------------------------------------------------f-------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------00ep-0----------------------------------------------------------------------------------------------------4--------------------v--0f--3---v----0t-04---8--P4+--------------------------
+; Folding = --------------------------------------n-------X-089----v--------------------------------------------------------f-------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------00ep-0---------------------------------------------------------------------------------------------Y0-7-4-4---------8----------v---f--3---v---v83-+r---8-08----------------------------
 ; EnableXP
