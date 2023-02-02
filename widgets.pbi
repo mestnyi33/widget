@@ -955,7 +955,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;{
     ; Requester
     Global resize_one
-    Declare EventHandler ( canvas.i = - 1, eventtype.i = - 1 )
+    
+    Declare EventHandler ( canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
     Declare WaitClose( *this = #PB_Any, waittime.l = 0 )
     Declare Message( Title.s, Text.s, flag.q = #Null )
     
@@ -11227,31 +11228,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Repaint | #True
       EndIf
       
-      
-      ; mouse wheel verticl and horizontal
-      If eventtype = #__event_MouseWheelX
-        ;         If mouse( )\wheel\x > 0
-        ;           ;Post( *this\scroll\h, #__event_Up )
-        Repaint | bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
-        
-        ;         ElseIf mouse( )\wheel\x < 0
-        ;           ;Post( #__event_Down, *this\scroll\h )
-        ;           Repaint | bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
-        ;         EndIf
-      EndIf
-      
-      If eventtype = #__event_MouseWheelY
-        ;         If mouse( )\wheel\y > 0
-        ;           ;Post( *this\scroll\v, #__event_Up )
-        Repaint | bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
-        ;
-        ;         ElseIf mouse( )\wheel\y < 0
-        ;           ;Post( *this\scroll\v, #__event_Down )
-        ;           Repaint | bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
-        ;         EndIf
-      EndIf
-      
-      
       ; key events
       If eventtype = #__event_Input Or
          eventtype = #__event_KeyDown Or
@@ -11603,15 +11579,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Next
           
         EndIf
-      EndIf
-      
-      
-      If eventtype = #__event_MouseWheelX
-        Repaint | bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
-      EndIf
-      
-      If eventtype = #__event_MouseWheelY
-        Repaint | bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
       EndIf
       
       
@@ -18576,11 +18543,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ repaint state
         Select eventtype
-          Case #__event_MouseWheelX
-            Debug "wheelX " + *data
-          Case #__event_MouseWheelY
-            Debug "wheelY " + *data
-            
           Case #__event_Focus
             If *this\color\state = #__s_3
               *this\color\state = #__s_2
@@ -18914,21 +18876,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
         EndSelect
         
-        ;\\
+        ;\\ 
         If PopupWidget( )
           If PopupWidget( ) = *this
-            Select eventtype
-              Case #__event_LeftClick
-                If *this\_root( )\_parent( ) ; ComboBox( )
-                  SetText( *this\_root( )\_parent( ), GetItemText( PopupWidget( ), GetState( PopupWidget( ) ) ) )
-                  PostCanvasRepaint( *this\_root( )\_parent( )\_root( ) )
-                  
-                  If IsWindow( GetWindow( GetRoot( PopupWidget( ) ) ) )
-                    Display( PopupWidget( ), *this\_root( )\_parent( ) )
-                    SetActiveWindow( GetWindow( GetRoot( *this\_root( )\_parent( ) ) ) )
-                  EndIf
+            If eventtype = #__event_LeftClick
+              ;\\ ComboBox( )
+              If *this\_root( )\_parent( ) 
+                SetText( *this\_root( )\_parent( ), GetItemText( PopupWidget( ), GetState( PopupWidget( ) ) ) )
+                PostCanvasRepaint( *this\_root( )\_parent( )\_root( ) )
+                
+                If IsWindow( GetWindow( GetRoot( PopupWidget( ) ) ) )
+                  Display( PopupWidget( ), *this\_root( )\_parent( ) )
+                  SetActiveWindow( GetWindow( GetRoot( *this\_root( )\_parent( ) ) ) )
                 EndIf
-            EndSelect
+              EndIf
+            EndIf
           Else
             ;\\ hide popup widget
             If eventtype = #__event_Down
@@ -18949,7 +18911,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ;\\ before post drop events
+      ;\\ before post-widget-events drop
       If eventtype = #__event_Drop
         If mouse( )\drag\actions & #PB_Drag_Drop
           mouse( )\drag\x      = a_selector( )\x - *this\x[#__c_inner]
@@ -18980,21 +18942,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ;\\ post widget events
-      If Not *this\state\disable
-        If *this\_root( )
+      ;\\ mouse wheel horizontal
+      If eventtype = #__event_MouseWheelX
+        ; Debug "wheelX " + *data
+        If *this\scroll And *this\scroll\h And 
+           bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
+          *this\state\repaint = #True
+        EndIf
+      EndIf
+      
+      ;\\ mouse wheel verticl
+      If eventtype = #__event_MouseWheelY
+        ; Debug "wheelY " + *data
+        If *this\scroll And *this\scroll\v And 
+           bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
+          *this\state\repaint = #True
+        EndIf     
+        ;         If *this\scroll And *this\scroll\v
+        ;           *this\scroll\increment = 20
+        ;           If mouse( )\wheel\y < 0
+        ;             Debug mouse( )\wheel\y
+        ;             If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos + *this\scroll\increment )
+        ;               *this\state\repaint = #True
+        ;             EndIf
+        ;           ElseIf mouse( )\wheel\y > 0
+        ;             Debug mouse( )\wheel\y
+        ;             If bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - *this\scroll\increment )
+        ;               *this\state\repaint = #True
+        ;             EndIf
+        ;           EndIf
+        ;         EndIf     
+      EndIf
+      
+      ;\\ post-widget-events
+      If *this\_root( )
+        If Not *this\state\disable
           Post( *this, eventtype, *button, *data )
         EndIf
       EndIf
       
-      ;\\ then start drag if (drag&drop)
+      ;\\ after post-widget-events dragStart 
       If eventtype = #__event_DragStart
         If mouse( )\drag
           DropState( *this )
+          If mouse( )\drag\actions & #PB_Drag_Drop
+            mouse( )\interact = #True
+          EndIf
         EndIf
       EndIf
       
-      ;\\ then drop if create new widget
+      ;\\ after post-widget-events then drop if create new widget
       If eventtype = #__event_Drop
         If *this <> Widget( )
           mouse( )\interact = #True
@@ -19036,8 +19033,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndSelect
       
       ;\\ post repaint canvas
-      If Not *this\state\disable
-        If *this\_root( )
+      If *this\_root( )
+        If Not *this\state\disable
           ;\\
           If *this\state\repaint = #True
             *this\state\repaint = #False
@@ -19047,7 +19044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure EventHandler( Canvas = - 1, eventtype = - 1 )
+    Procedure EventHandler( Canvas = - 1, eventtype = - 1, eventdata = 0 )
       Protected Repaint, mouse_x , mouse_y
       
       ;       If eventtype = #__event_Create
@@ -19398,15 +19395,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
              PressedWidget( )\state\drag = #PB_Drag_None
             PressedWidget( )\state\drag = #PB_Drag_Link
             
-                           ; Keyboard( )\key[1] = GetGadgetAttribute( PressedWidget( )\_root( )\canvas\gadget, #PB_Canvas_Modifiers )
-                            Debug Keyboard( )\key[1]
-            
             ;\\
             DoEvents( PressedWidget( ), #__event_DragStart )
-            If mouse( )\drag And 
-               mouse( )\drag\actions & #PB_Drag_Drop
-              mouse( )\interact = #True
-            EndIf
           EndIf
           
           ;\\ mouse-pressed-widget move event
@@ -19601,12 +19591,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       ElseIf eventtype = #__event_MouseWheelX
         If EnteredWidget( )
-          DoEvents( EnteredWidget( ), #__event_MouseWheelX, EventData( ) )
+          mouse()\wheel\x = eventdata
+          If is_integral_( EnteredWidget( ) )
+            DoEvents( EnteredWidget( )\_parent( ), eventtype, eventdata )
+          Else
+            DoEvents( EnteredWidget( ), eventtype, eventdata )
+          EndIf
         EndIf
         
       ElseIf eventtype = #__event_MouseWheelY
         If EnteredWidget( )
-          DoEvents( EnteredWidget( ), #__event_MouseWheelY, EventData( ) )
+          mouse()\wheel\y = eventdata
+          If is_integral_( EnteredWidget( ) )
+            DoEvents( EnteredWidget( )\_parent( ), eventtype, eventdata )
+          Else
+            DoEvents( EnteredWidget( ), eventtype, eventdata )
+          EndIf
         EndIf
         
       EndIf
@@ -21063,5 +21063,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------P-------v+----------------v-----------------------------------------------f-------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------00ep-0---------------------------------------------------------------------------------------------d0---4-4--------------------v--0f--3---v-0--+b--f0----vf----------------------------
+; Folding = --------------------------------------P-------v+----------------v-----------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------0-f4-----------------------------------------------------------------448l+4---------------------------------------------------------------------------------------------42---f-f---------------------+f--0-b-----4----4+4-7----vf-----------------------------
 ; EnableXP

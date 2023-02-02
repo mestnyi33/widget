@@ -15,13 +15,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Event_Draw ;         : result = 1 : AddItem(w_flag, -1, " ------------ draw")
         Debug "draw"
         
-      Case #__Event_Down           : result = 1 : AddItem(w_flag, -1, "down")
+      ;Case #__Event_Down           : result = 1 : AddItem(w_flag, -1, "down")
       Case #__Event_LeftButtonDown : result = 1 : AddItem(w_flag, -1, " leftdown")
       Case #__Event_LeftButtonUp   : result = 1 : AddItem(w_flag, -1, "  leftup")
       Case #__Event_LeftClick      : result = 1 : AddItem(w_flag, -1, "   click") 
       Case #__Event_Left2Click     : result = 1 : AddItem(w_flag, -1, "     2_click") 
       Case #__Event_Left3Click     : result = 1 : AddItem(w_flag, -1, "       3_click") 
-      Case #__Event_Up             : result = 1 : AddItem(w_flag, -1, "up")
+      ;Case #__Event_Up             : result = 1 : AddItem(w_flag, -1, "up")
     EndSelect
     
     If result

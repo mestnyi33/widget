@@ -1,6 +1,5 @@
 ﻿
-;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
+XIncludeFile "../../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile

@@ -311,7 +311,7 @@ Module events
             ; Debug "X - scroll"
             If EnteredGadget() >= 0
               CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-                CallCFunctionFast(refcon, EnteredGadget(), constants::#PB_EventType_MouseWheelX, scrollX)
+                CallCFunctionFast(refcon, EnteredGadget( ), constants::#PB_EventType_MouseWheelX, scrollX)
               CompilerEndIf
             EndIf
           EndIf
@@ -320,7 +320,7 @@ Module events
             ; Debug "Y - scroll"
             If EnteredGadget() >= 0
               CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-                CallCFunctionFast(refcon, EnteredGadget(), constants::#PB_EventType_MouseWheelY, scrollY)
+                CallCFunctionFast(refcon, EnteredGadget( ), constants::#PB_EventType_MouseWheelY, scrollY)
               CompilerEndIf
             EndIf
           EndIf
@@ -349,33 +349,35 @@ Module events
   
   Procedure.i WaitEvent(event.i, second.i=0)
     If *setcallback And event = #PB_Event_Gadget
-      Protected EventType = EventType()
-      Protected EventGadget = EventGadget()
+      Protected EventType   = EventType( )
+      Protected EventGadget = EventGadget( )
+      Protected EventData   = EventData( )
+      
       CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
         If EventType = constants::#PB_EventType_Repaint
-          CallCFunctionFast(*setcallback, EventGadget, EventType)
+          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
         EndIf
       CompilerEndIf
       CompilerIf Defined(constants::PB_EventType_Create, #PB_Constant) 
         If EventType = constants::#PB_EventType_Create
-          CallCFunctionFast(*setcallback, EventGadget, EventType)
+          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
         EndIf
       CompilerEndIf
 ;       If EventType = #PB_EventType_MouseEnter
 ;         ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
 ;         If Mouse::Window() = WindowID(EventWindow())
-;           CallCFunctionFast(*setcallback, EventGadget, EventType)
+;           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
 ;         EndIf
 ;       EndIf
       If EventType = #PB_EventType_RightButtonDown Or
         EventType = #PB_EventType_RightButtonUp
-        CallCFunctionFast(*setcallback, EventGadget, EventType)
+        CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
       EndIf
       If EventType = #PB_EventType_KeyDown Or
          EventType = #PB_EventType_KeyUp Or
          EventType = #PB_EventType_Input
         
-        CallCFunctionFast(*setcallback, EventGadget, EventType)
+        CallCFunctionFast( *setcallback, EventGadget, EventType, EventData )
       EndIf
     EndIf
     
