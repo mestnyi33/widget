@@ -9338,8 +9338,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ; make line position
                 If *this\text\vertical
-                  If *this\scroll_height( ) < *this\_rows( )\text\height + *this\text\padding\y * 2
-                    *this\scroll_height( ) = *this\_rows( )\text\height + *this\text\padding\y * 2
+                  If *this\scroll_height( ) < *this\_rows( )\text\height + *this\text\padding\y * 2 + *this\mode\fullselection
+                    *this\scroll_height( ) = *this\_rows( )\text\height + *this\text\padding\y * 2 + *this\mode\fullselection
                   EndIf
                   
                   If *this\text\rotate = 90
@@ -9350,8 +9350,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *this\scroll_width( ) + TxtHeight + Bool( *this\_rows( )\index <> *this\count\items - 1 ) * *this\mode\gridlines
                 Else ; horizontal
-                  If *this\scroll_width( ) < *this\_rows( )\text\width + *this\text\padding\x * 2
-                    *this\scroll_width( ) = *this\_rows( )\text\width + *this\text\padding\x * 2
+                  If *this\scroll_width( ) < *this\_rows( )\text\width + *this\text\padding\x * 2 + *this\mode\fullselection
+                    *this\scroll_width( ) = *this\_rows( )\text\width + *this\text\padding\x * 2 + *this\mode\fullselection
                   EndIf
                   
                   If *this\text\rotate = 0
@@ -19026,7 +19026,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If PressedWidget( )
                 DoEvents( PressedWidget( ), #__event_CursorChange )
               Else
-                DoEvents( *this, #__event_CursorChange )
+                If *this
+                  DoEvents( *this, #__event_CursorChange )
+                EndIf
               EndIf
             EndIf
             
@@ -21061,5 +21063,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------P-------v+----------------v-----------------------------------------------f-------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------00ep-0---------------------------------------------------------------------------------------------d0---4-4--------------------v--0f--3---v-0-f-t--v+----4v----------------------------
+; Folding = --------------------------------------P-------v+----------------v-----------------------------------------------f-------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------00ep-0---------------------------------------------------------------------------------------------d0---4-4--------------------v--0f--3---v-0--+b--f0----vf----------------------------
 ; EnableXP

@@ -43,10 +43,6 @@ Module Cursor
     Shared EnteredID
     Static PressedID
     
-    If eType = #NSCursorUpdate
-      Debug "#NSCursorUpdate"
-    EndIf
-    
     If eType = #NSLeftMouseDown
       PressedID = Mouse::Gadget(Mouse::Window())
       
@@ -63,7 +59,7 @@ Module Cursor
       EndIf
       
       EnteredID = handle
-      PressedID = 0
+      PressedID = #Null
       
     ElseIf eType = #NSMouseMoved
       handle = Mouse::Gadget(Mouse::Window())
@@ -82,6 +78,10 @@ Module Cursor
       EndIf
       
     Else ; appKitDefined
+      If eType = #NSCursorUpdate
+        Debug "#NSCursorUpdate"
+      EndIf
+      
       CompilerIf #PB_Compiler_IsMainFile
         ; event =  __NSCFType
         Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)

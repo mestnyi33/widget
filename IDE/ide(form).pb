@@ -286,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If a_widget( )\_a_\transform = 1
       AddElement( *copy( ) ) 
-      *copy.allocate( GROUP, ( ) )
+      *copy.allocate( A_GROUP, ( ) )
       *copy( )\widget = a_widget( )
     Else
       ;       ForEach a_group( )
@@ -299,8 +299,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
     EndIf
     
-    a_selector( )\x = a_transform( )\grid\size
-    a_selector( )\y = a_transform( )\grid\size
+    a_selector( )\x = a_transform( )\grid_size
+    a_selector( )\y = a_transform( )\grid_size
   EndMacro
   
   Macro widget_delete( )
@@ -334,8 +334,8 @@ CompilerIf #PB_Compiler_IsMainFile
                     *copy( )\widget\height[#__c_frame] )
       Next
       
-      a_selector( )\x + a_transform( )\grid\size
-      a_selector( )\y + a_transform( )\grid\size
+      a_selector( )\x + a_transform( )\grid_size
+      a_selector( )\y + a_transform( )\grid_size
       
       ClearList( a_group( ) )
       CopyList( *copy( ), a_group( ) )
@@ -895,7 +895,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftClick
         If getclass( EventWidget ) = "ToolBar"
           Protected transform, move_x, move_y, toolbarbutton = GetData( EventWidget )
-          Static NewList *copy._s_group( )
+          Static NewList *copy._s_a_group( )
           
           
           Select toolbarbutton
