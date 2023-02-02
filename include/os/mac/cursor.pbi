@@ -53,14 +53,13 @@ Module Cursor
     ElseIf eType = #NSLeftMouseUp
       handle = Mouse::Gadget(Mouse::Window())
       
-      If handle And 
-         handle <> PressedID
-        
+      If handle <> PressedID
         If PressedID  
           Cursor::change(PressedID, 0)
         EndIf
-        
-        Cursor::change( handle, 1)
+        If handle  
+          Cursor::change( handle, 1)
+        EndIf
       EndIf
       
       EnteredID = handle
@@ -255,7 +254,7 @@ Module Cursor
         EndIf
         
         CompilerIf #PB_Compiler_IsMainFile
-        Debug "changeCursor"
+          Debug "changeCursor"
         CompilerEndIf
       EndIf
     EndIf
@@ -407,7 +406,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0f0P2---
+; Folding = --7f7-f-
 ; EnableXP
