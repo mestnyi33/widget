@@ -81,6 +81,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     MOUSE
     Structure _s_MOUSE ; Extends _s_POINT
       *cursor                    ; current visible cursor
+      
       y.l[3]
       x.l[3]
       
@@ -190,11 +191,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       invert.b
       vertical.b
       
-      ; short._s_edit ; ".."
       edit._s_edit[4]
       caret._s_caret
       syntax._s_syntax
       
+      ; short._s_edit ; ".."
       ; short._s_text ; сокращенный текст
       
       rotate.f
@@ -208,8 +209,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *img ; - Image( )
       
       ;;*output;transparent.b
-      depth.a
       change.b
+      depth.a
       size.w  ; icon small/large
       
       ;;rotate.f
@@ -222,19 +223,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;       *background._s_image
     EndStructure
     
-    ;     ;--     anchor
-    ;     structure _s_anchor extends _s_coordinate
-    ;       round.a
-    ;       *cursor
-    ;       color._s_color;[4]
-    ;     Endstructure
     ;--     BUTTONS
     Structure _s_BUTTONS Extends _s_COORDINATE
       state._s_state
-       
-      index.l ; - anchors
-      *cursor ; anchor buttons
-      
       size.l 
       
       hide.b
@@ -245,6 +236,45 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
+    ;--     anchors
+    Structure _s_a_group Extends _s_coordinate
+      *widget._s_WIDGET
+    EndStructure
+    Structure _s_transform
+      *main._s_WIDGET
+      *widget._s_WIDGET
+      *e_widget._s_WIDGET
+      List *group._s_a_group( )
+      
+      *type
+      *grab ; grab image handle
+      
+      pos.l
+      size.l
+      
+      *grid_image
+      grid_size.l
+      grid_type.l
+      *grid_widget
+      
+      dot_ted.l
+      dot_line.l
+      dot_space.l
+      
+      cursor.i[constants::#__a_count+1]
+      id._s_buttons[constants::#__a_count+1]
+    EndStructure
+    Structure _s_a
+      pos.l
+      size.l
+      
+      index.b
+      transform.b
+      mode.i
+      
+      *id._s_buttons[constants::#__a_moved+1]
+    EndStructure
+    
     Structure _S_THUMB Extends _s_BUTTONS
       pos.l
       len.l
@@ -252,14 +282,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       change.w
     EndStructure
     
-    ;     ;--     button
-    ;     structure _s_button 
-    ;       pushed.l
-    ;       entered.l
-    ;       id._s_buttons[3]
-    ;     Endstructure
-    
-    ;--     margin
+    ;;--     margin
     Structure _s_margin Extends _s_coordinate
       color._s_color
       hide.b
@@ -377,53 +400,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       List *_s._s_tabs( )
       List *draws._s_tabs( )
-    EndStructure
-    
-    ;--     dotted
-    Structure _s_dotted
-      ;draw.b
-      dot.l
-      line.l
-      space.l
-    EndStructure
-    
-    ;--     grid
-    Structure _s_grid
-      *widget
-      *image
-      size.l
-      type.l
-    EndStructure
-    ; multi group
-    Structure _s_group Extends _s_coordinate
-      *widget._s_WIDGET
-    EndStructure
-    ;--     anchors
-    Structure _s_transform
-      *main._s_WIDGET
-      *widget._s_WIDGET
-      *_a_widget._s_WIDGET
-      List *group._s_group( )
-      
-      *type
-      *grab ; grab image handle
-      
-      pos.l
-      size.l
-      index.l
-      
-      grid._s_grid
-      dotted._s_dotted
-      id._s_buttons[constants::#__a_count+1]
-    EndStructure
-    Structure _s_a
-      pos.l
-      size.l
-      
-      index.b
-      transform.b
-      mode.i
-      *id._s_buttons[constants::#__a_moved+1]
     EndStructure
     
     ;--     mode
@@ -637,7 +613,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ; EndStructureUnion
       
       _a_mode.i
-      _a_transform.b ; add anchors on the widget (to size and move)
+      ;_a_transform.b ; add anchors on the widget (to size and move)
       *_a_id_._s_buttons[constants::#__a_moved+1]
       _a_._s_a
       transform.b
@@ -793,5 +769,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----v-----
+; Folding = -----N+---
 ; EnableXP
