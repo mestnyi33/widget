@@ -185,7 +185,7 @@ Module Cursor
   EndProcedure
   
   Procedure   Free(hCursor.i) 
-    Debug "cursor-free "+hCursor
+    ; Debug "cursor-free "+hCursor
     
     If hCursor >= 0 And hCursor <= 255
       If FindMapElement(images(), Str(hCursor))

@@ -5,6 +5,7 @@ CompilerEndIf
 DeclareModule Mouse
   Declare.i Window( )
   Declare.i Gadget( WindowID )
+  Declare.i State( )
 EndDeclareModule
 
 Module Mouse
@@ -105,6 +106,29 @@ Module Mouse
     EndIf
     
     ProcedureReturn handle
+  EndProcedure
+  
+  Procedure State( )
+    Static press.b
+    Protected state.b = CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+    
+    If press <> state
+      If state
+        If state = 1
+          Debug "LeftDown - "+state
+        ElseIf state = 2
+          Debug "RightDown - "+state
+        EndIf
+      Else
+        If press = 1
+          Debug "LeftUp - "+press
+        ElseIf press = 2
+          Debug "RightUp - "+press
+        EndIf
+      EndIf
+      press = state
+    EndIf
+    
   EndProcedure
 EndModule
 
@@ -209,6 +233,8 @@ CompilerIf #PB_Compiler_IsMainFile
       gadgetID = Mouse::Gadget( WindowID )
       
       If gadgetID
+        Mouse::State( )
+        
         If ID::Gadget( gadgetID ) =- 1
           Debug "window - ("+ ID::Window( WindowID ) +") "+ WindowID ;+" "+ GetClassName( WindowID )
         Else
@@ -234,5 +260,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = -+---
 ; EnableXP

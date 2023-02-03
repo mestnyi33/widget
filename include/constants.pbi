@@ -523,103 +523,92 @@
     EndEnumeration
     
     ;- Constant event-type
-    Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_create
-      #PB_EventType_repaint
-      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
-        #PB_EventType_Resize
-      CompilerEndIf
-      CompilerIf Not Defined(PB_EventType_returnKey, #PB_Constant)
-        #PB_EventType_returnKey
-      CompilerEndIf
-      
-      #PB_EventType_resizeBegin
-      #PB_EventType_resizeEnd
+    CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
+      #PB_EventType_Resize = 6
+    CompilerEndIf
+    CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
+      #PB_EventType_ReturnKey = 7
+    CompilerEndIf
+    #PB_EventType_Left3Click = 8
+    #PB_EventType_Right3Click = 9
+    Enumeration 65510 ; #PB_EventType_FirstCustomValue
+      #PB_EventType_Create
+      #PB_EventType_Repaint
+      #PB_EventType_ResizeBegin
+      #PB_EventType_ResizeEnd
       
       #PB_EventType_Draw
-      #PB_EventType_free
+      #PB_EventType_Free
       #PB_EventType_Drop
-      
-      #PB_EventType_scrollChange
-      
-      #PB_EventType_closeWindow
-      #PB_EventType_maximizeWindow
-      #PB_EventType_minimizeWindow
-      #PB_EventType_restoreWindow
-      
-      #PB_EventType_mouseWheelX
-      #PB_EventType_mouseWheelY
-      
-      #PB_EventType_left3Click
-      #PB_EventType_right3Click
-      
-      #PB_EventType_mouseStatus ; temp
-      #PB_EventType_statusChangeEdit
-      ;       #PB_EventType_timerStart
-      ;       #PB_EventType_timerStop
-      ;;;; #PB_EventType_colorChange
-      ; #PB_EventType_cursorUpdate
-      #PB_EventType_cursorChange
     EndEnumeration
+    Enumeration 65519
+      #PB_EventType_MouseWheelX
+      #PB_EventType_MouseWheelY
+      
+      #PB_EventType_CursorChange
+      #PB_EventType_ScrollChange
     
-    #__event_cursorChange = #PB_EventType_cursorChange
-    #__event_resizeBegin  = #PB_EventType_resizeBegin
-    #__event_resizeEnd    = #PB_EventType_resizeEnd
+      #PB_EventType_CloseWindow
+      #PB_EventType_MaximizeWindow
+      #PB_EventType_MinimizeWindow
+      #PB_EventType_RestoreWindow
+    EndEnumeration
+      
+    #__event_cursorChange = #PB_EventType_CursorChange
+    #__event_resizeBegin  = #PB_EventType_ResizeBegin
+    #__event_resizeEnd    = #PB_EventType_ResizeEnd
     
-    #__event_free     = #PB_EventType_free
+    #__event_free     = #PB_EventType_Free
     #__event_Drop     = #PB_EventType_Drop
-    #__event_create   = #PB_EventType_create
-    #__event_sizeitem = #PB_EventType_SizeItem
+    #__event_create   = #PB_EventType_Create
+    #__event_sizeitem = #PB_EventType_SizeItem                ; 65535
     
-    #__event_repaint      = #PB_EventType_repaint
-    #__event_resizeEnd    = #PB_EventType_resizeEnd
-    #__event_scrollChange = #PB_EventType_scrollChange
+    #__event_repaint      = #PB_EventType_Repaint
+    #__event_scrollChange = #PB_EventType_ScrollChange
     
-    #__event_closeWindow    = #PB_EventType_closeWindow
-    #__event_maximizewindow = #PB_EventType_maximizeWindow
-    #__event_minimizewindow = #PB_EventType_minimizeWindow
-    #__event_restorewindow  = #PB_EventType_restoreWindow
+    #__event_closeWindow    = #PB_EventType_CloseWindow
+    #__event_maximizewindow = #PB_EventType_MaximizeWindow
+    #__event_minimizewindow = #PB_EventType_MinimizeWindow
+    #__event_restorewindow  = #PB_EventType_RestoreWindow
     
-    #__event_mouseEnter      = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
-    #__event_mouseLeave      = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
-    #__event_mouseMove       = #PB_EventType_MouseMove        ; The mouse cursor moved
-    #__event_mouseWheel      = #PB_EventType_MouseWheel       ; The mouse wheel was moved
-    #__event_leftButtonDown  = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
-    #__event_leftButtonUp    = #PB_EventType_LeftButtonUp     ; The left mouse button was released
-    #__event_leftDoubleClick = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__event_left3Click      = #PB_EventType_left3Click       ; A click With the left mouse button
-    #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__event_leftClick       = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__event_mouseEnter      = #PB_EventType_MouseEnter       ; 65537 The mouse cursor entered the gadget
+    #__event_mouseLeave      = #PB_EventType_MouseLeave       ; 65538 The mouse cursor left the gadget
+    #__event_mouseMove       = #PB_EventType_MouseMove        ; 65539 The mouse cursor moved
+    #__event_mouseWheel      = #PB_EventType_MouseWheel       ; 65546 The mouse wheel was moved
+    #__event_leftButtonDown  = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
+    #__event_leftButtonUp    = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
+    #__event_leftDoubleClick = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
+    #__event_left3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
+    #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
+    #__event_leftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
     
-    #__event_rightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
-    #__event_rightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
-    #__event_rightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__event_right3Click      = #PB_EventType_right3Click      ; A click With the right mouse button
-    #__event_right2Click      = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__event_rightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__event_rightButtonDown  = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
+    #__event_rightButtonUp    = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
+    #__event_rightDoubleClick = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
+    #__event_right3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
+    #__event_right2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
+    #__event_rightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
     
-    #__event_middleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
-    #__event_middleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
-    #__event_focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
-    #__event_lostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
-    #__event_KeyDown          = #PB_EventType_KeyDown          ; A key was pressed
-    #__event_KeyUp            = #PB_EventType_KeyUp            ; A key was released
-    #__event_input            = #PB_EventType_Input            ; Text input was generated
-    #__event_resize           = #PB_EventType_Resize           ; The gadget has been resized
-    #__event_statusChange     = #PB_EventType_StatusChange
-    #__event_titleChange      = #PB_EventType_TitleChange
-    #__event_change           = #PB_EventType_Change
-    #__event_DragStart        = #PB_EventType_DragStart
-    #__event_returnKey        = #PB_EventType_returnKey
-    #__event_closeItem        = #PB_EventType_CloseItem
+    #__event_middleButtonDown = #PB_EventType_MiddleButtonDown ; 65544 The middle mouse button was pressed
+    #__event_middleButtonUp   = #PB_EventType_MiddleButtonUp   ; 65545 The middle mouse button was released
+    #__event_focus            = #PB_EventType_Focus            ; 256   The gadget gained keyboard focus
+    #__event_lostFocus        = #PB_EventType_LostFocus        ; 512   The gadget lost keyboard focus
+    #__event_KeyDown          = #PB_EventType_KeyDown          ; 65547 A key was pressed
+    #__event_KeyUp            = #PB_EventType_KeyUp            ; 65548 A key was released
+    #__event_input            = #PB_EventType_Input            ; 65549 Text input was generated
+    #__event_resize           = #PB_EventType_Resize           ; 6     The gadget has been resized
+    #__event_statusChange     = #PB_EventType_StatusChange     ; 65518
+    #__event_titleChange      = #PB_EventType_TitleChange      ; 65517
+    #__event_change           = #PB_EventType_Change           ; 768
+    #__event_DragStart        = #PB_EventType_DragStart        ; 2048
+    #__event_returnKey        = #PB_EventType_ReturnKey        ; 7
+    #__event_closeItem        = #PB_EventType_CloseItem        ; 65534
     
-    #__event_Down = #PB_EventType_Down
-    #__event_Up   = #PB_EventType_Up
-    
-    #__event_mouseWheelX = #PB_EventType_mouseWheelX
-    #__event_mouseWheelY = #PB_EventType_mouseWheelY
-    
-    #__event_Draw = #PB_EventType_Draw
+    #__event_Draw        = #PB_EventType_Draw
+    #__event_Up          = #PB_EventType_Up                    ; 4
+    #__event_Down        = #PB_EventType_Down                  ; 5
+    #__event_mouseWheelX = #PB_EventType_MouseWheelX
+    #__event_mouseWheelY = #PB_EventType_MouseWheelY
     
     
     ;- Constant create-type

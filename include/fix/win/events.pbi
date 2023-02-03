@@ -42,22 +42,14 @@ DeclareModule events
 EndDeclareModule
 Module events
   Procedure.i WaitEvent(event.i, second.i=0)
-    Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY
-    Protected MouseMove, MouseX, MouseY, MoveStart
-    Protected EnteredID, Canvas =- 1, EventType =- 1
-    
-    If MouseDrag Or Event = #PB_Event_Gadget
-      ;             If EventType = #PB_EventType_Repaint
-      
+    If Event = #PB_Event_Gadget
       If *setcallback
         Select EventType( )
           Case #PB_EventType_LeftClick
           Default
-            CallFunctionFast(*setcallback, EventGadget(), EventType())
+            CallFunctionFast(*setcallback, EventGadget(), EventType(), EventData())
         EndSelect
       EndIf
-      ;             EndIf
-      
     EndIf
     
     ProcedureReturn event
@@ -113,8 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
   EndProcedure
   
-  Procedure EventHandler(eventobject, eventtype)
-    Protected eventdata
+  Procedure EventHandler(eventobject, eventtype, eventdata )
     Protected window = EventWindow()
     Protected dropx, dropy
     Static deltax, deltay
@@ -786,8 +777,8 @@ CompilerIf #PB_Compiler_IsMainFile
     event = events::WaitEvent(WaitWindowEvent())
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 53
-; FirstLine = 40
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 44
+; FirstLine = 33
 ; Folding = ----4--------
 ; EnableXP

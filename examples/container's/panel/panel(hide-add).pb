@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*PANEL_1, -1, "*PANEL_1 - 1")
     AddItem(*PANEL_1, -1, "*PANEL_1 - 2")
     
-    *PANEL_2 = Panel(10,5,150,65) 
+    *PANEL_2 = Panel(10, 5, 150, 65) 
     AddItem(*PANEL_2, -1, "*PANEL_2 - 1")
     
     Container(10,5,150,55, #PB_Container_Flat) 

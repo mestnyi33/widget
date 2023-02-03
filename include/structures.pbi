@@ -85,7 +85,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       y.l[3]
       x.l[3]
       
-      time.q                     ; mouse down time
       click.a                    ; mouse clicked count
       buttons.l                  ; mouse clicked button
       change.b                   ; mouse moved state
@@ -236,7 +235,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
-    ;--     anchors
+    ;--     ANCHORS
     Structure _s_a_group Extends _s_coordinate
       *widget._s_WIDGET
     EndStructure
@@ -516,32 +515,24 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;       *data      ; set/get item data
     ;     Endstructure
     ;     
-    ;--     eventdata
+    
+
+    
+    ;--     EVENT
     Structure _s_eventdata
-      *back.pFunc ; temp
-      
-      *id
-      
-      *pFunc.pFunc
       ; *widget._s_WIDGET
       *type ; eventType( )
       *item ; eventItem( )
       *data ; eventdata( )
+      *pFunc.pFunc
     EndStructure
-    
-    ;--     BIND 
-    Structure _s_eventbind 
-      *func.pFunc
-      List *type( )
-    EndStructure
-    
-    ;--     event
-    Structure _s_event ; extends _s_eventdata
+    Structure _s_event 
+      ;*bind[constants::#__event]
+      draw.b
+      move.b
+      statusChange.b
       List *call._s_eventdata( )
       List *queue._s_eventdata( )
-      
-      List *post._s_eventdata( ) ; TEMP
-      List *_call._s_eventbind( ) ; TEMP
     EndStructure
     
     ;--     PARENT
@@ -585,6 +576,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     WIDGET
     Structure _s_WIDGET
+      *event._s_event
       type.b
       
       autosize.b
@@ -694,7 +686,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       caption._s_caption
       color._s_color[4]
       
-      *event._s_event
       
       List columns._s_column( )
       *root._s_ROOT     ; TEMP

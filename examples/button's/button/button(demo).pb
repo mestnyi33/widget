@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets( )
-    Select WidgetEvent( )
+    Select WidgetEventType( )
       Case #PB_EventType_LeftClick
         Debug  ""+EventIndex( )+" - widget click"
     EndSelect

@@ -553,7 +553,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonDown
         If IsContainer( *eventWidget )
           If a_transform( )\type > 0 Or group_select
-            ;a_transform( )\grab = 1
             If group_select 
               group_drag = *eventWidget
             EndIf
@@ -607,9 +606,6 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-      Case #PB_EventType_Resize
-        properties_update_coordinate( id_i_properties_tree, *eventWidget )
-        
       Case #PB_EventType_StatusChange
         ; Debug "widget status change "
         If IsGadget( id_design_code )
@@ -617,6 +613,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         SetState( id_i_view_tree, GetData( *eventWidget ) )
         properties_update( id_i_properties_tree, *eventWidget )
+        
+      Case #PB_EventType_Resize
+        properties_update_coordinate( id_i_properties_tree, *eventWidget )
         
         
     EndSelect
@@ -985,7 +984,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::Open( OpenWindow( #PB_Any, x,y,width,height, "ide", flag ) )
+    Define root = widget::Open( 1, x,y,width,height, "ide", flag ) 
     window_ide = widget::GetWindow( root )
     canvas_ide = widget::GetGadget( root )
     
@@ -1260,5 +1259,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v-------8---4+v0
+; Folding = -----v--4v-d-8---4+v0
 ; EnableXP

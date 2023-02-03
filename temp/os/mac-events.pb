@@ -22,7 +22,9 @@ If OpenWindow(0, 0, 0, 320, 230, "Test modifierFlags", #PB_Window_SystemMenu | #
     currentEvent = CocoaMessage(0, sharedApplication, "currentEvent")
     
     If currentEvent
+      
       type = CocoaMessage(0, currentEvent, "type")
+      Debug CocoaMessage(0, type, "pressedMouseButtons")
       ;Debug type 
       If type = #NSMouseEntered
         Debug "en"

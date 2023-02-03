@@ -24,7 +24,9 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
+  ;If WidgetEventType( ) <> #__event_MouseMove And WidgetEventType( ) <> #__event_Draw
+    Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
+  ;EndIf
 EndProcedure
 
 Procedure events_gbuttons()

@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  If Open(OpenWindow(#PB_Any, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(1, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *view = widget::Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
     *button1 = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
@@ -93,6 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 63
+; FirstLine = 55
 ; Folding = --
 ; EnableXP
