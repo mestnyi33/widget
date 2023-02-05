@@ -8,6 +8,15 @@ Macro CloseWindow_( hWnd )
   DestroyWindow_( hWnd )
 EndMacro
 
+Procedure SetWindowColor_(hWnd, Color)
+  Protected brush
+  brush = CreateSolidBrush_(Color)
+  ; brush = CreatePatternBrush_(ImageID)
+  
+  SetClassLongPtr_(hWnd, #GCL_HBRBACKGROUND, brush)
+  DeleteObject_(brush)
+EndProcedure
+
 Procedure Callback(WindowID,message,wParam,lParam)
   Protected Text$
   Protected Result = #PB_ProcessPureBasicEvents
@@ -230,6 +239,15 @@ Procedure OpenWindowCallback_(hWnd, uMsg, wParam, lParam)
   EndIf
   
   Select uMsg 
+;     Case #WM_ERASEBKGND
+;       GetClientRect_(hWnd, cRect.RECT)
+;       FillRect_(wParam, cRect, brush)
+;       ProcedureReturn 1
+      
+;     Case #WM_NCDESTROY
+;       SetWindowLongPtr_(hWnd, #GWL_WNDPROC, @oldProc)
+;       ProcedureReturn DefWindowProc_(hWnd, Msg, wParam, lParam)
+       
     Case #WM_CLOSE 
       DestroyWindow_(hWnd) 
       

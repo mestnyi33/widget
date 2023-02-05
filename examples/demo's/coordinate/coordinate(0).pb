@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -23,23 +23,36 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(g, #PB_ScrollArea_Y, sh)
     SetAttribute(*g, #PB_ScrollArea_Y, sh)
     
-    Debug "gadget y"
+    Debug "Y ScrollArea-gadget coordinate"
     Debug "  screen - "+ GadgetY(g, #PB_Gadget_ScreenCoordinate)
     Debug "  window - "+ GadgetY(g, #PB_Gadget_WindowCoordinate)
     Debug "  container - "+ GadgetY(g, #PB_Gadget_ContainerCoordinate)
     Debug "  area - "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
     Debug ""
     
-    Debug "widget y"
-    Debug "  screen - "+ y(*g, #__c_screen)
+    Debug "Y ScrollArea-widget coordinate"
+    Debug "  screen - "+ Str(GadgetY(GetGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
     Debug "  window - "+ y(*g, #__c_window)
     Debug "  container - "+ y(*g, #__c_container)
     Debug "  area - "+ GetAttribute(*g, #PB_ScrollArea_Y)
     Debug ""
     
+;     ; mac os
+;     Y ScrollArea-gadget coordinate
+;     screen - 220
+;     window - 53
+;     container - 10
+;     area - 202
+;     
+;     Y ScrollArea-widget coordinate
+;     screen - 212
+;     window - 45
+;     container - 10
+;     area - 220
+  
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

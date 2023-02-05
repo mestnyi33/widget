@@ -23,26 +23,53 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     STATE
     Structure _s_STATE
-      flag.q           ; temp for the widgets.pbi
+      create.b
+      repaint.b
       
       hide.b          ; panel childrens real hide state
       disable.b
-      create.b
       
-      repaint.b
       enter.b
       press.b
       focus.b
+      check.b
       drag.b
       
-      check.b
-      
-      
+      ; 
+      ; intermediate
       ; change.b
       ; collapse.b
       ; click.b
       ; move.b
       ; size.b
+    EndStructure
+    ;--     MODE
+    Structure _s_mode
+      ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+      ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+      ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+      ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
+      ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
+      ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
+      ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+      ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
+      ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+      ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+      ;                        ;                X,Y parameters are ignored.
+      ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+      ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
+      ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
+      ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+      
+      ;inline.b
+      check.b  
+      
+      lines.b
+      buttons.b
+      gridlines.b
+      fullselection.b
+      collapsed.b
+      threestate.b
     EndStructure
     ;--     COUNT
     Structure _s_COUNT
@@ -354,19 +381,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     ROW
     Structure _s_ROW
-      sublevelcolumn.a
+      *active._s_rows          ; focused item
+      *pressed._s_rows         ; pushed item
+      *entered._s_rows         ; entered item
+      *leaved._s_rows          ; leaved item
+      
       column.a
+      sublevelcolumn.a
       sublevelpos.a
       sublevelsize.a
       
       *first._s_rows           ; first elemnt in the list 
       *last._s_rows            ; last elemnt in the list 
-      *added._s_rows        ; last added last element
-      
-      *active._s_rows          ; focused item
-      *pressed._s_rows         ; pushed item
-      *entered._s_rows         ; entered item
-      *leaved._s_rows          ; leaved item
+      *added._s_rows           ; last added last element
       
       visible._s_VISIBLEITEMS
       
@@ -399,40 +426,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       List *_s._s_tabs( )
       List *draws._s_tabs( )
-    EndStructure
-    
-    ;--     mode
-    Structure _s_mode
-      ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-      ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
-      ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
-      ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
-      ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-      ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
-      ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-      ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-      ;                        ;                X,Y parameters are ignored.
-      ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-      ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
-      ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
-      ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
-      
-      ;inline.b
-      lines.b
-      buttons.b
-      gridlines.b
-      
-      check.b  
-      
-      fullselection.b
-      
-      collapse.b
-      
-      threestate.b
-      
-      
     EndStructure
     
     ;--     caption
@@ -760,5 +753,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----N+---
+; Folding = -----b+---
 ; EnableXP

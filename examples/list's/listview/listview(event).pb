@@ -117,7 +117,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ;}
   ;--------------
   
-  listview(270, 30, 250, 120,Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines)
+  listview(270, 30, 250, 120) : SetFrame( widget( ), 2)
   For a = 0 To 12
     AddItem (GetWidget(0), -1, "listview item " + Str(a)) ; define listview content
     SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
@@ -126,7 +126,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   SetState(GetWidget(0), 7) 
   SetState(GetWidget(0), 9) 
   
-  listview(270, 30+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_clickselect)
+  listview(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
     AddItem (GetWidget(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
@@ -137,7 +137,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   SetState(GetWidget(1), 7) 
   SetState(GetWidget(1), 9) 
   
-  listview(270, 30+150+150, 250, 120, Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * #__Flag_GridLines|#__listview_multiselect)
+  listview(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
     AddItem (GetWidget(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2

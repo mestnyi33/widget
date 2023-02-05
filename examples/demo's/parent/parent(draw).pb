@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 ;Uselib(widget)
 ;Macro widget( ) : enumwidget( ) : EndMacro
 ;XIncludeFile "../../../widgets.pbi"

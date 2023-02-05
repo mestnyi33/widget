@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 ;Macro widget( ) : enumwidget( ) : EndMacro
 
@@ -21,13 +20,13 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)): bind(-1,-1)
+  If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
     *p2 = Container(20, 180, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)): bind(-1,-1)
+  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     *p1 = Container(10, 10, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     *w = Container(10, 10, 100, 100)

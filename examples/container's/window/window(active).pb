@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -7,33 +6,33 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure active()
     If EventWidget( )\type =- 2
-      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
+      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ; " window"
     Else
-      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
+      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
     EndIf
   EndProcedure
   
   Procedure deactive()
     If EventWidget( )\type =- 2
-      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
+      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
     Else
-      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
+      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
     EndIf
   EndProcedure
   
   Procedure active_0()
     If EventWidget( )\type =- 2
-      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
+      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
     Else
-      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
+      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
     EndIf
   EndProcedure
   
   Procedure deactive_0()
     If EventWidget( )\type =- 2
-      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " window"
+      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
     Else
-      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget"
+      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
     EndIf
   EndProcedure
   
@@ -47,34 +46,34 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
     
     Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-    string(10,10,170,30,"string_0")
+    string(10,10,170,30,"string_1")
     ;   ;SetActive(widget())
     ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
     ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
     
-    string(10,50,170,30,"string_1")
+    string(10,50,170,30,"string_2")
     ;   ;SetActive(widget())
     ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
     ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
     
-    Window(110, 30, 190, 90, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-    string(10,10,170,30,"string_2")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
-    
-    string(10,50,170,30,"string_3")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
-    
-    Window(220, 50, 190, 90, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+    Window(110, 30, 190, 90, "Window_3", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     string(10,10,170,30,"string_4")
     ;   ;SetActive(widget())
     ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
     ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
     
     string(10,50,170,30,"string_5")
+    ;   ;SetActive(widget())
+    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
+    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    
+    Window(220, 50, 190, 90, "Window_6", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+    string(10,10,170,30,"string_7")
+    ;   ;SetActive(widget())
+    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
+    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    
+    string(10,50,170,30,"string_8")
     ;   ;SetActive(widget())
     ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
     ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)

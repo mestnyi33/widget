@@ -5,6 +5,7 @@
     EndMacro
     
     ;- - CONSTANTs
+    ;-\\ DD
     #PB_Drag_Drop = 1<<5
     
     ;{
@@ -43,12 +44,6 @@
     #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
     
     
-    ; list mode
-    #__m_checkselect  = 1
-    #__m_clickselect  = 2
-    #__m_multiselect  = 3
-    #__m_optionselect = 4
-    
     ;-\\ Anchors
     #__a_left         = 1
     #__a_right        = 3
@@ -80,8 +75,6 @@
     ;
     ; default values
     ;
-    #__window_frame_size     = 4
-    #__window_caption_height = 24
     #__border_scroll         = 10
     
     #__panel_height = 24 ;+ 4
@@ -224,7 +217,6 @@
       #__flag_nolines
       #__flag_nobuttons
       #__flag_checkboxes
-      #__flag_optionboxes
       #__flag_gridlines
       #__flag_threeState
       #__flag_clickselect
@@ -356,6 +348,8 @@
     #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
     
     ;-\\ Window
+    #__window_frame_size     = 4
+    #__window_caption_height = 24
     ;     #__window_nogadgets = #__flag_nogadgets
     ;     #__window_borderless = #__flag_borderless
     ;     #__window_systemmenu = #__flag_systemmenu
@@ -397,86 +391,102 @@
     ; Debug #PB_checkbox_inbetween ; -1
     ; Debug #PB_checkBox_threeState ; 4
 
+    ;-\\ ListView
+    ; list mode
+    #__m_checkselect  = 1
+    #__m_clickselect  = 2
+    #__m_multiselect  = 3
+    #__m_optionselect = 4
+    
+    #__listview_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
+    #__listview_multiselect = #__flag_multiline
+    
     ;-\\ Tree
-    #PB_Item_Sublevel = #PB_Tree_SubLevel
-    
-    #PB_tree_Collapse    = 32
-    #PB_tree_OptionBoxes = 64
-    #PB_tree_GridLines   = #__flag_gridlines;128
-    ;#PB_tree_itemPosition = 256
-    
     #__tree_nolines     = #__flag_nolines
     #__tree_nobuttons   = #__flag_nogadgets
     #__tree_checkboxes  = #__flag_checkboxes
     #__tree_threestate  = #__flag_threeState
-    #__tree_optionboxes = #__flag_optionboxes
-    #__tree_gridlines   = #__flag_gridLines
-    #__tree_multiselect = #__flag_multiline
+    #__tree_collapse    = 32
+    #__tree_optionboxes = 64
     
-    #__tree_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
-    #__tree_collapse    = #PB_tree_collapse
+    #__tree_multiselect = #__listview_multiselect
+    #__tree_clickselect = #__listview_clickselect
+    
     
     #__tree_property = #__flag_numeric
     #__tree_listview = #__flag_readonly
     #__tree_toolbar  = #__flag_password
     
-    ; tree attribute
-    #__tree_sublevel = #PB_Tree_SubLevel   ; 1
     
-    ; tree state
-    #__tree_selected  = #PB_Tree_Selected   ; 1
-    #__tree_expanded  = #PB_Tree_Expanded   ; 2
-    #__tree_checked   = #PB_Tree_Checked    ; 4
-    #__tree_collapsed = #PB_Tree_Collapsed  ; 8
-    #__tree_inbetween = #PB_Tree_Inbetween  ; 16
-                                            ;
-                                            ;     ;- TREE CONSTANTs
-                                            ;   #__tree_noLines = #PB_tree_noLines                         ; 1 2 Hide the little lines between each nodes.
-                                            ;   #__tree_noButtons = #PB_tree_noButtons                     ; 2 1 Hide the '+' node buttons.
-                                            ;   #__tree_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
-                                            ;   #__tree_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
-                                            ;
-                                            ;   EnumerationBinary 16
-                                            ;     #__tree_collapse
-                                            ;     #__tree_clickSelect
-                                            ;     #__tree_multiSelect
-                                            ;     #__tree_GridLines
-                                            ;     #__tree_OptionBoxes
-                                            ;     #__tree_borderLess
-                                            ;     #__tree_fullSelection
-                                            ;   EndEnumeration
-                                            ;
-                                            ;   #PB_tree_collapse = #__tree_collapse
-                                            ;   #PB_tree_GridLines = #__tree_GridLines
+;     ; tree state
+;     #__tree_selected  = #PB_Tree_Selected   ; 1
+;     #__tree_expanded  = #PB_Tree_Expanded   ; 2 ; развернуто
+;     #__tree_checked   = #PB_Tree_Checked    ; 4
+;     #__tree_collapsed = #PB_Tree_Collapsed  ; 8 ; свернуто
+;     #__tree_inbetween = #PB_Tree_Inbetween  ; 16
     
-    ; LIST_ELEMENT
-    ;     CompilerIf #PB_compiler_OS = #PB_OS_macOS
-    ;       Debug #PB_listView_multiSelect  ; 1
-    ;       Debug #PB_listView_clickSelect  ; 2
+;     Флаги для изменения поведения гаджета. Это может быть комбинация следующих значений:
+;     #PB_Tree_AlwaysShowSelection : даже если гаджет не активирован, выделение остается видимым.
+;     #PB_Tree_NoLines : скрыть маленькие линии между узлами.
+;     #PB_Tree_NoButtons : скрыть кнопки узлов «+».
+;     #PB_Tree_CheckBoxes : добавьте флажок перед каждым элементом.
+;     #PB_Tree_ThreeState : Флажки могут иметь промежуточное состояние.
+;     Флаг #PB_Tree_ThreeState можно использовать в сочетании с флагом #PB_Tree_CheckBoxes, 
+;     чтобы получить флажки, которые могут иметь состояние «включено», «выключено» и «промежуточное».
+;     Пользователь может выбрать только состояния «включено» или «выключено».
+;     Промежуточное состояние можно установить программно с помощью функции SetGadgetItemState().
+;     ;
+   
+        ; LIST_ELEMENT
+;         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;           Debug #PB_ListView_MultiSelect  ; 1
+;           Debug #PB_ListView_ClickSelect  ; 2
+;     
+;           Debug #PB_Tree_AlwaysShowSelection ; 0
+;           Debug #PB_Tree_NoLines    ; 1
+;           Debug #PB_Tree_Selected   ; 1
+;           Debug #PB_Tree_SubLevel   ; 1
+;           Debug #PB_Tree_NoButtons  ; 2
+;           Debug #PB_Tree_Expanded   ; 2
+;           Debug #PB_Tree_CheckBoxes ; 4
+;           Debug #PB_Tree_Checked    ; 4
+;           Debug #PB_Tree_ThreeState ; 8
+;           Debug #PB_Tree_Collapsed  ; 8
+;           Debug #PB_Tree_Inbetween  ; 16
+;     
+;           Debug #PB_ListIcon_AlwaysShowSelection ; 0
+;           Debug #PB_ListIcon_Selected   ; 1
+;           Debug #PB_ListIcon_Checked    ; 2
+;     
+;           Debug #PB_ListIcon_CheckBoxes ; 2
+;           Debug #PB_ListIcon_Inbetween  ; 4
+;           Debug #PB_ListIcon_ThreeState ; 8
+;         CompilerEndIf
     
-    ;       Debug #PB_tree_alwaysShowSelection ; 0
-    ;       Debug #PB_tree_noLines    ; 1
-    ;       Debug #PB_tree_selected   ; 1
-    ;       Debug #PB_tree_subLevel   ; 1
-    ;       Debug #PB_tree_noButtons  ; 2
-    ;       Debug #PB_tree_Expanded   ; 2
-    ;       Debug #PB_tree_checkBoxes ; 4
-    ;       Debug #PB_tree_checked    ; 4
-    ;       Debug #PB_tree_threeState ; 8
-    ;       Debug #PB_tree_collapsed  ; 8
-    ;       Debug #PB_tree_inbetween  ; 16
-    
-    ;       Debug #PB_listIcon_alwaysShowSelection ; 0
-    ;       Debug #PB_listIcon_selected   ; 1
-    ;       Debug #PB_listIcon_checkBoxes ; 2
-    ;       Debug #PB_listIcon_checked    ; 2
-    ;       Debug #PB_listIcon_inbetween  ; 4
-    ;       Debug #PB_listIcon_threeState ; 8
-    ;     CompilerEndIf
-    
-    ;- _c_listview
-    #__listview_clickselect = #__tree_clickselect
-    #__listview_multiselect = #__tree_multiselect
+    ;-\\ ListIcon
+    ;     Флаги для изменения поведения гаджета. Это может быть комбинация следующих значений:
+    ;     #PB_ListIcon_CheckBoxes : Отображать флажки в первом столбце.
+    ;     #PB_ListIcon_ThreeState : Флажки могут иметь промежуточное состояние.
+    ;     #PB_ListIcon_MultiSelect : включить множественный выбор.
+    ;     #PB_ListIcon_GridLines : Отображение линий-разделителей между строками и столбцами (не поддерживается в Mac OSX).
+    ;     #PB_ListIcon_HeaderDragDrop : порядок столбцов можно изменить с помощью перетаскивания.
+    ;     #PB_ListIcon_FullRowSelect : выделение охватывает всю строку, а не первый столбец (только для Windows).
+    ;     #PB_ListIcon_AlwaysShowSelection: выбор по-прежнему виден, даже если гаджет не активирован (только для Windows).
+    ;     Флаг #PB_ListIcon_ThreeState можно использовать в сочетании с флагом #PB_ListIcon_CheckBoxes, чтобы получить флажки,
+    ;     которые могут иметь состояние «включено», «выключено» и «промежуточное».
+    ;     Пользователь может выбрать только состояния «включено» или «выключено».
+    ;     Промежуточное состояние можно установить программно с помощью функции SetItemState( ).
+    ;
+    ; - GetAttribute() Со следующим атрибутом:
+    ;     #PB_ListIcon_ColumnCount : 3     возвращает количество столбцов в гаджете.
+    ;     #PB_ListIcon_DisplayMode : 2     возвращает текущий режим отображения гаджета (только для Windows)
+    ; - SetAttribute() Со следующим атрибутом:
+    ;     #PB_ListIcon_DisplayMode : Изменяет отображение гаджета (только для Windows).
+    ;                                Это может быть одна из следующих констант (только для Windows):
+    ;     #PB_ListIcon_LargeIcon : 0      Режим больших значков
+    ;     #PB_ListIcon_SmallIcon : Режим малых значков
+    ;     #PB_ListIcon_List      : Режим значка списка
+    ;     #PB_ListIcon_Report    : Режим отчета (столбцы, режим по умолчанию)
     
     ;-\\ Editor
     ;#__editor_inline = #__flag_inLine
@@ -486,9 +496,9 @@
     ;#__editor_numeric       = #__flag_numeric | #__text_multiline
     ;#__editor_fullselection = #__flag_fullselection
     ;#__editor_gridlines     = #__flag_gridLines
-    #__editor_borderless    = #__flag_borderless
+    ;#__editor_borderless    = #__flag_borderless
     
-    ;- _c_string
+    ;-\\ String
     #__string_right      = #__text_right
     #__string_center     = #__text_center
     #__string_numeric    = #__text_numeric
@@ -496,8 +506,8 @@
     #__string_readonly   = #__text_readonly
     #__string_uppercase  = #__text_uppercase
     #__string_lowercase  = #__text_lowercase
-    #__string_borderless = #__flag_borderless
     #__string_multiline  = #__text_multiline
+    ;#__string_borderless = #__flag_borderless
     
     ;-\\ Button
     #__button_toggle    = #PB_Button_Toggle

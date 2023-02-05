@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -250,17 +250,17 @@ CompilerIf #PB_Compiler_IsMainFile
         *param3 = 5
       EndIf
       
-      If a_transform( ) And a_transform( )\grid\size
-        x = ( x/a_transform( )\grid\size ) * a_transform( )\grid\size
-        y = ( y/a_transform( )\grid\size ) * a_transform( )\grid\size
-        width = ( width/a_transform( )\grid\size ) * a_transform( )\grid\size + 1
-        height = ( height/a_transform( )\grid\size ) * a_transform( )\grid\size + 1
+      If a_transform( ) And a_transform( )\grid_size
+        x = ( x/a_transform( )\grid_size ) * a_transform( )\grid_size
+        y = ( y/a_transform( )\grid_size ) * a_transform( )\grid_size
+        width = ( width/a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+        height = ( height/a_transform( )\grid_size ) * a_transform( )\grid_size + 1
         
         ;Debug ( a_transform( )\pos + #__window_frame_size )
         
         If class = "window"
-          width + ( #__window_frame_size * 2 )%a_transform( )\grid\size
-          height + ( #__window_frame_size * 2 + #__window_caption_height )%a_transform( )\grid\size
+          width + ( #__window_frame_size * 2 )%a_transform( )\grid_size
+          height + ( #__window_frame_size * 2 + #__window_caption_height )%a_transform( )\grid_size
         EndIf
       EndIf
       
@@ -295,7 +295,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
           EndIf
           
-          ;  SetBackgroundImage( *new, Points( a_transform( )\grid\size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+          ;  SetBackgroundImage( *new, Points( a_transform( )\grid_size-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
@@ -482,15 +482,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         If sublevel > *this\_rows( )\sublevel
 ;           PushListPosition( *this\_rows( ))
 ;           If PreviousElement( *this\_rows( ))
-;             *this\row\last_add = *this\_rows( )
+;             *this\row\added = *this\_rows( )
 ;             ;;NextElement( *this\_rows( ))
 ;           Else
-;             last = *this\row\last_add
+;             last = *this\row\added
 ;             sublevel = *this\_rows( )\sublevel
 ;           EndIf
 ;           PopListPosition( *this\_rows( ))
 ;         Else
-;           last = *this\row\last_add
+;           last = *this\row\added
 ;           sublevel = *this\_rows( )\sublevel
 ;         EndIf
         
@@ -506,18 +506,18 @@ CompilerIf #PB_Compiler_IsMainFile
          ; sublevel = position
         EndIf
         
-;         If *this\row\last_add 
-;           If sublevel > *this\row\last_add\sublevel
-;             sublevel = *this\row\last_add\sublevel + 1
-;             *parent_row = *this\row\last_add
+;         If *this\row\added 
+;           If sublevel > *this\row\added\sublevel
+;             sublevel = *this\row\added\sublevel + 1
+;             *parent_row = *this\row\added
 ;             
-;           ElseIf *this\row\last_add\parent\row 
-;             If sublevel > *this\row\last_add\parent\row\sublevel 
-;               *parent_row = *this\row\last_add\parent\row
+;           ElseIf *this\row\added\parent\row 
+;             If sublevel > *this\row\added\parent\row\sublevel 
+;               *parent_row = *this\row\added\parent\row
 ;               
-;             ElseIf sublevel < *this\row\last_add\sublevel 
-;               If *this\row\last_add\parent\row\parent\row
-;                 *parent_row = *this\row\last_add\parent\row\parent\row
+;             ElseIf sublevel < *this\row\added\sublevel 
+;               If *this\row\added\parent\row\parent\row
+;                 *parent_row = *this\row\added\parent\row\parent\row
 ;                 
 ;                 While *parent_row 
 ;                   If sublevel >= *parent_row\sublevel 
@@ -532,15 +532,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               EndIf
 ;               
 ;               ; for the editor( )
-;               If *this\row\last_add\parent\row 
-;                 If *this\row\last_add\parent\row\sublevel = sublevel 
-;                   ;                     *rows\before = *this\row\last_add\parent\row
-;                   ;                     *this\row\last_add\parent\row\after = *rows
+;               If *this\row\added\parent\row 
+;                 If *this\row\added\parent\row\sublevel = sublevel 
+;                   ;                     *rows\before = *this\row\added\parent\row
+;                   ;                     *this\row\added\parent\row\after = *rows
 ;                   
 ;                   If *this\type = #__type_Editor
-;                     *parent_row = *this\row\last_add\parent\row
+;                     *parent_row = *this\row\added\parent\row
 ;                     *parent_row\last = *rows
-;                     *this\row\last_add = *parent_row
+;                     *this\row\added = *parent_row
 ;                     last = *parent_row
 ;                   EndIf
 ;                   
@@ -551,7 +551,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         EndIf
         
         If *parent_row
-          *parent_row\count\childrens + 1
+          *parent_row\childrens + 1
           *rows\parent\row = *parent_row
         EndIf
         
@@ -560,28 +560,28 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If last
-          ; *this\row\last_add = last
+          ; *this\row\added = last
         Else
-          *this\row\last_add = *rows
+          *this\row\added = *rows
         EndIf
         
         ; for the tree( )
-        If *this\row\last_add\parent\row And
-           *this\row\last_add\parent\row\sublevel < sublevel
-          *this\row\last_add\parent\row\last = *this\row\last_add
+        If *this\row\added\parent\row And
+           *this\row\added\parent\row\sublevel < sublevel
+          *this\row\added\parent\row\last = *this\row\added
         EndIf
         
-        If *this\row\last_add\sublevel = 0
-          *this\row\last = *this\row\last_add
+        If *this\row\added\sublevel = 0
+          *this\row\last = *this\row\added
         EndIf
         
         If position = 0
           *this\row\first = *rows
         EndIf
         
-        If *this\mode\collapse And *rows\parent\row And 
+        If *this\mode\collapsed And *rows\parent\row And 
            *rows\sublevel > *rows\parent\row\sublevel
-          *rows\parent\row\collapsebox\___state= 1 
+          ;*rows\parent\row\collapsebox\___state= 1 
           *rows\hide = 1
         EndIf
         
@@ -667,11 +667,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( EventWidget )
-            DragCursor( #PB_Cursor_Cross )
+            ;DragCursor( #PB_Cursor_Cross )
             DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
           EndIf
         Else
-            DragCursor( #PB_Cursor_Arrows )
+            ;DragCursor( #PB_Cursor_Arrows )
           DragPrivate( #_DD_widget_re_parent, #PB_Drag_Copy )
         EndIf
         
@@ -733,10 +733,10 @@ CompilerIf #PB_Compiler_IsMainFile
               
               *rows\sublevel = SubLevel2 + 1
               If *parent_row
-                *parent_row\count\childrens + 1
+                *parent_row\childrens + 1
                 If *rows\parent\row ;And *rows\parent\row\sublevel >= *parent_row\sublevel
                   Debug 7777
-                  *rows\parent\row\count\childrens - 1
+                  *rows\parent\row\childrens - 1
                 EndIf
                 *rows\parent\row = *parent_row
               EndIf
@@ -784,7 +784,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
+         ; DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
           DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
         EndIf
         
@@ -904,8 +904,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 786
-; FirstLine = 782
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -------------
 ; EnableXP

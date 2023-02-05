@@ -1,4 +1,4 @@
-﻿ IncludePath "../../../" : XIncludeFile "widget-events.pbi"
+﻿ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -244,13 +244,13 @@ CompilerIf #PB_Compiler_IsMainFile
   *mdi\scroll\v\round = 11
   *mdi\scroll\v\bar\button[#__b_1]\round = *mdi\scroll\v\round
   *mdi\scroll\v\bar\button[#__b_2]\round = *mdi\scroll\v\round
-  *mdi\scroll\v\bar\button[#__b_3]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
   SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
   
   *mdi\scroll\h\round = 11
   *mdi\scroll\h\bar\button[#__b_1]\round = *mdi\scroll\h\round
   *mdi\scroll\h\bar\button[#__b_2]\round = *mdi\scroll\h\round
-  *mdi\scroll\h\bar\button[#__b_3]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
   SetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
   
   ;Debug *mdi\Scroll\v\round

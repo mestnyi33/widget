@@ -1,7 +1,5 @@
-﻿;XIncludeFile "../../../-widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
-Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w, *p1,*p2, *ch, *b
 
@@ -24,7 +22,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)): bind(-1,-1)
+If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
   *p1 = Container(10, 10, 200, 200)            ; 0
   *w = Container(10, 10, 100, 100)             ; 1
   ;Container(10, 10, 100, 100)                  ; 2
@@ -34,7 +32,7 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)): bind(-1,-1)
+  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
   *p2 = Container(20, 180, 200, 200)           ; 4
   Button(-25, 10, 100, 30, "Button_4_5")       ; 5
