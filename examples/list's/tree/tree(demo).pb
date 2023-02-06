@@ -14,6 +14,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Define RowHeight.CGFloat = 20
     ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
     CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    
+    ;CocoaMessage(0, GadgetID(gadget), "sizeLastColumnToFit")
+   CocoaMessage(0, GadgetID(gadget), "sizeToFit")
+      ;  CocoaMessage(0, GadgetID(gadget), "reloadData")
+      
   CompilerElse
   CompilerEndIf
   
@@ -463,7 +468,7 @@ EndProcedure
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#__tree_Collapsed)                                         
+    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#PB_Tree_Collapsed)                                         
     
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
@@ -507,7 +512,7 @@ EndProcedure
     
     
  ;{  4_example
-    *g = Tree(670, 100, 210, 210, #__list_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 100, 210, 210, #__tree_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         AddItem(*g, 1, "Tree_1", -1, 1) 
         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -534,7 +539,7 @@ EndProcedure
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__list_nolines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7

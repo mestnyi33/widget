@@ -22,6 +22,25 @@
 XIncludeFile "../../../widgets.pbi" 
 ;XIncludeFile "../empty.pb"
 Uselib(widget)
+ 
+ Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
+  Protected g = ListViewGadget(gadget, x,y,width,height,flag)
+  If gadget =- 1 : gadget = g : EndIf
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define RowHeight.CGFloat = 20
+    ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
+    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    CocoaMessage(0, GadgetID(gadget), "setUsesAlternatingRowBackgroundColors:", #YES)
+    
+    CocoaMessage(0, GadgetID(gadget), "sizeLastColumnToFit")
+ 
+  CompilerElse
+  CompilerEndIf
+  
+  ProcedureReturn gadget
+EndProcedure
+
 
 Procedure events_gadgets()
   Select EventType()
@@ -79,7 +98,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   ;{
   Define i,a
   ;
-  ListViewGadget(0, 10, 30, 250, 120);, #PB_ListView_ClickSelect|#PB_ListView_MultiSelect) 
+  ListViewGadget_(0, 10, 30, 250, 120);, #PB_ListView_ClickSelect|#PB_ListView_MultiSelect) 
   TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
   For a = 0 To 12
     AddGadgetItem (0, -1, "listview item " + Str(a)) ; define listview content
@@ -90,7 +109,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
   
   ;
-  ListViewGadget(1, 10, 30+150, 250, 120, #PB_ListView_ClickSelect)
+  ListViewGadget_(1, 10, 30+150, 250, 120, #PB_ListView_ClickSelect)
   TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
   For a = 0 To 12
     AddGadgetItem (1, -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
@@ -101,7 +120,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
   ;
-  ListViewGadget(2, 10, 30+150+150, 250, 120, #PB_ListView_MultiSelect)
+  ListViewGadget_(2, 10, 30+150+150, 250, 120, #PB_ListView_MultiSelect)
   TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
   For a = 0 To 12
     AddGadgetItem (2, -1, "listview item " + Str(a)) ; define listview content
