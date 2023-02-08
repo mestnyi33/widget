@@ -18653,10 +18653,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If eventtype = #__event_MouseEnter
-        If IsGadget( Canvas ) And 
-           GadgetType( Canvas ) = #PB_GadgetType_Canvas
-          ChangeCurrentRoot( GadgetID( Canvas ) )
-          ; Debug "canvas - enter "+Canvas +" "+ Root( )
+        If Not mouse( )\interact
+          If IsGadget( Canvas ) And 
+             GadgetType( Canvas ) = #PB_GadgetType_Canvas
+            ChangeCurrentRoot( GadgetID( Canvas ) )
+            ; Debug "canvas - enter "+Canvas +" "+ Root( )
+          EndIf
         EndIf
       EndIf
       
@@ -19143,6 +19145,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;\\
           If mouse( )\interact 
+            If Canvas <> EnteredGadget( )
+              Canvas = EnteredGadget( )
+              If IsGadget( Canvas ) And 
+                 GadgetType( Canvas ) = #PB_GadgetType_Canvas
+                ChangeCurrentRoot( GadgetID( Canvas ) )
+                ; Debug "canvas - enter "+Canvas +" "+ Root( )
+              EndIf
+            EndIf
+           
             Debug "canvas - up "+Canvas +" "+ Root( )
             mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
             mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
@@ -20623,5 +20634,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------V-8f8-0v-04-v--------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v+4-3--f-8v--0-------------------------
 ; EnableXP
