@@ -107,6 +107,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     EndStructure
     ;--     MOUSE
     Structure _s_MOUSE ; Extends _s_POINT
+      *event
       *cursor                    ; current visible cursor
       
       y.l[3]
@@ -355,14 +356,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;button._s_buttons ;temp \box[0]\ -> \button\
                         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
       
-      ;*_parent._s_rows
+      *parent._s_rows
       
 ;       *first._s_rows           ;TEMP first elemnt in the list 
 ;       *after._s_rows           ;TEMP first elemnt in the list 
 ;       *before._s_rows          ;TEMP first elemnt in the list 
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       
-      parent._s_objecttype
+      ;parent._s_objecttype
       
       *OptionGroupRow._s_rows ; option group row 
       
@@ -381,15 +382,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     ROW
     Structure _s_ROW
-      *active._s_rows          ; focused item
-      *pressed._s_rows         ; pushed item
-      *entered._s_rows         ; entered item
-      *leaved._s_rows          ; leaved item
-      
       column.a
       sublevelcolumn.a
       sublevelpos.a
       sublevelsize.a
+      
+      *focused._s_rows          ; focused item
+      *pressed._s_rows         ; pushed item
+      *entered._s_rows         ; entered item
+      *leaved._s_rows          ; leaved item
       
       *first._s_rows           ; first elemnt in the list 
       *last._s_rows            ; last elemnt in the list 
@@ -528,16 +529,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *queue._s_eventdata( )
     EndStructure
     
-    ;--     PARENT
-    Structure _s_PARENT
-      ;*row._s_rowS
-      
-      *root._s_ROOT     ; this parent root
-      *window._s_WIDGET ; this parent window 
-      *widget._s_WIDGET
-      
-    EndStructure
-    
     ;--     BOUNDS
     Structure _s_BOUNDMOVE
       min._s_POINT
@@ -554,7 +545,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     ATTACH
     Structure _s_ATTACH Extends _s_COORDINATE
       mode.a
-      parent._s_objecttype
+      *parent._s_WIDGET
     EndStructure
     
     ;--     COLUMN
@@ -618,8 +609,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       width.l[constants::#__c]
       ; transporent.b
       
-      parent._s_PARENT
-      
+     
       ; placing layout
       first._s_OBJECTTYPE
       last._s_OBJECTTYPE
@@ -632,25 +622,31 @@ CompilerIf Not Defined(Structures, #PB_Module)
        ; 
       *position ; ;#PB_List_First; #PB_List_Last
       
-      
-      *index[3]  
-      ; \index[0] - widget index 
-      ; \index[1] - panel opened tab index
-      ; \index[2] - panel selected item index
-      ; \index[1] - tab entered item index
-      ; \index[2] - tab selected item index
-      
       *address          ; widgets list address
       *container        ; 
       
       text._s_TEXT
       count._s_COUNT
       
+      
       *gadget._s_WIDGET[3] 
       ; \root\gadget[0] - active gadget
       ; \gadget[0] - window active child gadget 
       ; \gadget[1] - splitter( ) first gadget
       ; \gadget[2] - splitter( ) second gadget
+      
+      *index[4]  
+      ; \index[0] - widget index 
+      ;
+      ; \index[1] - panel opened tab index     - OpenedTabIndex( )
+      ; \index[2] - panel selected item index  - FocusedTabIndex( )
+      ;
+      ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
+      ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
+      ;
+      ; \index[1] - edit entered line index    - EnteredLineIndex( )
+      ; \index[2] - edit focused line index    - FocusedLineIndex( )
+      ; \index[3] - edit pressed line index    - PressedLineIndex( )
       
       image._s_image[4]       
       ; \image[0] - draw image
@@ -681,8 +677,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       
       List columns._s_column( )
-      *root._s_ROOT     ; TEMP
-      *window._s_WIDGET ; TEMP
+      *root._s_ROOT     
+      *window._s_WIDGET
+      *parent._s_WIDGET
     EndStructure
     ;--     CANVAS
     Structure _s_CANVAS
@@ -753,5 +750,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----b+---
+; Folding = -----b+--
 ; EnableXP

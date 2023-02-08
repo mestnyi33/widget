@@ -1129,5 +1129,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -9-X6-----------------
+; Folding = -9--------------------
 ; EnableXP

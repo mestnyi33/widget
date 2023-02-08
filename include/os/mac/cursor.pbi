@@ -237,7 +237,7 @@ Module Cursor
       ; reset
       If state = 0 
         CocoaMessage(0, *cursor\windowID, "enableCursorRects")
-        If *cursor\hcursor =- 1
+        If *cursor\hcursor = - 1
           CocoaMessage(0, 0, "NSCursor unhide")
         EndIf
       EndIf
@@ -246,7 +246,7 @@ Module Cursor
       If *cursor\hcursor <> CocoaMessage(0, 0, "NSCursor currentCursor")
         If state = 1 
           CocoaMessage(0, *cursor\windowID, "disableCursorRects")
-          If *cursor\hcursor =- 1
+          If *cursor\hcursor = - 1
             CocoaMessage(0, 0, "NSCursor hide")
           Else
             CocoaMessage(0, *cursor\hcursor, "set") 
@@ -288,7 +288,7 @@ Module Cursor
 ;           EndIf
           
           Select icursor
-            Case #PB_Cursor_Invisible : *cursor\hcursor =- 1
+            Case #PB_Cursor_Invisible : *cursor\hcursor = - 1
             Case #PB_Cursor_Busy 
               SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
               
@@ -407,5 +407,5 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --7f7-f-
+; Folding = --7f7---
 ; EnableXP

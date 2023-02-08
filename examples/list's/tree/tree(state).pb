@@ -22,6 +22,8 @@ CompilerIf #PB_Compiler_IsMainFile
         
       CompilerCase #PB_OS_Windows
 				Select GadgetType(gadget)
+					Case #PB_GadgetType_Tree
+					  
 					Case #PB_GadgetType_ListView
 						SendMessage_(GadgetID(gadget), #LB_SETTOPINDEX, CountGadgetItems(gadget) - 1, #Null)
 					Case #PB_GadgetType_ListIcon
@@ -130,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu))
+  If Open(1, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = TreeGadget_(#PB_Any, 10, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)
     *g2 = TreeGadget_(#PB_Any, 10, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines)
@@ -168,6 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 26
 ; Folding = ----
 ; EnableXP

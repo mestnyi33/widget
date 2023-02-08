@@ -89,15 +89,17 @@ Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
     CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
     CocoaMessage(0, GadgetID(gadget), "setUsesAlternatingRowBackgroundColors:", #YES)
     
-    CocoaMessage(0, GadgetID(gadget), "sizeLastColumnToFit")
- 
+    If gadget <> 1
+      CocoaMessage(0, GadgetID(gadget), "sizeLastColumnToFit")
+    EndIf
+    
   CompilerElse
   CompilerEndIf
   
   ProcedureReturn gadget
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListViewGadget_(0, 10, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Listview") ; define listview content

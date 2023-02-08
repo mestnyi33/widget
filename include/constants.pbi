@@ -102,40 +102,19 @@
     
     #__sOC = SizeOf(Character)
     
-    
-    ; splitter
-    #__split_0 = 0
-    #__split_1 = 1
-    #__split_2 = 2
-    
-    #__split_b1 = 1
-    #__split_b2 = 2
-    #__split_b3 = 3
-    
-    ;
-    #__tab_1 = 1 ; entered item
-    #__tab_2 = 2 ; selected item
-    
-    ;-\\ Errors editor
+    ;-\\ edit errors 
     Enumeration 1
       #__error_text_input
       #__error_text_back
       #__error_text_return
     EndEnumeration
     
-    ;-\\  Constant edit selection
+    ;-\\ edit selection
     #__sel_to_line   = 1
     #__sel_to_first  = 2
     #__sel_to_remove = - 1
     #__sel_to_last   = - 2
     #__sel_to_set    = 5
-    
-    ;-\\ Bar buttons
-    Enumeration
-      #__b_1 = 1
-      #__b_2 = 2
-      #__b_3 = 3
-    EndEnumeration
     
     ;window bar buttons
     Enumeration
@@ -555,7 +534,7 @@
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       
-      #PB_EventType_CursorChange
+      #PB_EventType_CursorUpdate
       #PB_EventType_ScrollChange
     
       #PB_EventType_CloseWindow
@@ -564,7 +543,7 @@
       #PB_EventType_RestoreWindow
     EndEnumeration
       
-    #__event_cursorChange = #PB_EventType_CursorChange
+    #__event_CursorUpdate = #PB_EventType_CursorUpdate
     #__event_resizeBegin  = #PB_EventType_ResizeBegin
     #__event_resizeEnd    = #PB_EventType_ResizeEnd
     
