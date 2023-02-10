@@ -3202,25 +3202,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\y = mouse_y - a_focused( )\_a_\id[a_index( )]\y
             
             ;\\
-            If Not ( a_focused( )\container = 0 And a_index( ) = #__a_moved )
-              ; horizontal
-              Select a_index( )
-                Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                  mouse( )\delta\x - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
-                  
-                Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                  mouse( )\delta\x - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
-              EndSelect
-              
-              ; vertical
-              Select a_index( )
-                Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                  mouse( )\delta\y - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
-                  
-                Case #__a_bottom, 8, #__a_right_bottom ; bottom
-                  mouse( )\delta\y - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
-              EndSelect
-            EndIf
+            mouse( )\delta\x - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+            mouse( )\delta\y - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
             
           Else
             If a_transform( )\main
@@ -3314,9 +3297,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\buttons And a_index( ) And a_focused( )\_a_\id[a_index( )] And a_focused( )\_a_\id[a_index( )]\color\state = #__S_2
               mouse_x - mouse( )\delta\x
               mouse_y - mouse( )\delta\y
-              
               If a_transform( )\grid_size > 0
-                mouse_x = IntCeil(mouse_x, a_transform( )\grid_size) ; ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
+                mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
                 mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
               EndIf
               
@@ -3330,59 +3312,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   mh = #PB_Ignore
                   
                   If a_index( ) <> #__a_moved
-                    ; horizontal
+                    ;\\ horizontal
                     Select a_index( )
                       Case #__a_left, #__a_left_top, #__a_left_bottom ; left
-                                   ;\\ move boundaries
-;                         If a_focused( )\bounds\move
-;                           If a_focused( )\bounds\move\min\x <> #PB_Ignore And
-;                              mouse_x <= a_focused( )\bounds\move\min\x
-;                             mouse_x = a_focused( )\bounds\move\min\x
-;                           EndIf
-;                         EndIf
-                        mw = ( a_focused( )\x[#__c_container] - mouse_x ) + a_focused( )\width[#__c_frame] + (a_focused( )\_parent( )\fs)
+                        mw = ( a_focused( )\x[#__c_container] - mouse_x ) + a_focused( )\width[#__c_frame] 
                         If mw <= 0
                           mw      = 0
                           mouse_x = a_focused( )\x[#__c_frame] + a_focused( )\width[#__c_frame]
                         EndIf
                         
                       Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                                   ;\\ move boundaries
-;                         If a_focused( )\bounds\move And
-;                            a_focused( )\bounds\move\max\x <> #PB_Ignore And
-;                            mouse_x >= a_focused( )\bounds\move\max\x
-;                           mouse_x = a_focused( )\bounds\move\max\x
-;                         EndIf
                         mw = ( mouse_x - a_focused( )\x[#__c_container] ) + IsGrid
                     EndSelect
                     
-                    ; vertical
+                    ;\\ vertical
                     Select a_index( )
                       Case #__a_top, #__a_left_top, #__a_right_top ; top
-                                   ;\\ move boundaries
-;                         If a_focused( )\bounds\move
-;                           If a_focused( )\bounds\move\min\y <> #PB_Ignore And
-;                              mouse_y <= a_focused( )\bounds\move\min\y
-;                             mouse_y = a_focused( )\bounds\move\min\y
-;                           EndIf
-;                         EndIf
-                        mh = ( a_focused( )\y[#__c_container] - mouse_y ) + a_focused( )\height[#__c_frame] + (a_focused( )\_parent( )\fs)
+                        mh = ( a_focused( )\y[#__c_container] - mouse_y ) + a_focused( )\height[#__c_frame] 
                         If mh <= 0
                           mh      = 0
                           mouse_y = a_focused( )\y[#__c_frame] + a_focused( )\height[#__c_frame]
                         EndIf
                         
                       Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                                   ;\\ move boundaries
-;                         If a_focused( )\bounds\move And
-;                            a_focused( )\bounds\move\max\y <> #PB_Ignore And
-;                            mouse_y >= a_focused( )\bounds\move\max\y - a_focused( )\height[#__c_frame]
-;                           mouse_y = a_focused( )\bounds\move\max\y - a_focused( )\height[#__c_frame]
-;                         EndIf
                         mh = ( mouse_y - a_focused( )\y[#__c_container] ) + IsGrid
                     EndSelect
                     
-                    ;
+                    ;\\
                     If a_index( ) <> #__a_left_top
                       If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
                         mouse_x = #PB_Ignore
@@ -3393,26 +3349,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   EndIf
                   
-                  
-;                  ;\\ size boundaries
-;       If a_focused( )\bounds\size
-;         If ( a_focused( )\bounds\size\min\width <> #PB_Ignore And mw < a_focused( )\bounds\size\min\width )
-;           mw      = #PB_Ignore;a_focused( )\bounds\size\min\width
-;          ; mouse_x = #PB_Ignore
-;         EndIf
-;         If ( a_focused( )\bounds\size\max\width <> #PB_Ignore And mw > a_focused( )\bounds\size\max\width )
-;           mw      = #PB_Ignore;a_focused( )\bounds\size\max\width
-;          ; mouse_x = #PB_Ignore
-;         EndIf
-;         If ( a_focused( )\bounds\size\min\height <> #PB_Ignore And mh < a_focused( )\bounds\size\min\height )
-;           mh      = #PB_Ignore;a_focused( )\bounds\size\min\height
-;          ; mouse_y = #PB_Ignore
-;         EndIf
-;         If ( a_focused( )\bounds\size\max\height <> #PB_Ignore And mh > a_focused( )\bounds\size\max\height )
-;           mh      = #PB_Ignore;a_focused( )\bounds\size\max\height
-;          ; mouse_y = #PB_Ignore
-;         EndIf
-;       EndIf
                   ;Debug " " + mw + " " + mh
                   *this\state\repaint | Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
                   
@@ -13200,7 +13136,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure SetCursor( *this._S_widget, *cursor )
       Protected result = *this\cursor
-      
+      Debug "set-cursor "+*cursor
       ;\\
       If mouse( )\drag
         If *this\state\drag = #PB_Drag_Finish
@@ -14232,27 +14168,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If ReParent
-          ;\\ resize
-          x = *this\x[#__c_container]
-          y = *this\y[#__c_container]
-          
-          ;\\ for the scrollarea container childrens
-          ;\\ if new parent - scrollarea container
-          If *parent\scroll And
-             *parent\scroll\v And *parent\scroll\h
-            x - *parent\scroll\h\bar\page\pos
-            y - *parent\scroll\v\bar\page\pos
-          EndIf
-          
-          ;\\ if last parent - scrollarea container
-          If *LastParent\scroll And
-             *LastParent\scroll\v And *LastParent\scroll\h
-            x + *LastParent\scroll\h\bar\page\pos
-            y + *LastParent\scroll\v\bar\page\pos
-          EndIf
-          
           ;
           If Not ( *this\state\drag = #PB_Drag_Move )
+            ;\\ resize
+            x = *this\x[#__c_container]
+            y = *this\y[#__c_container]
+            
+            ;\\ for the scrollarea container childrens
+            ;\\ if new parent - scrollarea container
+            If *parent\scroll And
+               *parent\scroll\v And *parent\scroll\h
+              x - *parent\scroll\h\bar\page\pos
+              y - *parent\scroll\v\bar\page\pos
+            EndIf
+            
+            ;\\ if last parent - scrollarea container
+            If *LastParent\scroll And
+               *LastParent\scroll\v And *LastParent\scroll\h
+              x + *LastParent\scroll\h\bar\page\pos
+              y + *LastParent\scroll\v\bar\page\pos
+            EndIf
+            
             Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
           EndIf
           
@@ -19035,7 +18971,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;\\ drag & drop stop
           If PressedWidget( )\state\drag
-            PressedWidget( )\state\drag = #PB_Drag_Finish
+            If PressedWidget( )\state\drag <> #PB_Drag_Move
+              PressedWidget( )\state\drag = #PB_Drag_Finish
+            EndIf
             
             ;\\ do drop events
             If mouse( )\drag
@@ -20611,5 +20549,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------6vf0-----v4-4--88--+------------0-v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------6vf0-----v4ft0D----------------v--0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Pf9-ff2------------------------------------------------------------------------------------------------------------------------t+4-7---0-------------------------------
 ; EnableXP

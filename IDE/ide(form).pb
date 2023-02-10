@@ -530,7 +530,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case #_DD_reParent
             Debug " ----- DD_move ----- "
             If SetParent( PressedWidget( ), EnteredWidget( ) )
-              Debug "re-parent"
+              Debug "re-parent "+ PressedWidget( )\_parent( )\class
             EndIf
             
           Case #_DD_CreateNew 
@@ -1259,5 +1259,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v---v-f-8---4-v0
+; Folding = -----v-------8---4-v0
 ; EnableXP
