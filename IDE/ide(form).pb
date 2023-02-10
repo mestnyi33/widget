@@ -284,10 +284,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Macro widget_copy( )
     ClearList( *copy( ) )
     
-    If a_widget( )\_a_\transform = 1
+    If a_focused( )\_a_\transform = 1
       AddElement( *copy( ) ) 
       *copy.allocate( A_GROUP, ( ) )
-      *copy( )\widget = a_widget( )
+      *copy( )\widget = a_focused( )
     Else
       ;       ForEach a_group( )
       ;         AddElement( *copy( ) ) 
@@ -304,10 +304,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro widget_delete( )
-    If a_widget( )\_a_\transform = 1
-      RemoveItem( id_i_view_tree, GetData( a_widget( ) ) )
+    If a_focused( )\_a_\transform = 1
+      RemoveItem( id_i_view_tree, GetData( a_focused( ) ) )
       
-      Free( a_widget( ) )
+      Free( a_focused( ) )
       
       a_Set( GetItemData( id_i_view_tree, GetState( id_i_view_tree ) ) )
     Else
@@ -345,7 +345,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug " group "+a_group( )\widget
     Next
     
-    ;a_update( a_widget( ) )
+    ;a_update( a_focused( ) )
   EndMacro
   
   Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, height.l=#PB_Ignore )
@@ -558,7 +558,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
           EndIf
           
-          ;           If a_widget( )\transform <> 1
+          ;           If a_focused( )\transform <> 1
           ;             ForEach a_group( )
           ;               SetItemState( id_i_view_tree, GetData( a_group( )\widget ), 0 )
           ;             Next
@@ -569,7 +569,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonUp
         ; then group select
         If IsContainer( *eventWidget )
-          If a_transform( ) And a_widget( ) And a_widget( )\_a_\transform =- 1
+          If a_transform( ) And a_focused( ) And a_focused( )\_a_\transform =- 1
             SetState( id_i_view_tree, - 1 )
             If IsGadget( id_design_code )
               SetGadgetState( id_design_code, - 1 )
@@ -870,7 +870,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 findstring = Mid( EventWidget( )\text\string, startpos, stoppos - startpos )
                 
                 If countstring = 4
-                  SetText( a_widget( ), findstring )
+                  SetText( a_focused( ), findstring )
                 Else
                   If countstring = 0
                     x = Val( findstring )
@@ -882,7 +882,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     height = Val( findstring )
                   EndIf
                   
-                  Resize( a_widget( ), x, y, width, height)
+                  Resize( a_focused( ), x, y, width, height)
                 EndIf
                 
               EndIf
@@ -936,8 +936,8 @@ CompilerIf #PB_Compiler_IsMainFile
                  #_tb_group_height
               
               ;\\ toolbar buttons events
-              move_x = a_selector( )\x - a_widget( )\x[#__c_inner]
-              move_y = a_selector( )\y - a_widget( )\y[#__c_inner]
+              move_x = a_selector( )\x - a_focused( )\x[#__c_inner]
+              move_y = a_selector( )\y - a_focused( )\y[#__c_inner]
               
               ForEach a_group( )
                 Select toolbarbutton
@@ -970,7 +970,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndSelect
               Next
               
-              a_update( a_widget( ) )
+              a_update( a_focused( ) )
               
               ;Redraw( Root() )
           EndSelect
@@ -1259,5 +1259,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v--4v-f-8---4+v0
+; Folding = -----v---v-f-8---4-v0
 ; EnableXP

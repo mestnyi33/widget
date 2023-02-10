@@ -53,13 +53,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi._s_widget = Container(x,y,Width, height)
   Define *mdi._s_widget = MDI(x,y,Width, height)
   ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
+  a_init( *mdi, 5 )
   OpenList(*mdi)
   Button(10,50,80,80,"mdi-top")
   Button(10,400+50,80,80,"mdi-bottom")
   CloseList()
   
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
-  a_init( *mdi, 0 )
   Define vfs ;= #__window_caption_height+#__window_frame_size*2
   
   Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 

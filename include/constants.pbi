@@ -46,13 +46,13 @@
     
     ;-\\ Anchors
     #__a_left         = 1
-    #__a_right        = 3
     #__a_top          = 2
+    #__a_right        = 3
     #__a_bottom       = 4
     #__a_left_top     = 5
-    #__a_left_bottom  = 8
     #__a_right_top    = 6
     #__a_right_bottom = 7
+    #__a_left_bottom  = 8
     ;
     #__a_line_left   = 10
     #__a_line_right  = 11

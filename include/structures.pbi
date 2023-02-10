@@ -268,6 +268,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *widget._s_WIDGET
     EndStructure
     Structure _s_transform
+      index.a
       *main._s_WIDGET
       *widget._s_WIDGET
       *e_widget._s_WIDGET
