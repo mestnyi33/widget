@@ -3205,6 +3205,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\x - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
             mouse( )\delta\y - a_focused( )\_parent( )\fs - (a_focused( )\_a_\size - a_pos( a_focused( ) ) )
             
+            i = 3
+            Debug "coordinate "+ a_focused( )\_parent( )\class +" "+ a_focused( )\x[i] +" "+ a_focused( )\y[i] +" "+ a_focused( )\width[i] +" "+ a_focused( )\height[i]
+            
           Else
             If a_transform( )\main
               mouse_x - a_transform( )\main\x[#__c_container]
@@ -14176,7 +14179,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If ReParent
           ;
-          If Not ( *this\state\drag = #PB_Drag_Move )
+          If *this\state\drag = #PB_Drag_Move
+            *this\resize | #__resize_change
+            
+            x = *this\x[#__c_frame] - *parent\x[#__c_inner]
+            y = *this\y[#__c_frame] - *parent\y[#__c_inner]
+            
+            If Not *this\attach 
+              If *this\_a_\transform And  
+                 (*parent\container > 0 And
+                  *parent\type <> #__type_MDI)
+                y + *parent\fs
+                x + *parent\fs
+              EndIf
+            EndIf
+          
+            If *this\_a_\transform > 0
+              x + ( x % a_transform( )\grid_size )
+              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+              
+              y + ( y % a_transform( )\grid_size )
+              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+            EndIf
+            
+            *this\x[#__c_container] = x
+            *this\y[#__c_container] = y
+          Else
             ;\\ resize
             x = *this\x[#__c_container]
             y = *this\y[#__c_container]
@@ -20573,5 +20601,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------6-f--------ft0Df------------------+-4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff9-f--------------------------------------------------------------------------+-----------------------------------------------t+--7-----------------------------------
+; Folding = -----------------------------------------------6-f--------ft0Df------------------+-4-------V--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff9-f--------------------------------------------------------------------------4-----------------------------------------------v2--X-----------------------------------
 ; EnableXP

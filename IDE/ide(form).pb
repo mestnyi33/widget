@@ -533,11 +533,45 @@ CompilerIf #PB_Compiler_IsMainFile
             Static dx, dy
 ;             dx = Mouse( )\delta\x-PressedWidget( )\_parent( )\x[#__c_inner]-PressedWidget( )\_parent( )\scroll_x( ) + PressedWidget( )\bs
 ;             dy = Mouse( )\delta\y-PressedWidget( )\_parent( )\y[#__c_inner]-PressedWidget( )\_parent( )\scroll_y( ) + PressedWidget( )\bs
-            
-            Debug " ----- DD_move ----- "+dx+" "+dy
+            dx = PressedWidget( )\_parent( )\x[#__c_inner]
+            dy = PressedWidget( )\_parent( )\y;[#__c_inner]
+            Debug " ----- DD_move ----- "+dx+" "+dy ; re-parent Window 304 315 184 176
+            ; re-parent Window 304 315 288 200
             If SetParent( PressedWidget( ), EnteredWidget( ) )
-              Resize( PressedWidget( ), EventDropX( )-dx, EventDropY( )-dy, #PB_Ignore, #PB_Ignore)
-              Debug "re-parent "+ PressedWidget( )\_parent( )\class +" "+ PressedWidget( )\x +" "+ PressedWidget( )\y +" "+ PressedWidget( )\x[3] +" "+ PressedWidget( )\y[3]
+            ; Resize( PressedWidget( ), EventDropX( )-dx, EventDropY( )-dy, #PB_Ignore, #PB_Ignore)
+              
+;               ; inner x&y position
+              Protected x = 304 - 20 ; PressedWidget( )\x ;+ ( PressedWidget( )\bs - PressedWidget( )\fs );[#__c_frame];
+              Protected y = 315-119 ; dy ; PressedWidget( )\y-dy ;- ( PressedWidget( )\y + ( PressedWidget( )\bs - PressedWidget( )\fs )-dy);[#__c_frame];
+;               Protected ix      = ( x + PressedWidget( )\fs + PressedWidget( )\fs[1] )
+;               Protected iy      = ( y + PressedWidget( )\fs + PressedWidget( )\fs[2] )
+               
+;                 ;
+;                 ;If Change_x
+;                 PressedWidget( )\resize | #__resize_x
+;                 PressedWidget( )\x[#__c_frame]  = x
+;                 PressedWidget( )\x[#__c_inner]  = ix
+;                 PressedWidget( )\x[#__c_screen] = x - ( PressedWidget( )\bs - PressedWidget( )\fs )
+;                 If PressedWidget( )\_window( )
+;                   PressedWidget( )\x[#__c_window] = x - PressedWidget( )\_window( )\x[#__c_inner]
+;                 EndIf
+;               ;EndIf
+;                 
+;               ;If Change_y
+;                 PressedWidget( )\resize | #__resize_y
+;                 PressedWidget( )\y[#__c_frame]  = y
+;                 PressedWidget( )\y[#__c_inner]  = iy
+;                 PressedWidget( )\y[#__c_screen] = y - ( PressedWidget( )\bs - PressedWidget( )\fs )
+;                 If PressedWidget( )\_window( )
+;                   PressedWidget( )\y[#__c_window] = y - PressedWidget( )\_window( )\y[#__c_inner]
+;                 EndIf
+;               ;EndIf
+                Debug ""+x+" "+y
+              
+             ; Resize( PressedWidget( ), x, y, #PB_Ignore, #PB_Ignore)
+             ;Resize( PressedWidget( ), PressedWidget( )\x-dx, PressedWidget( )\y-dy, #PB_Ignore, #PB_Ignore)
+               Protected i = 3
+              Debug "re-parent "+ PressedWidget( )\_parent( )\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
             EndIf
             
           Case #_DD_CreateNew 
@@ -560,6 +594,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonDown
         dx = mouse( )\x - PressedWidget( )\x[#__c_inner]
         dy = mouse( )\y - PressedWidget( )\y[#__c_inner]
+        dx = PressedWidget( )\x;[#__c_container]
+        dy = PressedWidget( )\y;[#__c_container]
+        Debug ""+dx+" "+dy
         
         If IsContainer( *eventWidget )
           If a_transform( )\type > 0 Or group_select
