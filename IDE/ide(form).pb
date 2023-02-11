@@ -493,7 +493,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure widget_events( )
     Protected eventtype = WidgetEventType( ) 
     Protected *new, *eventWidget._s_widget = EventWidget( )
-    
+          
     Select eventtype 
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
@@ -505,10 +505,12 @@ CompilerIf #PB_Compiler_IsMainFile
         Else
           Select DragType( ) 
             Case #PB_Drag_Link 
-              If DragPrivate( #_DD_Group, #PB_Drag_Drop )
-                SetCursor( *eventWidget, #PB_Cursor_Cross )
+              If IsContainer( *eventWidget )
+                If DragPrivate( #_DD_Group, #PB_Drag_Drop )
+                  SetCursor( *eventWidget, #PB_Cursor_Cross )
+                EndIf
               EndIf
-              
+            
             Case #PB_Drag_Move 
               If DragPrivate( #_DD_reParent )
                 SetCursor( *eventWidget, #PB_Cursor_Arrows )
@@ -528,9 +530,14 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug " ----- DD_group ----- "
             
           Case #_DD_reParent
-            Debug " ----- DD_move ----- "
+            Static dx, dy
+;             dx = Mouse( )\delta\x-PressedWidget( )\_parent( )\x[#__c_inner]-PressedWidget( )\_parent( )\scroll_x( ) + PressedWidget( )\bs
+;             dy = Mouse( )\delta\y-PressedWidget( )\_parent( )\y[#__c_inner]-PressedWidget( )\_parent( )\scroll_y( ) + PressedWidget( )\bs
+            
+            Debug " ----- DD_move ----- "+dx+" "+dy
             If SetParent( PressedWidget( ), EnteredWidget( ) )
-              Debug "re-parent "+ PressedWidget( )\_parent( )\class
+              Resize( PressedWidget( ), EventDropX( )-dx, EventDropY( )-dy, #PB_Ignore, #PB_Ignore)
+              Debug "re-parent "+ PressedWidget( )\_parent( )\class +" "+ PressedWidget( )\x +" "+ PressedWidget( )\y +" "+ PressedWidget( )\x[3] +" "+ PressedWidget( )\y[3]
             EndIf
             
           Case #_DD_CreateNew 
@@ -551,6 +558,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Case #PB_EventType_LeftButtonDown
+        dx = mouse( )\x - PressedWidget( )\x[#__c_inner]
+        dy = mouse( )\y - PressedWidget( )\y[#__c_inner]
+        
         If IsContainer( *eventWidget )
           If a_transform( )\type > 0 Or group_select
             If group_select 
@@ -1259,5 +1269,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v-------8---4-v0
+; Folding = -----v--4----4---v-f8-
 ; EnableXP

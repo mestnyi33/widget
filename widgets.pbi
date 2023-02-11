@@ -2874,7 +2874,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected i
       
       If Not *this\_a_\transform
-        a_set_state( *this, 1 )
+        a_set_state( *this, - 1 )
         
         If Not a_transform( )
           a_transform( ).allocate( TRANSFORM )
@@ -3193,8 +3193,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
                 If Not is_integral_( a_focused( ))
-                  mouse_x - a_focused( )\_parent( )\scroll_x( )
-                  mouse_y - a_focused( )\_parent( )\scroll_y( )
+                  mouse_x + a_focused( )\_parent( )\scroll_x( )
+                  mouse_y + a_focused( )\_parent( )\scroll_y( )
                 EndIf
               EndIf
             EndIf
@@ -3298,6 +3298,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               mouse_x - mouse( )\delta\x
               mouse_y - mouse( )\delta\y
               If a_transform( )\grid_size > 0
+                mouse_x + ( mouse_x % a_transform( )\grid_size )
+                mouse_y + ( mouse_y % a_transform( )\grid_size )
                 mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
                 mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
               EndIf
@@ -3962,107 +3964,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.b Resize( *this._S_widget, x.l, y.l, width.l, height.l )
       Protected.b result
       Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-      Debug " resize - "+*this\class +" "+x +" "+ width
-      
-      ;\\ move boundaries
-      If *this\bounds\move
-        If x <> #PB_Ignore
-          If *this\bounds\move\min\x <> #PB_Ignore And
-             x < *this\bounds\move\min\x
-            If width <> #PB_Ignore
-              width - ( *this\bounds\move\min\x - x )
-            EndIf
-            x = *this\bounds\move\min\x
-          EndIf
-          If *this\bounds\move\max\x <> #PB_Ignore
-            If width <> #PB_Ignore
-              If x > *this\bounds\move\max\x - width
-                x = *this\bounds\move\max\x - width
-              EndIf
-            Else
-              If x > *this\bounds\move\max\x - *this\width[#__c_frame]
-                x = *this\bounds\move\max\x - *this\width[#__c_frame]
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        If y <> #PB_Ignore
-          If *this\bounds\move\min\y <> #PB_Ignore And 
-             y < *this\bounds\move\min\y 
-            If height <> #PB_Ignore
-              height - ( *this\bounds\move\min\y - y )
-            EndIf
-            y = *this\bounds\move\min\y
-          EndIf
-          If *this\bounds\move\max\y <> #PB_Ignore
-            If height <> #PB_Ignore
-              If y > *this\bounds\move\max\y - height
-                y = *this\bounds\move\max\y - height
-              EndIf
-            Else
-              If y > *this\bounds\move\max\y - *this\height[#__c_frame]
-                y = *this\bounds\move\max\y - *this\height[#__c_frame]
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
-      ;\\ size boundaries
-      If *this\bounds\size
-        If width <> #PB_Ignore  
-          If #PB_Ignore <> *this\bounds\size\min\width And 
-             width < *this\bounds\size\min\width 
-            If x <> #PB_Ignore 
-              x + ( width - *this\bounds\size\min\width )
-            EndIf
-            width = *this\bounds\size\min\width
-          EndIf
-          If #PB_Ignore <> *this\bounds\size\max\width And
-             width > *this\bounds\size\max\width 
-            width = *this\bounds\size\max\width
-          EndIf
-          
-          ;\\
-          If *this\bounds\move
-            If x <> #PB_Ignore 
-              If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) 
-                width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
-              EndIf
-            Else
-              If width > *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x ) 
-                width = *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x )
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        If height <> #PB_Ignore  
-          If #PB_Ignore <> *this\bounds\size\min\height And
-             height < *this\bounds\size\min\height 
-            If y <> #PB_Ignore  
-              y + ( height - *this\bounds\size\min\height )
-            EndIf
-            height = *this\bounds\size\min\height
-          EndIf
-          If #PB_Ignore <> *this\bounds\size\max\height And
-             height > *this\bounds\size\max\height 
-            height = *this\bounds\size\max\height
-          EndIf
-          
-          ;\\
-          If *this\bounds\move
-            If y <> #PB_Ignore 
-              If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) 
-                height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
-              EndIf
-            Else
-              If height > *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y ) 
-                height = *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y )
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-      EndIf
+      ; Debug " resize - "+*this\class +" "+x +" "+ width
       
       
       
@@ -4114,29 +4016,127 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
       Else
-        If a_transform( ) And
-           a_transform( )\grid_size > 1 And
-           *this = a_focused( ) And
-           *this <> a_transform( )\main
-          
+        If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
+          If *this\_a_\transform > 0
+            If x <> #PB_Ignore
+              x + ( x % a_transform( )\grid_size )
+              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+            EndIf
+            
+            If y <> #PB_Ignore
+              y + ( y % a_transform( )\grid_size )
+              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+            EndIf
+            
+            If width <> #PB_Ignore
+              width + ( width % a_transform( )\grid_size )
+              width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+            EndIf
+            
+            If height <> #PB_Ignore
+              height + ( height % a_transform( )\grid_size )
+              height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+            EndIf
+          EndIf
+        EndIf
+        
+        ;\\ move boundaries
+        If *this\bounds\move
           If x <> #PB_Ignore
-            x + ( x % a_transform( )\grid_size )
-            x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+            If *this\bounds\move\min\x <> #PB_Ignore And
+               x < *this\bounds\move\min\x
+              If width <> #PB_Ignore
+                width - ( *this\bounds\move\min\x - x )
+              EndIf
+              x = *this\bounds\move\min\x
+            EndIf
+            If *this\bounds\move\max\x <> #PB_Ignore
+              If width <> #PB_Ignore
+                If x > *this\bounds\move\max\x - width
+                  x = *this\bounds\move\max\x - width
+                EndIf
+              Else
+                If x > *this\bounds\move\max\x - *this\width[#__c_frame]
+                  x = *this\bounds\move\max\x - *this\width[#__c_frame]
+                EndIf
+              EndIf
+            EndIf
           EndIf
-          
           If y <> #PB_Ignore
-            y + ( y % a_transform( )\grid_size )
-            y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+            If *this\bounds\move\min\y <> #PB_Ignore And 
+               y < *this\bounds\move\min\y 
+              If height <> #PB_Ignore
+                height - ( *this\bounds\move\min\y - y )
+              EndIf
+              y = *this\bounds\move\min\y
+            EndIf
+            If *this\bounds\move\max\y <> #PB_Ignore
+              If height <> #PB_Ignore
+                If y > *this\bounds\move\max\y - height
+                  y = *this\bounds\move\max\y - height
+                EndIf
+              Else
+                If y > *this\bounds\move\max\y - *this\height[#__c_frame]
+                  y = *this\bounds\move\max\y - *this\height[#__c_frame]
+                EndIf
+              EndIf
+            EndIf
           EndIf
-          
-          If width <> #PB_Ignore
-            width + ( width % a_transform( )\grid_size )
-            width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+        EndIf
+        
+        ;\\ size boundaries
+        If *this\bounds\size
+          If width <> #PB_Ignore  
+            If #PB_Ignore <> *this\bounds\size\min\width And 
+               width < *this\bounds\size\min\width 
+              If x <> #PB_Ignore 
+                x + ( width - *this\bounds\size\min\width )
+              EndIf
+              width = *this\bounds\size\min\width
+            EndIf
+            If #PB_Ignore <> *this\bounds\size\max\width And
+               width > *this\bounds\size\max\width 
+              width = *this\bounds\size\max\width
+            EndIf
+            
+            ;\\
+            If *this\bounds\move
+              If x <> #PB_Ignore 
+                If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) 
+                  width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
+                EndIf
+              Else
+                If width > *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x ) 
+                  width = *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x )
+                EndIf
+              EndIf
+            EndIf
           EndIf
-          
-          If height <> #PB_Ignore
-            height + ( height % a_transform( )\grid_size )
-            height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+          If height <> #PB_Ignore  
+            If #PB_Ignore <> *this\bounds\size\min\height And
+               height < *this\bounds\size\min\height 
+              If y <> #PB_Ignore  
+                y + ( height - *this\bounds\size\min\height )
+              EndIf
+              height = *this\bounds\size\min\height
+            EndIf
+            If #PB_Ignore <> *this\bounds\size\max\height And
+               height > *this\bounds\size\max\height 
+              height = *this\bounds\size\max\height
+            EndIf
+            
+            ;\\
+            If *this\bounds\move
+              If y <> #PB_Ignore 
+                If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) 
+                  height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
+                EndIf
+              Else
+                If height > *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y ) 
+                  height = *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y )
+                EndIf
+              EndIf
+            EndIf
           EndIf
         EndIf
         
@@ -4196,11 +4196,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-          If *this\_a_\transform And
-             (*this\_parent( )\container > 0 And
-              *this\_parent( )\type <> #__type_MDI)
-            y - *this\_parent( )\fs
-            x - *this\_parent( )\fs
+          If Not *this\attach 
+            If *this\_a_\transform And  
+               (*this\_parent( )\container > 0 And
+                *this\_parent( )\type <> #__type_MDI)
+              y - *this\_parent( )\fs
+              x - *this\_parent( )\fs
+            EndIf
           EndIf
         EndIf
         
@@ -11837,15 +11839,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       mouse_x = mouse( )\x
       mouse_y = mouse( )\y
       
-      ;       If eventtype = #__event_MouseMove
-      ;         If *this\state\press
-      ;           If *this = *this\_root( )\canvas\container
-      ;             ResizeWindow( *this\_root( )\canvas\window, ( DesktopMousex( ) - mouse( )\delta\x ), ( DesktopMouseY( ) - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
-      ;           Else
-      ;             Repaint = Resize( *this, ( mouse_x - mouse( )\delta\x ), ( mouse_y - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
-      ;           EndIf
-      ;         EndIf
-      ;       EndIf
+      If eventtype = #__event_MouseMove
+        If *this\state\press And Not *this\_a_\transform
+          If *this = *this\_root( )\canvas\container
+            ResizeWindow( *this\_root( )\canvas\window, ( DesktopMouseX( ) - mouse( )\delta\x ), ( DesktopMouseY( ) - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
+          Else
+            Repaint = Resize( *this, ( mouse_x - mouse( )\delta\x ), ( mouse_y - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
+          EndIf
+        EndIf
+      EndIf
       
       If eventtype = #__event_LeftClick
         If *this\type = #__type_Window
@@ -13926,6 +13928,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected parent, ReParent.b, x, y, *last._S_widget, *lastParent._S_widget, NewList *D._S_widget( ), NewList *C._S_widget( )
       
       If *parent
+        If *parent\child And Not *parent\container
+          Debug "SetParent("
+          *parent = *parent\_parent( )
+        EndIf
+        
         If *this\_parent( ) = *parent And
            *this\TabIndex( ) = tabindex
           ProcedureReturn #False
@@ -17104,33 +17111,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
+      ;\\
       If *widget
         ;\\ is integral scroll bar's
         If *widget\scroll
-          If *widget\scroll\v And Not *widget\scroll\v\hide And *widget\scroll\v\type And
+          If *widget\scroll\v And Not *widget\scroll\v\hide And
              is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
              is_at_point_( *widget\scroll\v, mouse_x, mouse_y, [#__c_draw] )
-            *widget = *widget\scroll\v ; MouseState( *widget\scroll\v, *leave, mouse_x, mouse_y )
+            *widget = *widget\scroll\v
           EndIf
-          If *widget\scroll\h And Not *widget\scroll\h\hide And *widget\scroll\h\type And
+          If *widget\scroll\h And Not *widget\scroll\h\hide And
              is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
              is_at_point_( *widget\scroll\h, mouse_x, mouse_y, [#__c_draw] )
-            *widget = *widget\scroll\h ; MouseState( *widget\scroll\h, *leave, mouse_x, mouse_y )
+            *widget = *widget\scroll\h 
           EndIf
         EndIf
         
         ;\\ is integral tab bar
-        If *widget\TabBox( ) And Not *widget\TabBox( )\hide And *widget\TabBox( )\type And
+        If *widget\TabBox( ) And Not *widget\TabBox( )\hide And
            is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_frame] ) And
            is_at_point_( *widget\TabBox( ), mouse_x, mouse_y, [#__c_draw] )
-          *widget = *widget\TabBox( ) ; MouseState( *widget\TabBox( ), *leave, mouse_x, mouse_y )
+          *widget = *widget\TabBox( )
         EndIf
         
         ;\\ is integral string bar
-        If *widget\StringBox( ) And Not *widget\StringBox( )\hide And *widget\StringBox( )\type And
+        If *widget\StringBox( ) And Not *widget\StringBox( )\hide And
            is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_frame] ) And
            is_at_point_( *widget\StringBox( ), mouse_x, mouse_y, [#__c_draw] )
-          *widget = *widget\StringBox( ) ; MouseState( *widget\StringBox( ), *leave, mouse_x, mouse_y )
+          *widget = *widget\StringBox( )
         EndIf
         
       Else
@@ -18499,8 +18507,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
           mouse( )\drag\width  = a_selector( )\width
           mouse( )\drag\height = a_selector( )\height
         Else
-          mouse( )\drag\x = mouse( )\x - *this\x[#__c_inner]
-          mouse( )\drag\y = mouse( )\y - *this\y[#__c_inner]
+          mouse( )\drag\x = mouse( )\x - *this\x[#__c_inner] - *this\scroll_x( )
+          mouse( )\drag\y = mouse( )\y - *this\y[#__c_inner] - *this\scroll_y( )
+          
+                  Protected dx =  mouse( )\delta\x - PressedWidget( )\_parent( )\x[#__c_inner] - PressedWidget( )\_parent( )\scroll_x( ) + PressedWidget( )\bs
+          Protected dy =   mouse( )\delta\y - PressedWidget( )\_parent( )\y[#__c_inner] - PressedWidget( )\_parent( )\scroll_y( ) + PressedWidget( )\bs
+          Debug ""+dx+" "+dy
           
           mouse( )\drag\string = GetClass( PressedWidget( ) )
           mouse( )\drag\width  = #PB_Ignore
@@ -18926,7 +18938,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
               mouse( )\delta\x = mouse( )\x - PressedWidget( )\x[#__c_container]
               mouse( )\delta\y = mouse( )\y - PressedWidget( )\y[#__c_container]
-              
+                          
+;             mouse( )\delta\x = mouse( )\x - PressedWidget( )\x[#__c_frame]
+;             mouse( )\delta\y = mouse( )\y - PressedWidget( )\y[#__c_frame]
+
               If Not is_integral_( PressedWidget( )) And PressedWidget( )\_parent( )
                 mouse( )\delta\x - PressedWidget( )\_parent( )\scroll_x( )
                 mouse( )\delta\y - PressedWidget( )\_parent( )\scroll_y( )
@@ -18985,6 +19000,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If EnteredWidget( )\drop
                   DoEvents( EnteredWidget( ), #__event_Drop )
                 EndIf
+;               Else
+;                 ;\\ если бросили на дочерный элемент 
+;                 ;\\ например: скролл-бар у скроллареа
+;                 If EnteredWidget( )\child And 
+;                    Not EnteredWidget( )\container
+;                   If EnteredWidget( )\_parent( )\drop
+;                     DoEvents( EnteredWidget( )\_parent( ), #__event_Drop )
+;                   EndIf
+;                 EndIf
               EndIf
               
               ;\\ reset dragged cursor
@@ -20549,5 +20573,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------6vf0-----v4ft0D----------------v--0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Pf9-ff2------------------------------------------------------------------------------------------------------------------------t+4-7---0-------------------------------
+; Folding = -----------------------------------------------6-f--------ft0Df------------------+-4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff9-f--------------------------------------------------------------------------+-----------------------------------------------t+--7-----------------------------------
 ; EnableXP
