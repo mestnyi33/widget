@@ -536,7 +536,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
           Case #_DD_CreateNew 
-            Debug " ----- DD_new ----- "+ GetText( id_elements_tree )
+            Debug " ----- DD_new ----- "+ GetText( id_elements_tree ) +" "+ EventDropX( ) +" "+ EventDropY( ) +" "+ EventDropWidth( ) +" "+ EventDropHeight( )
             widget_add( *eventWidget, GetText( id_elements_tree ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
             
@@ -1261,5 +1261,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v--4----4---v-f8-
+; Folding = -----r-------4---v-f8-
 ; EnableXP

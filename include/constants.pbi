@@ -54,10 +54,10 @@
     #__a_right_bottom = 7
     #__a_left_bottom  = 8
     ;
-    #__a_line_left   = 10
-    #__a_line_right  = 11
-    #__a_line_top    = 12
-    #__a_line_bottom = 13
+    #__a_line_left   = 1;10
+    #__a_line_top    = 2;12
+    #__a_line_right  = 3;11
+    #__a_line_bottom = 4;13
     ; a_mode_
     EnumerationBinary 1
       #__a_position
@@ -70,7 +70,7 @@
     ;
     #__a_size  = 7
     #__a_moved = 9
-    #__a_count = #__a_moved + 4
+    #__a_count = #__a_moved ;+ 4
     
     ;
     ; default values
