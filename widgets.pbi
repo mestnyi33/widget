@@ -2349,34 +2349,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If _address_[#__a_left_bottom] :draw_box_( _address_[#__a_left_bottom]\x, _address_[#__a_left_bottom]\y, _address_[#__a_left_bottom]\width, _address_[#__a_left_bottom]\height, _address_[#__a_left_bottom]\color\frame[_address_[#__a_left_bottom]\color\state] ) : EndIf
     EndMacro
     
-    Procedure a_draw_sel( *sel._s_TRANSFORM )
-      ; draw grab background
-      If *sel\grab
-        drawing_mode_alpha_( #PB_2DDrawing_Default )
-        DrawImage( ImageID( *sel\grab ), 0, 0 )
-        
-        If Not *sel\type
-          CustomFilterCallback( @Draw_Datted( ))
-        EndIf
-        
-        If *sel\id[0]\color\back[0]
-          draw_box_( *sel\id[0]\x, *sel\id[0]\y, *sel\id[0]\width, *sel\id[0]\height, *sel\id[0]\color\back[0] )
-        EndIf
-        
-        If *sel\type
-          DrawText( *sel\id[0]\x + 3, *sel\id[0]\y + 1, Str( *sel\id[0]\width ) + "x" + Str( *sel\id[0]\height ), *sel\id[0]\color\front[0], *sel\id[0]\color\back[0] )
-          
-          If *sel\id[0]\color\frame[0]
-            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-            draw_box_( *sel\id[0]\x, *sel\id[0]\y, *sel\id[0]\width, *sel\id[0]\height, *sel\id[0]\color\frame[0] )
-          EndIf
-        Else
-          drawing_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined )
-          draw_box_( *sel\id[0]\x, *sel\id[0]\y, *sel\id[0]\width, *sel\id[0]\height, *sel\id[0]\color\frame[0] )
-        EndIf
-      EndIf
-    EndProcedure
-    
     Macro a_transform_( _this_ )
       Bool( _this_\_a_\transform Or ( is_integral_( _this_ ) And _this_\_parent( )\_a_\transform ) )
     EndMacro
@@ -16760,7 +16732,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Not *this\state\disable 
               
               ;\\ draw entered anchors 
-              If *this\_a_\transform
+              If a_focused( ) And 
+                 *this\_a_\transform
                 a_draw( *this\_a_\id )
               EndIf
               
@@ -16904,18 +16877,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ draw movable & sizable anchors
         If a_transform( )
+          Clip( a_transform( )\main, [#__c_draw2] )
+          
           If a_focused( ) And a_focused( )\_a_\transform And Not a_focused( )\hide And
              a_focused( )\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
             
-             ; draw key-focused-widget anchors
-             Clip( a_transform( )\main, [#__c_draw2] )
-             
-             If a_focused( ) And a_focused( )\state\press
+            If a_focused( ) And a_focused( )\state\press
               If a_index( ) = #__a_moved
                 DrawWidget( a_focused( ) )
               EndIf
             EndIf
             
+            ; draw key-focused-widget anchors
             a_draw( a_anchors( ) )
           EndIf
           
@@ -16923,9 +16896,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_transform( )\main\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
             
             ; draw mouse selected widget anchors
-            Clip( a_transform( )\main, [#__c_draw2] )
             ; a_draw( a_selector( ) )
-           ; a_draw_sel( a_transform( ) )
+            
+            ;\\ draw grab background
+            If a_transform( )\grab
+              drawing_mode_alpha_( #PB_2DDrawing_Default )
+              DrawImage( ImageID( a_transform( )\grab ), 0, 0 )
+              
+              If Not a_transform( )\type
+                CustomFilterCallback( @Draw_Datted( ))
+              EndIf
+              
+              If a_selector( )\color\back
+                draw_box_( a_selector( )\x, a_selector( )\y, a_selector( )\width, a_selector( )\height, a_selector( )\color\back )
+              EndIf
+              
+              If a_transform( )\type
+                DrawText( a_selector( )\x + 3, a_selector( )\y + 1, Str( a_selector( )\width ) + "x" + Str( a_selector( )\height ), a_selector( )\color\front, a_selector( )\color\back )
+                
+                If a_selector( )\color\frame
+                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                  draw_box_( a_selector( )\x, a_selector( )\y, a_selector( )\width, a_selector( )\height, a_selector( )\color\frame )
+                EndIf
+              Else
+                drawing_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined )
+                draw_box_( a_selector( )\x, a_selector( )\y, a_selector( )\width, a_selector( )\height, a_selector( )\color\frame )
+              EndIf
+            EndIf
           EndIf
         EndIf
         
@@ -20634,5 +20631,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--2--v-----------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--2--v------------------------------------------------------------------------------------------------
 ; EnableXP
