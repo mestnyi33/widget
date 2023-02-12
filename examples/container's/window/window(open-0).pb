@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
 If Open(1, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  ;a_init(Root())
+  a_init(Root())
   SetColor( Root( ), #__color_back, $ff00ffff)
   
   ;\\

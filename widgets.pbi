@@ -2838,12 +2838,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; a_resize( *this, size )
         If size <> #PB_Ignore
-          ;_this_\bs = _this_\fs + a_transform( )\pos
-          If *this\container And *this\fs > 1
-            *this\_a_\size = size + *this\fs
-          Else
+;           ;_this_\bs = _this_\fs + a_transform( )\pos
+;           If *this\container And *this\fs > 1
+;             *this\_a_\size = size + *this\fs
+;           Else
             *this\_a_\size = size
-          EndIf
+;           EndIf
           
           If position = #PB_Ignore
             position = size - size / 3 - 2
@@ -3244,12 +3244,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
               EndIf
             EndIf
-            mouse( )\delta\x = mouse_x - a_anchors([a_index( )])\x
-            mouse( )\delta\y = mouse_y - a_anchors([a_index( )])\y
+            
+              mouse( )\delta\x = mouse_x - a_anchors([a_index( )])\x
+              mouse( )\delta\y = mouse_y - a_anchors([a_index( )])\y
+              
             
             ;\\
-            mouse( )\delta\x - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
-            mouse( )\delta\y - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+            If a_index( ) = #__a_moved
+;               mouse( )\delta\x = mouse_x - a_focused( )\x
+;               mouse( )\delta\y = mouse_y - a_focused( )\y
+              
+              mouse( )\delta\x - a_focused( )\_parent( )\fs ; - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+              mouse( )\delta\y - a_focused( )\_parent( )\fs ; - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+            Else
+;               mouse( )\delta\x = mouse_x - a_anchors([a_index( )])\x
+;               mouse( )\delta\y = mouse_y - a_anchors([a_index( )])\y
+              
+              mouse( )\delta\x - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+              mouse( )\delta\y - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+            EndIf
+            
+;             ;\\
+;             mouse( )\delta\x - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+;             mouse( )\delta\y - a_focused( )\_parent( )\fs - ( a_focused( )\_a_\size - a_pos( a_focused( ) ) )
+            
+            Debug ""+mouse( )\delta\x +" "+ mouse( )\delta\y
             
             If a_index( ) = #__a_moved
               i = 3
@@ -16708,6 +16727,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         bar_area_draw_( *this )
       EndIf
       
+      If ( a_transform( ) And a_focused( ) And a_focused( )\state\press And a_index( ) = #__a_moved )
+        If *this\event And
+           *this\event\draw
+          Post( *this, #__event_Draw )
+        EndIf
+      EndIf
+      
     EndProcedure
     
     Procedure.b Draw( *this._S_widget )
@@ -16807,9 +16833,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If *this\event And
-           *this\event\draw
-          Post( *this, #__event_Draw )
+        If Not ( a_transform( ) And a_focused( ) And a_focused( )\state\press And a_index( ) = #__a_moved )
+          If *this\event And
+             *this\event\draw
+            Post( *this, #__event_Draw )
+          EndIf
         EndIf
         
         ;\\
@@ -20669,5 +20697,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f0--8------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
