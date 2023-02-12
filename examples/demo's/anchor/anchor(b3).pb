@@ -8,7 +8,7 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
     Select WidgetEventType( )
       Case #PB_EventType_Draw
         
-        If Eventwidget()\state\press
+        If Eventwidget()\state\focus
           ; Demo draw on element
           UnclipOutput()
           DrawingMode(#PB_2DDrawing_Outlined)

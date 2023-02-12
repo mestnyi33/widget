@@ -16769,7 +16769,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Not *this\state\disable 
               
               ;\\ draw entered anchors 
-              If a_focused( ) And 
+              If a_transform( ) And
+                 a_focused( ) And 
                  *this\_a_\transform
                 a_draw( *this\_a_\id )
               EndIf

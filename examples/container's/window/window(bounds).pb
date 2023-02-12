@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Box(Eventwidget()\x[#__c_frame],
               Eventwidget()\y[#__c_frame],
               Eventwidget()\bounds\size\min\width,
-              Eventwidget()\bounds\size\min\height, $ffff0000)
+              Eventwidget()\bounds\size\min\height, $ff00ff00)
           
           Box(Eventwidget()\x[#__c_frame],
               Eventwidget()\y[#__c_frame],
