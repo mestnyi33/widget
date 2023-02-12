@@ -4067,7 +4067,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
       Else
-        ;\\ move boundaries
+        ;\\
+        If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
+          If *this\_a_\transform > 0
+            If x <> #PB_Ignore
+              x + ( x % a_transform( )\grid_size )
+              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+            EndIf
+            
+            If y <> #PB_Ignore
+              y + ( y % a_transform( )\grid_size )
+              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+            EndIf
+            
+            If width <> #PB_Ignore
+              width + ( width % a_transform( )\grid_size )
+              width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+            EndIf
+            
+            If height <> #PB_Ignore
+              height + ( height % a_transform( )\grid_size )
+              height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+            EndIf
+          EndIf
+        EndIf
+        
+      ;\\ move boundaries
         If *this\bounds\move
           If x <> #PB_Ignore
             If *this\bounds\move\min\x <> #PB_Ignore And
@@ -4245,30 +4270,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Debug "resize - " + *this\autosize + " " + *this\class + " " + x + " " + y + " " + width + " " + height
       EndIf
       
-      If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
-          If *this\_a_\transform > 0
-            If x <> #PB_Ignore
-              x + ( x % a_transform( )\grid_size )
-              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
-            EndIf
-            
-            If y <> #PB_Ignore
-              y + ( y % a_transform( )\grid_size )
-              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
-            EndIf
-            
-            If width <> #PB_Ignore
-              width + ( width % a_transform( )\grid_size )
-              width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-            EndIf
-            
-            If height <> #PB_Ignore
-              height + ( height % a_transform( )\grid_size )
-              height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-            EndIf
-          EndIf
-        EndIf
-        
         
       ; inner x&y position
       ix      = ( x + *this\fs + *this\fs[1] )
@@ -16857,22 +16858,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
           WidgetEvent( )\data = #Null
         EndIf
         
-;         ;\\
-;         If EnteredButton( ) And EnteredWidget( ) And
-;            EnteredWidget( )\bar And EnteredWidget( )\state\enter And
-;            ( EnteredWidget( )\bar\button[1] = EnteredButton( ) Or
-;              EnteredWidget( )\bar\button[2] = EnteredButton( ) Or
-;              EnteredWidget( )\bar\button = EnteredButton( ) )
-;           
-;           UnclipOutput( )
-;           ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
-;           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-;           If EnteredButton( )\state\disable
-;             draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ff0000ff )
-;           Else
-;             draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ffff0000 )
-;           EndIf
-;         EndIf
+        ;\\
+        If EnteredButton( ) And EnteredWidget( ) And
+           EnteredWidget( )\bar And EnteredWidget( )\state\enter And
+           ( EnteredWidget( )\bar\button[1] = EnteredButton( ) Or
+             EnteredWidget( )\bar\button[2] = EnteredButton( ) Or
+             EnteredWidget( )\bar\button = EnteredButton( ) )
+          
+          UnclipOutput( )
+          ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
+          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+          If EnteredButton( )\state\disable
+            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ff0000ff )
+          Else
+            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ffff0000 )
+          EndIf
+        EndIf
         
         
         ;\\ draw movable & sizable anchors
@@ -20631,5 +20632,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--2--v------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--7--4------------------------------------------------------------------------------------------------
 ; EnableXP
