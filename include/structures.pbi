@@ -263,7 +263,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
-    ;--     ANCHORS
+    ;--     TRANSFORM
     Structure _s_a_group Extends _s_coordinate
       *widget._s_WIDGET
     EndStructure
@@ -275,7 +275,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List *group._s_a_group( )
       
       *type
-      *grab ; grab image handle
+      *grab[2] ; grab image handle
       
       pos.l
       size.l

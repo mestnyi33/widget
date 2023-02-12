@@ -1024,7 +1024,7 @@ CompilerIf #PB_Compiler_IsMainFile
     id_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( id_design_panel )
     AddItem( id_design_panel, -1, "Form" )
     id_design_form = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) 
-   ;a_init( id_design_form, 0 )
+    a_init( id_design_form, 0 )
     
     AddItem( id_design_panel, -1, "Code" )
     ;id_design_code = Editor( 0,0,0,0 ) ; bug then move anchors window
