@@ -4092,7 +4092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-      ;\\ move boundaries
+        ;\\ move boundaries
         If *this\bounds\move
           If x <> #PB_Ignore
             If *this\bounds\move\min\x <> #PB_Ignore And
@@ -4148,6 +4148,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             If #PB_Ignore <> *this\bounds\size\max\width And
                width > *this\bounds\size\max\width 
+              If x <> #PB_Ignore 
+                x + ( width - *this\bounds\size\max\width )
+              EndIf
               width = *this\bounds\size\max\width
             EndIf
             
@@ -4174,6 +4177,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             If #PB_Ignore <> *this\bounds\size\max\height And
                height > *this\bounds\size\max\height 
+              If y <> #PB_Ignore  
+                y + ( height - *this\bounds\size\max\height )
+              EndIf
               height = *this\bounds\size\max\height
             EndIf
             
@@ -20632,5 +20638,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--7--4------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-X---+------------------------------------------------------------------------------------------------
 ; EnableXP
