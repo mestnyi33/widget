@@ -14749,6 +14749,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
         height = *this\bounds\move\max\y - *this\y[#__c_frame]
       EndIf
       
+      
+      ; TEMP
+      If *this\bounds\move\min\x = #PB_Ignore
+        *this\bounds\move\min\x = *this\_parent( )\x[#__c_inner]
+      EndIf
+      If *this\bounds\move\min\y = #PB_Ignore
+        *this\bounds\move\min\y = *this\_parent( )\y[#__c_inner]
+      EndIf
+      If *this\bounds\move\max\x = #PB_Ignore
+        *this\bounds\move\max\x = *this\_parent( )\width[#__c_inner]
+      EndIf
+      If *this\bounds\move\max\y = #PB_Ignore
+        *this\bounds\move\max\y = *this\_parent( )\height[#__c_inner]
+      EndIf
+      
+      If Not *this\bounds\size
+        If MinimumX <> #PB_Ignore And 
+           MaximumX <> #PB_Ignore
+          MaximumX - MinimumX
+        EndIf
+        If MinimumY <> #PB_Ignore And 
+           MaximumY <> #PB_Ignore
+          MaximumY - MinimumY
+        EndIf
+        If MaximumX <> #PB_Ignore Or 
+           MaximumY <> #PB_Ignore
+          SizeBounds( *this, #PB_Ignore, #PB_Ignore, MaximumX, MaximumY )
+        EndIf
+      EndIf
+      
       ProcedureReturn Resize( *this, x, y, width, height )
     EndProcedure
     
@@ -20638,5 +20668,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-X---+------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f0--8------------------------------------------------------------------------------------------------
 ; EnableXP

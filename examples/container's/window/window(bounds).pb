@@ -37,10 +37,20 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If Eventwidget()\bounds\size
-          Box(Eventwidget()\bounds\size\min\width,
-              Eventwidget()\bounds\size\min\height,
-              Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
-              Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
+;           Box(Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\min\height,
+;               Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\min\height, $ffff0000)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\max\width,
+              Eventwidget()\bounds\size\max\height, $ffff0000)
         EndIf
         
         ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)

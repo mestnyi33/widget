@@ -4,7 +4,37 @@ Uselib(widget)
 Global alpha = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
-Procedure _a_object( x.l,y.l,width.l,height.l, text.s, frameSize, Color.l  )
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+      Case #PB_EventType_Draw
+        
+        If Eventwidget()\state\press
+          ; Demo draw on element
+          UnclipOutput()
+          DrawingMode(#PB_2DDrawing_Outlined)
+          
+          If Eventwidget()\bounds\move
+            Box(Eventwidget()\bounds\move\min\x,
+                Eventwidget()\bounds\move\min\y,
+                Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
+                Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
+          EndIf
+          
+          If Eventwidget()\bounds\size
+            Box(Eventwidget()\x[#__c_frame],
+                Eventwidget()\y[#__c_frame],
+                Bool(Eventwidget()\bounds\size\max\width>0)*Eventwidget()\bounds\size\max\width,
+                Bool(Eventwidget()\bounds\size\max\height>0)*Eventwidget()\bounds\size\max\height, $ffff0000)
+          EndIf
+          
+          ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
+        EndIf
+        
+    EndSelect
+    
+  EndProcedure
+  
+  Procedure _a_object( x.l,y.l,width.l,height.l, text.s, frameSize, Color.l  )
   If Not Alpha(Color)
     Color = Color&$FFFFFF | 255<<24
   EndIf
@@ -17,6 +47,8 @@ Procedure _a_object( x.l,y.l,width.l,height.l, text.s, frameSize, Color.l  )
   SetColor(widget(), #__color_front, Color&$FFFFFF | 255<<24)
   widget()\round = 20
   SetFrame(widget(), frameSize);, -1), -2) ; bug
+  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  
   ProcedureReturn widget( )
 EndProcedure
 
@@ -43,5 +75,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 782, 452, "Example 3: Object boundaries to pos
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +
+; Folding = -8
 ; EnableXP
