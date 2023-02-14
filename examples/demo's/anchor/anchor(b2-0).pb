@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5

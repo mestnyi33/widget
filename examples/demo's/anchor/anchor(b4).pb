@@ -15,7 +15,7 @@ EndEnumeration
 
 Procedure menu_events()
   ;Case #PB_Event_Menu
-  Protected CurrentObject = a_enter_widget( )
+  Protected CurrentObject = a_entered( )
   
   If CurrentObject
     Select EventMenu()

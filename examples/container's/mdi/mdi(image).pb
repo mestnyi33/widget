@@ -1,5 +1,4 @@
-﻿; XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
+﻿ XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -134,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  Procedure Canvas_AddImage( *mdi, x, y, img, round=0 )
+  Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
     Protected *this._s_widget
     
     *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
@@ -237,31 +236,31 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define b=19;20        
   *mdi\scroll\v\round = 11
-  *mdi\scroll\v\bar\button[#__b_1]\round = *mdi\scroll\v\round
-  *mdi\scroll\v\bar\button[#__b_2]\round = *mdi\scroll\v\round
-  *mdi\scroll\v\bar\button[#__b_3]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
   SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
   
   *mdi\scroll\h\round = 11
-  *mdi\scroll\h\bar\button[#__b_1]\round = *mdi\scroll\h\round
-  *mdi\scroll\h\bar\button[#__b_2]\round = *mdi\scroll\h\round
-  *mdi\scroll\h\bar\button[#__b_3]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
   SetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
   
   ;Debug *mdi\Scroll\v\round
   vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
   hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
   
-  Canvas_AddImage( *mdi, -80, -20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
-  Canvas_AddImage( *mdi, 100, 120, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
-  Canvas_AddImage( *mdi, 210, 250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  MDI_AddImage( *mdi, -80, -20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
+  MDI_AddImage( *mdi, 100, 120, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
+  MDI_AddImage( *mdi, 210, 250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
   
-  Canvas_AddImage( *mdi,-70,240,hole, round )
-  Canvas_AddImage( *mdi,90,30,hole2, 100 )
+  MDI_AddImage( *mdi,-70,240,hole, round )
+  MDI_AddImage( *mdi,90,30,hole2, 100 )
   
   BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +---
+; Folding = ----
 ; EnableXP

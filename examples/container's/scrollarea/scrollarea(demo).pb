@@ -28,13 +28,13 @@ CompilerIf #PB_Compiler_IsMainFile
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
-    Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
-    Button(90,  90, 230, 30,"Button 3")
+    Button(10,  10, 230, 30, "Button 1")
+    Button(50,  50, 230, 30, "Button 2") ;: SetAlignment(widget(), #__align_right)
+    Button(90,  90, 230, 30, "Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
-    *b = Button(Sw-130, Sh-30, 130, 30,"Button")
+    *b = Button(Sw-130, Sh-30, 130, 30, "Button")
     CloseList()
     
     ;
@@ -121,6 +121,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

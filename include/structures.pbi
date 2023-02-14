@@ -1,5 +1,19 @@
 ﻿XIncludeFile "constants.pbi"
 
+; StructureUnion
+;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255] 
+;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
+;   c.c[0]    ; CAHR    : 2 Byte unsigned [0..65535]
+;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
+;   u.u[0]    ; UNICODE : 2 Byte unsigned [0..65535]
+;   l.l[0]    ; LONG    : 4 Byte signed   [-2147483648..2147483647]
+;   f.f[0]    ; FLOAT   : 4 Byte
+;   q.q[0]    ; QUAD    : 8 Byte signed   [-9223372036854775808..9223372036854775807]
+;   d.d[0]    ; DOUBLE  : 8 Byte float    
+;   i.i[0]    ; INTEGER : 4 or 8 Byte INT, depending on System
+;   *p.TUPtr[0] ; Pointer for TUPtr (it's possible and it's done in PB-IDE Source) This can be used as a PointerPointer like the C **Pointer
+; EndStructureUnion
+
 ;-
 CompilerIf Not Defined(Structures, #PB_Module)
   DeclareModule Structures

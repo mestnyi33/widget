@@ -1,6 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
-; надо исправить scroll\v draw width
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -17,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi._s_widget = MDI(x,y, width,height)
-  ;;a_init( *mdi )
+  ;a_init( *mdi )
   
   Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
@@ -29,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
   Define *g3._s_widget = AddItem(*mdi, -1, "SubChild") : SetClass(widget(), "SubChild") 
-  Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
+  Button(10,10,80,80,"button_3") : SetClass(widget(), GetText(widget())) 
   
   ;
   Resize(*g0, 50, 50, 400, 400)

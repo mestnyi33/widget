@@ -45,7 +45,7 @@ Open(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Windo
 
 UsePNGImageDecoder()
 
-; Define the default properties of objects:
+; Определите свойства объектов по умолчанию:
 ;AddObjectHandle(#Object_Default, #Handle_Position | #Handle_Size)
 a_init(root(), 0)
 SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
@@ -53,21 +53,20 @@ SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 
 
 ; --- Attachment ---
-; You can attach an object on another object directly during creation or later with AttachObject
+; Вы можете прикрепить объект к другому объекту непосредственно во время создания или позже с помощью AttachObject.
 
 *Object1 = a_object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
 *Object2 = a_object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
-;*Object2 = a_object(50, 170, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
-SetAttachment( *Object2, *Object1, 0 ) ; Attach object2 directly to object1, the position is then relative to object1
+SetAttachment( *Object2, *Object1, 0 ) ; Прикрепите Object2 непосредственно к Object1, тогда позиция будет относительно Object1
 
 *Object3 = a_object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
-SetAttachment( *Object3, *Object1, 1 ) ; Attach object3 to object1 but just the x-position
+SetAttachment( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, но только к x-позиции
 
 
 ; --- Panel container ---
-; If you attach an object to another and set its boundaries, it acts like a panel gadget.
-; Here you can also swap between the different frames with the small handles on top left and top right.
+; Если вы присоединяете объект к другому и устанавливаете его границы, он действует как гаджет панели.
+; Здесь вы также можете переключаться между различными кадрами с помощью маленьких ручек вверху слева и вверху справа.
 
 *Object4 = Panel(450, 50, 300, 300);, ""
 SetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
@@ -75,42 +74,28 @@ SetColor(widget(), #__color_Frame, RGB(64, 128, 192))
 ;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
 SetFrame(widget(), 2)
 ;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
-;AddObjectHandle(#Object4, #Handle_Custom1, CatchImage(#PB_Any, ?resultset_previous), #Alignment_Top | #Alignment_Left, 32, 16) ; This is the handle to swap the frame
-;AddObjectHandle(#Object4, #Handle_Custom2, CatchImage(#PB_Any, ?resultset_next), #Alignment_Top | #Alignment_Right, -32, 16)   ; This is the handle to swap the frame
 
-;SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(0, 64, 128))
-
-; AddObjectFrame(#Object4, 0, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ; Add some frames and set the view box for their child objects
-; AddObjectFrame(#Object4, 1, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ;   as well as the inner area size to bound the childs.
-; AddObjectFrame(#Object4, 2, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32)
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
+MoveBounds(*Object5)
 AddItem( *Object4, 1, "panel-item-1" )
 *Object6 = a_object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
+MoveBounds(*Object6)
 AddItem( *Object4, 2, "panel-item-2" )
 *Object7 = a_object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
+MoveBounds(*Object7)
 CloseList( )
 SetState(*Object4, 2)
 
-; --- Scroll area ---
-; If you attach an object to another and set its clipping frame, it acts like a scroll area gadget.
-; Here you can also change the visible area with the handles (arrows) on the right and bottom.
 
-*Object8 = ScrollArea( 850, 50, 300, 300,500, 500,1);, "", RGBa(128, 192, 64))
+; --- Scroll area ---
+; Если вы присоединяете объект к другому объекту и устанавливаете его рамку обрезки, он действует как гаджет области прокрутки.
+; Здесь вы также можете изменить видимую область с помощью ручек (стрелок) справа и снизу.
+
+*Object8 = ScrollArea( 850, 50, 300, 300,500, 500,1)
 SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
 SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
-SetFrame(widget(), 2)
-SetColor(widget()\scroll\v, #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget()\scroll\h, #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget()\scroll\v, #__color_Frame, RGB(128, 192, 64))
-SetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
-
-; AddObjectHandle(#Object8, #Handle_Custom1, CatchImage(#PB_Any, ?arrow_up), #Alignment_Top | #Alignment_Right, -12, 16) ; This is the handle the change the visible area
-; AddObjectHandle(#Object8, #Handle_Custom2, CatchImage(#PB_Any, ?arrow_down), #Alignment_Bottom | #Alignment_Right, -12, -40) ; This is the handle the change the visible area
-; AddObjectHandle(#Object8, #Handle_Custom3, CatchImage(#PB_Any, ?arrow_left), #Alignment_Bottom | #Alignment_Left, 16, -12) ; This is the handle the change the visible area
-; AddObjectHandle(#Object8, #Handle_Custom4, CatchImage(#PB_Any, ?arrow_right), #Alignment_Bottom | #Alignment_Right, -40, -12) ; This is the handle the change the visible area
-
-; SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(64, 128, 0))
+; SetFrame(widget(), 2)
 
 ; Attach some objects to #Object8
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
@@ -122,12 +107,12 @@ a_object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 CloseList( )
 
 
-; Containers here works a bit like the PureBasic PanelGadgets in a way
-; but the objects may or may not be constrained in position within it.
-; Each object can have frames (containers for other objects). These frames are numbered from 1 to n.
-; If you attach an object (children) to another object (parent), you can specify to which frame it should be attached,
-; otherwise it will be automatically added to the current visible frame.
-; You can later change the displayed frame with the ShowObjectFrame() command.
+; Контейнеры здесь немного похожи на PureBasic PanelGadgets.
+; но объекты могут быть или не быть ограничены в положении внутри него.
+; Каждый объект может иметь фреймы (контейнеры для других объектов). Эти кадры пронумерованы от 1 до n.
+; Если вы присоединяете объект (дочерний) к другому объекту (родительскому), вы можете указать, к какому фрейму он должен быть присоединен,
+; в противном случае он будет автоматически добавлен в текущий видимый кадр.
+; Позже вы можете изменить отображаемый кадр с помощью команды ShowObjectFrame().
 
 WaitClose( )
 
@@ -304,5 +289,5 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = +
 ; EnableXP

@@ -3771,7 +3771,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          If *this\child And Not *this\attach     ;   And Not *this\container
+          If *this\child And Not *this\attach
             If *this\type = #__type_TabBar Or
                *this\type = #__type_ToolBar Or
                *this\type = #__type_ScrollBar
@@ -3958,48 +3958,59 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If *this\type = #__type_window
-          Protected h_frame =  *this\fs * 2 + *this\fs[1] + *this\fs[3]
+          Protected xx = x, yy = y
+          
+          If *this\_parent( )
+            If xx <> #PB_Ignore
+              xx + *this\_parent( )\x[#__c_inner]
+            EndIf
+            If yy <> #PB_Ignore
+              yy + *this\_parent( )\y[#__c_inner]
+            EndIf
+          EndIf
+          
+          If *this\type = #__type_window
+        Protected h_frame =  *this\fs * 2 + *this\fs[1] + *this\fs[3]
           Protected v_frame =  *this\fs * 2 + *this\fs[2] + *this\fs[4]
           
           ;\\ move boundaries
           If *this\bounds\move
             If x <> #PB_Ignore
               If *this\bounds\move\min\x <> #PB_Ignore And
-                 x < *this\bounds\move\min\x
+                 xx < *this\bounds\move\min\x
                 If width <> #PB_Ignore
-                  width - ( *this\bounds\move\min\x - x ) + h_frame
+                  width - ( *this\bounds\move\min\x - xx ) + h_frame
                 EndIf
-                x = *this\bounds\move\min\x
+                xx = *this\bounds\move\min\x
               EndIf
               If *this\bounds\move\max\x <> #PB_Ignore
                 If width <> #PB_Ignore
-                  If x > *this\bounds\move\max\x - width - h_frame
-                    x = *this\bounds\move\max\x - width - h_frame
+                  If xx > *this\bounds\move\max\x - width - h_frame
+                    xx = *this\bounds\move\max\x - width - h_frame
                   EndIf
                 Else
-                  If x > *this\bounds\move\max\x - *this\width[#__c_frame] - h_frame
-                    x = *this\bounds\move\max\x - *this\width[#__c_frame] - h_frame
+                  If xx > *this\bounds\move\max\x - *this\width[#__c_frame] - h_frame
+                    xx = *this\bounds\move\max\x - *this\width[#__c_frame] - h_frame
                   EndIf
                 EndIf
               EndIf
             EndIf
-            If y <> #PB_Ignore
+            If yy <> #PB_Ignore
               If *this\bounds\move\min\y <> #PB_Ignore And
-                 y < *this\bounds\move\min\y
+                 yy < *this\bounds\move\min\y
                 If height <> #PB_Ignore
-                  height - ( *this\bounds\move\min\y - y ) + v_frame
+                  height - ( *this\bounds\move\min\y - yy ) + v_frame
                 EndIf
-                y = *this\bounds\move\min\y
+                yy = *this\bounds\move\min\y
               EndIf
               If *this\bounds\move\max\y <> #PB_Ignore
                 If height <> #PB_Ignore
-                  If y > *this\bounds\move\max\y - height - v_frame
-                   y = *this\bounds\move\max\y - height - v_frame
+                  If yy > *this\bounds\move\max\y - height - v_frame
+                   yy = *this\bounds\move\max\y - height - v_frame
                   EndIf
                 Else
-                  If y > *this\bounds\move\max\y - *this\height[#__c_frame] - v_frame
-                    y = *this\bounds\move\max\y - *this\height[#__c_frame] - v_frame
+                  If yy > *this\bounds\move\max\y - *this\height[#__c_frame] - v_frame
+                    yy = *this\bounds\move\max\y - *this\height[#__c_frame] - v_frame
                   EndIf
                 EndIf
               EndIf
@@ -4011,28 +4022,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If width <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\width And
                  width < *this\bounds\size\min\width - h_frame
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\min\width ) + h_frame
+                If xx <> #PB_Ignore
+                  xx + ( width - *this\bounds\size\min\width ) + h_frame
                 EndIf
                 width = *this\bounds\size\min\width - h_frame
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\width And
                  width > *this\bounds\size\max\width - h_frame
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\max\width ) + h_frame
+                If xx <> #PB_Ignore
+                  xx + ( width - *this\bounds\size\max\width ) + h_frame
                 EndIf
                 width = *this\bounds\size\max\width - h_frame
               EndIf
               
               ;\\
               If *this\bounds\move
-                If x <> #PB_Ignore
-                  If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
-                    width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
+                If xx <> #PB_Ignore
+                  If width > *this\bounds\size\max\width - ( xx - *this\bounds\move\min\x ) - h_frame
+                    width = *this\bounds\size\max\width - ( xx - *this\bounds\move\min\x ) - h_frame
                   EndIf
                 Else
-                  If width > *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
-                    width = *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
+                  If width > *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x ) - h_frame
+                    width = *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x ) - h_frame
                   EndIf
                 EndIf
               EndIf
@@ -4040,28 +4051,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If height <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\height And
                  height < *this\bounds\size\min\height - v_frame
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\min\height ) + v_frame
+                If yy <> #PB_Ignore
+                  yy + ( height - *this\bounds\size\min\height ) + v_frame
                 EndIf
                 height = *this\bounds\size\min\height - v_frame
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\height And
                  height > *this\bounds\size\max\height - v_frame
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\max\height ) + v_frame
+                If yy <> #PB_Ignore
+                  yy + ( height - *this\bounds\size\max\height ) + v_frame
                 EndIf
                 height = *this\bounds\size\max\height - v_frame
               EndIf
               
               ;\\
               If *this\bounds\move
-                If y <> #PB_Ignore
-                  If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
-                    height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
+                If yy <> #PB_Ignore
+                  If height > *this\bounds\size\max\height - ( yy - *this\bounds\move\min\y ) - v_frame
+                    height = *this\bounds\size\max\height - ( yy - *this\bounds\move\min\y ) - v_frame
                   EndIf
                 Else
-                  If height > *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
-                    height = *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
+                  If height > *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y ) - v_frame
+                    height = *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y ) - v_frame
                   EndIf
                 EndIf
               EndIf
@@ -4072,42 +4083,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Else
           ;\\ move boundaries
           If *this\bounds\move
-            If x <> #PB_Ignore
+            If xx <> #PB_Ignore
               If *this\bounds\move\min\x <> #PB_Ignore And
-                 x < *this\bounds\move\min\x
+                 xx < *this\bounds\move\min\x
                 If width <> #PB_Ignore
-                  width - ( *this\bounds\move\min\x - x )
+                  width - ( *this\bounds\move\min\x - xx )
                 EndIf
-                x = *this\bounds\move\min\x
+                xx = *this\bounds\move\min\x
               EndIf
               If *this\bounds\move\max\x <> #PB_Ignore
                 If width <> #PB_Ignore
-                  If x > *this\bounds\move\max\x - width
-                    x = *this\bounds\move\max\x - width
+                  If xx > *this\bounds\move\max\x - width
+                    xx = *this\bounds\move\max\x - width
                   EndIf
                 Else
-                  If x > *this\bounds\move\max\x - *this\width[#__c_frame]
-                    x = *this\bounds\move\max\x - *this\width[#__c_frame]
+                  If xx > *this\bounds\move\max\x - *this\width[#__c_frame]
+                    xx = *this\bounds\move\max\x - *this\width[#__c_frame]
                   EndIf
                 EndIf
               EndIf
             EndIf
-            If y <> #PB_Ignore
+            If yy <> #PB_Ignore
               If *this\bounds\move\min\y <> #PB_Ignore And
-                 y < *this\bounds\move\min\y
+                 yy < *this\bounds\move\min\y
                 If height <> #PB_Ignore
-                  height - ( *this\bounds\move\min\y - y )
+                  height - ( *this\bounds\move\min\y - yy )
                 EndIf
-                y = *this\bounds\move\min\y
+                yy = *this\bounds\move\min\y
               EndIf
               If *this\bounds\move\max\y <> #PB_Ignore
                 If height <> #PB_Ignore
-                  If y > *this\bounds\move\max\y - height
-                    y = *this\bounds\move\max\y - height
+                  If yy > *this\bounds\move\max\y - height
+                    yy = *this\bounds\move\max\y - height
                   EndIf
                 Else
-                  If y > *this\bounds\move\max\y - *this\height[#__c_frame]
-                    y = *this\bounds\move\max\y - *this\height[#__c_frame]
+                  If yy > *this\bounds\move\max\y - *this\height[#__c_frame]
+                    yy = *this\bounds\move\max\y - *this\height[#__c_frame]
                   EndIf
                 EndIf
               EndIf
@@ -4119,28 +4130,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If width <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\width And
                  width < *this\bounds\size\min\width
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\min\width )
+                If xx <> #PB_Ignore
+                  xx + ( width - *this\bounds\size\min\width )
                 EndIf
                 width = *this\bounds\size\min\width
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\width And
                  width > *this\bounds\size\max\width
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\max\width )
+                If xx <> #PB_Ignore
+                  xx + ( width - *this\bounds\size\max\width )
                 EndIf
                 width = *this\bounds\size\max\width
               EndIf
               
               ;\\
               If *this\bounds\move
-                If x <> #PB_Ignore
-                  If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
-                    width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
+                If xx <> #PB_Ignore
+                  If width > *this\bounds\size\max\width - ( xx - *this\bounds\move\min\x )
+                    width = *this\bounds\size\max\width - ( xx - *this\bounds\move\min\x )
                   EndIf
                 Else
-                  If width > *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x )
-                    width = *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x )
+                  If width > *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x )
+                    width = *this\bounds\size\max\width - ( *this\x[#__c_frame] - *this\bounds\move\min\x )
                   EndIf
                 EndIf
               EndIf
@@ -4148,35 +4159,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If height <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\height And
                  height < *this\bounds\size\min\height
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\min\height )
+                If yy <> #PB_Ignore
+                  yy + ( height - *this\bounds\size\min\height )
                 EndIf
                 height = *this\bounds\size\min\height
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\height And
                  height > *this\bounds\size\max\height
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\max\height )
+                If yy <> #PB_Ignore
+                  yy + ( height - *this\bounds\size\max\height )
                 EndIf
                 height = *this\bounds\size\max\height
               EndIf
               
               ;\\
               If *this\bounds\move
-                If y <> #PB_Ignore
-                  If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
-                    height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
+                If yy <> #PB_Ignore
+                  If height > *this\bounds\size\max\height - ( yy - *this\bounds\move\min\y )
+                    height = *this\bounds\size\max\height - ( yy - *this\bounds\move\min\y )
                   EndIf
                 Else
-                  If height > *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y )
-                    height = *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y )
+                  If height > *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y )
+                    height = *this\bounds\size\max\height - ( *this\y[#__c_frame] - *this\bounds\move\min\y )
                   EndIf
                 EndIf
               EndIf
             EndIf
           EndIf
         EndIf
-      
+        
+        x = xx
+        y = yy
+        If *this\_parent( )
+          If x <> #PB_Ignore
+            x - *this\_parent( )\x[#__c_inner]
+          EndIf
+          If y <> #PB_Ignore
+          y - *this\_parent( )\y[#__c_inner]
+        EndIf
+      EndIf
+        
         ;\\
         If x = #PB_Ignore
           x = *this\x[#__c_container]
@@ -14682,32 +14704,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\bounds\move.allocate(BOUNDMove)
       
-      *this\bounds\move\min\x = MinimumX
-      *this\bounds\move\max\x = MaximumX
-      
-      *this\bounds\move\min\y = MinimumY
-      *this\bounds\move\max\y = MaximumY
-      
-      If *this\bounds\move\min\x = #PB_Ignore
-        *this\bounds\move\min\x = *this\_parent( )\bs
+      If MinimumX = #PB_Ignore
+        *this\bounds\move\min\x = *this\_parent( )\x[#__c_inner]
+      Else
+        *this\bounds\move\min\x = *this\_parent( )\x[#__c_inner] + MinimumX
       EndIf
-      If *this\bounds\move\min\y = #PB_Ignore
-        *this\bounds\move\min\y = *this\_parent( )\bs
+      If MinimumY = #PB_Ignore
+        *this\bounds\move\min\y = *this\_parent( )\y[#__c_inner]
+      Else
+        *this\bounds\move\min\y = *this\_parent( )\y[#__c_inner] + MinimumY
       EndIf
-      If *this\bounds\move\max\x = #PB_Ignore
+      If MaximumX = #PB_Ignore
         *this\bounds\move\max\x = *this\_parent( )\width[#__c_inner]
+      Else
+        *this\bounds\move\max\x = *this\_parent( )\x[#__c_inner] + MaximumX
       EndIf
-      If *this\bounds\move\max\y = #PB_Ignore
+      If MaximumY = #PB_Ignore
         *this\bounds\move\max\y = *this\_parent( )\height[#__c_inner]
+      Else
+        *this\bounds\move\max\y = *this\_parent( )\y[#__c_inner] + MaximumY
       EndIf
       
-     
+      ;
+      If *this\bounds\move\min\x <> #PB_Ignore And
+         *this\bounds\move\min\x > *this\x[#__c_frame]
+        x = *this\bounds\move\min\x
+        If *this\width[#__c_frame] > *this\bounds\move\max\x - *this\bounds\move\min\x
+          width = *this\bounds\move\max\x - *this\bounds\move\min\x
+        EndIf
+      ElseIf *this\bounds\move\max\x <> #PB_Ignore And
+             *this\width[#__c_frame] > ( *this\bounds\move\max\x - *this\x[#__c_frame] )
+        width = *this\bounds\move\max\x - *this\x[#__c_frame]
+      EndIf
+      If *this\bounds\move\min\y <> #PB_Ignore And
+         *this\bounds\move\min\y > *this\y[#__c_frame]
+        y = *this\bounds\move\min\y
+        If *this\height[#__c_frame] > *this\bounds\move\max\y - *this\bounds\move\min\y
+          height = *this\bounds\move\max\y - *this\bounds\move\min\y
+        EndIf
+      ElseIf *this\bounds\move\max\y <> #PB_Ignore And
+             *this\height[#__c_frame] > ( *this\bounds\move\max\y - *this\y[#__c_frame] )
+        height = *this\bounds\move\max\y - *this\y[#__c_frame]
+      EndIf
+      
       
       If Not *this\bounds\size
-        MinimumX = *this\bounds\move\min\x
-        MinimumY = *this\bounds\move\min\y
-        MaximumX = *this\bounds\move\max\x
-        MaximumY = *this\bounds\move\max\y
         If MinimumX <> #PB_Ignore And
            MaximumX <> #PB_Ignore
           MaximumX - MinimumX
@@ -14716,34 +14757,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
            MaximumY <> #PB_Ignore
           MaximumY - MinimumY
         EndIf
-        
-        ProcedureReturn SizeBounds( *this, #PB_Ignore, #PB_Ignore, MaximumX, MaximumY )
-      Else
-        ;\\
-        If *this\bounds\move\min\x <> #PB_Ignore And
-           *this\bounds\move\min\x > *this\x[#__c_frame]
-          x = *this\bounds\move\min\x
-          If *this\width[#__c_frame] > *this\bounds\move\max\x - *this\bounds\move\min\x
-            width = *this\bounds\move\max\x - *this\bounds\move\min\x
-          EndIf
-        ElseIf *this\bounds\move\max\x <> #PB_Ignore And
-               *this\width[#__c_frame] > ( *this\bounds\move\max\x - *this\x[#__c_frame] )
-          width = *this\bounds\move\max\x - *this\x[#__c_frame]
+        If MaximumX <> #PB_Ignore Or
+           MaximumY <> #PB_Ignore
+          SizeBounds( *this, #PB_Ignore, #PB_Ignore, MaximumX, MaximumY )
         EndIf
-        If *this\bounds\move\min\y <> #PB_Ignore And
-           *this\bounds\move\min\y > *this\y[#__c_frame]
-          y = *this\bounds\move\min\y
-          If *this\height[#__c_frame] > *this\bounds\move\max\y - *this\bounds\move\min\y
-            height = *this\bounds\move\max\y - *this\bounds\move\min\y
-          EndIf
-        ElseIf *this\bounds\move\max\y <> #PB_Ignore And
-               *this\height[#__c_frame] > ( *this\bounds\move\max\y - *this\y[#__c_frame] )
-          height = *this\bounds\move\max\y - *this\y[#__c_frame]
-        EndIf
-        
-        ProcedureReturn Resize( *this, x, y, width, height )
       EndIf
       
+      ProcedureReturn Resize( *this, x, y, width, height )
     EndProcedure
     
     Procedure SizeBounds( *this._S_widget, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
@@ -14753,41 +14773,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       *this\bounds\size.allocate(BOUNDSize)
       
-      If MinimumWidth <> #PB_Ignore
-        *this\bounds\size\min\width = MinimumWidth
-      Else
-        *this\bounds\size\min\width = *this\fs * 2 + *this\fs[1] + *this\fs[3]
-      EndIf
-      If MinimumHeight <> #PB_Ignore
-        *this\bounds\size\min\height = MinimumHeight
-      Else
-        *this\bounds\size\min\height = *this\fs * 2 + *this\fs[2] + *this\fs[4]
-      EndIf
+      *this\bounds\size\min\width = MinimumWidth
+      *this\bounds\size\max\width = MaximumWidth
       
-      If MaximumWidth <> #PB_Ignore
-        *this\bounds\size\max\width = MaximumWidth
-      Else
-        *this\bounds\size\max\width = *this\_parent( )\width[#__c_inner]
-      EndIf
-      If MaximumHeight <> #PB_Ignore
-        *this\bounds\size\max\height = MaximumHeight
-       Else
-        *this\bounds\size\max\height = *this\_parent( )\height[#__c_inner]
-      EndIf
+      *this\bounds\size\min\height = MinimumHeight
+      *this\bounds\size\max\height = MaximumHeight
       
-      If *this\width[#__c_frame] < *this\bounds\size\min\width
+      ;
+      If *this\bounds\size\min\width <> #PB_Ignore And
+         *this\bounds\size\min\width > *this\width[#__c_frame]
         width = *this\bounds\size\min\width
-      ElseIf *this\height[#__c_frame] < *this\bounds\size\min\height
-        height = *this\bounds\size\min\height
-      EndIf
-      If *this\width[#__c_frame] > *this\bounds\size\max\width
+      ElseIf *this\bounds\size\max\width <> #PB_Ignore And
+             *this\bounds\size\max\width < *this\width[#__c_frame]
         width = *this\bounds\size\max\width
-      ElseIf *this\height[#__c_frame] > *this\bounds\size\max\height
+      EndIf
+      If *this\bounds\size\min\height <> #PB_Ignore And
+         *this\bounds\size\min\height > *this\height[#__c_frame]
+        height = *this\bounds\size\min\height
+      ElseIf *this\bounds\size\max\height <> #PB_Ignore And
+             *this\bounds\size\max\height < *this\height[#__c_frame]
         height = *this\bounds\size\max\height
       EndIf
       
       ProcedureReturn Resize( *this, x, y, width, height )
     EndProcedure
+    
     
     ;-
     Procedure.i GetItemData( *this._S_widget, item.l )
@@ -16770,11 +16780,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $AAE4E4E4 )
         EndIf
         
-;         If *this\child And *this\container
-;           drawing_mode_alpha_( #PB_2DDrawing_Default )
-;           draw_box_( *this\x[#__c_draw], *this\y[#__c_draw], *this\width[#__c_draw], *this\height[#__c_draw], $ff000000 )
-;         EndIf
-        
         ;\\
         If Not *this\hide
           ; reset values
@@ -16903,6 +16908,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ draw movable & sizable anchors
         If a_transform( )
+          Clip( a_transform( )\main, [#__c_draw2] )
           
           If a_focused( ) And a_focused( )\_a_\transform And Not a_focused( )\hide And
              a_focused( )\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
@@ -16910,14 +16916,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If a_focused( ) And a_focused( )\state\press
               If a_index( ) = #__a_moved
                 
-                Clip( a_transform( )\main, [#__c_draw2] )
                 DrawWidget( a_focused( ) )
                 PushListPosition( *this\_widgets( ))
                 ForEach *this\_widgets( )
                   If IsChild( *this\_widgets( ), a_focused( ) )
                     
                     If Not *this\_widgets( )\hide ; begin draw all widgets
-                      Draw( *this\_widgets( ))
+                                                  ; Draw( *this\_widgets( ))
+                      DrawWidget( *this\_widgets( ) )
                     EndIf
                   EndIf
                 Next
@@ -16932,7 +16938,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; draw key-focused-widget anchors
-            Clip( a_transform( )\main, [#__c_draw2] )
             a_draw( a_anchors( ) )
           EndIf
           
@@ -20258,445 +20263,68 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
+; XIncludeFile "../../../widgets.pbi"
 
-CompilerIf #PB_Compiler_IsMainFile ;=99
-  
+;-
+; Bounds window example
+CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLIB(widget)
+  Uselib(widget)
   
-  Enumeration
-    #window_0
-    #window
-  EndEnumeration
+  Define object
+  Declare CustomEvents( )
   
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 4)
   
-  ; Shows using of several panels...
-  Procedure BindEvents( )
-    Protected *this._S_widget = EventWidget( )
-    Protected eventtype = WidgetEventType( )
-    
-    Select eventtype
-        ;       Case #__event_Draw          : Debug "draw"
-      Case #__event_MouseWheelX : Debug " - " + *this + " - wheel-x"
-      Case #__event_MouseWheelY : Debug " - " + *this + " - wheel-y"
-      Case #__event_Input : Debug " - " + *this + " - input"
-      Case #__event_KeyDown : Debug " - " + *this + " - key-down"
-      Case #__event_KeyUp : Debug " - " + *this + " - key-up"
-      Case #__event_Focus : Debug " - " + *this + " - focus"
-      Case #__event_LostFocus : Debug " - " + *this + " - lfocus"
-      Case #__event_MouseEnter : Debug " - " + *this + " - enter"
-      Case #__event_MouseLeave : Debug " - " + *this + " - leave"
-      Case #__event_LeftButtonDown : Debug " - " + *this + " - down"
-      Case #__event_DragStart : Debug " - " + *this + " - drag"
-      Case #__event_Drop : Debug " - " + *this + " - drop"
-      Case #__event_LeftButtonUp : Debug " - " + *this + " - up"
-      Case #__event_LeftClick : Debug " - " + *this + " - click"
-      Case #__event_LeftDoubleClick : Debug " - " + *this + " - 2_click"
-    EndSelect
-  EndProcedure
+  Container(50, 0, 400, 400)
+  ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  object = Container(150, 150, 300, 300) : CloseList()
   
+  SizeBounds(object, 200, 200, 401, 401)
+  MoveBounds(object, 0, 0, 401, 401)
   
-  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-  
-  Define i
-  Define *w._S_widget, *g._S_widget, editable
-  Define *root._S_widget = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
-  
-  ;BindWidgetEvent( *root, @BindEvents( ) )
-  Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-  view = Container(10, 10, 406, 238, #PB_Container_Flat)
-  SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-  ;a_enable( widget( ), 15 )
-  a_init( view, 15 )
-  
-  ;Define *a1._s_widget = image( 5+170,5+140,60,60, -1 )
-  Define *a1._s_widget = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
-  ;Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-  Define *a2._s_widget = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-  Define *a3._s_widget = image( 150, 110, 60, 60, -1 )
-  
-  ; a_init( *a, 15 )
-  a_set( *a1, #__a_size )
-  
-  CloseList( )
-  size_value  = Track(56, 262, 240, 26, 0, 30)
-  pos_value   = Track(56, 292, 240, 26, 0, 30)
-  grid_value  = Track(56, 320, 240, 26, 0, 30)
-  back_color  = Button(304, 264, 112, 32, "BackColor")
-  frame_color = Button(304, 304, 112, 32, "FrameColor")
-  size_text   = Text(8, 256, 40, 24, "0")
-  pos_text    = Text(8, 288, 40, 24, "0")
-  grid_text   = Text(8, 320, 40, 24, "0")
-  
-  SetState( size_value, 7 )
-  SetState( pos_value, 3 )
-  SetState( grid_value, 6 )
-  
-  ;\\Close( )
-  
-  ;;Bind( *root, @WidgetEventHandler( ) )
-  
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  
-  
-  ;\\ Open Root0
-  Define *root0._S_widget = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  Global *button_panel = Panel(10, 10, 200 + 60, 200)
-  Define Text.s, m.s   = #LF$, a
-  AddItem(*button_panel, -1, "1")
-  *g = Editor(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-  ;*g                 = Editor(10, 10, 200 + 60, 200, #__flag_gridlines);, #__flag_autosize)
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "I have to write the text in the box or not." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work."
-  
-  SetText(*g, Text.s)
-  For a = 0 To 2
-    AddItem(*g, a, Str(a) + " Line " + Str(a))
-  Next
-  AddItem(*g, 7 + a, "_")
-  For a = 4 To 6
-    AddItem(*g, a, Str(a) + " Line " + Str(a))
-  Next
-  
-  ;\\
-  AddItem(*button_panel, -1, "2")
-  *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-  a  = - 1
-  AddItem(*g, a, "This is a long line.")
-  AddItem(*g, a, "Who should show.")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "I have to write the text in the box or not.")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "")
-  AddItem(*g, a, "The string must be very long.")
-  AddItem(*g, a, "Otherwise it will not work.")
-  For a = 0 To 2
-    AddItem(*g, a, Str(a) + " Line " + Str(a))
-  Next
-  AddItem(*g, 7 + a, "_")
-  For a = 4 To 6
-    AddItem(*g, a, Str(a) + " Line " + Str(a))
-  Next
-  ;\\
-  AddItem(*button_panel, -1, "3")
-  *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
-  For a = 1 To 2
-    AddColumn(*g, a, "Column_" + Str(a + 1), 90)
-  Next
-  For a = 0 To 15
-    AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
-  Next
-  
-  SetState(*button_panel, 2)
-  CloseList( ) ; close panel lists
-  
-  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__string_password | #__string_right)
-  
-  ;\\
-  Procedure button_panel_events( )
-    Select GetText( EventWidget( ) )
-      Case "1"
-        SetState(*button_panel, 0)
-      Case "2"
-        SetState(*button_panel, 1)
-    EndSelect
-  EndProcedure
-  Bind(Button( 220, 220, 25, 50, "1"), @button_panel_events( ), #PB_EventType_LeftClick )
-  Bind(Button( 220 + 25, 220, 25, 50, "2"), @button_panel_events( ), #PB_EventType_LeftClick )
-  ;\\Close( )
-  
-  ;\\
-  Define *root1._S_widget = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-  ;BindWidgetEvent( *root1, @BindEvents( ) )
-  
-  ;\\Close( )
-  
-  Define *root2._S_widget = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-  
-  HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-  String( 60, 20, 60, 40, "String" )
-  *w = ComboBox( 108, 30, 152, 40, #PB_ComboBox_Editable )
-  For i = 1 To 100;0000
-    AddItem(*w, i, "text-" + Str(i))
-  Next
-  SetState( *w, 3 )
-  ;\\Close( )
-  
-  
-  Define *root3._S_widget = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-  ;BindWidgetEvent( *root3, @BindEvents( ) )
-  ;\\Close( )
-  
-  Define *root4._S_widget = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-  ;BindWidgetEvent( *root4, @BindEvents( ) )
-  ;\\Close( )
-  
-  
-  
-  Define count = 2;0000
-  #st          = 1
-  Global mx    = #st, my = #st
-  
-  Define time = ElapsedMilliseconds( )
-  
-  Global *c, *panel._S_widget
-  Procedure do_Events( )
-    Select WidgetEventType( )
-      Case #__event_LeftClick
-        
-        Select GetText( EventWidget( ) )
-          Case "hide_2"
-            hide(*c, 1)
-            ; Disable(*c, 1)
-            
-          Case "show_2"
-            hide(*c, 0)
-            
-        EndSelect
-        
-        ;         ;Case #__event_LeftButtonUp
-        ;         ClearDebugOutput( )
-        ;
-        ;         If StartEnumerate(*panel);Root( ))
-        ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
-        ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-        ;           EndIf
-        ;           StopEnumerate( )
-        ;         EndIf
-        
-    EndSelect
-  EndProcedure
-  
-  OpenList( *root1 )
-  *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
-  AddItem( *panel, -1, "item_1" )
-  ;Button( 20,20, 80,80, "item_1")
-  *g = Editor(0, 0, 0, 0, #__flag_autosize)
-  For a = 0 To 2
-    AddItem(*g, a, "Line " + Str(a))
-  Next
-  AddItem(*g, 3 + a, "")
-  AddItem(*g, 4 + a, ~"define W_0 = Window( 282, \"Window_0\" )")
-  AddItem(*g, 5 + a, "")
-  For a = 6 To 8
-    AddItem(*g, a, "Line " + Str(a))
-  Next
-  
-  AddItem( *panel, -1, "item_2" )
-  ; Button( 10,10, 80,80, "item_2")
-  Bind(Button( 5, 5, 55, 22, "hide_2"), @do_Events( ))
-  Bind(Button( 5, 30, 55, 22, "show_2"), @do_Events( ))
-  
-  *c        = Container(110, 5, 150, 155, #PB_Container_Flat)
-  Define *p = Panel(10, 5, 150, 65)
-  AddItem(*p, -1, "item-1")
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Button(10, 5, 50, 25, "butt1")
-  CloseList( )
-  CloseList( )
-  AddItem(*p, -1, "item-2")
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Button(10, 5, 50, 25, "butt2")
-  CloseList( )
-  CloseList( )
-  CloseList( )
-  
-  Container(10, 75, 150, 55, #PB_Container_Flat)
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Container(10, 5, 150, 55, #PB_Container_Flat)
-  Button(10, 5, 50, 45, "butt1")
-  CloseList( )
-  CloseList( )
-  CloseList( )
-  CloseList( )
-  
-  AddItem( *panel, -1, "item_3" )
-  
-  SetText(Container(20, 20, 180, 180, editable), "4")
-  SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets | editable), "5")
-  SetText(Container(40, 20, 180, 180, editable), "6")
-  Define seven = Container(20, 20, 180, 180, editable)
-  SetText(seven, "      7")
-  
-  SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets | editable), "     8")
-  SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets | editable), "     9")
-  SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets | editable), "     10")
-  
-  CloseList( ) ; 7
-  CloseList( ) ; 6
-  SetText(Container(10, 45, 70, 180, editable), "11")
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "12")
-  SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets | editable), "13")
-  SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets | editable), "14")
-  
-  SetText(Container(10, 45, 70, 180, editable), "15")
-  SetText(Container(10, 5, 70, 180, editable), "16")
-  SetText(Container(10, 5, 70, 180, editable), "17")
-  SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "18")
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
-  CloseList( ) ; 1
-  
-  OpenList( seven )
-  ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-  ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-  ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1")
-  SetText(Container( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
-  CloseList( ) ; 7
-               ;OpenList( *panel )
-  
-  AddItem( *panel, -1, "item_4" )
-  Button( 30, 30, 80, 80, "item_4")
-  AddItem( *panel, -1, "item_5" )
-  Button( 40, 40, 80, 80, "item_5")
-  CloseList( ) ; *panel
-  CloseList( ) ; *root1
-               ; SetState( *panel, 2 )
-  
-  ;\\\
-  OpenList( *root2 )
-  SetText(*root2, "*root2" )
-  ;   ;Define *p3._S_widget = Container( 80,80, 150,150 )
-  ;   Define *p3._S_widget = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-  ;   SetText(*p3, "12" )
-  ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-  ;
-  ;   Define *p2._S_widget = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-  ;   SetText(Container( 5,5, 70,70 ), "5" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-  ;   CloseList( )
-  ;   Define *c1._S_widget = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-  ;   CloseList( )
-  ;
-  ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-  ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-  ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-  ;   CloseList( )
-  ;   CloseList( )
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-  ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-  ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-  ;   Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  
-  
-  Button_2 = ComboBox( 20, 20, 150, 40)
-  For i = 1 To 100;0000
-    AddItem(Button_2, i, "text-" + Str(i))
-  Next
-  SetState( Button_2, 3 )
-  
-  ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-  Button_3   = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-  Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-  Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
-  Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-  Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-  Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-  Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = widget::Splitter(10, 80, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-  SetState(Splitter_5, 50)
-  SetState(Splitter_4, 50)
-  SetState(Splitter_3, 40)
-  SetState(Splitter_1, 50)
-  
-  Spin(10, 210, 250, 25, 5, 30 )
-  Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
-  
-  ;\\
-  OpenList( *root3 )
-  Define *tree = Tree( 10, 20, 150, 200, #__tree_multiselect)
-  For i = 1 To 100;0000
-    AddItem(*tree, i, "text-" + Str(i))
-  Next
-  SetState(*tree, 5 - 1)
-  Container( 70, 180, 80, 80): CloseList( )
-  
-  ;\\
-  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless)
-  SetColor( *w, #__color_back, $FF07EAF6 )
-  For i = 1 To 10;00000
-    AddItem(*w, i, "text-" + Str(i))
-  Next
-  
-  ;\\
-  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes )
-  For i = 1 To 100;0000
-    If (i & 5)
-      AddItem(*w, i, "text-" + Str(i), -1, 1 )
-    Else
-      AddItem(*w, i, "text-" + Str(i))
-    EndIf
-  Next
-  
-  Debug "--------  time --------- " + Str(ElapsedMilliseconds( ) - time)
-  
-  
-  ;\\
-  Define *window._S_widget
-  Define i, y = 5
-  OpenList( *root4 )
-  For i = 1 To 4
-    Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
-    ;Container(5, y, 150, 95 + 2)
-    If i = 2
-      Disable( widget( ), 1)
-    EndIf
-    Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
-    If i = 3
-      CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
-      SetState( widget( ), 1 )
-    ElseIf i = 4
-      Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
-    Else
-      Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
-    EndIf
-    If i = 3
-      Disable( widget( ), 1)
-    EndIf
-    If i = 4 Or i = 3
-      Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
-      SetState( widget( ), 1 )
-    Else
-      Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
-    EndIf
-    If i = 3
-      Disable( widget( ), 1)
-    EndIf
-    CloseList( )
-    ;CloseList( )
-    y + 130
-  Next
-  
-  SetActive(*tree)
-  
-  ; redraw(root( ))
-  ;
+  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
   WaitClose( )
+  
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+      Case #PB_EventType_Draw
+        
+        ; Demo draw on element
+        UnclipOutput()
+        DrawingMode(#PB_2DDrawing_Outlined)
+        
+        If Eventwidget()\bounds\move
+          Box(Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\min\y,
+              Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
+        EndIf
+        
+        If Eventwidget()\bounds\size
+;           Box(Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\min\height,
+;               Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\min\height, $ff00ff00)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\max\width,
+              Eventwidget()\bounds\size\max\height, $ffff0000)
+        EndIf
+        
+        ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
+        
+    EndSelect
+    
+  EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------f2-----ff----------x-----4v--0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X---------------------------------------------------------4r----------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

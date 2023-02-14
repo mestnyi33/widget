@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿ XIncludeFile "../../../widgets.pbi"
 
 ;-
 ; Bounds window example
@@ -9,14 +9,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Define object
   Declare CustomEvents( )
   
-  Open(0, 0, 0, 700, 700, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered); | #PB_Window_SizeGadget)
-  a_init(root(), 0)
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 4)
   
-  Container(48, 48, 604, 604)
-  ;object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   object = Container(150, 150, 300, 300) : CloseList()
+  Container(50, 50, 500, 500)
+  ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  object = Container(150, 150, 300, 300) : CloseList()
   
-  SizeBounds(object, 200, 200, 401, 401)
+  ;SizeBounds(object, 200, 200, 401, 401)
   MoveBounds(object, 100, 100, 501, 501)
   
   Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )

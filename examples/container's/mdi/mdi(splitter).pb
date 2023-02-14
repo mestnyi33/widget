@@ -5,7 +5,7 @@
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
 ; 
 
-XIncludeFile "../../widgets.pbi"
+XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -31,6 +31,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

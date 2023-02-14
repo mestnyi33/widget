@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -19,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *val, *widget = GetData( EventWidget( ) )
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
+      Case #__Event_LeftClick
         *val = Val( GetText( *widget ) )
           
         Select GetText( EventWidget( ) ) 
@@ -32,7 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
         EndSelect
         
-      Case #PB_EventType_Change
+        Post(GetData(widget( )), #__Event_Change )
+      Case #__Event_Change
     EndSelect
   EndProcedure
   
@@ -42,11 +42,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Button(x+width-w, y, w,h,"+")
     SetData(widget( ), *string)
-    Bind( widget( ), @_temp_spin_events_( ), #PB_EventType_LeftClick )
+    Bind( widget( ), @_temp_spin_events_( ), #__Event_LeftClick )
     
     Button(x+width-w, y+height-h, w,h,"-")
     SetData(widget( ), *string)
-    Bind( widget( ), @_temp_spin_events_( ), #PB_EventType_LeftClick )
+    Bind( widget( ), @_temp_spin_events_( ), #__Event_LeftClick )
     
     ChangeCurrentElement(widget( ), *string\address)
     ProcedureReturn *string
@@ -56,9 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
     _temp_spin_(x,y,width,height, min, max)
   EndMacro
   
-  If OpenWindow(0, 0, 0, 230+230+15, 210, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(0, 0, 0, 230+230+15, 210)
-    Container( 10,10,220,190 )
+  If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    Container( 10,10,220,210 )
     a_init( widget( ), 15 )
     image( 5,5,60,60, -1 )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
@@ -66,24 +65,26 @@ CompilerIf #PB_Compiler_IsMainFile
     a_set( *a )
     CloseList( )
     
-    Container( 235,10,230,190 )
-    Frame( 5,5,230,190, "preferences" )
-    Text( 10,10,100,20, "grid", #__text_border )
-    *grid = Spin( 10,30,100,30, 0,100 )
+    Define y = 0
+    Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
+    ;Container( 235,10,230,205, #PB_Container_BorderLess )
+    ;Frame( 0,0,230-2,205-2, "preferences" )
+    Text( 10,10+y,100,18, "grid", #PB_Text_Border )
+    *grid = Spin( 10,30+y,100,30, 0,100 )
     Bind( *grid, @events_widgets( ), #PB_EventType_Change )
     
-    Text( 10,70,100,20, "size", #__text_border )
-    *size = Spin( 10,90,100,30, 0,100 )
+    Text( 10,70+y,100,18, "size", #PB_Text_Border )
+    *size = Spin( 10,90+y,100,30, 0,100 )
     Bind( *size, @events_widgets( ), #PB_EventType_Change )
     
-    Text( 10,130,100,20, "position", #__text_border )
-    *position = Spin( 10,150,100,30, 0,100 )
+    Text( 10,130+y,100,18, "position", #PB_Text_Border )
+    *position = PB(Spin)( 10,150+y,100,30, 0,100 )
     Bind( *position, @events_widgets( ), #PB_EventType_Change )
     
-    *BackColor = Button( 120,90,100,30, "BackColor" )
+    *BackColor = Button( 120,90+y,100,30, "BackColor" )
     Bind( *BackColor, @events_widgets( ), #PB_EventType_LeftClick )
     
-    *FrameColor = Button( 120,150,100,30, "FrameColor" )
+    *FrameColor = Button( 120,150+y,100,30, "FrameColor" )
     Bind( *FrameColor, @events_widgets( ), #PB_EventType_LeftClick )
     
     WaitClose( )

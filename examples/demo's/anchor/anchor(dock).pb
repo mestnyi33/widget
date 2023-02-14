@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
 ;XIncludeFile "widgets.pbi"
 
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
     
 ;-
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure.i _SetAlignment(*this._s_widget, Mode.l, Type.l=1)
-    ProcedureReturn SetAlignmentFlag(*this, Mode, Type)
+    ProcedureReturn SetAlignment(*this, Mode, Type)
     
 ;       With *this
 ;         Select Type
