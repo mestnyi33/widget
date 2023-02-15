@@ -225,11 +225,11 @@ Repeat
 ForEver
 
 End
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = -
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = --
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 166
+; EnableCompileCount = 167
 ; EnableBuildCount = 0
 ; EnableExeConstant

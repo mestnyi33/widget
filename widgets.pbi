@@ -4323,6 +4323,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\state\repaint = #True
         
         
+        ;\\ update parent inner coordinate
+        If *this\bar And 
+           *this\child And 
+           *this\_parent( )
+          If *this\bar\vertical
+            If *this\bar\page\len
+              *this\_parent( )\height[#__c_inner] = *this\bar\page\len
+            EndIf
+          Else
+            If *this\bar\page\len
+              *this\_parent( )\width[#__c_inner] = *this\bar\page\len
+            EndIf
+          EndIf
+        EndIf
+        
         ;\\
         If ( Change_width Or Change_height )
           If *this\type = #__type_Image Or
@@ -7404,6 +7419,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 ; Debug  "   min " + *this\bar\min + " max " + *this\bar\max
                 
+                ;\\
+                If *this\bar And *this\child And *this\_parent( )
+                  If *this\bar\vertical
+                    *this\_parent( )\scroll_height( ) = *this\bar\max
+                  Else
+                    *this\_parent( )\scroll_width( ) = *this\bar\max
+                  EndIf
+                EndIf
+              
                 ;\bar\PageChange( ) = #True
                 result = #True
               EndIf
@@ -7699,10 +7723,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ))
       EndIf
       
+      ;\\
       If result
         
-        *this\width[#__c_inner]  = *this\scroll\h\bar\page\len
-        *this\height[#__c_inner] = *this\scroll\v\bar\page\len
+;         *this\width[#__c_inner]  = *this\scroll\h\bar\page\len
+;         *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         *this\resize | #__resize_change
         
       EndIf
@@ -7840,11 +7865,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
            \h\bar\AreaChange( )
           ;           *this\resize | #__resize_change
           ; Debug ""+*this\width[#__c_inner]  +" "+ \h\bar\page\len
-          
-          ;\\ update inner coordinate
-          *this\width[#__c_inner]  = \h\bar\page\len
-          *this\height[#__c_inner] = \v\bar\page\len
-          
+;          ;\\ update inner coordinate
+;         *this\width[#__c_inner]  = \h\bar\page\len
+;         *this\height[#__c_inner] = \v\bar\page\len
+;          
           ProcedureReturn #True
         EndIf
       EndWith
@@ -14154,7 +14178,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\level         = *parent\level + 1
         *this\count\parents = *parent\count\parents + 1
         
-        
         ;\\ TODO
         If *this\_window( )
           Static NewMap typeCount.l( )
@@ -14193,6 +14216,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           a_set( *this, #__a_size )
         EndIf
         
+        ;\\
+        If *parent\bounds\childrens
+          MoveBounds( *this );, 0, 0, *parent\width, *parent\height )
+        EndIf
+          
         ;\\
         If ReParent
           ;
@@ -14695,10 +14723,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\bounds\move\min\y = *this\_parent( )\bs
       EndIf
       If *this\bounds\move\max\x = #PB_Ignore
-        *this\bounds\move\max\x = *this\_parent( )\width[#__c_inner]
+        If *this\_parent( )\scroll_width( ) ; *this\_parent( )\scroll\h
+          *this\bounds\move\max\x = *this\_parent( )\scroll_width( ) ; *this\_parent( )\scroll\h\bar\max
+        Else
+          *this\bounds\move\max\x = *this\_parent( )\width[#__c_inner]
+        EndIf
       EndIf
       If *this\bounds\move\max\y = #PB_Ignore
-        *this\bounds\move\max\y = *this\_parent( )\height[#__c_inner]
+        If *this\_parent( )\scroll_height( ) ; *this\_parent( )\scroll\v
+          *this\bounds\move\max\y = *this\_parent( )\scroll_height( ) ; *this\_parent( )\scroll\v\bar\max
+        Else
+          *this\bounds\move\max\y = *this\_parent( )\height[#__c_inner]
+        EndIf
       EndIf
       
      
@@ -14767,12 +14803,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If MaximumWidth <> #PB_Ignore
         *this\bounds\size\max\width = MaximumWidth
       Else
-        *this\bounds\size\max\width = *this\_parent( )\width[#__c_inner]
+        If *this\_parent( )\scroll\h
+          *this\bounds\size\max\width = *this\_parent( )\scroll\h\bar\max 
+        Else
+          *this\bounds\size\max\width = *this\_parent( )\width[#__c_inner]
+        EndIf
       EndIf
       If MaximumHeight <> #PB_Ignore
         *this\bounds\size\max\height = MaximumHeight
-       Else
-        *this\bounds\size\max\height = *this\_parent( )\height[#__c_inner]
+      Else
+        If *this\_parent( )\scroll\v
+          *this\bounds\size\max\height = *this\_parent( )\scroll\v\bar\max
+        Else
+          *this\bounds\size\max\height = *this\_parent( )\height[#__c_inner]
+        EndIf
       EndIf
       
       If *this\width[#__c_frame] < *this\bounds\size\min\width
@@ -16866,7 +16910,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; draw clip out transform widgets frame
                   ;If *this\_widgets( )\_a_\transform
                   If is_parent_( *this\_widgets( ), *this\_widgets( )\_parent( ) ) And Not *this\_widgets( )\_parent( )\hide
-                    draw_box_( *this\_widgets( )\x[#__c_inner], *this\_widgets( )\y[#__c_inner], *this\_widgets( )\width[#__c_inner], *this\_widgets( )\height[#__c_inner], $ff00ffff )
+                    If *this\_widgets( )\round
+                      draw_roundbox_( *this\_widgets( )\x[#__c_inner], *this\_widgets( )\y[#__c_inner], *this\_widgets( )\width[#__c_inner], *this\_widgets( )\height[#__c_inner], *this\_widgets( )\round,*this\_widgets( )\round, $ff00ffff )
+                    Else
+                      draw_box_( *this\_widgets( )\x[#__c_inner], *this\_widgets( )\y[#__c_inner], *this\_widgets( )\width[#__c_inner], *this\_widgets( )\height[#__c_inner], $ff00ffff )
+                    EndIf
                   EndIf
                   ;EndIf
                 EndIf
@@ -16917,7 +16965,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If IsChild( *this\_widgets( ), a_focused( ) )
                     
                     If Not *this\_widgets( )\hide ; begin draw all widgets
-                      Draw( *this\_widgets( ))
+                     ; Clip( a_focused( ), [#__c_inner] )
+                      DrawWidget( *this\_widgets( ))
                     EndIf
                   EndIf
                 Next
@@ -20698,5 +20747,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------f2-----ff----------x-----4v--0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X---------------------------------------------------------4r----------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------f2-----ff----------z-----4v--0--8-f---37+-X2v-------------------------------------------------------------------------0+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------7---------------------------------------------------------4r----------------------------------------------------------------------------------------
 ; EnableXP

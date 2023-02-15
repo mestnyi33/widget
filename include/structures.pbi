@@ -554,6 +554,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       max._s_SIZE
     EndStructure
     Structure _s_BOUNDS
+      childrens.b
       *move._s_BOUNDMOVE
       *size._s_BOUNDSIZE
     EndStructure

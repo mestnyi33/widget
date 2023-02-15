@@ -27,10 +27,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure MDIImage_Add( *mdi, x, y, img, alphatest=0, round = 0 )
-    Protected *this._s_widget = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
+    Protected *this._s_widget 
+    *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     SetClass(*this, "image-"+Str(img))
     SetCursor( *this, #PB_Cursor_Hand )
+    *this\round = round
     
     Bind( *this, @MDIImage_Events(), #PB_EventType_LeftButtonUp )
     Bind( *this, @MDIImage_Events(), #PB_EventType_LeftButtonDown )

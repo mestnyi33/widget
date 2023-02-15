@@ -109,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_Draw
         
-        ; Demo draw on element
+        ; Demo draw line on the element
         UnclipOutput()
         DrawingMode(#PB_2DDrawing_Outlined)
         
@@ -262,5 +262,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = ---
 ; EnableXP

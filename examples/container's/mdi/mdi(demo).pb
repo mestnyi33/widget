@@ -20,26 +20,23 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g0 = AddItem(*mdi, -1, "form_0")
   Button(10,10,80,80,"button_0")
   
-;   Define *g1 = AddItem(*mdi, -1, "form_1")
-;   Button(10,10,80,80,"button_1")
-;   
-;   Define *g2 = AddItem(*mdi, -1, "form_2")
-;   Button(10,10,80,80,"button_2")
-;   
-;   Define *g3 = AddItem(*mdi, -1, "form_3")
-;   Button(10,10,80,80,"button_3")
+  Define *g1 = AddItem(*mdi, -1, "form_1")
+  Button(10,10,80,80,"button_1")
+  
+  Define *g2 = AddItem(*mdi, -1, "form_2")
+  Button(10,10,80,80,"button_2")
+  
+  Define *g3 = AddItem(*mdi, -1, "form_3")
+  Button(10,10,80,80,"button_3")
   
   ; use root list
   OpenList(Root())
-  ;;CloseList()
   
   Define *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
   Define *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
   
   SetState(*spl1, width - 150)
   SetState(*spl2, height - 150)
-  
-  ;Bind( #PB_Default, #PB_Default )
   
   Repeat
     Event = WaitWindowEvent()

@@ -32,6 +32,10 @@ Enumeration 1
 	#Object8
 EndEnumeration
 
+Procedure ChildrensBounds( *this._s_widget )
+  *this\bounds\childrens = 1
+EndProcedure
+
 
 ; ----------------------------------------------
 
@@ -98,6 +102,7 @@ SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
 ; SetFrame(widget(), 2)
 
 ; Attach some objects to #Object8
+ChildrensBounds( *Object8 )
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
 a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
@@ -289,5 +294,5 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = +
+; Folding = 0
 ; EnableXP

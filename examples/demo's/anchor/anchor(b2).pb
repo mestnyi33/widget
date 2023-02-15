@@ -43,15 +43,15 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   a_mode(*Object1, #__a_width | #__a_position, 15)
   a_mode(*Object2, #__a_height | #__a_position, 12)
   a_mode(*Object3, #__a_edge | #__a_position, 9);
-  a_mode(*Object4, #__a_corner | #__a_position, 5)
+  a_mode(*Object4, #__a_corner | #__a_position, 34)
   a_mode(*Object5, #__a_full | #__a_position)
   
   ; Define different cursors to the objects
   SetCursor(*Object1, #PB_Cursor_Default)
   SetCursor(*Object2, #PB_Cursor_Hand)
   SetCursor(*Object3, #PB_Cursor_Cross)
-  SetCursor(*Object4, #PB_Cursor_Busy)
-  SetCursor(*Object5, #PB_Cursor_Denied)
+  ;SetCursor(*Object4, #PB_Cursor_Busy)
+  ;SetCursor(*Object5, #PB_Cursor_Denied)
   
   ; ; Sets the selection frame style of the specified object.
   SetSelectionStyle(*Object1, #SelectionStyle_None, #SelectionStyle_None, 6)
