@@ -139,6 +139,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       pressed._s_OBJECTTYPE      ; mouse button's pushed element
       leaved._s_OBJECTTYPE       ; mouse leaved element
       
+      anchors.a
       *_transform._s_transform
       interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
     EndStructure
@@ -282,7 +283,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *widget._s_WIDGET
     EndStructure
     Structure _s_transform
-      index.a
       *main._s_WIDGET
       *widget._s_WIDGET
       *e_widget._s_WIDGET

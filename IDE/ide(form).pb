@@ -496,6 +496,12 @@ CompilerIf #PB_Compiler_IsMainFile
           
     Select eventtype 
       Case #PB_EventType_DragStart
+        If a_index( ) = #__a_moved
+          If DragPrivate( #_DD_reParent )
+            SetCursor( *eventWidget, #PB_Cursor_Arrows )
+          EndIf
+        EndIf
+        
         If GetState( id_elements_tree) > 0 
           If IsContainer( *eventWidget )
             If DragPrivate( #_DD_CreateNew, #PB_Drag_Drop )
@@ -503,25 +509,26 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
           EndIf
         Else
-          Select DragType( ) 
-            Case #PB_Drag_Link 
-              If IsContainer( *eventWidget )
-                If DragPrivate( #_DD_Group, #PB_Drag_Drop )
-                  SetCursor( *eventWidget, #PB_Cursor_Cross )
-                EndIf
-              EndIf
             
-            Case #PB_Drag_Move 
-              If DragPrivate( #_DD_reParent )
-                SetCursor( *eventWidget, #PB_Cursor_Arrows )
-              EndIf
-              
-            Case #PB_Drag_Copy
-              If DragPrivate( #_DD_CreateCopy )
-                SetCursor( *eventWidget, #PB_Cursor_Hand )
-              EndIf
-              
-          EndSelect
+;           Select DragType( ) 
+;             Case #PB_Drag_Resize 
+;               If DragPrivate( #_DD_reParent )
+;                 SetCursor( *eventWidget, #PB_Cursor_Arrows )
+;               EndIf
+;               
+;             Case #PB_Drag_Copy
+;               If DragPrivate( #_DD_CreateCopy )
+;                 SetCursor( *eventWidget, #PB_Cursor_Hand )
+;               EndIf
+;               
+;             Default 
+;               If IsContainer( *eventWidget )
+;                 If DragPrivate( #_DD_Group, #PB_Drag_Drop )
+;                   SetCursor( *eventWidget, #PB_Cursor_Cross )
+;                 EndIf
+;               EndIf
+;               
+;           EndSelect
         EndIf
         
       Case #PB_EventType_Drop
@@ -586,28 +593,6 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-      Case #PB_EventType_MouseEnter,
-           #PB_EventType_MouseMove
-        
-        If Not GetButtons( )
-          If *eventWidget\state\enter = 2  
-            If GetState( id_elements_tree) > 0 
-              If IsContainer( *eventWidget )
-                SetCursor( *eventWidget, #PB_Cursor_Cross )
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
-      Case #PB_EventType_MouseLeave
-        If Not GetButtons( )
-          If GetState( id_elements_tree) > 0 
-            If IsContainer( *eventWidget )
-              SetCursor( *eventWidget, #PB_Cursor_Default )
-            EndIf
-          EndIf
-        EndIf
-        
       Case #PB_EventType_StatusChange
         ; Debug "widget status change "
         If IsGadget( id_design_code )
@@ -619,6 +604,30 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Resize
         properties_update_coordinate( id_i_properties_tree, *eventWidget )
         
+      Case #PB_EventType_MouseEnter,
+           #PB_EventType_MouseMove
+        
+        If IsContainer( *eventWidget ) 
+          If *eventWidget\state\enter = 2 
+            If GetCursor( ) <> #PB_Cursor_Cross
+              If Not GetButtons( ) 
+                If GetState( id_elements_tree ) > 0 
+                  SetCursor( *eventWidget, #PB_Cursor_Cross )
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        
+        If IsContainer( *eventWidget )
+          If Not GetButtons( )
+            If GetState( id_elements_tree) > 0 
+              SetCursor( *eventWidget, #PB_Cursor_Default )
+            EndIf
+          EndIf
+        EndIf
         
     EndSelect
     
@@ -1262,5 +1271,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----r-------4---v-f8-
+; Folding = -----v-----e-0---8-4+
 ; EnableXP

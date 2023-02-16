@@ -7,6 +7,7 @@
     ;- - CONSTANTs
     ;-\\ DD
     #PB_Drag_Drop = 1<<5
+    ;#PB_Drag_Resize = - 1; #PB_Drag_Move
     
     ;{
     
