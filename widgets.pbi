@@ -16974,30 +16974,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If a_focused( ) And a_focused( )\_a_\transform And Not a_focused( )\hide And
              a_focused( )\_root( )\canvas\gadget = *this\_root( )\canvas\gadget
             
-            If a_focused( ) And a_focused( )\state\press
-              If a_index( ) = #__a_moved
-                
-                Clip( a_transform( )\main, [#__c_draw2] )
-                DrawWidget( a_focused( ), a_focused( )\type )
-                PushListPosition( *this\_widgets( ))
-                ForEach *this\_widgets( )
-                  If IsChild( *this\_widgets( ), a_focused( ) )
-                    
-                    If Not *this\_widgets( )\hide ; begin draw all widgets
-                                                  ; Clip( a_focused( ), [#__c_inner] )
-                      DrawWidget( *this\_widgets( ), *this\_widgets( )\type )
-                    EndIf
-                  EndIf
-                Next
-                PopListPosition( *this\_widgets( ))
-                
-                
-                ;                 If a_transform( )\grab[1]
-                ;                  drawing_mode_alpha_( #PB_2DDrawing_Default )
-                ;                  DrawImage( ImageID( a_transform( )\grab[1] ), a_focused( )\x[#__c_frame], a_focused( )\y[#__c_frame] )
-                ;                 EndIf
-              EndIf
-            EndIf
+;             If a_focused( ) And a_focused( )\state\press
+;               If a_index( ) = #__a_moved
+;                 
+;                 Clip( a_transform( )\main, [#__c_draw2] )
+;                 DrawWidget( a_focused( ), a_focused( )\type )
+;                 PushListPosition( *this\_widgets( ))
+;                 ForEach *this\_widgets( )
+;                   If IsChild( *this\_widgets( ), a_focused( ) )
+;                     
+;                     If Not *this\_widgets( )\hide ; begin draw all widgets
+;                                                   ; Clip( a_focused( ), [#__c_inner] )
+;                       DrawWidget( *this\_widgets( ), *this\_widgets( )\type )
+;                     EndIf
+;                   EndIf
+;                 Next
+;                 PopListPosition( *this\_widgets( ))
+;                 
+;                 
+;                 ;                 If a_transform( )\grab[1]
+;                 ;                  drawing_mode_alpha_( #PB_2DDrawing_Default )
+;                 ;                  DrawImage( ImageID( a_transform( )\grab[1] ), a_focused( )\x[#__c_frame], a_focused( )\y[#__c_frame] )
+;                 ;                 EndIf
+;               EndIf
+;             EndIf
             
             ; draw key-focused-widget anchors
             Clip( a_transform( )\main, [#__c_draw2] )

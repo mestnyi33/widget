@@ -493,12 +493,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure widget_events( )
     Protected eventtype = WidgetEventType( ) 
     Protected *new, *eventWidget._s_widget = EventWidget( )
-          
+    Static *beforeWidget
+    
     Select eventtype 
       Case #PB_EventType_DragStart
         If a_index( ) = #__a_moved
           If DragPrivate( #_DD_reParent )
             SetCursor( *eventWidget, #PB_Cursor_Arrows )
+;             *beforeWidget = GetPosition( *eventWidget, #PB_List_Before ) 
+;             SetPosition( *eventWidget, #PB_List_Last )
+           ; SetParent( *eventWidget, id_design_form )
           EndIf
         EndIf
         
@@ -576,6 +580,12 @@ CompilerIf #PB_Compiler_IsMainFile
        ;; ProcedureReturn #PB_Ignore
         
       Case #PB_EventType_LeftButtonUp
+        If *beforeWidget
+          SetPosition( *eventWidget, #PB_List_After, *beforeWidget)
+          *beforeWidget = 0
+        EndIf
+        
+        
         ; then group select
         If IsContainer( *eventWidget )
           If a_transform( ) And a_focused( ) And a_focused( )\_a_\transform =- 1
@@ -1271,5 +1281,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v-----e-0---8-4+
+; Folding = -----v-----0+8---4-v0
 ; EnableXP

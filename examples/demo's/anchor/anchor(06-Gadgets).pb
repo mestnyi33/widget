@@ -38,8 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure a_mode( *this._s_widget, mode.i )
-    If a_transform( )
-      *this\_a_mode = mode  
+    If *this\_a_
+      *this\_a_\mode = mode  
     EndIf
   EndProcedure
   

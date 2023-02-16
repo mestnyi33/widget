@@ -282,7 +282,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
     Structure _s_a_group Extends _s_coordinate
       *widget._s_WIDGET
     EndStructure
-    Structure _s_transform
+    Structure _s_TRANSFORM
       *main._s_WIDGET
       *widget._s_WIDGET
       *e_widget._s_WIDGET
@@ -306,7 +306,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       cursor.i[constants::#__a_count+1]
       id._s_buttons[constants::#__a_count+1]
     EndStructure
-    Structure _s_a
+    ;--     ANCHORS
+    Structure _s_ANCHORS
       pos.l
       size.l
       
@@ -576,6 +577,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     WIDGET
     Structure _s_WIDGET
+      _a_._s_ANCHORS
+      
       *event._s_event
       type.b
       
@@ -603,12 +606,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;*VerticalWidget._s_WIDGET   ; = ScrollArea( ) vertical bar widget
       ;*HorizontalWidget._s_WIDGET ; = ScrollArea( ) horizontal bar widget
                                   ; EndStructureUnion
-      
-      _a_mode.i
-      ;_a_transform.b ; add anchors on the widget (to size and move)
-      *_a_id_._s_buttons[constants::#__a_moved+1]
-      _a_._s_a
-      transform.b
       
       __state.w ; #_s_ss_ (font; back; frame; fore; line)
       __draw.b 

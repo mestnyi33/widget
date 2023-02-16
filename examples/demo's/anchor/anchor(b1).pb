@@ -7,8 +7,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     
-    ;a_init(Root())
-    a_init(Window(40,40,720,370,"window", #__window_systemmenu))
+    a_init(Root())
+    ;a_init(Window(40,40,720,370,"window", #__window_systemmenu))
     ;a_init(MDI(40,40,720,370)) : OpenList(widget())
     ;a_init(Container(40,40,720,370))
     ;a_init(ScrollArea(40,40,720,370, 800,500))

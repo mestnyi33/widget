@@ -5,7 +5,9 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
 Uselib(widget)
 
 Procedure a_mode( *this._s_widget, mode.i )
-  *this\_a_mode = mode  
+  If *this\_a_
+    *this\_a_\mode = mode  
+  EndIf
 EndProcedure
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
@@ -40,8 +42,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   SetCursor(*Object1, #PB_Cursor_Default)
   SetCursor(*Object2, #PB_Cursor_Hand)
   SetCursor(*Object3, #PB_Cursor_Cross)
-  SetCursor(*Object4, #PB_Cursor_Busy)
-  SetCursor(*Object5, #PB_Cursor_Denied)
+;   SetCursor(*Object4, #PB_Cursor_Busy)
+;   SetCursor(*Object5, #PB_Cursor_Denied)
   
   ; ; Sets the selection frame style of the specified object.
   SetSelectionStyle(*Object1, #SelectionStyle_None, #SelectionStyle_None, 13)

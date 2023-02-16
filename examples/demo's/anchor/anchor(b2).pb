@@ -4,23 +4,24 @@ Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
     
 Procedure a_mode( *this._s_widget, mode.i, size.l = #PB_Default )
-  *this\_a_\mode = mode  
-  *this\_a_mode = mode  
-  
-  If size.l <> #PB_Default
-    a_transform( )\size = size
+  If *this\_a_
+    *this\_a_\mode = mode  
     
-    *this\_a_\size = size
+    If size.l <> #PB_Default
+      a_transform( )\size = size
+      
+      *this\_a_\size = size
       *this\_a_\pos = size - size / 3 - 2
-        
+      
       ; Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-        ;a_resize( *this, size )
-        
+      ;a_resize( *this, size )
+      
+    EndIf
   EndIf
 EndProcedure
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
-  ;;*this\_a_mode = mode  
+  ;;*this\_a_\mode = mode  
   SetFrame(*this, size)
   If color <> #SelectionStyle_None
     SetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
@@ -68,5 +69,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; Folding = --
 ; EnableXP
