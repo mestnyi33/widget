@@ -38,12 +38,121 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure a_mode( *this._s_widget, mode.i )
-    *this\_a_mode = mode  
+    If a_transform( )
+      *this\_a_mode = mode  
+    EndIf
   EndProcedure
   
   
   
   ; Callback procedure for a button form. Runtime keyword is needed here!
+  Procedure Callback_Button(*Object._s_widget, Width.i, Height.i, DataValue.i)
+    Protected Text.s = GetText(*Object)
+    Protected Hue = DataValue
+    
+    ; Box background
+    AddPathBox(0.0, 0.0, Width, Height)
+    VectorSourceLinearGradient(0.0, 0.0, 0.0, Height)
+    If *object\state\press And *object\state\enter
+      VectorSourceGradientColor(HSVA(Hue, 10, $FF), 0.00)
+      VectorSourceGradientColor(HSVA(Hue, 20, $F8), 0.45)
+      VectorSourceGradientColor(HSVA(Hue, 30, $F0), 0.50)
+      VectorSourceGradientColor(HSVA(Hue, 40, $E8), 1.00)
+    ElseIf *object\state\enter
+      VectorSourceGradientColor(HSVA(Hue, 5, $FF), 0.00)
+      VectorSourceGradientColor(HSVA(Hue, 10, $F8), 0.45)
+      VectorSourceGradientColor(HSVA(Hue, 15, $F0), 0.50)
+      VectorSourceGradientColor(HSVA(Hue, 20, $E8), 1.00)
+    Else
+      VectorSourceGradientColor(HSVA(0, 0, $F8), 0.00)
+      VectorSourceGradientColor(HSVA(0, 0, $F0), 0.45)
+      VectorSourceGradientColor(HSVA(0, 0, $E8), 0.50)
+      VectorSourceGradientColor(HSVA(0, 0, $D8), 1.00)
+    EndIf
+    FillPath( )
+    
+    ; Box frame
+    If *object\state\disable
+      AddPathBox(0.5, 0.5, Width-1, Height-1)
+      VectorSourceColor(HSVA(0, 0, $D0))
+      StrokePath(1)
+      AddPathBox(1.5, 1.5, Width-3, Height-3)
+      VectorSourceColor(HSVA(0, 0, $F0))
+      StrokePath(1)
+    ElseIf *object\state\press And *object\state\enter
+      AddPathBox(0.5, 0.5, Width-1, Height-1)
+      VectorSourceColor(HSVA(Hue, 100, $80))
+      StrokePath(1)
+      AddPathBox(1.5, 1.5, Width-3, Height-3)
+      VectorSourceColor(HSVA(Hue, 50, $FF))
+      StrokePath(1)
+    ElseIf *object\state\enter
+      AddPathBox(0.5, 0.5, Width-1, Height-1)
+      VectorSourceColor(HSVA(0, 0, $A0))
+      StrokePath(1)
+      AddPathBox(1.5, 1.5, Width-3, Height-3)
+      VectorSourceColor(HSVA(Hue, 10, $FF))
+      StrokePath(1)
+    Else
+      AddPathBox(0.5, 0.5, Width-1, Height-1)
+      VectorSourceColor(HSVA(0, 0, $A0))
+      StrokePath(1)
+      AddPathBox(1.5, 1.5, Width-3, Height-3)
+      VectorSourceColor(HSVA(0, 0, $FF))
+      StrokePath(1)
+    EndIf
+    
+    ; Text
+    AddPathBox(0.0, 0.0, Width, Height)
+    ClipPath( )
+    VectorFont(FontID(#Font))
+    If *object\state\disable
+      VectorSourceColor($40000000)
+    Else
+      VectorSourceColor($FF000000)
+    EndIf
+    If Height - 6 > 0 And Width - 6 > 0
+      If *object\state\press
+        MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2)
+      Else
+        MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2-1)
+      EndIf
+      DrawVectorParagraph(Text, Width-6, Height-6, #PB_VectorParagraph_Center)
+    EndIf
+    
+  EndProcedure
+  
+  Procedure ButtonEvents( )
+    Select WidgetEventType( ) 
+      Case #__event_LeftClick
+        Debug "Button '" + GetText(EventWidget( )) + "' was clicked."
+      Case #__event_Draw
+        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
+        TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
+        Callback_Button(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], EventWidget( )\data)
+        StopVectorDrawing( )
+    EndSelect
+  EndProcedure
+  
+  ; Custom procedure to create a button object
+  Procedure Form_AddButton(X.i, Y.i, Width.i, Height.i, Text.s, HighlightColorHue.i=205)
+    Protected *Object._s_widget
+    *Object = a_object( X, Y, Width, Height, Text, 0)
+    *Object\type = 0
+    *Object\container = 0
+    *Object\data = HighlightColorHue
+    ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
+    Bind(*Object, @ButtonEvents( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
+    Bind(*Object, @ButtonEvents( ), #__event_LeftClick ) 
+    ;a_mode(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
+    
+    ProcedureReturn *Object
+  EndProcedure
+  
+  
+  ;  - - -  Check box form - - -
+  
+  
   Procedure Callback_CheckBox(*Object._s_widget, Width.i, Height.i, DataValue.i)
     Protected Text.s = GetText(*Object)
     Protected State.i = GetState(*Object)
@@ -58,7 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Box background
     AddPathBox(0, Y, 19, 19)
     VectorSourceLinearGradient(0.0, Y, 0.0, Y+19)
-    If *object\state\press
+    If *object\state\press And *object\state\enter
       VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
       VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
     ElseIf *object\state\enter
@@ -78,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddPathBox(1.5, Y+1.5, 16, 16)
       VectorSourceColor(HSVA(0, 0, $F0))
       StrokePath(1)
-    ElseIf *object\state\press
+    ElseIf *object\state\press And *object\state\enter
       AddPathBox(0.5, Y+0.5, 18, 18)
       VectorSourceColor(HSVA(Hue, 100, $80))
       StrokePath(1)
@@ -128,7 +237,7 @@ CompilerIf #PB_Compiler_IsMainFile
       VectorSourceColor($FF000000)
     EndIf
     If Height > 0 And Width - 25 > 0
-      If *object\state\press
+      If *object\state\press And *object\state\enter
         MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2)
       Else
         MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2-1)
@@ -138,111 +247,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  Procedure Callback_Button(*Object._s_widget, Width.i, Height.i, DataValue.i)
-    Protected Text.s = GetText(*Object)
-    Protected Hue = DataValue
-    
-    ; Box background
-    AddPathBox(0.0, 0.0, Width, Height)
-    VectorSourceLinearGradient(0.0, 0.0, 0.0, Height)
-    If *object\state\press
-      VectorSourceGradientColor(HSVA(Hue, 10, $FF), 0.00)
-      VectorSourceGradientColor(HSVA(Hue, 20, $F8), 0.45)
-      VectorSourceGradientColor(HSVA(Hue, 30, $F0), 0.50)
-      VectorSourceGradientColor(HSVA(Hue, 40, $E8), 1.00)
-    ElseIf *object\state\enter
-      VectorSourceGradientColor(HSVA(Hue, 5, $FF), 0.00)
-      VectorSourceGradientColor(HSVA(Hue, 10, $F8), 0.45)
-      VectorSourceGradientColor(HSVA(Hue, 15, $F0), 0.50)
-      VectorSourceGradientColor(HSVA(Hue, 20, $E8), 1.00)
-    Else
-      VectorSourceGradientColor(HSVA(0, 0, $F8), 0.00)
-      VectorSourceGradientColor(HSVA(0, 0, $F0), 0.45)
-      VectorSourceGradientColor(HSVA(0, 0, $E8), 0.50)
-      VectorSourceGradientColor(HSVA(0, 0, $D8), 1.00)
-    EndIf
-    FillPath( )
-    
-    ; Box frame
-    If *object\state\disable
-      AddPathBox(0.5, 0.5, Width-1, Height-1)
-      VectorSourceColor(HSVA(0, 0, $D0))
-      StrokePath(1)
-      AddPathBox(1.5, 1.5, Width-3, Height-3)
-      VectorSourceColor(HSVA(0, 0, $F0))
-      StrokePath(1)
-    ElseIf *object\state\press
-      AddPathBox(0.5, 0.5, Width-1, Height-1)
-      VectorSourceColor(HSVA(Hue, 100, $80))
-      StrokePath(1)
-      AddPathBox(1.5, 1.5, Width-3, Height-3)
-      VectorSourceColor(HSVA(Hue, 50, $FF))
-      StrokePath(1)
-    ElseIf *object\state\enter
-      AddPathBox(0.5, 0.5, Width-1, Height-1)
-      VectorSourceColor(HSVA(0, 0, $A0))
-      StrokePath(1)
-      AddPathBox(1.5, 1.5, Width-3, Height-3)
-      VectorSourceColor(HSVA(Hue, 10, $FF))
-      StrokePath(1)
-    Else
-      AddPathBox(0.5, 0.5, Width-1, Height-1)
-      VectorSourceColor(HSVA(0, 0, $A0))
-      StrokePath(1)
-      AddPathBox(1.5, 1.5, Width-3, Height-3)
-      VectorSourceColor(HSVA(0, 0, $FF))
-      StrokePath(1)
-    EndIf
-    
-    ; Text
-    AddPathBox(0.0, 0.0, Width, Height)
-    ClipPath( )
-    VectorFont(FontID(#Font))
-    If *object\state\disable
-      VectorSourceColor($40000000)
-    Else
-      VectorSourceColor($FF000000)
-    EndIf
-    If Height - 6 > 0 And Width - 6 > 0
-      If *object\state\press
-        MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2)
-      Else
-        MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2-1)
-      EndIf
-      DrawVectorParagraph(Text, Width-6, Height-6, #PB_VectorParagraph_Center)
-    EndIf
-    
-  EndProcedure
-  
-  Procedure ButtonEvents( )
-    StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
-    TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
-    Callback_Button(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], EventWidget( )\data)
-    StopVectorDrawing( )
-  EndProcedure
-  
-  ; Custom procedure to create a button object
-  Procedure Form_AddButton(X.i, Y.i, Width.i, Height.i, Text.s, HighlightColorHue.i=205)
-    Protected *Object._s_widget
-    *Object = a_object( X, Y, Width, Height, Text, 0)
-    *Object\type = 0
-    ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
-    Bind(*Object, @ButtonEvents( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
-    a_mode(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
-    *Object\data = HighlightColorHue
-    
-    ProcedureReturn *Object
-  EndProcedure
-  
-  
-  ;  - - -  Check box form - - -
-  
-  
   Procedure CheckBoxEvents( )
-    StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
-    TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
-    Callback_CheckBox(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], 0)
-    StopVectorDrawing( )
+    Select WidgetEventType( ) 
+      Case #__event_LeftClick, #__event_Left2Click, #__event_Left3Click
+        SetState(EventWidget( ), 1-GetState(EventWidget( )))
+      Case #__event_Draw
+        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
+        TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
+        Callback_CheckBox(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], 0)
+        StopVectorDrawing( )
+    EndSelect
   EndProcedure
   
   ; Custom procedure to create a button object
@@ -250,9 +264,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *Object._s_widget
     *Object = a_object( X, Y, Width, Height, Text, 0)
     *Object\type = 0
-    ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
-    Bind(*Object, @CheckBoxEvents( ), #__event_Draw)  ; Set the drawing callback with the specified highlighting color
-    a_mode(*Object, #__a_size|#__a_position)         ; Add handles if you want to edit the buttons.
+    *Object\container = 0
+    ;SetText(*Object, Text)                                ; Set the button text as a dictionary entry
+    Bind(*Object, @CheckBoxEvents( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
+    Bind(*Object, @CheckBoxEvents( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
+    Bind(*Object, @CheckBoxEvents( ), #__event_Left2Click)  ; Set the drawing callback with the specified highlighting color
+    Bind(*Object, @CheckBoxEvents( ), #__event_Left3Click)  ; Set the drawing callback with the specified highlighting color
+    ;a_mode(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
     
     ProcedureReturn *Object
   EndProcedure
@@ -281,8 +299,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Not Open( #Window );, #Canvas )
     Debug "Unable to initialize the object manager !"    
   EndIf
-  a_init(root( ), 0)
   SetColor(root( ), #__color_back, $FFF0F0F0 )
+  a_init(root( ), 0)
   
   ; Creates some customized buttons
   *Object_Button1 = Form_AddButton(50, 50, 200, 30, "Normal button")
@@ -330,5 +348,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = --4--
 ; EnableXP

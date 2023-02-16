@@ -16632,9 +16632,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure DrawWidget( *this._S_widget )
+    Procedure DrawWidget( *this._S_widget, type )
       ;\\ draw widgets
-      Select *this\type
+      Select type
         Case #__type_Window : Window_Draw( *this )
         Case #__type_MDI : draw_Container( *this )
         Case #__type_Container : draw_Container( *this )
@@ -16813,7 +16813,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ draw widgets
-            DrawWidget( *this )
+            DrawWidget( *this, *this\type )
           EndIf
           
           ;\\ reset values
@@ -16978,14 +16978,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If a_index( ) = #__a_moved
                 
                 Clip( a_transform( )\main, [#__c_draw2] )
-                DrawWidget( a_focused( ) )
+                DrawWidget( a_focused( ), a_focused( )\type )
                 PushListPosition( *this\_widgets( ))
                 ForEach *this\_widgets( )
                   If IsChild( *this\_widgets( ), a_focused( ) )
                     
                     If Not *this\_widgets( )\hide ; begin draw all widgets
                                                   ; Clip( a_focused( ), [#__c_inner] )
-                      DrawWidget( *this\_widgets( ))
+                      DrawWidget( *this\_widgets( ), *this\_widgets( )\type )
                     EndIf
                   EndIf
                 Next
@@ -19832,6 +19832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       *this._S_widget = Container(x, y, width, height, #__flag_nogadgets)
+      ;;*this\type = 0
       If text
         SetText( *this, text)
       EndIf
@@ -20782,5 +20783,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

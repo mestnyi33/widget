@@ -160,6 +160,10 @@
       #__s_3
     EndEnumeration
     
+    #__s_entered = 1<<0
+    #__s_pressed = 1<<1
+    #__s_disabled = 1<<2
+    
     ;-\\ Attribute
     #__displayMode = 1 << 13
     ;   #PB_image = 1<<13
