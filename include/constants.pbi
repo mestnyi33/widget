@@ -45,34 +45,6 @@
     #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
     
     
-    ;-\\ Anchors
-    #__a_left         = 1
-    #__a_top          = 2
-    #__a_right        = 3
-    #__a_bottom       = 4
-    #__a_left_top     = 5
-    #__a_right_top    = 6
-    #__a_right_bottom = 7
-    #__a_left_bottom  = 8
-    ;
-    #__a_line_left   = 1;10
-    #__a_line_top    = 2;12
-    #__a_line_right  = 3;11
-    #__a_line_bottom = 4;13
-    ; a_mode_
-    EnumerationBinary 1
-      #__a_position
-      #__a_width
-      #__a_height
-      #__a_corner
-    EndEnumeration
-    #__a_edge = #__a_width | #__a_height
-    #__a_full = #__a_position | #__a_corner | #__a_edge
-    ;
-    #__a_size  = 7
-    #__a_moved = 9
-    #__a_count = #__a_moved ;+ 4
-    
     ;
     ; default values
     ;
@@ -698,7 +670,44 @@
     #debug_update_text = 0
     #debug_multiline   = 0
     #debug_repaint     = 0 ; Debug " - -  Canvas repaint - -  "
-                           ;-
+    
+    
+    ;-\\ Anchors
+    #__a_anchors_size  = 7
+    
+    ;
+    #__a_left         = 1
+    #__a_top          = 2
+    #__a_right        = 3
+    #__a_bottom       = 4
+    #__a_left_top     = 5
+    #__a_right_top    = 6
+    #__a_right_bottom = 7
+    #__a_left_bottom  = 8
+    #__a_moved = 9
+    
+    ;
+    #__a_line_left   = 1;10
+    #__a_line_top    = 2;12
+    #__a_line_right  = 3;11
+    #__a_line_bottom = 4;13
+    #__a_count = #__a_moved ;+ 4
+    
+    ; a_mode_
+    EnumerationBinary 1
+      #__a_position ; положение
+      #__a_width  ;= #__align_left | #__align_right  ; по ширине
+      #__a_height ;= #__align_top | #__align_bottom  ; по высоте 
+      #__a_corner ; = #__align_left | #__align_top | #__align_bottom | #__align_right    ; по углам
+    ;  #__a_rb
+    EndEnumeration
+    #__a_edge = #__a_width | #__a_height ; по крайам
+    #__a_size = #__a_corner | #__a_edge
+    #__a_full = #__a_position | #__a_size
+    
+    
+    
+    ;-
                            ;- GLOBAL
                            ;-
     

@@ -3,23 +3,6 @@ Uselib(widget)
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
     
-Procedure a_mode( *this._s_widget, mode.i, size.l = #PB_Default )
-  If *this\_a_
-    *this\_a_\mode = mode  
-    
-    If size.l <> #PB_Default
-      a_transform( )\size = size
-      
-      *this\_a_\size = size
-      *this\_a_\pos = size - size / 3 - 2
-      
-      ; Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      ;a_resize( *this, size )
-      
-    EndIf
-  EndIf
-EndProcedure
-
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_\mode = mode  
   SetFrame(*this, size)
@@ -30,7 +13,7 @@ EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   ;
-  a_init(root(), 10)
+  a_init(root(), 10, 1)
   SetColor(root(), #__color_back, RGBA(128, 192, 64, alpha))
   
   ; Create five different objects
@@ -45,7 +28,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   a_mode(*Object2, #__a_height | #__a_position, 12)
   a_mode(*Object3, #__a_edge | #__a_position, 9);
   a_mode(*Object4, #__a_corner | #__a_position, 34)
-  a_mode(*Object5, #__a_full | #__a_position)
+  a_mode(*Object5, #__a_size | #__a_position)
   
   ; Define different cursors to the objects
   SetCursor(*Object1, #PB_Cursor_Default)
@@ -69,5 +52,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Folding = -
 ; EnableXP

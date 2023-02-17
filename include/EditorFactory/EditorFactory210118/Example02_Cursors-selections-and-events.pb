@@ -221,11 +221,11 @@ Repeat
 ForEver
 
 End
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 159
+; EnableCompileCount = 161
 ; EnableBuildCount = 0
 ; EnableExeConstant

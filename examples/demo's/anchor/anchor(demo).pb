@@ -7,13 +7,42 @@ CompilerIf #PB_Compiler_IsMainFile
   Global._s_widget *BackColor, *FrameColor, *position, *size, *grid
   
   Procedure events_widgets( )
+    Protected *this._s_widget = EventWidget( )
+    
     Select WidgetEventType( )
       Case #PB_EventType_LeftClick
+      Case #PB_EventType_StatusChange
+        If *size
+          SetText(*size, Str(*this\_a_\size) )
+        EndIf
+        
+        If *position
+          SetText(*position, Str(*this\_a_\pos) )
+        EndIf
+        
+        If *grid
+          SetText(*grid, Str(a_transform( )\grid_size) )
+        EndIf
+        
       Case #PB_EventType_Change
-        Debug 555
+        If *this = *size
+          a_mode( a_focused( ), #__a_full, Val(GetText(*this)))
+          
+          SetText(*position, Str(a_focused( )\_a_\pos) )
+        EndIf
+        
+        If *this = *position
+          a_mode( a_focused( ), #__a_full, Val(GetText(*size)), Val(GetText(*position)))
+        EndIf
+        
+        If *this = *grid
+          a_init(a_transform( )\main, Val(GetText(*grid)))
+        EndIf
+        
     EndSelect
   EndProcedure
   
+  Global _temp_spin_min_, _temp_spin_max_
   Procedure _temp_spin_events_( )
     Protected *val, *widget = GetData( EventWidget( ) )
     
@@ -24,10 +53,14 @@ CompilerIf #PB_Compiler_IsMainFile
         Select GetText( EventWidget( ) ) 
           Case "+"
             *val + 1
-            SetText( *widget, Str(*val))
+            If *val <= _temp_spin_max_
+              SetText( *widget, Str(*val))
+            EndIf
           Case "-"
             *val - 1
-            SetText( *widget, Str(*val))
+            If *val >= _temp_spin_min_
+              SetText( *widget, Str(*val))
+            EndIf
             
         EndSelect
         
@@ -37,6 +70,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure _temp_spin_(x,y,width,height, min, max)
+    _temp_spin_min_ = min 
+    _temp_spin_max_ = max
+    
     Protected w=20, h=height/2-1
     Protected *string._s_widget = String(x, y, width-w-1,height,"0")
     
@@ -59,9 +95,13 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Container( 10,10,220,210 )
     a_init( widget( ), 15 )
+    
     image( 5,5,60,60, -1 )
+    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
+    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
     image( 150,110,60,60, -1 )
+    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
     a_set( *a )
     CloseList( )
     
@@ -69,16 +109,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
     ;Container( 235,10,230,205, #PB_Container_BorderLess )
     ;Frame( 0,0,230-2,205-2, "preferences" )
-    Text( 10,10+y,100,18, "grid", #PB_Text_Border )
+    Text( 10,10+y,100,18, "grid size", #PB_Text_Border )
     *grid = Spin( 10,30+y,100,30, 0,100 )
     Bind( *grid, @events_widgets( ), #PB_EventType_Change )
     
-    Text( 10,70+y,100,18, "size", #PB_Text_Border )
+    Text( 10,70+y,100,18, "anchor size", #PB_Text_Border )
     *size = Spin( 10,90+y,100,30, 0,100 )
     Bind( *size, @events_widgets( ), #PB_EventType_Change )
     
-    Text( 10,130+y,100,18, "position", #PB_Text_Border )
-    *position = PB(Spin)( 10,150+y,100,30, 0,100 )
+    Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
+    ;*position = PB(Spin)( 10,150+y,100,30, 0,100 )
+    *position = Spin( 10,150+y,100,30, 0,100 )
     Bind( *position, @events_widgets( ), #PB_EventType_Change )
     
     *BackColor = Button( 120,90+y,100,30, "BackColor" )
@@ -87,11 +128,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *FrameColor = Button( 120,150+y,100,30, "FrameColor" )
     Bind( *FrameColor, @events_widgets( ), #PB_EventType_LeftClick )
     
+    
+    If a_focused( )
+     ; SetText(*size, Str(a_focused( )\_a_\size) )
+    EndIf
+    
     WaitClose( )
   EndIf
   
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Folding = ----
 ; EnableXP

@@ -397,7 +397,8 @@ CompilerIf #PB_Compiler_IsMainFile
           SetColor( *new, #__color_back, $FFECECEC )
           SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
           Bind( *new, @widget_events( ) )
-          
+          a_mode(*new, #__a_full, 14)
+  
         Case "container"   
           *new = Container( x,y,width,height, flag ) : CloseList( )
           SetColor( *new, #__color_back, $FFF1F1F1 )

@@ -291,8 +291,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *type
       *grab[2] ; grab image handle
       
-      pos.l
-      size.l
+      ;pos.l
+      ;size.l
       
       *grid_image
       grid_size.l
