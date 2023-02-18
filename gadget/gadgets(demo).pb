@@ -1,5 +1,5 @@
 ﻿; comment uncomment to see
-;XIncludeFile "gadgets.pbi" : UseModule gadget
+XIncludeFile "gadgets.pbi" : UseModule gadget
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
@@ -145,6 +145,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

@@ -144,13 +144,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     
-    ;- Replacement >> PB( )
-    Macro CreateCursor( _imageID_, _x_ = 0, _y_ = 0 )
-      func::CreateCursor( _imageID_, _x_, _y_ )
-    EndMacro
-    ;     Macro CreateCursor( ImageID, x = 0, y = 0 )
-    ;       Cursor::Create( ImageID, x, y )
-    ;     EndMacro
+;     ;- Replacement >> PB( )
+;     Macro CreateCursor( _imageID_, _x_ = 0, _y_ = 0 )
+;       func::CreateCursor( _imageID_, _x_, _y_ )
+;     EndMacro
+;     ;     Macro CreateCursor( ImageID, x = 0, y = 0 )
+;     ;       Cursor::Create( ImageID, x, y )
+;     ;     EndMacro
     
     ;-  Drag & Drop
     Macro EventDropX( ): DropX( ): EndMacro
@@ -1152,8 +1152,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i OpenList( *this, item.l = 0 )
     ;
     Declare DoEvents( *this, eventtype.l, *data = #Null, *button = #PB_All ) ;, mouse_x.l, mouse_y.l
-    Declare Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, *callback = #Null, canvas = #PB_Any )
-    Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null, Window = -1, *CallBack = #Null )
+    Declare Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, canvas = #PB_Any )
+    Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
     Declare Free( *this )
     ;}
   EndDeclareModule
@@ -4633,6 +4633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\_root( ) And *this\_root( )\canvas\ResizeBeginWidget = #Null
           ;Debug "  start - resize"
           *this\_root( )\canvas\ResizeBeginWidget = *this
+          mouse( )\interact = 1
           Post( *this, #__event_ResizeBegin )
         EndIf
         
@@ -10984,6 +10985,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\scroll\state = - 1
             EndIf
             
+            PostCanvasRepaint( *this )
           EndIf
         EndIf
       EndIf
@@ -12628,7 +12630,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure AddItem( *this._S_widget, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
       Protected result
-      
+        
       If *this\type = #__type_ListIcon
         ForEach *This\Columns( )
           *this\row\column = *this\columns( )\index
@@ -13460,6 +13462,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
             EndIf
             
+            PostCanvasRepaint( *this )
             ProcedureReturn #True
           EndIf
         EndIf
@@ -14312,6 +14315,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\_root( )\canvas\ResizeBeginWidget
             ; Debug "   end - resize " + #PB_Compiler_Procedure
             Post( *this\_root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+            mouse( )\interact = 0
             *this\_root( )\canvas\ResizeBeginWidget = #Null
           EndIf
           
@@ -15147,6 +15151,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
+      PostCanvasRepaint( *this )
       ProcedureReturn result
     EndProcedure
     
@@ -15285,9 +15290,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If *this\state\repaint = #True
-        PostCanvasRepaint( *this )
         *this\state\repaint = #False
       EndIf
+        PostCanvasRepaint( *this )
       
       ProcedureReturn result
     EndProcedure
@@ -15356,6 +15361,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *root\canvas\ResizeBeginWidget
         ; Debug "   end - resize " + #PB_Compiler_Procedure
         Post( *root\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+        mouse( )\interact = 0
         *root\canvas\ResizeBeginWidget = #Null
       EndIf
       
@@ -18868,6 +18874,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If Root( )\canvas\ResizeBeginWidget
             ; Debug "   end - resize " + #PB_Compiler_Procedure
             Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+            mouse( )\interact = 0
             Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
           
@@ -18913,6 +18920,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If Root( )\canvas\ResizeBeginWidget
                   ; Debug "   end - resize " + #PB_Compiler_Procedure
                   Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+                  mouse( )\interact = 0
                   Root( )\canvas\ResizeBeginWidget = #Null
                 EndIf
               EndIf
@@ -19486,7 +19494,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn root
     EndProcedure
     
-    Procedure Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, *CallBack = #Null, Canvas = #PB_Any )
+    Procedure Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
       ; init
@@ -19497,6 +19505,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If Root( )\canvas\ResizeBeginWidget
             ; Debug "   end - resize " + #PB_Compiler_Procedure
             Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
+            mouse( )\interact = 0
             Root( )\canvas\ResizeBeginWidget = #Null
           EndIf
         EndIf
@@ -19800,16 +19809,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null, Window = -1, *CallBack = #Null )
-      Protected *this, g
+    Procedure.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
+      Protected *this, g, Window = ID::Window( UseGadgetList( 0 ) )
       
-      If Window = - 1
-        Window = GetActiveWindow( )
-      EndIf
-      ;;Debug Window
       Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
       
-      Open( Window, x, y, width, height, "", #PB_Canvas_Container, 0, *CallBack, Gadget )
+      If MapSize(Root( ))
+        Protected *canvas = Root( )\canvas\gadget
+      EndIf
+      
+      Open( Window, x, y, width, height, "", #PB_Canvas_Container, 0, Gadget )
       
       Select Type
         Case #__type_Tree : *this = Tree( 0, 0, width, height, flag )
@@ -19828,6 +19837,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         g      = Gadget
       Else
         g = GadgetID( Gadget )
+      EndIf
+      
+      SetGadgetData( Gadget, *this )
+      ;ReDraw( Root( ) )
+      
+      If IsGadget(*canvas)
+        ; CloseList( )
+        ;Debug ""+Gadget+" "+*canvas
+        ChangeCurrentRoot( GadgetID(*canvas) )
+        OpenList( Root( ) )
       EndIf
       
       ProcedureReturn g
@@ -20790,5 +20809,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------0----------------0----fvv----------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------+----------------+----v44---------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------v-----------------
 ; EnableXP

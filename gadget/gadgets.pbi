@@ -625,7 +625,13 @@ DeclareModule Gadget
     Macro EventGadget() : EventGadget_() : EndMacro
     Macro EventType() : EventType_() : EndMacro
     Macro GadgetType(_gadget_) : GadgetType_(_gadget_) : EndMacro
-    
+    Macro GadgetWidth(_gadget_, _mode_ = #PB_Gadget_ActualSize)
+      GadgetWidth_(_gadget_, _mode_)
+    EndMacro
+    Macro GadgetHeight(_gadget_, _mode_ = #PB_Gadget_ActualSize)
+      GadgetHeight_(_gadget_, _mode_)
+    EndMacro
+
     
     Macro BindGadgetEvent(_gadget_, _callback_, _eventtype_=#PB_All)
       BindGadgetEvent_(_gadget_, _callback_, _eventtype_)
@@ -720,7 +726,7 @@ DeclareModule Gadget
     
     
     Procedure EventData_()
-      If widget::EventWidget( )\data
+      If widget::EventWidget( ) And widget::EventWidget( )\data
         ProcedureReturn widget::EventWidget( )\data
       Else
         ProcedureReturn PB(EventData)()
@@ -728,8 +734,7 @@ DeclareModule Gadget
     EndProcedure
     
     Procedure EventType_()
-      If widget::EventWidget( ) And widget::Atpoint(widget::EventWidget( ), widget::Mouse( )\x, widget::Mouse( )\y) 
-        ;if widget::EventWidget( )\event <>- 1
+      If widget::EventWidget( ) And widget::EventWidget( )\state\enter
         ProcedureReturn widget::EventWidget( )\event
       Else
         ProcedureReturn PB(EventType)()
@@ -738,9 +743,7 @@ DeclareModule Gadget
     
     Procedure EventGadget_()
       If widget::EventWidget( ) And
-         widget::EventWidget( )\root And 
-         widget::Atpoint(widget::EventWidget( ), widget::mouse( )\x, widget::mouse( )\y ) 
-        
+         widget::EventWidget( )\root
         ProcedureReturn widget::EventWidget( )\root\canvas\gadget
        Else
         ProcedureReturn PB(EventGadget)()
@@ -761,6 +764,30 @@ DeclareModule Gadget
       Else
         *this = Gadget
         ProcedureReturn widget::Free(*this)
+      EndIf
+    EndProcedure
+    
+    Procedure GadgetWidth_(Gadget, mode)
+      If PB(IsGadget)(Gadget)
+        If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
+          ProcedureReturn widget::Width(PB(GetGadgetData)(Gadget), mode)
+        Else
+          ProcedureReturn PB(GadgetWidth)(Gadget, mode)
+        EndIf
+      Else
+        ProcedureReturn widget::Width(Gadget, mode)
+      EndIf
+    EndProcedure
+    
+    Procedure GadgetHeight_(Gadget, mode)
+      If PB(IsGadget)(Gadget)
+        If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
+          ProcedureReturn widget::Height(PB(GetGadgetData)(Gadget), mode)
+        Else
+          ProcedureReturn PB(GadgetHeight)(Gadget, mode)
+        EndIf
+      Else
+        ProcedureReturn widget::Height(Gadget, mode)
       EndIf
     EndProcedure
     
@@ -1265,26 +1292,26 @@ DeclareModule Gadget
         EndIf
       EndIf
       
-      Repaints()
+      ;Repaints()
     EndProcedure  
     
     If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;ListViewGadget(0, 10, 10, 160, 160) 
       PB(TreeGadget)(1, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-      TreeGadget(2, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapse); | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+      TreeGadget(2, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapsed); | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
       PB(SplitterGadget)(100, 10, 10, 335, 160, 1, 2, #PB_Splitter_Vertical)
       ;SplitterGadget(100, 10, 10, 335, 160, 1, 2, #PB_Splitter_Vertical)
       
       For ID = 1 To 2
         For a = 0 To 10
-          AddGadgetItem (ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
-          AddGadgetItem (ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+          AddGadgetItem(ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+          AddGadgetItem(ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
           AddGadgetItem(ID, -1, "Sub-Item 1", 0, 1)           ; These are on the 1st sublevel
           AddGadgetItem(ID, -1, "Sub-Item 1_2", 0, 2)         ; These are on the 1st sublevel
           AddGadgetItem(ID, -1, "Sub-Item 2", 0, 1)
           AddGadgetItem(ID, -1, "Sub-Item 3", 0, 1)
           AddGadgetItem(ID, -1, "Sub-Item 4", 0, 1)
-          AddGadgetItem (ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+          AddGadgetItem(ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
         Next
         
         Debug " gadget "+ ID +" count items "+ CountGadgetItems(ID) +" "+ GadgetType(ID)
@@ -1317,5 +1344,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = n------P-d4tttttttttttttt0----
+; Folding = v-------04-f4343333+333333+----
 ; EnableXP

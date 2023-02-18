@@ -98,10 +98,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ; EndIf
   
   OpenWindow(0, 200, 100, 220, 220, "click hire", #PB_Window_SystemMenu)
-  CanvasGadget(0, 10, 10, 200, 200)
+  CanvasGadget(0, 10, 10, 200, 200, #PB_Canvas_Keyboard)
   
   OpenWindow(1, 300, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
-  CanvasGadget(1, 10, 10, 200, 200)
+  CanvasGadget(1, 10, 10, 200, 200, #PB_Canvas_Keyboard)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
@@ -191,6 +191,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ; ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   ; ; CompilerEndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

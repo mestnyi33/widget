@@ -38,6 +38,29 @@ Module Cursor
   
   Global eventTap, psn, EnteredID 
   
+  
+;   Structure ArrayOfMethods
+;   i.i[0]
+; EndStructure
+; ImportC ""
+;   class_copyMethodList(*Class, *p_methodCount)
+;   ; -> An array of pointers of type Method describing
+;   ;    the instance methods implemented by the class
+;   ;    Any instance methods implemented by superclasses are Not included
+;   ;    You must free the array with free()
+;   class_getName(*Class) ; -> UnsafePointer<Int8> -> *string
+;   sel_getName(*Selector); -> const char *
+;   method_getName(*Method) ; -> Selector
+;   method_getTypeEncoding(*Method) ; -> const char *
+;   method_getReturnType(*Method, *dst, dst_len) ; -> void
+;   method_getNumberOfArguments(*Method)         ; -> unsigned int
+;   method_getArgumentType(*Method, index, *dst, dst_len) ; -> void
+;   
+;   NSGetSizeAndAlignment(*StringPtr, *p_size, *p_align) 
+;   ; -> const char *
+;   ;    Obtains the actual size and the aligned size of an encoded type.
+; EndImport
+
   ProcedureC  Proc(proxy, eType, event, refcon)
     Protected handle
     Shared EnteredID
@@ -78,6 +101,66 @@ Module Cursor
       EndIf
       
     Else ; appKitDefined
+      If PressedID  
+;        Define methodCount
+;     Define *Methods.ArrayOfMethods = class_copyMethodList(object_getclass_(CocoaMessage(0, 0, "NSCursor currentSystemCursor")), @methodCount)
+;     Debug *Methods\i[6]
+;     Debug method_getName(*Methods\i[6])
+;     Debug sel_getName(method_getName(*Methods\i[6]))
+;     Debug PeekS(sel_getName(method_getName(*Methods\i[6])), -1, #PB_UTF8)
+;     
+; Debug CocoaMessage(0, 0, "NSCursor currentSystemCursor")
+;         
+; ;         Debug CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentSystemCursor"), "hotSpot")
+; ;         Debug Point\x
+        
+        Static count
+        Cursor::change(PressedID, 1)
+       
+       Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+        If NSEvent
+          Protected Window = CocoaMessage(0, NSEvent, "window")
+          If Window
+            ; If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
+              Protected Point.NSPoint
+              CocoaMessage(@Point, NSEvent, "locationInWindow")
+              Protected contentView = CocoaMessage(0, Window, "contentView")
+              Protected hitTest = CocoaMessage(0, contentView, "hitTest:@", @Point)
+              If hitTest
+                ;Debug hitTest
+                If CocoaMessage(0, Window, "areCursorRectsEnabled")
+                  CocoaMessage(0, Window, "disableCursorRects")
+                ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
+                ;  Debug " reset "
+                EndIf
+              Else
+                If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
+;                   CocoaMessage(0, Window, "discardCursorRects")
+;                   CocoaMessage(0, Window, "resetCursorRects")
+                  CocoaMessage(0, Window, "enableCursorRects")
+                ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
+                 ; Debug " set "
+                EndIf
+              EndIf
+              
+              
+              
+;               ;CocoaMessage(0, Window, "enableCursorRects")
+;               Debug ""+Window+" "+CocoaMessage(0, 0, "NSCursor currentCursor") +" "+ count
+; ;               CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "push")
+; ;                CocoaMessage(0, CocoaMessage(0, 0, "NSCursor openHandCursor"), "set")
+; ;              CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "pop")
+; ;               ;CocoaMessage(0, Window, "disableCursorRects")
+;              count + 1 
+; ;           
+; ;           ;CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "invalidateCursorRects")
+; 
+;           ; EndIf
+         EndIf
+        EndIf
+  
+      EndIf
+      
       If eType = #NSCursorUpdate
         Debug "#NSCursorUpdate"
       EndIf
@@ -236,7 +319,9 @@ Module Cursor
     If *cursor And *cursor\hcursor
       ; reset
       If state = 0 
-        CocoaMessage(0, *cursor\windowID, "enableCursorRects")
+        If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
+          CocoaMessage(0, *cursor\windowID, "enableCursorRects")
+        EndIf
         If *cursor\hcursor = - 1
           CocoaMessage(0, 0, "NSCursor unhide")
         EndIf
@@ -245,7 +330,10 @@ Module Cursor
       ; set
       If *cursor\hcursor <> CocoaMessage(0, 0, "NSCursor currentCursor")
         If state = 1 
-          CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+          If CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
+            CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+          EndIf
+          
           If *cursor\hcursor = - 1
             CocoaMessage(0, 0, "NSCursor hide")
           Else
@@ -266,7 +354,7 @@ Module Cursor
       Protected *cursor._s_cursor
       Protected GadgetID = GadgetID(Gadget)
       CompilerIf #PB_Compiler_IsMainFile
-        Debug "setCursor "+ icursor
+        Debug "setCursor "+ GadgetType(Gadget) +" "+ icursor
       CompilerEndIf
       
       *cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
@@ -362,8 +450,7 @@ Module Cursor
          EndIf
       EndIf
       
-      If *cursor\hcursor And 
-         GadgetID = mouse::Gadget(*cursor\windowID)
+      If *cursor\hcursor And GadgetID = mouse::Gadget(*cursor\windowID) ; ( CocoaMessage(0, 0, "NSEvent pressedMouseButtons") Or GadgetID = mouse::Gadget(*cursor\windowID) )
          EnteredID = GadgetID
          Change( GadgetID, 1 )
         ProcedureReturn #True
@@ -407,5 +494,5 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --7f7---
+; Folding = ---7f+--+-
 ; EnableXP
