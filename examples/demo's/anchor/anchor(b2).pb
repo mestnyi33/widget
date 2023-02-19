@@ -13,8 +13,8 @@ EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   ;
-  a_init(root(), 10, 1)
-  SetColor(root(), #__color_back, RGBA(128, 192, 64, alpha))
+  a_init(root( ))
+  SetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
   
   ; Create five different objects
   *Object1 = a_object(20, 20, 200, 100, "left & right", RGBA(64, 128, 192, alpha)) 

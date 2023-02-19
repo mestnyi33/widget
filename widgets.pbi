@@ -2731,9 +2731,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_remove( a_entered( ), i )
           EndIf
           
+          ;\\
+          If a_index( ) > 0
+            If a_index( ) <> #__a_moved
+              If a_entered( ) And
+                 a_entered( )\_a_\id[a_index( )] And
+                 Not is_at_point_( a_entered( )\_a_\id[a_index( )], mouse( )\x, mouse( )\y )
+                
+                If a_entered( )\_a_\id[a_index( )]\color\state <> #__S_0
+                  a_entered( )\_a_\id[a_index( )]\color\state = #__S_0
+                  a_entered( )\state\repaint                  = 1
+                  ;Debug "" + a_index( ) + " - e_leave"
+                EndIf
+              EndIf
+            EndIf
+            a_index( ) = 0
+          EndIf
+          
+          ;\\
           a_entered( ) = *this
           
           ;\\
+          i = 0
           a_add( *this, i )
           a_size( *this\_a_\id, *this\_a_\size )
           a_move( *this\_a_\id, *this\container,
@@ -2741,6 +2760,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\y[#__c_screen],
                   *this\width[#__c_screen],
                   *this\height[#__c_screen] )
+          
+          
+          ;\\
+          i = 0
+          For i = 1 To #__a_moved
+            If a_entered( )\_a_\id[i] And
+               is_at_point_( a_entered( )\_a_\id[i], mouse( )\x, mouse( )\y )
+              ;
+              If a_index( ) <> i
+                a_index( ) = i
+                
+                If i <> #__a_moved
+                  If a_entered( )\_a_\id[i]\color\state <> #__S_1
+                    ;Debug "" + i + " - a_enter"
+                    a_entered( )\_a_\id[i]\color\state = #__S_1
+                    a_entered( )\state\repaint         = 1
+                  EndIf
+                EndIf
+              EndIf
+              Break
+            EndIf
+          Next
+          
           
           ;\\
           If *this\_a_\id\color\state <> #__S_1
@@ -4628,12 +4670,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If *this\root And *this\root\canvas\ResizeBeginWidget = #Null
-          ;Debug "  start - resize"
-          *this\root\canvas\ResizeBeginWidget = *this
-          mouse( )\interact = 1
-          Post( *this, #__event_ResizeBegin )
-        EndIf
         
 ; ; ;         If *this\_a_ And *this\_a_\id And *this\_a_\transform
 ; ; ;           a_move( *this\_a_\id, *this\container,
@@ -14309,14 +14345,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
           EndIf
           
-          ;
-          If *this\root\canvas\ResizeBeginWidget
-            ; Debug "   end - resize " + #PB_Compiler_Procedure
-            Post( *this\root\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-            mouse( )\interact = 0
-            *this\root\canvas\ResizeBeginWidget = #Null
-          EndIf
-          
+          ;\\
           PostCanvasRepaint( *parent )
           PostCanvasRepaint( *lastParent )
           
@@ -15356,13 +15385,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-  CREATEs
     Procedure.i Create( *parent._S_widget, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
       Protected *root._s_root = Root( )  ; @*canvas\_roots( ) ;
-      If *root\canvas\ResizeBeginWidget
-        ; Debug "   end - resize " + #PB_Compiler_Procedure
-        Post( *root\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-        mouse( )\interact = 0
-        *root\canvas\ResizeBeginWidget = #Null
-      EndIf
-      
       Protected color, image;, *this.allocate( Widget )
       
       Protected *this._S_widget
@@ -17372,7 +17394,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 
-                *widget = a_entered( )
+                If i <> #__a_moved
+                  *widget = a_entered( )
+                EndIf
                 Break
               EndIf
             Next
@@ -18295,6 +18319,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ repaint state
         Select eventtype
+          Case #__event_ResizeBegin 
+            Debug "resize - start " + *this\class
+          Case #__event_ResizeEnd
+            Debug "resize - stop " + *this\class
+            
           Case #__event_Focus
             If *this\color\state = #__s_3
               *this\color\state = #__s_2
@@ -18869,13 +18898,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          eventtype = #__event_RightButtonUp
         
         If Root( )
-          If Root( )\canvas\ResizeBeginWidget
-            ; Debug "   end - resize " + #PB_Compiler_Procedure
-            Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-            mouse( )\interact = 0
-            Root( )\canvas\ResizeBeginWidget = #Null
-          EndIf
-          
           ;           ;\\
           ;           If PressedWidget( ) And
           ;              Root( ) <> PressedWidget( )\root
@@ -18890,7 +18912,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If IsGadget( Canvas ) And
              GadgetType( Canvas ) = #PB_GadgetType_Canvas
             ChangeCurrentRoot( GadgetID( Canvas ) )
-            ; Debug "canvas - enter "+Canvas +" "+ Root( )
           EndIf
         EndIf
       EndIf
@@ -18913,15 +18934,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If Root( )\canvas\repaint = #True
-              
-              If EventData( ) = #__event_Create
-                If Root( )\canvas\ResizeBeginWidget
-                  ; Debug "   end - resize " + #PB_Compiler_Procedure
-                  Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-                  mouse( )\interact = 0
-                  Root( )\canvas\ResizeBeginWidget = #Null
-                EndIf
-              EndIf
               
               ReDraw( Root( ) )
               Root( )\canvas\repaint = #False
@@ -19498,15 +19510,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; init
       If Not MapSize(Root( ))
         events::SetCallback( @EventHandler( ) )
-      Else
-        If Root( )
-          If Root( )\canvas\ResizeBeginWidget
-            ; Debug "   end - resize " + #PB_Compiler_Procedure
-            Post( Root( )\canvas\ResizeBeginWidget, #__event_ResizeEnd )
-            mouse( )\interact = 0
-            Root( )\canvas\ResizeBeginWidget = #Null
-          EndIf
-        EndIf
       EndIf
       
       If width = #PB_Ignore And height = #PB_Ignore
@@ -19792,6 +19795,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
+        ;\\
         Resize( *this, x, y, width, height )
         
         If *this\flag & #__Window_NoGadgets = #False
@@ -19801,6 +19805,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\flag & #__Window_NoActivate = #False
           SetActive( *this )
         EndIf
+        
         PostCanvasRepaint( *this, #__event_Create)
       EndWith
       
@@ -20011,7 +20016,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           FocusedWidget( ) = *this\parent
         EndIf
         
-        PostCanvasRepaint( *this\parent )
+        PostCanvasRepaint( *this\parent, #__event_free )
         ;ClearStructure( *this, _S_widget )
       EndIf
       
@@ -20297,7 +20302,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;
         PushMapPosition(Root( ))
         ForEach Root( )
-          PostCanvasRepaint( Root( ) )
+          PostCanvasRepaint( Root( ), #__event_create )
         Next
         PopMapPosition(Root( ))
         
@@ -20807,5 +20812,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------800------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------v44--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vL---------------------------------------------------------------------------------b---------------------------------------
 ; EnableXP
