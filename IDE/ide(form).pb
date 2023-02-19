@@ -544,7 +544,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case #_DD_reParent
             Debug " ----- DD_move ----- "
             If SetParent( PressedWidget( ), EnteredWidget( ) )
-              Protected i = 3 : Debug "re-parent "+ PressedWidget( )\_parent( )\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
+              Protected i = 3 : Debug "re-parent "+ PressedWidget( )\parent\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
             EndIf
             
           Case #_DD_CreateNew 
@@ -665,7 +665,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
     ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-    ;widget( )\color = widget( )\_parent( )\color
+    ;widget( )\color = widget( )\parent\color
     widget( )\class = "ToolBar"
     widget( )\data = _button_
     
@@ -808,7 +808,7 @@ CompilerIf #PB_Compiler_IsMainFile
           
           a_transform( )\type = 0
           If DragPrivate( #_DD_CreateNew, #PB_Drag_Copy )
-            SetCursor( EventWidget, CreateCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) ) )
+            SetCursor( EventWidget, Cursor::Create( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) ) )
           EndIf
         EndIf
         

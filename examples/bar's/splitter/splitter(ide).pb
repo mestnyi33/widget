@@ -1,12 +1,10 @@
-﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
-;XIncludeFile "../../../widgets-splitter.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   Uselib(widget)
   EnableExplicit
-  ;#__Text_Border = #PB_Text_Border
+  #__Text_Border = #PB_Text_Border
   
   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help

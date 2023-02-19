@@ -2,7 +2,7 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-XIncludeFile "../../../widget-events.pbi"
+XIncludeFile "../../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -77,7 +77,7 @@ SetGadgetState(15, 250-9-25)
   
                   
   widget::SetState(*w_13, 25) 
-  widget::SetState(*w_15, -25)
+  widget::SetState(*w_15, 250-9-25)
   
 ;   
 ;widget::SetState(*w_15, *w_15\bar\page\end-25);-#__splitter_buttonsize)
