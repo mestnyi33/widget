@@ -364,10 +364,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure   SetPositionItem( *this._S_widget, *currentRow._s_rows, position.l, *rowMoved._S_rows = #Null ) ; Ok
                                                                                                              ;       If *rowMoved = #Null
                                                                                                              ;         Select Position 
-                                                                                                             ;           Case #PB_List_First  : *rowMoved = *currentRow\parent_row( )\first\row
+                                                                                                             ;           Case #PB_List_First  : *rowMoved = *currentRow\ParentRow( )_row( )\first\row
                                                                                                              ;           Case #PB_List_Before : *rowMoved = *currentRow\before\row
                                                                                                              ;           Case #PB_List_After  : *rowMoved = *currentRow\after\row
-                                                                                                             ;           Case #PB_List_Last   : *rowMoved = *currentRow\parent_row( )\last\row
+                                                                                                             ;           Case #PB_List_Last   : *rowMoved = *currentRow\ParentRow( )_row( )\last\row
                                                                                                              ;         EndSelect
                                                                                                              ;       EndIf
                                                                                                              ;       
@@ -424,11 +424,11 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;         If *currentRow\after\row
                                                                                                              ;           *currentRow\after\row\before\row = *currentRow\before\row
                                                                                                              ;         EndIf
-                                                                                                             ;         If *currentRow\parent_row( )\first\row = *currentRow
-                                                                                                             ;           *currentRow\parent_row( )\first\row = *currentRow\after\row
+                                                                                                             ;         If *currentRow\ParentRow( )_row( )\first\row = *currentRow
+                                                                                                             ;           *currentRow\ParentRow( )_row( )\first\row = *currentRow\after\row
                                                                                                              ;         EndIf
-                                                                                                             ;         If *currentRow\parent_row( )\last\row = *currentRow
-                                                                                                             ;           *currentRow\parent_row( )\last\row = *currentRow\before\row
+                                                                                                             ;         If *currentRow\ParentRow( )_row( )\last\row = *currentRow
+                                                                                                             ;           *currentRow\ParentRow( )_row( )\last\row = *currentRow\before\row
                                                                                                              ;         EndIf
                                                                                                              ;         
                                                                                                              ;         ;
@@ -441,10 +441,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           If *currentRow\before\row
                                                                                                              ;             *currentRow\before\row\after\row = *currentRow
                                                                                                              ;           Else
-                                                                                                             ;             If *currentRow\parent_row( )\first\row
-                                                                                                             ;               *currentRow\parent_row( )\first\row\before\row = *currentRow
+                                                                                                             ;             If *currentRow\ParentRow( )_row( )\first\row
+                                                                                                             ;               *currentRow\ParentRow( )_row( )\first\row\before\row = *currentRow
                                                                                                              ;             EndIf
-                                                                                                             ;             *currentRow\parent_row( )\first\row = *currentRow
+                                                                                                             ;             *currentRow\ParentRow( )_row( )\first\row = *currentRow
                                                                                                              ;           EndIf
                                                                                                              ;         EndIf
                                                                                                              ;         
@@ -457,10 +457,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           If *currentRow\after\row
                                                                                                              ;             *currentRow\after\row\before\row = *currentRow
                                                                                                              ;           Else
-                                                                                                             ;             If *currentRow\parent_row( )\last\row
-                                                                                                             ;               *currentRow\parent_row( )\last\row\after\row = *currentRow
+                                                                                                             ;             If *currentRow\ParentRow( )_row( )\last\row
+                                                                                                             ;               *currentRow\ParentRow( )_row( )\last\row\after\row = *currentRow
                                                                                                              ;             EndIf
-                                                                                                             ;             *currentRow\parent_row( )\last\row = *currentRow
+                                                                                                             ;             *currentRow\ParentRow( )_row( )\last\row = *currentRow
                                                                                                              ;           EndIf
                                                                                                              ;         EndIf
                                                                                                              ;         
@@ -511,34 +511,34 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             sublevel = *this\row\added\sublevel + 1
 ;             *parent_row = *this\row\added
 ;             
-;           ElseIf *this\row\added\parent 
-;             If sublevel > *this\row\added\parent\sublevel 
-;               *parent_row = *this\row\added\parent
+;           ElseIf *this\row\added\ParentRow( ) 
+;             If sublevel > *this\row\added\ParentRow( )\sublevel 
+;               *parent_row = *this\row\added\ParentRow( )
 ;               
 ;             ElseIf sublevel < *this\row\added\sublevel 
-;               If *this\row\added\parent\parent
-;                 *parent_row = *this\row\added\parent\parent
+;               If *this\row\added\ParentRow( )\ParentRow( )
+;                 *parent_row = *this\row\added\ParentRow( )\ParentRow( )
 ;                 
 ;                 While *parent_row 
 ;                   If sublevel >= *parent_row\sublevel 
 ;                     If sublevel = *parent_row\sublevel 
-;                       *parent_row = *parent_row\parent
+;                       *parent_row = *parent_row\ParentRow( )
 ;                     EndIf
 ;                     Break
 ;                   Else
-;                     *parent_row = *parent_row\parent
+;                     *parent_row = *parent_row\ParentRow( )
 ;                   EndIf
 ;                 Wend
 ;               EndIf
 ;               
 ;               ; for the editor( )
-;               If *this\row\added\parent 
-;                 If *this\row\added\parent\sublevel = sublevel 
-;                   ;                     *rows\before = *this\row\added\parent
-;                   ;                     *this\row\added\parent\after = *rows
+;               If *this\row\added\ParentRow( ) 
+;                 If *this\row\added\ParentRow( )\sublevel = sublevel 
+;                   ;                     *rows\before = *this\row\added\ParentRow( )
+;                   ;                     *this\row\added\ParentRow( )\after = *rows
 ;                   
 ;                   If *this\type = #__type_Editor
-;                     *parent_row = *this\row\added\parent
+;                     *parent_row = *this\row\added\ParentRow( )
 ;                     *parent_row\last = *rows
 ;                     *this\row\added = *parent_row
 ;                     last = *parent_row
@@ -552,7 +552,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *parent_row
           *parent_row\childrens + 1
-          *rows\parent = *parent_row
+          *rows\ParentRow( ) = *parent_row
         EndIf
         
         If sublevel
@@ -566,9 +566,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ; for the tree( )
-        If *this\row\added\parent And
-           *this\row\added\parent\sublevel < sublevel
-          *this\row\added\parent\last = *this\row\added
+        If *this\row\added\ParentRow( ) And
+           *this\row\added\ParentRow( )\sublevel < sublevel
+          *this\row\added\ParentRow( )\last = *this\row\added
         EndIf
         
         If *this\row\added\sublevel = 0
@@ -579,9 +579,9 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\first = *rows
         EndIf
         
-        If *this\mode\collapsed And *rows\parent And 
-           *rows\sublevel > *rows\parent\sublevel
-          ;*rows\parent\collapsebox\___state= 1 
+        If *this\mode\collapsed And *rows\ParentRow( ) And 
+           *rows\sublevel > *rows\ParentRow( )\sublevel
+          ;*rows\ParentRow( )\collapsebox\___state= 1 
           *rows\hide = 1
         EndIf
         
@@ -642,25 +642,25 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events( )
-    Protected EventWidget = EventWidget( )
+    Protected *eventWidget._s_widget = EventWidget( )
     Select WidgetEventType( ) 
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
-          If IsContainer( EventWidget )
+          If IsContainer( *eventWidget )
             DragPrivate( #_DD_widget_new_create, #PB_Drag_Drop )
-            SetCursor( EventWidget, #PB_Cursor_Cross )
+            SetCursor( *eventWidget, #PB_Cursor_Cross )
           EndIf
         Else
           If a_index( ) = #__a_moved
             DragPrivate( #_DD_widget_re_parent )
-            SetCursor( EventWidget, #PB_Cursor_Arrows )
+            SetCursor( *eventWidget, #PB_Cursor_Arrows )
           EndIf
         EndIf
         
       Case #PB_EventType_Drop
-        If IsContainer( EventWidget )
+        If IsContainer( *eventWidget )
           If GetState( id_elements_tree) > 0 
-            widget_add( EventWidget, GetText( id_elements_tree ), 
+            widget_add( *eventWidget, GetText( id_elements_tree ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
             
             ; end new create
@@ -716,11 +716,11 @@ CompilerIf #PB_Compiler_IsMainFile
               *rows\sublevel = SubLevel2 + 1
               If *parent_row
                 ;*parent_row\childrens + 1
-                If *rows\parent ;And *rows\parent\sublevel >= *parent_row\sublevel
+                If *rows\ParentRow( ) ;And *rows\ParentRow( )\sublevel >= *parent_row\sublevel
                   Debug 7777
-                ;  *rows\parent\childrens - 1
+                ;  *rows\ParentRow( )\childrens - 1
                 EndIf
-                *rows\parent = *parent_row
+                *rows\ParentRow( ) = *parent_row
               EndIf
               
               MoveElement( *this\_rows( ), #PB_List_After, *parent_row)
@@ -736,12 +736,30 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         
-        ;       Case #PB_EventType_LeftButtonUp
-        ;         If GetState( id_elements_tree) <> 0 
-        ;           Debug ""+mouse( )\x+" "+mouse( )\delta\x
-        ;           widget_add( EventWidget( ), GetText( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
-        ;            SetState( id_elements_tree, 0 )
-        ;         EndIf
+       Case #PB_EventType_StatusChange
+        ; Debug "widget status change "
+        SetState( id_inspector_tree, GetData( *eventWidget ) )
+        If IsGadget( id_design_code )
+          SetGadgetState( id_design_code, GetData( *eventWidget ) )
+        EndIf
+        ;properties_update( id_inspector_tree, *eventWidget )
+        
+      Case #PB_EventType_LeftButtonUp
+        If ListSize(a_group( ))
+          ;\\ reset all selected state
+          SetState( id_inspector_tree, - 1 )
+          If IsGadget( id_design_code )
+            SetGadgetState( id_design_code, - 1 )
+          EndIf
+          
+          ;\\ set selected state
+          ForEach a_group( )
+            SetItemState( id_inspector_tree, GetData( a_group( )\widget ), #PB_Tree_Selected )
+            If IsGadget( id_design_code )
+              SetGadgetItemState( id_design_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
+            EndIf
+          Next
+        EndIf
         
     EndSelect
   EndProcedure
@@ -752,13 +770,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._s_widget
     Protected e_type = WidgetEvent( )\type
     Protected e_item = WidgetEvent( )\item
-    Protected EventWidget = EventWidget( )
+    Protected *eventWidget = EventWidget( )
     
     Select e_type
       Case #PB_EventType_LeftButtonDown
         
       Case #PB_EventType_DragStart
-        If EventWidget = id_elements_tree
+        If *eventWidget = id_elements_tree
           ClearDebugOutput()
           
           Debug "drag - "
@@ -766,15 +784,15 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
-          DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy);, ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
+          DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy);, ImageID( GetItemData( *eventWidget, GetState( *eventWidget ))))
         EndIf
         
       Case #PB_EventType_Change
         Protected q, startpos, stoppos
-        If EventWidget = id_inspector_tree
+        If *eventWidget = id_inspector_tree
           ClearDebugOutput()
           
-          *this = GetItemData( EventWidget, GetState( EventWidget ) )
+          *this = GetItemData( *eventWidget, GetState( *eventWidget ) )
           
           If a_set( *this )
           EndIf
@@ -791,12 +809,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::Open( OpenWindow( #PB_Any, x,y,width,height, "ide", flag ) )
+    Define root = widget::Open( 0, x,y,width,height, "ide", flag ) 
     window_ide = widget::GetWindow( root )
     canvas_ide = widget::GetGadget( root )
     
     id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
-    id_design_code = TreeGadget(-1, 590,270,200,250 )
+    id_design_code = ListViewGadget(-1, 590,270,200,250, #PB_ListView_MultiSelect )
+    ;id_design_code = TreeGadget(-1, 590,270,200,250, #PB_Tree_AlwaysShowSelection )
     id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
     id_design_form = MDI( 10,10,410,510, #__mdi_editable ) 
     
@@ -848,7 +867,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Define *window = widget_add(id_design_form, "window", 30, 30, 350, 250)
-    widget_add(*window, "button", 15, 15, 120, 30)
+    widget_add(*window, "button", 50, 20, 120, 30)
     
     Define *container = widget_add(*window, "container", 15, 50, 165, 170)
     Define *container = widget_add(*window, "container", 185, 50, 165, 170)
@@ -867,7 +886,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   DataSection   
     ; include images
-    IncludePath #path + "/ide/include/images"
+    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      IncludePath #path + "../ide/include/images"
+    CompilerElse
+      IncludePath #path + "/ide/include/images"
+    CompilerEndIf
     
     widget_delete:    : IncludeBinary "delete1.png"
     widget_paste:     : IncludeBinary "paste.png"
@@ -886,5 +909,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------6------
+; Folding = --------------
 ; EnableXP

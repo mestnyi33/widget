@@ -511,34 +511,34 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             sublevel = *this\row\added\sublevel + 1
 ;             *parent_row = *this\row\added
 ;             
-;           ElseIf *this\row\added\parent\row 
-;             If sublevel > *this\row\added\parent\row\sublevel 
-;               *parent_row = *this\row\added\parent\row
+;           ElseIf *this\row\added\ParentRow( ) 
+;             If sublevel > *this\row\added\ParentRow( )\sublevel 
+;               *parent_row = *this\row\added\ParentRow( )
 ;               
 ;             ElseIf sublevel < *this\row\added\sublevel 
-;               If *this\row\added\parent\row\parent\row
-;                 *parent_row = *this\row\added\parent\row\parent\row
+;               If *this\row\added\ParentRow( )\ParentRow( )
+;                 *parent_row = *this\row\added\ParentRow( )\ParentRow( )
 ;                 
 ;                 While *parent_row 
 ;                   If sublevel >= *parent_row\sublevel 
 ;                     If sublevel = *parent_row\sublevel 
-;                       *parent_row = *parent_row\parent\row
+;                       *parent_row = *parent_row\ParentRow( )
 ;                     EndIf
 ;                     Break
 ;                   Else
-;                     *parent_row = *parent_row\parent\row
+;                     *parent_row = *parent_row\ParentRow( )
 ;                   EndIf
 ;                 Wend
 ;               EndIf
 ;               
 ;               ; for the editor( )
-;               If *this\row\added\parent\row 
-;                 If *this\row\added\parent\row\sublevel = sublevel 
-;                   ;                     *rows\before = *this\row\added\parent\row
-;                   ;                     *this\row\added\parent\row\after = *rows
+;               If *this\row\added\ParentRow( ) 
+;                 If *this\row\added\ParentRow( )\sublevel = sublevel 
+;                   ;                     *rows\before = *this\row\added\ParentRow( )
+;                   ;                     *this\row\added\ParentRow( )\after = *rows
 ;                   
 ;                   If *this\type = #__type_Editor
-;                     *parent_row = *this\row\added\parent\row
+;                     *parent_row = *this\row\added\ParentRow( )
 ;                     *parent_row\last = *rows
 ;                     *this\row\added = *parent_row
 ;                     last = *parent_row
@@ -552,7 +552,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *parent_row
           *parent_row\childrens + 1
-          *rows\parent\row = *parent_row
+          *rows\ParentRow( ) = *parent_row
         EndIf
         
         If sublevel
@@ -566,9 +566,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ; for the tree( )
-        If *this\row\added\parent\row And
-           *this\row\added\parent\row\sublevel < sublevel
-          *this\row\added\parent\row\last = *this\row\added
+        If *this\row\added\ParentRow( ) And
+           *this\row\added\ParentRow( )\sublevel < sublevel
+          *this\row\added\ParentRow( )\last = *this\row\added
         EndIf
         
         If *this\row\added\sublevel = 0
@@ -579,9 +579,9 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\first = *rows
         EndIf
         
-        If *this\mode\collapsed And *rows\parent\row And 
-           *rows\sublevel > *rows\parent\row\sublevel
-          ;*rows\parent\row\collapsebox\___state= 1 
+        If *this\mode\collapsed And *rows\ParentRow( ) And 
+           *rows\sublevel > *rows\ParentRow( )\sublevel
+          ;*rows\ParentRow( )\collapsebox\___state= 1 
           *rows\hide = 1
         EndIf
         
@@ -733,12 +733,12 @@ CompilerIf #PB_Compiler_IsMainFile
               
               *rows\sublevel = SubLevel2 + 1
               If *parent_row
-                *parent_row\childrens + 1
-                If *rows\parent\row ;And *rows\parent\row\sublevel >= *parent_row\sublevel
+                ; *parent_row\childrens + 1
+                If *rows\ParentRow( ) ;And *rows\ParentRow( )\sublevel >= *parent_row\sublevel
                   Debug 7777
-                  *rows\parent\row\childrens - 1
+                  *rows\ParentRow( )\childrens - 1
                 EndIf
-                *rows\parent\row = *parent_row
+                *rows\ParentRow( ) = *parent_row
               EndIf
               
               MoveElement( *this\_rows( ), #PB_List_After, *parent_row)

@@ -403,7 +403,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       sublevelpos.a
       sublevelsize.a
       
-      *focused._s_rows          ; focused item
+      clickselect.b
+      multiselect.b
+      
+      *focused._s_rows         ; focused item
       *pressed._s_rows         ; pushed item
       *entered._s_rows         ; entered item
       *leaved._s_rows          ; leaved item
@@ -416,7 +419,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       margin._s_margin
       
-      *_tt._s_tt
+      *tt._s_tt
       
       ;box._s_buttons          
       ;List _s._s_rows( )

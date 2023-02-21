@@ -369,6 +369,12 @@ Module events
 ;           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
 ;         EndIf
 ;       EndIf
+      If EventType = #PB_EventType_Focus Or 
+         EventType = #PB_EventType_LostFocus
+        If PressedGadget( ) = - 1
+          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+        EndIf
+      EndIf
       If EventType = #PB_EventType_RightButtonDown Or
         EventType = #PB_EventType_RightButtonUp
         CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )

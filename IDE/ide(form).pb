@@ -1263,7 +1263,11 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\ include images
   DataSection   
     ;IncludePath "include/images"
-    IncludePath #path + "IDE/include/images"
+    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+    IncludePath #path + "../IDE/include/images"
+    CompilerElse
+    IncludePath #path + "/IDE/include/images"
+    CompilerEndIf
     
     widget_delete:    : IncludeBinary "delete1.png"
     widget_paste:     : IncludeBinary "paste.png"
@@ -1282,5 +1286,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v-----0+8---4-v0
+; Folding = -----v-----0+8---4-v0-
 ; EnableXP

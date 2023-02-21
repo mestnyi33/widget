@@ -354,7 +354,7 @@
     #__m_multiselect  = 3
     #__m_optionselect = 4
     
-    #__listview_clickselect = #__flag_clickselect  ; #PB_listView_clickSelect ;
+    #__listview_clickselect = #__flag_clickselect
     #__listview_multiselect = #__flag_multiline
     
     ;-\\ Tree

@@ -114,50 +114,50 @@ Module Cursor
 ; ;         Debug CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentSystemCursor"), "hotSpot")
 ; ;         Debug Point\x
         
-        Static count
         Cursor::change(PressedID, 1)
        
-       Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-        If NSEvent
-          Protected Window = CocoaMessage(0, NSEvent, "window")
-          If Window
-            ; If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
-              Protected Point.NSPoint
-              CocoaMessage(@Point, NSEvent, "locationInWindow")
-              Protected contentView = CocoaMessage(0, Window, "contentView")
-              Protected hitTest = CocoaMessage(0, contentView, "hitTest:@", @Point)
-              If hitTest
-                ;Debug hitTest
-                If CocoaMessage(0, Window, "areCursorRectsEnabled")
-                  CocoaMessage(0, Window, "disableCursorRects")
-                ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
-                ;  Debug " reset "
-                EndIf
-              Else
-                If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
-;                   CocoaMessage(0, Window, "discardCursorRects")
-;                   CocoaMessage(0, Window, "resetCursorRects")
-                  CocoaMessage(0, Window, "enableCursorRects")
-                ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
-                 ; Debug " set "
-                EndIf
-              EndIf
-              
-              
-              
-;               ;CocoaMessage(0, Window, "enableCursorRects")
-;               Debug ""+Window+" "+CocoaMessage(0, 0, "NSCursor currentCursor") +" "+ count
-; ;               CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "push")
-; ;                CocoaMessage(0, CocoaMessage(0, 0, "NSCursor openHandCursor"), "set")
-; ;              CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "pop")
-; ;               ;CocoaMessage(0, Window, "disableCursorRects")
-;              count + 1 
-; ;           
-; ;           ;CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "invalidateCursorRects")
-; 
-;           ; EndIf
-         EndIf
-        EndIf
+;       Static count
+;       Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+;         If NSEvent
+;           Protected Window = CocoaMessage(0, NSEvent, "window")
+;           If Window
+;             ; If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
+;               Protected Point.NSPoint
+;               CocoaMessage(@Point, NSEvent, "locationInWindow")
+;               Protected contentView = CocoaMessage(0, Window, "contentView")
+;               Protected hitTest = CocoaMessage(0, contentView, "hitTest:@", @Point)
+;               If hitTest
+;                 ;Debug hitTest
+;                 If CocoaMessage(0, Window, "areCursorRectsEnabled")
+;                   CocoaMessage(0, Window, "disableCursorRects")
+;                 ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
+;                 ;  Debug " reset "
+;                 EndIf
+;               Else
+;                 If Not CocoaMessage(0, Window, "areCursorRectsEnabled")
+; ;                   CocoaMessage(0, Window, "discardCursorRects")
+; ;                   CocoaMessage(0, Window, "resetCursorRects")
+;                   CocoaMessage(0, Window, "enableCursorRects")
+;                 ;  CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "set")
+;                  ; Debug " set "
+;                 EndIf
+;               EndIf
+;               
+;               
+;               
+; ;               ;CocoaMessage(0, Window, "enableCursorRects")
+; ;               Debug ""+Window+" "+CocoaMessage(0, 0, "NSCursor currentCursor") +" "+ count
+; ; ;               CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "push")
+; ; ;                CocoaMessage(0, CocoaMessage(0, 0, "NSCursor openHandCursor"), "set")
+; ; ;              CocoaMessage(0, CocoaMessage(0, 0, "NSCursor currentCursor"), "pop")
+; ; ;               ;CocoaMessage(0, Window, "disableCursorRects")
+; ;              count + 1 
+; ; ;           
+; ; ;           ;CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "invalidateCursorRects")
+; ; 
+; ;           ; EndIf
+;          EndIf
+;         EndIf
   
       EndIf
       
@@ -494,5 +494,5 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---7f+--+-
+; Folding = --2-9--0-
 ; EnableXP
