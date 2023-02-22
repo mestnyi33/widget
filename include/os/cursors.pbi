@@ -42,32 +42,35 @@ DeclareModule Cursor
     
     #PB_Cursor_Invisible       ; = 11
     
-    #PB_Cursor_DiagonalLeft  
-    #PB_Cursor_DiagonalRight  
+    #PB_Cursor_LeftUp
+    #PB_Cursor_RightUp
+    #PB_Cursor_LeftDown
+    #PB_Cursor_RightDown
     
     #PB_Cursor_Left  
     #PB_Cursor_Right           
     #PB_Cursor_Up 
     #PB_Cursor_Down           
     
-    #PB_Cursor_LeftUp
-    #PB_Cursor_RightUp
-    #PB_Cursor_LeftDown
-    #PB_Cursor_RightDown
+    #PB_Cursor_LeftRight2      
+    #PB_Cursor_UpDown2        
     
-    #PB_Cursor_SeparatorLeft           
-    #PB_Cursor_SeparatorLeftRight      
-    #PB_Cursor_SeparatorRight           
-    #PB_Cursor_SeparatorUp              
-    #PB_Cursor_SeparatorUpDown        
-    #PB_Cursor_SeparatorDown           
+    ;     #PB_Cursor_SeparatorLeft           
+    ;     #PB_Cursor_SeparatorRight           
+    ;     #PB_Cursor_SeparatorUp              
+    ;     #PB_Cursor_SeparatorDown           
+    
+    #PB_Cursor_Drag
+    #PB_Cursor_Drop
     
     #PB_Cursor_Grab            
     #PB_Cursor_Grabbing
-    #PB_Cursor_Drag
-    #PB_Cursor_Drop
     #PB_Cursor_VIBeam
   EndEnumeration
+  
+  #PB_Cursor_DiagonalLeft  = #PB_Cursor_LeftUpRightDown
+  #PB_Cursor_DiagonalRight = #PB_Cursor_LeftDownRightUp
+  
   
   Structure _s_cursor
     icursor.i
@@ -324,90 +327,79 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Debug "currentCursor - "+CocoaMessage(0, 0, "NSCursor currentCursor") ; CocoaMessage(0, 0, "NSCursor systemCursor") +" "+ 
   ;;events::SetCallback(@EventHandler())
   
+  ;-\\ OPENWINDOW
   OpenWindow(4, 550, 300, 328, 328, "window_4", #PB_Window_SystemMenu)
-  Define Canvas_0 = CanvasGadget(#PB_Any, 8, 8, 86, 86)
-  ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
-  Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56)
-  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56)
-  ;;Canvas_3 = CanvasGadget(#PB_Any, 8, 200, 56, 56)
-  Define Canvas_32 = CanvasGadget(#PB_Any, 8, 264, 56, 56)
+  Define Invisible = CanvasGadget(#PB_Any, 8, 8, 86, 86) : GadgetToolTip( Invisible, "#PB_Cursor_Invisible")
+  Define Denied = CanvasGadget(#PB_Any, 8, 264, 56, 56) : GadgetToolTip( Denied, "#PB_Cursor_Denied")
+  Define Cross = CanvasGadget(#PB_Any, 264, 8, 56, 56) : GadgetToolTip( Cross, "#PB_Cursor_Cross")
+  Define Busy = CanvasGadget(#PB_Any, 264, 264, 56, 56) : GadgetToolTip( Busy, "#PB_Cursor_Busy")
   
   ;   Canvas_4 = CanvasGadget(#PB_Any, 72, 8, 56, 56)
   Define lt = CanvasGadget(#PB_Any, 72, 72, 56, 56)
-  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56)
   Define lb = CanvasGadget(#PB_Any, 72, 200, 56, 56)
   ;   Canvas_72 = CanvasGadget(#PB_Any, 72, 264, 56, 56)
   
-  Define up = CanvasGadget(#PB_Any, 136, 8, 56, 24)
-  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24)
-  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56)
-  Define c = CanvasGadget(#PB_Any, 136, 136, 56, 56)
-  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56)
-  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24)
-  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24)
+  Define up = CanvasGadget(#PB_Any, 136, 8, 56, 24) : GadgetToolTip( up, "#PB_Cursor_Up")
+  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24) : GadgetToolTip( up2, "#PB_Cursor_UpDown")
+  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56) : GadgetToolTip( up3, "#PB_Cursor_UpDown2")
+  
+  Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56) : GadgetToolTip( left, "#PB_Cursor_Left")
+  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56) : GadgetToolTip( left2, "#PB_Cursor_LeftRight")
+  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56) : GadgetToolTip( left3, "#PB_Cursor_LeftRight2")
+  
+  Define Arrows = CanvasGadget(#PB_Any, 136, 136, 56, 56) : GadgetToolTip( Arrows, "#PB_Cursor_Arrows")
+  
+  Define right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56) : GadgetToolTip( right, "#PB_Cursor_Right")
+  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#PB_Cursor_LeftRight")
+  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#PB_Cursor_LeftRight2")
+  
+  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#PB_Cursor_UpDown")
+  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#PB_Cursor_UpDown")
+  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#PB_Cursor_Down2")
   
   ;   Canvas_12 = CanvasGadget(#PB_Any, 200, 8, 56, 56)
   Define rt = CanvasGadget(#PB_Any, 200, 72, 56, 56)
-  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56)
   Define rb = CanvasGadget(#PB_Any, 200, 200, 56, 56)
   ;   Canvas_152 = CanvasGadget(#PB_Any, 200, 264, 56, 56)
   
-  Define Canvas_16 = CanvasGadget(#PB_Any, 264, 8, 56, 56)
+  ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
+  
+  ;;Canvas_3 = CanvasGadget(#PB_Any, 8, 200, 56, 56)
   ;;Canvas_17 = CanvasGadget(#PB_Any, 264, 72, 56, 56)
-  Define right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56)
-  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56)
   ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
-  Define Canvas_192 = CanvasGadget(#PB_Any, 264, 264, 56, 56)
   
-;   Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
-;   Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
-;   Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-;   
-;   ;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-; ;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
-;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
-;   Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
-;   Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
-;   Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
-; ;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-; ;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
-;   Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
-;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
-; 
-;   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
-;   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
-;   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
-;   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
-;   Cursor::Set((left3), Cursor::#PB_Cursor_Left ) 
-;   Cursor::Set((up3), Cursor::#PB_Cursor_Up ) 
-;   Cursor::Set((Right3), Cursor::#PB_Cursor_Right ) 
-;   Cursor::Set((down3), Cursor::#PB_Cursor_Down ) 
-;   Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
-;   Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
-;   Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
-;   Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Drop ) 
   
-  Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  ;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  ;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
+  ;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
+  ;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
-  Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
-  Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
-  Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
-;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
   Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
+  Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
+  
   Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
   Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
   Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
   Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
-  Cursor::Set((c), Cursor::#PB_Cursor_Arrows ) 
-  Cursor::Set((Canvas_16), Cursor::#PB_Cursor_Cross ) 
-  Cursor::Set((Canvas_0), Cursor::#PB_Cursor_Invisible ) 
-  Cursor::Set((Canvas_32), Cursor::#PB_Cursor_Denied ) 
-  Cursor::Set((Canvas_192), Cursor::#PB_Cursor_Busy ) 
+  
+  Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
+  Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
+  Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
+  Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
+  
+  Cursor::Set((left3), Cursor::#PB_Cursor_LeftRight2 ) 
+  Cursor::Set((right3), Cursor::#PB_Cursor_LeftRight2 ) 
+  Cursor::Set((up3), Cursor::#PB_Cursor_UpDown2 ) 
+  Cursor::Set((down3), Cursor::#PB_Cursor_UpDown2 ) 
+  
+  Cursor::Set((Arrows), Cursor::#PB_Cursor_Arrows ) 
+  Cursor::Set((Cross), Cursor::#PB_Cursor_Cross ) 
+  Cursor::Set((Invisible), Cursor::#PB_Cursor_Invisible ) 
+  Cursor::Set((Denied), Cursor::#PB_Cursor_Denied ) 
+  Cursor::Set((Busy), Cursor::#PB_Cursor_Busy ) 
+  
+  
   
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     ClipGadgets(UseGadgetList(0))
@@ -527,17 +519,8 @@ CompilerIf #PB_Compiler_IsMainFile
     DrawRight(x, y, width, bcolor, fcolor)
   EndMacro
   
-  Define x,y
-  Define fcolor = $FFFFFF
-  Define bcolor = $000000
-  Define width = 16
-  Define height = 7
   
-  If StartDrawing(CanvasOutput(lt))
-    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
-    x = (OutputWidth()-width)/2
-    y = (OutputHeight()-width)/2
-    ; 
+  Macro Diagonal1(x, y, size, bcolor, fcolor)
     LineXY(x+3,y+2,x+13,y+12,bcolor)
     LineXY(x+2,y+2,x+13,y+13,bcolor)
     LineXY(x+2,y+3,x+12,y+13,bcolor)
@@ -565,6 +548,71 @@ CompilerIf #PB_Compiler_IsMainFile
     Line(x+14,y+8,1,6,fcolor)
     Line(x+2,y+1,6,1,fcolor)
     Line(x+8,y+14,6,1,fcolor)
+    
+  EndMacro
+  Macro Diagonal2(x, y, size, bcolor, fcolor)
+    ; 
+    LineXY(x+2,y+12,x+12,y+2,bcolor)
+    LineXY(x+2,y+13,x+13,y+2,bcolor)
+    LineXY(x+3,y+13,x+13,y+3,bcolor)
+    
+    Plot(x+3,y+10,bcolor)
+    Plot(x+10,y+3,bcolor)
+    Plot(x+5,y+12,bcolor)
+    Plot(x+12,y+5,bcolor)
+    
+    Line(x+2,y+9,1,3,bcolor)
+    Line(x+9,y+2,3,1,bcolor)
+    Line(x+4,y+13,3,1,bcolor)
+    Line(x+13,y+4,1,3,bcolor)
+    
+    ;
+    LineXY(x+4,y+9,x+9,y+4,fcolor)
+    LineXY(x+6,y+11,x+11,y+6,fcolor)
+    
+    LineXY(x+2,y+8,x+3,y+9,fcolor)
+    LineXY(x+8,y+2,x+9,y+3,fcolor)
+    LineXY(x+6,y+12,x+7,y+13,fcolor)
+    LineXY(x+12,y+6,x+13,y+7,fcolor)
+    
+    Line(x+1,y+8,1,6,fcolor)
+    Line(x+8,y+1,6,1,fcolor)
+    Line(x+2,y+14,6,1,fcolor)
+    Line(x+14,y+2,1,6,fcolor)
+    
+    
+  EndMacro
+  
+  Define x,y
+  Define fcolor = $FFFFFF
+  Define bcolor = $000000
+  Define width = 16
+  Define height = 7
+  
+  
+  If StartDrawing(CanvasOutput(Arrows))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-width)/2
+    
+    ; down2                                                 
+    Box(x+6,y+6,4,4, fcolor)
+    DrawCursorUp(x,y-1,width, bcolor, fcolor )
+    DrawCursorDown(x,y+7,width, bcolor, fcolor )
+    
+    DrawCursorLeft(x-1,y,width, bcolor, fcolor )
+    DrawCursorRight(x+7,y,width, bcolor, fcolor )
+    Box(x+7,y+7,2,2, bcolor)
+    
+    StopDrawing()
+  EndIf
+  
+  If StartDrawing(CanvasOutput(lt))
+    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+    x = (OutputWidth()-width)/2
+    y = (OutputHeight()-width)/2
+    ;
+    Diagonal1(x,y,width, bcolor, fcolor)
     
     StopDrawing()
   EndIf
@@ -573,34 +621,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     x = (OutputWidth()-width)/2
     y = (OutputHeight()-width)/2
-    ; 
-    LineXY(x+3,y+2,x+13,y+12,bcolor)
-    LineXY(x+2,y+2,x+13,y+13,bcolor)
-    LineXY(x+2,y+3,x+12,y+13,bcolor)
-    
-    Plot(x+12,y+10,bcolor)
-    Plot(x+10,y+12,bcolor)
-    Plot(x+5,y+3,bcolor)
-    Plot(x+3,y+5,bcolor)
-    
-    Line(x+2,y+4,1,3,bcolor)
-    Line(x+4,y+2,3,1,bcolor)
-    Line(x+9,y+13,3,1,bcolor)
-    Line(x+13,y+9,1,3,bcolor)
-    
     ;
-    LineXY(x+6,y+4,x+11,y+9,fcolor)
-    LineXY(x+4,y+6,x+9,y+11,fcolor)
-    
-    LineXY(x+2,y+7,x+3,y+6,fcolor)
-    LineXY(x+7,y+2,x+6,y+3,fcolor)
-    LineXY(x+8,y+13,x+9,y+12,fcolor)
-    LineXY(x+13,y+8,x+12,y+9,fcolor)
-    
-    Line(x+1,y+2,1,6,fcolor)
-    Line(x+14,y+8,1,6,fcolor)
-    Line(x+2,y+1,6,1,fcolor)
-    Line(x+8,y+14,6,1,fcolor)
+    Diagonal1(x,y,width, bcolor, fcolor)
     
     StopDrawing()
   EndIf
@@ -610,33 +632,7 @@ CompilerIf #PB_Compiler_IsMainFile
     x = (OutputWidth()-width)/2
     y = (OutputHeight()-width)/2
     ; 
-    LineXY(x+2,y+12,x+12,y+2,bcolor)
-    LineXY(x+2,y+13,x+13,y+2,bcolor)
-    LineXY(x+3,y+13,x+13,y+3,bcolor)
-    
-    Plot(x+3,y+10,bcolor)
-    Plot(x+10,y+3,bcolor)
-    Plot(x+5,y+12,bcolor)
-    Plot(x+12,y+5,bcolor)
-    
-    Line(x+2,y+9,1,3,bcolor)
-    Line(x+9,y+2,3,1,bcolor)
-    Line(x+4,y+13,3,1,bcolor)
-    Line(x+13,y+4,1,3,bcolor)
-    
-    ;
-    LineXY(x+4,y+9,x+9,y+4,fcolor)
-    LineXY(x+6,y+11,x+11,y+6,fcolor)
-    
-    LineXY(x+2,y+8,x+3,y+9,fcolor)
-    LineXY(x+8,y+2,x+9,y+3,fcolor)
-    LineXY(x+6,y+12,x+7,y+13,fcolor)
-    LineXY(x+12,y+6,x+13,y+7,fcolor)
-    
-    Line(x+1,y+8,1,6,fcolor)
-    Line(x+8,y+1,6,1,fcolor)
-    Line(x+2,y+14,6,1,fcolor)
-    Line(x+14,y+2,1,6,fcolor)
+    Diagonal2(x,y,width, bcolor, fcolor)
     
     StopDrawing()
   EndIf
@@ -646,33 +642,7 @@ CompilerIf #PB_Compiler_IsMainFile
     x = (OutputWidth()-width)/2
     y = (OutputHeight()-width)/2
     ; 
-    LineXY(x+2,y+12,x+12,y+2,bcolor)
-    LineXY(x+2,y+13,x+13,y+2,bcolor)
-    LineXY(x+3,y+13,x+13,y+3,bcolor)
-    
-    Plot(x+3,y+10,bcolor)
-    Plot(x+10,y+3,bcolor)
-    Plot(x+5,y+12,bcolor)
-    Plot(x+12,y+5,bcolor)
-    
-    Line(x+2,y+9,1,3,bcolor)
-    Line(x+9,y+2,3,1,bcolor)
-    Line(x+4,y+13,3,1,bcolor)
-    Line(x+13,y+4,1,3,bcolor)
-    
-    ;
-    LineXY(x+4,y+9,x+9,y+4,fcolor)
-    LineXY(x+6,y+11,x+11,y+6,fcolor)
-    
-    LineXY(x+2,y+8,x+3,y+9,fcolor)
-    LineXY(x+8,y+2,x+9,y+3,fcolor)
-    LineXY(x+6,y+12,x+7,y+13,fcolor)
-    LineXY(x+12,y+6,x+13,y+7,fcolor)
-    
-    Line(x+1,y+8,1,6,fcolor)
-    Line(x+8,y+1,6,1,fcolor)
-    Line(x+2,y+14,6,1,fcolor)
-    Line(x+14,y+2,1,6,fcolor)
+    Diagonal2(x,y,width, bcolor, fcolor)
     
     StopDrawing()
   EndIf
@@ -721,22 +691,10 @@ CompilerIf #PB_Compiler_IsMainFile
     StopDrawing()
   EndIf
   
-  If StartDrawing(CanvasOutput(c))
-    Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
-    x = (OutputWidth()-width)/2
-    y = (OutputHeight()-(height*2))/2
-    
-    ; down2                                                 
-    Box(x+6,y+5,4,4, fcolor)
-    DrawCursorUp(x,y-2,width, bcolor, fcolor )
-    DrawCursorDown(x,y+height-1,width, bcolor, fcolor )
-    
-    DrawCursorLeft(x-1,y-1,width, bcolor, fcolor )
-    DrawCursorRight(x+7,y-1,width, bcolor, fcolor )
-    Box(x+7,y+6,2,2, bcolor)
-    
-    StopDrawing()
-  EndIf
+  
+  
+  
+  
   
   If StartDrawing(CanvasOutput(left3))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
@@ -839,8 +797,7 @@ CompilerIf #PB_Compiler_IsMainFile
     StopDrawing()
   EndIf
   
-  
-  If StartDrawing(CanvasOutput(Canvas_16))
+  If StartDrawing(CanvasOutput(Cross))
     Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
     ;       img = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
     ;       ;DrawImage(img, 0,0)
@@ -909,5 +866,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------
+; Folding = -----PAAw----
 ; EnableXP

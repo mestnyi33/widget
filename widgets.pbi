@@ -43,7 +43,7 @@
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-  #path = "/Users/as/Documents/GitHub/widget/"
+  #path = "/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -18175,9 +18175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If eventtype = #__event_LeftButtonDown
           If *this\EnteredRow( )
             ;\\
-            If *this\row\multiselect Or
-               *this\row\clickselect
-              
+            If *this\row\multiselect
               PushListPosition( *this\_rows( ) )
               ForEach *this\_rows( )
                 If *this\_rows( )\color\state <> #__S_0
@@ -18218,9 +18216,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ ok
         If eventtype = #__event_Focus
-          If *this\row\multiselect Or
-             *this\row\clickselect
-            
+          If *this\row\multiselect                         Or *this\row\clickselect
             PushListPosition( *this\_rows( ) )
             ForEach *this\_rows( )
               If *this\_rows( )\color\state = #__S_3
@@ -18247,9 +18243,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ ok
         If eventtype = #__event_LostFocus
-          If *this\row\multiselect Or
-             *this\row\clickselect
-            
+          If *this\row\multiselect                         Or *this\row\clickselect
             PushListPosition( *this\_rows( ) )
             ForEach *this\_rows( )
               If *this\_rows( )\color\state = #__S_2
@@ -20883,8 +20877,6 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 47
-; FirstLine = 39
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vW-+X------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----0------------------------vW-+X------------------------------------
 ; EnableXP
