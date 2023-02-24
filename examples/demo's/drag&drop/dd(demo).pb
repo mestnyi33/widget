@@ -90,7 +90,7 @@ Procedure Events( )
           DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            SetCursor( Gadget_SourceItem, CreateCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
+            SetCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
           EndIf
         EndIf
         

@@ -52,6 +52,12 @@ DeclareModule events
   Macro FocusedGadget() : events::*focused : EndMacro
   Macro PressedGadget() : events::*pressed : EndMacro
   
+;   Macro SetActiveGadget( _gadget_ )
+;     Bool( FocusedGadget( ) <> _gadget_ ) 
+;     FocusedGadget( ) = _gadget_
+;     PB(SetActiveGadget)( _gadget_ ) 
+;   EndMacro
+  
   DraggedGadget() =- 1 
   EnteredGadget() =- 1 
   PressedGadget() =- 1 
@@ -245,10 +251,12 @@ Module events
                                           ;Debug CocoaMessage(0, Mouse::Window(), "focusView")
         
         If PressedGadget() >= 0
-          If FocusedGadget() =- 1
-            FocusedGadget() = PressedGadget() ; GetActiveGadget()
-            If GadgetType(FocusedGadget()) = #PB_GadgetType_Canvas
-              CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_Focus)
+          If FocusedGadget() = - 1
+            If GetActiveGadget()
+              If FocusedGadget() <> GetActiveGadget()
+                FocusedGadget() = GetActiveGadget()
+                CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
+              EndIf
             EndIf
           EndIf
           
@@ -369,9 +377,16 @@ Module events
 ;           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
 ;         EndIf
 ;       EndIf
-      If EventType = #PB_EventType_Focus Or 
-         EventType = #PB_EventType_LostFocus
-        If PressedGadget( ) = - 1
+      If EventType = #PB_EventType_Focus 
+        Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+        If FocusedGadget( ) = - 1
+          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+        EndIf
+      EndIf
+      If EventType = #PB_EventType_LostFocus
+        Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+        ; 
+        If FocusedGadget( ) = - 1
           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
         EndIf
       EndIf
