@@ -398,6 +398,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     
     ;--     ROW
     Structure _s_ROW
+      index.i
+      
       column.a
       sublevelcolumn.a
       sublevelpos.a

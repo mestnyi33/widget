@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../-widgets.pbi" 
 
 EnableExplicit
 Uselib( Widget )
@@ -83,6 +84,7 @@ Procedure Events( )
         SourceItem = GetState(Gadget_SourceItem)
         If DragPrivate(#PrivateType_0, #PB_Drag_Move)
           Protected img =- 1
+          
           SelectElement(EventWidget( )\_rows( ), SourceItem)
           img = CreateImage(#PB_Any, EventWidget( )\_rows( )\text\width, EventWidget( )\_rows( )\text\height, 32, #PB_Image_Transparent )
           StartDrawing(ImageOutput(img))
@@ -146,7 +148,7 @@ Procedure Events( )
           Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
           
           TargetItem = GetState(Gadget_TargetItem)        
-          
+          Debug "               - "+TargetItem
           ; nothing to do if source and target are equal
           ;
           ; ничего не делать, если источник и цель равны
