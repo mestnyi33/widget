@@ -148,7 +148,7 @@ Procedure Events( )
           Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
           
           TargetItem = GetState(Gadget_TargetItem)        
-          Debug "               - "+TargetItem
+          ;Debug "               - "+TargetItem
           ; nothing to do if source and target are equal
           ;
           ; ничего не делать, если источник и цель равны
@@ -263,6 +263,7 @@ Procedure Events( )
               ;
               ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
               ; из-за удаления источника, который был до цели
+              ;Debug "---------------- "+Str(TargetItem - ChildCount - 1)
               SetState(Gadget_TargetItem, TargetItem - ChildCount - 1)
               
             ElseIf TargetItem <= SourceItem
