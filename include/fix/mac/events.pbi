@@ -255,7 +255,7 @@ Module events
             If GetActiveGadget()
               If FocusedGadget() <> GetActiveGadget()
                 FocusedGadget() = GetActiveGadget()
-                CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
+               ; CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
               EndIf
             EndIf
           EndIf

@@ -19205,7 +19205,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ( FocusedWidget( ) = EnteredWidget( ) Or 
                  FocusedWidget( ) = EnteredWidget( )\parent ) )
             Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
-            
+              
+            FocusedWidget( )\state\focus = 1
             DoEvents( FocusedWidget( ), #__event_Focus )
           EndIf
         EndIf
@@ -19214,6 +19215,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If FocusedWidget( ) And
            FocusedWidget( )\root\canvas\gadget = Canvas
           Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
+          
+          FocusedWidget( )\state\focus = 0
           DoEvents( FocusedWidget( ), #__event_LostFocus )
         EndIf
         
@@ -20917,5 +20920,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00------8v----+f--------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00------8v----+f----------------a08f0--4--------------------------------
 ; EnableXP
