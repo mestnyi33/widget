@@ -13411,37 +13411,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\type = #__type_ListView
         ; Debug *this\mode\check
         
-        ; reset all selected items
-        If State = - 1
-          If *this\FocusedRow( )
-            If *this\mode\check <> #__m_optionselect
-              If *this\FocusedRow( )\state\focus
-                *this\FocusedRow( )\state\focus = #False
-                ; multi select mode
-                If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-                EndIf
-              EndIf
-            EndIf
-            
-            *this\FocusedRow( )\color\state = #__S_0
-            *this\FocusedRow( )             = #Null
-          EndIf
-        EndIf
-        
-        ;
-        If is_no_select_item_( *this\_rows( ), State )
-          ProcedureReturn #False
-        EndIf
-        
-        ;\\
         If *this\count\items
+          ;\\ min\max state
+          If State < 0
+            State = - 1
+          EndIf
+          If State > *this\count\items - 1
+            State = *this\count\items - 1
+          EndIf
+          
           ;\\ scroll to visible
           *this\scroll\state  = - 1
           
+          ;\\ reset all selected items
+          If State = - 1
+            If *this\FocusedRow( )
+              If *this\mode\check <> #__m_optionselect
+                If *this\FocusedRow( )\state\focus
+                  *this\FocusedRow( )\state\focus = #False
+;                   ; multi select mode
+;                   If *this\row\multiselect
+;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
+;                   EndIf
+                EndIf
+              EndIf
+              
+              *this\FocusedRow( )\color\state = #__S_0
+              *this\FocusedRow( )             = #Null
+            EndIf
+          EndIf
+          
+          ;\\
           If *this\row\index <> state
             *this\row\index = state
             
+            ;\\
+            If is_no_select_item_( *this\_rows( ), State )
+              ProcedureReturn #False
+            EndIf
+            
+            DoEvents( *this, #__event_StatusChange, *this\_rows( ), *this\_rows( )\index )
+              
             ;\\ example file "D&D-items"
             If *this\drop
               If *this\PressedRow( )
@@ -13486,10 +13496,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\FocusedRow( )
                 If *this\FocusedRow( )\state\focus
                   *this\FocusedRow( )\state\focus = #False
-                  ; multi select mode
-                  If *this\row\multiselect
-                    Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-                  EndIf
+;                   ; multi select mode
+;                   If *this\row\multiselect
+;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
+;                   EndIf
                 EndIf
                 
                 *this\FocusedRow( )\color\state = #__S_0
@@ -13507,14 +13517,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\FocusedRow( )\color\state = #__S_3
                 EndIf
                 
-                Post( *this, #__event_Change, *this\FocusedRow( )\index )
+                DoEvents( *this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index )
               Else
                 If *this\FocusedRow( )\state\focus = 0 ; ???
                   *this\FocusedRow( )\state\focus = 1
-                  ; multi select mode
-                  If *this\row\multiselect
-                    Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
-                  EndIf
+;                   ; multi select mode
+;                   If *this\row\multiselect
+;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
+;                   EndIf
                 EndIf
                 
                 *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
@@ -18164,8 +18174,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\_rows( )\color\state <> #__S_0
                     *this\_rows( )\color\state = #__S_0
                     
-                    If *this\_rows( )\state\focus <> 0
-                      *this\_rows( )\state\focus = 0
+                    If Not *this\_rows( )\state\enter 
+                      If *this\_rows( )\state\focus <> 0
+                        *this\_rows( )\state\focus = 0
+                      EndIf
                     EndIf
                     
                     If *this\_rows( )\state\press <> 0
@@ -18195,6 +18207,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ ok
         If eventtype = #__event_Focus
+          If *this\EnteredRow( )
+            *this\row\index = *this\EnteredRow( )\index
+          EndIf
+          
+          ;\\
           If *this\row\multiselect Or *this\row\clickselect
             PushListPosition( *this\_rows( ) )
             ForEach *this\_rows( )
@@ -18326,13 +18343,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               If *this\FocusedRow( ) 
                 *this\row\index = *this\FocusedRow( )\index
-                *this\FocusedRow( )\state\press = 0
                 *this\FocusedRow( )\color\state = #__s_2
+                
+                If *this\FocusedRow( )\state\press 
+                  *this\FocusedRow( )\state\press = 0
+                Else
+                  If Not *this\row\multiselect
+                    DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                  EndIf
+                EndIf
                 
                 If *this\FocusedRow( )\state\focus = 0
                   *this\FocusedRow( )\state\focus = 1
                   
-                  DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                   DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
                 EndIf
               EndIf
@@ -18406,34 +18429,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
           Case #__event_Change
             If *this\row
-              Debug "change " + *button
+             ; Debug "change " + *button
             EndIf
             
           Case #__event_StatusChange
             If *this\row
-              ;               If *this\FocusedRow( )
-              ;                 If *this\FocusedRow( )\state\focus ; ???
-              ;                   If *this\FocusedRow( )\state\focus = 1
-              ;                     *this\FocusedRow( )\state\focus = - 1
+              ; Debug "status-change " + *button
               ;               Protected *row._s_rows = *Data
               ;               If *row And *row\color\state = #__s_2
               ;                 ;Debug *button
               ;                 *row\color\back[*row\color\state] = $FF2C70F5 ; TEMP
               ;               EndIf
-              ;                   EndIf
-              ;                 Else
-              ;                   Debug "no focus statechange"
-              ;                 EndIf
-              ;               EndIf
               *this\state\repaint = #True
             EndIf
             
-          Case #__event_Drop
-            *this\state\repaint = #True
-            
           Case #__event_MouseMove
-            If *this\bar And *this\state\drag
-              *this\state\repaint = #True
+            If *this\bar 
+              If *this\state\drag
+                If *this\state\repaint <> #True
+                  *this\state\repaint = #True
+                EndIf
+              EndIf
             EndIf
             
           Case #__event_MouseEnter,
@@ -18452,14 +18468,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #__event_LeftClick,
                #__event_KeyDown,
                #__event_KeyUp,
-               #__event_Focus,
-               #__event_LostFocus,
                #__event_ScrollChange,
-               ;            ; #__event_Repaint,
-               ;              #__event_Create,
-               ;              #__event_Resize,
-            #__event_DragStart
-            
+               #__event_Drop,
+               #__event_DragStart
+            ;                #__event_Focus,
+            ;                #__event_LostFocus,
+            ;              ; #__event_Repaint,
+            ;                #__event_Create,
+            ;                #__event_Resize,
+               
             
             *this\state\repaint = #True
         EndSelect
@@ -20900,5 +20917,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------88----f-844------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00------8v----+f--------------------------------------------------------
 ; EnableXP

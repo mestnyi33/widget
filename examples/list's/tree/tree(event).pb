@@ -27,6 +27,11 @@ Procedure events_widgets()
   ;; ClearDebugOutput()
   
   Select WidgetEventType()
+    Case #PB_EventType_Focus
+      Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
+    Case #PB_EventType_LostFocus
+      Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+      
     Case #PB_EventType_Up
       Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
       
@@ -37,7 +42,7 @@ Procedure events_widgets()
       Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #PB_EventType_StatusChange
-      Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+     ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #PB_EventType_DragStart
       Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()

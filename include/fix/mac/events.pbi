@@ -260,9 +260,10 @@ Module events
             EndIf
           EndIf
           
-          If FocusedGadget() >= 0 And 
-             FocusedGadget() <> PressedGadget()
-            CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
+          If FocusedGadget() <> PressedGadget()
+            If FocusedGadget() >= 0
+              CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_LostFocus)
+            EndIf
             
             FocusedGadget() = PressedGadget()
             CallCFunctionFast(refcon, FocusedGadget(), #PB_EventType_Focus)
@@ -1150,5 +1151,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -9v-------------------
+; Folding = -9v--------------------
 ; EnableXP
