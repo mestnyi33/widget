@@ -3,20 +3,20 @@
 ; up/down selected item 
 ; up/down post event leftclick
 
-; flag = multiselect
-; shift & up/down selected item 
-; up/down post event leftclick
-
 ; flag = clickselect
 ; spake & up/down selected item
 ; spake post event leftclick
+
+; flag = multiselect
+; shift & up/down selected item 
+; up/down post event leftclick
 
 ; qt 
 ; flag = none 
 ; up/down selected item 
 ; up/down post event leftclick
-; fn left/right first/last item and selected 
-; fn up/down first/last visible item and selected 
+; fn left/right first-last item and selected 
+; fn up/down first-last visible item and selected 
 
 
 XIncludeFile "../../../widgets.pbi" 

@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global a, *first, *last, *added, *reset, *w1, *w2, *w3, *w4, *g1, *g2, *g3, *g4, countitems=6; количесвто итемов 
+  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *g1, *g3, *g2, *g4, *g5, *g6, countitems=6; количесвто итемов 
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
@@ -53,6 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
     Protected g = PB(ListViewGadget)(gadget, x,y,width,height,flag)
+    ;Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+    ;Protected g = PB(ListIconGadget)(gadget, x,y,width,height,"title",width, flag)
     If gadget =- 1 : gadget = g : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -67,60 +69,151 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn gadget
   EndProcedure
   
+  ;-
+  Procedure events_gadgets()
+    Select EventType()
+;       Case #PB_EventType_Focus
+;         Debug  ""+EventGadget()+" - gadget focus "+GetGadgetState(EventGadget())
+;       Case #PB_EventType_LostFocus
+;         Debug  ""+EventGadget()+" - gadget lost-focus "+GetGadgetState(EventGadget())
+;         
+;       Case #PB_EventType_DragStart
+;         Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+        
+      Case #PB_EventType_Change
+        Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+        
+      Case #PB_EventType_LeftClick
+        Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+        
+;       Case #PB_EventType_LeftDoubleClick
+;         Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+;         
+;       Case #PB_EventType_RightClick
+;         Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+        
+    EndSelect
+  EndProcedure
   
-  If Open(1, 100, 50, 525, 435+40, "demo ListView state", #PB_Window_SystemMenu)
-    ; demo gadget
-    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 205, #PB_ListView_ClickSelect)
-    *g4 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 205, #PB_ListView_ClickSelect)
-    
-    *g2 = ListViewGadget_(#PB_Any, 10, 220, 120, 205, #PB_ListView_MultiSelect)
-    For a = 0 To countitems
-      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
-    Next
-    SetGadgetState_(*g1, a-1)
-    SetGadgetState_(*g2, a-1) 
-    
-    *g3 = ListViewGadget_(#PB_Any, 10+125, 220, 120, 205, #PB_ListView_MultiSelect)
-    For a = 0 To 300
-      AddGadgetItem_(*g3, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g4, -1, "Item "+Str(a), 0)
-    Next
-    
-    
-    ; demo widget
-    *w1 = widget::ListView(265, 10, 120, 205, #PB_ListView_ClickSelect )
-    *w4 = widget::ListView(265+125, 10, 120, 205, #PB_ListView_ClickSelect )
-    
-    *w2 = widget::ListView(265, 220, 120, 205, #PB_ListView_MultiSelect )
-    For a = 0 To countitems
-      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
-    Next
-    widget::SetState(*w1, a-1)
-    widget::SetState(*w2, a-1) 
+  Procedure events_widgets()
+    Select WidgetEventType()
+;       Case #PB_EventType_Focus
+;         Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
+;       Case #PB_EventType_LostFocus
+;         Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+;         
+;       Case #PB_EventType_Up
+;         Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
+;         
+;       Case #PB_EventType_Down
+;         Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
+;         
+;       Case #PB_EventType_ScrollChange
+;         Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        
+;       Case #PB_EventType_StatusChange
+;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         
+;       Case #PB_EventType_DragStart
+;         Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         
+      Case #PB_EventType_Change
+        Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         
+      Case #PB_EventType_LeftClick
+        Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        
+;       Case #PB_EventType_LeftDoubleClick
+;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         
+;       Case #PB_EventType_RightClick
+;         Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        
+    EndSelect
+  EndProcedure
+  
+  If Open(1, 100, 50, 520, 645, "demo ListView state", #PB_Window_SystemMenu)
+    ;\\ demo gadget
+    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 205)
+    *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 205)
     
     ;\\
-    *w3 = widget::ListView(265+125, 220, 120, 205, #PB_ListView_MultiSelect )
+    *g3 = ListViewGadget_(#PB_Any, 10, 220, 120, 205, #PB_ListView_ClickSelect)
+    *g4 = ListViewGadget_(#PB_Any, 10+125, 220, 120, 205, #PB_ListView_ClickSelect)
+    
+    ;\\
+    *g5 = ListViewGadget_(#PB_Any, 10, 430, 120, 205, #PB_ListView_MultiSelect)
+    *g6 = ListViewGadget_(#PB_Any, 10+125, 430, 120, 205, #PB_ListView_MultiSelect)
+    
+    ;\\
+    For a = 0 To countitems
+      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g3, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g5, -1, "Item "+Str(a), 0)
+    Next
     For a = 0 To 300
-      widget::AddItem(*w3, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w4, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g4, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g6, -1, "Item "+Str(a), 0)
     Next
     
-    ;     ;\\
-    ;     Define i, *tree = Tree( 520+10, 20, 150, 200, #__tree_multiselect)
-    ;     For i = 1 To 100;0000
-    ;       AddItem(*tree, i, "text-" + Str(i))
-    ;     Next
-    ;     SetState(*tree, 5 - 1)
+    ;\\
+    SetGadgetState_(*g1, countitems-1)
+    SetGadgetState_(*g3, countitems-1) 
+    SetGadgetState_(*g5, countitems-1) 
     
-    SetActive( *w2 )
-    SetActiveGadget( *g2 )
-    SetActive( *w2 )
+    ;\\ demo widget
+    *w1 = widget::ListView(265, 10, 120, 205 )
+    *w2 = widget::ListView(265+125, 10, 120, 205 )
+    
+    ;\\
+    *w3 = widget::ListView(265, 220, 120, 205, #PB_ListView_ClickSelect )
+    *w4 = widget::ListView(265+125, 220, 120, 205, #PB_ListView_ClickSelect )
+    
+    ;\\
+    *w5 = widget::ListView(265, 430, 120, 205, #PB_ListView_MultiSelect )
+    *w6 = widget::ListView(265+125, 430, 120, 205, #PB_ListView_MultiSelect )
+    
+    ;\\
+    For a = 0 To countitems
+      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w3, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w5, -1, "Item "+Str(a), 0)
+    Next
+    For a = 0 To 300
+      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w4, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w6, -1, "Item "+Str(a), 0)
+    Next
+    
+    ;\\
+    widget::SetState(*w1, countitems-1)
+    widget::SetState(*w3, countitems-1) 
+    widget::SetState(*w5, countitems-1) 
+    
+    ;\\
+    SetActive( *w5 )
+    SetActiveGadget( *g5 )
+    SetActive( *w5 )
+    
+    ;\\
+    BindGadgetEvent(*g1, @events_gadgets())
+    BindGadgetEvent(*g2, @events_gadgets())
+    BindGadgetEvent(*g3, @events_gadgets())
+    BindGadgetEvent(*g4, @events_gadgets())
+    BindGadgetEvent(*g5, @events_gadgets())
+    BindGadgetEvent(*g6, @events_gadgets())
+    ;\\
+    Bind(*w1, @events_widgets())
+    Bind(*w2, @events_widgets())
+    Bind(*w3, @events_widgets())
+    Bind(*w4, @events_widgets())
+    Bind(*w5, @events_widgets())
+    Bind(*w6, @events_widgets())
     
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; Folding = ---
 ; EnableXP

@@ -248,7 +248,7 @@ Module events
       ;
       If eType = #NSLeftMouseDown
         PressedGadget() = EnteredGadget() ; EventGadget()
-                                          ;Debug CocoaMessage(0, Mouse::Window(), "focusView")
+                                          ; Debug CocoaMessage(0, Mouse::Window(), "focusView")
         
         If PressedGadget() >= 0
           If FocusedGadget() = - 1
@@ -379,13 +379,13 @@ Module events
 ;         EndIf
 ;       EndIf
       If EventType = #PB_EventType_Focus 
-        Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+        ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
         If FocusedGadget( ) = - 1
           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
         EndIf
       EndIf
       If EventType = #PB_EventType_LostFocus
-        Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+       ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
         ; 
         If FocusedGadget( ) = - 1
           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )

@@ -32,32 +32,32 @@ Procedure events_widgets()
     Case #PB_EventType_LostFocus
       Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
       
-;     Case #PB_EventType_Up
-;       Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
-;       
-;     Case #PB_EventType_Down
-;       Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
-;       
-;     Case #PB_EventType_ScrollChange
-;       Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_StatusChange
-;      ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_DragStart
-;       Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_Change
-;       Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_LeftClick
-;       Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_LeftDoubleClick
-;       Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;       
-;     Case #PB_EventType_RightClick
-;       Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #PB_EventType_Up
+      Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
+      
+    Case #PB_EventType_Down
+      Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
+      
+    Case #PB_EventType_ScrollChange
+      Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_StatusChange
+     ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_DragStart
+      Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_Change
+      Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_LeftClick
+      Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_LeftDoubleClick
+      Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #PB_EventType_RightClick
+      Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
   EndSelect
 EndProcedure

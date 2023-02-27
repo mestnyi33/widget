@@ -18066,13 +18066,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\EnteredRow( )\state\enter
               *this\EnteredRow( )\state\enter = 0
               
-              If *this\EnteredRow( )\color\state = #__S_1
-                *this\EnteredRow( )\color\state = #__S_0
-              EndIf
+              If *this\state\press And 
+                 Not *this\row\clickselect And 
+                 Not *this\row\multiselect
+                
+                If *this\EnteredRow( )\color\state = #__S_2
+                  *this\EnteredRow( )\color\state = #__S_0
+                EndIf
+              Else
+                If *this\EnteredRow( )\color\state = #__S_1
+                  *this\EnteredRow( )\color\state = #__S_0
+                EndIf
               
-              If *this\EnteredRow( )\state\focus And 
-                 *this\EnteredRow( )\color\state <> #__S_2
-                *this\EnteredRow( )\color\state = #__S_3
+                If *this\EnteredRow( )\state\focus And 
+                   *this\EnteredRow( )\color\state <> #__S_2
+                  *this\EnteredRow( )\color\state = #__S_3
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -18098,18 +18107,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\EnteredRow( )\state\enter = 0
                 *this\EnteredRow( )\state\enter = 1
                 
-                If *this\EnteredRow( )\color\state = #__S_0
-                  *this\EnteredRow( )\color\state = #__S_1
-                EndIf
-                
-                If *this\EnteredRow( )\state\focus And 
-                   *this\EnteredRow( )\color\state <> #__S_2
-                  *this\EnteredRow( )\color\state = #__S_1
+                If *this\state\press And 
+                   Not *this\row\clickselect And 
+                   Not *this\row\multiselect
+                  
+                  If *this\EnteredRow( )\color\state = #__S_0
+                    *this\EnteredRow( )\color\state = #__S_2
+                  EndIf
+                Else
+                  If *this\EnteredRow( )\color\state = #__S_0
+                    *this\EnteredRow( )\color\state = #__S_1
+                  EndIf
+                  
+                  If *this\EnteredRow( )\state\focus And 
+                     *this\EnteredRow( )\color\state <> #__S_2
+                    *this\EnteredRow( )\color\state = #__S_1
+                  EndIf
                 EndIf
                 
                 ;\\ update non-focus status
-                If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ))
-                  ; Debug " items status change enter"
+                If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ) And 
+                         Not ( *this\state\press And Not *this\row\clickselect And Not *this\row\multiselect ) )
+                   ; Debug " items status change enter"
                   
                   DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
                 EndIf
@@ -18117,8 +18136,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-          ElseIf *this\FocusedRow( ) <> *this\LeavedRow( )
-            ; Debug " items status change leave"
+          ElseIf Not ( *this\LeavedRow( ) = *this\FocusedRow( ) And
+                       Not ( *this\state\press And Not *this\row\clickselect And Not *this\row\multiselect )  )
+             ; Debug " items status change leave"
             
             If *this\FocusedRow( )
               DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -18168,38 +18188,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\row\index = *this\EnteredRow( )\index
               
               ;\\
-              If *this\row\multiselect
-                PushListPosition( *this\_rows( ) )
-                ForEach *this\_rows( )
-                  If *this\_rows( )\color\state <> #__S_0
-                    *this\_rows( )\color\state = #__S_0
-                    
-                    If Not *this\_rows( )\state\enter 
-                      If *this\_rows( )\state\focus <> 0
-                        *this\_rows( )\state\focus = 0
-                      EndIf
-                    EndIf
-                    
-                    If *this\_rows( )\state\press <> 0
-                      *this\_rows( )\state\press = 0
-                    EndIf
-                  EndIf
-                Next
-                PopListPosition( *this\_rows( ) )
-              EndIf
-              
-              *this\PressedRow( )             = *this\EnteredRow( )
-              *this\PressedRow( )\color\state = #__S_2
-              *this\PressedRow( )\state\press = 1
-              
-              If *this\PressedRow( ) <> *this\FocusedRow( )
-                If *this\FocusedRow( ) And
-                   *this\FocusedRow( )\color\state = #__S_2
-                  *this\FocusedRow( )\color\state = #__S_3
-                  DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+              If *this\row\clickselect 
+                *this\PressedRow( )             = *this\EnteredRow( )
+                *this\PressedRow( )\state\press ! 1
+                
+                If *this\PressedRow( )\state\press
+                  *this\PressedRow( )\color\state = #__S_2
+                Else
+                  *this\PressedRow( )\color\state = #__S_1
                 EndIf
                 
-                DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+              Else
+                If *this\row\multiselect
+                  PushListPosition( *this\_rows( ) )
+                  ForEach *this\_rows( )
+                    If *this\_rows( )\color\state <> #__S_0
+                      *this\_rows( )\color\state = #__S_0
+                      
+                      If Not *this\_rows( )\state\enter 
+                        If *this\_rows( )\state\focus <> 0
+                          *this\_rows( )\state\focus = 0
+                        EndIf
+                      EndIf
+                      
+                      If *this\_rows( )\state\press <> 0
+                        *this\_rows( )\state\press = 0
+                      EndIf
+                    EndIf
+                  Next
+                  PopListPosition( *this\_rows( ) )
+                EndIf
+                
+                *this\PressedRow( )             = *this\EnteredRow( )
+                *this\PressedRow( )\color\state = #__S_2
+                *this\PressedRow( )\state\press = 1
+                
+                If *this\PressedRow( ) <> *this\FocusedRow( )
+                  If *this\FocusedRow( ) And
+                     *this\FocusedRow( )\color\state = #__S_2
+                    *this\FocusedRow( )\color\state = #__S_3
+                    DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                  EndIf
+                  
+                  DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -18311,52 +18344,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             If *this\PressedRow( )
-              If *this\EnteredRow( ) And 
-                 *this\EnteredRow( )\state\enter 
+              If *this\row\clickselect 
+                DoEvents(*this, #__event_Change, *this\PressedRow( ), *this\PressedRow( )\index)
+              Else
+                If *this\EnteredRow( ) And 
+                   *this\EnteredRow( )\state\enter 
+                  
+                  ;\\
+                  If Not *this\row\multiselect
+                    If *this\FocusedRow( )  
+                      If *this\FocusedRow( ) <> *this\EnteredRow( )
+                        *this\FocusedRow( )\state\focus = 0
+                        *this\FocusedRow( )\state\enter = 0
+                        *this\FocusedRow( )\color\state = #__s_0
+                      EndIf
+                    EndIf
+                  EndIf
+                  
+                  *this\FocusedRow( ) = *this\EnteredRow( )
+                EndIf
                 
-                ;\\
-                If Not *this\row\multiselect
-                  If *this\FocusedRow( )  
-                    If *this\FocusedRow( ) <> *this\EnteredRow( )
-                      *this\FocusedRow( )\state\focus = 0
-                      *this\FocusedRow( )\state\enter = 0
-                      *this\FocusedRow( )\color\state = #__s_0
+                
+                If *this\PressedRow( ) <> *this\EnteredRow( )
+                  If Not *this\row\multiselect
+                    If Not *this\PressedRow( )\state\focus
+                      *this\PressedRow( )\state\enter = 0
+                      *this\PressedRow( )\state\press = 0
+                      *this\PressedRow( )\color\state = #__s_0
                     EndIf
                   EndIf
                 EndIf
                 
-                *this\FocusedRow( ) = *this\EnteredRow( )
-              EndIf
-              
-              
-              If *this\PressedRow( ) <> *this\EnteredRow( )
-                If Not *this\row\multiselect
-                  If Not *this\PressedRow( )\state\focus
-                    *this\PressedRow( )\state\enter = 0
-                    *this\PressedRow( )\state\press = 0
-                    *this\PressedRow( )\color\state = #__s_0
-                  EndIf
-                EndIf
-              EndIf
-              
-              *this\PressedRow( ) = #Null
-              
-              If *this\FocusedRow( ) 
-                *this\row\index = *this\FocusedRow( )\index
-                *this\FocusedRow( )\color\state = #__s_2
+                *this\PressedRow( ) = #Null
                 
-                If *this\FocusedRow( )\state\press 
-                  *this\FocusedRow( )\state\press = 0
-                Else
-                  If Not *this\row\multiselect
-                    DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
-                  EndIf
-                EndIf
-                
-                If *this\FocusedRow( )\state\focus = 0
-                  *this\FocusedRow( )\state\focus = 1
+                If *this\FocusedRow( ) 
+                  *this\row\index = *this\FocusedRow( )\index
+                  *this\FocusedRow( )\color\state = #__s_2
                   
-                  DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                  If *this\FocusedRow( )\state\press 
+                    *this\FocusedRow( )\state\press = 0
+                  Else
+                    If Not *this\row\multiselect
+                      DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                    EndIf
+                  EndIf
+                  
+                  If *this\FocusedRow( )\state\focus = 0
+                    *this\FocusedRow( )\state\focus = 1
+                    
+                    DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                  EndIf
                 EndIf
               EndIf
             EndIf
@@ -19204,7 +19241,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              ( EnteredWidget( ) And 
                ( FocusedWidget( ) = EnteredWidget( ) Or 
                  FocusedWidget( ) = EnteredWidget( )\parent ) )
-            Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
+           ; Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
               
             FocusedWidget( )\state\focus = 1
             DoEvents( FocusedWidget( ), #__event_Focus )
@@ -19214,7 +19251,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ElseIf eventtype = #__event_LostFocus
         If FocusedWidget( ) And
            FocusedWidget( )\root\canvas\gadget = Canvas
-          Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
+         ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
           
           FocusedWidget( )\state\focus = 0
           DoEvents( FocusedWidget( ), #__event_LostFocus )
@@ -20858,14 +20895,14 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Container( 70, 180, 80, 80): CloseList( )
   
   ;\\
-  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless|#__tree_clickselect)
+  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless|#__flag_gridlines|#__tree_checkboxes)
   SetColor( *w, #__color_back, $FF07EAF6 )
   For i = 1 To 10;00000
     AddItem(*w, i, "text-" + Str(i))
   Next
   
   ;\\
-  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes )
+  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_clickselect )
   For i = 1 To 100;0000
     If (i & 5)
       AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -20920,5 +20957,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00------8v----+f----------------a08f0--4--------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00----++08vv-u-0-+---------------274-7--v--------------------------------
 ; EnableXP

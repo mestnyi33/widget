@@ -1,15 +1,14 @@
 ﻿; keyboard events
 ; flag = none
-; up/down selected item 
-; up/down post event leftclick
+; up/down selected item and post event change
 
 ; flag = multiselect
-; shift & up/down selected item 
-; up/down post event leftclick
+; up/down selected item and post event change
+; shift & up/down selected items and post event change
 
 ; flag = clickselect
-; spake & up/down selected item
-; spake post event leftclick
+; up/down entered item
+; spake selected item and post event change
 
 ; OS
 ; windows 
@@ -176,6 +175,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 10
 ; Folding = --
 ; EnableXP
