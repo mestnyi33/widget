@@ -13429,10 +13429,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\mode\check <> #__m_optionselect
                 If *this\FocusedRow( )\state\focus
                   *this\FocusedRow( )\state\focus = #False
-;                   ; multi select mode
-;                   If *this\row\multiselect
-;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-;                   EndIf
+                  ;                   ; multi select mode
+                  ;                   If *this\row\multiselect
+                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
+                  ;                   EndIf
                 EndIf
               EndIf
               
@@ -13451,7 +13451,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             DoEvents( *this, #__event_StatusChange, *this\_rows( ), *this\_rows( )\index )
-              
+            
             ;\\ example file "D&D-items"
             If *this\drop
               If *this\PressedRow( )
@@ -13496,10 +13496,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *this\FocusedRow( )
                 If *this\FocusedRow( )\state\focus
                   *this\FocusedRow( )\state\focus = #False
-;                   ; multi select mode
-;                   If *this\row\multiselect
-;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-;                   EndIf
+                  ;                   ; multi select mode
+                  ;                   If *this\row\multiselect
+                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
+                  ;                   EndIf
                 EndIf
                 
                 *this\FocusedRow( )\color\state = #__S_0
@@ -13521,10 +13521,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Else
                 If *this\FocusedRow( )\state\focus = 0 ; ???
                   *this\FocusedRow( )\state\focus = 1
-;                   ; multi select mode
-;                   If *this\row\multiselect
-;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
-;                   EndIf
+                  ;                   ; multi select mode
+                  ;                   If *this\row\multiselect
+                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
+                  ;                   EndIf
                 EndIf
                 
                 *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
@@ -18059,7 +18059,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\ change enter/leave state
-        If *this\EnteredRow( ) <> *item
+        If *this\EnteredRow( ) <> *item And Not ( *this\state\press And Not *item And Not *this\row\multiselect )
+          If *this\PressedRow( )
+            ; Debug *this\PressedRow( )\index
+          EndIf
           
           ;\\ leave state
           If *this\EnteredRow( )
@@ -18067,8 +18070,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\EnteredRow( )\state\enter = 0
               
               If *this\state\press And 
-                 Not *this\row\clickselect And 
-                 Not *this\row\multiselect
+                 Not *this\row\multiselect And
+                 Not *this\row\clickselect 
                 
                 If *this\EnteredRow( )\color\state = #__S_2
                   *this\EnteredRow( )\color\state = #__S_0
@@ -18077,7 +18080,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *this\EnteredRow( )\color\state = #__S_1
                   *this\EnteredRow( )\color\state = #__S_0
                 EndIf
-              
+                
                 If *this\EnteredRow( )\state\focus And 
                    *this\EnteredRow( )\color\state <> #__S_2
                   *this\EnteredRow( )\color\state = #__S_3
@@ -18101,44 +18104,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
+          ;\\ enter state
           If *this\EnteredRow( )
-            ;\\ enter state
-            If *this\state\enter
-              If *this\EnteredRow( )\state\enter = 0
-                *this\EnteredRow( )\state\enter = 1
+            If *this\EnteredRow( )\state\enter = 0
+              *this\EnteredRow( )\state\enter = 1
+              
+              If *this\state\press And 
+                 ; Not *this\row\multiselect And 
+                Not *this\row\clickselect
                 
-                If *this\state\press And 
-                   Not *this\row\clickselect And 
-                   Not *this\row\multiselect
-                  
-                  If *this\EnteredRow( )\color\state = #__S_0
-                    *this\EnteredRow( )\color\state = #__S_2
-                  EndIf
-                Else
-                  If *this\EnteredRow( )\color\state = #__S_0
-                    *this\EnteredRow( )\color\state = #__S_1
-                  EndIf
-                  
-                  If *this\EnteredRow( )\state\focus And 
-                     *this\EnteredRow( )\color\state <> #__S_2
-                    *this\EnteredRow( )\color\state = #__S_1
-                  EndIf
+                If *this\EnteredRow( )\color\state = #__S_0
+                  *this\EnteredRow( )\color\state = #__S_2
+                EndIf
+              Else
+                If *this\EnteredRow( )\color\state = #__S_0
+                  *this\EnteredRow( )\color\state = #__S_1
                 EndIf
                 
-                ;\\ update non-focus status
-                If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ) And 
-                         Not ( *this\state\press And Not *this\row\clickselect And Not *this\row\multiselect ) )
-                   ; Debug " items status change enter"
-                  
-                  DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                If *this\EnteredRow( )\state\focus And 
+                   *this\EnteredRow( )\color\state <> #__S_2
+                  *this\EnteredRow( )\color\state = #__S_1
                 EndIf
+              EndIf
+              
+              ;\\ update non-focus status
+              If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ) And 
+                       Not ( *this\state\press And Not *this\row\clickselect And Not *this\row\multiselect ) )
+                ; Debug " items status change enter"
+                
+                DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
               EndIf
             EndIf
             
             ;\\
           ElseIf Not ( *this\LeavedRow( ) = *this\FocusedRow( ) And
                        Not ( *this\state\press And Not *this\row\clickselect And Not *this\row\multiselect )  )
-             ; Debug " items status change leave"
+            ; Debug " items status change leave"
             
             If *this\FocusedRow( )
               DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -18146,6 +18147,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               DoEvents(*this, #__event_StatusChange, *this\LeavedRow( ), *this\LeavedRow( )\index)
             EndIf
           EndIf
+          
         EndIf
         
         ;\\ drag & drop state
@@ -18194,11 +18196,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If *this\PressedRow( )\state\press
                   *this\PressedRow( )\color\state = #__S_2
+                  *this\PressedRow( )\state\focus = 1
                 Else
                   *this\PressedRow( )\color\state = #__S_1
+                  *this\PressedRow( )\state\focus = 0
                 EndIf
                 
-                ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                ;                 ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
               Else
                 If *this\row\multiselect
                   PushListPosition( *this\_rows( ) )
@@ -18345,7 +18349,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\PressedRow( )
               If *this\row\clickselect 
-                DoEvents(*this, #__event_Change, *this\PressedRow( ), *this\PressedRow( )\index)
+                If *this\state\drag 
+                  If *this\PressedRow( ) <> *this\EnteredRow( )
+                    If *this\EnteredRow( )
+                      *this\PressedRow( )\state\press = 0
+                      *this\PressedRow( )\color\state = #__S_0
+                      *this\EnteredRow( )\state\press = 1
+                      *this\EnteredRow( )\state\focus = 1
+                      *this\EnteredRow( )\color\state = #__S_2
+                      DoEvents(*this, #__event_Change, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                    Else
+                      If *this\PressedRow( )\state\press
+                        *this\PressedRow( )\state\press = 0
+                        *this\PressedRow( )\state\focus = 0
+                        *this\PressedRow( )\color\state = #__S_0
+                      Else
+                        *this\PressedRow( )\state\press = 1
+                        *this\PressedRow( )\state\focus = 1
+                        *this\PressedRow( )\color\state = #__S_2
+                      EndIf
+                    EndIf
+                  EndIf
+                Else
+                  DoEvents(*this, #__event_Change, *this\PressedRow( ), *this\PressedRow( )\index)
+                EndIf
               Else
                 If *this\EnteredRow( ) And 
                    *this\EnteredRow( )\state\enter 
@@ -18363,7 +18390,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *this\FocusedRow( ) = *this\EnteredRow( )
                 EndIf
-                
                 
                 If *this\PressedRow( ) <> *this\EnteredRow( )
                   If Not *this\row\multiselect
@@ -18466,7 +18492,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
           Case #__event_Change
             If *this\row
-             ; Debug "change " + *button
+              ; Debug "change " + *button
             EndIf
             
           Case #__event_StatusChange
@@ -18513,7 +18539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;              ; #__event_Repaint,
             ;                #__event_Create,
             ;                #__event_Resize,
-               
+            
             
             *this\state\repaint = #True
         EndSelect
@@ -19241,8 +19267,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
              ( EnteredWidget( ) And 
                ( FocusedWidget( ) = EnteredWidget( ) Or 
                  FocusedWidget( ) = EnteredWidget( )\parent ) )
-           ; Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
-              
+            ; Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
+            
             FocusedWidget( )\state\focus = 1
             DoEvents( FocusedWidget( ), #__event_Focus )
           EndIf
@@ -19251,7 +19277,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ElseIf eventtype = #__event_LostFocus
         If FocusedWidget( ) And
            FocusedWidget( )\root\canvas\gadget = Canvas
-         ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
+          ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
           
           FocusedWidget( )\state\focus = 0
           DoEvents( FocusedWidget( ), #__event_LostFocus )
@@ -20887,7 +20913,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   
   ;\\
   OpenList( *root3 )
-  Define *tree = Tree( 10, 20, 150, 200, #__tree_multiselect)
+  Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
   For i = 1 To 100;0000
     AddItem(*tree, i, "text-" + Str(i))
   Next
@@ -20895,7 +20921,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   Container( 70, 180, 80, 80): CloseList( )
   
   ;\\
-  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless|#__flag_gridlines|#__tree_checkboxes)
+  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless|#__tree_multiselect) ; |#__flag_gridlines
   SetColor( *w, #__color_back, $FF07EAF6 )
   For i = 1 To 10;00000
     AddItem(*w, i, "text-" + Str(i))
@@ -20957,5 +20983,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00e6-0r---------------------------------------------------------------------------------------------------------------------00----++08vv-u-0-+---------------274-7--v--------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

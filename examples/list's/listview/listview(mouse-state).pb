@@ -134,16 +134,16 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(1, 100, 50, 520, 645, "demo ListView state", #PB_Window_SystemMenu)
     ;\\ demo gadget
-    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 205)
-    *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 205)
+    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 205, #PB_ListView_MultiSelect)
+    *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 205, #PB_ListView_MultiSelect)
     
     ;\\
     *g3 = ListViewGadget_(#PB_Any, 10, 220, 120, 205, #PB_ListView_ClickSelect)
     *g4 = ListViewGadget_(#PB_Any, 10+125, 220, 120, 205, #PB_ListView_ClickSelect)
     
     ;\\
-    *g5 = ListViewGadget_(#PB_Any, 10, 430, 120, 205, #PB_ListView_MultiSelect)
-    *g6 = ListViewGadget_(#PB_Any, 10+125, 430, 120, 205, #PB_ListView_MultiSelect)
+    *g5 = ListViewGadget_(#PB_Any, 10, 430, 120, 205)
+    *g6 = ListViewGadget_(#PB_Any, 10+125, 430, 120, 205)
     
     ;\\
     For a = 0 To countitems
@@ -163,16 +163,16 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState_(*g5, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListView(265, 10, 120, 205 )
-    *w2 = widget::ListView(265+125, 10, 120, 205 )
+    *w1 = widget::ListView(265, 10, 120, 205, #PB_ListView_MultiSelect )
+    *w2 = widget::ListView(265+125, 10, 120, 205, #PB_ListView_MultiSelect )
     
     ;\\
     *w3 = widget::ListView(265, 220, 120, 205, #PB_ListView_ClickSelect )
     *w4 = widget::ListView(265+125, 220, 120, 205, #PB_ListView_ClickSelect )
     
     ;\\
-    *w5 = widget::ListView(265, 430, 120, 205, #PB_ListView_MultiSelect )
-    *w6 = widget::ListView(265+125, 430, 120, 205, #PB_ListView_MultiSelect )
+    *w5 = widget::ListView(265, 430, 120, 205 )
+    *w6 = widget::ListView(265+125, 430, 120, 205 )
     
     ;\\
     For a = 0 To countitems
@@ -214,6 +214,6 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP
