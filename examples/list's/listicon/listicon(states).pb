@@ -6,13 +6,17 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
+  #PB_ListIcon_ClickSelect = #__flag_clickselect
+  ;#PB_ListIcon_MultiSelect = #__flag_multiline
+  
+  
+  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=4; количесвто итемов 
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
+        ; ExplorerListGadget, ListIconGadget и ListIconGadget — все три построены на одном и том же классе Cocoa (NSTableView).
         ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
         If state >= 0
           CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", state )
@@ -20,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;       CompilerCase #PB_OS_Windows
         ;         Select GadgetType(gadget)
-        ;           Case #PB_GadgetType_ListView
+        ;           Case #PB_GadgetType_ListIcon
         ;            ; SendMessage_(GadgetID(gadget), #LVM_SCROLL, #Null, CountGadgetItems(gadget) - 1)
         ;           Case #PB_GadgetType_ListIcon
         ;             SendMessage_(GadgetID(gadget), #LVM_ENSUREVISIBLE, CountGadgetItems(gadget) - 1, #Null)
@@ -51,10 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
-    Protected g = PB(ListViewGadget)(gadget, x,y,width,height,flag)
-    ;Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
-    ;Protected g = PB(ListIconGadget)(gadget, x,y,width,height,"title",width, flag)
+  Procedure ListIconGadget_(gadget, x,y,width,height, titleText.s, titleWidth, flag=0)
+    Protected g = PB(ListIconGadget)(gadget, x,y,width,height, titleText, titleWidth,flag)
     If gadget =- 1 : gadget = g : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -132,22 +134,22 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(1, 100, 50, 520, 755, "demo ListView state", #PB_Window_SystemMenu)
+  If Open(1, 100, 50, 520, 755, "demo ListIcon state", #PB_Window_SystemMenu)
     ;\\ demo gadget
-    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 180 )
-    *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 180)
+    *g1 = ListIconGadget_(#PB_Any, 10, 10, 120, 180, "column", 100 )
+    *g2 = ListIconGadget_(#PB_Any, 10+125, 10, 120, 180, "column", 100)
     
     ;\\
-    *g3 = ListViewGadget_(#PB_Any, 10, 195, 120, 180, #PB_ListView_ClickSelect)
-    *g4 = ListViewGadget_(#PB_Any, 10+125, 195, 120, 180, #PB_ListView_ClickSelect)
+    *g3 = ListIconGadget_(#PB_Any, 10, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect)
+    *g4 = ListIconGadget_(#PB_Any, 10+125, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect)
     
     ;\\
-    *g5 = ListViewGadget_(#PB_Any, 10, 380, 120, 180, #PB_ListView_MultiSelect)
-    *g6 = ListViewGadget_(#PB_Any, 10+125, 380, 120, 180, #PB_ListView_MultiSelect)
+    *g5 = ListIconGadget_(#PB_Any, 10, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect)
+    *g6 = ListIconGadget_(#PB_Any, 10+125, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect)
     
     ;\\
-    *g7 = ListViewGadget_(#PB_Any, 10, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect)
-    *g8 = ListViewGadget_(#PB_Any, 10+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect)
+    *g7 = ListIconGadget_(#PB_Any, 10, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect)
+    *g8 = ListIconGadget_(#PB_Any, 10+125, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect)
     
     ;\\
     For a = 0 To countitems
@@ -170,20 +172,20 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListView(265, 10, 120, 180 )
-    *w2 = widget::ListView(265+125, 10, 120, 180 )
+    *w1 = widget::ListIcon(265, 10, 120, 180, "column", 100 )
+    *w2 = widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
     
     ;\\
-    *w3 = widget::ListView(265, 195, 120, 180, #PB_ListView_ClickSelect )
-    *w4 = widget::ListView(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect )
+    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect )
     
     ;\\
-    *w5 = widget::ListView(265, 380, 120, 180, #PB_ListView_MultiSelect )
-    *w6 = widget::ListView(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect )
+    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect )
     
     ;\\
-    *w7 = widget::ListView(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
-    *w8 = widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect )
+    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect )
     
     ;\\
     For a = 0 To countitems

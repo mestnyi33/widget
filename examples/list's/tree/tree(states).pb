@@ -6,13 +6,17 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
+  #PB_Tree_ClickSelect = #__flag_clickselect
+  #PB_Tree_MultiSelect = #__flag_multiline
+  
+  
   Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
+        ; ExplorerListGadget, ListIconGadget и TreeGadget — все три построены на одном и том же классе Cocoa (NSTableView).
         ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
         If state >= 0
           CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", state )
@@ -20,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;       CompilerCase #PB_OS_Windows
         ;         Select GadgetType(gadget)
-        ;           Case #PB_GadgetType_ListView
+        ;           Case #PB_GadgetType_Tree
         ;            ; SendMessage_(GadgetID(gadget), #LVM_SCROLL, #Null, CountGadgetItems(gadget) - 1)
         ;           Case #PB_GadgetType_ListIcon
         ;             SendMessage_(GadgetID(gadget), #LVM_ENSUREVISIBLE, CountGadgetItems(gadget) - 1, #Null)
@@ -51,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
-    Protected g = PB(ListViewGadget)(gadget, x,y,width,height,flag)
+  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
+    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
     ;Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
     ;Protected g = PB(ListIconGadget)(gadget, x,y,width,height,"title",width, flag)
     If gadget =- 1 : gadget = g : EndIf
@@ -132,22 +136,22 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(1, 100, 50, 520, 755, "demo ListView state", #PB_Window_SystemMenu)
+  If Open(1, 100, 50, 520, 755, "demo Tree state", #PB_Window_SystemMenu)
     ;\\ demo gadget
-    *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 180 )
-    *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 180)
+    *g1 = TreeGadget_(#PB_Any, 10, 10, 120, 180 )
+    *g2 = TreeGadget_(#PB_Any, 10+125, 10, 120, 180)
     
     ;\\
-    *g3 = ListViewGadget_(#PB_Any, 10, 195, 120, 180, #PB_ListView_ClickSelect)
-    *g4 = ListViewGadget_(#PB_Any, 10+125, 195, 120, 180, #PB_ListView_ClickSelect)
+    *g3 = TreeGadget_(#PB_Any, 10, 195, 120, 180, #PB_Tree_ClickSelect)
+    *g4 = TreeGadget_(#PB_Any, 10+125, 195, 120, 180, #PB_Tree_ClickSelect)
     
     ;\\
-    *g5 = ListViewGadget_(#PB_Any, 10, 380, 120, 180, #PB_ListView_MultiSelect)
-    *g6 = ListViewGadget_(#PB_Any, 10+125, 380, 120, 180, #PB_ListView_MultiSelect)
+    *g5 = TreeGadget_(#PB_Any, 10, 380, 120, 180, #PB_Tree_MultiSelect)
+    *g6 = TreeGadget_(#PB_Any, 10+125, 380, 120, 180, #PB_Tree_MultiSelect)
     
     ;\\
-    *g7 = ListViewGadget_(#PB_Any, 10, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect)
-    *g8 = ListViewGadget_(#PB_Any, 10+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect)
+    *g7 = TreeGadget_(#PB_Any, 10, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect)
+    *g8 = TreeGadget_(#PB_Any, 10+125, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect)
     
     ;\\
     For a = 0 To countitems
@@ -170,20 +174,20 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListView(265, 10, 120, 180 )
-    *w2 = widget::ListView(265+125, 10, 120, 180 )
+    *w1 = widget::Tree(265, 10, 120, 180 )
+    *w2 = widget::Tree(265+125, 10, 120, 180 )
     
     ;\\
-    *w3 = widget::ListView(265, 195, 120, 180, #PB_ListView_ClickSelect )
-    *w4 = widget::ListView(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w3 = widget::Tree(265, 195, 120, 180, #PB_Tree_ClickSelect )
+    *w4 = widget::Tree(265+125, 195, 120, 180, #PB_Tree_ClickSelect )
     
     ;\\
-    *w5 = widget::ListView(265, 380, 120, 180, #PB_ListView_MultiSelect )
-    *w6 = widget::ListView(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w5 = widget::Tree(265, 380, 120, 180, #PB_Tree_MultiSelect )
+    *w6 = widget::Tree(265+125, 380, 120, 180, #PB_Tree_MultiSelect )
     
     ;\\
-    *w7 = widget::ListView(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
-    *w8 = widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w7 = widget::Tree(265, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
+    *w8 = widget::Tree(265+125, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
     
     ;\\
     For a = 0 To countitems
