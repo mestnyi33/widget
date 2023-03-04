@@ -6,7 +6,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
+  Global a, *first, *last, *added, *reset,
+         *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8,
+         *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
@@ -77,9 +79,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Case #PB_EventType_LostFocus
 ;         Debug  ""+EventGadget()+" - gadget lost-focus "+GetGadgetState(EventGadget())
 ;         
-;       Case #PB_EventType_DragStart
-;         Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
-        
+      Case #PB_EventType_DragStart
+        If *g1 = EventGadget()
+          PB(DragText)( "drag" )
+          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+        EndIf
+      
       Case #PB_EventType_Change
         Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
         
@@ -114,9 +119,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Case #PB_EventType_StatusChange
 ;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-;       Case #PB_EventType_DragStart
-;         Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
-;         
+      Case #PB_EventType_DragStart
+        If *w1 = EventWidget()
+          DragText( GetItemText(EventWidget(), GetState(EventWidget())) )
+          Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        EndIf
+      
+      Case #PB_EventType_Drop
+        If *w3 = EventWidget()
+          Debug  ""+GetIndex(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
+          AddItem( *w3, EventWidget( )\EnteredRow( )\index + 1, EventDropText( ) )
+          SetActive( *w3 )
+        EndIf
+      
       Case #PB_EventType_Change
         Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
@@ -150,24 +165,33 @@ CompilerIf #PB_Compiler_IsMainFile
     *g8 = ListViewGadget_(#PB_Any, 10+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect)
     
     ;\\
+    a = 0
     For a = 0 To countitems
-      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g3, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g1, -1, "D&D item "+Str(a), 0)
+      AddGadgetItem_(*g3, -1, "Drop item "+Str(a), 0)
       AddGadgetItem_(*g5, -1, "Item "+Str(a), 0)
       AddGadgetItem_(*g7, -1, "Item "+Str(a), 0)
     Next
+    a = 0
     For a = 0 To countitems*10
       AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
       AddGadgetItem_(*g4, -1, "Item "+Str(a), 0)
       AddGadgetItem_(*g6, -1, "Item "+Str(a), 0)
       AddGadgetItem_(*g8, -1, "Item "+Str(a), 0)
     Next
+    a = 0
+    For a = 0 To countitems
+      SetGadgetState_(*g1, a)
+      SetGadgetState_(*g3, a)
+      SetGadgetState_(*g5, a)
+      SetGadgetState_(*g7, a)
+    Next
     
-    ;\\
-    SetGadgetState_(*g1, countitems-1)
-    SetGadgetState_(*g3, countitems-1) 
-    SetGadgetState_(*g5, countitems-1) 
-    SetGadgetState_(*g7, countitems-1) 
+;     ;\\
+;     SetGadgetState_(*g1, countitems-1)
+;     SetGadgetState_(*g3, countitems-1) 
+;     SetGadgetState_(*g5, countitems-1) 
+;     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
     *w1 = widget::ListView(265, 10, 120, 180 )
@@ -186,24 +210,36 @@ CompilerIf #PB_Compiler_IsMainFile
     *w8 = widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
     
     ;\\
+    a = 0 
     For a = 0 To countitems
-      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w3, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w1, -1, "D&D item "+Str(a), 0)
+      widget::AddItem(*w3, -1, "Drop item "+Str(a), 0)
       widget::AddItem(*w5, -1, "Item "+Str(a), 0)
       widget::AddItem(*w7, -1, "Item "+Str(a), 0)
     Next
+    a = 0 
     For a = 0 To countitems*10
       widget::AddItem(*w2, -1, "Item "+Str(a), 0)
       widget::AddItem(*w4, -1, "Item "+Str(a), 0)
       widget::AddItem(*w6, -1, "Item "+Str(a), 0)
       widget::AddItem(*w8, -1, "Item "+Str(a), 0)
     Next
+    a = 0 
+    For a = 0 To countitems
+      widget::SetState(*w1, a)
+      widget::SetState(*w3, a)
+      widget::SetState(*w5, a)
+      widget::SetState(*w7, a)
+    Next
+    
+;     ;\\
+;     widget::SetState(*w1, countitems-1)
+;     widget::SetState(*w3, countitems-1) 
+;     widget::SetState(*w5, countitems-1) 
+;     widget::SetState(*w7, countitems-1) 
     
     ;\\
-    widget::SetState(*w1, countitems-1)
-    widget::SetState(*w3, countitems-1) 
-    widget::SetState(*w5, countitems-1) 
-    widget::SetState(*w7, countitems-1) 
+    EnableDrop( *w3, #PB_Drop_Text, #PB_Drag_Copy )
     
     ;\\
     SetActive( *w5 )
@@ -229,5 +265,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = V--
 ; EnableXP

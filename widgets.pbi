@@ -13439,15 +13439,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;\\
           If *this\row\index <> state
-            *this\row\index = state
-            
-            ;\\
             If is_no_select_item_( *this\_rows( ), State )
               ProcedureReturn #False
             EndIf
             
-            DoEvents( *this, #__event_StatusChange, *this\_rows( ), *this\_rows( )\index )
+            Debug ""+*this\class +" "+ *this\row\index +" "+ state
             
+            *this\row\index = state
+           
             ;\\ example file "D&D-items"
             If *this\drop
               If *this\PressedRow( )
@@ -13490,14 +13489,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\FocusedRow( ) <> *this\_rows( )
               If *this\FocusedRow( )
-                If *this\FocusedRow( )\state\focus
-                  *this\FocusedRow( )\state\focus = #False
-                  ;                   ; multi select mode
-                  ;                   If *this\row\multiselect
-                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-                  ;                   EndIf
-                EndIf
-                
+                *this\FocusedRow( )\state\focus = 0
                 *this\FocusedRow( )\color\state = #__S_0
               EndIf
               
@@ -13524,6 +13516,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 EndIf
                 
                 *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
+                DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
               EndIf
               
               PostCanvasRepaint( *this )
@@ -14314,8 +14307,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_init( *this )
           EndIf
         EndIf
+        
         ;\\ set transformation for the child
         If Not *this\_a_\transform And *parent\_a_\transform
+          *this\data = - 1
           a_set_state( *this, Bool( *parent\_a_\transform ) )
           a_set( *this, #__a_full, #__a_anchors_size )
         EndIf
@@ -17977,48 +17972,48 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;
       If *this\row
         ;\\ search at point entered items
-        If *this\state\enter = 2
-          If ListSize( *this\VisibleRows( ) )
-            If *this\EnteredRow( ) And
-               *this\EnteredRow( )\visible And
-               Not *this\EnteredRow( )\hide And
-               is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
-              *item = *this\EnteredRow( )
-            Else
-              LastElement( *this\VisibleRows( ))
-              Repeat
-                If *this\VisibleRows( )\visible And
-                   Not *this\VisibleRows( )\hide And
-                   is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )
-                  *item = *this\VisibleRows( )
-                  Break
-                EndIf
-              Until PreviousElement( *this\VisibleRows( )) = #False
+        If Not Mouse( )\drag Or *this\drop
+          If *this\state\enter = 2
+            If ListSize( *this\VisibleRows( ) )
+              If *this\EnteredRow( ) And
+                 *this\EnteredRow( )\visible And
+                 Not *this\EnteredRow( )\hide And
+                 is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
+                *item = *this\EnteredRow( )
+              Else
+                LastElement( *this\VisibleRows( ))
+                Repeat
+                  If *this\VisibleRows( )\visible And
+                     Not *this\VisibleRows( )\hide And
+                     is_at_point_( *this\VisibleRows( ), mouse_x, mouse_y )
+                    *item = *this\VisibleRows( )
+                    Break
+                  EndIf
+                Until PreviousElement( *this\VisibleRows( )) = #False
+              EndIf
+              
+            ElseIf ListSize( *this\_rows( ) )
+              If *this\EnteredRow( ) And
+                 *this\EnteredRow( )\visible And
+                 Not *this\EnteredRow( )\hide And
+                 is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
+                *item = *this\EnteredRow( )
+              Else
+                LastElement( *this\_rows( ))
+                Repeat
+                  If *this\_rows( )\visible And
+                     Not *this\_rows( )\hide And
+                     is_at_point_( *this\_rows( ), mouse_x, mouse_y )
+                    *item = *this\_rows( )
+                    Break
+                  EndIf
+                Until PreviousElement( *this\_rows( )) = #False
+              EndIf
             EndIf
             
-          ElseIf ListSize( *this\_rows( ) )
-            If *this\EnteredRow( ) And
-               *this\EnteredRow( )\visible And
-               Not *this\EnteredRow( )\hide And
-               is_at_point_( *this\EnteredRow( ), mouse_x, mouse_y )
-              *item = *this\EnteredRow( )
-            Else
-              LastElement( *this\_rows( ))
-              Repeat
-                If *this\_rows( )\visible And
-                   Not *this\_rows( )\hide And
-                   is_at_point_( *this\_rows( ), mouse_x, mouse_y )
-                  *item = *this\_rows( )
-                  Break
-                EndIf
-              Until PreviousElement( *this\_rows( )) = #False
-            EndIf
-          EndIf
-        Else
-          If *this\state\drag ;And *this\state\drag <> #PB_Drag_Finish
-            If Not Mouse( )\drag Or PressedWidget( )\drop
-              
-              ;\\
+            ;\\
+          ElseIf *this\state\drag
+            If eventtype = #__event_MouseMove
               If is_at_point_horizontal_( *this, mouse( )\x )
                 If mouse( )\y < mouse( )\delta\y + *this\y[#__c_inner] And mouse( )\y < *this\y[#__c_inner]
                   If *this\VisibleFirstRow( ) And Not bar_in_start_( *this\scroll\v\bar )
@@ -18045,14 +18040,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
               EndIf
-              
             EndIf
+            
           EndIf
-          
         EndIf
         
         ;\\ change enter/leave state
-        If *this\EnteredRow( ) <> *item And Not ( *this\state\press And Not *item );And Not *this\row\multiselect )
+        If *this\EnteredRow( ) <> *item ;And Not ( ( *this\state\press And Not Mouse( )\drag ) And Not *item );And Not *this\row\multiselect )
           ; If *this\PressedRow( )
             ; Debug *this\PressedRow( )\index
           ; EndIf
@@ -18062,7 +18056,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\EnteredRow( )\state\enter
               *this\EnteredRow( )\state\enter = 0
               
-              If *this\state\press And 
+              If ( *this\state\press And Not Mouse( )\drag ) And 
                  Not *this\row\multiselect And
                  Not *this\row\clickselect 
                 
@@ -18087,13 +18081,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\EnteredRow( ) = *item
           
           ;\\
-          If Mouse( )\buttons
-            If *this\row\multiselect ; And Not *this\row\clickselect 
-              ;If *this\state\enter
-              If *this\EnteredRow( ) And *this\PressedRow( )
-                _multi_select_items_( *this, *this\EnteredRow( ) )
-              EndIf
-              ;EndIf
+          If *this\row\multiselect 
+            If Mouse( )\buttons And *this\PressedRow( ) And *this\EnteredRow( )
+              _multi_select_items_( *this, *this\EnteredRow( ) )
             EndIf
           EndIf
           
@@ -18102,7 +18092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\EnteredRow( )\state\enter = 0
               *this\EnteredRow( )\state\enter = 1
               
-              If *this\state\press And ( *this\row\clickselect = 0 Or 
+              If ( *this\state\press And Not Mouse( )\drag ) And ( *this\row\clickselect = 0 Or 
                                          ( *this\row\clickselect And *this\row\multiselect ))
                 If *this\EnteredRow( )\color\state = #__S_0
                   *this\EnteredRow( )\color\state = #__S_2
@@ -18167,6 +18157,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
+        If mouse( )\drag
+          If PressedWidget( ) And PressedWidget( )\row
+            If PressedWidget( )\PressedRow( )
+              PressedWidget( )\row\index = PressedWidget( )\PressedRow( )\index
+              
+              If PressedWidget( )\FocusedRow( )
+                PressedWidget( )\FocusedRow( )\state\focus = 0
+                PressedWidget( )\FocusedRow( )\color\state = #__s_0
+              EndIf
+              
+              PressedWidget( )\FocusedRow( ) = PressedWidget( )\PressedRow( )
+              PressedWidget( )\PressedRow( )\state\press = 0
+              PressedWidget( )\PressedRow( ) = 0
+              
+              If PressedWidget( )\FocusedRow( )
+                PressedWidget( )\FocusedRow( )\state\focus = 1
+                PressedWidget( )\FocusedRow( )\color\state = #__s_2
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+      
+        ;\\
         If eventtype = #__event_MouseEnter
           If *this\FocusedRow( ) And
              Not ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) )
@@ -18181,9 +18194,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\row\index = *this\EnteredRow( )\index
               
               ;\\
-              If *this\row\clickselect 
-                *this\PressedRow( )             = *this\EnteredRow( )
+              If *this\row\multiselect And Not *this\row\clickselect
+                PushListPosition( *this\_rows( ) )
+                ForEach *this\_rows( )
+                  If *this\_rows( )\color\state <> #__S_0
+                    *this\_rows( )\color\state = #__S_0
+                    
+                    If *this\_rows( )\state\focus
+                      Debug " multiselect "+*this\_rows( )\state\focus +" "+ *this\_rows( )\text\string
+                    EndIf
+                    
+                    If Not *this\_rows( )\state\enter 
+                      If *this\_rows( )\state\focus <> 0
+                        *this\_rows( )\state\focus = 0
+                      EndIf
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition( *this\_rows( ) )
+              EndIf
                 
+              *this\PressedRow( ) = *this\EnteredRow( )
+                
+              ;\\
+              If *this\row\clickselect 
                 *this\PressedRow( )\state\press ! 1
                 If *this\PressedRow( )\state\press
                   *this\PressedRow( )\color\state = #__S_2
@@ -18191,32 +18225,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\PressedRow( )\color\state = #__S_1
                 EndIf
                 
-                ;                 ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                ; DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
               Else
-                If *this\row\multiselect
-                  PushListPosition( *this\_rows( ) )
-                  ForEach *this\_rows( )
-                    If *this\_rows( )\color\state <> #__S_0
-                      *this\_rows( )\color\state = #__S_0
-                      
-                      If Not *this\_rows( )\state\enter 
-                        If *this\_rows( )\state\focus <> 0
-                          *this\_rows( )\state\focus = 0
-                        EndIf
-                      EndIf
-                      
-                      ;???
-                      If *this\_rows( )\state\press <> 0
-                        *this\_rows( )\state\press = 0
-                      EndIf
-                    EndIf
-                  Next
-                  PopListPosition( *this\_rows( ) )
-                EndIf
-                
-                *this\PressedRow( )             = *this\EnteredRow( )
-                *this\PressedRow( )\color\state = #__S_2
                 *this\PressedRow( )\state\press = 1
+                *this\PressedRow( )\color\state = #__S_2
                 
                 If *this\PressedRow( ) <> *this\FocusedRow( )
                   If *this\FocusedRow( ) And
@@ -18296,23 +18308,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_Drop ; Ok
-          If *this\EnteredRow( )
-            *this\row\index = *this\EnteredRow( )\index
-          EndIf
-          
-          If *this\FocusedRow( )
-            ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
-            ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
-            ;             Debug "drop f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\state\focus
-            
-            If *this\PressedRow( ) And
-               *this\FocusedRow( )\index > *this\PressedRow( )\index
-              *this\FocusedRow( )\state\enter = 0
-            EndIf
-            *this\FocusedRow( )\state\focus = 0
-            *this\FocusedRow( )\state\press = 0
-            *this\FocusedRow( )\color\state = #__s_0
-          EndIf
+;           If *this\EnteredRow( )
+;             *this\row\index = *this\EnteredRow( )\index
+;           EndIf
+;           
+;           If *this\FocusedRow( )
+;             ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
+;             ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
+;             ;             Debug "drop f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\state\focus
+;             
+;             If *this\PressedRow( ) And
+;                *this\FocusedRow( )\index > *this\PressedRow( )\index
+;               *this\FocusedRow( )\state\enter = 0
+;             EndIf
+;             *this\FocusedRow( )\state\focus = 0
+;             *this\FocusedRow( )\state\press = 0
+;             *this\FocusedRow( )\color\state = #__s_0
+;           EndIf
         EndIf
         
         ;\\
@@ -18340,7 +18352,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\PressedRow( )
               If *this\row\clickselect 
                 If *this\row\multiselect 
-                  
                   PushListPosition( *this\_rows( ) )
                   ForEach *this\_rows( )
                     If *this\_rows( )\color\state = #__S_2
@@ -18350,13 +18361,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                   Next
                   PopListPosition( *this\_rows( ) )
-                  
                 Else
                   If *this\state\drag 
                     If *this\PressedRow( ) <> *this\EnteredRow( )
                       If *this\EnteredRow( )
                         *this\PressedRow( )\state\press = 0
                         *this\PressedRow( )\color\state = #__S_0
+                        
                         *this\EnteredRow( )\state\press = 1
                         *this\EnteredRow( )\color\state = #__S_2
                         
@@ -18379,30 +18390,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *this\EnteredRow( ) And 
                    *this\EnteredRow( )\state\enter 
                   
-                  ;\\
                   If Not *this\row\multiselect
-                    If *this\FocusedRow( )  
-                      If *this\FocusedRow( ) <> *this\EnteredRow( )
-                        *this\FocusedRow( )\state\focus = 0
-                        *this\FocusedRow( )\state\enter = 0
-                        *this\FocusedRow( )\color\state = #__s_0
-                      EndIf
+                    If *this\FocusedRow( ) And 
+                       *this\FocusedRow( ) <> *this\EnteredRow( )
+                      *this\FocusedRow( )\state\enter = 0
+                      *this\FocusedRow( )\state\focus = 0
+                      *this\FocusedRow( )\color\state = #__s_0
                     EndIf
                   EndIf
                   
                   *this\FocusedRow( ) = *this\EnteredRow( )
                 EndIf
                 
-                If *this\PressedRow( ) <> *this\EnteredRow( )
-                  If Not *this\row\multiselect
+                If Not *this\row\multiselect
+                  If *this\PressedRow( ) <> *this\EnteredRow( )
                     If Not *this\PressedRow( )\state\focus
                       *this\PressedRow( )\state\enter = 0
-                      *this\PressedRow( )\state\press = 0
                       *this\PressedRow( )\color\state = #__s_0
                     EndIf
                   EndIf
                 EndIf
                 
+                *this\PressedRow( )\state\press = 0
                 *this\PressedRow( ) = #Null
                 
                 If *this\FocusedRow( ) 
@@ -18897,7 +18906,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;             EndIf
           ;           EndIf
           
-          mouse( )\drag\string = GetClass( PressedWidget( ) )
+;           If mouse( )\drag\string = ""
+;             mouse( )\drag\string = GetClass( PressedWidget( ) )
+;           EndIf
           mouse( )\drag\width  = #PB_Ignore
           mouse( )\drag\height = #PB_Ignore
         EndIf
@@ -20985,5 +20996,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------a------f--8v---v--v+88-f4+----------------------------------------------------------
+; Folding = ----------------------------------------------4+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------90e600-----------------------------------------------------------------------------------------------------------ft------v--48vv+9-2-4f-X--f-------+v-4------ft+0v+--8+-------------------------------
 ; EnableXP

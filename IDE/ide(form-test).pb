@@ -737,10 +737,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
         
        Case #PB_EventType_StatusChange
-        ; Debug "widget status change "
-        SetState( id_inspector_tree, GetData( *eventWidget ) )
+        position = GetData( *eventWidget ) 
+        ; If position = - 1 : position = 0 : EndIf ; test bug
+        Debug "widget status change "+position
+        SetState( id_inspector_tree, position )
         If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, GetData( *eventWidget ) )
+          SetGadgetState( id_design_code, position )
         EndIf
         ;properties_update( id_inspector_tree, *eventWidget )
         

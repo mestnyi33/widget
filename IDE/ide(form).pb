@@ -471,6 +471,8 @@ CompilerIf #PB_Compiler_IsMainFile
         AddItem( id_i_view_tree, position, newClass.s, img, sublevel )
         SetItemData( id_i_view_tree, position, *new )
         ; SetItemState( id_i_view_tree, position, #PB_tree_selected )
+        
+        ; Debug " "+position
         SetState( id_i_view_tree, position )
         
         If IsGadget( id_design_code )
@@ -605,11 +607,13 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
       Case #PB_EventType_StatusChange
-        ; Debug "widget status change "
-        If IsGadget( id_design_code )
-          SetGadgetState( id_design_code, GetData( *eventWidget ) )
+        ;\\ Debug " widget status change "
+        If GetData( *eventWidget ) >= 0
+          If IsGadget( id_design_code )
+            SetGadgetState( id_design_code, GetData( *eventWidget ) )
+          EndIf
+          SetState( id_i_view_tree, GetData( *eventWidget ) )
         EndIf
-        SetState( id_i_view_tree, GetData( *eventWidget ) )
         properties_update( id_i_properties_tree, *eventWidget )
         
       Case #PB_EventType_Resize
@@ -648,7 +652,7 @@ CompilerIf #PB_Compiler_IsMainFile
        eventtype = #PB_EventType_RightButtonUp 
       
       ; end new create
-      If GetState( id_elements_tree) > 0 
+      If GetState( id_elements_tree ) > 0 
         SetState( id_elements_tree, 0 )
         a_transform( )\type = 0
         SetCursor( *eventWidget, #PB_Cursor_Default )
@@ -1286,5 +1290,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----v-----0+8-----v0-
+; Folding = -----vv----804-----f8-
 ; EnableXP
