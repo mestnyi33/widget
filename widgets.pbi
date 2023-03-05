@@ -13416,111 +13416,95 @@ CompilerIf Not Defined( Widget, #PB_Module )
             State = *this\count\items - 1
           EndIf
           
-          ;\\ scroll to visible
-          *this\scroll\state  = - 1
-          
-          ;\\ reset all selected items
-          If State = - 1
-            If *this\FocusedRow( )
-              If *this\mode\check <> #__m_optionselect
-                If *this\FocusedRow( )\state\focus
-                  *this\FocusedRow( )\state\focus = #False
-                  ;                   ; multi select mode
-                  ;                   If *this\row\multiselect
-                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, - 1 )
-                  ;                   EndIf
-                EndIf
-              EndIf
-              
-              *this\FocusedRow( )\color\state = #__S_0
-              *this\FocusedRow( )             = #Null
-            EndIf
-          EndIf
           
           ;\\
           If *this\row\index <> state
-            If is_no_select_item_( *this\_rows( ), State )
-              ProcedureReturn #False
-            EndIf
-            
-            Debug ""+*this\class +" "+ *this\row\index +" "+ state
-            
+            ; Debug ""+*this\class +" "+ *this\row\index +" "+ state
             *this\row\index = state
-           
-            ;\\ example file "D&D-items"
-            If *this\drop
-              If *this\PressedRow( )
-                *this\_rows( )\index = State
-                
-                Debug " ---------- *this\PressedRow( )\childrens " + *this\PressedRow( )\childrens
-                
-                ;\\
-                PushListPosition( *this\_rows( ))
-                If *this\_rows( )\index > *this\PressedRow( )\index
-                  ;\\ drag up and drop down
-                  While PreviousElement( *this\_rows( ))
-                    If *this\_rows( )\index > *this\PressedRow( )\index
-                      *this\_rows( )\index - 1 - *this\PressedRow( )\childrens
-                    EndIf
-                  Wend
-                ElseIf *this\_rows( )\index < *this\PressedRow( )\index
-                  ;\\ drag down and drop up
-                  While NextElement( *this\_rows( ))
-                    If *this\_rows( )\index < *this\PressedRow( )\index
-                      *this\_rows( )\index + 1 + *this\PressedRow( )\childrens
-                    EndIf
-                  Wend
-                EndIf
-                PopListPosition( *this\_rows( ))
-                
-                ;\\
-                PushListPosition( *this\_rows( ))
-                While NextElement( *this\_rows( ))
-                  If *this\_rows( )\sublevel = *this\PressedRow( )\sublevel
-                    Break
-                  ElseIf *this\_rows( )\sublevel > *this\PressedRow( )\sublevel : State + 1
-                    *this\_rows( )\index = State
-                  EndIf
-                Wend
-                PopListPosition( *this\_rows( ))
-              EndIf
-            EndIf
             
-            ;\\
-            If *this\FocusedRow( ) <> *this\_rows( )
+            ;\\ scroll to visible
+            *this\scroll\state  = - 1
+            
+            If state = - 1
+              ;\\ reset all selected items
               If *this\FocusedRow( )
                 *this\FocusedRow( )\state\focus = 0
                 *this\FocusedRow( )\color\state = #__S_0
+                *this\FocusedRow( )             = #Null
+              EndIf
+            Else
+              If is_no_select_item_( *this\_rows( ), State )
+                ProcedureReturn #False
               EndIf
               
-              *this\FocusedRow( ) = *this\_rows( )
+              ;\\ example file "D&D-items"
+              If *this\drop
+                If *this\PressedRow( )
+                  *this\_rows( )\index = State
+                  
+                  Debug " ---------- *this\PressedRow( )\childrens " + *this\PressedRow( )\childrens
+                  
+                  ;\\
+                  PushListPosition( *this\_rows( ))
+                  If *this\_rows( )\index > *this\PressedRow( )\index
+                    ;\\ drag up and drop down
+                    While PreviousElement( *this\_rows( ))
+                      If *this\_rows( )\index > *this\PressedRow( )\index
+                        *this\_rows( )\index - 1 - *this\PressedRow( )\childrens
+                      EndIf
+                    Wend
+                  ElseIf *this\_rows( )\index < *this\PressedRow( )\index
+                    ;\\ drag down and drop up
+                    While NextElement( *this\_rows( ))
+                      If *this\_rows( )\index < *this\PressedRow( )\index
+                        *this\_rows( )\index + 1 + *this\PressedRow( )\childrens
+                      EndIf
+                    Wend
+                  EndIf
+                  PopListPosition( *this\_rows( ))
+                  
+                  ;\\
+                  PushListPosition( *this\_rows( ))
+                  While NextElement( *this\_rows( ))
+                    If *this\_rows( )\sublevel = *this\PressedRow( )\sublevel
+                      Break
+                    ElseIf *this\_rows( )\sublevel > *this\PressedRow( )\sublevel : State + 1
+                      *this\_rows( )\index = State
+                    EndIf
+                  Wend
+                  PopListPosition( *this\_rows( ))
+                EndIf
+              EndIf
               
-              ; click select mode
-              If *this\row\clickselect
-                If *this\FocusedRow( )\state\focus
+              ;\\
+              If *this\FocusedRow( ) <> *this\_rows( )
+                If *this\FocusedRow( )
                   *this\FocusedRow( )\state\focus = 0
                   *this\FocusedRow( )\color\state = #__S_0
+                EndIf
+                
+                *this\FocusedRow( ) = *this\_rows( )
+                
+                ; click select mode
+                If *this\row\clickselect
+                  If *this\FocusedRow( )\state\focus
+                    *this\FocusedRow( )\state\focus = 0
+                    *this\FocusedRow( )\color\state = #__S_0
+                  Else
+                    *this\FocusedRow( )\state\focus = 1
+                    *this\FocusedRow( )\color\state = #__S_3
+                  EndIf
+                  
+                  DoEvents( *this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index )
                 Else
-                  *this\FocusedRow( )\state\focus = 1
-                  *this\FocusedRow( )\color\state = #__S_3
+                   *this\FocusedRow( )\state\focus = 1
+                   *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
+                  DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
                 EndIf
                 
-                DoEvents( *this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index )
-              Else
-                If *this\FocusedRow( )\state\focus = 0 ; ???
-                  *this\FocusedRow( )\state\focus = 1
-                  ;                   ; multi select mode
-                  ;                   If *this\row\multiselect
-                  ;                     Post( *this, #__event_Change, *this\FocusedRow( )\index, 1 )
-                  ;                   EndIf
-                EndIf
-                
-                *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
-                DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
+                PostCanvasRepaint( *this )
+                ProcedureReturn #True
               EndIf
-              
-              PostCanvasRepaint( *this )
-              ProcedureReturn #True
             EndIf
           EndIf
         EndIf
@@ -14070,8 +14054,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure SetParent( *this._S_widget, *parent._S_widget, tabindex.l = 0 )
       Protected parent, ReParent.b, x, y, *last._S_widget, *lastParent._S_widget, NewList *D._S_widget( ), NewList *C._S_widget( )
+      ;\\
+      If *this = *parent
+        ProcedureReturn 0
+      EndIf
       
-      If *parent
+      If *parent 
         If Not *parent\container And *parent\child
           Debug "SetParent("
           *parent = *parent\parent
@@ -14322,9 +14310,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If ReParent
-          ;
+          *this\resize = #__resize_change
+            ;
           If a_index( ) = #__a_moved And *this\state\drag ; = #PB_Drag_Resize
-            *this\resize | #__resize_x | #__resize_y | #__resize_change
+            *this\resize | #__resize_x | #__resize_y
             
             x = *this\x[#__c_frame] - *parent\x[#__c_inner]
             y = *this\y[#__c_frame] - *parent\y[#__c_inner]
@@ -18011,37 +18000,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            ;\\
-          ElseIf *this\state\drag
-            If eventtype = #__event_MouseMove
-              If is_at_point_horizontal_( *this, mouse( )\x )
-                If mouse( )\y < mouse( )\delta\y + *this\y[#__c_inner] And mouse( )\y < *this\y[#__c_inner]
-                  If *this\VisibleFirstRow( ) And Not bar_in_start_( *this\scroll\v\bar )
-                    ChangeCurrentElement( *this\_rows( ), *this\VisibleFirstRow( ))
-                    *item = PreviousElement( *this\_rows( ) )
-                    
-                    If *item
-                      row_scroll_y_( *this, *item )
+          Else
+            
+            If *this\state\drag
+              If eventtype = #__event_MouseMove
+                If is_at_point_horizontal_( *this, mouse( )\x )
+                  If mouse( )\y <= mouse( )\delta\y + *this\y[#__c_inner] And mouse( )\y <= *this\y[#__c_inner]
+                    If *this\VisibleFirstRow( ) And Not bar_in_start_( *this\scroll\v\bar )
+                      ChangeCurrentElement( *this\_rows( ), *this\VisibleFirstRow( ))
+                      *item = PreviousElement( *this\_rows( ) )
+                      
+                      If *item
+                        row_scroll_y_( *this, *item )
+                      EndIf
+                    Else
+                      *item = *this\VisibleFirstRow( )
                     EndIf
-                  Else
-                    *item = *this\VisibleFirstRow( )
-                  EndIf
-                ElseIf mouse( )\y > mouse( )\delta\y + *this\y[#__c_inner] And 
-                       mouse( )\y > *this\y[#__c_inner] + *this\height[#__c_inner] 
-                  If *this\VisibleLastRow( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                    ChangeCurrentElement( *this\_rows( ), *this\VisibleLastRow( ))
-                    *item = NextElement( *this\_rows( ) )
-                    
-                    If *item
-                      row_scroll_y_( *this, *item )
+                  ElseIf mouse( )\y >= mouse( )\delta\y + *this\y[#__c_inner] And 
+                         mouse( )\y >= *this\y[#__c_inner] + *this\height[#__c_inner] 
+                    If *this\VisibleLastRow( ) And Not bar_in_stop_( *this\scroll\v\bar )
+                      ChangeCurrentElement( *this\_rows( ), *this\VisibleLastRow( ))
+                      *item = NextElement( *this\_rows( ) )
+                      
+                      If *item
+                        row_scroll_y_( *this, *item )
+                      EndIf
+                    Else
+                      *item = *this\VisibleLastRow( )
                     EndIf
-                  Else
-                    *item = *this\VisibleLastRow( )
                   EndIf
                 EndIf
               EndIf
             EndIf
-            
           EndIf
         EndIf
         
@@ -18308,10 +18298,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_Drop ; Ok
-;           If *this\EnteredRow( )
-;             *this\row\index = *this\EnteredRow( )\index
-;           EndIf
-;           
+          If *this\EnteredRow( )
+            *this\row\index = *this\EnteredRow( )\index
+          EndIf
+          
 ;           If *this\FocusedRow( )
 ;             ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
 ;             ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
@@ -20996,5 +20986,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------4+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------90e600-----------------------------------------------------------------------------------------------------------ft------v--48vv+9-2-4f-X--f-------+v-4------ft+0v+--8+-------------------------------
+; Folding = ----------------------------------------------4+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------90e6f-----------------5j--8--------------------------------------------------------------------------------------X8------8--0-4Xf+-7-8v-X--f-------+v-4------ft+0v+--8+-------------------------------
 ; EnableXP

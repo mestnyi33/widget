@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Debug "---->>"
   ForEach widget()
-    Debug "  "+ widget( )\_parent( )\class +" <- "+ widget( )\class
+    Debug "  "+ widget( )\parent\class +" <- "+ widget( )\class
   Next
   Debug "<<----"
   

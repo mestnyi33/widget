@@ -667,13 +667,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( EventWidget )
-            ;DragCursor( #PB_Cursor_Cross )
             DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
           EndIf
         Else
-            ;DragCursor( #PB_Cursor_Arrows )
           DragPrivate( #_DD_widget_re_parent, #PB_Drag_Copy )
         EndIf
+        SetCursor(EventWidget, #PB_Cursor_Default)
         
       Case #PB_EventType_Drop
         If IsContainer( EventWidget )
