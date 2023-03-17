@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   widget::SetState(*w3, 250/2)
   ;   widget::SetState(*w4, 10)
   
-  widget::SetState(*w0, -1)
+  ;widget::SetState(*w0, -1)
   widget::SetState(*w1, 9)
   widget::SetState(*w3, 6)
   widget::SetState(*w4, 1)

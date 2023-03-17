@@ -20,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare  Canvas_Draw( canvas.i, List Images.IMAGES( ) )
   
   Macro Area_Draw( _this_ )
-    widget::bar_updates( _this_,
-                         _this_\scroll\h\x, 
-                         _this_\scroll\v\y, 
-                         (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
-                         (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+    widget::bar_mdi_update( _this_,
+                            _this_\scroll\h\x, 
+                            _this_\scroll\v\y, 
+                            (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
+                            (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
     
     If Not _this_\scroll\v\hide
       widget::Draw( _this_\scroll\v )
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro Area_Use( _canvas_window_, _canvas_gadget_ = #PB_Any )
-    Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, 0, _canvas_gadget_ )
+    Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, _canvas_gadget_ )
   EndMacro
   
   Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug "changing scroller values - "+EventWidget( )\bar\page\change +" "+ WidgetEventData( )
         
         PushListPosition(  Images( )  )
-        If EventWidget( )\vertical
+        If EventWidget( )\bar\vertical
           ForEach Images( ) : Images( )\Y + EventWidget( )\bar\page\change : Next
           *this\y[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\y
           
@@ -115,6 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     PopListPosition( Images( ) )
     
+    StopDrawing( )
     If StartDrawing( CanvasOutput( canvas ) )
       DrawingMode( #PB_2DDrawing_Default )
       Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
@@ -151,9 +152,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
     
     If LastElement( Images( ) ) And 
-       Not AtPoint( *this\scroll\v, mouse_x, mouse_y ) And
-       Not AtPoint( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
-                                                       ; search for hit, starting from end ( z-order )
+       Not is_at_point_( *this\scroll\v, mouse_x, mouse_y ) And
+       Not is_at_point_( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
+                                                            ; search for hit, starting from end ( z-order )
       Repeat
         If mouse_x >= Images( )\x - scroll_x And mouse_x < Images( )\x+ Images( )\width - scroll_x 
           If mouse_y >= Images( )\y - scroll_y And mouse_y < Images( )\y + Images( )\height - scroll_y
@@ -221,14 +222,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Canvas = EventGadget( )
     Protected MouseX ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
     Protected MouseY ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
-                     Width = GadgetWidth( Canvas ) - x*2
-                     Height = GadgetHeight( Canvas ) - y*2
-    widget::EventHandler( )
+    Width = GadgetWidth( Canvas ) - x*2
+    Height = GadgetHeight( Canvas ) - y*2
+    
+    widget::EventHandler( Canvas, Event )
     
     MouseX = widget::Mouse( )\x
     MouseY = widget::Mouse( )\y
-;     Width = widget::Root( )\width - x*2
-;     Height = widget::Root( )\height - y*2
+    ;     Width = widget::Root( )\width - x*2
+    ;     Height = widget::Root( )\height - y*2
     
     Select Event
       Case #PB_EventType_Repaint
@@ -283,6 +285,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(MyCanvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-10-100)
   EndProcedure
   
+  hole = CreateImage( #PB_Any,100,100,32 )
+  If StartDrawing( ImageOutput( hole ) )
+    DrawingMode( #PB_2DDrawing_AllChannels )
+    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
+    Circle( 50,50,48,RGBA( $00,$FF,$FF,$FF ) )
+    Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
+    StopDrawing( )
+  EndIf
+  
   If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
     MessageRequester( "Fatal error", "Program terminated." )
     End
@@ -317,8 +328,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
   
   ;
-  MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) 
-  BindGadgetEvent(MyCanvas, @Canvas_Events())
+  MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) : BindGadgetEvent(MyCanvas, @Canvas_Events())
   Area_Use( 0, MyCanvas)
   ;MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_Events( ) ) )
   
@@ -326,19 +336,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
   Canvas_AddImage( Images( ), x+100,y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
   Canvas_AddImage( Images( ), x+210,y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+  Canvas_AddImage( Images( ), x+180,y+180,hole,#True )
   
-  hole = CreateImage( #PB_Any,100,100,32 )
-  If StartDrawing( ImageOutput( hole ) )
-    DrawingMode( #PB_2DDrawing_AllChannels )
-    Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
-    Circle( 50,50,48,RGBA( $00,$FF,$FF,$FF ) )
-    Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
-    StopDrawing( )
-  EndIf
-  Canvas_AddImage( Images( ),x+180,y+180,hole,#True )
-                   Width = GadgetWidth( MyCanvas ) - x*2
-                     Height = GadgetHeight( MyCanvas ) - y*2
-    
+  Width = GadgetWidth( MyCanvas ) - x*2
+  Height = GadgetHeight( MyCanvas ) - y*2
+  
   ;
   Area_Create( *this, x,y,width,height, 2,20 )
   Area_Bind( *this, @Area_Events( ) ) 
@@ -397,5 +399,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = R8----BA+
+; Folding = ---------
 ; EnableXP

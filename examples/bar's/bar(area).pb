@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;bar\hide
   EndMacro
   #__Bar_Inverted = #__Bar_Invert
-  #__Bar_NoButtons = #__bar_buttonsize
+  ;#__Bar_NoButtons = #__bar_buttonsize
   ;\bar_hide_() = \bar\bar_hide_()
   ;;;;;;;;;;;;;;;;;;;
   
@@ -313,7 +313,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 bar_change(*this, Images()\x, Images()\y, Images()\width, Images()\height)
                 
                 ; Bar_Updates(*this, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
-                Bar_Updates(*this, 0, 0, Width, Height) ; change
+                Bar_mdi_Update(*this, 0, 0, Width, Height) ; change
                 Repaint = 1
               EndIf
             EndIf

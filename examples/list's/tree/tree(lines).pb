@@ -2,8 +2,7 @@
 
 IncludePath "../../../"
 ;XIncludeFile "gadget/gadgets.pbi"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -234,7 +233,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__tree_Collapsed)                                         
+    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__tree_Collapse)                                         
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
     AddItem(*g6, 0, "Tree_2_2", -1, 3) 
@@ -274,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 20, 210, th, #__list_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 20, 210, th, #__tree_nolines|#__tree_OptionBoxes);|#__tree_NoButtons) ;                                        
 ;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
 ;         AddItem(*g, 1, "Tree_1", -1, 1) 
 ;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -301,7 +300,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__list_nolines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7

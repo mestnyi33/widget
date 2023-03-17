@@ -18516,10 +18516,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *BB2 = *this\bar\button[2]
               
               ;\\ get at-point-button address
-              If Not ( EnteredButton( ) And
-                       EnteredButton( )\hide = 0 And
-                       is_at_point_( EnteredButton( ), mouse( )\x, mouse( )\y ))
-                
                 ; search entered button
                 If *BB1\interact And *BB1\hide = 0 And
                    is_at_point_( *BB1, mouse( )\x, mouse( )\y )
@@ -18534,9 +18530,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *BB0 = *SB
                 EndIf
-              Else
-                *BB0 = EnteredButton( )
-              EndIf
               
               ;\\ do buttons events entered & leaved
               If EnteredButton( ) <> *BB0

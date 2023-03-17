@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -15,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     alphatest.i
   EndStructure
   
-  Global MyCanvas, *this._s_widget = AllocateStructure(_s_widget) 
+  Global MyCanvas, *this.allocate( widget ) 
   
   Global *current=#False
   Global currentItemXOffset.i, currentItemYOffset.i
@@ -106,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     PopListPosition(Images())
     
-    widget::bar_Updates(*this, x, y, width, height)
+    widget::bar_mdi_resize(*this, x, y, width, height)
     
     ; SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
   EndMacro
@@ -143,23 +142,24 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Repaint
     Protected Event = EventType()
     Protected Canvas = EventGadget()
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    ;   Protected Buttons = GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
-    ;   Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected MouseX 
+    Protected MouseY
+    
+    widget::EventHandler( Canvas, Event )
+    
+    MouseX = widget::Mouse( )\x
+    MouseY = widget::Mouse( )\y
     
     Width = GadgetWidth(Canvas) - x*2
     Height = GadgetHeight(Canvas) - y*2
     
     Select Event
       Case #PB_EventType_LeftButtonUp : Drag = #False
-        SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
         
       Case #PB_EventType_LeftButtonDown
-        If Not (EventWidget( ) And EventWidget( )\bar\index > 0)
+        If Not EnteredButton( ) ; (EventWidget( ) And EventWidget( )\bar\index > 0)
           Drag = Bool(HitTest(Images(), Mousex, Mousey))
           If Drag 
-            SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)
             Repaint = #True 
           EndIf
         EndIf
@@ -181,31 +181,18 @@ CompilerIf #PB_Compiler_IsMainFile
               GetScrollCoordinate(x, y, width, height)
             EndIf
           EndIf
-        Else
-          If Bool(HitTest(Images(), Mousex, Mousey)) 
-            ;If widget::_from_point_(Mousex, Mousey, Images(), [3])
-            cursor = #PB_Cursor_Hand
-            ;EndIf
-          Else 
-            cursor = #PB_Cursor_Default
-          EndIf
-          
-          If set_cursor <> cursor
-            set_cursor = cursor
-            SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, cursor)
-          EndIf
-          
         EndIf
         
       Case #PB_EventType_Resize 
         ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        
         GetScrollCoordinate(x, y, width, height)
         Repaint = #True
+        ;Debug 555
+      Case #PB_EventType_Repaint : Repaint = #True 
     EndSelect
     
     If Repaint 
-      Canvas_Draw(MyCanvas, Images()) 
+      Canvas_Draw(Canvas, Images()) 
     EndIf
   EndProcedure
   
@@ -213,7 +200,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_scrolls()
     Select WidgetEventType( ) ;   this()\event ; 
       Case #PB_EventType_Change
-        If EventWidget( )\vertical
+        If EventWidget( )\bar\vertical
           PushListPosition(Images())
           ForEach Images()
             Images()\Y + EventWidget( )\bar\page\change 
@@ -241,22 +228,25 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard)) : BindGadgetEvent(MyCanvas, @Canvas_CallBack())
   ;PostEvent( #PB_Event_Gadget, 0, MyCanvas, #PB_EventType_Resize )
   
-  ; *this\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
-  ; *this\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
   *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
   *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
   
   Bind(*this\scroll\v, @events_scrolls())
   Bind(*this\scroll\h, @events_scrolls())
   
-  ;Redraw(root())
+      
+;   StopDrawing()
+;   GetScrollCoordinate(x, y, width, height)
+;   Canvas_Draw(MyCanvas, Images()) 
+          
   Repeat
-    Event = WaitWindowEvent()
+    Event = pb(WaitWindowEvent)()
+  ;  Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 84----
+; Folding = 84f--
 ; EnableXP

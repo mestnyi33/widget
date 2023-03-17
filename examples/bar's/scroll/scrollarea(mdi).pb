@@ -34,10 +34,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
-    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
-    ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
-    ;*b = Container(Sw-130, Sh-130, 130, 30) : OpenList(*g)
+    *b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) :CloseList( )
+    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
+    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
+    ;*b = Button(Sw-130, Sh-30, 130, 30,"Window") : OpenList(*g)
+    ;*b = Container(Sw-130, Sh-30, 130, 30) : OpenList(*g)
     CloseList()
     
     ;

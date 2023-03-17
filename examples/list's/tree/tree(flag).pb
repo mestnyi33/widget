@@ -51,9 +51,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case Button_2 : flag = #__tree_checkboxes
           Case Button_3 : flag = #__tree_optionboxes
           Case Button_4 : flag = #__tree_threestate
-          Case Button_5 : flag = #__tree_collapsed
-          Case Button_6 : flag = #__tree_expanded
-          Case Button_7 : flag = #__tree_gridlines
+          ;Case Button_5 : flag = #__tree_collapsed
+          ;Case Button_6 : flag = #__tree_expanded
+          ;Case Button_7 : flag = #__tree_gridlines
         EndSelect
         
         If flag
@@ -124,9 +124,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_2, Flag(*this, #__tree_checkboxes))
     SetState(Button_3, Flag(*this, #__tree_optionboxes))
     SetState(Button_4, Flag(*this, #__tree_threestate))
-    SetState(Button_5, Flag(*this, #__tree_collapsed))
+    ;SetState(Button_5, Flag(*this, #__tree_collapsed))
     ;SetState(Button_6, Flag(*this, #__tree_expanded))
-    SetState(Button_7, Flag(*this, #__tree_gridlines))
+    ;SetState(Button_7, Flag(*this, #__tree_gridlines))
     ;     SetState(Button_8, Flag(*this, #__tree_nolines))
     ;     SetState(Button_9, Flag(*this, #__tree_nobuttons))
     Hide(Button_type, 1)

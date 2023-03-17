@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Procedure events_gadgets()

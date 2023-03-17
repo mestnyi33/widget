@@ -539,7 +539,7 @@ EndProcedure
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons | #__tree_ThreeState | #__tree_OptionBoxes)   ;  |#__flag_GridLines                       
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7
@@ -553,10 +553,10 @@ EndProcedure
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
-    SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
-    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
-    SetItemText(*g, 5, "backcolor and text change")
+    SetItemColor(*g, 3, #__Color_Front, $FFFFFF00)
+    SetItemColor(*g, 3, #__Color_Back, $FFFF00FF)
+    SetItemText(*g, 3, "16_font backcolor text change")
+    ;SetItemText(*g, 3, "16_font and text change")
     LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
     SetItemText(*g, 4, "25_font and text change")
