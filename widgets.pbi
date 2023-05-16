@@ -43,11 +43,11 @@
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-  #path = "/Users/As/Documents/GitHub/widget/"
+  #path = "";/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-  #path = "Z:\Documents\GitHub\Widget\"
+  #path = "";Z:\Documents\GitHub\Widget\"
 CompilerEndIf
 
 IncludePath #path
@@ -21020,6 +21020,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 45
+; FirstLine = 33
 ; Folding = -------------------------------------------------------------------------------4----------------fV--------------------------x---------------------+----0-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-30------------------------------------------f---f--------------------------0-u-----------------------------------------------------
 ; EnableXP
