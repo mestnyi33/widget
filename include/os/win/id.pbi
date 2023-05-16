@@ -7,6 +7,13 @@
 EndDeclareModule
 
 Module ID
+  Procedure.s GetTitle(Handle)
+      Protected Name.s
+      Name.s = Space(1024)
+      GetWindowText_(Handle, @Name, Len(Name))
+      ProcedureReturn Left(Name, Len(Name))
+  EndProcedure
+    
   Procedure.s ClassName( handle.i )
     Protected Class$ = Space( 16 )
     GetClassName_( handle, @Class$, Len( Class$ ) )
@@ -65,8 +72,6 @@ CompilerIf #PB_Compiler_IsMainFile
     eventID = WaitWindowEvent( )
   Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 20
-; FirstLine = 10
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

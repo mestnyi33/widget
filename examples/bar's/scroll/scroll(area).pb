@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare  Canvas_Draw( canvas.i, List Images.IMAGES( ) )
   
   Macro Area_Draw( _this_ )
-    widget::bar_mdi_update( _this_,
+    widget::bar_mdi_resize( _this_,
                             _this_\scroll\h\x, 
                             _this_\scroll\v\y, 
                             (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
     _parent_\fs = _frame_size_
     _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
     _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
-    widget::bar_Resizes( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
+    widget::bar_area_resize( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
   EndMacro                                                  
   
   Macro Area_Bind( _parent_, _callback_)
@@ -266,7 +266,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Resize 
         ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
         
-        widget::bar_Resizes( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
+        widget::bar_area_resize( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
         
         Repaint = #True
     EndSelect

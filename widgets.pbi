@@ -1150,6 +1150,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare bar_mdi_update( *this )
     Declare bar_area_resize( *this, x.l, y.l, width.l, height.l )
     Declare.b bar_Change( *this, ScrollPos.l )
+    Declare.b bar_Update( *this, mode.b = 1 )
     
     Declare AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
@@ -1176,7 +1177,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-\\ DECLARE PRIVATEs
     ;-
     Declare.b bar_tab_draw( *this )
-    Declare.b bar_Update( *this, mode.b = 1 )
     Declare.b bar_SetState( *this, state.l )
     
     Declare.l update_visible_items_( *this._S_widget, visible_items_height.l = 0 )
@@ -7925,15 +7925,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PressedButton( )             = EnteredButton( )
             PressedButton( )\state\press = #True
             ;PressedButton( )\color\state                              = #__S_2
+            
             If Not ( *this\type = #__type_TrackBar Or
                      ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
               PressedButton( )\color\state = #__S_2
             EndIf
             PressedButton( )\color\back[PressedButton( )\color\state] = $FF2C70F5
             
+            
             ;
             If ( *BB2\state\press And *bar\invert ) Or
                ( *BB1\state\press And Not *bar\invert )
+              
+;               If *this\tab
+;                 ForEach *this\_tabs( )
+;                   If *this\_tabs( )\visible And *this\x[#__c_inner] < *this\_tabs( )\x + *this\_tabs( )\width
+;                     Debug ""+*this\x +" "+ *this\_tabs( )\x +" "+ *this\_tabs( )\width
+;                     ;                     *tabRow = *this\_tabs( )
+;                     *this\scroll\increment = *this\_tabs( )\width
+;                     Break
+;                   EndIf
+;                 Next
+;               EndIf
               
               If bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) ; bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
                 *this\state\repaint = #True
@@ -7967,9 +7980,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
           EndIf
+          
         EndIf
       EndIf
-      
+
       ;\\
       If eventtype = #__event_Up
         If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -21007,5 +21021,5 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------x-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-30------------------------------------------f---f---------f----------------0-u-----------------------------------------------------
+; Folding = -------------------------------------------------------------------------------4----------------fV--------------------------x---------------------+----0-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-30------------------------------------------f---f--------------------------0-u-----------------------------------------------------
 ; EnableXP

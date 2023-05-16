@@ -313,7 +313,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 bar_change(*this, Images()\x, Images()\y, Images()\width, Images()\height)
                 
                 ; Bar_Updates(*this, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
-                Bar_mdi_Update(*this, 0, 0, Width, Height) ; change
+                bar_mdi_resize(*this, 0, 0, Width, Height) ; change
                 Repaint = 1
               EndIf
             EndIf
@@ -325,7 +325,7 @@ CompilerIf #PB_Compiler_IsMainFile
           If *this\scroll\h\bar\max<>ScrollWidth : SetAttribute(*this\scroll\h, #__Bar_Maximum, ScrollWidth) : EndIf
           If *this\scroll\v\bar\max<>ScrollHeight : SetAttribute(*this\scroll\v, #__Bar_Maximum, ScrollHeight) : EndIf
          
-          Bar_Resizes(*this, 0, 0, Width, Height)
+          bar_area_resize(*this, 0, 0, Width, Height)
           Repaint = #True
          
       EndSelect
