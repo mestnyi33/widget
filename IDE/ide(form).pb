@@ -1267,11 +1267,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\ include images
   DataSection   
     ;IncludePath "include/images"
-    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
       IncludePath #path + "../ide/include/images"
-    CompilerElse
-      IncludePath #path + "ide/include/images"
-    CompilerEndIf
+     ; IncludePath #path + "ide/include/images"
     
     widget_delete:    : IncludeBinary "delete1.png"
     widget_paste:     : IncludeBinary "paste.png"
@@ -1289,6 +1286,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 1270
+; FirstLine = 1028
 ; Folding = -----vv----804-----f8-
 ; EnableXP
