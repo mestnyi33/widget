@@ -353,9 +353,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#PB_Cursor_LeftRight")
   Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#PB_Cursor_LeftRight2")
   
-  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#PB_Cursor_UpDown")
+  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#PB_Cursor_UpDown2")
   Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#PB_Cursor_UpDown")
-  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#PB_Cursor_Down2")
+  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#PB_Cursor_Down")
   
   ;   Canvas_12 = CanvasGadget(#PB_Any, 200, 8, 56, 56)
   Define rt = CanvasGadget(#PB_Any, 200, 72, 56, 56)
@@ -865,6 +865,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = -----PAAw----
 ; EnableXP

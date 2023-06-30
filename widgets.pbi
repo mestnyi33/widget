@@ -1183,6 +1183,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.l draw_items_( *this._S_widget, List *rows._S_rows( ), _scroll_x_, _scroll_y_ )
     Declare Text_Update( *this._S_widget )
     
+    Macro macros_cursor_updates( address ) ; , cursor = )
+      DoEvents( address, #__event_CursorUpdate )
+;       If Cursor::Set( address\root\canvas\gadget, mouse( )\cursor )
+;         DoEvents( address, #__event_CursorUpdate )
+;       EndIf
+    EndMacro
+    
     ;\\
     Macro row_x_( _this_, _address_ )
       ( _this_\x[#__c_inner] + _address_\x )  ; + _this_\scroll_x( )
@@ -18945,10 +18952,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If *this\EnteredRow( )\state\enter < 0
             *button = *this\EnteredRow( )\index
-            *data   = mouse( )\x | mouse( )\y
+            *data   = mouse( )\x | mouse( )\y << 16
           Else
             *button = *this\EnteredRow( )\index + 1
-            *data   = mouse( )\x | mouse( )\y
+            *data   = mouse( )\x | mouse( )\y << 16
           EndIf
         EndIf
       EndIf
@@ -19040,39 +19047,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__event_MouseEnter, #__event_MouseMove, #__event_Up
           If PressedWidget( ) And PressedWidget( )\state\press
             If mouse( )\cursor <> PressedWidget( )\cursor
-              ; Debug " cursor-press-change - " + mouse( )\cursor + " >> " + PressedWidget( )\cursor
+               Debug " cursor-press-change - " + mouse( )\cursor + " >> " + PressedWidget( )\cursor
               mouse( )\cursor = PressedWidget( )\cursor
-              DoEvents( PressedWidget( ), #__event_CursorUpdate )
+              macros_cursor_updates( PressedWidget( ) )
             EndIf
           Else
             If *this\state\enter = 2
               If mouse( )\cursor <> *this\cursor
-                ; Debug " cursor-this-change - " + mouse( )\cursor + " >> " + *this\cursor
+                 Debug " cursor-this-change - " + mouse( )\cursor + " >> " + *this\cursor
                 mouse( )\cursor = *this\cursor
-                DoEvents( *this, #__event_CursorUpdate )
+                macros_cursor_updates( *this )
               EndIf
             ElseIf EnteredWidget( ) And
                    EnteredWidget( )\state\enter = 2
               
               If PressedWidget( ) And
                  PressedWidget( )\root <> EnteredWidget( )\root
+                Debug " cursor-reset-root-leave"
+               ; принудительно збрасываем курсор, 
+               ; если перешли на другой канвас
                 mouse( )\cursor = #PB_Cursor_Default
               EndIf
               
+              ;
               If mouse( )\cursor <> EnteredWidget( )\cursor
-                ; Debug " cursor-entered-change - " + mouse( )\cursor + " >> " + EnteredWidget( )\cursor
+                 Debug " cursor-entered-change - " + mouse( )\cursor + " >> " + EnteredWidget( )\cursor
                 mouse( )\cursor = EnteredWidget( )\cursor
-                DoEvents( EnteredWidget( ), #__event_CursorUpdate )
+                macros_cursor_updates( EnteredWidget( ) )
               EndIf
             Else
               If mouse( )\cursor <> #PB_Cursor_Default
-                ; Debug " cursor-reset-leave - " + mouse( )\cursor + " >> " + #PB_Cursor_Default +" "+ *this\class
+                 Debug " cursor-reset-leave - " + mouse( )\cursor + " >> " + #PB_Cursor_Default +" "+ *this\class
                 mouse( )\cursor = #PB_Cursor_Default
                 ;               If PressedWidget( ) And PressedWidget( )\root = Root( )
-                ;                 DoEvents( PressedWidget( ), #__event_CursorUpdate )
+                ;                 macros_cursor_updates( PressedWidget( ) )
                 ;               Else
                 ;                 If *this
-                DoEvents( *this, #__event_CursorUpdate )
+                macros_cursor_updates( *this )
                 ;                 EndIf
                 ;               EndIf
               EndIf
@@ -21020,8 +21031,6 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   ;
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 45
-; FirstLine = 33
-; Folding = -------------------------------------------------------------------------------4----------------fV--------------------------x---------------------+----0-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-30------------------------------------------f---f--------------------------0-u-----------------------------------------------------
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; Folding = -------------------------------------------------------------------------------v-----------------q+-------------------------j---------------------0----8-4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-++t8-------------------------------------------+---+-------------------------8-d-0+---0fXdd8-----------------------------------------
 ; EnableXP

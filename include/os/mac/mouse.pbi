@@ -43,6 +43,8 @@ Module Mouse
       
       If handle
         Select ClassName(handle)
+          Case "PBFlippedWindowView"
+            handle = 0
           Case "NSStepper" 
             handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
             handle = CocoaMessage(0, handle, "subviews")
@@ -105,6 +107,7 @@ Module Mouse
       EndIf
     EndIf
     
+    ;Debug ClassName(handle)
     ProcedureReturn handle
   EndProcedure
   
@@ -259,6 +262,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -+---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; Folding = -v---
 ; EnableXP
