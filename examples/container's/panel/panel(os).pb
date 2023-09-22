@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      PostCanvasRepaint( *this\_root( ) )
+      PostCanvasRepaint( *this\root )
     EndIf
   EndProcedure
   
@@ -167,5 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 69
 ; Folding = ---
 ; EnableXP

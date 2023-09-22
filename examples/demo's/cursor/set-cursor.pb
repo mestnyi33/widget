@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
         EndIf
         
-        Area_Draw( EventWidget( )\_parent( ) )
+        Area_Draw( EventWidget( )\parent )
         
     EndSelect
     
@@ -242,14 +242,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define b=19;20        
   *mdi\scroll\v\round = 11
-  *mdi\scroll\v\bar\button[#__b_1]\round = *mdi\scroll\v\round
-  *mdi\scroll\v\bar\button[#__b_2]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
+  *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
   *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
   SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
   
   *mdi\scroll\h\round = 11
-  *mdi\scroll\h\bar\button[#__b_1]\round = *mdi\scroll\h\round
-  *mdi\scroll\h\bar\button[#__b_2]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
+  *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
   *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
   SetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
   

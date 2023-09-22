@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -9,42 +8,45 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global.i gEvent, gQuit, *but, *win
   
-  Procedure events_widgets()
+  Procedure events_widgets( )
     If WidgetEventType() <> #PB_EventType_MouseMove And 
        WidgetEventType() <> #PB_EventType_Draw And 
        WidgetEventType() <> #PB_EventType_StatusChange
-      ;ClearDebugOutput()
-      Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
       
-      Select WidgetEventType() 
-        Case #PB_EventType_LeftClick
-          If GetIndex(EventWidget()) = 1
-            ProcedureReturn #PB_Ignore ; no send to (window & root) - event
-          EndIf
-      EndSelect
+      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+        ; ClearDebugOutput()
+        Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
+      EndIf
+      
+      If GetIndex(EventWidget()) = 1
+        ProcedureReturn #PB_Ignore ; no send to (window & root) - event
+      EndIf
     EndIf
   EndProcedure
   
-  Procedure events_windows()
+  Procedure events_windows( )
     If WidgetEventType() <> #PB_EventType_MouseMove And 
        WidgetEventType() <> #PB_EventType_Draw And
        WidgetEventType() <> #PB_EventType_StatusChange
-      Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
       
-      Select WidgetEventType() 
-        Case #PB_EventType_LeftClick
-          If GetIndex(EventWidget()) = 2
-            ProcedureReturn #PB_Ignore ; no send to (root) - event
-          EndIf
-      EndSelect
+      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+        Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+      EndIf
+      
+      If GetIndex(EventWidget()) = 2
+        ProcedureReturn #PB_Ignore ; no send to (root) - event
+      EndIf
     EndIf
   EndProcedure
   
-  Procedure events_roots()
+  Procedure events_roots( )
     If WidgetEventType() <> #PB_EventType_MouseMove And 
        WidgetEventType() <> #PB_EventType_Draw And
        WidgetEventType() <> #PB_EventType_StatusChange
-      Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+      
+      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+        Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+      EndIf
     EndIf
   EndProcedure
   
@@ -80,5 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 62
+; FirstLine = 42
 ; Folding = ---
 ; EnableXP

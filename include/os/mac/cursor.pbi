@@ -2,7 +2,7 @@
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
-  #test_cursor = 1
+  #test_cursor = 0
   
   #kThemeArrowCursor                   = 0
   #kThemeCopyArrowCursor               = 1
@@ -571,8 +571,10 @@ Module Cursor
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
     Protected *ic, Hotspot.NSPoint
-    Debug "---------------- create-cursor -----------------"
     If ImageID
+    	CompilerIf #test_cursor
+    		Debug " ::---------------- create-cursor -----------------"
+    	CompilerEndIf
       Hotspot\x = x
       Hotspot\y = y
       *ic = CocoaMessage(0, 0, "NSCursor alloc")
@@ -616,7 +618,7 @@ Module Cursor
         EndIf
         
         CompilerIf #test_cursor
-          Debug "::changeCursor " + *cursor\hcursor +" "+ state
+          Debug " ::changeCursor " + *cursor\hcursor +" "+ state
         CompilerEndIf
         ProcedureReturn #True
       EndIf
@@ -630,7 +632,7 @@ Module Cursor
       Protected GadgetID = GadgetID(Gadget)
       
       CompilerIf #test_cursor
-        Debug "::setCursor "+ GadgetType(Gadget) +" "+ icursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+        Debug " ::setCursor "+ GadgetType(Gadget) +" "+ icursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
       CompilerEndIf
       
       *cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
@@ -741,6 +743,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; Folding = --f---------v-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 239
+; FirstLine = 221
+; Folding = --f---------f-
 ; EnableXP

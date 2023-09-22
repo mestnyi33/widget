@@ -891,7 +891,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerIf #PB_Compiler_OS = #PB_OS_Linux
       IncludePath #path + "../ide/include/images"
     CompilerElse
-      IncludePath #path + "/ide/include/images"
+      IncludePath #path + "../ide/include/images"
     CompilerEndIf
     
     widget_delete:    : IncludeBinary "delete1.png"

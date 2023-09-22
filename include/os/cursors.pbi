@@ -55,11 +55,6 @@ DeclareModule Cursor
     #PB_Cursor_LeftRight2      
     #PB_Cursor_UpDown2        
     
-    ;     #PB_Cursor_SeparatorLeft           
-    ;     #PB_Cursor_SeparatorRight           
-    ;     #PB_Cursor_SeparatorUp              
-    ;     #PB_Cursor_SeparatorDown           
-    
     #PB_Cursor_Drag
     #PB_Cursor_Drop
     
@@ -865,6 +860,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 65
+; FirstLine = 30
 ; Folding = -----PAAw----
 ; EnableXP

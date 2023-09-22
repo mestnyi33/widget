@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 
 ;- EXAMPLE
@@ -11,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_roots( )
-    If WidgetEventType() <> #PB_EventType_MouseMove
+    If WidgetEventType( ) <> #PB_EventType_MouseMove
       Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
     EndIf
   EndProcedure
@@ -19,8 +18,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0( )
     If Open(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
       
+      Define *butt0 = Button(50, 50, 280, 35, "test-button-events") 
+      Bind( *butt0, @events_roots( ) )
       
-      Define *butt = Button(50, 50, 280, 80, "test-button-events") : Button(350, 50, 80, 80, "Deactivate")
+      Define *butt = Button(50, 50+45, 280, 35, "test-button-events") 
       Bind( *butt, @events_roots( ), #PB_EventType_Change )
       Bind( *butt, @events_roots( ), #PB_EventType_CloseItem )
       Bind( *butt, @events_roots( ), #PB_EventType_Down )
@@ -51,6 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *butt, @events_roots( ), #PB_EventType_StatusChange )
       Bind( *butt, @events_roots( ), #PB_EventType_TitleChange )
       Bind( *butt, @events_roots( ), #PB_EventType_Up )
+      
+      Define *butt1 = Button(350, 50, 80, 80, "Deactivate")
+      
     EndIf
   EndProcedure
   

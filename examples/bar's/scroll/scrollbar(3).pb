@@ -2,7 +2,7 @@
 ; example demo resize draw splitter - OS gadgets
 ; 
 
-XIncludeFile "../../../widget-events.pbi"
+XIncludeFile "../../../widgets.pbi"
 ;XIncludeFile "/Users/as/Downloads/Widget-93ec1da964149fb21b5ec928294f95a549f61ac6/widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -64,14 +64,14 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent(#PB_Event_Gadget, @events_gadgets())
   
   ; first splitter
-  s_0 = widget::Scroll(0, 0, 0, 0, 0, -250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*#__split_1 
+  s_0 = widget::Scroll(0, 0, 0, 0, 0, -250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*1
   Bind(widget(), @events_widgets())
-  s_1 = widget::Scroll(0, 0, 0, 0, 0, 250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*#__split_2
+  s_1 = widget::Scroll(0, 0, 0, 0, 0, 250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*2
   s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
   ; first splitter
-  s_3 = widget::Scroll(0, 0, 0, 0, 0,250,0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*#__split_1 
-  s_4 = widget::Scroll(0, 0, 0, 0, 0,250,0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*#__split_2 
+  s_3 = widget::Scroll(0, 0, 0, 0, 0,250,0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*1 
+  s_4 = widget::Scroll(0, 0, 0, 0, 0,250,0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*2
   ;Define *g._s_widget = s_4 : *g\bar\max = 250
    s_5 = widget::Splitter(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
  
@@ -94,5 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 55
 ; Folding = -
 ; EnableXP

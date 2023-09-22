@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
         EndIf
         
-        Area_Draw( EventWidget( )\_parent( ) )
+        Area_Draw( EventWidget( )\parent )
         
     EndSelect
     
@@ -262,5 +262,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

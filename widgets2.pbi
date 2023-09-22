@@ -3818,6 +3818,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			Protected _p_y2_
 			Protected *parent._S_WIDGET
 			
+			Debug " reClip - "+*this\class
+			
 			If *this\bounds\attach
 				*parent = *this\bounds\attach\parent
 			Else
@@ -3960,7 +3962,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		Procedure.b Resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
 			Protected.b result
 			Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-			; Debug " resize - "+*this\class +" "+x +" "+ width
+			; Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
 			
 			
 			;       If *this\resize & #__resize_start = #False
@@ -4397,6 +4399,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			
 			;\\
 			If ( Change_x Or Change_y Or Change_width Or Change_height )
+				Debug "    resize - "+*this\class +" "+*this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
+				
 				*this\resize | #__resize_change
 				*this\state\repaint = #True
 				update_border( *this )
@@ -5599,7 +5603,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			*BB2 = *bar\button[2]
 			
 			With *this
-				
+				Debug "  Draw scrolbar " + *this\class +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
+
 				;         DrawImage( ImageID( UpImage ), *BB1\x, *BB1\y )
 				;         DrawImage( ImageID( DownImage ), *BB2\x, *BB2\y )
 				;         ProcedureReturn
@@ -16769,6 +16774,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			Protected arrow_right
 			
 			With *this
+				Debug " Draw - "+*this\class
+				
 				If *this\state\repaint = #True
 					*this\state\repaint = #False
 				EndIf
@@ -20593,7 +20600,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 	;- <<<
 CompilerEndIf
 
-
 ;-
 Macro UseLIB( _name_ )
 	UseModule _name_
@@ -20602,7 +20608,30 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile ;=99
+CompilerIf #PB_Compiler_IsMainFile
+	Uselib(widget)
+	
+	Global MDI, MDI_splitter, Splitter
+	
+	If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+		
+		MDI = MDI(0, 0, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
+		Define *g0 = AddItem(MDI, -1, "form_0")
+; 		Button(10,10,80,80,"button_0")
+; 		
+; 		Define *g1 = AddItem(MDI, -1, "form_1")
+; 		Button(10,10,80,80,"button_1")
+; 		
+; 		Define *g2 = AddItem(MDI, -1, "form_2")
+; 		Button(10,10,80,80,"button_2")
+		Resize(*g0, 190,190, #PB_Ignore, #PB_Ignore)
+		
+		Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+	EndIf
+	
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile =99
 	
 	EnableExplicit
 	UseLIB(widget)
@@ -21048,7 +21077,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
 	WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3959
-; FirstLine = 3768
-; Folding = -------------------------------------------------------------------------4+----v------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-4----------------------------------------------------00--f70-----------------------------f-------f-f-v--+---------u---8-8-4-jtv9--f-v--v0fv+-+vr+----------------------------------------f---
+; CursorPosition = 45
+; FirstLine = 30
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------+4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

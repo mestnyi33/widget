@@ -32,8 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug "MDI - resize "+*mdi\width[2] +" "+ *mdi\width[1] +" "+ *mdi\width[6] ;+" - "+ *g0\width[6]
   Define *g0._s_widget = AddItem(*mdi, -1, "form_0")
   Resize(*g0, Width-200, Height-200, #PB_Ignore, #PB_Ignore)
-
   redraw(root())
+  
   Debug "  MDI - resize "+*mdi\width[2] +" "+ *mdi\width[6] +" - "+ *g0\width[6]
   Resize(*mdi, #PB_Ignore,#PB_Ignore, Width-1, height-1)
   redraw(root())
@@ -44,5 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 34
+; FirstLine = 8
 ; Folding = -
 ; EnableXP

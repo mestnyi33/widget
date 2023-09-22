@@ -17,9 +17,12 @@
 ;-
 CompilerIf Not Defined(Structures, #PB_Module)
   DeclareModule Structures
-    Prototype pFunc( )
+    ;-- PROTOTIPEs
+    Prototype DrawFunc(*this)
+    Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
     
     ;{ 
+    ;-- STRUCTUREs
     ;--     POINT
     Structure _s_POINT
       y.l
@@ -40,7 +43,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       create.b
       repaint.b
       
-      hide.b          ; panel childrens real hide state
+      ;hide.b          ; panel childrens real hide state
       disable.b
       
       enter.b
@@ -173,15 +176,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       autodock._s_COORDINATE
     EndStructure
     
-    ;--     arrow
+    ;--     ARROW
     Structure _s_ARROW
       size.a
       type.b
       direction.b
     EndStructure
     
-    ;--     page
-    Structure _s_page
+    ;--     PAGE
+    Structure _s_PAGE
       pos.l
       len.l
       *end
@@ -431,8 +434,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;--     BAR
     Structure _s_BAR
       max.l
-      min.l[3]   ; fixed min bar size 
-      fixed.l[3] ; splitter fixed bar position  
+      min.l[3]   ; fixed min[1&2] bar size 
+      fixed.l[3] ; fixed bar[1&2] position (splitter)
       
       invert.b
       vertical.b
@@ -448,6 +451,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       List *_s._s_tabs( )
       List *draws._s_tabs( )
+    EndStructure
+    
+    ;--     SCROLL
+    Structure _s_SCROLL Extends _s_COORDINATE
+      bars.b
+      align._s_align
+      ;padding.b
+      
+      state.b    ; set state status
+     
+      increment.f      ; scrollarea
+      *v._s_WIDGET     ; vertical scrollbar
+      *h._s_WIDGET     ; horizontal scrollbar
     EndStructure
     
     ;--     caption
@@ -486,19 +502,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;--     SCROLL
-    Structure _s_SCROLL Extends _s_COORDINATE
-      bars.b
-      align._s_align
-      ;padding.b
-      
-      state.b    ; set state status
-     
-      increment.f      ; scrollarea
-      *v._s_WIDGET     ; vertical scrollbar
-      *h._s_WIDGET     ; horizontal scrollbar
-    EndStructure
-    
     ;--     popup
     Structure _s_popup
       gadget.i
@@ -531,45 +534,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
     ;     Endstructure
     ;     
     
-
-    
-    ;--     EVENT
-    Structure _s_eventdata
-      ; *widget._s_WIDGET
-      *type ; eventType( )
-      *item ; eventItem( )
-      *data ; eventdata( )
-      *pFunc.pFunc
-    EndStructure
-    Structure _s_event 
-      ;*bind[constants::#__event]
-      draw.b
-      move.b
-      statusChange.b
-      List *call._s_eventdata( )
-      List *queue._s_eventdata( )
-    EndStructure
-    
-    ;--     BOUNDS
-    Structure _s_BOUNDMOVE
-      min._s_POINT
-      max._s_POINT
-    EndStructure
-    Structure _s_BOUNDSIZE
-      min._s_SIZE
-      max._s_SIZE
-    EndStructure
-    Structure _s_BOUNDS
-      childrens.b
-      *move._s_BOUNDMOVE
-      *size._s_BOUNDSIZE
-    EndStructure
-    ;--     ATTACH
-    Structure _s_ATTACH Extends _s_COORDINATE
-      mode.a
-      *parent._s_WIDGET
-    EndStructure
-    
     ;--     COLUMN
     Structure _s_COLUMN Extends _s_COORDINATE
       index.i
@@ -580,12 +544,47 @@ CompilerIf Not Defined(Structures, #PB_Module)
       List items._s_rows( )
     EndStructure
     
+    ;--     BOUNDS
+    Structure _s_BOUNDATTACH
+      mode.a
+      *parent._s_WIDGET
+    EndStructure
+    Structure _s_BOUNDMOVE
+      min._s_POINT
+      max._s_POINT
+    EndStructure
+    Structure _s_BOUNDSIZE
+      min._s_SIZE
+      max._s_SIZE
+    EndStructure
+    Structure _s_BOUNDS
+      childrens.b        ; ???
+      *move._s_BOUNDMOVE
+      *size._s_BOUNDSIZE
+      *attach._s_BOUNDATTACH
+    EndStructure
+   
+    ;--     EVENT
+    Structure _s_EVENTDATA
+      *widget._s_WIDGET ; eventWidget( )
+      *type ; eventType( )
+      *item ; eventItem( )
+      *data ; eventData( )
+    EndStructure
+    Structure _s_event Extends _s_EVENTDATA
+      *function.EventFunc
+    EndStructure
+    
     ;--     WIDGET
     Structure _s_WIDGET
+      type.b
+      container.b            ; is container
+      round.a                ; drawing round
+      
+      ;*Draw.DrawFunc        ; Function to Draw
       _a_._s_ANCHORS
       
-      *event._s_event
-      type.b
+      
       
       autosize.b
       fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
@@ -593,7 +592,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       *_tt._s_tt          ; notification = уведомление
       *drop._s_DROP
-      *attach._s_ATTACH
       *align._s_ALIGN
       
       *bar._s_BAR
@@ -601,19 +599,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       *_box_._s_BUTTONS ; checkbox; optionbox
       
       tab._s_TAB        
-      scroll._s_SCROLL    ; vertical & horizontal scrollbars
       
       *GroupWidget._s_WIDGET      ; = Option( ) group widget  
                                   ; StructureUnion
       ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
       *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
       *StringWidget._s_WIDGET     ; = SpinBar( ) string box
-      ;*VerticalWidget._s_WIDGET   ; = ScrollArea( ) vertical bar widget
-      ;*HorizontalWidget._s_WIDGET ; = ScrollArea( ) horizontal bar widget
                                   ; EndStructureUnion
       
-      __state.w ; #_s_ss_ (font; back; frame; fore; line)
-      __draw.b 
       
       BarWidth.w ; bar v size
       BarHeight.w; bar h size 
@@ -636,12 +629,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       bounds._s_BOUNDS
       state._s_STATE
+      scroll._s_SCROLL            ; vertical & horizontal scrollbars
       
-       ; 
-      *position ; ;#PB_List_First; #PB_List_Last
-      
-      *address          ; widgets list address
-      *container        ; 
       
       text._s_TEXT
       count._s_COUNT
@@ -674,7 +663,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       flag.q
       *data
-      *cursor
+      *cursor[4]
       
       child.b ; is the widget composite?
       interact.i 
@@ -683,48 +672,34 @@ CompilerIf Not Defined(Structures, #PB_Module)
       class.s  
       change.l
       hide.b[2] 
-      round.a
-      resize.i
+      
+      resize.i   ; state
       
       *errors
       notify.l ; оповестить об изменении
       
-      mode._s_mode
+      mode._s_mode            ; drawing mode
       caption._s_caption
       color._s_color[4]
       
-      
       List columns._s_column( )
+      List *events._s_EVENT( )
+      
       *root._s_ROOT     
       *window._s_WIDGET
       *parent._s_WIDGET
-    EndStructure
-    ;--     CANVAS
-    Structure _s_CANVAS
-      *ResizeBeginWidget._s_WIDGET
-      
-      *fontID             ; current drawing fontid
-      *address            ; root list address
-      
-      window.i            ; canvas window
-      gadget.i            ; canvas gadget
-      container.i         ; 
-      
-      repaint.b
-      postevent.b         ; post evet canvas repaint
-      bindevent.b         ; bind canvas event
-      
-      List *child._s_WIDGET( )    ; widget( )\
-      event._s_eventdata   ; 
-      List *events._s_eventdata( )    ; 
+      *address                 ; widget( )\ list address
     EndStructure
     
-    ;--     STICKY
-    Structure _s_STICKY
-      *window._s_ROOT  ; top level root window element
-      *widget._s_WIDGET  ; popup gadget element
-      *message._s_WIDGET ; message window element
-      *tooltip._s_WIDGET ; tool tip element
+    ;--     CANVAS
+    Structure _s_CANVAS
+      *fontID                  ; current drawing fontID
+      *GadgetID                ; canvas handle
+      window.i                 ; canvas window
+      gadget.i                 ; canvas gadget
+      container.i              ; ???
+      repaint.b
+      List *child._s_WIDGET( ) ; widget( )\
     EndStructure
     
     ;--     ROOT
@@ -732,31 +707,29 @@ CompilerIf Not Defined(Structures, #PB_Module)
       canvas._s_canvas
     EndStructure
     
-    ;--     struct
-    Structure _s_struct 
-      *drawing
-      
-      *opened._s_WIDGET             ; last list opened element
-      *closed._s_WIDGET             ; last list opened element
+    ;--     STICKY
+    Structure _s_STICKY
+      *window._s_ROOT               ; top level root window element
+      *widget._s_WIDGET             ; popup gadget element
+      *message._s_WIDGET            ; message window element
+      *tooltip._s_WIDGET            ; tool tip element
+    EndStructure
+    
+    ;--     STRUCT
+    Structure _s_STRUCT
+    	repaint.b
+    	*drawing                      ; ???
+      *opened._s_WIDGET             ; last-list opened element
        
-      *root._s_ROOT       ; 
       mouse._s_mouse                ; mouse( )\
       keyboard._s_keyboard          ; keyboard( )\
-      STICKY._s_STICKY              ; Sticky( )\
+      sticky._s_STICKY              ; sticky( )\
       
-      *widget._s_WIDGET             ; eventwidget( )\ 
-      event._s_eventdata            ; widgetevent( )\ ; \type ; \item ; \data
+      event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
+      List *events._s_EVENTDATA( )  ; post events list
       
-      Map *_roots._s_ROOT( )         ; 
-      
-      ; для совместимости
-      List *_root._s_ROOT( )        ; 
-      List *_address._s_WIDGET( )   ; widget( )\
-      
-      ; TEMP
-      *action_widget._s_WIDGET ; temp
-      action_type.s ; temp
-     EndStructure
+      Map *roots._s_ROOT( )         ; 
+    EndStructure
     
     ;Global *event._s_events = Allocatestructure(_s_events)
     ;}
@@ -768,5 +741,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----b+--
+; CursorPosition = 665
+; FirstLine = 613
+; Folding = -----r+--
 ; EnableXP

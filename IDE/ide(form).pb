@@ -386,7 +386,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select class
         Case "window"    
-          If GetType( *parent ) = #__Type_MDI
+          If Type( *parent ) = #__Type_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
@@ -495,24 +495,24 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events( )
     Protected eventtype = WidgetEventType( ) 
-    Protected *new, *eventWidget._s_widget = EventWidget( )
+    Protected *new, *ew._s_widget = WidgetEvent( )\widget
     Static *beforeWidget
     
     Select eventtype 
       Case #PB_EventType_DragStart
         If a_index( ) = #__a_moved
           If DragPrivate( #_DD_reParent )
-            SetCursor( *eventWidget, #PB_Cursor_Arrows )
-;             *beforeWidget = GetPosition( *eventWidget, #PB_List_Before ) 
-;             SetPosition( *eventWidget, #PB_List_Last )
-           ; SetParent( *eventWidget, id_design_form )
+            SetCursor( *ew, #PB_Cursor_Arrows )
+;             *beforeWidget = GetPosition( *ew, #PB_List_Before ) 
+;             SetPosition( *ew, #PB_List_Last )
+           ; SetParent( *ew, id_design_form )
           EndIf
         EndIf
         
         If GetState( id_elements_tree) > 0 
-          If IsContainer( *eventWidget )
+          If IsContainer( *ew )
             If DragPrivate( #_DD_CreateNew, #PB_Drag_Drop )
-              SetCursor( *eventWidget, #PB_Cursor_Cross )
+              SetCursor( *ew, #PB_Cursor_Cross )
             EndIf
           EndIf
         Else
@@ -520,18 +520,18 @@ CompilerIf #PB_Compiler_IsMainFile
 ;           Select DragType( ) 
 ;             Case #PB_Drag_Resize 
 ;               If DragPrivate( #_DD_reParent )
-;                 SetCursor( *eventWidget, #PB_Cursor_Arrows )
+;                 SetCursor( *ew, #PB_Cursor_Arrows )
 ;               EndIf
 ;               
 ;             Case #PB_Drag_Copy
 ;               If DragPrivate( #_DD_CreateCopy )
-;                 SetCursor( *eventWidget, #PB_Cursor_Hand )
+;                 SetCursor( *ew, #PB_Cursor_Hand )
 ;               EndIf
 ;               
 ;             Default 
-;               If IsContainer( *eventWidget )
+;               If IsContainer( *ew )
 ;                 If DragPrivate( #_DD_Group, #PB_Drag_Drop )
-;                   SetCursor( *eventWidget, #PB_Cursor_Cross )
+;                   SetCursor( *ew, #PB_Cursor_Cross )
 ;                 EndIf
 ;               EndIf
 ;               
@@ -551,26 +551,26 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case #_DD_CreateNew 
             Debug " ----- DD_new ----- "+ GetText( id_elements_tree ) +" "+ EventDropX( ) +" "+ EventDropY( ) +" "+ EventDropWidth( ) +" "+ EventDropHeight( )
-            widget_add( *eventWidget, GetText( id_elements_tree ), 
+            widget_add( *ew, GetText( id_elements_tree ), 
                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
             
           Case #_DD_CreateCopy
             Debug " ----- DD_copy ----- " + GetText( PressedWidget( ) )
             
-;            *new = widget_add( *eventWidget, GetClass( PressedWidget( ) ), 
+;            *new = widget_add( *ew, GetClass( PressedWidget( ) ), 
 ;                         X( PressedWidget( ) ), Y( PressedWidget( ) ), Width( PressedWidget( ) ), Height( PressedWidget( ) ) )
             
-            *new = widget_add( *eventWidget, EventDropText( ), 
+            *new = widget_add( *ew, EventDropText( ), 
                                EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
            SetText( *new, "Copy_"+EventDropText( ) )
           
         EndSelect
         
       Case #PB_EventType_LeftButtonDown
-        If IsContainer( *eventWidget )
+        If IsContainer( *ew )
           If a_transform( )\type > 0 Or group_select
             If group_select 
-              group_drag = *eventWidget
+              group_drag = *ew
             EndIf
           EndIf
           
@@ -584,13 +584,13 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LeftButtonUp
         If *beforeWidget
-          SetPosition( *eventWidget, #PB_List_After, *beforeWidget)
+          SetPosition( *ew, #PB_List_After, *beforeWidget)
           *beforeWidget = 0
         EndIf
         
         
         ; then group select
-        If IsContainer( *eventWidget )
+        If IsContainer( *ew )
           If a_transform( ) And a_focused( ) And a_focused( )\_a_\transform =- 1
             SetState( id_i_view_tree, - 1 )
             If IsGadget( id_design_code )
@@ -608,26 +608,27 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_StatusChange
         ;\\ Debug " widget status change "
-        If GetData( *eventWidget ) >= 0
+        If GetData( *ew ) >= 0
           If IsGadget( id_design_code )
-            SetGadgetState( id_design_code, GetData( *eventWidget ) )
+            SetGadgetState( id_design_code, GetData( *ew ) )
           EndIf
-          SetState( id_i_view_tree, GetData( *eventWidget ) )
+          SetState( id_i_view_tree, GetData( *ew ) )
         EndIf
-        properties_update( id_i_properties_tree, *eventWidget )
+        properties_update( id_i_properties_tree, *ew )
         
       Case #PB_EventType_Resize
-        properties_update_coordinate( id_i_properties_tree, *eventWidget )
+        properties_update_coordinate( id_i_properties_tree, *ew )
+        SetWindowTitle( EventWindow(), Str(width(*ew))+"x"+Str(height(*ew) ) )
         
       Case #PB_EventType_MouseEnter,
            #PB_EventType_MouseMove
         
-        If IsContainer( *eventWidget ) 
-          If *eventWidget\state\enter = 2 
+        If IsContainer( *ew ) 
+          If *ew\state\enter = 2 
             If GetCursor( ) <> #PB_Cursor_Cross
               If Not GetButtons( ) 
                 If GetState( id_elements_tree ) > 0 
-                  SetCursor( *eventWidget, #PB_Cursor_Cross )
+                  SetCursor( *ew, #PB_Cursor_Cross )
                 EndIf
               EndIf
             EndIf
@@ -636,10 +637,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseLeave
         
-        If IsContainer( *eventWidget )
+        If IsContainer( *ew )
           If Not GetButtons( )
             If GetState( id_elements_tree) > 0 
-              SetCursor( *eventWidget, #PB_Cursor_Default )
+              SetCursor( *ew, #PB_Cursor_Default )
             EndIf
           EndIf
         EndIf
@@ -655,7 +656,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If GetState( id_elements_tree ) > 0 
         SetState( id_elements_tree, 0 )
         a_transform( )\type = 0
-        SetCursor( *eventWidget, #PB_Cursor_Default )
+        SetCursor( *ew, #PB_Cursor_Default )
       EndIf
     EndIf
   EndProcedure
@@ -801,35 +802,35 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._s_widget
     Protected e_type = WidgetEvent( )\type
     Protected e_item = WidgetEvent( )\item
-    Protected EventWidget = EventWidget( )
+    Protected *ew._s_widget = WidgetEvent( )\widget
     
     Select e_type
       Case #PB_EventType_DragStart
-        If EventWidget = id_elements_tree
+      	If *ew = id_elements_tree
           Debug " ------ drag ide_events() ----- "
           ;         DD_EventDragWidth( ) 
           ;         DD_EventDragHeight( )
           
           a_transform( )\type = 0
           If DragPrivate( #_DD_CreateNew, #PB_Drag_Copy )
-            SetCursor( EventWidget, Cursor::Create( ImageID( GetItemData( EventWidget, GetState( EventWidget ) ) ) ) )
+            SetCursor( *ew, Cursor::Create( ImageID( GetItemData( *ew, GetState( *ew ) ) ) ) )
           EndIf
         EndIf
         
       Case #PB_EventType_StatusChange
-        If EventWidget = listview_debug
+        If *ew = listview_debug
           
-          ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
+          ; Debug Left( *ew\text\string, *ew\text\caret\pos ); GetState( listview_debug )
         EndIf
         
         If e_item = - 1
-          ;SetText( id_i_help_text, GetItemText( EventWidget, GetState( EventWidget ) ) )
+          ;SetText( id_i_help_text, GetItemText( *ew, GetState( *ew ) ) )
         Else
-          If EventWidget = id_i_view_tree
-            SetText( id_i_help_text, GetItemText( EventWidget, e_item ) )
+          If *ew = id_i_view_tree
+            SetText( id_i_help_text, GetItemText( *ew, e_item ) )
             
             ;\\ TEMP change visible
-            *this._s_widget = EventWidget
+            *this._s_widget = *ew
             If *this\FocusedRow( ) 
               If *this\FocusedRow( )\color\state <> 3
                 *this\FocusedRow( )\color\back[*this\FocusedRow( )\color\state] = *this\color\back[*this\FocusedRow( )\color\state] ; $FFF5702C ; TEMP
@@ -844,14 +845,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
           EndIf
           
-          If EventWidget = id_elements_tree
-            SetText( id_i_help_text, GetItemText( EventWidget, e_item ) )
+          If *ew = id_elements_tree
+            SetText( id_i_help_text, GetItemText( *ew, e_item ) )
           EndIf
         EndIf
         
       Case #PB_EventType_Change
-        If EventWidget = id_i_view_tree
-          *this = GetItemData( EventWidget, GetState( EventWidget ) )
+        If *ew = id_i_view_tree
+          *this = GetItemData( *ew, GetState( *ew ) )
           
           If a_set( *this )
            
@@ -860,40 +861,40 @@ CompilerIf #PB_Compiler_IsMainFile
           ;;SetActive( *this )
         EndIf
         
-        If EventWidget = id_elements_tree
-          a_transform( )\type = GetState( EventWidget )
+        If *ew = id_elements_tree
+          a_transform( )\type = GetState( *ew )
         EndIf
         
-        If EventWidget = listview_debug
+        If *ew = listview_debug
           Protected q, startpos, stoppos
           Protected x = #PB_Ignore, y = #PB_Ignore
           Protected width = #PB_Ignore, height = #PB_Ignore
           
-          Protected findstring.s = Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos )
+          Protected findstring.s = Left( *ew\text\string, *ew\text\caret\pos )
           Protected countstring = CountString( findstring, "," )
           
           Select countstring
             Case 0, 1, 2, 3, 4
-              For q = EventWidget( )\text\edit[1]\len To EventWidget( )\text\edit[1]\pos Step - 1
-                If Mid( EventWidget( )\text\string, q, 1 ) = "(" Or 
-                   Mid( EventWidget( )\text\string, q, 1 ) = ~"\"" Or
-                   Mid( EventWidget( )\text\string, q, 1 ) = ","
+              For q = *ew\text\edit[1]\len To *ew\text\edit[1]\pos Step - 1
+                If Mid( *ew\text\string, q, 1 ) = "(" Or 
+                   Mid( *ew\text\string, q, 1 ) = ~"\"" Or
+                   Mid( *ew\text\string, q, 1 ) = ","
                   startpos = q + 1
                   Break
                 EndIf
               Next q
               
-              For q = EventWidget( )\text\edit[3]\pos To ( EventWidget( )\text\edit[3]\pos + EventWidget( )\text\edit[3]\len )
-                If Mid( EventWidget( )\text\string, q, 1 ) = "," Or
-                   Mid( EventWidget( )\text\string, q, 1 ) = ~"\"" Or
-                   Mid( EventWidget( )\text\string, q, 1 ) = ")"
+              For q = *ew\text\edit[3]\pos To ( *ew\text\edit[3]\pos + *ew\text\edit[3]\len )
+                If Mid( *ew\text\string, q, 1 ) = "," Or
+                   Mid( *ew\text\string, q, 1 ) = ~"\"" Or
+                   Mid( *ew\text\string, q, 1 ) = ")"
                   stoppos = q
                   Break
                 EndIf
               Next q
               
               If stoppos And stoppos - startpos
-                findstring = Mid( EventWidget( )\text\string, startpos, stoppos - startpos )
+                findstring = Mid( *ew\text\string, startpos, stoppos - startpos )
                 
                 If countstring = 4
                   SetText( a_focused( ), findstring )
@@ -914,21 +915,21 @@ CompilerIf #PB_Compiler_IsMainFile
               EndIf
           EndSelect
           
-          ; Debug Left( EventWidget( )\text\string, EventWidget( )\text\caret\pos ); GetState( listview_debug )
+          ; Debug Left( *ew\text\string, *ew\text\caret\pos ); GetState( listview_debug )
         EndIf
         
       Case #PB_EventType_LeftClick
-        If getclass( EventWidget ) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData( EventWidget )
+        If getclass( *ew ) = "ToolBar"
+          Protected transform, move_x, move_y, toolbarbutton = GetData( *ew )
           Static NewList *copy._s_a_group( )
           
           
           Select toolbarbutton
             Case 1
-              If Getstate( EventWidget )  
+              If Getstate( *ew )  
                 ; group
-                group_select = EventWidget
-                ; SetAtributte( EventWidget, #PB_Button_PressedImage )
+                group_select = *ew
+                ; SetAtributte( *ew, #PB_Button_PressedImage )
               Else
                 ; un group
                 group_select = 0
@@ -1286,8 +1287,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 1270
-; FirstLine = 1028
-; Folding = -----vv----804-----f8-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1
+; Folding = -----v-------4---v9b8-
 ; EnableXP

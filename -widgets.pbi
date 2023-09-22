@@ -206,8 +206,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;Macro _rows( ): row\_s( ): EndMacro
     Macro _rows( ): columns( )\items( ): EndMacro
     
-    Macro Root( ): widget::*canvas\_roots( ): EndMacro
-    Macro _events( ): root\canvas\events( ): EndMacro
+    Macro Root( ): widget::*canvas\roots( ): EndMacro
     Macro _widgets( ): root\canvas\child( ): EndMacro ; Returns last created widget
     
     Macro enumWidget( ): Root( )\_widgets( ): EndMacro       ; temp
@@ -17109,7 +17108,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If WidgetEvent( )\pFunc
+        If WidgetEvent( )\binded
           EventWidget( )      = *this
           WidgetEvent( )\type = eventtype
           WidgetEvent( )\item = *button
@@ -17192,7 +17191,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i Bind( *this._S_widget, *callback, eventtype.l = #PB_All, item.l = #PB_All )
-      WidgetEvent( )\pFunc = 1
+      WidgetEvent( )\binded = 1
       
       
       If *this = #PB_All
@@ -20409,9 +20408,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If ListSize( Root( )\_events( ) )
-          ClearList( Root( )\_events( ) )
-        EndIf
+;         If ListSize( Root( )\_events( ) )
+;           ClearList( Root( )\_events( ) )
+;         EndIf
         
         ;
         PushMapPosition(Root( ))
@@ -20927,5 +20926,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-+-------------------------------------------------------------------
+; CursorPosition = 209
+; FirstLine = 203
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84f-------------------------------------------------------------------
 ; EnableXP

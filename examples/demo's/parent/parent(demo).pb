@@ -30,7 +30,10 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = WidgetEventData()
     
    Select EventType
-        Case #PB_EventType_LeftClick, #PB_EventType_Change
+   	Case #PB_EventType_LeftButtonDown
+   		;ClearDebugOutput()
+   		
+   	Case #PB_EventType_LeftClick, #PB_EventType_Change
           Select EventWidget
             Case  *DESKTOP:  SetParent(*CHILD, 0)
             Case  *_6:  SetParent(*CHILD, *window_10)
@@ -207,5 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; CursorPosition = 33
+; FirstLine = 15
+; Folding = -+
 ; EnableXP

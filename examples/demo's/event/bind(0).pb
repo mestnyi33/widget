@@ -9,20 +9,24 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_gadgets()
-    Debug ""+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
+    Protected *ew._s_widget = EventWidget( )
+    Debug ""+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
   EndProcedure
   
   Procedure events_widgets()
+    Protected *ew._s_widget = EventWidget( )
     ; ClearDebugOutput()
-    Debug " "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+    Debug " "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
   EndProcedure
   
   Procedure events_windows()
-    Debug "   "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+    Protected *ew._s_widget = EventWidget( )
+    Debug "   "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
   EndProcedure
   
   Procedure events_roots()
-    Debug "     "+Str(EventWidget()\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+    Protected *ew._s_widget = EventWidget( )
+    Debug "     "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
   EndProcedure
   
   

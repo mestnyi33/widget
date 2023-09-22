@@ -7,15 +7,16 @@ Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ;
 
 Procedure events_widgets()
   Protected repaint, BackColor
+  Protected *ew._s_widget = EventWidget( )
   
   Select WidgetEventType( )
     Case #PB_EventType_MouseEnter 
-      EventWidget( )\color\back = $ff0000ff : repaint = 1
+      *ew\color\back = $ff0000ff : repaint = 1
     Case #PB_EventType_MouseLeave 
-      EventWidget( )\color\back = $ff00ff00 : repaint = 1
+      *ew\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
-  If EventWidget( )\state\enter
+  If *ew\state\enter
     If mouse( )\buttons
       BackColor = $ff00F7FF
     Else
@@ -24,18 +25,18 @@ Procedure events_widgets()
   Else
     BackColor = $ff13FF00
   EndIf
-  If EventWidget( )\state\press
+  If *ew\state\press
     BackColor = $ffFFAA00
   Else
-    If EventWidget( )\state\focus
+    If *ew\state\focus
       BackColor = $ffFF0090
     EndIf
   EndIf
   
   
   
-  If EventWidget( )\color\back <> BackColor ; repaint
-    EventWidget( )\color\back = BackColor
+  If *ew\color\back <> BackColor ; repaint
+    *ew\color\back = BackColor
     ; Repaints( )
     ;_post_repaint_canvas_( root( )\canvas )
     ReDraw( root( ) )

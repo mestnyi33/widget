@@ -17,7 +17,6 @@ Global SourceItem, SourceLevel
 Global TargetItem, TargetLevel
 
 #Window = 0
-
 ; If you want to do multiple drag&drop in different Gadgets of your program,
 ; you can use different values here so the events do not collide.
 ; (ie so the user cannot drag to the wrong gadget)
@@ -26,6 +25,7 @@ Global TargetItem, TargetLevel
 ; вы можете использовать здесь разные значения, чтобы события не сталкивались.
 ; (т.е. чтобы пользователь не мог перетащить не тот гаджет)
 #PrivateType = 0
+#PB_Item_Sublevel = #PB_Tree_SubLevel
 
 Procedure events( )
   Protected i, Text$, Level, CountItems
@@ -77,7 +77,7 @@ Procedure events( )
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
-              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel)
+              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_SubLevel)
               TargetItem  + 1
               
             Else
@@ -243,5 +243,6 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 27
 ; Folding = --
 ; EnableXP

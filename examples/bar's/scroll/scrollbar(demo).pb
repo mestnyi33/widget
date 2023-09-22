@@ -2,7 +2,7 @@
 Uselib(widget)
 
 Procedure events_gadgets()
-  ClearDebugOutput()
+  ;ClearDebugOutput()
   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
   
   Select EventType()
@@ -13,7 +13,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  ClearDebugOutput()
+  ;ClearDebugOutput()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
@@ -54,5 +54,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_Sy
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 5
 ; Folding = -
 ; EnableXP

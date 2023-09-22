@@ -357,52 +357,60 @@ Module events
   EndProcedure
   
   Procedure.i WaitEvent(event.i, second.i=0)
-    If *setcallback And event = #PB_Event_Gadget
-      Protected EventType   = EventType( )
-      Protected EventGadget = EventGadget( )
-      Protected EventData   = EventData( )
-      
-      CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
-        If EventType = constants::#PB_EventType_Repaint
-          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-        EndIf
-      CompilerEndIf
-      CompilerIf Defined(constants::PB_EventType_Create, #PB_Constant) 
-        If EventType = constants::#PB_EventType_Create
-          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-        EndIf
-      CompilerEndIf
-;       If EventType = #PB_EventType_MouseEnter
-;         ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
-;         If Mouse::Window() = WindowID(EventWindow())
-;           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-;         EndIf
-;       EndIf
-      If EventType = #PB_EventType_Focus 
-        ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-        If FocusedGadget( ) = - 1
-          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-        EndIf
-      EndIf
-      If EventType = #PB_EventType_LostFocus
-       ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-        ; 
-        If FocusedGadget( ) = - 1
-          CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-        EndIf
-      EndIf
-      If EventType = #PB_EventType_RightButtonDown Or
-        EventType = #PB_EventType_RightButtonUp
-        CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
-      EndIf
-      If EventType = #PB_EventType_KeyDown Or
-         EventType = #PB_EventType_KeyUp Or
-         EventType = #PB_EventType_Input
-        
-        CallCFunctionFast( *setcallback, EventGadget, EventType, EventData )
-      EndIf
-    EndIf
-    
+  	If *setcallback 
+  		If event = #PB_Event_Gadget
+  			Protected EventType   = EventType( )
+  			Protected EventGadget = EventGadget( )
+  			Protected EventData   = EventData( )
+  			
+  			CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
+  				If EventType = constants::#PB_EventType_Repaint
+  					CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+  				EndIf
+  			CompilerEndIf
+  			CompilerIf Defined(constants::PB_EventType_Create, #PB_Constant) 
+  				If EventType = constants::#PB_EventType_Create
+  					CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+  				EndIf
+  			CompilerEndIf
+  			;       If EventType = #PB_EventType_MouseEnter
+			;         ; Debug " e - "+Mouse::Window() +" "+ WindowID(EventWindow())
+			;         If Mouse::Window() = WindowID(EventWindow())
+			;           CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+			;         EndIf
+			;       EndIf
+  			If EventType = #PB_EventType_Focus 
+  				;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+  				If FocusedGadget( ) = - 1
+  					CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+  				EndIf
+  			EndIf
+  			If EventType = #PB_EventType_LostFocus
+  				; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+				; 
+  				If FocusedGadget( ) = - 1
+  					CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+  				EndIf
+  			EndIf
+  			If EventType = #PB_EventType_RightButtonDown Or
+  			   EventType = #PB_EventType_RightButtonUp
+  				CallCFunctionFast(*setcallback, EventGadget, EventType, EventData )
+  			EndIf
+  			If EventType = #PB_EventType_KeyDown Or
+  			   EventType = #PB_EventType_KeyUp Or
+  			   EventType = #PB_EventType_Input
+  				
+  				CallCFunctionFast( *setcallback, EventGadget, EventType, EventData )
+  			EndIf
+  		EndIf
+  		
+  		If Not event 
+  			CompilerIf Defined(constants::PB_EventType_Repaint, #PB_Constant) 
+  				CallCFunctionFast(*setcallback, 0, constants::#PB_EventType_Repaint, 0 )
+  			CompilerEndIf
+  	   EndIf
+  	EndIf
+  	
     ProcedureReturn event
   EndProcedure
   
@@ -1151,5 +1159,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -9v--------------------
+; CursorPosition = 408
+; FirstLine = 332
+; Folding = -9--------8------------
 ; EnableXP

@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
         buttonsize = GetAttribute( *scrollbar, #__Bar_ButtonSize )
         Debug "button-size - "+buttonsize
         
-        Splitter(5, 5, 370, 70, *scrollbar,0)
+        Splitter(5, 5, 370, 70, *scrollbar,-1)
         SetState(widget(), 70)
         
         SetGadgetState(0, buttonsize)
@@ -30,8 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Else
           SetGadgetText(0, "show scrollbar buttons")
         EndIf
-        
-        bind(-1,-1)
+       
       EndIf
     EndIf
   EndProcedure
@@ -73,6 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 32
+; FirstLine = 5
 ; Folding = --
 ; EnableXP

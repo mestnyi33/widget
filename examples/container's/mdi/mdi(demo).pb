@@ -1,5 +1,23 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 
+; #PB_MDI_Arrange
+; #PB_MDI_AutoSize
+; #PB_MDI_BorderLess
+; #PB_MDI_Cascade
+; #PB_MDI_Hide
+; #PB_MDI_ItemHeight
+; #PB_MDI_ItemWidth
+; #PB_MDI_Maximize
+; #PB_MDI_Minimize
+; #PB_MDI_Next
+; #PB_MDI_Normal
+; #PB_MDI_NoScrollBars
+; #PB_MDI_Previous
+; #PB_MDI_Show
+; #PB_MDI_SizedItem
+; #PB_MDI_TileHorizontally
+; #PB_MDI_TileVertically
+
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
@@ -43,5 +61,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 14
 ; Folding = -
 ; EnableXP

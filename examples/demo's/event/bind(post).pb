@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       time = ElapsedMilliseconds()
       If StartEnumerate( *g )
-        Post( #PB_EventType_Focus, widget())
+        Post( widget(), #PB_EventType_Focus)
         StopEnumerate( )
       EndIf
       Debug  Str(ElapsedMilliseconds()-time) + " - time post widget"
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       
 ;       time = ElapsedMilliseconds()
 ;       If StartEnumerate( *g )
-;         Post( #PB_EventType_Focus, widget())
+;         Post( widget(), #PB_EventType_Focus)
 ;         StopEnumerate( )
 ;       EndIf
 ;       Debug  Str(ElapsedMilliseconds()-time) + " - time post widget"

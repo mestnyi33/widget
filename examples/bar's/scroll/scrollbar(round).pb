@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
         *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8, 0, round)
         SetState(widget(), 31)
         
-        Splitter(5, 5, 370, 70, *scrollbar,0)
+        Splitter(5, 5, 370, 70, *scrollbar,-1)
         SetState(widget(), 70)
         
         SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
           SetGadgetText(0, "round scrollbar buttons")
         EndIf
         
-        bind(-1,-1)
+       ; bind(-1,-1)
       EndIf
     EndIf
   EndProcedure
@@ -49,9 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 0
             *scrollbar\round = GetGadgetState(0) * round
-            *scrollbar\bar\button[#__b_1]\round = *scrollbar\round
-            *scrollbar\bar\button[#__b_2]\round = *scrollbar\round
-            *scrollbar\bar\button[#__b_3]\round = *scrollbar\round
+            *scrollbar\bar\button[0]\round = *scrollbar\round
+            *scrollbar\bar\button[1]\round = *scrollbar\round
+            *scrollbar\bar\button[2]\round = *scrollbar\round
             
              ; Resize(*scrollbar, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       
@@ -79,6 +79,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 19
 ; Folding = --
 ; EnableXP

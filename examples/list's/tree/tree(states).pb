@@ -10,7 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
   #PB_Tree_MultiSelect = #__flag_multiline
   
   
-  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
+  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=5; количесвто итемов 
+  Global itext.s = " long & long line"
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
@@ -130,12 +131,23 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Case #PB_EventType_LeftDoubleClick
 ;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-;       Case #PB_EventType_RightClick
-;         Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
-        
-    EndSelect
-  EndProcedure
-  
+      Case #PB_EventType_RightClick
+        ; Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      	Protected a
+      	If GetData( eventWidget()) = Bool(itext)
+      		SetData( eventWidget(), Bool(itext)!1)
+      		For a = 0 To CountItems(eventWidget()) - 1
+      			SetItemText(eventWidget(), a, "Item "+Str(a) +" long & long line")
+      		Next
+      	Else
+      		SetData( eventWidget(), Bool(itext))
+      		For a = 0 To CountItems(eventWidget()) - 1
+      			SetItemText(eventWidget(), a, "Item "+Str(a))
+      		Next
+      	EndIf
+   EndSelect
+EndProcedure
+
   If Open(1, 100, 50, 520, 755, "demo Tree state", #PB_Window_SystemMenu)
     ;\\ demo gadget
     *g1 = TreeGadget_(#PB_Any, 10, 10, 120, 180 )
@@ -155,16 +167,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\
     For a = 0 To countitems
-      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g3, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g5, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g7, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g1, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g3, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g5, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g7, -1, "Item "+Str(a) + itext, 0)
     Next
     For a = 0 To countitems*10
-      AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g4, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g6, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g8, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(*g2, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g4, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g6, -1, "Item "+Str(a) + itext, 0)
+      AddGadgetItem_(*g8, -1, "Item "+Str(a) + itext, 0)
     Next
     
     ;\\
@@ -191,16 +203,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\
     For a = 0 To countitems
-      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w3, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w5, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w7, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w1, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w3, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w5, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w7, -1, "Item "+Str(a) + itext, 0)
     Next
     For a = 0 To countitems*10
-      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w4, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w6, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w8, -1, "Item "+Str(a), 0)
+      widget::AddItem(*w2, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w4, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w6, -1, "Item "+Str(a) + itext, 0)
+      widget::AddItem(*w8, -1, "Item "+Str(a) + itext, 0)
     Next
     
     ;\\
@@ -233,5 +245,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 139
+; FirstLine = 132
 ; Folding = ---
 ; EnableXP

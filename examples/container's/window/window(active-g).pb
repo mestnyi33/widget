@@ -1,28 +1,32 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 
 Procedure active()
-  If EventWidget( )\type > 0
-    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
+  Protected *ew._s_widget = EventWidget( )
+  If *ew\type > 0
+    Debug "  "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget_"+*ew\index
   EndIf
 EndProcedure
 
 Procedure deactive()
-  If EventWidget( )\type > 0
-    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
+  Protected *ew._s_widget = EventWidget( )
+  If *ew\type > 0
+    Debug "  "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget_"+*ew\index
   EndIf
 EndProcedure
 
 Procedure active_0()
-  If EventWidget( )\type > 0
-    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
+  Protected *ew._s_widget = EventWidget( )
+  If *ew\type > 0
+    Debug " -   "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget_"+*ew\index
   EndIf
 EndProcedure
 
 Procedure deactive_0()
-  If EventWidget( )\type > 0
-    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
+  Protected *ew._s_widget = EventWidget( )
+  If *ew\type > 0
+    Debug " -   "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget_"+*ew\index
   EndIf
 EndProcedure
 
