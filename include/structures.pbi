@@ -377,9 +377,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       *parent._s_rows
       
-;       *first._s_rows           ;TEMP first elemnt in the list 
-;       *after._s_rows           ;TEMP first elemnt in the list 
-;       *before._s_rows          ;TEMP first elemnt in the list 
+       *first._s_rows           ;TEMP first elemnt in the list 
+       *after._s_rows           ;TEMP first elemnt in the list 
+       *before._s_rows          ;TEMP first elemnt in the list 
+       
       *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
       
       ;parent._s_objecttype
@@ -741,7 +742,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 665
-; FirstLine = 613
+; CursorPosition = 382
+; FirstLine = 367
 ; Folding = -----r+--
 ; EnableXP

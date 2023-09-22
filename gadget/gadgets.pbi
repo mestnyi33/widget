@@ -735,7 +735,7 @@ DeclareModule Gadget
     
     Procedure EventType_()
       If widget::EventWidget( ) And widget::EventWidget( )\state\enter
-        ProcedureReturn widget::EventWidget( )\event
+        ProcedureReturn widget::EventWidget( )\type
       Else
         ProcedureReturn PB(EventType)()
       EndIf
@@ -1344,5 +1344,7 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 737
+; FirstLine = 708
 ; Folding = v-------04-f4343333+333333+----
 ; EnableXP

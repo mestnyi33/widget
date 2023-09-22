@@ -237,36 +237,36 @@ CompilerIf #PB_Compiler_IsMainFile
     ;With *this
     If *this
       ;{ Генерируем идентификатор
-      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
-        If LastElement( *this\row\_s( ) )
-          ;;*this\row\last = *this\row\_s( )
+      If position < 0 Or position > ListSize( *this\_rows( ) ) - 1
+        If LastElement( *this\_rows( ) )
+          ;;*this\row\last = *this\_rows( )
         EndIf
-        handle = AddElement( *this\row\_s( ) ) 
+        handle = AddElement( *this\_rows( ) ) 
         ;If position < 0 
-          position = ListIndex( *this\row\_s( ) )
+          position = ListIndex( *this\_rows( ) )
         ;EndIf
       Else
-        handle = SelectElement( *this\row\_s( ), position )
+        handle = SelectElement( *this\_rows( ), position )
         ; for the tree( )
-        If sublevel > *this\row\_s( )\sublevel
-          PushListPosition( *this\row\_s( ) )
-          If PreviousElement( *this\row\_s( ) )
-            *this\row\last = *this\row\_s( )
-            ;; NextElement( *this\row\_s( ) )
+        If sublevel > *this\_rows( )\sublevel
+          PushListPosition( *this\_rows( ) )
+          If PreviousElement( *this\_rows( ) )
+            *this\row\last = *this\_rows( )
+            ;; NextElement( *this\_rows( ) )
           Else
             *last = *this\row\last
-            sublevel = *this\row\_s( )\sublevel
+            sublevel = *this\_rows( )\sublevel
           EndIf
-          PopListPosition( *this\row\_s( ) )
+          PopListPosition( *this\_rows( ) )
 ; ;           If *last = *this\row\last
-; ;             sublevel = *this\row\_s( )\sublevel
+; ;             sublevel = *this\_rows( )\sublevel
 ; ;           EndIf
         Else
           *last = *this\row\last
-          sublevel = *this\row\_s( )\sublevel
+          sublevel = *this\_rows( )\sublevel
         EndIf
         
-        handle = InsertElement( *this\row\_s( ) )
+        handle = InsertElement( *this\_rows( ) )
       EndIf
       ;}
       
@@ -281,13 +281,13 @@ CompilerIf #PB_Compiler_IsMainFile
             *parent = *this\row\last
            ; *parent\childrens = 1
             
-          ElseIf *this\row\last\_parent 
-            If sublevel > *this\row\last\_parent\sublevel 
-              *parent = *this\row\last\_parent
+          ElseIf *this\row\last\parent 
+            If sublevel > *this\row\last\parent\sublevel 
+              *parent = *this\row\last\parent
               
             ElseIf sublevel < *this\row\last\sublevel 
-              If *this\row\last\_parent\_parent
-                *parent = *this\row\last\_parent\_parent
+              If *this\row\last\parent\parent
+                *parent = *this\row\last\parent\parent
                 
                 While *parent 
                   If sublevel >= *parent\sublevel 
@@ -296,17 +296,17 @@ CompilerIf #PB_Compiler_IsMainFile
                     EndIf
                     Break
                   Else
-                    *parent = *parent\_parent
+                    *parent = *parent\parent
                   EndIf
                 Wend
               EndIf
               
               ;;; ; for the editor( )
-;               If *this\row\last\_parent 
-;                 If *this\row\last\_parent\sublevel = sublevel 
-;                   *last = *this\row\last\_parent
-;                   *parent = *this\row\last\_parent
-;                   *parent\last = *this\row\_s( )
+;               If *this\row\last\parent 
+;                 If *this\row\last\parent\sublevel = sublevel 
+;                   *last = *this\row\last\parent
+;                   *parent = *this\row\last\parent
+;                   *parent\last = *this\_rows( )
 ;                   *this\row\last = *parent
 ;                 EndIf
 ;               EndIf
@@ -315,46 +315,46 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\row\_s( )\_parent = *parent
+        *this\_rows( )\parent = *parent
         
         If *last
          ; *this\row\last = *last
         Else
-          *this\row\last = *this\row\_s( )
+          *this\row\last = *this\_rows( )
         EndIf
         
         ; for the tree( )
-        If *this\row\last\_parent And 
-           *this\row\last\_parent\sublevel < sublevel
-          *this\row\last\_parent\last = *this\row\last
+        If *this\row\last\parent And 
+           *this\row\last\parent\sublevel < sublevel
+          *this\row\last\parent\last = *this\row\last
         EndIf
         
         If sublevel = 0
           If *this\row\first 
             If *this\row\first\first
-              *this\row\_s( )\first = *this\row\first\first
+              *this\_rows( )\first = *this\row\first\first
             EndIf
-            *this\row\first\first = *this\row\_s( )
+            *this\row\first\first = *this\_rows( )
           EndIf
         EndIf
         
         If position = 0
-          *this\row\first = *this\row\_s( )
+          *this\row\first = *this\_rows( )
         EndIf
         
-        *this\row\_s( )\sublevel = sublevel
+        *this\_rows( )\sublevel = sublevel
         
         ; add lines
-        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
-        *this\row\_s( )\color = _get_colors_( )
-        *this\row\_s( )\color\state = 0
-        *this\row\_s( )\color\back = 0 
-        *this\row\_s( )\color\frame = 0
+        *this\_rows( )\index = ListIndex( *this\_rows( ) )
+        *this\_rows( )\color = _get_colors_( )
+        *this\_rows( )\color\state = 0
+        *this\_rows( )\color\back = 0 
+        *this\_rows( )\color\frame = 0
         
         If Text
-          *this\row\_s( )\text\change = 1
-          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\_rows( )\text\change = 1
+          *this\_rows( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\_rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\count\items + 1
@@ -374,33 +374,33 @@ CompilerIf #PB_Compiler_IsMainFile
     ;With *this
     If *this
       ;{ Генерируем идентификатор
-      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
-        If LastElement( *this\row\_s( ) )
-          ;;*this\row\last = *this\row\_s( )
+      If position < 0 Or position > ListSize( *this\_rows( ) ) - 1
+        If LastElement( *this\_rows( ) )
+          ;;*this\row\last = *this\_rows( )
         EndIf
-        handle = AddElement( *this\row\_s( ) ) 
+        handle = AddElement( *this\_rows( ) ) 
         ;If position < 0 
-          position = ListIndex( *this\row\_s( ) )
+          position = ListIndex( *this\_rows( ) )
         ;EndIf
       Else
-        handle = SelectElement( *this\row\_s( ), position )
+        handle = SelectElement( *this\_rows( ), position )
         ; for the tree( )
-        If sublevel > *this\row\_s( )\sublevel
-          PushListPosition( *this\row\_s( ) )
-          If PreviousElement( *this\row\_s( ) )
-            *this\row\last = *this\row\_s( )
-            ;; NextElement( *this\row\_s( ) )
+        If sublevel > *this\_rows( )\sublevel
+          PushListPosition( *this\_rows( ) )
+          If PreviousElement( *this\_rows( ) )
+            *this\row\last = *this\_rows( )
+            ;; NextElement( *this\_rows( ) )
           Else
             *last = *this\row\last
-            sublevel = *this\row\_s( )\sublevel
+            sublevel = *this\_rows( )\sublevel
           EndIf
-          PopListPosition( *this\row\_s( ) )
+          PopListPosition( *this\_rows( ) )
         Else
           *last = *this\row\last
-          sublevel = *this\row\_s( )\sublevel
+          sublevel = *this\_rows( )\sublevel
         EndIf
         
-        handle = InsertElement( *this\row\_s( ) )
+        handle = InsertElement( *this\_rows( ) )
       EndIf
       ;}
       
@@ -415,13 +415,13 @@ CompilerIf #PB_Compiler_IsMainFile
             *parent = *this\row\last
             *parent\childrens = 1
             
-          ElseIf *this\row\last\_parent 
-            If sublevel > *this\row\last\_parent\sublevel 
-              *parent = *this\row\last\_parent
+          ElseIf *this\row\last\parent 
+            If sublevel > *this\row\last\parent\sublevel 
+              *parent = *this\row\last\parent
               
             ElseIf sublevel < *this\row\last\sublevel 
-              If *this\row\last\_parent\_parent
-                *parent = *this\row\last\_parent\_parent
+              If *this\row\last\parent\parent
+                *parent = *this\row\last\parent\parent
                 
                 While *parent 
                   If sublevel >= *parent\sublevel 
@@ -430,20 +430,20 @@ CompilerIf #PB_Compiler_IsMainFile
                     EndIf
                     Break
                   Else
-                    *parent = *parent\_parent
+                    *parent = *parent\parent
                   EndIf
                 Wend
               EndIf
               
               ;; ; for the editor( )
-              If *this\row\last\_parent 
-                If *this\row\last\_parent\sublevel = sublevel 
-; ;                   *last = *this\row\last\_parent
-; ;                   *parent = *this\row\last\_parent
-; ; ;                   *parent\last = *this\row\_s( )
+              If *this\row\last\parent 
+                If *this\row\last\parent\sublevel = sublevel 
+; ;                   *last = *this\row\last\parent
+; ;                   *parent = *this\row\last\parent
+; ; ;                   *parent\last = *this\_rows( )
 ; ;                    *this\row\last = *parent
-                  *this\row\_s( )\before = *this\row\last\_parent
-                  *this\row\last\_parent\after = *this\row\_s( )
+                  *this\_rows( )\before = *this\row\last\parent
+                  *this\row\last\parent\after = *this\_rows( )
                   ;*this\row\last = *parent
                   Debug Text
                 EndIf
@@ -453,46 +453,46 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\row\_s( )\_parent = *parent
+        *this\_rows( )\parent = *parent
         
         If *last
          ; *this\row\last = *last
         Else
-          *this\row\last = *this\row\_s( )
+          *this\row\last = *this\_rows( )
         EndIf
         
         ; for the tree( )
-        If *this\row\last\_parent And 
-           *this\row\last\_parent\sublevel < sublevel
-          *this\row\last\_parent\last = *this\row\last
+        If *this\row\last\parent And 
+           *this\row\last\parent\sublevel < sublevel
+          *this\row\last\parent\last = *this\row\last
         EndIf
         
         If sublevel = 0
           If *this\row\first 
             If *this\row\first\first
-              *this\row\_s( )\first = *this\row\first\first
+              *this\_rows( )\first = *this\row\first\first
             EndIf
-            *this\row\first\first = *this\row\_s( )
+            *this\row\first\first = *this\_rows( )
           EndIf
         EndIf
         
         If position = 0
-          *this\row\first = *this\row\_s( )
+          *this\row\first = *this\_rows( )
         EndIf
         
-        *this\row\_s( )\sublevel = sublevel
+        *this\_rows( )\sublevel = sublevel
         
         ; add lines
-        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
-        *this\row\_s( )\color = _get_colors_( )
-        *this\row\_s( )\color\state = 0
-        *this\row\_s( )\color\back = 0 
-        *this\row\_s( )\color\frame = 0
+        *this\_rows( )\index = ListIndex( *this\_rows( ) )
+        *this\_rows( )\color = _get_colors_( )
+        *this\_rows( )\color\state = 0
+        *this\_rows( )\color\back = 0 
+        *this\_rows( )\color\frame = 0
         
         If Text
-          *this\row\_s( )\text\change = 1
-          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\_rows( )\text\change = 1
+          *this\_rows( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\_rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\count\items + 1
@@ -511,7 +511,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-; ;     *g = Tree(10, 100, 210, 210, #__list_CheckBoxes)                                         
+; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -536,7 +536,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 10, 210, 100, #__list_CheckBoxes)                                         
+    *g = Tree(10, 10, 210, 100, #__tree_CheckBoxes)                                         
     add(*g, -1, "Node "+Str(a), 0, 0)                                         
     add(*g, -1, "Sub-Item 1", -1, 1)                                           
     add(*g, -1, "Sub-Item 3", -1, 3)
@@ -544,7 +544,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, -1, "Sub-Item 4", -1, 4)
     
     ; 2_example
-    *g = Tree(10, 10+110, 210, 100, #__list_CheckBoxes)                                         
+    *g = Tree(10, 10+110, 210, 100, #__tree_CheckBoxes)                                         
     add(*g, 0, "Node "+Str(a), 0, 0)                                         
     add(*g, 1, "Sub-Item 1", -1, 1)                                           
     add(*g, 3, "Sub-Item 3", -1, 3)
@@ -552,7 +552,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, 4, "Sub-Item 4", -1, 4)
     
     ;{  5_example
-    *g5 = Tree(230, 10, 103, 210, #__list_NoButtons|#__list_Collapsed)                                         
+    *g5 = Tree(230, 10, 103, 210, #__tree_NoButtons|#__tree_Collapse)                                         
     add(*g5, 0, "Tree_0", -1 )
     add(*g5, 1, "Tree_1", -1, 0) 
     add(*g5, 2, "Tree_2", -1, 0) 
@@ -576,7 +576,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__list_Collapsed)                                         
+    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__tree_Collapse)                                         
     
     add(*g6, 0, "Tree_1", -1, 1) 
     add(*g6, 0, "Tree_2_1", -1, 2) 
@@ -597,7 +597,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 10, 210, 210);|#__list_Collapsed)                                         
+    *g = Tree(450, 10, 210, 210);|#__tree_Collapsed)                                         
     add(*g, 0, "Tree_0", -1 )
     add(*g, 1, "Tree_1_1", 0, 1) 
     add(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -618,7 +618,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 10, 210, 210, #__list_NoLines);|#__list_OptionBoxes|#__list_NoButtons) ;                                        
+    *g = Tree(670, 10, 210, 210, #__tree_NoLines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
         add(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         add(*g, 1, "Tree_1", -1, 1) 
         add(*g, 2, "Tree_2_2", -1, 2) 
@@ -645,7 +645,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 10, 210, 210, #__list_CheckBoxes|#__list_NoLines|#__list_NoButtons|#__list_GridLines | #__list_ThreeState | #__list_OptionBoxes)                            
+    *g = Tree(890, 10, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     add(*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 ;Or i%3=0
@@ -675,7 +675,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
-    *g = Tree(10, 230, 210, 400);|#__list_Collapsed)                                         
+    *g = Tree(10, 230, 210, 400);|#__tree_Collapsed)                                         
   
     ;  2_example
     add(*g, 0, "Structure widget", -1, 0)
@@ -757,8 +757,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Next i
   
 ;   ForEach *g\row\_s()
-;     If *g\row\_s()\_parent ;And *g\row\_s()\_parent\last = *g\row\_s()
-;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\_parent\text\string +" l "+ *g\row\_s()\_parent\last\text\string
+;     If *g\row\_s()\parent ;And *g\row\_s()\parent\last = *g\row\_s()
+;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
 ;     EndIf
 ;   Next
 ;   Debug ""
@@ -774,5 +774,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 578
+; FirstLine = 550
 ; Folding = ---------------
 ; EnableXP
