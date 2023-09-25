@@ -97,6 +97,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       parents.l
       childrens.l
     EndStructure
+    Structure _s_ANIMATION
+       Value.i
+       Min.i
+       Max.i
+       Delay.i
+       Enter.i
+       Leave.i
+    EndStructure
     ;--     OBJECTTYPE
     Structure _s_OBJECTTYPE
       *root._s_ROOT
@@ -742,7 +750,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 382
-; FirstLine = 367
-; Folding = -----r+--
+; CursorPosition = 99
+; FirstLine = 88
+; Folding = -----X0---
 ; EnableXP

@@ -488,7 +488,7 @@
       #PB_Event_Destroy
     EndEnumeration
     
-    ;- Constant event-type
+    ;-\\ event-type
     CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
       #PB_EventType_Resize = 6
     CompilerEndIf
@@ -525,59 +525,84 @@
     #__event_resizeEnd    = #PB_EventType_ResizeEnd
     
     #__event_free     = #PB_EventType_Free
-    #__event_Drop     = #PB_EventType_Drop
     #__event_create   = #PB_EventType_Create
     #__event_sizeitem = #PB_EventType_SizeItem                ; 65535
     
-    #__event_repaint      = #PB_EventType_Repaint
+    #__event_Drop     = #PB_EventType_Drop
+    #__event_DragStart        = #PB_EventType_DragStart        ; 2048
+    
+    #__event_Draw        = #PB_EventType_Draw
+    #__event_Repaint      = #PB_EventType_Repaint
     #__event_scrollChange = #PB_EventType_ScrollChange
     
     #__event_closeWindow    = #PB_EventType_CloseWindow
-    #__event_maximizewindow = #PB_EventType_MaximizeWindow
-    #__event_minimizewindow = #PB_EventType_MinimizeWindow
-    #__event_restorewindow  = #PB_EventType_RestoreWindow
+    #__event_maximizeWindow = #PB_EventType_MaximizeWindow
+    #__event_minimizeWindow = #PB_EventType_MinimizeWindow
+    #__event_restoreWindow  = #PB_EventType_RestoreWindow
     
     #__event_mouseEnter      = #PB_EventType_MouseEnter       ; 65537 The mouse cursor entered the gadget
     #__event_mouseLeave      = #PB_EventType_MouseLeave       ; 65538 The mouse cursor left the gadget
     #__event_mouseMove       = #PB_EventType_MouseMove        ; 65539 The mouse cursor moved
     #__event_mouseWheel      = #PB_EventType_MouseWheel       ; 65546 The mouse wheel was moved
+    #__event_mouseWheelX     = #PB_EventType_MouseWheelX
+    #__event_mouseWheelY     = #PB_EventType_MouseWheelY
+    
+    #__event_ButtonleftDown        = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
+    #__event_ButtonleftUp          = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
+    #__event_ButtonleftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
+    #__event_Buttonleft2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
+    #__event_Buttonleft3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
+    #__event_ButtonrightDown        = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
+    #__event_ButtonrightUp          = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
+    #__event_ButtonrightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
+    #__event_Buttonright2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
+    #__event_Buttonright3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
+    
+    #__event_Up              = #PB_EventType_Up                    ; 4
+    #__event_Down            = #PB_EventType_Down                  ; 5
+    
     #__event_leftButtonDown  = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
     #__event_leftButtonUp    = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
     #__event_leftDoubleClick = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
-    #__event_left3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
-    #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
-    #__event_leftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
     
     #__event_rightButtonDown  = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
     #__event_rightButtonUp    = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
     #__event_rightDoubleClick = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
-    #__event_right3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
-    #__event_right2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
-    #__event_rightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
     
     #__event_middleButtonDown = #PB_EventType_MiddleButtonDown ; 65544 The middle mouse button was pressed
     #__event_middleButtonUp   = #PB_EventType_MiddleButtonUp   ; 65545 The middle mouse button was released
-    #__event_focus            = #PB_EventType_Focus            ; 256   The gadget gained keyboard focus
+    
+    #__event_leftDown        = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
+    #__event_leftUp          = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
+    #__event_leftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
+    #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
+    #__event_left3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
+    
+    #__event_rightDown        = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
+    #__event_rightUp          = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
+    #__event_rightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
+    #__event_right2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
+    #__event_right3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
+    
+    #__event_middleDown       = #PB_EventType_MiddleButtonDown ; 65544 The middle mouse button was pressed
+    #__event_middleUp         = #PB_EventType_MiddleButtonUp   ; 65545 The middle mouse button was released
+    
+    #__event_Focus            = #PB_EventType_Focus            ; 256   The gadget gained keyboard focus
     #__event_lostFocus        = #PB_EventType_LostFocus        ; 512   The gadget lost keyboard focus
-    #__event_KeyDown          = #PB_EventType_KeyDown          ; 65547 A key was pressed
-    #__event_KeyUp            = #PB_EventType_KeyUp            ; 65548 A key was released
-    #__event_input            = #PB_EventType_Input            ; 65549 Text input was generated
-    #__event_resize           = #PB_EventType_Resize           ; 6     The gadget has been resized
+    #__event_Resize           = #PB_EventType_Resize           ; 6     The gadget has been resized
     #__event_statusChange     = #PB_EventType_StatusChange     ; 65518
     #__event_titleChange      = #PB_EventType_TitleChange      ; 65517
-    #__event_change           = #PB_EventType_Change           ; 768
-    #__event_DragStart        = #PB_EventType_DragStart        ; 2048
-    #__event_returnKey        = #PB_EventType_ReturnKey        ; 7
+    #__event_Change           = #PB_EventType_Change           ; 768
     #__event_closeItem        = #PB_EventType_CloseItem        ; 65534
     
-    #__event_Draw        = #PB_EventType_Draw
-    #__event_Up          = #PB_EventType_Up                    ; 4
-    #__event_Down        = #PB_EventType_Down                  ; 5
-    #__event_mouseWheelX = #PB_EventType_MouseWheelX
-    #__event_mouseWheelY = #PB_EventType_MouseWheelY
+    #__event_KeyDown          = #PB_EventType_KeyDown          ; 65547 A key was pressed
+    #__event_KeyUp            = #PB_EventType_KeyUp            ; 65548 A key was released
+    #__event_Input            = #PB_EventType_Input            ; 65549 Text input was generated
+    #__event_returnKey        = #PB_EventType_ReturnKey        ; 7
     
     
-    ;- Constant create-type
+    
+    ;-\\ create-type
     Enumeration - 1
       #__type_all
       #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
@@ -1008,5 +1033,7 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 547
+; FirstLine = 570
 ; Folding = ---
 ; EnableXP

@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *this.allocate( widget )
   Global NewList Images.IMAGES( )
-  Declare  Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+  Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
   
   Macro Area_Draw( _this_ )
     widget::bar_mdi_resize( _this_,
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro Area_Use( _canvas_window_, _canvas_gadget_ = #PB_Any )
-    Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Keyboard, _canvas_gadget_ )
+    Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
   EndMacro
   
   Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
@@ -399,5 +399,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 117
+; FirstLine = 94
 ; Folding = ---------
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets3.pbi"
 
 ; #PB_MDI_Arrange
 ; #PB_MDI_AutoSize
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   EnableExplicit
-  Global Event.i, MyCanvas
+  Global Event.i, MyCanvas, *spl1,*spl2
   Global x=100,y=100, width=420, height=420 , focus
   
   If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
@@ -30,10 +30,27 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
+  Procedure button_3_events( )
+     Static click, state1, state2
+     
+     If click = 0
+        click = 1
+        state1 = GetState(*spl1)
+        state2 = GetState(*spl2)
+        SetState(*spl1, width)
+        SetState(*spl2, height)
+     Else
+        click = 0
+        SetState(*spl1, state1)
+        SetState(*spl2, state2)
+     EndIf
+     
+  EndProcedure
+  
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi = MDI(x,y,width, height);, #__flag_autosize)
-   a_init( *mdi )
+  a_init( *mdi )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
   Button(10,10,80,80,"button_0")
@@ -45,22 +62,24 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  Button(10,10,80,80,"button_3")
+  BinD(Button(10,10,80,80,"button_3"), @button_3_events(), #__event_LeftButtonDown)
   
   ; use root list
   OpenList(Root())
   
-  Define *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
-  Define *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
+  *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
+  *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
   
   SetState(*spl1, width - 150)
   SetState(*spl2, height - 150)
+  
   
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14
+; CursorPosition = 75
+; FirstLine = 41
 ; Folding = -
 ; EnableXP

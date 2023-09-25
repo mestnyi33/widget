@@ -1,5 +1,5 @@
 ﻿;- 
-XIncludeFile "../widgets.pbi"
+XIncludeFile "../widgets3.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -618,7 +618,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_Resize
         properties_update_coordinate( id_i_properties_tree, *ew )
-        SetWindowTitle( EventWindow(), Str(width(*ew))+"x"+Str(height(*ew) ) )
+        SetWindowTitle( GetWindow(*ew\root), Str(width(*ew))+"x"+Str(height(*ew) ) )
         
       Case #PB_EventType_MouseEnter,
            #PB_EventType_MouseMove

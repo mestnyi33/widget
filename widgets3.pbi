@@ -1144,7 +1144,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		Declare.l bar_setAttribute( *this, Attribute.l, *value )
 		Declare.i bar_tab_SetState( *this, State.l )
 		Declare bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
-		Declare bar_mdi_update( *this )
+		Declare bar_mdi_update( *this, x.l, y.l, width.l, height.l )
 		Declare bar_area_resize( *this, x.l, y.l, width.l, height.l )
 		Declare.b bar_Change( *this, ScrollPos.l )
 		Declare.b bar_Update( *this, mode.b = 1 )
@@ -4447,10 +4447,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					EndIf
 				EndIf
 				
+				Send( *this, #__event_resize )
+				
 				; if the integral scroll bars
 				;\\ resize vertical&horizontal scrollbars
 				If *this\scroll And *this\scroll\v And *this\scroll\h
-					bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   If *this\type = #__type_MDI
+				      bar_mdi_update( *this, 0,0,0,0  )
+				      bar_mdi_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   EndIf
 				EndIf
 				
 				;\\ if the integral tab bar
@@ -4517,17 +4523,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				;\\ parent mdi
 				If *this\child And
 				   *this\parent And
-				   *this\parent\type = #__type_MDI And
-				   *this\parent\scroll And
-				   *this\parent\scroll\v And
-				   *this\parent\scroll\h And
-				   *this\parent\scroll\v <> *this And
-				   *this\parent\scroll\h <> *this And
-				   *this\parent\scroll\v\bar\PageChange( ) = 0 And
-				   *this\parent\scroll\h\bar\PageChange( ) = 0
-					
-				   bar_mdi_update( *this )
-				   bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
+				   *this\parent\type = #__type_MDI 
+				   
+				   If *this\parent\scroll And
+				      *this\parent\scroll\v And
+				      *this\parent\scroll\h And
+				      *this\parent\scroll\v <> *this And
+				      *this\parent\scroll\h <> *this And
+				      *this\parent\scroll\v\bar\PageChange( ) = 0 And
+				      *this\parent\scroll\h\bar\PageChange( ) = 0
+				      
+				      
+				      bar_mdi_update( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame]  )
+				      bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
+				   EndIf
 				EndIf
 				
 				;\\
@@ -4687,6 +4696,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					EndIf
 				EndIf
 				
+				
 				;\\
 				If PopupWidget( )
 					If *this = PopupWidget( )\parent
@@ -4703,10 +4713,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				; ; ;                   *this\height[#__c_screen] )
 				; ; ;         EndIf
 				
-				If *this\_a_\transform Or *this\container
-					; Post( *this, #__event_Resize )
-					Post( *this, #__event_resize )
-				EndIf
+; 				If *this\_a_\transform Or *this\container
+; 					; Post( *this, #__event_Resize )
+; 					Post( *this, #__event_resize )
+; 				EndIf
 			EndIf
 			
 			;
@@ -6463,48 +6473,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			ProcedureReturn result
 		EndProcedure
 		
-		Procedure bar_mdi_update( *this._S_WIDGET )
-			*this\parent\scroll_x( )      = *this\x[#__c_container]
-			*this\parent\scroll_y( )      = *this\y[#__c_container]
-			*this\parent\scroll_width( )  = *this\width[#__c_frame]
-			*this\parent\scroll_height( ) = *this\height[#__c_frame]
+    Procedure bar_mdi_update( *this._S_WIDGET, x.l, y.l, width.l, height.l )
+			*this\scroll_x( )      = x;*this\x[#__c_container]
+			*this\scroll_y( )      = y;*this\y[#__c_container]
+			*this\scroll_width( )  = width;*this\width[#__c_frame]
+			*this\scroll_height( ) = height;*this\height[#__c_frame]
 			
-			If StartEnumerate( *this\parent )
-				If enumWidget( )\parent = *this\parent
-					If *this\parent\scroll_x( ) > enumWidget( )\x[#__c_container]
-						*this\parent\scroll_x( ) = enumWidget( )\x[#__c_container]
+			If StartEnumerate( *this )
+				If enumWidget( )\parent = *this
+					If *this\scroll_x( ) > enumWidget( )\x[#__c_container]
+						*this\scroll_x( ) = enumWidget( )\x[#__c_container]
 					EndIf
-					If *this\parent\scroll_y( ) > enumWidget( )\y[#__c_container]
-						*this\parent\scroll_y( ) = enumWidget( )\y[#__c_container]
+					If *this\scroll_y( ) > enumWidget( )\y[#__c_container]
+						*this\scroll_y( ) = enumWidget( )\y[#__c_container]
 					EndIf
 				EndIf
 				StopEnumerate( )
 			EndIf
 			
-			If StartEnumerate( *this\parent )
-				If enumWidget( )\parent = *this\parent
-					If *this\parent\scroll_width( ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\parent\scroll_x( )
-						*this\parent\scroll_width( ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\parent\scroll_x( )
+			If StartEnumerate( *this )
+				If enumWidget( )\parent = *this
+					If *this\scroll_width( ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
+						*this\scroll_width( ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
 					EndIf
-					If *this\parent\scroll_height( ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\parent\scroll_y( )
-						*this\parent\scroll_height( ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\parent\scroll_y( )
+					If *this\scroll_height( ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\scroll_y( )
+						*this\scroll_height( ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\scroll_y( )
 					EndIf
 				EndIf
 				StopEnumerate( )
 			EndIf
 			
-; 			If *this\parent\scroll_width( ) < *this\parent\width[#__c_inner]
-; 			   *this\parent\scroll_width( ) = *this\parent\width[#__c_inner]
+; 			If *this\scroll_width( ) < *this\width[#__c_inner]
+; 			   *this\scroll_width( ) = *this\width[#__c_inner]
 ; 			EndIf
-; 			If *this\parent\scroll_height( ) < *this\parent\height[#__c_inner]
-; 			   *this\parent\scroll_height( ) = *this\parent\height[#__c_inner]
+; 			If *this\scroll_height( ) < *this\height[#__c_inner]
+; 			   *this\scroll_height( ) = *this\height[#__c_inner]
 ; 			EndIf
 		EndProcedure
-		
-		Procedure bar_mdi_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
+; 		
+		Procedure _bar_mdi_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
 			Static v_max, h_max
 			Protected sx, sy, round
 			Protected result
+			
+			If Not ( *this\scroll And ( *this\scroll\v Or *this\scroll\h ))
+			   ProcedureReturn 
+			EndIf
 			
 			If *this\scroll\v\bar\page\len <> height - Bool( *this\scroll_width( ) > width ) * *this\scroll\h\height
 				*this\scroll\v\bar\page\len = height - Bool( *this\scroll_width( ) > width ) * *this\scroll\h\height
@@ -6669,7 +6683,175 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			EndIf
 		EndProcedure
 		
-		
+		Procedure   bar_mdi_resize( *this._s_WIDGET, x.l,y.l,width.l,height.l ) ; Bar_Updates
+      Static v_max, h_max
+      Protected sx, sy, round
+      Protected result
+      
+;       width = *this\parent\width[#__c_inner]
+;       height = *this\parent\height[#__c_inner];251
+;       width = *this\width[#__c_container]
+;       height = *this\height[#__c_container];251
+      Debug ""+*this\class +" "+ width +" "+ height
+
+      If *this\scroll\v\bar\page\len <> height - Bool( *this\width[#__c_required] > width ) * *this\scroll\h\height
+        *this\scroll\v\bar\page\len = height - Bool( *this\width[#__c_required] > width ) * *this\scroll\h\height
+      EndIf
+      
+      If *this\scroll\h\bar\page\len <> width - Bool( *this\height[#__c_required] > height ) * *this\scroll\v\width
+        *this\scroll\h\bar\page\len = width - Bool( *this\height[#__c_required] > height ) * *this\scroll\v\width
+      EndIf
+      
+      If *this\x[#__c_required] < x
+        ; left set state
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+      Else
+        sx = ( *this\x[#__c_required] - x ) 
+        *this\width[#__c_required] + sx
+        *this\x[#__c_required] = x
+      EndIf
+      
+      If *this\y[#__c_required] < y
+        ; top set state
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        sy = ( *this\y[#__c_required] - y )
+        *this\height[#__c_required] + sy
+        *this\y[#__c_required] = y
+      EndIf
+      
+      If *this\width[#__c_required] > *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+        If *this\width[#__c_required] - sx <= width And *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+          ;Debug "w - " + Str( *this\height[#__c_required] - sx )
+          
+          ; if on the h - scroll
+          If *this\scroll\v\bar\max > height - *this\scroll\h\height
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width 
+            *this\height[#__c_required] = *this\scroll\v\bar\max
+            ;  Debug "w - " + *this\scroll\v\bar\max  + " " +  *this\scroll\v\height  + " " +  *this\scroll\v\bar\page\len
+          Else
+            *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\x[#__c_required] - x ) - *this\scroll\h\height
+          EndIf
+        EndIf
+        
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+      Else
+        *this\scroll\h\bar\max = *this\width[#__c_required]
+        *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+      EndIf
+      
+      If *this\height[#__c_required] > *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+        If *this\height[#__c_required] - sy <= Height And *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x )
+          ;Debug " h - " + Str( *this\height[#__c_required] - sy )
+          
+          ; if on the v - scroll
+          If *this\scroll\h\bar\max > width - *this\scroll\v\width
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+            *this\width[#__c_required] = *this\scroll\h\bar\max
+            ;  Debug "h - " + *this\scroll\h\bar\max  + " " +  *this\scroll\h\width  + " " +  *this\scroll\h\bar\page\len
+          Else
+            *this\width[#__c_required] = *this\scroll\h\bar\page\len - ( *this\x[#__c_required] - x ) - *this\scroll\v\width
+          EndIf
+        EndIf
+        
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        *this\scroll\v\bar\max = *this\height[#__c_required]
+        *this\height[#__c_required] = *this\scroll\v\bar\page\len - ( *this\y[#__c_required] - y )
+      EndIf
+      
+      If *this\scroll\h\round And
+         *this\scroll\v\round And
+         *this\scroll\h\bar\page\len < width And 
+         *this\scroll\v\bar\page\len < height
+        round = ( *this\scroll\h\height/4 )
+      EndIf
+      
+      If *this\width[#__c_required] >= *this\scroll\h\bar\page\len  
+        If *this\scroll\h\bar\Max <> *this\width[#__c_required] 
+          *this\scroll\h\bar\Max = *this\width[#__c_required]
+          
+          If *this\x[#__c_required] <= x 
+            *this\scroll\h\bar\page\pos =- ( *this\x[#__c_required] - x )
+          EndIf
+        EndIf
+        
+        If *this\scroll\h\width <> *this\scroll\h\bar\page\len + round
+          ; Debug  "h " + *this\scroll\h\bar\page\len
+          Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, *this\scroll\h\bar\page\len + round, #PB_Ignore )
+          *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len )) 
+          ;           *this\scroll\h\width = *this\scroll\h\bar\page\len + round
+          ;           *this\scroll\h\hide = Bar_Update( *this\scroll\h\bar )
+          result = 1
+        EndIf
+      EndIf
+      
+      If *this\height[#__c_required] >= *this\scroll\v\bar\page\len  
+        If *this\scroll\v\bar\Max <> *this\height[#__c_required]  
+          *this\scroll\v\bar\Max = *this\height[#__c_required]
+          
+          If *this\y[#__c_required] <= y 
+            ;If *this\scroll\v\bar\page\pos <>- ( *this\y[#__c_required] - y )
+            *this\scroll\v\bar\page\pos =- ( *this\y[#__c_required] - y )
+            
+            ; Send( #__event_change, *this\scroll\v )
+            ;EndIf
+          EndIf
+        EndIf
+        
+        If *this\scroll\v\height <> *this\scroll\v\bar\page\len + round
+          ; Debug  "v " + *this\scroll\v\bar\page\len
+          Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\scroll\v\bar\page\len + round )
+          *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len )) 
+          ;           *this\scroll\v\height = *this\scroll\v\bar\page\len + round
+          ;           *this\scroll\v\hide = Bar_Update( *this\scroll\v\bar )
+          result = 1
+        EndIf
+      EndIf
+      
+      ;       If Not *this\scroll\h\hide 
+      ;         If *this\scroll\h\y[#__c_container] <> y + height - *this\scroll\h\height
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize( *this\scroll\h, #PB_Ignore, y + height - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;         If *this\scroll\h\x[#__c_container] <> x
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize( *this\scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;       EndIf
+      ;       
+      ;       If Not *this\scroll\v\hide 
+      ;         If *this\scroll\v\x[#__c_container] <> x + width - *this\scroll\v\width
+      ;           ; Debug "x"
+      ;           *this\scroll\v\hide = Resize( *this\scroll\v, x + width - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;         If *this\scroll\v\y[#__c_container] <> y
+      ;           ; Debug "y"
+      ;           *this\scroll\v\hide = Resize( *this\scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore )
+      ;         EndIf
+      ;       EndIf
+      
+      If v_max <> *this\scroll\v\bar\Max
+        v_max = *this\scroll\v\bar\Max
+        *this\scroll\v\resize | #__resize_change
+        Bar_Update( *this\scroll\v ) 
+        *this\scroll\v\hide = Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len )) 
+      EndIf
+      
+      If h_max <> *this\scroll\h\bar\Max
+        h_max = *this\scroll\h\bar\Max
+        *this\scroll\h\resize | #__resize_change
+        Bar_Update( *this\scroll\h ) 
+        *this\scroll\h\hide = Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len )) 
+      EndIf
+      
+;       *this\width[#__c_inner] = *this\scroll\h\bar\page\len
+;       *this\height[#__c_inner] = *this\scroll\v\bar\page\len
+      ProcedureReturn result
+    EndProcedure
+    
 		;-
 		Procedure.b bar_Update( *this._S_WIDGET, mode.b = 1 )
 			Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i, width, height
@@ -6683,7 +6865,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			width  = *this\width[#__c_frame]
 			height = *this\height[#__c_frame]
 			
-			;\\
 			;\\
 			If *this\child
 				If *bar\vertical
@@ -19596,9 +19777,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		EndProcedure
 		
 		Procedure EventResize( )
-			Protected canvas = GetWindowData( EventWindow( ))
-			
-			ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 )
+		   Protected canvas = GetWindowData( EventWindow( ))
+		   
+		   ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 ) ; bug 
 			; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
 		EndProcedure
 		
@@ -19747,8 +19928,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				w = WindowID( Window )
 			EndIf
 			
+			If x = #PB_Ignore : x = 0 : EndIf
+			If y = #PB_Ignore : y = 0 : EndIf
+			
 			If width = #PB_Ignore
-				width = WindowWidth( Window, #PB_Window_InnerCoordinate )
+			   width = WindowWidth( Window, #PB_Window_InnerCoordinate )
 				If x And x <> #PB_Ignore
 					width - x * 2
 				EndIf
@@ -19770,7 +19954,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			If PB(IsGadget)(Canvas)
 				g = GadgetID( Canvas )
 			Else
-				g = CanvasGadget( Canvas, x, y, width, height, Flag | #PB_Canvas_Keyboard )
+			   g = CanvasGadget( Canvas, x, y, width, height, Flag | #PB_Canvas_Keyboard )
 				If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
 			EndIf
 			
@@ -20600,7 +20784,7 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile =99
 	Uselib(widget)
 	
 	Global MDI, MDI_splitter, Splitter
@@ -20623,7 +20807,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile =99
+CompilerIf #PB_Compiler_IsMainFile
 	
 	EnableExplicit
 	UseLIB(widget)
@@ -21069,7 +21253,7 @@ CompilerIf #PB_Compiler_IsMainFile =99
 	WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6671
-; FirstLine = 6633
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4457
+; FirstLine = 4416
+; Folding = ---------------------------------------------------------------------------------------------------0-9Tr------------------------------------------------0v-------n-0---P---X-8fv-4-0v-v-0--2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

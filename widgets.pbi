@@ -1144,7 +1144,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		Declare.l bar_setAttribute( *this, Attribute.l, *value )
 		Declare.i bar_tab_SetState( *this, State.l )
 		Declare bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
-		Declare bar_mdi_update( *this )
+		Declare bar_mdi_update( *this, x.l, y.l, width.l, height.l )
 		Declare bar_area_resize( *this, x.l, y.l, width.l, height.l )
 		Declare.b bar_Change( *this, ScrollPos.l )
 		Declare.b bar_Update( *this, mode.b = 1 )
@@ -4446,7 +4446,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				; if the integral scroll bars
 				;\\ resize vertical&horizontal scrollbars
 				If *this\scroll And *this\scroll\v And *this\scroll\h
-					bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   If *this\type = #__type_MDI
+				      bar_mdi_update( *this, 0,0,0,0  )
+				      bar_mdi_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+				   EndIf
 				EndIf
 				
 				;\\ if the integral tab bar
@@ -4513,19 +4517,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				;\\ parent mdi
 				If *this\child And
 				   *this\parent And
-				   *this\parent\type = #__type_MDI And
-				   *this\parent\scroll And
-				   *this\parent\scroll\v And
-				   *this\parent\scroll\h And
-				   *this\parent\scroll\v <> *this And
-				   *this\parent\scroll\h <> *this And
-				   *this\parent\scroll\v\bar\PageChange( ) = 0 And
-				   *this\parent\scroll\h\bar\PageChange( ) = 0
-					
-					bar_mdi_update( *this )
-					bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
-				  ; bar_mdi_update2( *this, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
-      EndIf
+				   *this\parent\type = #__type_MDI 
+				   
+				   If *this\parent\scroll And
+				      *this\parent\scroll\v And
+				      *this\parent\scroll\h And
+				      *this\parent\scroll\v <> *this And
+				      *this\parent\scroll\h <> *this And
+				      *this\parent\scroll\v\bar\PageChange( ) = 0 And
+				      *this\parent\scroll\h\bar\PageChange( ) = 0
+				      
+				      
+				      bar_mdi_update( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame]  )
+				      bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
+				   EndIf
+				EndIf
 				
 				;\\
 				If *this\type = #__type_Spin Or
@@ -6459,44 +6465,44 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			ProcedureReturn result
 		EndProcedure
 		
-		Procedure bar_mdi_update( *this._S_WIDGET )
-			*this\parent\scroll_x( )      = *this\x[#__c_container]
-			*this\parent\scroll_y( )      = *this\y[#__c_container]
-			*this\parent\scroll_width( )  = *this\width[#__c_frame]
-			*this\parent\scroll_height( ) = *this\height[#__c_frame]
+		Procedure bar_mdi_update( *this._S_WIDGET, x.l, y.l, width.l, height.l )
+			*this\scroll_x( )      = x;*this\x[#__c_container]
+			*this\scroll_y( )      = y;*this\y[#__c_container]
+			*this\scroll_width( )  = width;*this\width[#__c_frame]
+			*this\scroll_height( ) = height;*this\height[#__c_frame]
 			
-			If StartEnumerate( *this\parent )
-				If enumWidget( )\parent = *this\parent
-					If *this\parent\scroll_x( ) > enumWidget( )\x[#__c_container]
-						*this\parent\scroll_x( ) = enumWidget( )\x[#__c_container]
+			If StartEnumerate( *this )
+				If enumWidget( )\parent = *this
+					If *this\scroll_x( ) > enumWidget( )\x[#__c_container]
+						*this\scroll_x( ) = enumWidget( )\x[#__c_container]
 					EndIf
-					If *this\parent\scroll_y( ) > enumWidget( )\y[#__c_container]
-						*this\parent\scroll_y( ) = enumWidget( )\y[#__c_container]
+					If *this\scroll_y( ) > enumWidget( )\y[#__c_container]
+						*this\scroll_y( ) = enumWidget( )\y[#__c_container]
 					EndIf
 				EndIf
 				StopEnumerate( )
 			EndIf
 			
-			If StartEnumerate( *this\parent )
-				If enumWidget( )\parent = *this\parent
-					If *this\parent\scroll_width( ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\parent\scroll_x( )
-						*this\parent\scroll_width( ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\parent\scroll_x( )
+			If StartEnumerate( *this )
+				If enumWidget( )\parent = *this
+					If *this\scroll_width( ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
+						*this\scroll_width( ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
 					EndIf
-					If *this\parent\scroll_height( ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\parent\scroll_y( )
-						*this\parent\scroll_height( ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\parent\scroll_y( )
+					If *this\scroll_height( ) < enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\scroll_y( )
+						*this\scroll_height( ) = enumWidget( )\y[#__c_container] + enumWidget( )\height[#__c_frame] - *this\scroll_y( )
 					EndIf
 				EndIf
 				StopEnumerate( )
 			EndIf
 			
-; 			If *this\parent\scroll_width( ) < *this\parent\width[#__c_inner]
-; 			   *this\parent\scroll_width( ) = *this\parent\width[#__c_inner]
+; 			If *this\scroll_width( ) < *this\width[#__c_inner]
+; 			   *this\scroll_width( ) = *this\width[#__c_inner]
 ; 			EndIf
-; 			If *this\parent\scroll_height( ) < *this\parent\height[#__c_inner]
-; 			   *this\parent\scroll_height( ) = *this\parent\height[#__c_inner]
+; 			If *this\scroll_height( ) < *this\height[#__c_inner]
+; 			   *this\scroll_height( ) = *this\height[#__c_inner]
 ; 			EndIf
 		EndProcedure
-		
+; 	
 		Procedure bar_mdi_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
 			Static v_max, h_max
 			Protected sx, sy, round
@@ -16760,8 +16766,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			; 			;\\
 			; 			If *this\event And
 			; 			   *this\event\draw
-			; 				; Post( *this, #__event_Draw )
-			; 			Post( *this, #__event_Draw )
+			 			Send( *this, #__event_Draw )
 			; 				      EndIf
 		EndProcedure
 		
@@ -19597,9 +19602,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		EndProcedure
 		
 		Procedure EventResize( )
-			Protected canvas = GetWindowData( EventWindow( ))
+		   Protected canvas = GetWindowData( EventWindow( ))
+		   
+		   Protected x = GadgetX( canvas )
+			Protected y = GadgetY( canvas )
 			
-			ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 )
+			ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - x * 2, WindowHeight( EventWindow( )) - y * 2 )
+			; ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 ) ; bug GadgetX&Y()
 			; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
 		EndProcedure
 		
@@ -19748,6 +19757,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				w = WindowID( Window )
 			EndIf
 			
+			If x = #PB_Ignore : x = 0 : EndIf
+		   If y = #PB_Ignore : y = 0 : EndIf
+			   
 			If width = #PB_Ignore
 				width = WindowWidth( Window, #PB_Window_InnerCoordinate )
 				If x And x <> #PB_Ignore
@@ -20238,7 +20250,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				EndIf
 				
 				PostCanvasRepaint( *this\parent, #__event_free )
-				;ClearStructure( *this, _S_WIDGET )
+				
+				ClearStructure(*this, _S_WIDGET)
+				FreeMemory(*this)
 			EndIf
 			
 			ProcedureReturn result
@@ -21048,7 +21062,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
 	WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3959
-; FirstLine = 3768
-; Folding = -------------------------------------------------------------------------4+----v------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-4----------------------------------------------------00--f70-----------------------------f-------f-f-v--+---------u---8-8-4-jtv9--f-v--v0fv+-+vr+----------------------------------------f---
+; CursorPosition = 4448
+; FirstLine = 3923
+; Folding = -------------------------------------------------------------------------4+----v-----------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f----------------------------------------------------44---p4------------------------------0-------0-0-+-8---------8+--v-v-f-P3+y---0-+--3-07-8-u7--------------------------------+-----------
 ; EnableXP

@@ -1,32 +1,36 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets3.pbi"
 
 ;
 ; Module name   : elements
 ; Author        : mestnyi
 ; Last updated  : mar 12, 2020
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
-; 
-
-XIncludeFile "../../../widgets.pbi"
+;
 
 CompilerIf #PB_Compiler_IsMainFile
 	Uselib(widget)
 	
 	Global MDI, MDI_splitter, Splitter
 	
+	Procedure MDI_ChildrensResizeEvents( )
+	   Debug "    ---  resize "+GetClass(EventWidget( )) +" "+x(EventWidget( )) +" "+y(EventWidget( )) +" "+width(EventWidget( )) +" "+height(EventWidget( ))
+	EndProcedure
+	
 	If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+	   ;a_init( Root( ))
+	   Bind( Root( ), @MDI_ChildrensResizeEvents( ), #__event_resize)
 		
 		MDI = MDI(0, 0, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
 		Define *g0 = AddItem(MDI, -1, "form_0")
-		Button(10,10,80,80,"button_0")
-		
-		Define *g1 = AddItem(MDI, -1, "form_1")
-		Button(10,10,80,80,"button_1")
-		
-		Define *g2 = AddItem(MDI, -1, "form_2")
-		Button(10,10,80,80,"button_2")
-		
-		Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+; 		Button(10,10,80,80,"button_0")
+; 		
+ 		Define *g1 = AddItem(MDI, -1, "form_1")
+; 		Button(10,10,80,80,"button_1")
+; 		
+ 		Define *g2 = AddItem(MDI, -1, "form_2")
+; 		Button(10,10,80,80,"button_2")
+ 		
+ 		Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 	EndIf
 	
 CompilerEndIf
@@ -72,7 +76,6 @@ CompilerEndIf
 ;   Until Event = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 5
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
