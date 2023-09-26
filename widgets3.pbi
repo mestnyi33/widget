@@ -4448,6 +4448,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				EndIf
 				
 				Send( *this, #__event_resize )
+				;Debug ""+Str(*this\scroll) +" "+ Str(*this\scroll\v) +" "+ Str(*this\scroll\h)
 				
 				; if the integral scroll bars
 				;\\ resize vertical&horizontal scrollbars
@@ -4555,6 +4556,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					; Debug "-- bar_Update -- "+" "+ *this\class
 					bar_Update( *this, Bool( Change_width Or Change_height ) )
 				EndIf
+				
+				
 				
 				;-\\ childrens resize
 				;\\ then move and size parent resize all childrens
@@ -6282,11 +6285,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				
 				If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
 				   ( _this_\scroll\v\width[#__c_draw] > 0 And _this_\scroll\v\height[#__c_draw] > 0 )
-					bar_scroll_draw( _this_\scroll\v )
+				   bar_scroll_draw( _this_\scroll\v )
 				EndIf
 				If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\height And
 				   ( _this_\scroll\h\width[#__c_draw] > 0 And _this_\scroll\h\height[#__c_draw] > 0 )
-					bar_scroll_draw( _this_\scroll\h )
+				   bar_scroll_draw( _this_\scroll\h )
 				EndIf
 				
 				;If #__draw_scroll_box
@@ -6309,7 +6312,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		EndMacro
 		
 		Procedure bar_area_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
-			If ( *this\width = 0 And *this\height = 0)
+		   If ( *this\width = 0 And *this\height = 0)
 				If *this\scroll
 					*this\scroll\v\hide = #True
 					*this\scroll\h\hide = #True
@@ -6445,7 +6448,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					;          ;\\ update inner coordinate
 					;         *this\width[#__c_inner]  = \h\bar\page\len
 					;         *this\height[#__c_inner] = \v\bar\page\len
-					;          
+               ;      
+				   Debug ""+\v\bar\max +""+ \v\bar\page\len
 					ProcedureReturn #True
 				EndIf
 			EndWith
@@ -6865,44 +6869,44 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			width  = *this\width[#__c_frame]
 			height = *this\height[#__c_frame]
 			
-			;\\
-			If *this\child
-				If *bar\vertical
-					If height = 0
-						height = *this\parent\height[#__c_inner]
-						;  Debug "hi - "+height
-						If Not *this\height And *this\parent\scroll\h
-							*this\height[#__c_frame]     = height
-							If *this\parent\scroll\v
-							   *this\height[#__c_frame] - *this\parent\scroll\v\width + Bool( *this\round And *this\parent\scroll\v\round ) * ( *this\parent\scroll\v\width / 4 )
-							EndIf
-							*this\height[#__c_container] = height
-							*this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
-							If *this\height[#__c_container] < 0
-								*this\height[#__c_container] = 0
-							EndIf
-							*this\height[#__c_inner] = *this\height[#__c_container]
-						EndIf
-					EndIf
-				Else
-					If width = 0
-						width = *this\parent\width[#__c_inner]
-						;  Debug "wi - "+width
-						If Not *this\width And *this\parent\scroll\v
-						   *this\width[#__c_frame]     = width 
-						   If *this\parent\scroll\h
-						     *this\width[#__c_frame] - *this\parent\scroll\h\height + Bool( *this\round And *this\parent\scroll\h\round ) * ( *this\parent\scroll\h\height / 4 )
-						   EndIf
-						   *this\width[#__c_container] = width
-							*this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
-							If *this\width[#__c_container] < 0
-								*this\width[#__c_container] = 0
-							EndIf
-							*this\width[#__c_inner] = *this\width[#__c_container]
-						EndIf
-					EndIf
-				EndIf
-			EndIf
+; 			;\\
+; 			If *this\child
+; 				If *bar\vertical
+; 					If height = 0
+; 						height = *this\parent\height[#__c_inner]
+; 						;  Debug "hi - "+height
+; 						If Not *this\height And *this\parent\scroll\h
+; 							*this\height[#__c_frame]     = height
+; 							If *this\parent\scroll\v
+; 							   *this\height[#__c_frame] - *this\parent\scroll\v\width + Bool( *this\round And *this\parent\scroll\v\round ) * ( *this\parent\scroll\v\width / 4 )
+; 							EndIf
+; 							*this\height[#__c_container] = height
+; 							*this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
+; 							If *this\height[#__c_container] < 0
+; 								*this\height[#__c_container] = 0
+; 							EndIf
+; 							*this\height[#__c_inner] = *this\height[#__c_container]
+; 						EndIf
+; 					EndIf
+; 				Else
+; 					If width = 0
+; 						width = *this\parent\width[#__c_inner]
+; 						;  Debug "wi - "+width
+; 						If Not *this\width And *this\parent\scroll\v
+; 						   *this\width[#__c_frame]     = width 
+; 						   If *this\parent\scroll\h
+; 						     *this\width[#__c_frame] - *this\parent\scroll\h\height + Bool( *this\round And *this\parent\scroll\h\round ) * ( *this\parent\scroll\h\height / 4 )
+; 						   EndIf
+; 						   *this\width[#__c_container] = width
+; 							*this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
+; 							If *this\width[#__c_container] < 0
+; 								*this\width[#__c_container] = 0
+; 							EndIf
+; 							*this\width[#__c_inner] = *this\width[#__c_container]
+; 						EndIf
+; 					EndIf
+; 				EndIf
+; 			EndIf
 			
 			; Debug ""+height +" "+width+" "+ *this\height +" "+ *bar\vertical+" "+ *this\class
 			
@@ -7204,11 +7208,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 						
 						;\\
 						If *this\type = #__type_splitter
-; 							If *bar\vertical
-; 								*this\cursor = cursor::#PB_Cursor_Down
-; 							Else
-; 								*this\cursor = cursor::#PB_Cursor_Right
-; 							EndIf
 							*this\cursor = *this\cursor[3]
 						EndIf
 					EndIf
@@ -7233,11 +7232,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 						
 						;\\
 						If *this\type = #__type_splitter
-; 							If *bar\vertical
-; 								*this\cursor = cursor::#PB_Cursor_UpDown
-; 							Else
-; 								*this\cursor = cursor::#PB_Cursor_LeftRight
-; 							EndIf
 						   *this\cursor = *this\cursor[1]
 						EndIf
 					EndIf
@@ -7265,11 +7259,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 						
 						;\\
 						If *this\type = #__type_splitter
-; 							If *bar\vertical
-; 								*this\cursor = cursor::#PB_Cursor_Up
-; 							Else
-; 								*this\cursor = cursor::#PB_Cursor_Left
-; 							EndIf
 						   *this\cursor = *this\cursor[2]
 						EndIf
 					EndIf
@@ -7293,11 +7282,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 						
 						;\\
 						If *this\type = #__type_splitter
-; 							If *bar\vertical
-; 								*this\cursor = cursor::#PB_Cursor_UpDown
-; 							Else
-; 								*this\cursor = cursor::#PB_Cursor_LeftRight
-; 							EndIf
 						   *this\cursor = *this\cursor[1]
 						EndIf
 					EndIf
@@ -7321,6 +7305,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
 								*SB\color\state = #__S_0
 							EndIf
 						EndIf
+					EndIf
+					
+					If *this\child
+					   If *this\bar\max < *this\bar\page\len
+					      ;Debug ""+*this\bar\max +" "+ *this\bar\page\len
+					      If *this\hide <> #True
+					         *this\hide = #True
+					      EndIf
+					   EndIf
 					EndIf
 				EndIf
 				
@@ -16275,9 +16268,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				
 				If *this\type = #__type_ScrollBar
 					If *this\bar\vertical
-						Resize( *this, *this\parent\width[#__c_inner]-width, y, width, *this\parent\height[#__c_inner] )
+						Resize( *this, *this\parent\width[#__c_inner]-width, y, width, *this\parent\height[#__c_inner]-width+Bool(*this\Round)*(width / 4)  )
 					Else
-						Resize( *this, x, *this\parent\height[#__c_inner]-height, *this\parent\width[#__c_inner], height )
+						Resize( *this, x, *this\parent\height[#__c_inner]-height, *this\parent\width[#__c_inner]-height+Bool(*this\Round)*(height / 4), height )
 					EndIf
 				EndIf
 				
@@ -21253,7 +21246,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4457
-; FirstLine = 4416
-; Folding = ---------------------------------------------------------------------------------------------------0-9Tr------------------------------------------------0v-------n-0---P---X-8fv-4-0v-v-0--2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 6891
+; FirstLine = 6603
+; Folding = ---------------------------------------------------------------------------------------------------0-9T-------------------------------------------------0v-------4----0--f0v-04-8-+4-4-+--7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

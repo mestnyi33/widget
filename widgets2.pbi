@@ -6444,6 +6444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					;         *this\width[#__c_inner]  = \h\bar\page\len
 					;         *this\height[#__c_inner] = \v\bar\page\len
 					;          
+					;Debug ""+\v\bar\max +" "+ \v\bar\page\len
 					ProcedureReturn #True
 				EndIf
 			EndWith
@@ -7135,12 +7136,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
 							If *SB\state\disable = #False
 								*SB\state\disable = #True
 								
+								If *this\child
+								   *this\hide = #True
+								EndIf
+				
 								*SB\color\state = #__S_3
 							EndIf
 						Else
 							If *SB\state\disable = #True
 								*SB\state\disable = #False
 								
+								If *this\child
+								   *this\hide = #False
+								EndIf
+				
 								*SB\color\state = #__S_0
 							EndIf
 						EndIf
@@ -21091,7 +21100,7 @@ CompilerIf #PB_Compiler_IsMainFile =99
 	WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4458
-; FirstLine = 4447
+; CursorPosition = 7131
+; FirstLine = 6982
 ; Folding = -------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

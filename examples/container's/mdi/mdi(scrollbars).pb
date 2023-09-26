@@ -19,11 +19,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
   
-  ; Debug " - test show and size scroll bars - "
+  ; Debug " - test parent - mdi show and size scroll bars - "
+  ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,231 )
   
+  ; Debug " - test child - mdi show and size scroll bars - "
+  ; Resize(*g0,#PB_Ignore,#PB_Ignore,392,368 )
+  ; Resize(*g0,113,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+  ; Resize(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
+  ; Resize(*g0,113,189,#PB_Ignore,#PB_Ignore )
   
   ; widgets2
 ;   resize - Root 0 0 620 620
@@ -70,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 2
+; CursorPosition = 28
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

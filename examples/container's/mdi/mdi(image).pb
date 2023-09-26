@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global x=200,y=150, width=320, height=320 , focus
    
     
-   Procedure MDI_ChildrensEvents( )
+   Procedure MDI_ImageEvents( )
       Protected *ew._s_widget = EventWidget( )
       Static DragWidget
       
@@ -83,13 +83,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
       
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_LeftButtonUp )
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_LeftButtonDown )
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_MouseMove )
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_MouseEnter )
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_MouseLeave )
-      Bind( *this, @MDI_ChildrensEvents(), #PB_EventType_Draw )
-      Bind( #PB_All, @MDI_ChildrensEvents(), #PB_EventType_Repaint )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonUp )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonDown )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseMove )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseEnter )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseLeave )
+      Bind( *this, @MDI_ImageEvents(), #PB_EventType_Draw )
+      Bind( #PB_All, @MDI_ImageEvents(), #PB_EventType_Repaint )
    EndProcedure
    
    ;- \\
@@ -244,7 +244,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 43
-; Folding = ---
+; CursorPosition = 91
+; FirstLine = 66
+; Folding = -6-
 ; EnableXP

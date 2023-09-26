@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 ; #PB_MDI_Arrange
 ; #PB_MDI_AutoSize
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi = MDI(x,y,width, height);, #__flag_autosize)
-  a_init( *mdi )
+   a_init( *mdi )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
   Button(10,10,80,80,"button_0")
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  BinD(Button(10,10,80,80,"button_3"), @button_3_events(), #__event_LeftButtonDown)
+  BinD(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftButtonDown)
   
   ; use root list
   OpenList(Root())
@@ -79,7 +79,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 41
 ; Folding = -
 ; EnableXP

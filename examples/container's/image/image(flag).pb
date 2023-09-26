@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 ; ;XIncludeFile "../empty.pb"
 UseLib(widget)
@@ -35,29 +35,29 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select this()\event
+    Select WidgetEventType()
       Case #PB_EventType_LeftClick
-        Select this()\widget
+        Select EventWidget()
           Case *this
             If Flag(*this, #__button_toggle)
-              SetState(f_4, GetState(this()\widget))
+              SetState(f_4, GetState(EventWidget()))
             EndIf
             
           Case Button_type 
-            If GetState(this()\widget)
+            If GetState(EventWidget())
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetText(this()\widget, "widget")
+              SetText(EventWidget(), "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetText(this()\widget, "gadget")
+              SetText(EventWidget(), "gadget")
             EndIf
             
           Case f_0 : flag = #__button_default
@@ -75,9 +75,10 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(this()\widget))
+          Flag(*this, flag, GetState(EventWidget()))
         EndIf
-        Post(#__event_repaint, #PB_All)
+        
+        ; PostCanvasRepaint( *this\root )
     EndSelect
     
   EndProcedure
@@ -137,6 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 80
+; FirstLine = 66
 ; Folding = ---
 ; EnableXP

@@ -4,14 +4,14 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Define h = 60
+  Define h = 60, max = 301
   Define._s_widget *g1, *g2, *g3, *g4, *g5, *g6
   
   If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Scroll(    30, 30, 200, h, 0,301,139)
-    *g2 = Scroll(30+210, 30, 200, h, 0,301,129)
-    *g3 = Scroll(30+420, 30, 200, h, 0,301,139)
+    *g1 = Scroll(    30, 30, 200, h, 0,max,139)
+    *g2 = Scroll(30+210, 30, 200, h, 0,max,139)
+    *g3 = Scroll(30+420, 30, 200, h, 0,max,139)
     
     *g4 = Splitter(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     *g5 = Splitter(30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
@@ -28,6 +28,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
