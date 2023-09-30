@@ -1,4 +1,4 @@
-﻿XIncludeFile "widgets.pbi"
+﻿XIncludeFile "widgets2.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100

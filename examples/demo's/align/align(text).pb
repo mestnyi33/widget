@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../" : XIncludeFile "widgets3.pbi"
 
 ;- 
 ;- example
@@ -16,11 +16,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ; _text_ +#LF$+ _text_
     
   ;  Text(_x_,_y_,_width_,_height_,_text_,_flag_)
-     Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+  ;   Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ;  Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ;  CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ; Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
-  ;  String(_x_,_y_,_width_,_height_,_text_,_flag_)
+    String(_x_,_y_,_width_,_height_,_text_,_flag_)
      
   ;  widget()\text\vertical = 1
   

@@ -89,14 +89,6 @@
     #__sel_to_last   = - 2
     #__sel_to_set    = 5
     
-    ;window bar buttons
-    Enumeration
-      #__wb_close
-      #__wb_maxi
-      #__wb_mini
-      #__wb_help
-    EndEnumeration
-    
     ;-\\ Coordinate (pos & size)
     Enumeration _c_coordinate
       #__c_screen    = 0 ; screen
@@ -304,6 +296,12 @@
     #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
     
     ;-\\ Window
+    ; caption bar buttons
+    #__wb_close = 1
+    #__wb_maxi = 2
+    #__wb_mini = 3
+    #__wb_help = 4
+    
     #__window_frame_size     = 4
     #__window_caption_height = 24
     ;     #__window_nogadgets = #__flag_nogadgets
@@ -1033,7 +1031,7 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 547
-; FirstLine = 570
+; CursorPosition = 303
+; FirstLine = 285
 ; Folding = ---
 ; EnableXP

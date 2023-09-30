@@ -10,6 +10,7 @@ Define text.s = "abc" + Chr( 10 ) + "def" + Chr( 10 ) + "ghi" + Chr( 10 ) + "jkl
 
 #WINDOW = 0
 #TEXT_GADGET = 0
+#__Text_Border = #PB_Text_Border
 
 Define *w._S_widget, text_gadget_width = 500
 
@@ -25,7 +26,7 @@ If OpenWindow( #WINDOW, 0, 0, text_gadget_width + 20, 400, "TextGadget", #PB_Win
 	Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP

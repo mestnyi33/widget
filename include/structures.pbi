@@ -16,741 +16,734 @@
 
 ;-
 CompilerIf Not Defined(Structures, #PB_Module)
-  DeclareModule Structures
-    ;-- PROTOTIPEs
-    Prototype DrawFunc(*this)
-    Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
-    
-    ;{ 
-    ;-- STRUCTUREs
-    ;--     POINT
-    Structure _s_POINT
-      y.l
-      x.l
-    EndStructure
-    ;--     SIZE
-    Structure _s_SIZE
-      width.l
-      height.l
-    EndStructure
-    ;--     COORDINATE
-    Structure _s_COORDINATE Extends _s_SIZE
-      y.l
-      x.l
-    EndStructure
-    ;--     STATE
-    Structure _s_STATE
-      create.b
-      repaint.b
+   DeclareModule Structures
+      ;-- PROTOTIPEs
+      Prototype DrawFunc(*this)
+      Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
       
-      ;hide.b          ; panel childrens real hide state
-      disable.b
+      ;{ 
+      ;-- STRUCTUREs
+      ;--     POINT
+      Structure _s_POINT
+         y.l
+         x.l
+      EndStructure
+      ;--     SIZE
+      Structure _s_SIZE
+         width.l
+         height.l
+      EndStructure
+      ;--     COORDINATE
+      Structure _s_COORDINATE Extends _s_SIZE
+         y.l
+         x.l
+      EndStructure
+      ;--     STATE
+      Structure _s_STATE
+         enter.b
+         press.b
+         hide.b
+         focus.b
+         disable.b
+         ;interact.b
+      EndStructure
+      ;--     MODE
+      Structure _s_mode
+         ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+         ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+         ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+         ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
+         ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
+         ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
+         ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+         ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
+         ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+         ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+         ;                        ;                X,Y parameters are ignored.
+         ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+         ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
+         ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
+         ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+         
+         ;inline.b
+         check.b  
+         
+         lines.b
+         buttons.b
+         gridlines.b
+         fullselection.b
+         collapsed.b
+         threestate.b
+      EndStructure
+      ;--     COUNT
+      Structure _s_COUNT
+         index.l
+         type.l;[100]
+         items.l
+         events.l
+         parents.l
+         childrens.l
+      EndStructure
+      Structure _s_ANIMATION
+         Value.i
+         Min.i
+         Max.i
+         Delay.i
+         Enter.i
+         Leave.i
+      EndStructure
+      ;--     OBJECTTYPE
+      Structure _s_OBJECTTYPE
+         *root._s_ROOT
+         *row._s_ROWS
+         *widget._s_WIDGET
+         *button._s_BUTTONS
+      EndStructure
+      ;--     D&D
+      Structure _s_DROP 
+         format.i
+         actions.i
+         private.i
+         
+         *imageID
+         string.s
+         ; files.s
+      EndStructure
+      Structure _s_DRAG Extends _s_DROP
+         y.l
+         x.l
+         width.l
+         height.l
+         *cursor
+         state.b
+      EndStructure
+      ;--     MOUSE
+      Structure _s_MOUSE ; Extends _s_POINT
+         *cursor                    ; current visible cursor
+         
+         y.l[3]
+         x.l[3]
+         
+         click.a                    ; mouse clicked count
+         buttons.l                  ; mouse clicked button
+         change.b                   ; mouse moved state
+         
+         *drag._s_DRAG
+         wheel._s_POINT
+         delta._s_POINT
+         
+         entered._s_OBJECTTYPE      ; mouse entered element
+         pressed._s_OBJECTTYPE      ; mouse button's pushed element
+         leaved._s_OBJECTTYPE       ; mouse leaved element
+         
+         anchors.a
+         *_transform._s_transform
+         interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+      EndStructure
+      ;--     KEYBOARD
+      Structure _s_KEYBOARD ; Ok
+         *window._s_WIDGET  ; active window element ; GetActive( )\
+         focused._s_OBJECTTYPE      ; keyboard focus element
+         change.b
+         input.c
+         key.i[2]
+      EndStructure
+      ;--     COLOR
+      Structure _s_COLOR
+         state.b ; entered; selected; disabled;
+         front.i[4]
+         line.i[4]
+         fore.i[4]
+         back.i[4]
+         frame.i[4]
+         _alpha.a[2]
+         *alpha._s_color
+      EndStructure
       
-      enter.b
-      press.b
-      focus.b
-      check.b
-      drag.b
+      ;--     ALIGN
+      Structure _s_ALIGN Extends _s_COORDINATE
+         left.b
+         top.b
+         right.b
+         bottom.b
+         
+         autodock._s_COORDINATE
+      EndStructure
       
-      ; 
-      ; intermediate
-      ; change.b
-      ; collapse.b
-      ; click.b
-      ; move.b
-      ; size.b
-    EndStructure
-    ;--     MODE
-    Structure _s_mode
-      ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-      ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
-      ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
-      ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
-      ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-      ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
-      ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-      ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-      ;                        ;                X,Y parameters are ignored.
-      ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-      ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
-      ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
-      ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+      ;--     ARROW
+      Structure _s_ARROW
+         size.a
+         type.b
+         direction.b
+      EndStructure
       
-      ;inline.b
-      check.b  
+      ;--     BUTTONS
+      Structure _s_BUTTONS Extends _s_COORDINATE
+         checkstate.b
+         
+         size.l 
+         round.a
+         
+         state._s_state
+         arrow._s_arrow
+         color._s_color[4]
+         
+         interact.b ; temp
+      EndStructure
       
-      lines.b
-      buttons.b
-      gridlines.b
-      fullselection.b
-      collapsed.b
-      threestate.b
-    EndStructure
-    ;--     COUNT
-    Structure _s_COUNT
-      index.l
-      type.l;[100]
-      items.l
-      events.l
-      parents.l
-      childrens.l
-    EndStructure
-    Structure _s_ANIMATION
-       Value.i
-       Min.i
-       Max.i
-       Delay.i
-       Enter.i
-       Leave.i
-    EndStructure
-    ;--     OBJECTTYPE
-    Structure _s_OBJECTTYPE
-      *root._s_ROOT
-      *row._s_ROWS
-      *widget._s_WIDGET
-      *button._s_BUTTONS
-    EndStructure
-    ;--     D&D
-    Structure _s_DROP 
-      format.i
-      actions.i
-      private.i
+      ;--     PAGE
+      Structure _s_PAGE
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
       
-      *imageID
-      string.s
-      ; files.s
-    EndStructure
-    Structure _s_DRAG Extends _s_DROP
-      y.l
-      x.l
-      width.l
-      height.l
-      *cursor
-      state.b
-    EndStructure
-    ;--     MOUSE
-    Structure _s_MOUSE ; Extends _s_POINT
-      *event
-      *cursor                    ; current visible cursor
+      Structure _S_THUMB Extends _s_BUTTONS
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
       
-      y.l[3]
-      x.l[3]
+      ;--     CARET
+      Structure _s_CARET Extends _s_COORDINATE
+         mode.i
+         ;direction.b
+         
+         pos.l[3]
+         time.l
+         
+         change.b
+      EndStructure
       
-      click.a                    ; mouse clicked count
-      buttons.l                  ; mouse clicked button
-      change.b                   ; mouse moved state
+      ;--     edit
+      Structure _s_edit Extends _s_COORDINATE
+         pos.l
+         len.l
+         
+         string.s
+         change.b
+         
+         *color._s_color
+      EndStructure
       
-      *drag._s_DRAG
-      wheel._s_POINT
-      delta._s_POINT
+      ;--     syntax
+      Structure _s_syntax
+         List *word._s_edit( )
+      EndStructure
       
-      entered._s_OBJECTTYPE      ; mouse entered element
-      pressed._s_OBJECTTYPE      ; mouse button's pushed element
-      leaved._s_OBJECTTYPE       ; mouse leaved element
+      ;--     TEXT
+      Structure _s_TEXT Extends _s_edit
+         ;     ;     Char.c
+         *fontID ; .i[2]
+         
+         ;StructureUnion
+         pass.b
+         lower.b
+         upper.b
+         numeric.b
+         ;EndStructureUnion
+         
+         editable.b
+         multiline.b
+         
+         invert.b
+         vertical.b
+         
+         edit._s_edit[4]
+         caret._s_caret
+         syntax._s_syntax
+         
+         ; short._s_edit ; ".."
+         ; short._s_text ; сокращенный текст
+         
+         rotate.f
+         align._s_align
+         padding._s_point
+      EndStructure
       
-      anchors.a
-      *_transform._s_transform
-      interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
-    EndStructure
-    ;--     KEYBOARD
-    Structure _s_KEYBOARD ; Ok
-      *window._s_WIDGET          ; active window element ; GetActive( )\
-      focused._s_OBJECTTYPE      ; keyboard focus element
-      change.b
-      input.c
-      key.i[2]
-    EndStructure
-    ;--     COLOR
-    Structure _s_COLOR
-      state.b ; entered; selected; disabled;
-      front.i[4]
-      line.i[4]
-      fore.i[4]
-      back.i[4]
-      frame.i[4]
-      _alpha.a[2]
-      *alpha._s_color
-    EndStructure
-    
-    ;--     ALIGN
-    Structure _s_ALIGN Extends _s_COORDINATE
-      left.b
-      top.b
-      right.b
-      bottom.b
+      ;--     image
+      Structure _s_image Extends _s_coordinate
+         *id  ; - ImageID( ) 
+         *img ; - Image( )
+         
+         ;;*output;transparent.b
+         change.b
+         depth.a
+         size.w  ; icon small/large
+         
+         ;;rotate.f
+         align._s_align
+         padding._s_point
+         ;       
+         ;       
+         ;       *pressed._s_image
+         ;       *released._s_image
+         ;       *background._s_image
+      EndStructure
       
-      autodock._s_COORDINATE
-    EndStructure
-    
-    ;--     ARROW
-    Structure _s_ARROW
-      size.a
-      type.b
-      direction.b
-    EndStructure
-    
-    ;--     PAGE
-    Structure _s_PAGE
-      pos.l
-      len.l
-      *end
-      change.w
-    EndStructure
-    
-    ;--     CARET
-    Structure _s_CARET Extends _s_COORDINATE
-      mode.i
-      ;direction.b
+      ;--     TRANSFORM
+      Structure _s_a_group Extends _s_coordinate
+         *widget._s_WIDGET
+      EndStructure
+      Structure _s_TRANSFORM
+         *main._s_WIDGET
+         *widget._s_WIDGET
+         *e_widget._s_WIDGET
+         List *group._s_a_group( )
+         
+         *type
+         *grab[2] ; grab image handle
+         
+         ;pos.l
+         ;size.l
+         
+         *grid_image
+         grid_size.l
+         grid_type.l
+         *grid_widget
+         
+         dot_ted.l
+         dot_line.l
+         dot_space.l
+         
+         cursor.i[constants::#__a_count+1]
+         id._s_buttons[constants::#__a_count+1]
+      EndStructure
+      ;--     ANCHORS
+      Structure _s_ANCHORS
+         pos.l
+         size.l
+         
+         index.b
+         transform.b
+         mode.i
+         
+         *id._s_buttons[constants::#__a_moved+1]
+      EndStructure
       
-      pos.l[3]
-      time.l
+      ;;--     margin
+      Structure _s_margin Extends _s_coordinate
+         color._s_color
+         hide.b
+      EndStructure
       
-      change.b
-    EndStructure
-    
-    ;--     edit
-    Structure _s_edit Extends _s_COORDINATE
-      pos.l
-      len.l
+      ;--     TAB
+      Structure _s_TAB
+         *widget._s_WIDGET
+         index.i 
+         change.b
+         
+         ; tab
+         *entered._s_rows 
+         *pressed._s_rows
+         *focused._s_rows 
+      EndStructure
       
-      string.s
-      change.b
+      ;--     TABS
+      Structure _s_TABS Extends _s_coordinate
+         index.l  ; Index of new list element
+         
+         
+         visible.b
+         round.a ; ?- 
+         
+         ;hide.b
+         state._s_state
+         text._s_text
+         image._s_image
+         color._s_color
+         
+         OffsetMove.i
+         OffsetMoveMin.i
+         OffsetMoveMax.i
+         
+      EndStructure
       
-      *color._s_color
-    EndStructure
-    
-    ;--     syntax
-    Structure _s_syntax
-      List *word._s_edit( )
-    EndStructure
-    
-    ;--     TEXT
-    Structure _s_TEXT Extends _s_edit
-      ;     ;     Char.c
-      *fontID ; .i[2]
+      ;--     ROWS
+      Structure _s_ROWS Extends _s_TABS
+         
+         checkbox._s_buttons ; \box[1]\ -> \checkbox\
+         collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
+         
+         childrens.w ; Row( )\ ; rows( )\ ; row\
+         
+         ;button._s_buttons ;temp \box[0]\ -> \button\
+         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
+         
+         *parent._s_rows
+         
+         *first._s_rows           ;TEMP first elemnt in the list 
+         *after._s_rows           ;TEMP first elemnt in the list 
+         *before._s_rows          ;TEMP first elemnt in the list 
+         
+         *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
+         
+         ;parent._s_objecttype
+         
+         *OptionGroupRow._s_rows ; option group row 
+         
+         ; edit
+         margin._s_edit
+         
+         *data  ; set/get item data
+         sublevel.w
+      EndStructure
       
-      ;StructureUnion
-        pass.b
-        lower.b
-        upper.b
-        numeric.b
-        ;EndStructureUnion
-        
-      editable.b
-      multiline.b
+      Structure _s_VISIBLEITEMS
+         *first._s_rows           ; first draw-elemnt in the list 
+         *last._s_rows            ; last draw-elemnt in the list 
+         List *_s._s_rows( )      ; all draw-elements
+      EndStructure
       
-      invert.b
-      vertical.b
+      ;--     ROW
+      Structure _s_ROW
+         index.i
+         
+         column.a
+         sublevelcolumn.a
+         sublevelpos.a
+         sublevelsize.a
+         
+         clickselect.b
+         multiselect.b
+         
+         *focused._s_rows         ; focused item
+         *pressed._s_rows         ; pushed item
+         *entered._s_rows         ; entered item
+         *leaved._s_rows          ; leaved item
+         
+         *first._s_rows           ; first elemnt in the list 
+         *last._s_rows            ; last elemnt in the list 
+         *added._s_rows           ; last added last element
+         
+         visible._s_VISIBLEITEMS
+         
+         margin._s_margin
+         
+         *tt._s_tt
+         
+         ;box._s_buttons          
+         ;List _s._s_rows( )
+         
+      EndStructure
       
-      edit._s_edit[4]
-      caret._s_caret
-      syntax._s_syntax
+      ;--     BAR
+      Structure _s_BAR
+         max.l
+         min.l[3]   ; fixed min[1&2] bar size 
+         fixed.l[3] ; fixed bar[1&2] position (splitter)
+         
+         invert.b
+         vertical.b
+         
+         percent.f
+         direction.l
+         
+         page._s_page
+         area._s_page
+         thumb._s_thumb  
+         
+         *button._s_buttons[3]
+         
+         List *_s._s_tabs( )
+         List *draws._s_tabs( )
+      EndStructure
       
-      ; short._s_edit ; ".."
-      ; short._s_text ; сокращенный текст
+      ;--     SCROLL
+      Structure _s_SCROLL Extends _s_COORDINATE
+         bars.b
+         align._s_align
+         ;padding.b
+         
+         state.b    ; set state status
+         
+         increment.f      ; scrollarea
+         *v._s_WIDGET     ; vertical scrollbar
+         *h._s_WIDGET     ; horizontal scrollbar
+      EndStructure
       
-      rotate.f
-      align._s_align
-      padding._s_point
-    EndStructure
-    
-    ;--     image
-    Structure _s_image Extends _s_coordinate
-      *id  ; - ImageID( ) 
-      *img ; - Image( )
+      ;--     caption
+      Structure _s_caption
+         y.l[5]
+         x.l[5]
+         height.l[5]
+         width.l[5]
+         ; transporent.b
+         
+         text._s_text
+         button._s_buttons[5]
+         color._s_color
+         
+         interact.b
+         hide.b
+         round.b
+         _padding.b
+      EndStructure
       
-      ;;*output;transparent.b
-      change.b
-      depth.a
-      size.w  ; icon small/large
+      ;--     line_
+      Structure _s_line_
+         v._s_coordinate
+         h._s_coordinate
+      EndStructure
       
-      ;;rotate.f
-      align._s_align
-      padding._s_point
+      ;--     tt
+      Structure _s_tt Extends _s_coordinate
+         window.i
+         gadget.i
+         
+         visible.b
+         
+         text._s_text
+         image._s_image
+         color._s_color
+      EndStructure
+      
+      ;--     popup
+      Structure _s_popup
+         gadget.i
+         window.i
+         
+         ; *widget._s_WIDGET
+      EndStructure
+      
+      
+      ;     ;--     items
+      ;     structure _s_items extends _s_coordinate
+      ;       index.l
+      ;       *parent._s_items
+      ;       draw.b
+      ;       hide.b
       ;       
+      ;       image._s_image
+      ;       text._s_text[4]
+      ;       box._s_buttons[2]
+      ;       color._s_color
       ;       
-      ;       *pressed._s_image
-      ;       *released._s_image
-      ;       *background._s_image
-    EndStructure
-    
-    ;--     BUTTONS
-    Structure _s_BUTTONS Extends _s_COORDINATE
-      state._s_state
-      size.l 
+      ;       ;state.b
+      ;       round.a
+      ;       
+      ;       sublevel.w
+      ;       childrens.l
+      ;       sublevelsize.l
+      ;       
+      ;       *data      ; set/get item data
+      ;     Endstructure
+      ;     
       
-      hide.b
-      round.a
-      interact.b
+      ;--     COLUMN
+      Structure _s_COLUMN Extends _s_COORDINATE
+         index.i
+         
+         text._s_TEXT
+         image._s_image
+         
+         List items._s_rows( )
+      EndStructure
       
-      arrow._s_arrow
-      color._s_color[4]
-    EndStructure
-    
-    ;--     TRANSFORM
-    Structure _s_a_group Extends _s_coordinate
-      *widget._s_WIDGET
-    EndStructure
-    Structure _s_TRANSFORM
-      *main._s_WIDGET
-      *widget._s_WIDGET
-      *e_widget._s_WIDGET
-      List *group._s_a_group( )
+      ;--     BOUNDS
+      Structure _s_BOUNDATTACH
+         mode.a
+         *parent._s_WIDGET
+      EndStructure
+      Structure _s_BOUNDMOVE
+         min._s_POINT
+         max._s_POINT
+      EndStructure
+      Structure _s_BOUNDSIZE
+         min._s_SIZE
+         max._s_SIZE
+      EndStructure
+      Structure _s_BOUNDS
+         childrens.b        ; ???
+         *move._s_BOUNDMOVE
+         *size._s_BOUNDSIZE
+         *attach._s_BOUNDATTACH
+      EndStructure
       
-      *type
-      *grab[2] ; grab image handle
+      ;--     EVENT
+      Structure _s_EVENTDATA
+         *widget._s_WIDGET ; eventWidget( )
+         *type             ; eventType( )
+         *item             ; eventItem( )
+         *data             ; eventData( )
+      EndStructure
+      Structure _s_event Extends _s_EVENTDATA
+         *function.EventFunc
+      EndStructure
       
-      ;pos.l
-      ;size.l
+      ;--     WIDGET
+      Structure _s_WIDGET
+         type.b
+         round.a                ; drawing round
+         container.b            ; is container
+         child.b                ; is the widget composite?
+         
+         create.b
+         hide.b
+         hidden.b
+         dragstart.b
+         checkstate.b
+         repaint.b
+         autosize.b
+         
+         change.l
+         resize.i   ; state
+         
+         ;*Draw.DrawFunc        ; Function to Draw
+         _a_._s_ANCHORS
+         caption._s_caption
+         
+         
+         fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
+         bs.a    ; border size
+         
+         *_tt._s_tt          ; notification = уведомление
+         *drop._s_DROP
+         *align._s_ALIGN
+         
+         *bar._s_BAR
+         *row._s_ROW ; multi-text; buttons; lists; - gadgets
+         *_box_._s_BUTTONS ; checkbox; optionbox
+         
+         tab._s_TAB        
+         
+         *GroupWidget._s_WIDGET      ; = Option( ) group widget  
+                                     ; StructureUnion
+                                     ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
+         *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
+         *StringWidget._s_WIDGET     ; = SpinBar( ) string box
+                                     ; EndStructureUnion
+         
+         
+         BarWidth.w ; bar v size
+         BarHeight.w; bar h size 
+         MenuBarHeight.w
+         ToolBarHeight.w
+         StatusBarHeight.w
+         
+         y.l[constants::#__c]
+         x.l[constants::#__c]
+         height.l[constants::#__c]
+         width.l[constants::#__c]
+         ; transporent.b
+         
+         
+         ; placing layout
+         first._s_OBJECTTYPE
+         last._s_OBJECTTYPE
+         after._s_OBJECTTYPE
+         before._s_OBJECTTYPE
+         
+         bounds._s_BOUNDS
+         state._s_STATE
+         scroll._s_SCROLL            ; vertical & horizontal scrollbars
+         
+         
+         text._s_TEXT
+         count._s_COUNT
+         
+         
+         *gadget._s_WIDGET[3] 
+         ; \root\gadget[0] - active gadget
+         ; \gadget[0] - window active child gadget 
+         ; \gadget[1] - splitter( ) first gadget
+         ; \gadget[2] - splitter( ) second gadget
+         
+         *index[4]  
+         ; \index[0] - widget index 
+         ;
+         ; \index[1] - panel opened tab index     - OpenedTabIndex( )
+         ; \index[2] - panel selected item index  - FocusedTabIndex( )
+         ;
+         ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
+         ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
+         ;
+         ; \index[1] - edit entered line index    - EnteredLineIndex( )
+         ; \index[2] - edit focused line index    - FocusedLineIndex( )
+         ; \index[3] - edit pressed line index    - PressedLineIndex( )
+         
+         image._s_image[4]       
+         ; \image[0] - draw image
+         ; \image[1] - released image
+         ; \image[2] - pressed image
+         ; \image[3] - background image
+         
+         flag.q
+         *data
+         *cursor[4]
+         
+         level.l 
+         class.s  
+         
+         
+         *errors
+         notify.l ; оповестить об изменении
+         
+         mode._s_mode            ; drawing mode
+         color._s_color[4]
+         
+         List columns._s_column( )
+         List *events._s_EVENT( )
+         
+         *root._s_ROOT     
+         *window._s_WIDGET
+         *parent._s_WIDGET
+         *address                 ; widget( )\ list address
+      EndStructure
       
-      *grid_image
-      grid_size.l
-      grid_type.l
-      *grid_widget
+      ;--     CANVAS
+      Structure _s_CANVAS
+         *fontID                  ; current drawing fontID
+         *GadgetID                ; canvas handle
+         window.i                 ; canvas window
+         gadget.i                 ; canvas gadget
+         container.i              ; ???
+         repaint.b
+         List *child._s_WIDGET( ) ; widget( )\
+      EndStructure
       
-      dot_ted.l
-      dot_line.l
-      dot_space.l
+      ;--     ROOT
+      Structure _s_ROOT Extends _s_WIDGET
+         canvas._s_canvas
+      EndStructure
       
-      cursor.i[constants::#__a_count+1]
-      id._s_buttons[constants::#__a_count+1]
-    EndStructure
-    ;--     ANCHORS
-    Structure _s_ANCHORS
-      pos.l
-      size.l
+      ;--     STICKY
+      Structure _s_STICKY
+         *window._s_ROOT               ; top level root window element
+         *widget._s_WIDGET             ; popup gadget element
+         *message._s_WIDGET            ; message window element
+         *tooltip._s_WIDGET            ; tool tip element
+      EndStructure
       
-      index.b
-      transform.b
-      mode.i
+      ;--     STRUCT
+      Structure _s_STRUCT
+         repaint.b
+         *drawing                      ; ???
+         *opened._s_WIDGET             ; last-list opened element
+         
+         mouse._s_mouse                ; mouse( )\
+         keyboard._s_keyboard          ; keyboard( )\
+         sticky._s_STICKY              ; sticky( )\
+         
+         event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
+         List *events._s_EVENTDATA( )  ; post events list
+         
+         Map *roots._s_ROOT( )         ; 
+      EndStructure
       
-      *id._s_buttons[constants::#__a_moved+1]
-    EndStructure
-    
-    Structure _S_THUMB Extends _s_BUTTONS
-      pos.l
-      len.l
-      *end
-      change.w
-    EndStructure
-    
-    ;;--     margin
-    Structure _s_margin Extends _s_coordinate
-      color._s_color
-      hide.b
-    EndStructure
-    
-    ;--     TAB
-    Structure _s_TAB
-      *widget._s_WIDGET
-      index.i 
-      change.b
+      ;Global *event._s_events = Allocatestructure(_s_events)
+      ;}
       
-      ; tab
-      *entered._s_rows 
-      *pressed._s_rows
-      *focused._s_rows 
-    EndStructure
-    
-    ;--     TABS
-    Structure _s_TABS Extends _s_coordinate
-      index.l  ; Index of new list element
-      
-      hide.b
-      visible.b
-      round.a ; ?- 
-      
-      state._s_state
-      text._s_text
-      image._s_image
-      color._s_color
-      
-      OffsetMove   .i
-  OffsetMoveMin.i
-  OffsetMoveMax.i
-  
-    EndStructure
-    
-    ;--     ROWS
-    Structure _s_ROWS Extends _s_TABS
-       checkbox._s_buttons ; \box[1]\ -> \checkbox\
-       collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
-      
-       childrens.w ; Row( )\ ; rows( )\ ; row\
-      
-      ;button._s_buttons ;temp \box[0]\ -> \button\
-                        ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
-      
-      *parent._s_rows
-      
-       *first._s_rows           ;TEMP first elemnt in the list 
-       *after._s_rows           ;TEMP first elemnt in the list 
-       *before._s_rows          ;TEMP first elemnt in the list 
-       
-      *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
-      
-      ;parent._s_objecttype
-      
-      *OptionGroupRow._s_rows ; option group row 
-      
-      ; edit
-      margin._s_edit
-      
-      *data  ; set/get item data
-      sublevel.w
-    EndStructure
-    
-    Structure _s_VISIBLEITEMS
-      *first._s_rows           ; first draw-elemnt in the list 
-      *last._s_rows            ; last draw-elemnt in the list 
-      List *_s._s_rows( )      ; all draw-elements
-    EndStructure
-    
-    ;--     ROW
-    Structure _s_ROW
-      index.i
-      
-      column.a
-      sublevelcolumn.a
-      sublevelpos.a
-      sublevelsize.a
-      
-      clickselect.b
-      multiselect.b
-      
-      *focused._s_rows         ; focused item
-      *pressed._s_rows         ; pushed item
-      *entered._s_rows         ; entered item
-      *leaved._s_rows          ; leaved item
-      
-      *first._s_rows           ; first elemnt in the list 
-      *last._s_rows            ; last elemnt in the list 
-      *added._s_rows           ; last added last element
-      
-      visible._s_VISIBLEITEMS
-      
-      margin._s_margin
-      
-      *tt._s_tt
-      
-      ;box._s_buttons          
-      ;List _s._s_rows( )
-      
-    EndStructure
-    
-    ;--     BAR
-    Structure _s_BAR
-      max.l
-      min.l[3]   ; fixed min[1&2] bar size 
-      fixed.l[3] ; fixed bar[1&2] position (splitter)
-      
-      invert.b
-      vertical.b
-      
-      percent.f
-      direction.l
-      
-      page._s_page
-      area._s_page
-      thumb._s_thumb  
-      
-      *button._s_buttons[3]
-      
-      List *_s._s_tabs( )
-      List *draws._s_tabs( )
-    EndStructure
-    
-    ;--     SCROLL
-    Structure _s_SCROLL Extends _s_COORDINATE
-      bars.b
-      align._s_align
-      ;padding.b
-      
-      state.b    ; set state status
-     
-      increment.f      ; scrollarea
-      *v._s_WIDGET     ; vertical scrollbar
-      *h._s_WIDGET     ; horizontal scrollbar
-    EndStructure
-    
-    ;--     caption
-    Structure _s_caption
-      y.l[5]
-      x.l[5]
-      height.l[5]
-      width.l[5]
-      ; transporent.b
-      
-      text._s_text
-      button._s_buttons[4]
-      color._s_color
-      
-      interact.b
-      hide.b
-      round.b
-      _padding.b
-    EndStructure
-    
-    ;--     line_
-    Structure _s_line_
-      v._s_coordinate
-      h._s_coordinate
-    EndStructure
-    
-    ;--     tt
-    Structure _s_tt Extends _s_coordinate
-      window.i
-      gadget.i
-      
-      visible.b
-      
-      text._s_text
-      image._s_image
-      color._s_color
-    EndStructure
-    
-    ;--     popup
-    Structure _s_popup
-      gadget.i
-      window.i
-      
-      ; *widget._s_WIDGET
-    EndStructure
-    
-    
-    ;     ;--     items
-    ;     structure _s_items extends _s_coordinate
-    ;       index.l
-    ;       *parent._s_items
-    ;       draw.b
-    ;       hide.b
-    ;       
-    ;       image._s_image
-    ;       text._s_text[4]
-    ;       box._s_buttons[2]
-    ;       color._s_color
-    ;       
-    ;       ;state.b
-    ;       round.a
-    ;       
-    ;       sublevel.w
-    ;       childrens.l
-    ;       sublevelsize.l
-    ;       
-    ;       *data      ; set/get item data
-    ;     Endstructure
-    ;     
-    
-    ;--     COLUMN
-    Structure _s_COLUMN Extends _s_COORDINATE
-      index.i
-      
-      text._s_TEXT
-      image._s_image
-      
-      List items._s_rows( )
-    EndStructure
-    
-    ;--     BOUNDS
-    Structure _s_BOUNDATTACH
-      mode.a
-      *parent._s_WIDGET
-    EndStructure
-    Structure _s_BOUNDMOVE
-      min._s_POINT
-      max._s_POINT
-    EndStructure
-    Structure _s_BOUNDSIZE
-      min._s_SIZE
-      max._s_SIZE
-    EndStructure
-    Structure _s_BOUNDS
-      childrens.b        ; ???
-      *move._s_BOUNDMOVE
-      *size._s_BOUNDSIZE
-      *attach._s_BOUNDATTACH
-    EndStructure
+   EndDeclareModule 
    
-    ;--     EVENT
-    Structure _s_EVENTDATA
-      *widget._s_WIDGET ; eventWidget( )
-      *type ; eventType( )
-      *item ; eventItem( )
-      *data ; eventData( )
-    EndStructure
-    Structure _s_event Extends _s_EVENTDATA
-      *function.EventFunc
-    EndStructure
-    
-    ;--     WIDGET
-    Structure _s_WIDGET
-      type.b
-      container.b            ; is container
-      round.a                ; drawing round
+   Module Structures 
       
-      ;*Draw.DrawFunc        ; Function to Draw
-      _a_._s_ANCHORS
-      
-      
-      
-      autosize.b
-      fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-      bs.a    ; border size
-      
-      *_tt._s_tt          ; notification = уведомление
-      *drop._s_DROP
-      *align._s_ALIGN
-      
-      *bar._s_BAR
-      *row._s_ROW ; multi-text; buttons; lists; - gadgets
-      *_box_._s_BUTTONS ; checkbox; optionbox
-      
-      tab._s_TAB        
-      
-      *GroupWidget._s_WIDGET      ; = Option( ) group widget  
-                                  ; StructureUnion
-      ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
-      *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
-      *StringWidget._s_WIDGET     ; = SpinBar( ) string box
-                                  ; EndStructureUnion
-      
-      
-      BarWidth.w ; bar v size
-      BarHeight.w; bar h size 
-      MenuBarHeight.w
-      ToolBarHeight.w
-      StatusBarHeight.w
-      
-      y.l[constants::#__c]
-      x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
-      ; transporent.b
-      
-     
-      ; placing layout
-      first._s_OBJECTTYPE
-      last._s_OBJECTTYPE
-      after._s_OBJECTTYPE
-      before._s_OBJECTTYPE
-      
-      bounds._s_BOUNDS
-      state._s_STATE
-      scroll._s_SCROLL            ; vertical & horizontal scrollbars
-      
-      
-      text._s_TEXT
-      count._s_COUNT
-      
-      
-      *gadget._s_WIDGET[3] 
-      ; \root\gadget[0] - active gadget
-      ; \gadget[0] - window active child gadget 
-      ; \gadget[1] - splitter( ) first gadget
-      ; \gadget[2] - splitter( ) second gadget
-      
-      *index[4]  
-      ; \index[0] - widget index 
-      ;
-      ; \index[1] - panel opened tab index     - OpenedTabIndex( )
-      ; \index[2] - panel selected item index  - FocusedTabIndex( )
-      ;
-      ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
-      ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
-      ;
-      ; \index[1] - edit entered line index    - EnteredLineIndex( )
-      ; \index[2] - edit focused line index    - FocusedLineIndex( )
-      ; \index[3] - edit pressed line index    - PressedLineIndex( )
-      
-      image._s_image[4]       
-      ; \image[0] - draw image
-      ; \image[1] - released image
-      ; \image[2] - pressed image
-      ; \image[3] - background image
-      
-      flag.q
-      *data
-      *cursor[4]
-      
-      child.b ; is the widget composite?
-      interact.i 
-      
-      level.l 
-      class.s  
-      change.l
-      hide.b[2] 
-      
-      resize.i   ; state
-      
-      *errors
-      notify.l ; оповестить об изменении
-      
-      mode._s_mode            ; drawing mode
-      caption._s_caption
-      color._s_color[4]
-      
-      List columns._s_column( )
-      List *events._s_EVENT( )
-      
-      *root._s_ROOT     
-      *window._s_WIDGET
-      *parent._s_WIDGET
-      *address                 ; widget( )\ list address
-    EndStructure
-    
-    ;--     CANVAS
-    Structure _s_CANVAS
-      *fontID                  ; current drawing fontID
-      *GadgetID                ; canvas handle
-      window.i                 ; canvas window
-      gadget.i                 ; canvas gadget
-      container.i              ; ???
-      repaint.b
-      List *child._s_WIDGET( ) ; widget( )\
-    EndStructure
-    
-    ;--     ROOT
-    Structure _s_ROOT Extends _s_WIDGET
-      canvas._s_canvas
-    EndStructure
-    
-    ;--     STICKY
-    Structure _s_STICKY
-      *window._s_ROOT               ; top level root window element
-      *widget._s_WIDGET             ; popup gadget element
-      *message._s_WIDGET            ; message window element
-      *tooltip._s_WIDGET            ; tool tip element
-    EndStructure
-    
-    ;--     STRUCT
-    Structure _s_STRUCT
-    	repaint.b
-    	*drawing                      ; ???
-      *opened._s_WIDGET             ; last-list opened element
-       
-      mouse._s_mouse                ; mouse( )\
-      keyboard._s_keyboard          ; keyboard( )\
-      sticky._s_STICKY              ; sticky( )\
-      
-      event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
-      List *events._s_EVENTDATA( )  ; post events list
-      
-      Map *roots._s_ROOT( )         ; 
-    EndStructure
-    
-    ;Global *event._s_events = Allocatestructure(_s_events)
-    ;}
-    
-  EndDeclareModule 
-  
-  Module Structures 
-    
-  EndModule 
+   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 88
-; Folding = -----X0---
+; CursorPosition = 583
+; FirstLine = 575
+; Folding = ----------
 ; EnableXP

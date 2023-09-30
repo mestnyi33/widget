@@ -244,7 +244,5 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 66
 ; Folding = -6-
 ; EnableXP

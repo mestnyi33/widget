@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 UseLib(widget)
 
 Global Window_3, demo
@@ -333,25 +332,25 @@ Procedure AliginsEvent()
           
       EndSelect 
       
-      
+      Protected s3 = 17
       Select Result
-        Case 0  : Resize(Sha, 19,19,21,21)
-        Case 1  : Resize(Sha, 0,19,21,21)
-        Case 3  : Resize(Sha, 19,0,21,21)
-        Case 5  : Resize(Sha, 38-1,19,21,21) 
-        Case 7  : Resize(Sha, 19,38-1,21,21)
+        Case 0  : Resize(Sha, 19,19,s3,s3)
+        Case 1  : Resize(Sha, 0,19,s3,s3)
+        Case 3  : Resize(Sha, 19,0,s3,s3)
+        Case 5  : Resize(Sha, 38-1,19,s3,s3) 
+        Case 7  : Resize(Sha, 19,38-1,s3,s3)
           
         Case 10 : Resize(Sha, 0,0,40,60-2)
         Case 11 : Resize(Sha, 0,0,60-2,40)
         Case 12 : Resize(Sha, 19,0,40,60-2)
         Case 13 : Resize(Sha, 0,19,60-2,40)
-        Case 14 : Resize(Sha, 0,19,60-2,21)
-        Case 15 : Resize(Sha, 19,0,21,60-2)
+        Case 14 : Resize(Sha, 0,19,60-2,s3)
+        Case 15 : Resize(Sha, 19,0,s3,60-2)
           
-        Case 2  : Resize(Sha, 0,0,21,21)
-        Case 4  : Resize(Sha, 38-1,0,21,21)
-        Case 6  : Resize(Sha, 38-1,38-1,21,21)
-        Case 8  : Resize(Sha, 0,38-1,21,21)
+        Case 2  : Resize(Sha, 0,0,s3,s3)
+        Case 4  : Resize(Sha, 38-1,0,s3,s3)
+        Case 6  : Resize(Sha, 38-1,38-1,s3,s3)
+        Case 8  : Resize(Sha, 0,38-1,s3,s3)
         Case 9  : Resize(Sha, 0,0,60-2,60-2)
       EndSelect
       
@@ -431,10 +430,10 @@ Procedure Sha_Events()
   Protected left, right, top, bottom
   
   If EventWidget()\align
-    left = EventWidget()\align\anchor\left
-    top = EventWidget()\align\anchor\top
-    right = EventWidget()\align\anchor\right
-    bottom = EventWidget()\align\anchor\bottom
+    left = EventWidget()\align\left
+    top = EventWidget()\align\top
+    right = EventWidget()\align\right
+    bottom = EventWidget()\align\bottom
   EndIf
   
   Debug ""+left +" "+ right +" "+ top +" "+ bottom
@@ -448,5 +447,7 @@ ShowAlignWindow()
 
 Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 352
+; FirstLine = 334
 ; Folding = -------
 ; EnableXP

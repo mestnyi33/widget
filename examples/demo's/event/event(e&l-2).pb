@@ -1,7 +1,6 @@
 ﻿; #__from_mouse_state = 1
 
-;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+XIncludeFile "../../../widgets3.pbi" 
 Uselib(widget)
 
 Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
@@ -51,5 +50,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 240, 240, "enter&leave demo",
   ;Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
