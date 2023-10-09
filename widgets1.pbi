@@ -1,4 +1,8 @@
-﻿;  ^^
+﻿;    
+
+
+
+;  ^^
 ; (oo)\__________
 ; (__)\          )\/\
 ;      ||------w||
@@ -76,7 +80,7 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
    DeclareModule Widget
-      Global test_scrollbars_resize = 0
+      Global test_scrollbars_resize = 1
       
       EnableExplicit
       UseModule constants
@@ -1578,7 +1582,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       CompilerCase #PB_OS_Windows
       ;         _get_colors_( )\Front         = GetSysColor_(#COLOR_WINDOWTEXT)
       ;         _get_colors_( )\Back          = GetSysColor_(#COLOR_WINDOW)
-      ;         _get_colors_( )\state\focus         = GetSysColor_(#COLOR_HIGHLIGHT)
+      ;         _get_colors_( )\Focus         = GetSysColor_(#COLOR_HIGHLIGHT)
       ;         _get_colors_( )\Gadget        = GetSysColor_(#COLOR_mENU)
       ;         _get_colors_( )\Button        = GetSysColor_(#COLOR_3DLIGHT)
       ;         _get_colors_( )\Border        = GetSysColor_(#COLOR_WINDOWFRAME)
@@ -3258,6 +3262,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If eventtype = #__event_DragStart
+               ;           If a_index( ) = #__a_moved
+               ;             If Keyboard( )\key = #PB_Key_Space
+               ;               Keyboard( )\key             = 0
+               ;               PressedWidget( )\dragstart = #PB_Drag_Copy
+               ;               ProcedureReturn 0
+               ;             Else
+               ;               PressedWidget( )\dragstart = #PB_Drag_Resize
+               ;             EndIf
+               ;           Else
+               ;             If a_index( )
+               ;               PressedWidget( )\dragstart = #PB_Drag_Resize
+               ;             EndIf
+               ;           EndIf
+               
                If a_focused( ) And a_index( ) = #__a_moved And a_anchors([#__a_moved])
                   ; set_cursor_( *this, a_anchors([#__a_moved])\cursor )
                   
@@ -3954,7 +3972,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b Resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-         ;Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
+         ; Debug " resize - "+*this\class +" "+x +" "+ width
          
          
          ;       If *this\resize & #__resize_start = #False
@@ -3997,13 +4015,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;           *this\width[#__c_frame] = #PB_Ignore
             ;           *this\height[#__c_frame] = #PB_Ignore
          ElseIf *this\autosize
-            If *this\parent 
-               If *this <> *this\parent
-                  x      = *this\parent\x[#__c_inner]
-                  Y      = *this\parent\y[#__c_inner]
-                  width  = *this\parent\width[#__c_inner]
-                  height = *this\parent\height[#__c_inner]
-               EndIf
+            If *this\parent And *this <> *this\parent
+               x      = *this\parent\x[#__c_inner]
+               Y      = *this\parent\y[#__c_inner]
+               width  = *this\parent\width[#__c_inner]
+               height = *this\parent\height[#__c_inner]
             EndIf
             
          Else
@@ -4353,7 +4369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\x[#__c_frame]  = x
             *this\x[#__c_inner]  = ix
-            ; *this\x[#__c_screen] = x - ( *this\bs - *this\fs )
+            *this\x[#__c_screen] = x - ( *this\bs - *this\fs )
             If *this\_window( )
                *this\x[#__c_window] = x - *this\_window( )\x[#__c_inner]
             EndIf
@@ -4363,7 +4379,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\y[#__c_frame]  = y
             *this\y[#__c_inner]  = iy
-            ; *this\y[#__c_screen] = y - ( *this\bs - *this\fs )
+            *this\y[#__c_screen] = y - ( *this\bs - *this\fs )
             If *this\_window( )
                *this\y[#__c_window] = y - *this\_window( )\y[#__c_inner]
             EndIf
@@ -4373,7 +4389,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\width[#__c_frame]     = width
             *this\width[#__c_container] = iwidth
-            ; *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
+            *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
             If *this\width[#__c_container] < 0
                *this\width[#__c_container] = 0
             EndIf
@@ -4384,7 +4400,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\height[#__c_frame]     = height
             *this\height[#__c_container] = iheight
-            ; *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
+            *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
             If *this\height[#__c_container] < 0
                *this\height[#__c_container] = 0
             EndIf
@@ -4393,8 +4409,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
-            *this\repaint = #True
             *this\resize | #__resize_change
+            *this\repaint = #True
             update_border( *this )
             
             ;\\
@@ -4430,97 +4446,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug " resize - "+*this\class +" "+*this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
             EndIf
             
-            ;\\
-            If Not ( *this\bar And *this\child )
-               Send( *this, #__event_resize )
-            EndIf
-            
-            ;\\ update parent inner coordinate
-            If *this\bar And 
-               *this\child And
-               *this\parent
-               
-               If *this\bar\page\len
-                  If *this\bar\vertical
-                     If *this\parent\height[#__c_inner] <> *this\bar\page\len
-                        If test_scrollbars_resize
-                           Debug " parent inner height "+ *this\parent\height[#__c_inner] +" "+ *this\bar\page\len
-                        EndIf
-                        *this\parent\height[#__c_inner] = *this\bar\page\len
-                     EndIf
-                  Else
-                     If *this\parent\width[#__c_inner] <> *this\bar\page\len
-                        If test_scrollbars_resize
-                           Debug " parent inner width "+ *this\parent\width[#__c_inner] +" "+ *this\bar\page\len
-                        EndIf
-                        *this\parent\width[#__c_inner] = *this\bar\page\len
-                     EndIf
-                  EndIf
-               EndIf
-               
-            EndIf
-            
+            ; if the integral scroll bars
             ;\\ resize vertical&horizontal scrollbars
-            If *this\scroll And 
-               *this\scroll\v And
-               *this\scroll\h
-               
-               ;\\ 
+            If *this\scroll And *this\scroll\v And *this\scroll\h
+               bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
                If *this\type = #__type_MDI
-                  ;\\
-                  ;If Change_x Or Change_y
-                     Resize( *this\scroll\v, *this\width[#__c_container] - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     Resize( *this\scroll\h, #PB_Ignore, *this\height[#__c_container] - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
-                  ;EndIf
-                  
-                  If Change_width Or Change_height
-                     ;If *this\count\childrens
-                     bar_mdi_update( *this, 0,0,0,0  )
-                     bar_mdi_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-                     ;EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ if the integral scroll bars
-               If *this\type <> #__type_MDI
-                  bar_area_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+                  bar_mdi_update( *this, 0,0,0,0  )
+                  bar_mdi_resize( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
                EndIf
             EndIf
-            
-            ;\\
-            If *this\parent And
-               *this\parent\scroll And
-               *this\parent\scroll\v And
-               *this\parent\scroll\h 
-               
-               ;\\ parent mdi
-               If *this\child And *this\parent\type = #__type_MDI 
-                  If *this\parent\scroll\v <> *this And 
-                     *this\parent\scroll\h <> *this And
-                     *this\parent\scroll\v\bar\PageChange( ) = 0 And
-                     *this\parent\scroll\h\bar\PageChange( ) = 0
-                     
-                     bar_mdi_update( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame]  )
-                     bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
-                  EndIf
-               EndIf
-               
-               
-               ;\\
-               If *this\child And *this\parent\type <> #__type_MDI
-                  If *this\parent\width[#__c_container] = *this\parent\width[#__c_inner] And 
-                     *this\parent\height[#__c_container] = *this\parent\height[#__c_inner]
-                     ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
-                     
-                     If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
-                        *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
-                        
-                        bar_area_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
             
             ;\\ if the integral tab bar
             If *this\TabBox( ) And is_integral_( *this\TabBox( ) )
@@ -4583,6 +4517,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;EndIf
             
+            ;\\ update parent inner coordinate
+            If *this\bar And *this\child And *this\parent
+               If *this\bar\vertical
+                  If *this\bar\page\len
+                     *this\parent\height[#__c_inner] = *this\bar\page\len
+                  EndIf
+               Else
+                  If *this\bar\page\len
+                     *this\parent\width[#__c_inner] = *this\bar\page\len
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ parent mdi
+            If *this\child And
+               *this\parent And
+               *this\parent\type = #__type_MDI 
+               
+               If *this\parent\scroll And
+                  *this\parent\scroll\v And
+                  *this\parent\scroll\h And
+                  *this\parent\scroll\v <> *this And
+                  *this\parent\scroll\h <> *this And
+                  *this\parent\scroll\v\bar\PageChange( ) = 0 And
+                  *this\parent\scroll\h\bar\PageChange( ) = 0
+                  
+                  
+                  bar_mdi_update( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame]  )
+                  bar_mdi_resize( *this\parent, 0, 0, *this\parent\width[#__c_container], *this\parent\height[#__c_container] )
+               EndIf
+            EndIf
+            
             ;\\
             If *this\type = #__type_Spin Or
                *this\type = #__type_TabBar Or
@@ -4592,15 +4558,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\type = #__type_ProgressBar Or
                *this\type = #__type_Splitter
                
-               ; ???
                If ( Change_width Or Change_height )
-                  *this\TabChange( ) = - 1 
+                  *this\TabChange( ) = - 1
                EndIf
                
                ; Debug "-- bar_Update -- "+" "+ *this\class
                bar_Update( *this, Bool( Change_width Or Change_height ) )
             EndIf
-            
             
             ;-\\ childrens resize
             ;\\ then move and size parent resize all childrens
@@ -4742,7 +4706,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\
             If PopupWidget( )
                If *this = PopupWidget( )\parent
@@ -4759,12 +4722,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; ; ;                   *this\height[#__c_screen] )
             ; ; ;         EndIf
             
-            ; 				If *this\_a_\transform Or *this\container
-            ; 					; Post( *this, #__event_Resize )
-            ; 					Post( *this, #__event_resize )
-            ; 				EndIf
-         Else
-            Debug "------ " +*this\class +x+" "+y+" "+width+" "+height
+            If *this\_a_\transform Or *this\container
+               ; Post( *this, #__event_Resize )
+               Post( *this, #__event_resize )
+            EndIf
          EndIf
          
          ;
@@ -5393,10 +5354,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;no &~ entered &~ focused
                   If *this\_tabs( )\visible And
                      *this\_tabs( )\state\enter = #False And
-                     *this\_tabs( )\state\press = #False
+                     *this\_tabs( )\state\press = #False And
+                     *this\_tabs( )\state\focus = #False
                      
                      ;                ( *this\_tabs( )\state\enter = #False Or
                      ;                  *this\_tabs( )\state\press = #True ) And
+                     ;                *this\_tabs( )\state\focus = #False
                      ;
                      bar_item_draw_( *this, *this\_tabs( ), x, y, *SB\round, [0] )
                   EndIf
@@ -5658,118 +5621,117 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *BB2 = *bar\button[2]
          
          With *this
+            If test_scrollbars_resize
+               ;  Debug "  Draw scrolbar " + *this\class +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
+            EndIf
             
-               If test_scrollbars_resize
-                  ; Debug "  Draw scrolbar " + *this\class +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
-               EndIf
-               
-               ;         DrawImage( ImageID( UpImage ), *BB1\x, *BB1\y )
-               ;         DrawImage( ImageID( DownImage ), *BB2\x, *BB2\y )
-               ;         ProcedureReturn
-               
-               If *this\color\_alpha
-                  ; Draw scroll bar background
-                  If *this\color\back <> - 1
-                     drawing_mode_alpha_( #PB_2DDrawing_Default )
-                     If *this\child
-                        If *bar\vertical
-                           draw_box_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\parent\height[#__c_container], *this\color\back )
-                        Else
-                           draw_box_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner] - *this\round / 2, *this\height[#__c_inner], *this\color\back )
-                        EndIf
-                     Else
-                        draw_roundbox_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back )
-                     EndIf
-                  EndIf
-                  
-                  ;
-                  ; background buttons draw
-                  If Not *BB1\state\hide
-                     If *BB1\color\fore <> - 1
-                        drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                        draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
-                     Else
-                        drawing_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_box(*BB1, color\back)
-                     EndIf
-                  EndIf
-                  If Not *BB2\state\hide
-                     If *BB2\color\fore <> - 1
-                        drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                        draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
-                     Else
-                        drawing_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_box(*BB2, color\back)
-                     EndIf
-                  EndIf
-                  
-                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  
-                  If *this\type = #__type_ScrollBar
+            
+            ;         DrawImage( ImageID( UpImage ), *BB1\x, *BB1\y )
+            ;         DrawImage( ImageID( DownImage ), *BB2\x, *BB2\y )
+            ;         ProcedureReturn
+            
+            If *this\color\_alpha
+               ; Draw scroll bar background
+               If *this\color\back <> - 1
+                  drawing_mode_alpha_( #PB_2DDrawing_Default )
+                  If *this\child
                      If *bar\vertical
-                        If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\height[#__c_frame]
-                           Line(*this\x[#__c_frame], *this\y[#__c_frame], 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
-                        Else
-                           Line(*this\x[#__c_frame], *this\y[#__c_frame] + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
-                        EndIf
+                        draw_box_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\parent\height[#__c_container], *this\color\back )
                      Else
-                        If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\width[#__c_frame]
-                           Line(*this\x[#__c_frame], *this\y[#__c_frame], *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
-                        Else
-                           Line(*this\x[#__c_frame] + *BB1\round, *this\y[#__c_frame], *this\width[#__c_frame] - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
-                        EndIf
+                        draw_box_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner] - *this\round / 2, *this\height[#__c_inner], *this\color\back )
                      EndIf
+                  Else
+                     draw_roundbox_(*this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back )
                   EndIf
-                  
-                  ; frame buttons draw
-                  If Not *BB1\state\hide
-                     If *BB1\arrow\size
-                        draw_arrows_( *BB1, Bool(*bar\vertical ))
-                     EndIf
-                     draw_box(*BB1, color\frame)
-                  EndIf
-                  If Not *BB2\state\hide
-                     If *BB2\arrow\size
-                        draw_arrows_( *BB2, Bool(*bar\vertical ) + 2 )
-                     EndIf
-                     draw_box(*BB2, color\frame)
-                  EndIf
-                  
-                  
-                  If *bar\thumb\len And *this\type <> #__type_ProgressBar
-                     ; Draw thumb
-                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_(*bar\vertical, *SB, *SB\color\fore[*SB\color\state], *SB\color\back[*SB\color\state])
-                     
-                     If *SB\arrow\type ;*this\type = #__type_ScrollBar
-                        If *SB\arrow\size
-                           drawing_mode_alpha_( #PB_2DDrawing_Default )
-                           ;                 Arrow(*SB\x + (*SB\width -*SB\arrow\size )/2, *SB\y + (*SB\height -*SB\arrow\size )/2,
-                           ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\color\state]&$FFFFFF |*SB\color\_alpha<<24, *SB\arrow\type )
-                           
-                           draw_arrows_( *SB, *SB\arrow\direction )
-                        EndIf
-                     Else
-                        ; Draw thumb lines
-                        drawing_mode_alpha_( #PB_2DDrawing_Default )
-                        If *bar\vertical
-                           Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                           Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                           Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        Else
-                           Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                           Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                           Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        EndIf
-                     EndIf
-                     
-                     ; Draw thumb frame
-                     drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                     draw_box(*SB, color\frame)
-                  EndIf
-                  
                EndIf
-            
+               
+               ;
+               ; background buttons draw
+               If Not *BB1\state\hide
+                  If *BB1\color\fore <> - 1
+                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
+                     draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
+                  Else
+                     drawing_mode_alpha_( #PB_2DDrawing_Default )
+                     draw_box(*BB1, color\back)
+                  EndIf
+               EndIf
+               If Not *BB2\state\hide
+                  If *BB2\color\fore <> - 1
+                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
+                     draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
+                  Else
+                     drawing_mode_alpha_( #PB_2DDrawing_Default )
+                     draw_box(*BB2, color\back)
+                  EndIf
+               EndIf
+               
+               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+               
+               If *this\type = #__type_ScrollBar
+                  If *bar\vertical
+                     If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\height[#__c_frame]
+                        Line(*this\x[#__c_frame], *this\y[#__c_frame], 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
+                     Else
+                        Line(*this\x[#__c_frame], *this\y[#__c_frame] + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
+                     EndIf
+                  Else
+                     If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\width[#__c_frame]
+                        Line(*this\x[#__c_frame], *this\y[#__c_frame], *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
+                     Else
+                        Line(*this\x[#__c_frame] + *BB1\round, *this\y[#__c_frame], *this\width[#__c_frame] - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ; frame buttons draw
+               If Not *BB1\state\hide
+                  If *BB1\arrow\size
+                     draw_arrows_( *BB1, Bool(*bar\vertical ))
+                  EndIf
+                  draw_box(*BB1, color\frame)
+               EndIf
+               If Not *BB2\state\hide
+                  If *BB2\arrow\size
+                     draw_arrows_( *BB2, Bool(*bar\vertical ) + 2 )
+                  EndIf
+                  draw_box(*BB2, color\frame)
+               EndIf
+               
+               
+               If *bar\thumb\len And *this\type <> #__type_ProgressBar
+                  ; Draw thumb
+                  drawing_mode_alpha_( #PB_2DDrawing_Gradient )
+                  draw_gradient_(*bar\vertical, *SB, *SB\color\fore[*SB\color\state], *SB\color\back[*SB\color\state])
+                  
+                  If *SB\arrow\type ;*this\type = #__type_ScrollBar
+                     If *SB\arrow\size
+                        drawing_mode_alpha_( #PB_2DDrawing_Default )
+                        ;                 Arrow(*SB\x + (*SB\width -*SB\arrow\size )/2, *SB\y + (*SB\height -*SB\arrow\size )/2,
+                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\color\state]&$FFFFFF |*SB\color\_alpha<<24, *SB\arrow\type )
+                        
+                        draw_arrows_( *SB, *SB\arrow\direction )
+                     EndIf
+                  Else
+                     ; Draw thumb lines
+                     drawing_mode_alpha_( #PB_2DDrawing_Default )
+                     If *bar\vertical
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                     Else
+                        Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                     EndIf
+                  EndIf
+                  
+                  ; Draw thumb frame
+                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                  draw_box(*SB, color\frame)
+               EndIf
+               
+            EndIf
          EndWith
       EndProcedure
       
@@ -6321,8 +6283,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro bar_area_create_( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v = Create( _parent_, _parent_\class + "-" + _parent_\index + "-vertical", #__type_ScrollBar, 0, 0, #__scroll_buttonsize, _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
-            _parent_\scroll\h = Create( _parent_, _parent_\class + "-" + _parent_\index + "-horizontal", #__type_ScrollBar, 0, 0, _width_, #__scroll_buttonsize, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * #__scroll_buttonsize, 7, _scroll_step_ )
+            ;         If _parent_\text\invert
+            ;           _parent_\scroll\v = Create( _parent_, _parent_\class + "-" + _parent_\index + "-vertical", #__type_ScrollBar, 0, 0, #__scroll_buttonsize, 0, #Null$, #__flag_child | #__bar_vertical | #__bar_invert, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
+            ;         Else
+            _parent_\scroll\v = Create( _parent_, _parent_\class + "-" + _parent_\index + "-vertical", #__type_ScrollBar, 0, 0, #__scroll_buttonsize, 0, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
+            ;         EndIf
+            _parent_\scroll\h = Create( _parent_, _parent_\class + "-" + _parent_\index + "-horizontal", #__type_ScrollBar, 0, 0, 0, #__scroll_buttonsize, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * #__scroll_buttonsize, 7, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -6359,19 +6325,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Procedure bar_area_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
-         Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
-         ;Protected v1, h1, x1 = *this\x[#__c_container], y1 = *this\y[#__c_container], width1 = *this\width[#__c_container], height1 = *this\height[#__c_container], iwidth, iheight, w, h
+         If ( *this\width = 0 And *this\height = 0)
+            If *this\scroll
+               *this\scroll\v\hide = #True
+               *this\scroll\h\hide = #True
+            EndIf
+            ProcedureReturn 0
+         EndIf
          
          With *this\scroll
-            If Not ( *this\scroll And ( \v Or \h ))
-               ProcedureReturn 0
-            EndIf
-            
-            If ( *this\width = 0 And *this\height = 0)
-               \v\hide = #True
-               \h\hide = #True
-               ProcedureReturn 0
-            EndIf
+            Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, width1 = #PB_Ignore, height1 = #PB_Ignore, iwidth, iheight, w, h
+            ;Protected v1, h1, x1 = *this\x[#__c_container], y1 = *this\y[#__c_container], width1 = *this\width[#__c_container], height1 = *this\height[#__c_container], iwidth, iheight, w, h
+            If Not \v Or Not \h : ProcedureReturn : EndIf
             
             If x = #PB_Ignore
                x = \h\x[#__c_container]
@@ -6435,11 +6400,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If \v\bar\max > \v\bar\page\len
                v1      = 1
-               height = ( \v\bar\page\len + Bool( \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
+               height1 = ( \v\bar\page\len + Bool( \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
                If \v\hide <> #False
                   \v\hide = #False
                   If \h\hide
-                     width = \h\bar\page\len
+                     width1 = \h\bar\page\len
                   EndIf
                EndIf
             Else
@@ -6457,11 +6422,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If \h\bar\max > \h\bar\page\len
                h1     = 1
-               width = ( \h\bar\page\len + Bool( \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
+               width1 = ( \h\bar\page\len + Bool( \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
                If \h\hide <> #False
                   \h\hide = #False
                   If \v\hide
-                     height = \v\bar\page\len
+                     height1 = \v\bar\page\len
                   EndIf
                EndIf
             Else
@@ -6477,34 +6442,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If test_scrollbars_resize
-               Debug "  --- area_resize "+*this\class +" "+ *this\width[#__c_inner] +" "+ *this\height[#__c_inner] +" "+ \v\bar\page\len +" "+ \h\bar\page\len
-               Debug "  {"
+            If v1
+               Resize( \v, x1 , y, #PB_Ignore, height1 )
+            EndIf
+            If h1
+               Resize( \h, x, y1, width1, #PB_Ignore )
             EndIf
             
-            If v1 And (\v\x[#__c_container]<>x1 Or \v\y[#__c_container]<>y Or \v\height[#__c_frame]<>height)
-               Resize( \v, x1 , y, #PB_Ignore, height )
-            EndIf
-            If h1 And (\h\x[#__c_container]<>x Or \h\y[#__c_container]<>y1 Or \h\width[#__c_frame]<>width)
-               Resize( \h, x, y1, width, #PB_Ignore )
-            EndIf
             
             If test_scrollbars_resize
-               Debug "  }"
-            EndIf
-            
-            ;\\ update scrollbars parent inner coordinate
-            If *this\width[#__c_inner] <> \h\bar\page\len
-               *this\width[#__c_inner] = \h\bar\page\len
-            EndIf
-            If *this\height[#__c_inner] <> \v\bar\page\len
-               *this\height[#__c_inner] = \v\bar\page\len
+               Debug "  --- area_resize "+*this\class +" "+ *this\width[#__c_inner] +" "+ *this\height[#__c_inner]
             EndIf
             
             If \v\bar\AreaChange( ) Or
                \h\bar\AreaChange( )
-               
-               ;Debug ""+\v\bar\max +" "+ \v\bar\page\len
+               ;           *this\resize | #__resize_change
+               ; Debug ""+*this\width[#__c_inner]  +" "+ \h\bar\page\len
+               ;          ;\\ update inner coordinate
+               ;         *this\width[#__c_inner]  = \h\bar\page\len
+               ;         *this\height[#__c_inner] = \v\bar\page\len
+               ;          
                ProcedureReturn #True
             EndIf
          EndWith
@@ -6516,13 +6473,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ change vertical scrollbar max
          If *this\scroll\v And *this\scroll\v\bar\max <> *this\scroll_height( ) And
             bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
-            result = 1
+            result = #True
          EndIf
          
          ;\\ change horizontal scrollbar max
          If *this\scroll\h And *this\scroll\h\bar\max <> *this\scroll_width( ) And
             bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
-            result = 1
+            result = #True
          EndIf
          
          If result
@@ -6532,15 +6489,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure bar_mdi_update( *this._S_WIDGET, x.l, y.l, width.l, height.l ) ; Ok
-         *this\scroll_x( )      = x
-         *this\scroll_y( )      = y
-         *this\scroll_width( )  = width
-         *this\scroll_height( ) = height
+      Procedure bar_mdi_update( *this._S_WIDGET, x.l, y.l, width.l, height.l )
+         *this\scroll_x( )      = x;*this\x[#__c_container]
+         *this\scroll_y( )      = y;*this\y[#__c_container]
+         *this\scroll_width( )  = width;*this\width[#__c_frame]
+         *this\scroll_height( ) = height;*this\height[#__c_frame]
          
-         ;\\
          If StartEnumerate( *this )
-            If *this = enumWidget( )\parent
+            If enumWidget( )\parent = *this
                If *this\scroll_x( ) > enumWidget( )\x[#__c_container]
                   *this\scroll_x( ) = enumWidget( )\x[#__c_container]
                EndIf
@@ -6551,9 +6507,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             StopEnumerate( )
          EndIf
          
-         ;\\
          If StartEnumerate( *this )
-            If *this = enumWidget( )\parent
+            If enumWidget( )\parent = *this
                If *this\scroll_width( ) < enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
                   *this\scroll_width( ) = enumWidget( )\x[#__c_container] + enumWidget( )\width[#__c_frame] - *this\scroll_x( )
                EndIf
@@ -6563,18 +6518,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             StopEnumerate( )
          EndIf
-      EndProcedure
-      
-      Procedure  bar_mdi_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
-         Protected sx, sy, round, result
-         Static v_max, h_max
          
+         ; 			If *this\scroll_width( ) < *this\width[#__c_inner]
+         ; 			   *this\scroll_width( ) = *this\width[#__c_inner]
+         ; 			EndIf
+         ; 			If *this\scroll_height( ) < *this\height[#__c_inner]
+         ; 			   *this\scroll_height( ) = *this\height[#__c_inner]
+         ; 			EndIf
+      EndProcedure
+      ; 	
+      Procedure  bar_mdi_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
-               ProcedureReturn 0
+               ProcedureReturn 
             EndIf
             
-            ;\\
+            Static v_max, h_max
+            Protected sx, sy, round, result
+            
+            
+            
             If *this\scroll_y( ) < y
                ; top set state
                \h\bar\page\len = width - \v\width
@@ -6582,13 +6545,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If \h\bar\page\len <> width - Bool( *this\scroll_height( ) > height ) * \v\width
                   \h\bar\page\len = width - Bool( *this\scroll_height( ) > height ) * \v\width
                EndIf
-               
                sy = ( *this\scroll_y( ) - y )
                *this\scroll_height( ) + sy
                *this\scroll_y( ) = y
             EndIf
             
-            ;\\
             If *this\scroll_x( ) < x
                ; left set state
                \v\bar\page\len = height - \h\height
@@ -6596,13 +6557,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If \v\bar\page\len <> height - Bool( *this\scroll_width( ) > width ) * \h\height
                   \v\bar\page\len = height - Bool( *this\scroll_width( ) > width ) * \h\height
                EndIf
-               
                sx = ( *this\scroll_x( ) - x )
                *this\scroll_width( ) + sx
                *this\scroll_x( ) = x
             EndIf
             
-            ;\\
             If *this\scroll_height( ) > \v\bar\page\len - ( *this\scroll_y( ) - y )
                If *this\scroll_height( ) - sy <= Height And *this\scroll_width( ) = \h\bar\page\len - ( *this\scroll_x( ) - x )
                   ;Debug " h - " + Str( *this\scroll_height( ) - sy )
@@ -6624,7 +6583,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\scroll_height( ) = \v\bar\page\len - ( *this\scroll_y( ) - y )
             EndIf
             
-            ;\\
             If *this\scroll_width( ) > \h\bar\page\len - ( *this\scroll_x( ) - x )
                If *this\scroll_width( ) - sx <= width And *this\scroll_height( ) = \v\bar\page\len - ( *this\scroll_y( ) - y )
                   ;Debug "w - " + Str( *this\scroll_height( ) - sx )
@@ -6660,13 +6618,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   \v\bar\Max = *this\scroll_height( )
                   
                   If *this\scroll_y( ) <= y
+                     ;If \v\bar\page\pos <>- ( *this\scroll_y( ) - y )
                      \v\bar\page\pos = - ( *this\scroll_y( ) - y )
+                     
+                     ; Post( \v, #__event_change )
+                     
+                     ;EndIf
                   EndIf
                EndIf
                
                If \v\height <> \v\bar\page\len + round
+                  ; Debug  "v " + \v\bar\page\len
                   Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
-                  *this\scroll\v\hide = Bool( *this\scroll\v\bar\max <= *this\scroll\v\bar\page\len )
+                  \v\hide = Bool( \v\bar\max <= \v\bar\page\len )
+                  ;           \v\height = \v\bar\page\len + round
+                  ;           \v\hide = bar_Update( \v, 2 )
                   result = 1
                EndIf
             EndIf
@@ -6682,9 +6648,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If \h\width <> \h\bar\page\len + round
+                  ; Debug  "h " + \h\bar\page\len
                   Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
-                  *this\scroll\h\hide = Bool( *this\scroll\h\bar\max <= *this\scroll\h\bar\page\len )
-					   result = 1
+                  \h\hide = Bool( \h\bar\max <= \h\bar\page\len )
+                  ;           \h\width = \h\bar\page\len + round
+                  ;           \h\hide = bar_Update( \h, 2 )
+                  result = 1
                EndIf
             EndIf
             
@@ -6695,24 +6664,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If v_max <> \v\bar\Max
                v_max = \v\bar\Max
-               bar_Update( \v )
-               result = 1
+               ;\v\resize | #__resize_change
+               result = bar_Update( \v )
+               ;\v\hide = Bool( Not ( \v\bar\max > \v\bar\page\len ))
             EndIf
             
             ;\\
             If h_max <> \h\bar\Max
                h_max = \h\bar\Max
-               bar_Update( \h )
-               result = 1
-            EndIf
-            
-            
-            ;\\ update scrollbars parent inner coordinate
-            If *this\width[#__c_inner] <> \h\bar\page\len
-               *this\width[#__c_inner] = \h\bar\page\len
-            EndIf
-            If *this\height[#__c_inner] <> \v\bar\page\len
-               *this\height[#__c_inner] = \v\bar\page\len
+               ;\h\resize | #__resize_change
+               result = bar_Update( \h )
+               ;\h\hide = Bool( Not ( \h\bar\max > \h\bar\page\len ))
             EndIf
             
             ;\\
@@ -6720,7 +6682,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                
                ; ;           *this\parent\resize | #__resize_change
-              ; *this\resize | #__resize_change
+               *this\resize | #__resize_change
             EndIf
             ProcedureReturn result
          EndWith
@@ -6728,7 +6690,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure.b bar_Update( *this._S_WIDGET, mode.b = 1 )
-         Protected fixed.l, ScrollPos.f, ThumbPos.i, width, height
+         Protected fixed.l, result.b, ScrollPos.f, ThumbPos.i, width, height
          
          Protected *bar._S_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
@@ -6739,51 +6701,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
          width  = *this\width[#__c_frame]
          height = *this\height[#__c_frame]
          
-         ; 			;\\
-         ; 			If *this\child
-         ; 				If *bar\vertical
-         ; 					If height = 0
-         ; 						height = *this\parent\height[#__c_inner]
-         ; 						;  Debug "hi - "+height
-         ; 						If Not *this\height And *this\parent\scroll\h
-         ; 							*this\height[#__c_frame]     = height
-         ; 							If *this\parent\scroll\v
-         ; 							   *this\height[#__c_frame] - *this\parent\scroll\v\width + Bool( *this\round And *this\parent\scroll\v\round ) * ( *this\parent\scroll\v\width / 4 )
-         ; 							EndIf
-         ; 							*this\height[#__c_container] = height
-         ; 							*this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
-         ; 							If *this\height[#__c_container] < 0
-         ; 								*this\height[#__c_container] = 0
-         ; 							EndIf
-         ; 							*this\height[#__c_inner] = *this\height[#__c_container]
-         ; 						EndIf
-         ; 					EndIf
-         ; 				Else
-         ; 					If width = 0
-         ; 						width = *this\parent\width[#__c_inner]
-         ; 						;  Debug "wi - "+width
-         ; 						If Not *this\width And *this\parent\scroll\v
-         ; 						   *this\width[#__c_frame]     = width 
-         ; 						   If *this\parent\scroll\h
-         ; 						     *this\width[#__c_frame] - *this\parent\scroll\h\height + Bool( *this\round And *this\parent\scroll\h\round ) * ( *this\parent\scroll\h\height / 4 )
-         ; 						   EndIf
-         ; 						   *this\width[#__c_container] = width
-         ; 							*this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
-         ; 							If *this\width[#__c_container] < 0
-         ; 								*this\width[#__c_container] = 0
-         ; 							EndIf
-         ; 							*this\width[#__c_inner] = *this\width[#__c_container]
-         ; 						EndIf
-         ; 					EndIf
-         ; 				EndIf
-         ; 			EndIf
+         ;\\
+         If *this\child
+            If *bar\vertical
+               If height = 0
+                  height = *this\parent\height[#__c_inner]
+                  ;  Debug "hi - "+height
+                  If Not *this\height And *this\parent\scroll\h
+                     *this\height[#__c_frame]     = height - *this\parent\scroll\v\width + Bool( *this\round And *this\parent\scroll\v\round ) * ( *this\parent\scroll\v\width / 4 )
+                     *this\height[#__c_container] = height
+                     *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
+                     If *this\height[#__c_container] < 0
+                        *this\height[#__c_container] = 0
+                     EndIf
+                     *this\height[#__c_inner] = *this\height[#__c_container]
+                  EndIf
+               EndIf
+            Else
+               If width = 0
+                  width = *this\parent\width[#__c_inner]
+                  ;  Debug "wi - "+width
+                  If Not *this\width And *this\parent\scroll\v
+                     *this\width[#__c_frame]     = width - *this\parent\scroll\h\height + Bool( *this\round And *this\parent\scroll\h\round ) * ( *this\parent\scroll\h\height / 4 )
+                     *this\width[#__c_container] = width
+                     *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
+                     If *this\width[#__c_container] < 0
+                        *this\width[#__c_container] = 0
+                     EndIf
+                     *this\width[#__c_inner] = *this\width[#__c_container]
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
          
          ; Debug ""+height +" "+width+" "+ *this\height +" "+ *bar\vertical+" "+ *this\class
          
          ;\\
          If mode > 0
-            *this\resize | #__resize_change ; ???
-            
             ;\\ get area size
             If *bar\vertical
                *bar\area\len = height
@@ -6936,35 +6890,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         
-;          ;\\
-;          If *this\type = #__type_ScrollBar
-;             If *this\parent
-;                If *bar\page\len
-;                   If *bar\vertical
-;                      If *this\parent\height[#__c_inner] <> *bar\page\len
-;                         If test_scrollbars_resize
-;                            Debug " parent inner height "+ *this\parent\height[#__c_inner] +" "+ *bar\page\len +" "+ mode
-;                         EndIf
-;                         If *this\parent\scroll\h
-;                            Resize(*this\parent\scroll\h, #PB_Ignore, *bar\page\len, #PB_Ignore, #PB_Ignore)
-;                         EndIf
-;                         *this\parent\height[#__c_inner] = *bar\page\len
-;                      EndIf
-;                   Else
-;                      If *this\parent\width[#__c_inner] <> *bar\page\len
-;                         If test_scrollbars_resize
-;                            Debug " parent inner width "+ *this\parent\width[#__c_inner] +" "+ *bar\page\len +" "+ mode
-;                         EndIf
-;                         If *this\parent\scroll\v
-;                            Resize(*this\parent\scroll\v, *bar\page\len, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                         EndIf
-;                         *this\parent\width[#__c_inner] = *bar\page\len
-;                      EndIf
-;                   EndIf
-;                EndIf
-;             EndIf
-;          EndIf
          
          ;\\
          If mode < 2
@@ -7197,32 +7122,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *SB\state\disable = #False
                         *SB\state\disable = #True
                         
+                        If *this\child
+                           ;  *this\hide = #True
+                        EndIf
+                        
                         *SB\color\state = #__S_3
                      EndIf
                   Else
                      If *SB\state\disable = #True
                         *SB\state\disable = #False
                         
+                        If *this\child
+                           ;  *this\hide = #False
+                        EndIf
+                        
                         *SB\color\state = #__S_0
                      EndIf
                   EndIf
                EndIf
                
-               ;\\
                If *this\child
-                  *this\hide = Bool(*bar\max <= *bar\page\len)
-                  
-;                   If *this\parent
-;                      If *bar\vertical
-;                         If *this\parent\height[#__c_inner] <> *bar\page\len
-;                            *this\parent\height[#__c_inner] = *bar\page\len
-;                         EndIf
-;                      Else
-;                         If *this\parent\width[#__c_inner] <> *bar\page\len
-;                            *this\parent\width[#__c_inner] = *bar\page\len
-;                         EndIf
-;                      EndIf
-;                   EndIf
+                  If *this\bar\max < *this\bar\page\len
+                     ;Debug ""+*this\bar\max +" "+ *this\bar\page\len
+                     If *this\hide <> #True
+                        *this\hide = #True
+                     EndIf
+                  EndIf
                EndIf
             EndIf
             
@@ -7295,6 +7220,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *SB\x      = *this\x[#__c_frame] + ( *bar\thumb\pos - *bar\area\end )
                EndIf
                ;EndIf
+               
+               
+               result = Bool( *this\resize & #__resize_change )
             EndIf
             
             ;\\
@@ -7544,6 +7472,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
+               
+               result = Bool( *this\resize & #__resize_change )
             EndIf
             
             ;\\
@@ -7711,12 +7641,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If *bar\ThumbChange( ) <> 0
+               If *this\root And *this\root\canvas\gadget = PB(EventGadget)( )
+                  result = *bar\ThumbChange( )
+               EndIf
+               
                *bar\ThumbChange( ) = 0
             EndIf
             
          EndIf
          
-         ProcedureReturn Bool( *this\resize & #__resize_change )
+         ProcedureReturn result
       EndProcedure
       
       Procedure.b bar_Change( *this._S_WIDGET, ScrollPos.l )
@@ -11692,7 +11626,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure Window_Draw( *this._S_WIDGET )
          Protected caption_height = *this\caption\height - *this\fs
-         Protected mouse_interact_state = 1
          
          With *this
             ; чтобы закруглять только у окна с титлебаром
@@ -11706,14 +11639,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; Draw back
-            If *this\color\back[mouse_interact_state * *this\color\state]
+            If *this\color\back[*this\color\state]
                If *this\fs > *this\round / 3 And *this\round
-                  draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\color\back[mouse_interact_state * *this\color\state] )
+                  draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\color\back[*this\color\state] )
                Else
                   If *this\round
-                     draw_roundbox_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+                     draw_roundbox_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
                   Else
-                     draw_roundbox_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+                     draw_roundbox_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], *this\round, *this\round, *this\color\back[*this\color\state] )
                   EndIf
                EndIf
             EndIf
@@ -15718,6 +15651,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Row( *this )\index =- 1
             *this\WidgetChange( ) = 1
             
+            
             ;*this\round = round
             
             *this\TextChange( ) = 1
@@ -15829,6 +15763,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                *SB\size = size
                
+               ;
+               *BB1\interact = #True
+               *BB2\interact = #True
+               *SB\interact  = #True
+               
                *BB1\round = *this\round
                *BB2\round = *this\round
                *SB\round  = *this\round
@@ -15873,6 +15812,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                
+               *BB1\interact = #True
+               *BB2\interact = #True
+               ;*SB\interact = #True
+               
                *this\StringBox( ) = String(0, 0, 0, 0, "0", Flag | #__text_numeric | #__flag_child | #__flag_borderless )
             EndIf
             
@@ -15895,6 +15838,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;             If flag & #PB_Trackbar_Ticks = #PB_Trackbar_Ticks
                ;               *this\flag | #PB_Trackbar_Ticks
                ;             EndIf
+               
+               *BB1\interact = #True
+               *BB2\interact = #True
+               *SB\interact  = #True
                
                *SB\arrow\size = #__arrow_size
                *SB\arrow\type = #__arrow_type
@@ -15942,6 +15889,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *BB1\size = 15
                   *BB2\size = 15
                EndIf
+               
+               *BB1\interact = #True
+               *BB2\interact = #True
+               *SB\interact  = #True
                
                *BB1\round = 7
                *BB2\round = 7
@@ -16004,6 +15955,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\bar\button[1]\state\hide = Bool( *this\splitter_is_gadget_1( ) Or *this\splitter_gadget_1( ) )
                *this\bar\button[2]\state\hide = Bool( *this\splitter_is_gadget_2( ) Or *this\splitter_gadget_2( ) )
                *SB\size                 = #__splitter_buttonsize
+               *SB\interact             = #True
                *SB\round                = 2
                
                ;\\
@@ -16030,8 +15982,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ - Create image
          If *this\type = #__type_Image
             *this\color\back = $FFF9F9F9
-            *param_1 = *this\image\width
-            *param_2 = *this\image\height
          EndIf
          
          ;\\ - Create ComboBox
@@ -16139,54 +16089,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; EndIf
          EndIf
          
-         ;\\ Resize
-         If *this\child
-            If *this\parent
-               If *this\type = #__type_ScrollBar
-                  If *this\bar\vertical
-                     *this\parent\scroll\v = *this
-                     Resize( *this, *this\parent\width[#__c_container]-width, y, width, *this\parent\height[#__c_container]-width+Bool(*this\Round)*(width / 4)  )
-                  Else
-                     *this\parent\scroll\h = *this
-                     Resize( *this, x, *this\parent\height[#__c_container]-height, *this\parent\width[#__c_container]-height+Bool(*this\Round)*(height / 4), height )
-                  EndIf
-               EndIf
-            EndIf
-         Else
-            Resize( *this, x, y, width, height )
-         EndIf
-         
          ;\\ Scroll bars
          If flag & #__flag_noscrollbars = #False
-            If *this\type = #__type_String
+            If *this\type = #__type_Editor Or
+               *this\type = #__type_String Or
+               *this\type = #__type_Tree Or
+               *this\type = #__type_ListView Or
+               *this\type = #__type_ListIcon Or
+               *this\type = #__type_ExplorerList Or
+               *this\type = #__type_Property
                
-               bar_area_create_( *this, 1, 0, 0, *this\width[#__c_inner], *this\height[#__c_inner], 0)
-               
-               *this\scroll\v\hide = 1
-               *this\scroll\h\hide = 1
-               *this\scroll\v\width = 0
-;                *this\scroll\v\bar\button[0]\size = 1
-;                *this\scroll\v\bar\button[1]\size = 1
-;                *this\scroll\v\bar\button[2]\size = 1
-;                *this\scroll\h\bar\button[0]\size = 1
-;                *this\scroll\h\bar\button[1]\size = 1
-;                *this\scroll\h\bar\button[2]\size = 1
-               *this\scroll\h\height = 0
-               
-            ElseIf *this\type = #__type_Editor Or
-                   *this\type = #__type_Tree Or
-                   *this\type = #__type_ListView Or
-                   *this\type = #__type_ListIcon Or
-                   *this\type = #__type_ExplorerList Or
-                   *this\type = #__type_Property
-               
-               bar_area_create_( *this, 1, 0, 0, *this\width[#__c_inner], *this\height[#__c_inner], Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
+               bar_area_create_( *this, 1, 0, 0, 0, 0, Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_Image Or
                    *this\type = #__type_ScrollArea
-               
-                bar_area_create_( *this, 1, *param_1, *param_2, *this\width[#__c_inner], *this\height[#__c_inner] )
+               If *this\type = #__type_Image
+                  bar_area_create_( *this, 1, *this\image\width, *this\image\height, 0, 0 )
+               Else
+                  bar_area_create_( *this, 1, *param_1, *param_2, 0, 0 )
+               EndIf
             EndIf
+         EndIf
+         
+         ;\\ Resize
+         If *this\child
+            
+            If *this\type = #__type_ScrollBar
+               If *this\bar\vertical
+                  *this\width[#__c_frame]     = width
+                  *this\width[#__c_container] = width
+                  *this\width[#__c_screen]    = width + ( *this\bs * 2 - *this\fs * 2 )
+                  If *this\width[#__c_container] < 0
+                     *this\width[#__c_container] = 0
+                  EndIf
+                  *this\width[#__c_inner] = *this\width[#__c_container]
+                  ; Resize( *this, *this\parent\width[#__c_inner]-width, y, width, *this\parent\height[#__c_inner] )
+                  
+               Else
+                  *this\height[#__c_frame]     = height
+                  *this\height[#__c_container] = height
+                  *this\height[#__c_screen]    = height + ( *this\bs * 2 - *this\fs * 2 )
+                  If *this\height[#__c_container] < 0
+                     *this\height[#__c_container] = 0
+                  EndIf
+                  *this\height[#__c_inner] = *this\height[#__c_container]
+                  ; Resize( *this, x, *this\parent\height[#__c_inner]-height, *this\parent\width[#__c_inner], height )
+               EndIf
+            EndIf
+            
+         Else
+            Resize( *this, x, y, width, height )
          EndIf
          
          ;\\
@@ -16288,7 +16240,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_MDI, x, y, width, height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__scroll_buttonsize, 0, 1 )
+         ProcedureReturn Create( OpenedWidget( ), #PB_Compiler_Procedure, #__type_MDI, x, y, width, height, #Null$, flag | #__flag_nogadgets, width, height, 0, #__scroll_buttonsize, 0, 1 )
       EndProcedure
       
       Procedure.i Panel( x.l, y.l, width.l, height.l, flag.q = 0 )
@@ -16817,8 +16769,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_box_( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], $AAE4E4E4 )
          EndIf
          
-         ;\\
+         ; 			;\\
+         ; 			If *this\event And
+         ; 			   *this\event\draw
          Send( *this, #__event_Draw )
+         ; 				      EndIf
       EndProcedure
       
       Procedure.b Draw( *this._S_WIDGET )
@@ -17654,22 +17609,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          *SB  = *this\bar\button
-         If *this\type <> #__type_splitter
-            *BB1 = *this\bar\button[1]
-            *BB2 = *this\bar\button[2]
-         EndIf
-         
+         *BB1 = *this\bar\button[1]
+         *BB2 = *this\bar\button[2]
          
          ;\\ get at-point-button address
-         If *BB1 And *BB1\state\hide = 0 And
+         If *BB1 And *BB1\interact And *BB1\state\hide = 0 And
             is_at_point_( *BB1, mouse( )\x, mouse( )\y )
             
             *EnteredButton = *BB1
-         ElseIf *BB2 And *BB2\state\hide = 0 And
+         ElseIf *BB2 And *BB2\interact And *BB2\state\hide = 0 And
                 is_at_point_( *BB2, mouse( )\x, mouse( )\y )
             
             *EnteredButton = *BB2
-         ElseIf *SB And *SB\state\hide = 0 And
+         ElseIf *SB And *SB\interact And *Sb\state\hide = 0 And
                 is_at_point_( *SB, mouse( )\x, mouse( )\y, )
             
             *EnteredButton = *SB
@@ -18474,9 +18426,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;           If *this\FocusedRow( )
-               ;             ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\focus
-               ;             ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\focus
-               ;             ;             Debug "drop f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\focus
+               ;             ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\state\press +" "+ *this\PressedRow( )\state\enter +" "+ *this\PressedRow( )\state\focus
+               ;             ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\state\press +" "+ *this\EnteredRow( )\state\enter +" "+ *this\EnteredRow( )\state\focus
+               ;             ;             Debug "drop f - "+*this\FocusedRow( ) +" "+ *this\FocusedRow( )\text\string +" "+ *this\FocusedRow( )\state\press +" "+ *this\FocusedRow( )\state\enter +" "+ *this\FocusedRow( )\state\focus
                ;             
                ;             If *this\PressedRow( ) And
                ;                *this\FocusedRow( )\index > *this\PressedRow( )\index
@@ -18492,21 +18444,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Up
                If Mouse( )\buttons & #PB_Canvas_LeftButton
                   ;             If *item
-                  ;               Debug "up * - " + *item + " " + *item\text\string + " " + *item\state\press + " " + *item\state\enter + " " + *item\focus
+                  ;               Debug "up * - " + *item + " " + *item\text\string + " " + *item\state\press + " " + *item\state\enter + " " + *item\state\focus
                   ;             EndIf
                   ;             
                   ;             If *this\EnteredRow( )
-                  ;               Debug "up e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
+                  ;               Debug "up e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
                   ;             EndIf
                   ;             
                   ;             ;\\
                   ;             If *this\PressedRow( )
-                  ;               Debug "up p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
+                  ;               Debug "up p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\state\focus
                   ;             EndIf
                   ;             
                   ;             ;\\
                   ;             If *this\FocusedRow( )
-                  ;               Debug "up f - " + *this\FocusedRow( ) + " " + *this\FocusedRow( )\text\string + " " + *this\FocusedRow( )\state\press + " " + *this\FocusedRow( )\state\enter + " " + *this\FocusedRow( )\focus
+                  ;               Debug "up f - " + *this\FocusedRow( ) + " " + *this\FocusedRow( )\text\string + " " + *this\FocusedRow( )\state\press + " " + *this\FocusedRow( )\state\enter + " " + *this\FocusedRow( )\state\focus
                   ;             EndIf
                   
                   
@@ -18860,6 +18812,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If eventtype = #__event_MouseMove Or 
                      eventtype = #__event_MouseEnter Or 
                      eventtype = #__event_MouseLeave
+                     
+                     If *this\dragstart
+                        If *this\cursor <> *this\cursor[1]
+                           ; *this\cursor = *this\cursor[1]
+                        EndIf
+                     EndIf
                      
                      If *this\state\enter = 2
                         If *this\color\state <> #__s_1
@@ -19656,8 +19614,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure EventResize( )
          Protected canvas = GetWindowData( EventWindow( ))
          
-         ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 ) ; bug 
-                                                                                                                                                                     ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+         Protected x = GadgetX( canvas )
+         Protected y = GadgetY( canvas )
+         
+         ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - x * 2, WindowHeight( EventWindow( )) - y * 2 )
+         ; ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 ) ; bug GadgetX&Y()
+         ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
       EndProcedure
       
       
@@ -19963,7 +19925,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type  = #__type_window
             *this\class = #PB_Compiler_Procedure
             ;       *this\round = round
-            *this\create  = #True
+            *this\create = #True
             
             *this\x[#__c_frame]      = #PB_Ignore
             *this\y[#__c_frame]      = #PB_Ignore
@@ -20298,7 +20260,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             PostCanvasRepaint( *this\parent, #__event_free )
-            ;ClearStructure( *this, _S_WIDGET )
+            
+            ClearStructure(*this, _S_WIDGET)
+            FreeMemory(*this)
          EndIf
          
          ProcedureReturn result
@@ -20653,6 +20617,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
    ;- <<<
 CompilerEndIf
 
+
 ;-
 Macro UseLIB( _name_ )
    UseModule _name_
@@ -20661,30 +20626,7 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
-CompilerIf #PB_Compiler_IsMainFile =99
-   Uselib(widget)
-   
-   Global MDI, MDI_splitter, Splitter
-   
-   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      
-      MDI = MDI(0, 0, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
-      Define *g0 = AddItem(MDI, -1, "form_0")
-      ; 		Button(10,10,80,80,"button_0")
-      ; 		
-      ; 		Define *g1 = AddItem(MDI, -1, "form_1")
-      ; 		Button(10,10,80,80,"button_1")
-      ; 		
-      ; 		Define *g2 = AddItem(MDI, -1, "form_2")
-      ; 		Button(10,10,80,80,"button_2")
-      Resize(*g0, 190,190, #PB_Ignore, #PB_Ignore)
-      
-      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-   EndIf
-   
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile ;=99
    
    EnableExplicit
    UseLIB(widget)
@@ -21130,7 +21072,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 75
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4458
+; FirstLine = 4439
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------0----4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

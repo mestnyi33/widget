@@ -46,6 +46,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
          focus.b
          disable.b
          ;interact.b
+         
+         ; check pressed - галочка нажата
+         ; check push - проверка нажатия
+         ; check create - проверить создание
+         ; check redraw - проверка перерисовки     ; redraw state - состояние перерисовки
+         ; check drag - проверить перетаскивание
+         ; check focus - проверить фокус           ; focus state - состояние фокуса
+         ; check state - проверить состояние
+         ; check change - проверить изменение
+         ; check hided - проверить скрыто
+         ; check hidden -  проверить скрытое        ; state hidden - состояние скрыто
+         ; check disabled - проверка отключена
+         ; check repaint - проверить перекраску
+         ; state enter - состояние входа
       EndStructure
       ;--     MODE
       Structure _s_mode
@@ -743,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 583
-; FirstLine = 575
+; CursorPosition = 56
+; FirstLine = 40
 ; Folding = ----------
 ; EnableXP

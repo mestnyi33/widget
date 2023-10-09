@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets0.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
@@ -373,6 +373,8 @@ CompilerIf #PB_Compiler_IsMainFile
    *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
    *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
    
+   bar_mdi_resize( *this, x, y, width, height)
+            
    Bind(*this\scroll\v, @events_scrolls())
    Bind(*this\scroll\h, @events_scrolls())
    
@@ -387,5 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 84+----0---
+; CursorPosition = 266
+; FirstLine = 66
+; Folding = 8-+----0---
 ; EnableXP

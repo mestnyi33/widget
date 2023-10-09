@@ -135,18 +135,18 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Canvas_AddImage( *mdi, x, y, img, round=0 )
     Protected *this._s_widget
-    Static count
     *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
     *this\class = "image-"+Str(img)
+    *this\round = round
+    Static count
     Select count
       Case 0, 4
         *this\cursor = #PB_Cursor_Hand
       Case 1
         *this\cursor = #PB_Cursor_Cross
     EndSelect
-    *this\round = round
-    *this\fs = 10
     count + 1
+    *this\fs = 10
     ;SetCursor( *this, #PB_Cursor_Hand )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     
@@ -268,5 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 140
+; FirstLine = 129
 ; Folding = --v+
 ; EnableXP

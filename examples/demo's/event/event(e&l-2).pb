@@ -1,6 +1,6 @@
 ﻿; #__from_mouse_state = 1
 
-XIncludeFile "../../../widgets3.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 

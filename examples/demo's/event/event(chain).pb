@@ -1,6 +1,6 @@
 ﻿; #__from_mouse_state = 1
 IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets3.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(getText(*eventWidget)) + ">>")
         
-        If *eventWidget = *button2 And Not *eventWidget\state\drag
+        If *eventWidget = *button2 And Not *eventWidget\dragstart
           widget::Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
           widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseEnter)
           widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseLeave)
@@ -93,8 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 63
-; FirstLine = 55
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP

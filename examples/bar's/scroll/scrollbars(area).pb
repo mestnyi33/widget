@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets3.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
   
   Macro Area_Draw( _this_ )
-    widget::bar_mdi_resize( _this_,
+     widget::bar_mdi_resize( _this_,
                             _this_\scroll\h\x, 
                             _this_\scroll\v\y, 
                             (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
@@ -47,17 +47,24 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
-    _parent_\fs = _frame_size_
-    _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
-    _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
-    widget::bar_area_resize( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
+     ;_parent_\root = OpenedWidget( ) : OpenedWidget( ) = _parent_
+     _parent_\class = "Area"
+     _parent_\fs = _frame_size_
+;      _parent_\x = _x_
+;      _parent_\y = _y_
+;      _parent_\width = _width_
+;      _parent_\height = _height_
+    ; Resize(_parent_, _x_, _y_, _width_, _height_ )
+     
+     _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
+     _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
+    ; widget::bar_area_resize( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
   EndMacro                                                  
   
   Macro Area_Bind( _parent_, _callback_)
     If _callback_
       Bind( _parent_\scroll\v, _callback_ )
       Bind( _parent_\scroll\h, _callback_ )
-      ;Bind( root( ), 0 ) 
     EndIf
   EndMacro                                                  
   
@@ -96,7 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   
   ;-
   Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
-    Protected round
+    ; ProcedureReturn 
+     Protected round
     
     ;Debug Images( )\x
     *this\x[#__c_required] = Images( )\x 
@@ -115,35 +123,41 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     PopListPosition( Images( ) )
     
+    
     StopDrawing( )
     If StartDrawing( CanvasOutput( canvas ) )
-      DrawingMode( #PB_2DDrawing_Default )
-      Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
-      
-      If GetGadgetState(5)
-        UnclipOutput()
-        DrawingMode( #PB_2DDrawing_Outlined )
-        ForEach Images( )
-          round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
-          RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
-        Next
-        ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
-      EndIf
-      
-      DrawingMode( #PB_2DDrawing_AlphaBlend )
-      ForEach Images( )
-        DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
-      Next
-      
-      ;;Debug *this\y[#__c_required]
-      ;       FirstElement(Images( ))
-      ;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
-      
-      Area_Draw( *this )
-      
-      StopDrawing( )
+       ;\\
+       DrawingMode( #PB_2DDrawing_Default )
+       Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
+       
+       ;\\
+       Area_Draw( *this )
+       
+       ;\\
+       If GetGadgetState(5)
+          UnclipOutput()
+          DrawingMode( #PB_2DDrawing_Outlined )
+          ForEach Images( )
+             round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
+             RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
+          Next
+          ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
+       EndIf
+       
+       ;\\
+       DrawingMode( #PB_2DDrawing_AlphaBlend )
+       ForEach Images( )
+          DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
+       Next
+       
+       ;;Debug *this\y[#__c_required]
+       ;       FirstElement(Images( ))
+       ;       Debug ""+Images( )\x +" "+ *this\scroll\h\bar\page\pos
+       
+       
+       StopDrawing( )
     EndIf
-  EndProcedure
+ EndProcedure
   
   Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
     Shared currentItemXOffset.i, currentItemYOffset.i
@@ -301,10 +315,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
   ;
-  CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
-  CheckBoxGadget(3, 10, 30, 80,20, "invert")
-  CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
-  CheckBoxGadget(5, 10, 70, 80,20, "clipoutput") : SetGadgetState(5, 1)
+  CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadgetState(5, 1)
+  CheckBoxGadget(2, 10, 30, 100,20, "vertical bar") : SetGadgetState(2, 1)
+  CheckBoxGadget(3, 30, 50, 80,20, "invert")
+  CheckBoxGadget(4, 30, 70, 80,20, "noButtons")
   
   If CreateImage(0, 200, 80)
     
@@ -363,10 +377,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Select Event
       Case #PB_Event_Gadget
         Select EventGadget()
-          Case 2
-            If GetGadgetState(2)
+           Case 2
+              If GetGadgetState(2)
+                 SetGadgetText(2, "vertical bar")
               SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
             Else
+                 SetGadgetText(2, "horizontal bar")
               SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
             EndIf
             
@@ -399,7 +415,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 117
-; FirstLine = 94
-; Folding = ---------
+; Folding = -+-------
 ; EnableXP

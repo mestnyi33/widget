@@ -672,12 +672,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Procedure.i Bars(*this._S_widget, Size.i, round.i, Both.b)
       With *this     
         \scroll\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #__bar_Vertical, round)
-        \scroll\v\hide = \scroll\v\hide[1]
+        \scroll\v\hide = \scroll\v\hidden
         ;\scroll\v\s = *this
         
         If Both
           \scroll\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, round)
-          \scroll\h\hide = \scroll\h\hide[1]
+          \scroll\h\hide = \scroll\h\hidden
         Else
           \scroll\h._S_widget = AllocateStructure(_S_Bar)
           \scroll\h\hide = 1
@@ -709,10 +709,10 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList()
       
 ;       Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
-      Open(0, 200,10, 600, Height,"", #PB_Canvas_Keyboard|#PB_Canvas_Container, @Canvas_CallBack())
+      Open(0, 200,10, 600, Height,"", #PB_Canvas_Keyboard|#PB_Canvas_Container)
       g_Canvas = GetGadget(Root())
-      BindGadgetEvent(g_Canvas, @Canvas_CallBack())
-      Bind(root(), 0)
+      ;BindGadgetEvent(g_Canvas, @Canvas_CallBack())
+      ;Bind(root(), 0)
   ;OpenGadgetList(g_Canvas)
       
 ;       g_Canvas = CanvasGadget(#PB_Any, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
@@ -915,6 +915,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 711
+; FirstLine = 467
+; Folding = ----f-------
 ; EnableXP

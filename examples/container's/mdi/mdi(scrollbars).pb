@@ -1,6 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi"
-
-
+﻿
 ;  resize - MDI 10 10 160 95
 ;  resize - MDI-0-vertical-v 144 20 16 63
 ;  resize - MDI-0-horizontal-h 20 79 128 16
@@ -37,7 +35,10 @@
 ;    reClip - Window 124 59
 ;   Draw - Window 280 180
 ;   reClip - Window 124 59
-  
+
+XIncludeFile "../../../widgets3.pbi"
+
+
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
@@ -62,10 +63,20 @@ CompilerIf #PB_Compiler_IsMainFile
   ; 
   ; a_init( *mdi )
   
-  Debug ""
   ; add childrens to mdi gadget
   Define *g0 = AddItem(*mdi, -1, "form_0")
-  Define *g1 = AddItem(*mdi, -1, "form_1")
+  ;Define *g1 = AddItem(*mdi, -1, "form_1")
+  
+  
+;   Debug ""
+;   Resize(*mdi,15,15,#PB_Ignore,#PB_Ignore )
+;   Resize(*mdi,25,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+;   Resize(*mdi,#PB_Ignore,35,#PB_Ignore,#PB_Ignore )
+;   Debug ""
+;   Resize(*mdi,#PB_Ignore,#PB_Ignore,150,150 )
+;   Resize(*mdi,#PB_Ignore,#PB_Ignore,250,#PB_Ignore )
+ ; Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,350 )
+  
 ;   
 ;   ; Debug " - test parent - mdi show and size scroll bars - "
 ;   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
@@ -124,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 44
+; CursorPosition = 77
+; FirstLine = 64
 ; Folding = -
 ; EnableXP

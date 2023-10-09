@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets3.pbi"
 
 ; #PB_MDI_Arrange
 ; #PB_MDI_AutoSize
@@ -22,8 +22,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   EnableExplicit
-  Global Event.i, MyCanvas, *spl1,*spl2
+  Global Event.i, MyCanvas, *mdi._s_widget, *spl1,*spl2
   Global x=100,y=100, width=420, height=420 , focus
+  
+  Procedure events()
+     Debug *mdi\scroll\v\bar\page\pos
+  EndProcedure
   
   If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
@@ -49,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *mdi = MDI(x,y,width, height);, #__flag_autosize)
-   a_init( *mdi )
+  *mdi = MDI(x,y,width, height);, #__flag_autosize)
+   a_init( *mdi,1 )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
   Button(10,10,80,80,"button_0")
@@ -70,14 +74,24 @@ CompilerIf #PB_Compiler_IsMainFile
   *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
   *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
   
-  SetState(*spl1, width - 150)
-  SetState(*spl2, height - 150)
+  SetState(*spl1, width); - 150)
+  SetState(*spl2, height); - 150)
   
+;   Redraw(root())
+;   Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
+;   Resize(*g3, #PB_Ignore, -100, #PB_Ignore, #PB_Ignore)
+;   ;Resize(*g3, #PB_Ignore, 100, #PB_Ignore, #PB_Ignore)
+;   Resize(*g1, 30, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;   
+  Bind(#PB_All, @events(), #__event_down)
+  Bind(#PB_All, @events(), #__event_dragstart)
   
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 84
+; FirstLine = 57
 ; Folding = -
 ; EnableXP

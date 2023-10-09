@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets3.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
@@ -102,14 +102,14 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Gadgets_Events()
-      ;     Select Event
-      ;       Case #PB_Event_Gadget
       Select EventGadget()
          Case 2
             If GetGadgetState(2)
-               SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+                  SetGadgetText(2, "vertical bar")
+              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
             Else
-               SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+                SetGadgetText(2, "horizontal bar")
+                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
             
          Case 3
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            ; Canvas_Draw(MyCanvas, Images( ))
+            
             redraw(root())
             
          Case 4
@@ -131,16 +131,13 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            ; Canvas_Draw(MyCanvas, Images( ))
-            ;;redraw(root())
+            
+            redraw(root())
             
          Case 5
-            ; Canvas_Draw(MyCanvas, Images( ))
             redraw(root())
             
       EndSelect
-      ;     EndSelect
-      
    EndProcedure
    
    Define yy = 90
@@ -152,10 +149,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
    ;
-   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
-   CheckBoxGadget(3, 10, 30, 80,20, "invert")
-   CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
-   CheckBoxGadget(5, 10, 70, 80,20, "clipoutput") : SetGadgetState(5, 1)
+   CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadgetState(5, 1)
+   CheckBoxGadget(2, 10, 30, 80,20, "vertical bar") : SetGadgetState(2, 1)
+   CheckBoxGadget(3, 30, 50, 80,20, "invert")
+   CheckBoxGadget(4, 30, 70, 80,20, "noButtons")
    
    If CreateImage(0, 200, 80)
       
@@ -244,5 +241,5 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -6-
+; Folding = ---
 ; EnableXP
