@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets3.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...

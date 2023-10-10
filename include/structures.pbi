@@ -725,6 +725,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     STICKY
       Structure _s_STICKY
+         *root._s_ROOT               ; popup gadget element
          *window._s_ROOT               ; top level root window element
          *widget._s_WIDGET             ; popup gadget element
          *message._s_WIDGET            ; message window element
@@ -757,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 40
+; CursorPosition = 728
+; FirstLine = 723
 ; Folding = ----------
 ; EnableXP

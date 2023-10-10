@@ -160,6 +160,35 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Parent
   
+  Procedure IsContainerOC(Gadget)
+  ; Procedure IsContainer based on procedure IsCanvasContainer by mk-soft: https://www.purebasic.fr/english/viewtopic.php?t=79002
+  Select GadgetType(Gadget)
+    Case #PB_GadgetType_Container, #PB_GadgetType_Panel, #PB_GadgetType_ScrollArea, #PB_GadgetType_Splitter
+      ProcedureReturn #True
+    Case #PB_GadgetType_Canvas
+      CompilerSelect #PB_Compiler_OS
+        CompilerCase #PB_OS_Windows
+          If GetWindowLongPtr_(GadgetID(Gadget), #GWL_STYLE) & #WS_CLIPCHILDREN
+            ProcedureReturn #True
+          EndIf
+        CompilerCase #PB_OS_MacOS
+          Protected sv, count
+          sv    = CocoaMessage(0, GadgetID(Gadget), "subviews")
+          count = CocoaMessage(0, sv, "count")
+          ProcedureReturn count
+        CompilerCase #PB_OS_Linux
+          Protected GList, count
+          GList = gtk_container_get_children_(GadgetID(Gadget))
+          If GList
+            count = g_list_length_(GList)
+            g_list_free_(GList)
+            ProcedureReturn count
+          EndIf
+      CompilerEndSelect
+  EndSelect
+  ProcedureReturn #False
+EndProcedure
+
   Procedure GadgetIDType(  GadgetID )
     If GadgetID
       CompilerSelect #PB_Compiler_OS 
@@ -388,5 +417,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 190
+; FirstLine = 157
 ; Folding = --------
 ; EnableXP

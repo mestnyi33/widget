@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-   a_init( root() )
+   a_init( root(), 0 )
   
   ;Define *Tree = Tree(0,0,0,0,#__flag_autosize)
   ;Define *Tree = Tree(x,y,width, height)
@@ -57,7 +57,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 23
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
