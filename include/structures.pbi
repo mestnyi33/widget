@@ -156,7 +156,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
-         *window._s_WIDGET  ; active window element ; GetActive( )\
+         *window._S_WINDOW  ; active window element ; GetActive( )\
          focused._s_OBJECTTYPE      ; keyboard focus element
          change.b
          input.c
@@ -718,18 +718,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *child._s_WIDGET( ) ; widget( )\
       EndStructure
       
+      ;--     Window
+      Structure _s_WINDOW Extends _s_WIDGET
+         *widget._s_WIDGET
+      EndStructure
+      
       ;--     ROOT
-      Structure _s_ROOT Extends _s_WIDGET
+      Structure _s_ROOT Extends _s_WINDOW
          canvas._s_canvas
       EndStructure
       
       ;--     STICKY
       Structure _s_STICKY
-         *root._s_ROOT               ; popup gadget element
+         *root._s_ROOT                 ; popup gadget root element
          *window._s_ROOT               ; top level root window element
-         *widget._s_WIDGET             ; popup gadget element
          *message._s_WIDGET            ; message window element
          *tooltip._s_WIDGET            ; tool tip element
+         
+         ; temp
+         *widget._s_WIDGET             ; popup gadget element
       EndStructure
       
       ;--     STRUCT
@@ -758,7 +765,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 728
-; FirstLine = 723
-; Folding = ----------
+; CursorPosition = 738
+; FirstLine = 595
+; Folding = --------+-
 ; EnableXP

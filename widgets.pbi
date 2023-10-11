@@ -283,7 +283,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro OpenedWidget( ): widget::*canvas\opened: EndMacro
       
       Macro PopupWindow( ): widget::*canvas\sticky\window: EndMacro
-      Macro PopupWidget( ): widget::*canvas\sticky\widget: EndMacro
+      Macro Popup( ): widget::*canvas\sticky\root: EndMacro
       
       Macro WidgetEvent( ): widget::*canvas\event: EndMacro
       Macro WidgetEventWidget( ): WidgetEvent( )\widget: EndMacro
@@ -1014,7 +1014,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b Hide( *this, State.b = #PB_Default )
       Declare.b Disable( *this, State.b = #PB_Default )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
-      Declare.i Display( *this, *display, x = #PB_Ignore, y = #PB_Ignore )
+      Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       
       Declare.b Update( *this )
       Declare IsChild( *this, *parent )
@@ -4338,7 +4338,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If PopupWidget( )
+         If Popup( ) And Popup( )\widget
             Debug "resize - " + *this\autosize + " " + *this\class + " " + x + " " + y + " " + width + " " + height
          EndIf
          
@@ -4759,9 +4759,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\
-            If PopupWidget( )
-               If *this = PopupWidget( )\parent
-                  Resize( PopupWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            If *this = Popup( )
+               If Popup( )\widget
+                  Resize( Popup( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                EndIf
             EndIf
             
@@ -12052,6 +12052,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure ChangeParent( *this._S_WIDGET, *parent._S_WIDGET )
          ;\\
+         If *this\parent
+            If *this\parent <> *parent
+               *this\parent\count\childrens - 1
+            EndIf
+         EndIf
+         *parent\count\childrens + 1
+         
          *this\parent = *parent
          *this\root   = *parent\root
          
@@ -12087,133 +12094,136 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i Display( *this._S_WIDGET, *display._S_WIDGET, x = #PB_Ignore, y = #PB_Ignore )
+      Procedure CreatePopup( *display._S_WIDGET = 0, flags.q = 0 )
+         Protected window
+         Protected parent 
+         
+         If *display
+            parent = WindowID( *display\root\canvas\window )
+         EndIf
+         
+         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            window = OpenWindow( #PB_Any, 0,0,0,0, "", flags | #PB_Window_BorderLess, parent )
+            If CocoaMessage(0, WindowID(window), "hasShadow") = 0
+               CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
+            EndIf
+            
+            ;\\
+            ; CocoaMessage(0, WindowID(window), "styleMask") ; get
+            ; CocoaMessage(0, WindowID(window), "setStyleMask:", 1<<5) ; borderless box
+            ; CocoaMessage(0, WindowID(window), "setStyleMask:", 1<<6) ; borderless round
+            
+         CompilerElse
+            window = OpenWindow( #PB_Any, 0,0,0,0, "", flags | #PB_Window_BorderLess, parent )
+         CompilerEndIf
+         
+         ProcedureReturn Open( window )
+      EndProcedure
+      
+      Procedure.i DisplayPopup( *this._S_WIDGET, *display._S_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
          Protected display_width
          Protected display_height
          Protected display_mode = 0
          
-         *this\hide ! 1
-         
          ;\\
-         If *display\_box_
-            If *this\hide = 0
-               *display\_box_\arrow\direction = 3
-            Else
-               *display\_box_\arrow\direction = 2
-            EndIf
-         EndIf
-         
-         ;\\
-         If x = #PB_Ignore
-            x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
-         EndIf
-         If y = #PB_Ignore
-            y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
-         EndIf
-         
-         ;\\
-         If *this\hide
-            PopupWidget( ) = #Null
-         Else
-            PopupWidget( ) = *this
+         If *this
+            *this\hide ! 1
             
             ;\\
-            If *this\row
-               If Not ( *this\root And
-                        *this\root\canvas\window <> *display\root\canvas\window )
-                  
-                  Debug "display - update"
-                  ChangeParent( *this, *display )
-                  update_items_( *this )
+            If *display
+               If x = #PB_Ignore
+                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
+               EndIf
+               If y = #PB_Ignore
+                  y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
+               EndIf
+               
+               ;\\ ComboBox
+               If *display\_box_
+                  If *this\hide = 0
+                     *display\_box_\arrow\direction = 3
+                  Else
+                     *display\_box_\arrow\direction = 2
+                  EndIf
                EndIf
             EndIf
             
             ;\\
-            If *this\scroll And *this\scroll\v
-               display_width = *this\scroll\v\width
-            EndIf
-            display_width + *this\scroll_width( )
-            If display_width < *display\width
-               display_width = *display\width
-            EndIf
-            If display_mode
-               x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - display_width / 2
-            EndIf
-            ;\\
-            If *this\row
-               ForEach *this\_rows( )
-                  display_height + *this\_rows( )\height
-                  
-                  If display_mode
-                     If *this\_rows( )\state\focus
-                        y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\_rows( ) ) - *this\_rows( )\height / 2 )
-                     EndIf
-                  EndIf
-                  
-                  If ( ListIndex(*this\_rows( )) + 1 ) >= 10
-                     Break
-                  EndIf
-               Next
-            Else
-               display_height = *this\height
-            EndIf
-         EndIf
-         
-         ;\\
-         If *this\root And *this\root\canvas\window <> *display\root\canvas\window
             If *this\hide
-               Debug "display - hide"
-               
-               HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
+               *this\root\count\childrens = 0 ; ???
+               If Popup( ) 
+                  Debug "display - hide"
+                  Popup( )\widget = #Null
+                  HideWindow( Popup( )\canvas\window, #True, #PB_Window_NoActivate )
+               EndIf
             Else
-               Debug "display - show"
+               If Popup( ) 
+                  Debug "display - show"
+                  HideWindow( Popup( )\canvas\window, #False, #PB_Window_NoActivate )
+               Else
+                  Debug "display - create"
+                  Popup( ) = CreatePopup( *display, #PB_Window_NoActivate )
+               EndIf
+                  
+               ;\\
+               If *this\row
+                  If *this\root = *display\root ; Not ( *this\root And *this\root <> *display\root )
+                     
+                     Debug "display - update"
+                     ;ChangeParent( *this, *display )
+                     update_items_( *this )
+                  EndIf
+               EndIf
                
-               HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
-               PostCanvasRepaint( *this )
-            EndIf
-         Else
-            If Not *this\hide
-               Protected window
-               Protected *root._s_root
-               Debug "display - create"
+               ;\\
+               If *this\scroll And *this\scroll\v
+                  display_width = *this\scroll\v\width
+               EndIf
+               display_width + *this\scroll_width( )
+               If display_width < *display\width
+                  display_width = *display\width
+               EndIf
+               If display_mode
+                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - display_width / 2
+               EndIf
                
+               ;\\
+               If *this\row
+                  ForEach *this\_rows( )
+                     display_height + *this\_rows( )\height
+                     
+                     If display_mode
+                        If *this\_rows( )\state\focus
+                           y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\_rows( ) ) - *this\_rows( )\height / 2 )
+                        EndIf
+                     EndIf
+                     
+                     If ( ListIndex(*this\_rows( )) + 1 ) >= 10
+                        Break
+                     EndIf
+                  Next
+               Else
+                  display_height = *this\height
+               EndIf
+               
+               ;\\
                *this\autosize = #True
+               Popup( )\widget = *this
+               Popup( )\parent = *display
+               ChangeParent( *this, Popup( ) )
+               PostCanvasRepaint( Popup( ) )
                
+               ;\\
+               ; StickyWindow( window, #True )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", #PB_Window_NoActivate | #PB_Window_BorderLess, WindowID( *display\root\canvas\window ) )
-                  ;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
-                  CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
-                  ;             EndIf
-                  ;             ;CocoaMessage(0, WindowID(*root\canvas\window), "borderless:", 1)
-                  ;             ; CocoaMessage(0, WindowID(*root\canvas\window), "styleMask") ; get
-                  ;CocoaMessage(0, WindowID(window), "setStyleMask:", #NSMiniaturizableWindowMask )
-               CompilerElse
-                  window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", #PB_Window_NoActivate | #PB_Window_BorderLess, WindowID( *display\root\canvas\window ) )
+                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
+                  CocoaMessage(0, WindowID(Popup( )\canvas\window), "setLevel:", 3)
+                  ; Debug CocoaMessage(0, WindowID(Popup( )\canvas\window), "level")
                CompilerEndIf
                
-               ; StickyWindow( window, #True )
-               
-               *root            = Open( window )
-               *root\parent = *display
-               ChangeParent( *this, *root )
-               
-               ChangeCurrentRoot( *display\root\canvas\GadgetID )
+               ResizeWindow( Popup( )\canvas\window, x+*display\round, y, display_width-*display\round*2, display_height )
+               ProcedureReturn #True
             EndIf
-         EndIf
-         
-         If Not *this\hide
-            ;\\
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ; var windowLevel: UIWindow.Level { get set }
-               CocoaMessage(0, WindowID(*this\root\canvas\window), "setLevel:", 3) ; stay on top
-                                                                                   ; Debug CocoaMessage(0, WindowID(*this\root\canvas\window), "level")
-            CompilerEndIf
-            
-            ;\\
-            ; Resize( *this, 0, 0, display_width, display_height )
-            ResizeWindow( *this\root\canvas\window, x, y, display_width, display_height )
-            ;  ResizeWindow( *this\root\canvas\window, x+*display\round, y, display_width-*display\round*2, display_height )
-            ProcedureReturn #True
          EndIf
       EndProcedure
       
@@ -12962,11 +12972,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i GetGadget( *this._S_WIDGET = #Null )
+      Procedure.i GetGadget( *this._S_WINDOW = #Null )
          If *this = #Null
             ProcedureReturn Root( )\canvas\gadget ; Returns current root canvas-gadget
          ElseIf is_window_( *this )
-            ProcedureReturn *this\gadget ; Returns active gadget
+            ProcedureReturn *this\widget ; Returns active gadget
          Else
             ProcedureReturn *this\root\canvas\gadget ; Returns canvas-gadget
          EndIf
@@ -13733,50 +13743,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; when we deactivate the window
          ; we will deactivate his last active gadget
-         If GetActive( )\gadget And
-            GetActive( )\gadget\state\focus = #True
-            GetActive( )\gadget\state\focus = #False
-            DoEvents( GetActive( )\gadget, #__event_LostFocus )
+         If GetActive( )\widget And
+            GetActive( )\widget\state\focus = #True
+            GetActive( )\widget\state\focus = #False
+            DoEvents( GetActive( )\widget, #__event_LostFocus )
             
             ; is integral scroll bars
-            If GetActive( )\gadget\scroll
-               If GetActive( )\gadget\scroll\v And
-                  Not GetActive( )\gadget\scroll\v\hide And
-                  GetActive( )\gadget\scroll\v\type
+            If GetActive( )\widget\scroll
+               If GetActive( )\widget\scroll\v And
+                  Not GetActive( )\widget\scroll\v\hide And
+                  GetActive( )\widget\scroll\v\type
                   
-                  If GetActive( )\gadget\scroll\v\state\focus = #True
-                     GetActive( )\gadget\scroll\v\state\focus = #False
-                     DoEvents( GetActive( )\gadget\scroll\v, #__event_LostFocus )
+                  If GetActive( )\widget\scroll\v\state\focus = #True
+                     GetActive( )\widget\scroll\v\state\focus = #False
+                     DoEvents( GetActive( )\widget\scroll\v, #__event_LostFocus )
                   EndIf
                EndIf
-               If GetActive( )\gadget\scroll\h And
-                  Not GetActive( )\gadget\scroll\h\hide And
-                  GetActive( )\gadget\scroll\h\type
+               If GetActive( )\widget\scroll\h And
+                  Not GetActive( )\widget\scroll\h\hide And
+                  GetActive( )\widget\scroll\h\type
                   
-                  If GetActive( )\gadget\scroll\h\state\focus = #True
-                     GetActive( )\gadget\scroll\h\state\focus = #False
-                     DoEvents( GetActive( )\gadget\scroll\h, #__event_LostFocus )
+                  If GetActive( )\widget\scroll\h\state\focus = #True
+                     GetActive( )\widget\scroll\h\state\focus = #False
+                     DoEvents( GetActive( )\widget\scroll\h, #__event_LostFocus )
                   EndIf
                EndIf
             EndIf
             
             ; is integral tab bar
-            If GetActive( )\gadget\TabBox( ) And
-               Not GetActive( )\gadget\TabBox( )\hide And
-               GetActive( )\gadget\TabBox( )\type
+            If GetActive( )\widget\TabBox( ) And
+               Not GetActive( )\widget\TabBox( )\hide And
+               GetActive( )\widget\TabBox( )\type
                
-               If GetActive( )\gadget\TabBox( )\state\focus = #True
-                  GetActive( )\gadget\TabBox( )\state\focus = #False
-                  DoEvents( GetActive( )\gadget\TabBox( ), #__event_LostFocus )
+               If GetActive( )\widget\TabBox( )\state\focus = #True
+                  GetActive( )\widget\TabBox( )\state\focus = #False
+                  DoEvents( GetActive( )\widget\TabBox( ), #__event_LostFocus )
                EndIf
             EndIf
          EndIf
          
          ; 			;// set deactive all parents
          ; 			Protected *active._S_WIDGET
-         ; 			If GetActive( )\gadget And
-         ; 			   GetActive( )\gadget\address
-         ; 				*active = GetActive( )\gadget
+         ; 			If GetActive( )\widget And
+         ; 			   GetActive( )\widget\address
+         ; 				*active = GetActive( )\widget
          ; 			ElseIf GetActive( )\address
          ; 				*active = GetActive( )
          ; 			EndIf
@@ -13808,8 +13818,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If *this = PopupWidget( )
-               Debug " PopupWidget( setActive() ) "
+            If Popup( ) And *this = Popup( )\widget
+               Debug " Popup( setActive() ) "
                ; *this = *this\PopupBox( )
                ProcedureReturn 0
             EndIf
@@ -13817,6 +13827,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; если нужно отключить событие интегрированного гаджета
             If is_integral_( *this )
                *this = *this\parent
+               ; если он тоже встроеный
+               If *this\child
+                  *this = *this\parent
+               EndIf
             EndIf
             
             ;         ; is integral string bar
@@ -13854,11 +13868,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   GetActive( ) = *this
                Else
                   If *this\child
+                     ; Debug *this\class
                      GetActive( )        = *this\parent\_window( )
-                     GetActive( )\gadget = *this\parent
+                     GetActive( )\widget = *this\parent
                   Else
                      GetActive( )        = *this\_window( )
-                     GetActive( )\gadget = *this
+                     GetActive( )\widget = *this
                   EndIf
                EndIf
                
@@ -13876,10 +13891,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetActive( )
                   ; when we activate the window
                   ; we will activate his last gadget that lost focus
-                  If GetActive( )\gadget And
-                     GetActive( )\gadget\state\focus = #False
-                     GetActive( )\gadget\state\focus = #True
-                     DoEvents( GetActive( )\gadget, #__event_Focus )
+                  If GetActive( )\widget And
+                     GetActive( )\widget\state\focus = #False
+                     GetActive( )\widget\state\focus = #True
+                     DoEvents( GetActive( )\widget, #__event_Focus )
                   EndIf
                   
                   ; set window foreground position
@@ -14227,9 +14242,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             ChangeParent( *this, *parent )
-            
-            ;\\
-            *parent\count\childrens + 1
+            ;             ;\\
+            ;             *parent\count\childrens + 1
             If *parent <> *parent\root
                *parent\root\count\childrens + 1
             EndIf
@@ -15376,13 +15390,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; 
          Post( *this, #__event_create )
          
+         ;\\ replace pb flag
+         flag = FromPBFlag( type, flag )
+         
          ;\\
+         *this\create        = #True
          *this\color         = _get_colors_( )
          *this\type          = type
          *this\class         = class
          *this\round         = round
-         *this\create  = #True
+         *this\child = Bool( Flag & #__flag_child = #__flag_child )
          
+         ;\\
          *this\frame_x( )      = #PB_Ignore
          *this\frame_y( )      = #PB_Ignore
          *this\frame_width( )  = #PB_Ignore
@@ -15392,9 +15411,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_String
             *this\color\state = #__s_2
          EndIf
-         
-         ;\\ replace pb flag
-         flag = FromPBFlag( *this\type, flag )
          
          ;\\ Flags
          *this\flag = Flag
@@ -15467,8 +15483,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          *this\bs = *this\fs
          
-         *this\child = Bool( Flag & #__flag_child = #__flag_child )
-         
          ;\\
          If *parent
             ;\\
@@ -15484,9 +15498,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\child
-               *this\parent = *parent
-               *this\root   = *parent\root
-               *this\_window( ) = *parent\_window( )
+               ChangeParent( *this, *parent )
+;                *this\parent = *parent
+;                *this\root   = *parent\root
+;                *this\_window( ) = *parent\_window( )
                ;
                *this\index   = *parent\index
                *this\address = *parent\address
@@ -15978,10 +15993,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            *this\PopupBox( ) = Create( 0, *this\class + "_ListView", #__type_ListView, 0, 0, 0, 0, #Null$, Flag | #__flag_child | #__flag_borderless )
-            ;;*this\PopupBox( ) = ListView(0, 0, width, height, #__flag_child);|#__flag_borderless )
-            
+            *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 0,0,0,0, #Null$, #__flag_child | #__flag_borderless )
             *this\PopupBox( )\hide = 1
+            ;ChangeParent( *this\PopupBox( ), *this )
+               
          EndIf
          
          ;\\ Set Attribute
@@ -16070,8 +16085,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ Resize
          If *this\child
-            If *this\parent
-               If *this\type = #__type_ScrollBar
+           If *this\parent
+             If *this\type = #__type_ScrollBar
                   If *this\bar\vertical
                      *this\parent\scroll\v = *this
                      Resize( *this, *this\parent\width[#__c_container]-width, y, width, *this\parent\height[#__c_container]-width+Bool(*this\Round)*(width / 4)  )
@@ -17051,10 +17066,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\ draw current popup-widget
-            If PopupWidget( ) And PopupWidget( )\root = *this\root
-               Debug "popup - draw " + *this\root\class
-               
-               Draw( PopupWidget( ) )
+            If Popup( ) = *this\root
+               If Popup( )\widget
+                  ;Debug "popup - draw " + *this\root\class
+                  
+                  Draw( Popup( )\widget )
+               EndIf
             EndIf
             
             Drawing( ) = 0
@@ -17068,11 +17085,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this > 0
             If *this And *this\child
-               If *this = PopupWidget( )
-                  *this = *this\root\parent
-                  ;             If eventtype = #__event_Change
-                  ;               Debug *this\class
-                  ;             EndIf
+               If Popup( ) And Popup( )\widget
+                  *this = Popup( )\parent
                EndIf
             EndIf
             
@@ -17151,11 +17165,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Post( *this._S_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          If *this > 0
             If *this And *this\child
-               If *this = PopupWidget( )
-                  *this = *this\root\parent
-                  ;             If eventtype = #__event_Change
-                  ;               Debug *this\class
-                  ;             EndIf
+               If Popup( ) And Popup( )\widget
+                  *this = Popup( )\parent
                EndIf
             EndIf
             
@@ -17236,51 +17247,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected i, Repaint, *widget._S_WIDGET
          
          ;\\ get at point address
-         If *root\count\childrens
-            LastElement( *root\_widgets( ))
-            Repeat
-               ;\\
-               If *root\_widgets( )\address And Not *root\_widgets( )\hide And
-                  *root\_widgets( )\root\canvas\gadget = *root\canvas\gadget And
-                  is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_frame] ) And
-                  is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_draw] )
-                  
-                  ; get alpha
-                  If *root\_widgets( )\_a_\transform = 0 And ( *root\_widgets( )\image[#__image_background]\id And
-                                                               *root\_widgets( )\image[#__image_background]\depth > 31 And
-                                                               is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_inner] ) And
-                                                               StartDrawing( ImageOutput( *root\_widgets( )\image[#__image_background]\img )))
+         If Popup( ) = *root 
+            If Popup( )\widget
+               *widget = Popup( )\widget
+            EndIf
+         Else
+            If *root\count\childrens
+               ; If ListSize( *root\_widgets( ))
+               LastElement( *root\_widgets( ))
+               Repeat
+                  If *root\_widgets( )\address And 
+                     *root\_widgets( )\hide = 0 And
+                     *root\_widgets( )\root = *root And
+                     is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_frame] ) And
+                     is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_draw] )
                      
-                     drawing_mode_( #PB_2DDrawing_AlphaChannel )
-                     If Not Alpha( Point( ( mouse( )\x - *root\_widgets( )\inner_x( ) ) - 1,
-                                          ( mouse( )\y - *root\_widgets( )\inner_y( ) ) - 1 ) )
-                        StopDrawing( )
-                        Continue
-                     Else
-                        StopDrawing( )
+                     ;\\ get alpha
+                     If *root\_widgets( )\_a_\transform = 0 And 
+                        ( *root\_widgets( )\image[#__image_background]\id And
+                          *root\_widgets( )\image[#__image_background]\depth > 31 And
+                          is_at_point_( *root\_widgets( ), mouse_x, mouse_y, [#__c_inner] ) And
+                          StartDrawing( ImageOutput( *root\_widgets( )\image[#__image_background]\img )))
+                        
+                        drawing_mode_( #PB_2DDrawing_AlphaChannel )
+                        If Not Alpha( Point( ( mouse( )\x - *root\_widgets( )\inner_x( ) ) - 1,
+                                             ( mouse( )\y - *root\_widgets( )\inner_y( ) ) - 1 ) )
+                           StopDrawing( )
+                           Continue
+                        Else
+                           StopDrawing( )
+                        EndIf
                      EndIf
+                     
+                     ;\\ если переместили виджет то его исключаем
+                     If *root\_widgets( )\dragstart And
+                        *root\_widgets( )\resize
+                        Continue
+                     EndIf
+                     
+                     *widget = *root\_widgets( )
+                     Break
                   EndIf
-                  
-                  ;\\ если переместили виджет то его исключаем
-                  If *root\_widgets( )\dragstart And *root\_widgets( )\resize ; PressedWidget( ) And PressedWidget( )\dragstart ; a_index( ) = #__a_moved And *root\_widgets( )\dragstart ; = #PB_Drag_Resize
-                     Continue
-                  EndIf
-                  
-                  ;
-                  *widget = *root\_widgets( )
-                  
-                  Break
-               EndIf
-            Until PreviousElement( *root\_widgets( )) = #False
-         EndIf
-         
-         ;\\
-         If PopupWidget( )
-            mouse_x = CanvasMouseX(PopupWidget( )\root\canvas\gadget)
-            mouse_y = CanvasMouseY(PopupWidget( )\root\canvas\gadget)
-            If is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_at_point_( PopupWidget( ), mouse_x, mouse_y, [#__c_draw] )
-               *widget = PopupWidget( )
+               Until PreviousElement( *root\_widgets( )) = #False
+               ;EndIf
             EndIf
          EndIf
          
@@ -18728,7 +18737,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If eventtype = #__event_Down
                      If mouse( )\buttons & #PB_Canvas_LeftButton
                         If *this\PopupBox( )
-                           Display( *this\PopupBox( ), *this )
+                           DisplayPopup( *this\PopupBox( ), *this )
                         EndIf
                      EndIf
                   EndIf
@@ -18851,27 +18860,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndSelect
             
             ;\\
-            If PopupWidget( )
-               If PopupWidget( ) = *this
-                  If eventtype = #__event_LeftClick
-                     ;\\ ComboBox( )
-                     If *this\root\parent
-                        SetText( *this\root\parent, GetItemText( PopupWidget( ), GetState( PopupWidget( ) ) ) )
-                        ; PostCanvasRepaint( *this\root\parent )
-                        
-                        If IsWindow( GetWindow( GetRoot( PopupWidget( ) ) ) )
-                           Display( PopupWidget( ), *this\root\parent )
-                           SetActiveWindow( GetWindow( GetRoot( *this\root\parent ) ) )
+            If Popup( )
+               If Popup( )\widget
+                  If Popup( )\widget = *this
+                     If eventtype = #__event_up
+                        ;\\ ComboBox( )
+                        If *this\root\parent
+                           SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
+                           
+                           If IsWindow( GetWindow( *this\root ) )
+                              DisplayPopup( *this, *this\root\parent )
+                              SetActiveWindow( GetWindow( GetRoot( *this\root\parent ) ) )
+                           EndIf
                         EndIf
                      EndIf
-                  EndIf
-               Else
-                  ;\\ hide popup widget
-                  If eventtype = #__event_Down
-                     If PopupWidget( ) <> *this\parent And
-                        ( *this\PopupBox( ) And PopupWidget( ) = *this\PopupBox( ) ) = 0
-                        Display( PopupWidget( ), *this )
-                        PopupWidget( ) = #Null
+                  Else
+                     ;\\ hide popup widget
+                     If eventtype = #__event_Down
+                        If Not ( *this\PopupBox( ) And 
+                                 *this\PopupBox( ) = Popup( )\widget )
+                           
+                           ;\\ 
+                           If Not is_integral_( *this )
+                              DisplayPopup( Popup( )\widget, *this )
+                           EndIf
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -19003,16 +19016,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ send-widget-events
          If *this\root And 
             *this\state\disable = 0
-            If PressedWidget( ) And 
-               PressedWidget( )\root <> Root( )
-               mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
-               mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
-            EndIf
+            ;             If PressedWidget( ) And 
+            ;                PressedWidget( )\root <> Root( )
+            ;                mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
+            ;                mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
+            ;             EndIf
             If eventtype = #__event_Change
                Post( *this, eventtype, *button, *data )
             Else
                Send( *this, eventtype, *button, *data )
             EndIf
+            ;             If PressedWidget( ) And 
+            ;                PressedWidget( )\root <> Root( )
+            ;                mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
+            ;                mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
+            ;             EndIf
          EndIf
          
          ;\\ enabled mouse behavior
@@ -19486,8 +19504,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If PressedWidget( )\resize <> 0
                      PressedWidget( )\resize = 0
                      PressedWidget( )\dragstart = 0
-                     mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
-                     mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
+                     ;                      mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
+                     ;                      mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
                      GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
                      PressedWidget( )\dragstart = #PB_Drag_Finish
                   EndIf
@@ -19704,46 +19722,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure OpenPopup( *this._S_WIDGET, x, y, width, height, flag = 0 , *parent = #PB_Any )
-         Protected root
-         Protected window
-         Protected parent
-         
-         If IsWindow( *parent )
-            parent = *parent
-         EndIf
-         
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            If flag & #PB_Window_BorderLess
-               CompilerSelect #PB_Compiler_OS
-                  CompilerCase #PB_OS_MacOS
-                     window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", 0, parent )
-                     ;             If CocoaMessage(0, WindowID(window), "hasShadow") = 0
-                     ;               CocoaMessage(0, WindowID(window), "setHasShadow:", 1)
-                     ;             EndIf
-                     ; CocoaMessage(0, WindowID(window), "styleMask") ; get
-                     
-                     CocoaMessage(0, WindowID(window), "setStyleMask:", 1 << 5)
-                     ; CocoaMessage(0, WindowID(window), "setStyleMask:", 1<<6)
-                     ; CocoaMessage(0, WindowID(0), "setStyleMask:", 1<<3|1<<6)
-                     
-                  CompilerDefault
-                     window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", flag, parent )
-               CompilerEndSelect
-            Else
-               window = OpenWindow( #PB_Any, 0, 0, 0, 0, "", flag, parent )
-            EndIf
-            
-            ResizeWindow( window, x, y, width, height )
-         CompilerElse
-            window = OpenWindow( #PB_Any, x, y, width, height, "", #PB_Window_BorderLess | flag, parent )
-         CompilerEndIf
-         
-         root = Open( window )
-         
-         ProcedureReturn root
-      EndProcedure
-      
       Procedure Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
          Protected w, g, UseGadgetList, result
          
@@ -19899,13 +19877,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent._S_WIDGET = 0 )
          ;Protected *this.allocate( Widget )
-         Protected *root._s_root = OpenedWidget( )\root
+         If OpenedWidget( )
+            Protected *root._s_root = OpenedWidget( )\root
+         EndIf
          Protected MapSize = MapSize( root( ) )
          
          With *this
             Static pos_x.l, pos_y.l
             
-            Protected *this._S_WIDGET
+            Protected *this._S_WINDOW
             If MapSize And
                Not ListSize( EnumWidget( ) ) And
                Flag & #__flag_autosize = #__flag_autosize
@@ -19917,7 +19897,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *root\autosize = #True
                *this          = *root
             Else
-               *this.allocate( Widget )
+               *this.allocate( WINDOW )
+            EndIf
+            
+            If x = #PB_Ignore : If a_transform( ) : x = pos_x + a_transform( )\grid_size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
+            If y = #PB_Ignore : If a_transform( ) : y = pos_y + a_transform( )\grid_size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
+            
+            ; open root list
+            If Not MapSize
+               *this = CreatePopup( *parent )
+               ;SetWindowTitle( *this\root\canvas\window, Text )
+               ResizeWindow( *this\root\canvas\window, x, y, width + *this\fs * 2, height + *this\fs * 2 + *this\barHeight )
+               x = 0
+               y = 0
+               ;EndIf
             EndIf
             
             ; 
@@ -20005,16 +19998,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             *this\bs = *this\fs
             
-            If x = #PB_Ignore : If a_transform( ) : x = pos_x + a_transform( )\grid_size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
-            If y = #PB_Ignore : If a_transform( ) : y = pos_y + a_transform( )\grid_size : Else : y = pos_y : EndIf : EndIf : pos_y = y + #__window_frame_size + #__window_caption_height
-            
-            ; open root list
-            If Not MapSize
-               If OpenPopup( *this, x, y, width + *this\fs * 2, height + *this\fs * 2 + *this\barHeight, Flag, *parent )
-                  x = 0
-                  y = 0
-               EndIf
-            EndIf
             
             ;
             If *parent
@@ -21095,7 +21078,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21095
-; FirstLine = 21061
+; CursorPosition = 21078
+; FirstLine = 21044
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
