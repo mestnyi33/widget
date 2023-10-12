@@ -589,6 +589,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
+         ; widgets4.pbi
+         redraw.b
+         *redrawimage
+         ;
+         
          type.b
          round.a                ; drawing round
          container.b            ; is container
@@ -731,11 +736,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     STICKY
       Structure _s_STICKY
          *root._s_ROOT                 ; popup gadget root element
-         *window._s_ROOT               ; top level root window element
          *message._s_WIDGET            ; message window element
          *tooltip._s_WIDGET            ; tool tip element
          
          ; temp
+         *window._s_ROOT               ; top level root window element
          *widget._s_WIDGET             ; popup gadget element
       EndStructure
       
@@ -765,7 +770,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 738
-; FirstLine = 595
-; Folding = --------+-
+; CursorPosition = 591
+; FirstLine = 589
+; Folding = ----------
 ; EnableXP

@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -8,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global *w, *w1, *w2
   
-  If Open(OpenWindow(#PB_Any, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)) ;: bind(-1,-1)
+  If Open(0, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)
     
     *w = Window(100, 100, 180, 130, "openlist1", #__Window_SystemMenu)
     Button( 50, 95, 80,20,"button1")
@@ -31,5 +30,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 9
 ; Folding = -
 ; EnableXP

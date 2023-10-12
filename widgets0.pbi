@@ -210,7 +210,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		Macro enumWidget( ): Root( )\_widgets( ): EndMacro       ; temp
 		Macro Widget( ): Root( )\_widgets( ): EndMacro				; Returns last created widget
 		
-		Macro PB( _pb_function_name_ ): _pb_function_name_: EndMacro
+		;Macro PB( _pb_function_name_ ): _pb_function_name_: EndMacro
 		Macro Mouse( ): widget::*canvas\mouse: EndMacro
 		Macro Keyboard( ): widget::*canvas\keyboard: EndMacro
 		Macro Drawing( ): widget::*canvas\drawing : EndMacro
@@ -8551,9 +8551,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 								Continue
 							EndIf
 							
-							If Not Minus And Input = ' - ' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> " - "
+							If Not Minus And Input = '-' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> "-"
 								Minus = 1
-							ElseIf Input <> ' - '
+							ElseIf Input <> '-'
 								Minus = 0
 							Else
 								Continue
@@ -17631,7 +17631,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 				
 				*EnteredButton = *BB2
 			ElseIf *SB And *SB\interact And *SB\state\hide = 0 And
-			       is_at_point_( *SB, mouse( )\x, mouse( )\y, )
+			       is_at_point_( *SB, mouse( )\x, mouse( )\y )
 				
 				*EnteredButton = *SB
 			EndIf
@@ -21082,7 +21082,7 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3184
-; FirstLine = 3170
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---
+; CursorPosition = 91
+; FirstLine = 78
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

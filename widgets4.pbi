@@ -358,7 +358,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro scroll_inner_width( ): width[#__c_inner]: EndMacro
       Macro scroll_inner_height( ): height[#__c_inner]: EndMacro
       ;-
-      Macro StartEnumerate( _parent_, _item_ = #PB_All )
+      Macro StartEnumerate( _parent_ )
          Bool( _parent_\count\childrens )
          
          ;       PushMapPosition( Root( ) )
@@ -371,24 +371,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ResetList( enumWidget( ))
          EndIf
          
-         ;\\ 
-         If _item_ > 0                    
-            While NextElement( enumWidget( )) 
-               If _item_ = enumWidget( )\TabIndex( )
-                  PreviousElement( enumWidget( ))
-                  Break
-               EndIf
-            Wend
-         EndIf
-         
-         ;\\
-         While NextElement( enumWidget( )) 
+         While NextElement( enumWidget( ))
             If IsChild( enumWidget( ), _parent_ ) ; Not ( _parent_\after\widget And _parent_\after\widget = enumWidget( )) ;
-               If _item_ >= 0 
-                  If _item_ + 1 = enumWidget( )\TabIndex( )
-                    Break
-                  EndIf
-               EndIf
             EndMacro
             
             Macro AbortEnumerate( )
@@ -12261,7 +12245,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   result = 0
                   Break
                EndIf
-            Until *this = *this\root  
+            Until *this = *this\root  ; is_root_( *this )
+                                      ; Until ( *this And *this = *this\root ) = #Null
          EndIf
          
          ProcedureReturn result
@@ -16815,18 +16800,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\ limit drawing boundaries
                   If Not *this\root\autosize
-;                      If EnteredWidget( ) And Not EnteredWidget( )\child And EnteredWidget( )\state\enter
-;                         If (EnteredWidget( )\x[#__c_frame] + EnteredWidget( )\width[#__c_frame] < *this\x[#__c_frame] + *this\width[#__c_frame] Or
-;                             EnteredWidget( )\y[#__c_frame] + EnteredWidget( )\height[#__c_frame] < *this\y[#__c_frame] + *this\height[#__c_frame] ) And
-;                            (EnteredWidget( )\x[#__c_draw] + EnteredWidget( )\width[#__c_draw] < *this\x[#__c_draw] + *this\width[#__c_draw] Or
-;                             EnteredWidget( )\y[#__c_draw] + EnteredWidget( )\height[#__c_draw] < *this\y[#__c_draw] + *this\height[#__c_draw])
-;                            Clip( EnteredWidget( ), [#__c_draw] )
-;                         Else
-;                            Clip( *this, [#__c_draw] )
-;                         EndIf
-;                      Else
+                     If EnteredWidget( ) And Not EnteredWidget( )\child And EnteredWidget( )\state\enter
+                        If (EnteredWidget( )\x[#__c_frame] + EnteredWidget( )\width[#__c_frame] < *this\x[#__c_frame] + *this\width[#__c_frame] Or
+                            EnteredWidget( )\y[#__c_frame] + EnteredWidget( )\height[#__c_frame] < *this\y[#__c_frame] + *this\height[#__c_frame] ) And
+                           (EnteredWidget( )\x[#__c_draw] + EnteredWidget( )\width[#__c_draw] < *this\x[#__c_draw] + *this\width[#__c_draw] Or
+                            EnteredWidget( )\y[#__c_draw] + EnteredWidget( )\height[#__c_draw] < *this\y[#__c_draw] + *this\height[#__c_draw])
+                           Clip( EnteredWidget( ), [#__c_draw] )
+                        Else
+                           Clip( *this, [#__c_draw] )
+                        EndIf
+                     Else
                         Clip( *this, [#__c_draw] )
-;                      EndIf
+                     EndIf
                   EndIf
                   
                   ;\\ draw widgets
@@ -16890,7 +16875,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\resize = 0
                EndIf
             EndIf
-        EndWith
+            
+            ;\\
+            If *this\redraw <> 0
+               *this\redraw = 0
+            EndIf
+         EndWith
       EndProcedure
       
       Procedure ReDraw( *this._S_WIDGET )
@@ -16910,6 +16900,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *canvas\events( )\type <> #__event_Draw 
                      ;	Debug "events - " + *canvas\events( ) +" ( "+ ClassFromType(*canvas\events( )\widget\type) +" - "+ *canvas\events( )\widget\class +" ) "+ ClassFromEvent(*canvas\events( )\type)
                   EndIf
+                  If *canvas\events( )\type = #__event_Create
+                     *canvas\events( )\widget\redraw = 1
+                  EndIf
                   Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
                   PopListPosition( *canvas\events( ) )
                   
@@ -16926,6 +16919,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not ( a_transform( ) And a_transform( )\grab )
                If is_root_(*this )
                   ;\\
+                  If *this\root\redraw
                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                         ; good transparent canvas
                         FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
@@ -16941,6 +16935,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*this\root\canvas\window))
                      
                      Draw( *this\root)
+                  EndIf
                   
                   If Not ( *this\root\autosize And
                            *this\root\count\childrens = 0 )
@@ -16952,7 +16947,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; begin draw all widgets
                            If Not ( *this\_widgets( )\dragstart And 
                                     *this\_widgets( )\resize )
-                                  Draw( *this\_widgets( ))
+                              If *this\_widgets( )\redraw 
+                                 Draw( *this\_widgets( ))
+                              EndIf
                            EndIf
                         EndIf
                      Next
@@ -17484,8 +17481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               
                               ;
-                              If Not is_interact_row_( LeavedWidget( )\_widgets( ) ) And
-                                 LeavedWidget( )\_widgets( )\_a_\transform And
+                              If Not is_interact_row_( LeavedWidget( )\_widgets( ) ) And LeavedWidget( )\_widgets( )\_a_\transform And
                                  IsChild( LeavedWidget( ), LeavedWidget( )\_widgets( )) And
                                  Not IsChild( *widget, LeavedWidget( )\_widgets( ))
                                  LeavedWidget( )\_widgets( )\state\enter = 0
@@ -18597,6 +18593,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
+      Procedure SetRedraw( *this._S_WIDGET )
+         If *this\child
+            ;*this\redraw = 1
+            *this = *this\parent
+         EndIf  
+         If *this\address
+            *this\redraw = 1
+            ;                   If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+            ;                      If *this\root\redrawimage
+            ;                         FreeImage(*this\root\redrawimage)
+            ;                      EndIf
+            ;                      *this\root\redrawimage = GrabDrawingImage( #PB_Any, *this\root\x, *this\root\y, *this\root\width, *this\root\height )
+            ;                      StopDrawing()
+            ;                   EndIf
+            PushListPosition( *this\root\_widgets( ))
+            ChangeCurrentElement( *this\root\_widgets( ), *this\address )
+            While NextElement( *this\root\_widgets( ) )
+               If Not IsChild( *this\root\_widgets( ), *this\parent) 
+                  Break
+               EndIf
+               
+               If *this\root\_widgets( )\hide 
+                  Continue
+               EndIf
+               
+               Protected inter
+               If Not IsChild( *this\root\_widgets( ), *this) 
+                  inter = is_inter_sect_( *this\root\_widgets( ), *this, [#__c_draw])
+                  If Not inter
+                     Continue
+                  EndIf
+               EndIf
+               
+               Debug ""+*this\root\_widgets( )\class+"-"+*this\root\_widgets( )\index +" "+ inter
+               *this\root\_widgets( )\redraw = 1
+            Wend
+            PopListPosition( *this\root\_widgets( ))
+         EndIf
+         
+      EndProcedure
+      
       Procedure DoEvents( *this._S_WIDGET, eventtype.l, *data = #Null, *button = #PB_All )
          ; Debug "DoEvents( "+*this +" "+ eventtype
          ;\\
@@ -19152,11 +19189,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If *this\repaint And 
             *this\state\disable = 0
+            ;\\ redraw state
+            If *this\state\enter > 0
+               SetRedraw( *this )
+            EndIf
             PostCanvasRepaint( *this )
          EndIf
       EndProcedure
       
-      Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
+      Procedure EventHandler( Canvas = - 1, eventtype = - 1, eventdata = 0 )
          Protected Repaint, mouse_x , mouse_y
          
          ;\\
@@ -19168,7 +19209,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;           ;\\
                ;           If PressedWidget( ) And
                ;              Root( ) <> PressedWidget( )\root
-               ;             eventgadget = Root( )\canvas\gadget
+               ;             Canvas = Root( )\canvas\gadget
                ;           EndIf
             EndIf
          EndIf
@@ -19176,9 +19217,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If eventtype = #__event_MouseEnter
             If Not mouse( )\interact
-               If IsGadget( eventgadget ) And
-                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                  ChangeCurrentRoot( GadgetID( eventgadget ) )
+               If IsGadget( Canvas ) And
+                  GadgetType( Canvas ) = #PB_GadgetType_Canvas
+                  ChangeCurrentRoot( GadgetID( Canvas ) )
                EndIf
             EndIf
          EndIf
@@ -19187,17 +19228,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_MouseLeave
             If PressedWidget( ) And
                Root( ) <> PressedWidget( )\root
-               eventgadget = PressedWidget( )\root\canvas\gadget
+               Canvas = PressedWidget( )\root\canvas\gadget
                ChangeCurrentRoot( GadgetID( PressedWidget( )\root\canvas\gadget ) )
-               ; Debug "eventgadget - leave "+eventgadget +" "+ Root( )
+               ; Debug "canvas - leave "+Canvas +" "+ Root( )
             EndIf
          EndIf
          
          ;\\
          If eventtype = #__event_Repaint ; = 262150
-            If IsGadget( eventgadget ) And GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+            If IsGadget( Canvas ) And GadgetType( Canvas ) = #PB_GadgetType_Canvas
                PushMapPosition( Root( ) )
-               If ChangeCurrentRoot( GadgetID( eventgadget ) )
+               If ChangeCurrentRoot( GadgetID( Canvas ) )
                   If Root( )\canvas\repaint = 1
                      ReDraw( Root( ) )
                      Root( )\canvas\repaint = 0
@@ -19205,23 +19246,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                PopMapPosition( Root( ) )
                
-               ;\\
+               ;
                If Not mouse( )\interact
-                  If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
-                     If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
-                        If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
-                           ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-                        EndIf
-                     EndIf
-                  Else
-                     If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
-                        ChangeCurrentRoot( GadgetID( eventgadget ) )
+                  If EnteredGadget( ) >= 0 And
+                     EnteredGadget( ) <> Canvas
+                     If IsGadget( EnteredGadget( ) )
+                        ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
+                     Else
+                        ChangeCurrentRoot( GadgetID( Canvas ) )
                      EndIf
                   EndIf
                EndIf
             EndIf
             
-            ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
+            ;Debug "  event - "+EventType +" "+ Root( )\canvas\gadget +" "+ Canvas +" "+ EventData( )
          EndIf
          
          ;\\
@@ -19280,17 +19318,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If EventType = #__event_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         If EventType = #__event_Resize ;: PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             PushMapPosition( Root( ) )
-            If ChangeCurrentRoot( GadgetID( eventgadget ) )
-               Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+            If ChangeCurrentRoot( GadgetID( Canvas ) )
+               Resize( Root( ), 0, 0, PB(GadgetWidth)( Canvas ), PB(GadgetHeight)( Canvas ) )
                ReDraw( Root( ) )
             EndIf
             PopMapPosition( Root( ) )
          EndIf
          
          ;\\
-         If Root( ) And Root( )\canvas\gadget = eventgadget
+         If Root( ) And Root( )\canvas\gadget = Canvas
             ;\\
             Select eventtype
                Case #__event_MouseEnter,
@@ -19374,13 +19412,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ do all events
          If eventtype = #__event_Focus 
             If FocusedWidget( ) And 
-               FocusedWidget( )\root\canvas\gadget = eventgadget
+               FocusedWidget( )\root\canvas\gadget = Canvas
                
                If Not EnteredWidget( ) Or 
                   ( EnteredWidget( ) And 
                     ( FocusedWidget( ) = EnteredWidget( ) Or 
                       FocusedWidget( ) = EnteredWidget( )\parent ) )
-                  ; Debug "Canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+                  ; Debug "canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
                   
                   If FocusedWidget( )\state\focus = 0
                      FocusedWidget( )\state\focus = 1
@@ -19391,8 +19429,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          ElseIf eventtype = #__event_LostFocus
             If FocusedWidget( ) And
-               FocusedWidget( )\root\canvas\gadget = eventgadget
-               ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+               FocusedWidget( )\root\canvas\gadget = Canvas
+               ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + Canvas
                
                If FocusedWidget( )\state\focus = 1
                   FocusedWidget( )\state\focus = 0
@@ -19435,7 +19473,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PressedWidget( )             = EnteredWidget( )
                PressedWidget( )\state\press = #True
                
-               ; Debug "canvas - press "+eventgadget +" "+ Root( ) +" "+ PressedWidget( )\class
+               ; Debug "canvas - press "+Canvas +" "+ Root( ) +" "+ PressedWidget( )\class
                
                If eventtype = #__event_LeftButtonDown Or
                   eventtype = #__event_RightButtonDown
@@ -19602,16 +19640,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If mouse( )\interact
-                  If eventgadget <> EnteredGadget( )
-                     eventgadget = EnteredGadget( )
-                     If IsGadget( eventgadget ) And
-                        GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                        ChangeCurrentRoot( GadgetID( eventgadget ) )
-                        ; Debug "canvas - enter "+eventgadget +" "+ Root( )
+                  If Canvas <> EnteredGadget( )
+                     Canvas = EnteredGadget( )
+                     If IsGadget( Canvas ) And
+                        GadgetType( Canvas ) = #PB_GadgetType_Canvas
+                        ChangeCurrentRoot( GadgetID( Canvas ) )
+                        ; Debug "canvas - enter "+Canvas +" "+ Root( )
                      EndIf
                   EndIf
                   
-                  Debug "canvas - up " + eventgadget + " " + Root( )
+                  Debug "canvas - up " + Canvas + " " + Root( )
                   mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
                   mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
                   GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
@@ -20202,8 +20240,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\parent\count\childrens
                   LastElement(*this\_widgets( ))
                   Repeat
-                     If *this\_widgets( ) = *this Or
-                        IsChild( *this\_widgets( ), *this )
+                     If *this\_widgets( ) = *this Or IsChild( *this\_widgets( ), *this )
                         If *this\_widgets( )\root\count\childrens > 0
                            *this\_widgets( )\root\count\childrens - 1
                            
@@ -20940,55 +20977,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    AddItem( *panel, -1, "item_3" )
    
-   Procedure events_containers()
-      Protected repaint
-      Protected colorback = colors::*this\blue\fore,
-                colorframe=colors::*this\blue\frame, 
-                colorback1 = $ff00ff00,
-                colorframe1=$ff0000ff
-      
-      Select WidgetEventType( )
-         Case #PB_EventType_MouseEnter,
-              #PB_EventType_MouseLeave,
-              #PB_EventType_MouseMove
-            
-            If EventWidget( ) <> Root( )
-               If EventWidget( )\state\enter 
-                  If EventWidget( )\color\frame <> colorframe1 
-                     repaint = 1 
-                     EventWidget( )\color\frame = colorframe1
-                  EndIf
-                  
-                  If EventWidget( )\state\enter = 2
-                     If EventWidget( )\color\back <> colorback1 
-                        repaint = 1 
-                        EventWidget( )\color\back = colorback1
-                     EndIf
-                  Else
-                     If EventWidget( )\color\back = colorback1
-                        repaint = 1 
-                        EventWidget( )\color\back = colorback
-                     EndIf
-                  EndIf
-               Else   
-                  If EventWidget( )\color\back <> colorback 
-                     repaint = 1
-                     EventWidget( )\color\back = colorback
-                  EndIf
-                  If EventWidget( )\color\frame = colorframe1 
-                     repaint = 1 
-                     EventWidget( )\color\frame = colorframe
-                  EndIf
-               EndIf
-            EndIf
-            
-      EndSelect
-      
-      If repaint                                              
-        ; Debug "change state"
-      EndIf
-   EndProcedure
-
    SetText(Container(20, 20, 180, 180, editable), "4")
    SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets | editable), "5")
    SetText(Container(40, 20, 180, 180, editable), "6")
@@ -21015,14 +21003,6 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList( ) ; 15
    CloseList( ) ; 11
    CloseList( ) ; 1
-   
-   ;\\
-   If StartEnumerate( *panel, 2 )
-      Bind(EnumWidget( ), @events_containers(), #PB_EventType_MouseEnter)
-      Bind(EnumWidget( ), @events_containers(), #PB_EventType_MouseMove)
-      Bind(EnumWidget( ), @events_containers(), #PB_EventType_MouseLeave)
-      StopEnumerate( )
-   EndIf
    
    OpenList( seven )
    ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
@@ -21167,7 +21147,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 385
-; FirstLine = 382
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----4----------------------------------
+; CursorPosition = 16802
+; FirstLine = 16792
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -1,145 +1,84 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets3.pbi" : Uselib(widget)
 
-Global enumerate_count
-
-Procedure StartWindow( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure NextWindow( *this.Integer ) 
-  Protected *element
-  ; Widget() = GetChildrens(Root())
-  
-  If Not enumerate_count
-    *element = FirstElement(Widget())
-  Else
-    *element = NextElement(Widget())
-  EndIf
-  
-  enumerate_count + 1
-  
-  If Widget()\type <> #__type_window
-    While *element
-      *element = NextElement(Widget())
-      
-      If Widget()\type = #__type_window
-        Break
-      EndIf 
-    Wend
-  EndIf
-  
-  If Widget()\type <> #__type_window
-    ProcedureReturn 0
-  EndIf
-  
-  *this\i = Widget()\index ; ListIndex(Widget())
-  ProcedureReturn *element
-  
-EndProcedure
-
-Procedure AbortWindow( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure StartGadget( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
-
-Procedure NextGadget( *this.Integer, parent =- 1) 
-  Protected *element
-  
-  If Not enumerate_count
-    *element = FirstElement(Widget())
-  Else
-    *element = NextElement(Widget())
-  EndIf
-  
-  enumerate_count + 1
-  
-  If Widget()\type = #__type_window
-    While *element
-      *element = NextElement(Widget())
-      
-      If Widget()\type <> #__type_window And
-         Not (Widget()\parent\index <> parent And parent <> #PB_Any)
-        Break
-      EndIf 
-    Wend
-  EndIf
-  
-  If Widget()\type = #__type_window Or
-     (Widget()\parent\index <> parent And parent <> #PB_Any)
-    enumerate_count = 0
-    ProcedureReturn 0
-  EndIf
-  
-  *this\i = Widget()\index ; ListIndex(Widget())
-                                       ;Debug Widget()\text\string
-  ProcedureReturn *element
-  
-EndProcedure
-
-Procedure AbortGadget( )
-  enumerate_count = 0
-  ProcedureReturn 1
-EndProcedure
 
 ; Shows using of several panels...
-If Open(OpenWindow(#PB_Any, 0, 0, 322, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  
-  Define y = 5
-  For i = 1 To 4
-    Window(5, y, 150, 95, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
-    Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                                         ; Gadget(i, 
-    Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                                    ; Gadget(i+10,
-    Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                                    ; Gadget(i+20,
-    CloseList()                                                                                                         ; Gadget
-    y + 130
-  Next
-  
-  
-  Debug "Begen enumerate window"
-  If StartWindow( )
-    While NextWindow( @Window )
-      Debug "Window "+Window
-    Wend
-    AbortWindow()
-  EndIf
-  
-  Debug "Begen enumerate all gadget"
-  If StartGadget( )
-    While NextGadget( @Gadget )
-      Debug "Gadget "+Gadget
-    Wend
-    AbortGadget()
-  EndIf
-  
-  Window = 8
-  
-  Debug "Begen enumerate gadget window = "+ Str(Window)
-  If StartGadget( )
-    While NextGadget( @Gadget, Window )
-      Debug "Gadget "+Str(Gadget) +" Window "+ Window
-    Wend
-    AbortGadget()
-  EndIf
-  
-  
-  Debug "Begen enumerate alls"
-  ForEach Widget()
-    If _is_window_( widget() )
-      Debug "window "+ Widget()\index
-    Else
-      Debug "  gadget - "+ Widget()\index
-    EndIf
-  Next
-  
-  bind(-1,-1)
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+EnableExplicit
+If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   Define i, *parent._s_Widget
+   
+   For i = 1 To 3
+      Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
+      Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
+      Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
+      Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
+      CloseList()                                                                                         
+   Next
+   
+   i = 4
+   Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
+   *parent = Panel(5, 5, 120+2,85+2) 
+   AddItem(*parent, -1, "item-1")
+   Button(10,10,100,30,"Button1")                                                    
+   Button(10,45,100,30,"Button2")                                                    
+   AddItem(*parent, -1, "item-2")
+   Button(10,10,100,30,"Button3")                                                    
+   Button(10,45,100,30,"Button4")                                                    
+   AddItem(*parent, -1, "item-3")
+   Button(10,10,100,30,"Button5")                                                    
+   Button(10,45,100,30,"Button6")                                                    
+   CloseList()                                                                                         
+   SetState(*parent, 1)
+   
+   Debug "--- enumerate all widgets ---"
+   If StartEnumerate( root( ) )
+      If is_window_( widget() )
+         Debug "     window "+ Widget()\index
+      Else
+         Debug "       gadget - "+ Widget()\index
+      EndIf
+      StopEnumerate( )
+   EndIf
+   
+   Debug "--- enumerate all gadgets ---"
+   If StartEnumerate( root( ) )
+      If Not is_window_( widget( ) )
+         Debug "     gadget - "+widget( )\index
+      EndIf
+      StopEnumerate( )
+   EndIf
+   
+   Debug "--- enumerate all windows ---"
+   If StartEnumerate( root( ) )
+      If is_window_( widget( ) )
+         Debug "     window " + widget( )\index
+      EndIf
+      StopEnumerate( )
+   EndIf
+   
+   Define index = 12
+   *parent = GetWidget( index )
+   
+   Debug "--- enumerate all (window="+ Str(index) +") gadgets ---"
+   If StartEnumerate( *parent )
+      Debug "     gadget - "+ widget( )\index
+      StopEnumerate( )
+   EndIf
+   
+   index = 13
+   *parent = GetWidget( index )
+   Define item = 1
+   
+   Debug "--- enumerate all (gadget="+ Str(index) +") (item="+Str(item)+") gadgets ---"
+   If StartEnumerate( *parent, item )
+      Debug "     gadget - "+ widget( )\index
+      StopEnumerate( )
+   EndIf
+   
+   
+   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; CursorPosition = 70
+; FirstLine = 45
+; Folding = --
 ; EnableXP

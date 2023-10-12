@@ -264,6 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 2
 ; Folding = V--
 ; EnableXP

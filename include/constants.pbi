@@ -493,6 +493,12 @@
     CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
       #PB_EventType_ReturnKey = 7
     CompilerEndIf
+    CompilerIf Not Defined(PB_EventType_SizeItem, #PB_Constant)
+      #PB_EventType_SizeItem = 65535
+    CompilerEndIf
+    CompilerIf Not Defined(PB_EventType_CloseItem, #PB_Constant)
+      #PB_EventType_CloseItem = 65534
+    CompilerEndIf
     #PB_EventType_Left3Click = 8
     #PB_EventType_Right3Click = 9
     Enumeration 65510 ; #PB_EventType_FirstCustomValue
@@ -1031,7 +1037,7 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 303
-; FirstLine = 285
-; Folding = ---
+; CursorPosition = 498
+; FirstLine = 485
+; Folding = ----
 ; EnableXP
