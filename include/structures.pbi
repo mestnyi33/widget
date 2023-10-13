@@ -714,6 +714,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
+         *output
          *fontID                  ; current drawing fontID
          *GadgetID                ; canvas handle
          window.i                 ; canvas window
@@ -770,7 +771,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 591
-; FirstLine = 589
+; CursorPosition = 716
+; FirstLine = 714
 ; Folding = ----------
 ; EnableXP
