@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -90,6 +90,5 @@ EndIf
 End  
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
 ; Folding = -
 ; EnableXP

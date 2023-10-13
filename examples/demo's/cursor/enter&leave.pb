@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 UseLib( widget )
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -103,7 +103,5 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 68
 ; Folding = --
 ; EnableXP

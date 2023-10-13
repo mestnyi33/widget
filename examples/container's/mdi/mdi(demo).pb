@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 ; #PB_MDI_Arrange
 ; #PB_MDI_AutoSize
@@ -94,7 +94,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 59
 ; Folding = -
 ; EnableXP

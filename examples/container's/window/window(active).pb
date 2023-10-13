@@ -5,98 +5,54 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure active()
-    If EventWidget( )\type =- 2
-      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ; " window"
-    Else
-      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
-    EndIf
+    Debug " "+ EventWidget( )\text\string +"_"+ #PB_Compiler_Procedure 
   EndProcedure
   
   Procedure deactive()
-    If EventWidget( )\type =- 2
-      Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
-    Else
-      Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
-    EndIf
-  EndProcedure
-  
-  Procedure active_0()
-    If EventWidget( )\type =- 2
-      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
-    Else
-      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
-    EndIf
-  EndProcedure
-  
-  Procedure deactive_0()
-    If EventWidget( )\type =- 2
-      Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " window"
-    Else
-      Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure +"() "+ EventWidget( )\text\string ;  " gadget"
-    EndIf
+     Debug "   "+ EventWidget( )\text\string +"_"+ #PB_Compiler_Procedure 
   EndProcedure
   
   Define width=500, height=400
   
-  If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+  If Open(0, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
     ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-    
+     
+     ;\\
     ;   Bind(#PB_All, @active(), #PB_EventType_Focus)
     ;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
     
     Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     string(10,10,170,30,"string_1")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     string(10,50,170,30,"string_2")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     Window(110, 30, 190, 90, "Window_3", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     string(10,10,170,30,"string_4")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     string(10,50,170,30,"string_5")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     Window(220, 50, 190, 90, "Window_6", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     string(10,10,170,30,"string_7")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     string(10,50,170,30,"string_8")
-    ;   ;SetActive(widget())
-    ;   Bind( widget(), @active_0(), #PB_EventType_Focus)
-    ;   Bind( widget(), @deactive_0(), #PB_EventType_LostFocus)
+    ; SetActive(widget())
     
     
-    Bind( #PB_All, @active_0(), #PB_EventType_Focus)
-    Bind( #PB_All, @deactive_0(), #PB_EventType_LostFocus)
+    Bind( #PB_All, @active(), #PB_EventType_Focus)
+    Bind( #PB_All, @deactive(), #PB_EventType_LostFocus)
     
     WaitClose()
-    
-    ;   Repeat
-    ;     Event = WaitWindowEvent()
-    ;     
-    ;     If Event = #PB_Event_CloseWindow 
-    ;       Quit = 1
-    ;     EndIf
-    ;     
-    ;   Until Quit = 1
-    
-  EndIf
+ EndIf
   
   End 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; CursorPosition = 16
+; Folding = -
 ; EnableXP

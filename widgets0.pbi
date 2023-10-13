@@ -80,7 +80,7 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
 	DeclareModule Widget
-		Global test_scrollbars_resize = 1
+		Global test_scrollbars_resize = 0
 		
 		EnableExplicit
 		UseModule constants
@@ -216,7 +216,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 		Macro Drawing( ): widget::*canvas\drawing : EndMacro
 		
 		;-
-		Macro StringBox( ): StringWidget: EndMacro
+		Macro Title( ): text: EndMacro
+      Macro StringBox( ): StringWidget: EndMacro
 		Macro PopupBox( ): PopupWidget: EndMacro
 		Macro GroupBox( ): GroupWidget: EndMacro
 		
@@ -11827,21 +11828,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
 						                *this\y[#__c_frame] + *this\bs + *this\scroll_y( ) + *this\image\y - 2, *this\color\_alpha )
 					EndIf
 					
-					If *this\caption\text\string
+					If *this\Title( )\string
 						_clip_caption_( *this )
 						
 						; Draw string
 						If *this\resize & #__resize_change
 							If *this\image\id
-								*this\caption\text\x = *this\caption\x[#__c_inner] + *this\caption\text\padding\x + *this\image\width + 10;\image\padding\x
+								*this\Title( )\x = *this\caption\x[#__c_inner] + *this\Title( )\padding\x + *this\image\width + 10;\image\padding\x
 							Else
-								*this\caption\text\x = *this\caption\x[#__c_inner] + *this\caption\text\padding\x
+								*this\Title( )\x = *this\caption\x[#__c_inner] + *this\Title( )\padding\x
 							EndIf
-							*this\caption\text\y = *this\caption\y[#__c_inner] + ( *this\caption\height[#__c_inner] - TextHeight( "A" )) / 2
+							*this\Title( )\y = *this\caption\y[#__c_inner] + ( *this\caption\height[#__c_inner] - TextHeight( "A" )) / 2
 						EndIf
 						
 						drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-						DrawText( *this\caption\text\x, *this\caption\text\y, *this\caption\text\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+						DrawText( *this\Title( )\x, *this\Title( )\y, *this\Title( )\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
 						
 						;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
 						;             draw_roundbox_( *this\caption\x[#__c_inner], *this\caption\y[#__c_inner], *this\caption\width[#__c_inner], *this\caption\height[#__c_inner], *this\round, *this\round, $FF000000 )
@@ -13216,7 +13217,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			EndIf
 			
 			If *this\type = #__type_Window
-				ProcedureReturn *this\caption\text\string
+				ProcedureReturn *this\Title( )\string
 			EndIf
 			
 			If *this\text\pass
@@ -13631,7 +13632,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 			Protected result.i, Len.i, String.s, i.i
 			
 			If *this\type = #__type_Window
-				*this\caption\text\string = Text
+				*this\Title( )\string = Text
 			EndIf
 			
 			If *this\type = #__type_Tree
@@ -19992,8 +19993,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 					*this\barHeight = constants::_check_( *this\flag, #__flag_borderless, #False ) * ( #__window_caption_height ); + #__window_frame_size )
 					*this\round     = 7
 					
-					*this\caption\text\padding\x = 5
-					*this\caption\text\string    = Text
+					*this\Title( )\padding\x = 5
+					*this\Title( )\string    = Text
 				EndIf
 				
 				*this\child = Bool( *this\Flag & #__window_child = #__window_child )
@@ -21080,9 +21081,8 @@ CompilerIf #PB_Compiler_IsMainFile ;=99
 	;
 	WaitClose( )
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 78
+; CursorPosition = 218
+; FirstLine = 215
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

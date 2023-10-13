@@ -1,5 +1,5 @@
 ﻿;- 
-XIncludeFile "../widgets3.pbi"
+XIncludeFile "../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

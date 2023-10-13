@@ -484,9 +484,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          x.l[5]
          height.l[5]
          width.l[5]
-         ; transporent.b
          
-         text._s_text
          button._s_buttons[5]
          color._s_color
          
@@ -589,10 +587,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
-         ; widgets4.pbi
-         redraw.b
-         *redrawimage
-         ;
+         
          
          type.b
          round.a                ; drawing round
@@ -714,13 +709,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
-         *output
+         repaint.b
+         container.i              ; ???
          *fontID                  ; current drawing fontID
          *GadgetID                ; canvas handle
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
-         container.i              ; ???
-         repaint.b
          List *child._s_WIDGET( ) ; widget( )\
       EndStructure
       
@@ -771,7 +765,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 716
-; FirstLine = 714
+; CursorPosition = 493
+; FirstLine = 480
 ; Folding = ----------
 ; EnableXP

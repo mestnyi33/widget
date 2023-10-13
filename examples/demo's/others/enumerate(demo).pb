@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets3.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
 
 ; Shows using of several panels...
@@ -18,14 +18,14 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
    *parent = Panel(5, 5, 120+2,85+2) 
    AddItem(*parent, -1, "item-1")
-   Button(10,10,100,30,"Button1")                                                    
-   Button(10,45,100,30,"Button2")                                                    
+   Button(10,10,100,30,"Button14")                                                    
+   Button(10,45,100,30,"Button15")                                                    
    AddItem(*parent, -1, "item-2")
-   Button(10,10,100,30,"Button3")                                                    
-   Button(10,45,100,30,"Button4")                                                    
+   Button(10,10,100,30,"Button16")                                                    
+   Button(10,45,100,30,"Button17")                                                    
    AddItem(*parent, -1, "item-3")
-   Button(10,10,100,30,"Button5")                                                    
-   Button(10,45,100,30,"Button6")                                                    
+   Button(10,10,100,30,"Button18")                                                    
+   Button(10,45,100,30,"Button19")                                                    
    CloseList()                                                                                         
    SetState(*parent, 1)
    
@@ -78,7 +78,6 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 70
-; FirstLine = 45
+; CursorPosition = 27
 ; Folding = --
 ; EnableXP

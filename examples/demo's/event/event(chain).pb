@@ -1,6 +1,6 @@
 ﻿; #__from_mouse_state = 1
 IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets0.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
