@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ; example scroll gadget bar
     TextGadget       ( -1,  10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#PB_Text_Center)
     ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
@@ -320,5 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 27
+; FirstLine = 286
 ; Folding = --
 ; EnableXP

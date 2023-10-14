@@ -2488,7 +2488,7 @@ EndProcedure
 
 ;-
     Procedure.i Spin_( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
-      ProcedureReturn Spin( x, y, width, height, Min, Max, flag )
+      ProcedureReturn SpinBar( x, y, width, height, Min, Max, flag )
     EndProcedure
     
     Procedure.i Scroll_( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
@@ -7591,5 +7591,7 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2490
+; FirstLine = 2486
 ; Folding = ------
 ; EnableXP

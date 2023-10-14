@@ -242,6 +242,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;-
     Macro Title( ): text: EndMacro
+    Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
+    Macro MaximizeButton( ): caption\button[#__wb_close]: EndMacro
+    Macro MinimizeButton( ): caption\button[#__wb_maxi]: EndMacro
+    Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
+    
+    ;-
     Macro StringBox( ): StringWidget: EndMacro
     Macro PopupBox( ): PopupWidget: EndMacro
     Macro GroupBox( ): GroupWidget: EndMacro
@@ -11598,52 +11604,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\caption\inner_height( ) = *this\caption\height - *this\fs * 2
           
           ; caption close button
-          If Not *this\caption\button[#__wb_close]\state\hide
-            *this\caption\button[#__wb_close]\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\caption\button[#__wb_close]\width + *this\caption\_padding )
-            *this\caption\button[#__wb_close]\y = *this\caption\y + ( *this\caption\height - *this\caption\button[#__wb_close]\height ) / 2
+          If Not *this\CloseButton( )\state\hide
+            *this\CloseButton( )\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\CloseButton( )\width + *this\caption\_padding )
+            *this\CloseButton( )\y = *this\caption\y + ( *this\caption\height - *this\CloseButton( )\height ) / 2
           EndIf
           
           ; caption maximize button
-          If Not *this\caption\button[#__wb_maxi]\state\hide
-            If *this\caption\button[#__wb_close]\state\hide
-              *this\caption\button[#__wb_maxi]\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\caption\button[#__wb_maxi]\width + *this\caption\_padding )
+          If Not *this\MaximizeButton( )\state\hide
+            If *this\CloseButton( )\state\hide
+              *this\MaximizeButton( )\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
             Else
-              *this\caption\button[#__wb_maxi]\x = *this\caption\button[#__wb_close]\x - ( *this\caption\button[#__wb_maxi]\width + *this\caption\_padding )
+              *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
             EndIf
-            *this\caption\button[#__wb_maxi]\y = *this\caption\y + ( *this\caption\height - *this\caption\button[#__wb_maxi]\height ) / 2
+            *this\MaximizeButton( )\y = *this\caption\y + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
           EndIf
           
           ; caption minimize button
-          If Not *this\caption\button[#__wb_mini]\state\hide
-            If *this\caption\button[#__wb_maxi]\state\hide
-              *this\caption\button[#__wb_mini]\x = *this\caption\button[#__wb_close]\x - ( *this\caption\button[#__wb_mini]\width + *this\caption\_padding )
+          If Not *this\MinimizeButton( )\state\hide
+            If *this\MaximizeButton( )\state\hide
+              *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
             Else
-              *this\caption\button[#__wb_mini]\x = *this\caption\button[#__wb_maxi]\x - ( *this\caption\button[#__wb_mini]\width + *this\caption\_padding )
+              *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
             EndIf
-            *this\caption\button[#__wb_mini]\y = *this\caption\y + ( *this\caption\height - *this\caption\button[#__wb_mini]\height ) / 2
+            *this\MinimizeButton( )\y = *this\caption\y + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
           EndIf
           
           ; caption help button
-          If Not *this\caption\button[#__wb_help]\state\hide
-            If Not *this\caption\button[#__wb_mini]\state\hide
-              *this\caption\button[#__wb_help]\x = *this\caption\button[#__wb_mini]\x - ( *this\caption\button[#__wb_help]\width + *this\caption\_padding )
-            ElseIf Not *this\caption\button[#__wb_maxi]\state\hide
-              *this\caption\button[#__wb_help]\x = *this\caption\button[#__wb_maxi]\x - ( *this\caption\button[#__wb_help]\width + *this\caption\_padding )
+          If Not *this\HelpButton( )\state\hide
+            If Not *this\MinimizeButton( )\state\hide
+              *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+            ElseIf Not *this\MaximizeButton( )\state\hide
+              *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
             Else
-              *this\caption\button[#__wb_help]\x = *this\caption\button[#__wb_close]\x - ( *this\caption\button[#__wb_help]\width + *this\caption\_padding )
+              *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
             EndIf
-            *this\caption\button[#__wb_help]\y = *this\caption\button[#__wb_close]\y
+            *this\HelpButton( )\y = *this\CloseButton( )\y
           EndIf
           
           ; title bar width
-          If Not *this\caption\button[#__wb_help]\state\hide
-            *this\caption_inner_width( ) = *this\caption\button[#__wb_help]\x - *this\caption\inner_x( ) - *this\caption\_padding
-          ElseIf Not *this\caption\button[#__wb_mini]\state\hide
-            *this\caption_inner_width( ) = *this\caption\button[#__wb_mini]\x - *this\caption\inner_x( ) - *this\caption\_padding
-          ElseIf Not *this\caption\button[#__wb_maxi]\state\hide
-            *this\caption_inner_width( ) = *this\caption\button[#__wb_maxi]\x - *this\caption\inner_x( ) - *this\caption\_padding
-          ElseIf Not *this\caption\button[#__wb_close]\state\hide
-            *this\caption_inner_width( ) = *this\caption\button[#__wb_close]\x - *this\caption\inner_x( ) - *this\caption\_padding
+          If Not *this\HelpButton( )\state\hide
+            *this\caption_inner_width( ) = *this\HelpButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+          ElseIf Not *this\MinimizeButton( )\state\hide
+            *this\caption_inner_width( ) = *this\MinimizeButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+          ElseIf Not *this\MaximizeButton( )\state\hide
+            *this\caption_inner_width( ) = *this\MaximizeButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+          ElseIf Not *this\CloseButton( )\state\hide
+            *this\caption_inner_width( ) = *this\CloseButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
           EndIf
           
           
@@ -11826,17 +11832,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; buttins background
           drawing_mode_alpha_( #PB_2DDrawing_Default )
-          draw_box_button_( *this\caption\button[#__wb_close], color\back )
-          draw_box_button_( *this\caption\button[#__wb_maxi], color\back )
-          draw_box_button_( *this\caption\button[#__wb_mini], color\back )
-          draw_box_button_( *this\caption\button[#__wb_help], color\back )
+          draw_box_button_( *this\CloseButton( ), color\back )
+          draw_box_button_( *this\MaximizeButton( ), color\back )
+          draw_box_button_( *this\MinimizeButton( ), color\back )
+          draw_box_button_( *this\HelpButton( ), color\back )
           
           ; buttons image
           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-          draw_close_button_( *this\caption\button[#__wb_close], 6 )
-          draw_maximize_button_( *this\caption\button[#__wb_maxi], 4 )
-          draw_minimize_button_( *this\caption\button[#__wb_mini], 4 )
-          draw_help_button_( *this\caption\button[#__wb_help], 4 )
+          draw_close_button_( *this\CloseButton( ), 6 )
+          draw_maximize_button_( *this\MaximizeButton( ), 4 )
+          draw_minimize_button_( *this\MinimizeButton( ), 4 )
+          draw_help_button_( *this\HelpButton( ), 4 )
           
           ; Draw image
           If *this\image\id
@@ -11909,8 +11915,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Not Post( *this, #__event_restoreWindow )
           If *this\resize & #__resize_minimize
             *this\resize & ~ #__resize_minimize
-            *this\caption\button[#__wb_close]\state\hide = 0
-            *this\caption\button[#__wb_mini]\state\hide  = 0
+            *this\CloseButton( )\state\hide = 0
+            *this\MinimizeButton( )\state\hide  = 0
           EndIf
           *this\resize & ~ #__resize_maximize
           *this\resize | #__resize_restore
@@ -11958,9 +11964,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\root\height[#__c_restore] = *this\frame_height( )
           EndIf
           
-          *this\caption\button[#__wb_close]\state\hide = 1
-          If *this\caption\button[#__wb_maxi]\state\hide = 0
-            *this\caption\button[#__wb_mini]\state\hide = 1
+          *this\CloseButton( )\state\hide = 1
+          If *this\MaximizeButton( )\state\hide = 0
+            *this\MinimizeButton( )\state\hide = 1
           EndIf
           *this\resize | #__resize_minimize
           
@@ -11998,14 +12004,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\caption\interact = is_at_point_( *this\caption, mouse_x, mouse_y, [2] )
           ;*this\color\state = 2
           
-          Debug "" + #PB_Compiler_Procedure + " " + mouse_x + " " + *this\caption\button[#__wb_close]\x
+          Debug "" + #PB_Compiler_Procedure + " " + mouse_x + " " + *this\CloseButton( )\x
           ; close button
-          If is_at_point_( *this\caption\button[#__wb_close], mouse_x, mouse_y )
+          If is_at_point_( *this\CloseButton( ), mouse_x, mouse_y )
             ProcedureReturn Window_SetState( *this, #__Window_Close )
           EndIf
           
           ; maximize button
-          If is_at_point_( *this\caption\button[#__wb_maxi], mouse_x, mouse_y )
+          If is_at_point_( *this\MaximizeButton( ), mouse_x, mouse_y )
             If Not *this\resize & #__resize_maximize And
                Not *this\resize & #__resize_minimize
               
@@ -12016,7 +12022,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; minimize button
-          If is_at_point_( *this\caption\button[#__wb_mini], mouse_x, mouse_y )
+          If is_at_point_( *this\MinimizeButton( ), mouse_x, mouse_y )
             If Not *this\resize & #__resize_minimize
               ProcedureReturn Window_SetState( *this, #__window_minimize )
             EndIf
@@ -12074,14 +12080,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure ChangeParent( *this._S_WIDGET, *parent._S_WIDGET )
-      ;\\
-      If *this\parent
-        If *this\parent <> *parent
-          *this\parent\count\childrens - 1
-        EndIf
-      EndIf
-      *parent\count\childrens + 1
-      
       *this\parent = *parent
       *this\root   = *parent\root
       
@@ -12173,7 +12171,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If *this\hide
-          *this\root\count\childrens = 0 ; ???
           If Popup( ) 
             Debug "display - hide"
             Popup( )\widget = #Null
@@ -12193,7 +12190,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\root = *display\root ; Not ( *this\root And *this\root <> *display\root )
               
               Debug "display - update"
-              ;ChangeParent( *this, *display )
               update_items_( *this )
             EndIf
           EndIf
@@ -14268,8 +14264,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         ChangeParent( *this, *parent )
-        ;             ;\\
-        ;             *parent\count\childrens + 1
+        
+        ;\\
+        *parent\count\childrens + 1
         If *parent <> *parent\root
           *parent\root\count\childrens + 1
         EndIf
@@ -15524,11 +15521,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If *this\child
-          ChangeParent( *this, *parent )
-          ;                *this\parent = *parent
-          ;                *this\root   = *parent\root
-          ;                *this\_window( ) = *parent\_window( )
-          ;
+           *this\parent = *parent
+           *this\root   = *parent\root
+           *this\_window( ) = *parent\_window( )
+           
           *this\index   = *parent\index
           *this\address = *parent\address
           ; Debug  "Create(child) "+ *this\type
@@ -16021,7 +16017,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 0,0,0,0, #Null$, #__flag_child | #__flag_borderless )
         *this\PopupBox( )\hide = 1
-        ;ChangeParent( *this\PopupBox( ), *this )
         
       EndIf
       
@@ -19474,16 +19469,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If PressedWidget( )
           ;\\ drag & drop stop
           If PressedWidget( )\dragstart
-            ;\\
-            If a_index( )
-              If mouse( )\interact = #True
-                mouse( )\interact = #False
-                ; Debug PressedWidget( )\dragstart ; - 1 ; 16
-                mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
-                mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
-                GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y )
-              EndIf
-            EndIf
+;             ;\\
+;             If a_index( )
+;               If mouse( )\interact = #True
+;                 mouse( )\interact = #False
+;                 ; Debug PressedWidget( )\dragstart ; - 1 ; 16
+;                 mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
+;                 mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
+;                 GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y )
+;               EndIf
+;             EndIf
             
             ;\\
             PressedWidget( )\dragstart = #PB_Drag_Finish
@@ -19578,29 +19573,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PressedWidget( )\dragstart = #PB_Drag_None
             
             ;\\ do leave pressed-widget events
-            If LeavedWidget( ) <> PressedWidget( )
-              LeavedWidget( ) = PressedWidget( )
-              GetAtPoint( PressedWidget( )\root, - 1, - 1 )
+            If Not a_index( )
+               If LeavedWidget( ) <> PressedWidget( )
+                  LeavedWidget( ) = PressedWidget( )
+                  GetAtPoint( PressedWidget( )\root, - 1, - 1 )
+               EndIf
             EndIf
-          EndIf
+         EndIf
           
-          ;\\
-          If mouse( )\interact
-            If eventgadget <> EnteredGadget( )
-              eventgadget = EnteredGadget( )
-              If IsGadget( eventgadget ) And
-                 GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                ChangeCurrentRoot( GadgetID( eventgadget ) )
-                ; Debug "canvas - enter "+eventgadget +" "+ Root( )
-              EndIf
-            EndIf
-            
-            Debug "canvas - up " + eventgadget + " " + Root( )
-            mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
-            mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
-            GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
-            mouse( )\interact = #False
-          EndIf
+;           ;\\
+           If mouse( )\interact
+;             If eventgadget <> EnteredGadget( )
+;               eventgadget = EnteredGadget( )
+;               If IsGadget( eventgadget ) And
+;                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+;                 ChangeCurrentRoot( GadgetID( eventgadget ) )
+;                 ; Debug "canvas - enter "+eventgadget +" "+ Root( )
+;               EndIf
+;             EndIf
+;             
+;             Debug "canvas - up " + eventgadget + " " + Root( )
+;             mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
+;             mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
+;             GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+             mouse( )\interact = #False
+           EndIf
           
           ;\\ then popup close
           If PressedWidget( )\hide And
@@ -19946,42 +19943,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\caption\hide = constants::_check_( flag, #__flag_borderless )
         *this\caption\hide                     = constants::_check_( *this\flag, #__Window_titleBar, #False )
-        *this\caption\button[#__wb_close]\state\hide = constants::_check_( *this\flag, #__Window_SystemMenu, #False )
-        *this\caption\button[#__wb_maxi]\state\hide  = constants::_check_( *this\flag, #__Window_MaximizeGadget, #False )
-        *this\caption\button[#__wb_mini]\state\hide  = constants::_check_( *this\flag, #__Window_MinimizeGadget, #False )
-        *this\caption\button[#__wb_help]\state\hide  = 1
+        *this\CloseButton( )\state\hide = constants::_check_( *this\flag, #__Window_SystemMenu, #False )
+        *this\MaximizeButton( )\state\hide  = constants::_check_( *this\flag, #__Window_MaximizeGadget, #False )
+        *this\MinimizeButton( )\state\hide  = constants::_check_( *this\flag, #__Window_MinimizeGadget, #False )
+        *this\HelpButton( )\state\hide  = 1
         
-        *this\caption\button[#__wb_close]\color = colors::*this\red
-        *this\caption\button[#__wb_maxi]\color  = colors::*this\blue
-        *this\caption\button[#__wb_mini]\color  = colors::*this\green
+        *this\CloseButton( )\color = colors::*this\red
+        *this\MaximizeButton( )\color  = colors::*this\blue
+        *this\MinimizeButton( )\color  = colors::*this\green
         
-        *this\caption\button[#__wb_close]\color\state = 1
-        *this\caption\button[#__wb_maxi]\color\state  = 1
-        *this\caption\button[#__wb_mini]\color\state  = 1
+        *this\CloseButton( )\color\state = 1
+        *this\MaximizeButton( )\color\state  = 1
+        *this\MinimizeButton( )\color\state  = 1
         
-        *this\caption\button[#__wb_close]\round = 4 + 3
-        *this\caption\button[#__wb_maxi]\round  = *this\caption\button[#__wb_close]\round
-        *this\caption\button[#__wb_mini]\round  = *this\caption\button[#__wb_close]\round
-        *this\caption\button[#__wb_help]\round  = *this\caption\button[#__wb_close]\round
+        *this\CloseButton( )\round = 4 + 3
+        *this\MaximizeButton( )\round  = *this\CloseButton( )\round
+        *this\MinimizeButton( )\round  = *this\CloseButton( )\round
+        *this\HelpButton( )\round  = *this\CloseButton( )\round
         
-        *this\caption\button[#__wb_close]\width  = 12 + 2
-        *this\caption\button[#__wb_close]\height = 12 + 2
+        *this\CloseButton( )\width  = 12 + 2
+        *this\CloseButton( )\height = 12 + 2
         
-        *this\caption\button[#__wb_maxi]\width  = *this\caption\button[#__wb_close]\width
-        *this\caption\button[#__wb_maxi]\height = *this\caption\button[#__wb_close]\height
+        *this\MaximizeButton( )\width  = *this\CloseButton( )\width
+        *this\MaximizeButton( )\height = *this\CloseButton( )\height
         
-        *this\caption\button[#__wb_mini]\width  = *this\caption\button[#__wb_close]\width
-        *this\caption\button[#__wb_mini]\height = *this\caption\button[#__wb_close]\height
+        *this\MinimizeButton( )\width  = *this\CloseButton( )\width
+        *this\MinimizeButton( )\height = *this\CloseButton( )\height
         
-        *this\caption\button[#__wb_help]\width  = *this\caption\button[#__wb_close]\width * 2
-        *this\caption\button[#__wb_help]\height = *this\caption\button[#__wb_close]\height
+        *this\HelpButton( )\width  = *this\CloseButton( )\width * 2
+        *this\HelpButton( )\height = *this\CloseButton( )\height
         
-        If *this\caption\button[#__wb_maxi]\state\hide = 0 Or
-           *this\caption\button[#__wb_mini]\state\hide = 0
-          *this\caption\button[#__wb_close]\state\hide = 0
+        If *this\MaximizeButton( )\state\hide = 0 Or
+           *this\MinimizeButton( )\state\hide = 0
+          *this\CloseButton( )\state\hide = 0
         EndIf
         
-        If *this\caption\button[#__wb_close]\state\hide = 0
+        If *this\CloseButton( )\state\hide = 0
           *this\caption\hide = 0
         EndIf
         
@@ -21146,7 +21143,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 243
-; FirstLine = 233
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 14267
+; FirstLine = 14262
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04----------------------------------------------------------------0f0--Wv--4------------------------v-----
 ; EnableXP

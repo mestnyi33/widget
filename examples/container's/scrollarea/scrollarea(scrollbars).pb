@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Debug " - test parent - mdi show and size scroll bars - "
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
-  ; Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
+   Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,231 )
   
   ; Debug " - test child - mdi show and size scroll bars - "
