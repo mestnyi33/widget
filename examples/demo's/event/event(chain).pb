@@ -1,6 +1,6 @@
 ﻿; #__from_mouse_state = 1
 IncludePath "../../../"
-XIncludeFile "widgets0.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::bind(*button1, @events_widgets(), #PB_EventType_DragStart)
     widget::bind(*button1, @events_widgets(), constants::#PB_EventType_Drop)
       
-    *button2 = widget::Button( 195, 295, 40, 40, "drop here", #__button_multiline );| #__button_toggle) 
+    *button2 = widget::Button( 195, 295, 40, 40, "drop", #__button_multiline );| #__button_toggle) 
     EnableDrop( *button2, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(*button2, @events_widgets(), #PB_EventType_LeftButtonDown)
@@ -94,6 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
+; CursorPosition = 79
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
