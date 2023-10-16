@@ -77,12 +77,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     Button( 10+222, 10, 200, 20, "Standard button", #__button_default,-1,8 )
-    Button( 10+222, 40, 200, 20, "Left button", #__button_left|#__button_default )
+    Button( 10+222, 40, 200, 20, "Left button", #__button_left )
     Button( 10+222, 70, 200, 20, "Right button", #__button_right )
     Button( 10+222,100, 200, 60, "Default button and change font", #__button_default, -1,4 )
     SetFont(widget(), FontID(0))
-    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__button_multiline|#__button_default, -1,4 )
-    Button( 10+222,170+70, 200, 25, "Toggle button", #__button_toggle|#__button_default )
+    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__button_multiline, -1,4 )
+    Button( 10+222,170+70, 200, 25, "Toggle button", #__button_toggle )
     
     SetState( GetWidget( 5 ), 1 )
     SetFont( GetWidget( 5 ), FontID( 0 ) )
@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 47
+; CursorPosition = 83
+; FirstLine = 74
 ; Folding = ---
 ; EnableXP

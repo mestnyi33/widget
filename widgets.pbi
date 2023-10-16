@@ -80,6 +80,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_scrollbars_reclip = 0
       Global test_scrollbars_draw = 0
       Global test_drawing = 0
+      Global test_clip = 0
       
       EnableExplicit
       UseModule constants
@@ -6774,6 +6775,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b bar_Update( *this._S_WIDGET, mode.b = 1 )
          Protected fixed.l, ScrollPos.f, ThumbPos.i, width, height
          
+         If Not *this\bar
+            ProcedureReturn 0
+         EndIf
+         
          Protected *bar._S_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
          *SB  = *bar\button
@@ -12139,12 +12144,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this
-            *this\hide ! 1
+            Hide( *this, *this\hide ! 1 )
             
             ;\\
             If *display
                If x = #PB_Ignore
-                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x
+                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
                EndIf
                If y = #PB_Ignore
                   y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
@@ -12181,27 +12186,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If *this\row
-                  If *this\root = *display\root ; Not ( *this\root And *this\root <> *display\root )
-                     
+                  If *this\root = *display\root 
                      Debug "display - update"
                      update_items_( *this )
+                     bar_area_update( *this )
+                     Resize( *this, #PB_Ignore, #PB_Ignore, *this\root\width, *this\root\height ); *this\scroll_width( ), *this\scroll_height( ))
+                     Debug *this\scroll_width( )
                   EndIf
-               EndIf
-               
-               ;\\
-               If *this\scroll And *this\scroll\v
-                  display_width = *this\scroll\v\width
-               EndIf
-               display_width + *this\scroll_width( )
-               If display_width < *display\width
-                  display_width = *display\width
-               EndIf
-               If display_mode
-                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - display_width / 2
-               EndIf
-               
-               ;\\
-               If *this\row
+                  
+                  ;\\
+                  If *this\scroll And 
+                     *this\scroll\v And 
+                     Not *this\scroll\v\hide
+                     display_width = *this\scroll\v\width
+                  EndIf
+                  display_width + *this\scroll_width( )
+                  
+                  ;\\
                   ForEach *this\_rows( )
                      display_height + *this\_rows( )\height
                      
@@ -12219,12 +12220,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   display_height = *this\height
                EndIf
                
+                ;\\
+               If display_width < *display\width - 2
+                  display_width = *display\width - 2
+               EndIf
+               
                ;\\
-               *this\autosize = #True
-               Popup( )\widget = *this
-               Popup( )\parent = *display
-               ChangeParent( *this, Popup( ) )
-               PostCanvasRepaint( Popup( ) )
+               If display_mode
+                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - display_width / 2
+               EndIf
                
                ;\\
                ; StickyWindow( window, #True )
@@ -12233,6 +12237,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   CocoaMessage(0, WindowID(Popup( )\canvas\window), "setLevel:", 3)
                   ; Debug CocoaMessage(0, WindowID(Popup( )\canvas\window), "level")
                CompilerEndIf
+               
+               ;\\
+               *this\autosize = #True
+               Popup( )\widget = *this
+               Popup( )\parent = *display
+               ChangeParent( *this, Popup( ) )
+               PostCanvasRepaint( Popup( ) )
                
                ResizeWindow( Popup( )\canvas\window, x+*display\round, y, display_width-*display\round*2, display_height )
                ProcedureReturn #True
@@ -16010,6 +16021,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 0,0,0,0, #Null$, #__flag_child | #__flag_borderless )
+            *this\PopupBox( )\hidden = 1
             *this\PopupBox( )\hide = 1
             
          EndIf
@@ -16506,21 +16518,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DrawAlphaImage( *this\image\id, x + *this\image\x, y + *this\image\y, *this\color\_alpha )
             EndIf
             
-            ;\\ draw frame defaul focus widget
-            If *this\type = #__type_Button
-               If *this\flag & #PB_Button_Default
-                  drawing_mode_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\inner_x( ) + 2, *this\inner_y( ) + 2,
-                                  *this\inner_width( ) - 4, *this\inner_height( ) - 4, 
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
-               EndIf
-            EndIf
-            
-            ;\\ Draw frames
+               ;\\ Draw frames
             If *this\fs
                drawing_mode_( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
                                *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\color\_alpha << 24 )
+            EndIf
+            
+         ;\\ draw frame defaul focus widget
+            If *this\type = #__type_Button
+               If *this\flag & #PB_Button_Default
+                  drawing_mode_( #PB_2DDrawing_Outlined )
+                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), 
+                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
+                  If *this\round
+                     draw_roundbox_( *this\inner_x( )-1, *this\inner_y( ), *this\inner_width( )+2, *this\inner_height( ), 
+                                     *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
+                  EndIf
+                  draw_roundbox_( *this\x,*this\y,*this\width,*this\height,
+                                  *this\round,*this\round,*this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
+               EndIf
             EndIf
             
          EndWith
@@ -16789,9 +16806,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ limit drawing boundaries
-                  If Not *this\root\autosize
+                  ;If Not *this\root\autosize ;?????
                      Clip( *this, [#__c_draw] )
-                  EndIf
+                  ;EndIf
                   
                   ;\\ draw widgets
                   DrawWidget( *this, *this\type )
@@ -16837,10 +16854,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                
-               ;         If *this\child And *this\container
-               ;           drawing_mode_alpha_( #PB_2DDrawing_Default )
-               ;           draw_box_( *this\x[#__c_draw], *this\y[#__c_draw], *this\width[#__c_draw], *this\height[#__c_draw], $ff000000 )
-               ;         EndIf
+               If test_clip And *this\parent
+                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;   draw_box_( *this\parent\x[#__c_draw], *this\parent\y[#__c_draw], *this\parent\width[#__c_draw], *this\parent\height[#__c_draw], $ff000000 )
+                  draw_box_( *this\x[#__c_draw], *this\y[#__c_draw], *this\width[#__c_draw], *this\height[#__c_draw], $ff000000 )
+               EndIf
             EndIf
             
             
@@ -19727,7 +19745,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
          Else
-            g = CanvasGadget( Canvas, x, y, width, height, Flag | #PB_Canvas_Keyboard )
+            If flag & #PB_Canvas_Container = #PB_Canvas_Container
+               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Container | #PB_Canvas_Keyboard )
+            Else
+               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Keyboard )
+            EndIf
             If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
          EndIf
          
@@ -21084,7 +21106,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21083
-; FirstLine = 20321
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v7------------------------------------------------------8-d-0u-8----------a0v-r--470f-8-----------------------------
+; CursorPosition = 12192
+; FirstLine = 12172
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------f2------------------------------------------------------4-8+8d-4----------27f-X--v28-+4------------------------------
 ; EnableXP

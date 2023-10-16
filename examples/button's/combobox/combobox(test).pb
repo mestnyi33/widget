@@ -96,11 +96,18 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*s2combo, -1,"ComboBox item " + Str(a))
     Next
     
+    Define s2combo = ComboBox( 0,0,0,0 )
+    For a = 0 To 115
+      AddItem(s2combo, -1,"ComboBox item " + Str(a))
+    Next
+    
     Splitter( 10+x, 40+h*3, 250, h*3, s2combo, *s2combo , #PB_Splitter_Vertical)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 99
+; FirstLine = 69
 ; Folding = -
 ; EnableXP
