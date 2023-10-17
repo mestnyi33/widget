@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -44,13 +43,13 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
     
     ; all selected item's text-color 
-    SetItemColor(*w, #PB_All, #__Color_Front,  $FF00FFFF, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #__Color_Front,  $FF00FFFF, 2);#__color_state_selected)
     
     ; all selected item's back-color 
-    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3F00F0, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3F00F0, 2);#__color_state_selected)
     
     ; all entered item's back-color
-    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3Ff0F0, #__color_state_entered)
+    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3Ff0F0, 1);#__color_state_entered)
     
     ; vertical and horizontal line back-color
     SetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
@@ -58,7 +57,8 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 13
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 23
 ; Folding = -
 ; EnableXP
