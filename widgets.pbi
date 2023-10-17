@@ -3776,9 +3776,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Macro Clip( _address_, _mode_ = [#__c_draw] )
+    Macro clip_output_( _address_, _mode_ = [#__c_draw] )
       CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
-        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+        ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
       CompilerEndIf
     EndMacro
     
@@ -3814,11 +3814,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure Reclip( *this._S_WIDGET )
-      Macro _clip_caption_( _this_ )
-        ClipPut( _this_, _this_\caption\inner_x( ), _this_\caption\inner_y( ), _this_\caption_inner_width( ), _this_\caption\inner_height( ) )
-      EndMacro
-      
-      Macro _clip_width_( _address_, _parent_, _x_width_, _parent_ix_iwidth_, _mode_ = )
+      Macro clip_width_( _address_, _parent_, _x_width_, _parent_ix_iwidth_, _mode_ = )
         If _parent_ And
            (_parent_\x#_mode_ + _parent_\width#_mode_) > 0 And
            (_parent_\x#_mode_ + _parent_\width#_mode_) < (_x_width_) And
@@ -3837,7 +3833,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndMacro
       
-      Macro _clip_height_( _address_, _parent_, _y_height_, _parent_iy_iheight_, _mode_ = )
+      Macro clip_height_( _address_, _parent_, _y_height_, _parent_iy_iheight_, _mode_ = )
         If _parent_ And
            (_parent_\y#_mode_ + _parent_\height#_mode_) > 0 And
            (_parent_\y#_mode_ + _parent_\height#_mode_) < (_y_height_) And
@@ -3921,7 +3917,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; then move and size parent set clip coordinate
-        ; x&y - clip screen coordinate
+        ;\\ x&y - clip screen coordinate
         If *parent And                                  
            *parent\inner_x( ) > *this\x[#__c_screen] And
            *parent\inner_x( ) > *parent\x[#__c_draw]
@@ -3943,7 +3939,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\x[#__c_draw] < 0 : *this\x[#__c_draw] = 0 : EndIf
         If *this\y[#__c_draw] < 0 : *this\y[#__c_draw] = 0 : EndIf
         
-        ; x&y - clip inner coordinate
+        ;\\ width&height - clip coordinate
+        clip_width_( *this, *parent, *this\x[#__c_screen] + *this\width[#__c_screen], _p_x2_, [#__c_draw] )
+        clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
+        
+        
+        ;\\ x&y - clip inner coordinate
         If *this\x[#__c_draw] < *this\inner_x( )
           *this\x[#__c_draw2] = *this\inner_x( )
         Else
@@ -3955,22 +3956,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\y[#__c_draw2] = *this\y[#__c_draw]
         EndIf
         
-        ; width&height - clip coordinate
-        _clip_width_( *this, *parent, *this\x[#__c_screen] + *this\width[#__c_screen], _p_x2_, [#__c_draw] )
-        _clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
-        
-        ; width&height - clip inner coordinate
+        ;\\ width&height - clip inner coordinate
         If *parent
-          If *this\scroll_width( ) And *this\scroll_width( ) < *this\inner_width( )
-            _clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
-          Else
-            _clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
-          EndIf
-          If *this\scroll_height( ) And *this\scroll_height( ) < *this\inner_height( )
-            _clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
-          Else
-            _clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
-          EndIf
+;           If *this\scroll_width( ) And *this\scroll_width( ) < *this\inner_width( )
+;             clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
+;           Else
+            clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
+;           EndIf
+;           If *this\scroll_height( ) And *this\scroll_height( ) < *this\inner_height( )
+;             clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
+;           Else
+            clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
+;           EndIf
         EndIf
       EndIf
       
@@ -4450,6 +4447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\repaint = #True
+        *this\resize | #__reclip
         *this\resize | #__resize_change
         
         update_border( *this )
@@ -4790,6 +4788,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If enumWidget( )\autosize
                     Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   Else
+                    enumWidget( )\resize | #__reclip
                     enumWidget( )\resize | #__resize_change
                   EndIf
                 EndIf
@@ -4841,6 +4840,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; Чтобы обновить границы отоброжения (clip-coordinate)
       _this_\resize | #__resize_change
+      _this_\resize | #__reclip
     EndMacro
     
     Procedure HideChildrens( *this._S_WIDGET )
@@ -6389,7 +6389,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro bar_area_draw_( _this_ )
       If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
-        ;Clip( _this_, [#__c_draw] )
+        ;clip_output_( _this_, [#__c_draw] )
         
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
            ( _this_\scroll\v\width[#__c_draw] > 0 And _this_\scroll\v\height[#__c_draw] > 0 )
@@ -9744,12 +9744,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
+          
           ; Draw Lines text
           If *this\count\items
             *this\VisibleFirstRow( ) = 0
             *this\VisibleLastRow( )  = 0
             
-            PushListPosition( *this\_rows( ))
+           ;\\
+          clip_output_( *this, [#__c_draw2] )
+           PushListPosition( *this\_rows( ))
             ForEach *this\_rows( )
               ; Is visible lines - -  -
               *this\_rows( )\visible = Bool( Not *this\_rows( )\state\hide And
@@ -9937,6 +9940,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             Next
             PopListPosition( *this\_rows( )) ;
+          clip_output_( *this, [#__c_draw] )
           EndIf
           
           ; Draw caret
@@ -10667,9 +10671,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
       
-      ;
-      ; Clip( *this, [#__c_draw2] ) ; 2
-      
       ;\\
       PushListPosition( *rows( ))
       ForEach *rows( )
@@ -10894,7 +10895,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
+        clip_output_( *this, [#__c_draw2] )
         draw_items_( *this, *this\VisibleRows( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
+        clip_output_( *this, [#__c_draw] )
         
         ;\\ draw frames
         If *this\bs
@@ -11861,8 +11864,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\Title( )\string
-            _clip_caption_( *this )
-            
+            ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
+      
             ; Draw string
             If *this\resize & #__resize_change
               If *this\image\id
@@ -11878,11 +11881,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
-            Clip( *this, [#__c_draw] )
+            clip_output_( *this, [#__c_draw] )
           EndIf
         EndIf
-        
-        ;Clip( *this, [#__c_draw2] )
         
         ; background image draw
         If *this\image[#__image_background]\id
@@ -11892,7 +11893,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           *this\inner_y( ) + *this\image[#__image_background]\y, *this\color\_alpha )
         EndIf
         
-        ;Clip( *this, [#__c_draw] )
+        ;clip_output_( *this, [#__c_draw] )
         
         ; UnclipOutput( )
         ; drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -16573,7 +16574,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\StringBox( )
         drawing_mode_alpha_( #PB_2DDrawing_Gradient )
         draw_gradient_( 0, *this\_box_, *this\color\fore[*this\color\state], *this\color\back[state] )
-        Editor_Draw( *this\StringBox( ) )
+       ; Editor_Draw( *this\StringBox( ) )
       Else
         drawing_mode_alpha_( #PB_2DDrawing_Gradient )
         draw_gradient_( *this\text\vertical, *this, *this\color\fore[*this\color\state], *this\color\back[state], [#__c_frame] )
@@ -16677,9 +16678,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndWith
     EndProcedure
     
-    Procedure DrawWidget( *this._S_WIDGET, type )
-      ;\\ draw widgets
-      Select type
+    Procedure.b Draw( *this._S_WIDGET )
+      Protected arrow_right
+      
+      With *this
+        If *this\repaint = #True
+          *this\repaint = #False
+        EndIf
+        
+        ;\\ init drawing font
+        draw_font_( *this )
+        
+        ;\\ draw belowe drawing
+        If Not *this\hide
+;           If *this\resize & #__resize_change
+;              *this\resize | #__reclip
+;           EndIf
+           If *this\resize & #__reclip
+              *this\resize &~ #__reclip
+             Reclip( *this )
+          EndIf
+          
+          ;\\
+          If *this\width[#__c_draw] > 0 And
+             *this\height[#__c_draw] > 0
+            
+            ;\\
+            If *this\state\disable = 1
+              *this\state\disable = - 1
+              
+              If *this\count\childrens
+                DisableChildrens( *this )
+              EndIf
+            EndIf
+            
+            ;\\ limit drawing boundaries
+            ;If Not *this\root\autosize ;?????
+            clip_output_( *this, [#__c_draw] )
+            ;EndIf
+            
+          ;\\ draw widgets
+      Select *this\type
         Case #__type_Window     : Window_Draw( *this )
           
         Case #__type_ComboBox   : Combobox_Draw( *this )
@@ -16782,48 +16821,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
       EndIf
       
-      ;\\
+   ;\\
       Send( *this, #__event_Draw )
-    EndProcedure
-    
-    Procedure.b Draw( *this._S_WIDGET )
-      Protected arrow_right
-      
-      With *this
-        If *this\repaint = #True
-          *this\repaint = #False
-        EndIf
-        
-        ;\\ init drawing font
-        draw_font_( *this )
-        
-        ;\\ draw belowe drawing
-        If Not *this\hide
-          If *this\resize & #__resize_change
-             Reclip( *this )
-          EndIf
-          
-          ;\\
-          If *this\width[#__c_draw] > 0 And
-             *this\height[#__c_draw] > 0
-            
-            ;\\
-            If *this\state\disable = 1
-              *this\state\disable = - 1
-              
-              If *this\count\childrens
-                DisableChildrens( *this )
-              EndIf
-            EndIf
-            
-            ;\\ limit drawing boundaries
-            ;If Not *this\root\autosize ;?????
-            Clip( *this, [#__c_draw] )
-            ;EndIf
-            
-            ;\\ draw widgets
-            DrawWidget( *this, *this\type )
-          EndIf
+      EndIf
           
           ;\\ reset values
           If *this\WidgetChange( ) <> 0
@@ -16994,7 +16994,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_focused( )\root = *this\root
             
             ; draw key-focused-widget anchors
-            Clip( a_transform( )\main, [#__c_draw2] )
+            clip_output_( a_transform( )\main, [#__c_draw2] )
             a_draw( a_anchors( ) )
           EndIf
           
@@ -21117,7 +21117,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16802
-; FirstLine = 16145
-; Folding = ---------------------------------------------------------------------------------vt-----------------Vt-6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf4--f4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9942
+; FirstLine = 9193
+; Folding = ----------------------------------------------------------------------------z----t0----------------vq0P----------------------------------------------------------------------------------------------------------------------------------8--0----------------------------------------------------------408+--8+-------------------------------------------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------
 ; EnableXP

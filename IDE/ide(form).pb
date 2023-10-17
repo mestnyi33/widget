@@ -1284,7 +1284,6 @@ DataSection
 EndDataSection
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 84
+; CursorPosition = 2
 ; Folding = ---------------f---f-
 ; EnableXP

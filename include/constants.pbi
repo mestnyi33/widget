@@ -147,6 +147,7 @@
       #__resize_restore
       #__resize_minimize
       #__resize_maximize
+      #__reclip 
       #__resize_start
     EndEnumeration
     
@@ -1037,7 +1038,7 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 498
-; FirstLine = 485
+; CursorPosition = 149
+; FirstLine = 137
 ; Folding = ----
 ; EnableXP

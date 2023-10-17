@@ -77,5 +77,6 @@ EndModule
 
 UseModule fix
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = 4--
 ; EnableXP

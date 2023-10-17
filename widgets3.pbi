@@ -76,9 +76,9 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
   DeclareModule Widget
-    Global test_scrollbars_resize = 0
-    Global test_scrollbars_reclip = 0
-    Global test_scrollbars_draw = 0
+    Global test_scrollbars_resize = 1
+    Global test_scrollbars_reclip = 1
+    Global test_scrollbars_draw = 1
     Global test_drawing = 0
     Global test_clip = 1
     
@@ -3776,9 +3776,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Macro clip_output_( _address_, _mode_ = [#__c_draw] )
+    Macro Clip( _address_, _mode_ = [#__c_draw] )
       CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( draw, #PB_Module ))
-        ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+        PB(ClipOutput)( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
       CompilerEndIf
     EndMacro
     
@@ -3814,7 +3814,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure Reclip( *this._S_WIDGET )
-      Macro clip_width_( _address_, _parent_, _x_width_, _parent_ix_iwidth_, _mode_ = )
+      Macro _clip_caption_( _this_ )
+        ClipPut( _this_, _this_\caption\inner_x( ), _this_\caption\inner_y( ), _this_\caption_inner_width( ), _this_\caption\inner_height( ) )
+      EndMacro
+      
+      Macro _clip_width_( _address_, _parent_, _x_width_, _parent_ix_iwidth_, _mode_ = )
         If _parent_ And
            (_parent_\x#_mode_ + _parent_\width#_mode_) > 0 And
            (_parent_\x#_mode_ + _parent_\width#_mode_) < (_x_width_) And
@@ -3833,7 +3837,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndMacro
       
-      Macro clip_height_( _address_, _parent_, _y_height_, _parent_iy_iheight_, _mode_ = )
+      Macro _clip_height_( _address_, _parent_, _y_height_, _parent_iy_iheight_, _mode_ = )
         If _parent_ And
            (_parent_\y#_mode_ + _parent_\height#_mode_) > 0 And
            (_parent_\y#_mode_ + _parent_\height#_mode_) < (_y_height_) And
@@ -3952,20 +3956,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; width&height - clip coordinate
-        clip_width_( *this, *parent, *this\x[#__c_screen] + *this\width[#__c_screen], _p_x2_, [#__c_draw] )
-        clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
+        _clip_width_( *this, *parent, *this\x[#__c_screen] + *this\width[#__c_screen], _p_x2_, [#__c_draw] )
+        _clip_height_( *this, *parent, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_draw] )
         
         ; width&height - clip inner coordinate
         If *parent
           If *this\scroll_width( ) And *this\scroll_width( ) < *this\inner_width( )
-            clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
+            _clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
           Else
-            clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
+            _clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
           EndIf
           If *this\scroll_height( ) And *this\scroll_height( ) < *this\inner_height( )
-            clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
+            _clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
           Else
-            clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
+            _clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
           EndIf
         EndIf
       EndIf
@@ -4446,8 +4450,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If ( Change_x Or Change_y Or Change_width Or Change_height )
         *this\repaint = #True
-        *this\resize | #__reclip
         *this\resize | #__resize_change
+        *this\reclip = 1
         
         update_border( *this )
         
@@ -4787,8 +4791,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If enumWidget( )\autosize
                     Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   Else
-                    enumWidget( )\resize | #__reclip
-                    enumWidget( )\resize | #__resize_change
+                     enumWidget( )\reclip = 1
+                     enumWidget( )\resize | #__resize_change
                   EndIf
                 EndIf
               EndIf
@@ -6387,6 +6391,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro bar_area_draw_( _this_ )
       If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
+        ;Clip( _this_, [#__c_draw] )
+        
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
            ( _this_\scroll\v\width[#__c_draw] > 0 And _this_\scroll\v\height[#__c_draw] > 0 )
           bar_scroll_draw( _this_\scroll\v )
@@ -9740,30 +9746,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          ; Draw frames
-          If *this\notify
-            drawing_mode_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $FF0000FF )
-            If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
-          ElseIf *this\bs
-            drawing_mode_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[\color\state] )
-            If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\color\state] ) : EndIf  ; Сглаживание краев ) ))
-          EndIf
-          
           ; Draw Lines text
           If *this\count\items
             *this\VisibleFirstRow( ) = 0
             *this\VisibleLastRow( )  = 0
             
-           ;\\
-        clip_output_( *this, [#__c_draw2] )
-        Debug ""+*this\class +" "+ 
-              *this\x[#__c_draw] +" "+ *this\y[#__c_draw] +" "+ *this\width[#__c_draw] +" "+ *this\height[#__c_draw] +" - "+ 
-              *this\x[#__c_inner] +" "+ *this\y[#__c_inner] +" "+ *this\width[#__c_inner] +" "+ *this\height[#__c_inner] +" - "+ 
-              *this\x[#__c_draw2] +" "+ *this\y[#__c_draw2] +" "+ *this\width[#__c_draw2] +" "+ *this\height[#__c_draw2]
-              
-        PushListPosition( *this\_rows( ))
+            PushListPosition( *this\_rows( ))
             ForEach *this\_rows( )
               ; Is visible lines - -  -
               *this\_rows( )\visible = Bool( Not *this\_rows( )\state\hide And
@@ -9951,16 +9939,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             Next
             PopListPosition( *this\_rows( )) ;
-            
-            ;\\
-        ;clip_output_( *this, [#__c_draw] )
-        
           EndIf
           
           ; Draw caret
           If *this\text\editable And *this\state\focus
             drawing_mode_( #PB_2DDrawing_XOr )
             draw_box_( *this\inner_x( ) + *this\text\caret\x + scroll_x, *this\inner_y( ) + *this\text\caret\y + scroll_y, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+          EndIf
+          
+          ; Draw frames
+          If *this\notify
+            drawing_mode_( #PB_2DDrawing_Outlined )
+            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $FF0000FF )
+            If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
+          ElseIf *this\bs
+            drawing_mode_( #PB_2DDrawing_Outlined )
+            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[\color\state] )
+            If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\color\state] ) : EndIf  ; Сглаживание краев ) ))
           EndIf
           
           If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
@@ -10674,6 +10669,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
       
+      ;
+      ; Clip( *this, [#__c_draw2] ) ; 2
+      
       ;\\
       PushListPosition( *rows( ))
       ForEach *rows( )
@@ -10898,12 +10896,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        clip_output_( *this, [#__c_draw2] )
-        Debug "  "+*this\class +" "+ 
-              *this\x[#__c_draw] +" "+ *this\y[#__c_draw] +" "+ *this\width[#__c_draw] +" "+ *this\height[#__c_draw] +" - "+ 
-              *this\x[#__c_inner] +" "+ *this\y[#__c_inner] +" "+ *this\width[#__c_inner] +" "+ *this\height[#__c_inner] +" - "+ 
-              *this\x[#__c_draw2] +" "+ *this\y[#__c_draw2] +" "+ *this\width[#__c_draw2] +" "+ *this\height[#__c_draw2]
-        
         draw_items_( *this, *this\VisibleRows( ), *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos )
         
         ;\\ draw frames
@@ -11871,8 +11863,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\Title( )\string
-            ;ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
-      
+            _clip_caption_( *this )
+            
             ; Draw string
             If *this\resize & #__resize_change
               If *this\image\id
@@ -11888,9 +11880,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
-           ; clip_output_( *this, [#__c_draw] )
+            Clip( *this, [#__c_draw] )
           EndIf
         EndIf
+        
+        ;Clip( *this, [#__c_draw2] )
         
         ; background image draw
         If *this\image[#__image_background]\id
@@ -11900,6 +11894,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           *this\inner_y( ) + *this\image[#__image_background]\y, *this\color\_alpha )
         EndIf
         
+        ;Clip( *this, [#__c_draw] )
+        
+        ; UnclipOutput( )
+        ; drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+        ; draw_roundbox_( *this\frame_x( ),\frame_y( ),\frame_width( ),\frame_height( ), round,round,$ff000000 )
+        ; draw_roundbox_( *this\inner_x( ),\inner_y( ),\inner_width( ),\inner_height( ), round,round,$ff000000 )
         
       EndWith
     EndProcedure
@@ -16801,11 +16801,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ draw belowe drawing
         If Not *this\hide
-;           If *this\resize & #__resize_change
-;              *this\resize | #__reclip
-;           EndIf
-           If *this\resize & #__reclip
-              *this\resize &~ #__reclip
+           If *this\reclip
+              *this\reclip = 0
              Reclip( *this )
           EndIf
           
@@ -16824,12 +16821,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ limit drawing boundaries
             ;If Not *this\root\autosize ;?????
-            clip_output_( *this, [#__c_draw] )
-            Debug "draw "+*this\class +" "+ 
-              *this\x[#__c_draw] +" "+ *this\y[#__c_draw] +" "+ *this\width[#__c_draw] +" "+ *this\height[#__c_draw] +" - "+ 
-              *this\x[#__c_inner] +" "+ *this\y[#__c_inner] +" "+ *this\width[#__c_inner] +" "+ *this\height[#__c_inner] +" - "+ 
-              *this\x[#__c_draw2] +" "+ *this\y[#__c_draw2] +" "+ *this\width[#__c_draw2] +" "+ *this\height[#__c_draw2]
-        ;EndIf
+            Clip( *this, [#__c_draw] )
+            ;EndIf
             
             ;\\ draw widgets
             DrawWidget( *this, *this\type )
@@ -16880,9 +16873,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;   draw_box_( *this\parent\x[#__c_draw], *this\parent\y[#__c_draw], *this\parent\width[#__c_draw], *this\parent\height[#__c_draw], $ff000000 )
             draw_box_( *this\x[#__c_draw], *this\y[#__c_draw], *this\width[#__c_draw], *this\height[#__c_draw], $ff000000 )
           EndIf
-            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-            ;   draw_box_( *this\parent\x[#__c_draw], *this\parent\y[#__c_draw], *this\parent\width[#__c_draw], *this\parent\height[#__c_draw], $ff000000 )
-            draw_box_( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner], $ff000000 )
         EndIf
         
         
@@ -17007,7 +16997,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_focused( )\root = *this\root
             
             ; draw key-focused-widget anchors
-            ;clip_output_( a_transform( )\main, [#__c_draw2] )
+            Clip( a_transform( )\main, [#__c_draw2] )
             a_draw( a_anchors( ) )
           EndIf
           
@@ -20603,146 +20593,8 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
-
-; XIncludeFile "../../widgets.pbi"
-
-;- EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile ;= 100
-  EnableExplicit
-  UseLib(widget)
-  
-  UsePNGImageDecoder()
-  
-  Global img = 2
-;   CatchImage(0, ?Logo);?maximize, 204)
-; ;   DataSection
-; ;       maximize:
-; ;       Data.b $89,$50,$4E,$47,$0D,$0A,$1A,$0A,$00,$00,$00,$0D,$49,$48,$44,$52,$00,$00,$00,$10
-; ;       Data.b $00,$00,$00,$10,$08,$06,$00,$00,$00,$1F,$F3,$FF,$61,$00,$00,$00,$93,$49,$44,$41
-; ;       Data.b $54,$78,$DA,$CD,$D2,$B1,$0E,$82,$40,$10,$84,$61,$59,$A0,$80,$82,$80,$86,$D8,$28
-; ;       Data.b $14,$14,$24,$14,$60,$7C,$FF,$52,$E3,$23,$F8,$38,$E7,$5F,$6C,$61,$36,$7B,$39,$13
-; ;       Data.b $1B,$36,$F9,$AA,$99,$0C,$14,$77,$D8,$E5,$65,$90,$04,$3A,$FE,$BD,$11,$12,$9E,$A8
-; ;       Data.b $91,$7B,$5F,$0E,$3F,$BA,$A0,$B6,$03,$A2,$E1,$82,$1B,$36,$AC,$C6,$5D,$3B,$33,$DA
-; ;       Data.b $D8,$C0,$84,$11,$3D,$8E,$46,$FF,$D5,$E9,$62,$03,$23,$4E,$28,$21,$46,$09,$ED,$C4
-; ;       Data.b $FF,$60,$D0,$50,$10,$ED,$EC,$7F,$A0,$43,$01,$31,$8A,$D4,$C0,$03,$21,$E1,$85,$2B
-; ;       Data.b $1A,$EF,$21,$55,$38,$6B,$61,$F0,$68,$46,$87,$AE,$73,$B9,$06,$0D,$5A,$8F,$66,$95
-; ;       Data.b $76,$FF,$BF,$0F,$21,$2E,$31,$D6,$FF,$2F,$53,$8C,$00,$00,$00,$00,$49,$45,$4E,$44
-; ;       Data.b $AE,$42,$60,$82
-; ;       maximizeend:
-; ;     EndDataSection
-;     
-;     DataSection
-;     Logo: 
-;       IncludeBinary #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png";"Logo.bmp"
-;   EndDataSection
-      
-  If Not LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
-    End
-  EndIf
-  
-  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-    End
-  EndIf
-  
-  Global x,y,i,NewMap Widgets.i()
-  
-  Procedure scrolled( )
-    ; If EventGadget() = #PB_GadgetType_ScrollBar
-      SetState( Widgets(Hex(#PB_GadgetType_ProgressBar)), GetState( Widgets(Hex(#PB_GadgetType_ScrollBar))))
-    ; EndIf 
-  EndProcedure
-  
-  If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(GetActiveWindow())
-    ;
-    ;Widgets("Container") = Container(0, 0, 995, 455);, #__flag_AutoSize) 
-    
-;     Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button)+" text clip clip clip clip text" ) 
-    Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" text clip clip clip clip text")                                 
-;     Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+" text clip clip clip clip text", #PB_Text_Border)        
-;     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox)+" text clip clip clip clip text", #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
-;     Widgets(Hex(#PB_GadgetType_Option)) = Option(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option)+" text clip clip clip clip text" ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
-    Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
-    
-;     Widgets(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame)+" text clip clip clip clip text" )
-    Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
-;     Widgets(Hex(#PB_GadgetType_Image)) = Image(170, 205, 160,95, img, #PB_Image_Border ) 
-;     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink)+" text clip clip clip clip text", $00FF00, #PB_HyperLink_Underline ) 
-;     Widgets(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )
-;     Widgets(Hex(101)) = Option(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container)+" text clip clip clip clip text" )  : SetState(Widgets(Hex(101)), 1)  
-;     Widgets(Hex(102)) = Option(10, 40, 110,20, "Option_widget"+" text clip clip clip clip text");, #__flag_flat)  
-;     CloseList()
-    Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon)+" text clip clip clip clip text",120 )                           
-    
-;     ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
-;     Widgets(Hex(#PB_GadgetType_ProgressBar)) = Progress(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
-;     Widgets(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
-;     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseList()
-;     Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
-;     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
-;     
-;     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, 1)
-;     ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
-;     ;     DateGadget(#PB_GadgetType_Date, 500, 205, 160,95 )
-    Widgets(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "editor_"+Hex(#PB_GadgetType_Editor)+" text clip clip clip clip text")  
-    ;     Widgets(Hex(#PB_GadgetType_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
-    ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 505, 160,95,"" )
-    ;     
-    ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,95,"" )
-    Widgets(Hex(#PB_GadgetType_Spin)) = Spin(665, 105, 160,95,20,1000000000)
-    
-    Widgets(Hex(#PB_GadgetType_Tree)) = Tree( 665, 205, 160, 95 ) 
-    AddItem(Widgets(Hex(#PB_GadgetType_Tree)), -1, "Tree_"+Hex(#PB_GadgetType_Tree)+" text clip clip clip clip text") 
-    For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Tree)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
-    
-;     Widgets(Hex(#PB_GadgetType_Panel)) = Panel(665, 305, 160,95) 
-;     AddItem(Widgets(Hex(#PB_GadgetType_Panel)), -1, "Panel_"+Hex(#PB_GadgetType_Panel)+" text clip clip clip clip text") 
-;     Widgets(Hex(255)) = Button(0, 0, 90,20, "Button_255"+" text clip clip clip clip text" ) 
-;     For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Button(10,5,50,35, "butt_"+Str(i)+" text clip clip clip clip text") : Next 
-;     CloseList()
-;     
-;     OpenList(Widgets(Hex(#PB_GadgetType_Panel)), 1)
-;     Container(10,5,150,55, #PB_Container_Flat) 
-;     Container(10,5,150,55, #PB_Container_Flat) 
-;     Button(10,5,50,35, "butt_1"+" text clip clip clip clip text") 
-;     CloseList()
-;     CloseList()
-;     CloseList()
-;     SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
-    
-    Widgets(Hex(301)) = Spin(0, 0, 100,20,0,1000000000000000000, #__spin_plus)
-    Widgets(Hex(302)) = Spin(0, 0, 100,20,0,1000000000000000000) : SetState(Widgets(Hex(302)), 100000000000 )               
-    Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)))
-    
-    Widgets(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95); ,#__flag_AutoSize)
-    Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0"+" text clip clip clip clip text")
-    Resize(*g, 7, 40, 120, 60)
-    
-;     CloseList()
-; ;     OpenList(Root())
-;      Button(10,5,50,35, "butt_1") 
-    
-    ;     CompilerEndIf
-    ;     InitScintilla()
-    ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
-    ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
-    ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
-    
-    CloseList()
-    
-    ReDraw(Root())
-    
-    Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
-    
-    WaitClose( )
-;     Repeat
-;       Define  Event = WaitWindowEvent()
-;     Until Event= #PB_Event_CloseWindow
-    
-  EndIf   
-CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20723
-; FirstLine = 20519
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4794
+; FirstLine = 4772
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

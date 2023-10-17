@@ -16,51 +16,51 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         Function
       EndMacro
       
-      Macro PB_(Function)
+      Macro FIXME(Function)
         draw::mac_#Function
       EndMacro
       
       Macro TextHeight(Text)
-        PB_(TextHeight)(Text)
+        FIXME(TextHeight)(Text)
       EndMacro
       
       Macro TextWidth(Text)
-        PB_(TextWidth)(Text)
+        FIXME(TextWidth)(Text)
       EndMacro
       
       Macro DrawingMode(_mode_)
-        PB_(DrawingMode)(_mode_)
+        FIXME(DrawingMode)(_mode_)
         PB(DrawingMode)(_mode_) 
       EndMacro
       
       Macro GetGadgetFont(FontID)
-        PB_(GetGadgetFont)(FontID)
+        FIXME(GetGadgetFont)(FontID)
       EndMacro
       
       Macro DrawingFont(FontID)
-        PB_(DrawingFont)(FontID)
+        FIXME(DrawingFont)(FontID)
       EndMacro
       
       Macro ClipOutput(x, y, width, height)
         PB(ClipOutput)(x, y, width, height)
-        PB_(ClipOutput)(x, y, width, height)
+        FIXME(ClipOutput)(x, y, width, height)
       EndMacro
       
       Macro UnclipOutput()
         PB(UnclipOutput)()
-        PB_(ClipOutput)(0, 0, OutputWidth(), OutputHeight())
+        FIXME(ClipOutput)(0, 0, OutputWidth(), OutputHeight())
       EndMacro
       
       Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-        PB_(DrawRotatedText)(x, y, Text, 0, FrontColor, BackColor)
+        FIXME(DrawRotatedText)(x, y, Text, 0, FrontColor, BackColor)
       EndMacro
       
       Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-        PB_(DrawRotatedText)(x, y, Text, Angle, FrontColor, BackColor)
+        FIXME(DrawRotatedText)(x, y, Text, Angle, FrontColor, BackColor)
       EndMacro
       
       Macro SetOrigin( x, y )
-        PB_(SetOrigin)(x ,y)
+        FIXME(SetOrigin)(x ,y)
       EndMacro
       
       
@@ -538,5 +538,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -------4v-
+; CursorPosition = 411
+; FirstLine = 406
+; Folding = -------43-
 ; EnableXP
