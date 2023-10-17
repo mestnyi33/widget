@@ -269,7 +269,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select class
         Case "window"    
-          If GetType( *parent ) = #PB_GadgetType_MDI
+          If Type( *parent ) = #__Type_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
@@ -582,7 +582,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If *this\mode\collapsed And *rows\ParentRow( ) And 
            *rows\sublevel > *rows\ParentRow( )\sublevel
           ;*rows\ParentRow( )\collapsebox\___state= 1 
-          *rows\hide = 1
+          *rows\state\hide = 1
         EndIf
         
         ; properties
@@ -911,5 +911,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 584
+; FirstLine = 580
 ; Folding = --------------
 ; EnableXP

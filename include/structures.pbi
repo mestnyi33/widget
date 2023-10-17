@@ -587,7 +587,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
-         
+         reclip.b
          
          type.b
          round.a                ; drawing round
@@ -765,7 +765,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 493
-; FirstLine = 480
+; CursorPosition = 589
+; FirstLine = 587
 ; Folding = ----------
 ; EnableXP
