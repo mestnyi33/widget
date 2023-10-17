@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetGadgetFont( #PB_Any, FontID( #Font18R ) )
   Debug FontID(0)
   
-  If Open( OpenWindow( #PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) )
+  If Open( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     Global main = GetWindow( Root( ) )
     ;BindEventCanvas( )
     
@@ -143,8 +143,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 74
+; IDE Options = PureBasic 5.72 (Windows - x64)
 ; Folding = ---
 ; EnableXP
