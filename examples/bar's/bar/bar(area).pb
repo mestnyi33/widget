@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndStructure
  
   Enumeration
-    #MyCanvas = 1   ; just to test whether a number different from 0 works now
+    #MyCanvas = 0   ; just to test whether a number different from 0 works now
   EndEnumeration
   
   
@@ -227,11 +227,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Repaint
     Protected Canvas = EventGadget()
     Protected EventType = EventType()
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    ;Debug EventType
+    ;ProcedureReturn 
+    ;Debug IsGadget(Canvas)
+    If EventType <> 65511
+       Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected Buttons = GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected Width = GadgetWidth(Canvas)
+    Protected Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
+    Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
+ EndIf
+ Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
    
@@ -325,6 +330,7 @@ CompilerIf #PB_Compiler_IsMainFile
           If *this\scroll\h\bar\max<>ScrollWidth : SetAttribute(*this\scroll\h, #__Bar_Maximum, ScrollWidth) : EndIf
           If *this\scroll\v\bar\max<>ScrollHeight : SetAttribute(*this\scroll\v, #__Bar_Maximum, ScrollHeight) : EndIf
          
+          ;bar_area_update(*this)
           bar_area_resize(*this, 0, 0, Width, Height)
           Repaint = #True
          
@@ -352,7 +358,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
   CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
  
-  Open(0, 10, 110, 400, 400, "", 0, @Canvas_CallBack(), #MyCanvas)
+  Open(0, 10, 110, 400, 400, "", 0, 0, #MyCanvas)   ;@Canvas_CallBack()
   
   *this.allocate( widget )
   *this\scroll\v = Scroll( 380, 0,  20, 380, 0, 0, 0, #__Bar_Vertical|#__Bar_Inverted, 9 )
@@ -368,8 +374,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define vButton = GetAttribute(*this\scroll\v, #__Bar_NoButtons)
   Define hButton = GetAttribute(*this\scroll\h, #__Bar_NoButtons)
  
-  ;PostEvent(#PB_Event_Gadget, 0,#MyCanvas, #PB_EventType_Resize)
-  ;BindGadgetEvent(#MyCanvas, @Canvas_CallBack())
+  PostEvent(#PB_Event_Gadget, 0,#MyCanvas, #PB_EventType_Resize)
+  BindGadgetEvent(#MyCanvas, @Canvas_CallBack())
   BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
  
   Repeat
@@ -409,5 +415,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = vv-+-v-----
+; CursorPosition = 240
+; FirstLine = 204
+; Folding = vu---v-----
 ; EnableXP

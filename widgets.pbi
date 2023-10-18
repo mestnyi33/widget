@@ -79,8 +79,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_scrollbars_resize = 0
       Global test_scrollbars_reclip = 0
       Global test_scrollbars_draw = 0
-      Global test_drawing = 0
+      Global test_startdrawing = 0
       Global test_clip = 0
+      Global test_buttons_draw = 0
       
       EnableExplicit
       UseModule constants
@@ -213,32 +214,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;Macro PB( _pb_function_name_ ): _pb_function_name_: EndMacro
       Macro Mouse( ): widget::*canvas\mouse: EndMacro
       Macro Keyboard( ): widget::*canvas\keyboard: EndMacro
-      Macro Drawing( ): widget::*canvas\drawing : EndMacro
-      Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
-      Macro DrawingStart( _this_, _item_ = 0 ) 
+      ;-
+      Macro Drawing( )
+         widget::*canvas\drawing 
+;          ;\\     DrawingStop( )
+;          If Not Drawing( )
+;             Drawing( ) = StartDrawing( CanvasOutput( canvas ) )
+;          EndIf
+      EndMacro
+      Macro ReDrawing( _this_, _item_ = 0 ) 
+         ;DrawingStop( )
          If Not Drawing( ) 
             Drawing( ) = StartDrawing( Output( _this_\root )) 
+            
             If _item_ = 1
                draw_font_item_( _this_, _this_\EnteredLine( ), 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
             ElseIf _item_ = - 1
                draw_font_( _this_ )
             EndIf 
             
-            If test_drawing
-               Debug "  DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) +" "+ _this_\class
+            If test_startdrawing
+               Debug "  ReDrawing( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) +" "+ _this_\class
             EndIf
          EndIf
       EndMacro
       
-      Macro DrawingStop( )
+      Macro DrawingStart( _canvas_ )
          If Drawing( ) 
             StopDrawing( ) 
-            If test_drawing
-               Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) 
+            
+            If _canvas_ = #PB_Default
+               Drawing( ) = 0 
+               If test_startdrawing
+                  Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) 
+               EndIf
             EndIf
-            Drawing( ) = 0 
+         EndIf
+         If _canvas_ >= 0
+            Drawing( ) = StartDrawing( CanvasOutput( _canvas_ )) 
+            If test_startdrawing
+               Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) 
+            EndIf
          EndIf
       EndMacro
+      Macro DrawingStop( )
+         DrawingStart( #PB_Default )
+      EndMacro
+      Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
       
       
       ;-
@@ -1025,6 +1047,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Requester
       Global resize_one
       
+      Declare.w ChangeValue( *this )
       Declare.i TypeFromClass( class.s )
       Declare.s ClassFromType( type.i )
       Declare.s ClassFromEvent( event.i )
@@ -4998,7 +5021,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
+      Procedure.w ChangeValue( *this._s_widget ) ; -32768 to +32767
+         If *this\bar
+            ProcedureReturn *this\bar\page\change
+         EndIf
+      EndProcedure
       
+  
       
       ;-
       ;-  BARs
@@ -8187,7 +8216,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\EnteredLine( )
             ;\\
-            DrawingStart( *this, 1 )
+            ReDrawing( *this, 1 )
             
             mouse_x = mouse( )\x - row_x_( *this, *this\EnteredLine( ) ) - *this\EnteredLine( )\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
@@ -8214,7 +8243,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\index + " " + mode
          
          ;\\
-         DrawingStart( *this )
+         ReDrawing( *this )
          
          *this\repaint = #True
          ;\\ *rowLine\color\state = #__s_2
@@ -8971,7 +9000,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected add_index = - 1, add_y, add_pos, add_height
          
          ;\\
-         DrawingStart( *this )
+         ReDrawing( *this )
          
          
          If position < 0 Or position > ListSize( *this\_rows( )) - 1
@@ -10452,7 +10481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
                   
                   ;\\
-                  DrawingStart( *this )
+                  ReDrawing( *this )
                   
                   
                   ;\\ if the item list has changed
@@ -16070,7 +16099,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 0,0,0,0, #Null$, #__flag_child | #__flag_borderless )
+            *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 
+                                        0,0,0,0, #Null$, #__flag_child | #__flag_borderless | #__flag_nobuttons | #__flag_nolines )
 ;             *this\PopupBox( )\hidden = 1
 ;             *this\PopupBox( )\hide = 1
             Hide( *this\PopupBox( ), #True )
@@ -16926,35 +16956,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure ReDraw( *this._S_WIDGET )
-         ;\\
-         DrawingStop( )
-         
-         Drawing( ) = StartDrawing( Output( *this\root ))
-         If Drawing( )
-            If test_drawing =- 1
-               Debug "  DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) +" "+ *this\class
-            EndIf
             
-            ; bind all events
-            If ListSize( *canvas\events( ) )
-               ; Debug " -1- "+*canvas\events( )
-               ForEach *canvas\events( )
-                  PushListPosition( *canvas\events( ) )
-                  If *canvas\events( )\type <> #__event_MouseMove And 
-                     *canvas\events( )\type <> #__event_Draw 
-                     ;	Debug "events - " + *canvas\events( ) +" ( "+ ClassFromType(*canvas\events( )\widget\type) +" - "+ *canvas\events( )\widget\class +" ) "+ ClassFromEvent(*canvas\events( )\type)
+         ;\\ bind all events
+         If ListSize( *canvas\events( ) )
+            ; Debug " -1- "+*canvas\events( )
+            ForEach *canvas\events( )
+               PushListPosition( *canvas\events( ) )
+               If *canvas\events( )\type <> #__event_MouseMove And 
+                  *canvas\events( )\type <> #__event_Draw 
+                  ;	Debug "events - " + *canvas\events( ) +" ( "+ ClassFromType(*canvas\events( )\widget\type) +" - "+ *canvas\events( )\widget\class +" ) "+ ClassFromEvent(*canvas\events( )\type)
+               EndIf
+               
+               ;\\ scrollbar
+               If *canvas\events( )\widget\bar
+                  *canvas\events( )\widget\bar\page\change = *canvas\events( )\data
+               EndIf
+               ;\\
+               Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
+               ;\\ scrollbar
+               If *canvas\events( )\widget\bar
+                  If *canvas\events( )\widget\bar\page\change <> 0
+                     *canvas\events( )\widget\bar\page\change = 0
                   EndIf
-                  Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
-                  PopListPosition( *canvas\events( ) )
-                  
-                  DeleteElement(*canvas\events( ))
-               Next
-            EndIf
-            If ListSize( *canvas\events( ) )
-               Debug " -2- "+*canvas\events( )
-               ForEach *canvas\events( )
-                  Debug "   events - " + *canvas\events( ) +" ( "+ ClassFromType(*canvas\events( )\widget\type) +" ) "+ ClassFromEvent(*canvas\events( )\type)
-               Next
+               EndIf
+               PopListPosition( *canvas\events( ) )
+               
+               DeleteElement(*canvas\events( ))
+            Next
+         EndIf
+         If ListSize( *canvas\events( ) )
+            Debug " -2- "+*canvas\events( )
+            ForEach *canvas\events( )
+               Debug "   events - " + *canvas\events( ) +" ( "+ ClassFromType(*canvas\events( )\widget\type) +" ) "+ ClassFromEvent(*canvas\events( )\type)
+            Next
+         EndIf
+         
+         ;\\
+         DrawingStart( *this\root\canvas\gadget )
+         If Drawing( )
+            If test_startdrawing =- 1
+            ;   Debug "  DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) +" "+ *this\class
             EndIf
             
             ;\\
@@ -17083,22 +17124,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\ temp
-            If EnteredButton( ) And
-               EnteredWidget( ) And
-               EnteredWidget( )\bar And
-               EnteredWidget( )\root = *this\root And 
-               EnteredWidget( )\state\enter And
-               ( EnteredWidget( )\bar\button = EnteredButton( ) Or
-                 EnteredWidget( )\bar\button[1] = EnteredButton( ) Or
-                 EnteredWidget( )\bar\button[2] = EnteredButton( ) )
-               
-               UnclipOutput( )
-               ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
-               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-               If EnteredButton( )\state\disable
-                  draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ff0000ff )
-               Else
-                  draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ffff0000 )
+            If test_buttons_draw
+               If EnteredButton( ) And
+                  EnteredWidget( ) And
+                  EnteredWidget( )\bar And
+                  EnteredWidget( )\root = *this\root And 
+                  EnteredWidget( )\state\enter And
+                  ( EnteredWidget( )\bar\button = EnteredButton( ) Or
+                    EnteredWidget( )\bar\button[1] = EnteredButton( ) Or
+                    EnteredWidget( )\bar\button[2] = EnteredButton( ) )
+                  
+                  UnclipOutput( )
+                  ;Debug ""+EnteredButton( ) +" "+ EnteredButton( )\x +" "+ EnteredButton( )\y +" "+ EnteredButton( )\width +" "+ EnteredButton( )\height
+                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                  If EnteredButton( )\state\disable
+                     draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ff0000ff )
+                  Else
+                     draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, $ffff0000 )
+                  EndIf
                EndIf
             EndIf
             
@@ -19755,7 +19798,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             flag | #PB_Canvas_Container
          EndIf
          
-         If PB(IsWindow)(Window) = 0
+         If Not PB(IsWindow)(Window)
             If Window > 5000
                Window = #PB_Any
             EndIf
@@ -19890,8 +19933,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         DrawingStop( )
-         DrawingStart( Root( ), - 1 )
+         DrawingStart( Canvas )
+         draw_font_( Root( ) )
          
          ProcedureReturn Root( )
       EndProcedure
@@ -21157,7 +21200,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12135
-; FirstLine = 11740
-; Folding = -----------------------------------------------------------------------------------------------------+ncf-J-------------------------------------------------------------------------------------------------------------------------------------------------------------vP-----------------------------------4------------------------------------------------------------------------------------------------f---f---4+------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16997
+; FirstLine = 16386
+; Folding = -----------------------------------------------------------------------------------------------------0P6-+T+-------f-----------------------------------------------------------------------------------------------------------------------------------------------------06-----------------------------------+------------------------------------------------------------------------------------------------8-------3--------------------bv-9zf0----------------------------------------------+f4fv----f-fX0----------------------------------------------
 ; EnableXP

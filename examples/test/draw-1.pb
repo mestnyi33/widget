@@ -1,0 +1,27 @@
+﻿;- EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../../widgets.pbi" : UseLib( widget )
+   EnableExplicit
+   Global Event, progress, scroll
+   
+   Procedure scrolled( )
+      Debug ""+GetState( scroll ) +" "+ EventWidget( )\bar\page\change 
+      SetState( progress, GetState( scroll ))
+   EndProcedure
+   
+   If Open(0, 0, 0, 995, 605, "demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      progress = Progress(10, 150, 975,95,0,100, 0) 
+      ; SetState(progress, 50)
+      
+      scroll = Scroll(10, 250, 975,95,0,120,20) 
+      SetState(scroll, 50)
+      
+      ;\\
+      Bind(scroll, @scrolled(), #__event_Change )
+      WaitClose( )
+   EndIf   
+CompilerEndIf
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 7
+; Folding = -
+; EnableXP

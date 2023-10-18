@@ -1266,6 +1266,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------8---f--------X-P+-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1189
+; FirstLine = 1052
+; Folding = ----------8------------X-P+-------
 ; EnableXP
