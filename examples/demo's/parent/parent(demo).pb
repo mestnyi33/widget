@@ -60,6 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  6: *CHILD = ListView(30,20,150,30) 
                     Case  7: *CHILD = Frame(30,20,150,30,"Frame") 
                     Case  8: *CHILD = ComboBox(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
+                       Debug ""+*CHILD\root\class +" "+ *CHILD\PopupBox( )\root\class
+                       
                     Case  9: *CHILD = Image(30,20,150,30,0,#PB_Image_Border) 
                     Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
                     Case 11: *CHILD = Container(30,20,150,30,#PB_Container_Flat): Button(0,0,80,20,"Button"): CloseList() ; Container
@@ -112,6 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
   Open(10)
+  Root( )\class = "new"
   ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = Container(0, 0, 425, 350)
   
@@ -143,6 +146,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
   Open(20)
+  Root( )\class = "last"
   ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = Container(0,0, 425, 350)
   
@@ -210,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 15
-; Folding = -+
+; CursorPosition = 148
+; FirstLine = 139
+; Folding = --
 ; EnableXP

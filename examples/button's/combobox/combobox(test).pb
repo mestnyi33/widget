@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     Define *s1combo = ComboBox( 0,0,0,0 )
-    For a = 0 To 5
+    For a = 0 To 0
       AddItem(*s1combo, -1,"ComboBox item " + Str(a))
     Next
     
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 69
+; CursorPosition = 81
+; FirstLine = 72
 ; Folding = -
 ; EnableXP

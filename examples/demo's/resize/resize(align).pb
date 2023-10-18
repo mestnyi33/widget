@@ -1,7 +1,6 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
-  
+XIncludeFile "widgets.pbi"
+ 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
 UseLib(widget)
@@ -16,7 +15,7 @@ UseLib(widget)
   EndProcedure
   
   Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-    SetAlignmentFlag(*This._S_widget, Mode, Type)
+    SetAlignment(*This._S_widget, Mode)
   EndProcedure
   
   Procedure Window_0()
@@ -166,5 +165,7 @@ UseLib(widget)
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = --
 ; EnableXP
