@@ -134,22 +134,23 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Widgets(Hex(6)) = Button(0, 0, 80, 40, "left&top")    ; right         #right
     Widgets(Hex(7)) = Button(0, 0, 80, 40, "right&top")   ; right         #right
-    Widgets(Hex(8)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
-    Widgets(Hex(9)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
+    Widgets(Hex(8)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
+    Widgets(Hex(9)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
     
+    Define position = #__align_auto;#__align_auto
+    Define mode = #__align_auto
+    SetAlignment( Widgets(Hex(1)), mode, position,0,0,0 )
+    SetAlignment( Widgets(Hex(2)), mode, 0,position,0,0 )
+    SetAlignment( Widgets(Hex(3)), mode, 0,0,position,0 )
+    SetAlignment( Widgets(Hex(4)), mode, 0,0,0,position )
     
-    SetAlignment( Widgets(Hex(1)), #__align_auto, -5,0,0,0 )
-    SetAlignment( Widgets(Hex(2)), #__align_auto, 0,-5,0,0 )
-    SetAlignment( Widgets(Hex(3)), #__align_auto, 0,0,-5,0 )
-    SetAlignment( Widgets(Hex(4)), #__align_auto, 0,0,0,-5 )
+    SetAlignment( Widgets(Hex(6)), mode, position,position,0,0 )
+    SetAlignment( Widgets(Hex(7)), mode, 0,position,position,0 )
+    SetAlignment( Widgets(Hex(8)), mode, position,0,0,position )
+    SetAlignment( Widgets(Hex(9)), mode, 0,0,position,position )
     
-    SetAlignment( Widgets(Hex(6)), #__align_auto, -5,-5,0,0 )
-    SetAlignment( Widgets(Hex(7)), #__align_auto, 0,-5,-5,0 )
-    SetAlignment( Widgets(Hex(8)), #__align_auto, 0,0,-5,-5 )
-    SetAlignment( Widgets(Hex(9)), #__align_auto, -5,0,0,-5 )
-    
-    SetAlignment( Widgets(Hex(10)), #__align_auto, -5,0,-5,0 )
-    SetAlignment( Widgets(Hex(11)), #__align_auto, 0,-5,0,-5 )
+    SetAlignment( Widgets(Hex(10)), mode, position,0,position,0 )
+    SetAlignment( Widgets(Hex(11)), mode, 0,position,0,position )
     
     SetAlignment( Widgets(Hex(5)), #__align_center ) ; , 0,0,0,0 )
     
@@ -457,7 +458,7 @@ CompilerIf #PB_Compiler_IsMainFile
   example_2()
   example_3()
   example_4()
-  example_5()
+   example_5()
   example_6()
   example_7()
   
@@ -498,8 +499,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     
   ;   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 442
-; FirstLine = 437
-; Folding = ----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 463
+; FirstLine = 119
+; Folding = --C+
 ; EnableXP

@@ -42,8 +42,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
    EndMacro
    
-   Macro Area_Use( _canvas_window_, _canvas_gadget_ = #PB_Any )
+   Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
+      BindGadgetEvent( GetGadget( Root( ) ), _callback_ )
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
@@ -335,9 +336,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
    
    ;
-   MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) : BindGadgetEvent(MyCanvas, @Canvas_Events())
-   Area_Use( 0, MyCanvas)
-   ;MyCanvas = GetGadget( Open( 0, xx+10, yy+10, Width+x*2, Height+y*2, "", #PB_Canvas_Keyboard, @Canvas_Events( ) ) )
+   MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) 
+   Area_Use( 0, @Canvas_Events(), MyCanvas) 
+   ; *this = Root( ) 
+   ; MyCanvas = GetGadget( Root( ) )
+   
    
    ; add new images
    Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
@@ -408,7 +411,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 124
-; FirstLine = 118
-; Folding = ---f0----
+; CursorPosition = 341
+; FirstLine = 91
+; Folding = L3vf0+---
 ; EnableXP

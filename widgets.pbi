@@ -14519,7 +14519,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure SetAlignment( *this._S_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
          Protected flag.q
          ;\\
-         If mode & #__align_auto
+         If Not (( mode & #__align_full = #__align_full ) Or ( mode & #__align_auto = #__align_auto ))
+            If mode = 0 And left = 0 And top = 0 And right = 0 And bottom = 0
+               left = #__align_auto
+               top = #__align_auto
+               mode | #__align_auto 
+            EndIf
+            If mode & #__align_right
+               If mode & #__align_center = 0 And mode & #__align_bottom = 0
+                  top = 1
+                  mode | #__align_auto
+               EndIf
+               right = #__align_auto
+            EndIf
+            If mode & #__align_bottom
+               If mode & #__align_center = 0 And mode & #__align_right = 0
+                  left = 1
+                  mode | #__align_auto
+               EndIf
+               bottom = #__align_auto
+            EndIf
+            If mode & #__align_left
+               If mode & #__align_center = 0
+                  top = 1
+                  mode | #__align_auto
+               EndIf
+               left = #__align_auto
+            EndIf
+            If mode & #__align_top
+               If mode & #__align_center = 0
+                  left = 1
+                  mode | #__align_auto
+               EndIf
+               top = #__align_auto
+            EndIf
+            If right = #__align_auto And bottom = #__align_auto
+               right = 1 
+               bottom = 1
+               mode | #__align_auto
+            EndIf
+         EndIf
+         
+         ;\\
+         If mode & #__align_auto = #__align_auto
             If left = 0 And top = 0 And right = 0 And bottom = 0
                If mode & #__align_left : left = #__align_auto
                ElseIf mode & #__align_top : top = #__align_auto
@@ -14532,15 +14574,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   bottom = #__align_auto
                EndIf
             Else
-               If left > 0 : left = #__align_auto : EndIf
-               If top > 0 : top = #__align_auto : EndIf
-               If right > 0 : right = #__align_auto : EndIf
-               If bottom > 0 : bottom = #__align_auto : EndIf
+               If left > 0 : left = #True : EndIf
+               If top > 0 : top = #True : EndIf
+               If right > 0 : right = #True : EndIf
+               If bottom > 0 : bottom = #True : EndIf
+               
+               If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_auto : EndIf
+               If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_auto : EndIf
+               If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__align_auto : EndIf
+               If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__align_auto : EndIf
             EndIf
          EndIf
          
          ;\\
-         If mode & #__align_full
+         If mode & #__align_full = #__align_full
             If left = 0 And top = 0 And right = 0 And bottom = 0
                If mode & #__align_left : left = #__align_full
                ElseIf mode & #__align_top : top = #__align_full
@@ -14553,10 +14600,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   bottom = #__align_full
                EndIf
             Else
-               If left > 0 : left = #__align_full : EndIf
-               If top > 0 : top = #__align_full : EndIf
-               If right > 0 : right = #__align_full : EndIf
-               If bottom > 0 : bottom = #__align_full : EndIf
+;                If left > 0 : left = #__align_full : EndIf
+;                If top > 0 : top = #__align_full : EndIf
+;                If right > 0 : right = #__align_full : EndIf
+;                If bottom > 0 : bottom = #__align_full : EndIf
+               If left > 0 : left = #True : EndIf
+               If top > 0 : top = #True : EndIf
+               If right > 0 : right = #True : EndIf
+               If bottom > 0 : bottom = #True : EndIf
+               
+               If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_full : EndIf
+               If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_full : EndIf
+               If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__align_full : EndIf
+               If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__align_full : EndIf
             EndIf
          EndIf
          
@@ -21200,7 +21256,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16997
-; FirstLine = 16386
-; Folding = -----------------------------------------------------------------------------------------------------0P6-+T+-------f-----------------------------------------------------------------------------------------------------------------------------------------------------06-----------------------------------+------------------------------------------------------------------------------------------------8-------3--------------------bv-9zf0----------------------------------------------+f4fv----f-fX0----------------------------------------------
+; CursorPosition = 14526
+; FirstLine = 14098
+; Folding = -----------------------------------------------------------------------------------------------------0P6-+T+-------f-----------------------------------------------------------------------------------------------------------------------------------------------------06-----------------------------------+---------------------------------------------------------------fV----HqC---------------------------4-------t--------------------4e-6n-7----------------------------------------------0-u-e-----+-u7----------------------------------------------
 ; EnableXP

@@ -211,7 +211,7 @@
     ;     #__flag_autoright  = #__flag_autosize | #__flag_right
     ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
     
-    ;- _c_align
+    ;- \\ Alignment
     ; align type
     #__align_widget = 1
     #__align_text   = 2
@@ -1038,7 +1038,7 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 149
-; FirstLine = 137
+; CursorPosition = 222
+; FirstLine = 213
 ; Folding = ----
 ; EnableXP

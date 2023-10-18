@@ -370,8 +370,8 @@ CompilerIf #PB_Compiler_IsMainFile
    MyCanvas = GetGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
    
-   *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
-   *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
+   *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_invert, 11)
+   *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, #__bar_invert, 11)
    
    bar_mdi_resize( *this, x, y, width, height)
             
@@ -389,5 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 373
+; FirstLine = 168
 ; Folding = 8-+----0---
 ; EnableXP

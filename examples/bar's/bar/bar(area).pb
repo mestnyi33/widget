@@ -360,7 +360,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   Open(0, 10, 110, 400, 400, "", 0, 0, #MyCanvas)   ;@Canvas_CallBack()
   
-  *this.allocate( widget )
+  *this._s_widget = root()
   *this\scroll\v = Scroll( 380, 0,  20, 380, 0, 0, 0, #__Bar_Vertical|#__Bar_Inverted, 9 )
   *this\scroll\h = Scroll( 0, 380, 380,  20, 0, 0, 0, 0, 9 )
   ;Bind(*this\scroll\v,  )
@@ -415,7 +415,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 240
-; FirstLine = 204
+; CursorPosition = 362
+; FirstLine = 259
 ; Folding = vu---v-----
 ; EnableXP

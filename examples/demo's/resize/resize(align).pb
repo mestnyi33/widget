@@ -14,10 +14,6 @@ UseLib(widget)
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
-  Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-    SetAlignment(*This._S_widget, Mode)
-  EndProcedure
-  
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Define *w._S_widget = Open(0)
@@ -34,33 +30,61 @@ UseLib(widget)
      ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
        ;a_set(widget())
        
-      Widgets(Hex(1)) = Button(0, (200-20)/2, 80, 20, "cl_"+Str(1))
-      Widgets(Hex(2)) = Button((iw-80)/2, 0, 80, 20, "ct_"+Str(2))
-      Widgets(Hex(3)) = Button(iw-80-b, (200-20)/2, 80, 20, Str(3)+"_cr")
-      Widgets(Hex(4)) = Button((iw-80)/2, 200-20-b, 80, 20, Str(4)+"_cb")
-      Widgets(Hex(5)) = Button(0, 0, 80, 20, "Default_"+Str(5))
-      Widgets(Hex(6)) = Button(iw-80-b, 0, 80, 20, "Right_"+Str(6))
-      Widgets(Hex(7)) = Button(iw-80-b, 200-20-b, 80, 20, Str(8)+"_br")
-      Widgets(Hex(8)) = Button(0, 200-20-b, 80, 20, "Bottom_"+Str(7))
-      Widgets(Hex(9)) = Button((iw-80)/2, (200-20)/2, 80, 20, Str(9)+"_center")
+;       Widgets(Hex(1)) = Button(0, (200-20)/2, 80, 20, "cl_"+Str(1))
+;       Widgets(Hex(2)) = Button((iw-80)/2, 0, 80, 20, "ct_"+Str(2))
+;       Widgets(Hex(3)) = Button(iw-80-b, (200-20)/2, 80, 20, Str(3)+"_cr")
+;       Widgets(Hex(4)) = Button((iw-80)/2, 200-20-b, 80, 20, Str(4)+"_cb")
+;       Widgets(Hex(6)) = Button(0, 0, 80, 20, "left&top_"+Str(6))
+;       Widgets(Hex(7)) = Button(iw-80-b, 0, 80, 20, Str(7)+"_right&top")
+;       Widgets(Hex(8)) = Button(0, 200-20-b, 80, 20, "left&bottom_"+Str(8))
+;       Widgets(Hex(9)) = Button(iw-80-b, 200-20-b, 80, 20, Str(9)+"_right&bottom")
+;       Widgets(Hex(5)) = Button((iw-80)/2, (200-20)/2, 80, 20, Str(5)+"_center")
       
+    Widgets(Hex(1)) = Button(0, 0, 80, 40, "left")        ; center \2     align_proportional_horizontal
+    Widgets(Hex(2)) = Button(0, 0, 80, 40, "top")         ; center \2     align_proportional_horizontal
+    Widgets(Hex(3)) = Button(0, 0, 80, 40, "right")       ; right         #right
+    Widgets(Hex(4)) = Button(0, 0, 80, 40, "bottom")      ; right         #right
+    
+    Widgets(Hex(5)) = Button(0, 0, 80, 40, "center")      ; center \2     align_proportional_horizontal
+    
+    Widgets(Hex(6)) = Button(0, 0, 80, 40, "left&top")    ; right         #right
+    Widgets(Hex(7)) = Button(0, 0, 80, 40, "right&top")   ; right         #right
+    Widgets(Hex(8)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
+    Widgets(Hex(9)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
+    
       CloseList()
       
-      _SetAlignment(Widgets(Hex(1)), #__align_Center|#__align_left)
-      _SetAlignment(Widgets(Hex(2)), #__align_Center|#__align_top)
-      _SetAlignment(Widgets(Hex(3)), #__align_Center|#__align_right)
-      _SetAlignment(Widgets(Hex(4)), #__align_Center|#__align_bottom)
-      _SetAlignment(Widgets(Hex(5)), 0)
-      _SetAlignment(Widgets(Hex(6)), #__align_right)
-      _SetAlignment(Widgets(Hex(7)), #__align_right|#__align_bottom)
-      _SetAlignment(Widgets(Hex(8)), #__align_bottom)
-      _SetAlignment(Widgets(Hex(9)), #__align_Center)
+      SetAlignment(Widgets(Hex(1)), #__align_Center|#__align_left)
+      SetAlignment(Widgets(Hex(2)), #__align_Center|#__align_top)
+      SetAlignment(Widgets(Hex(3)), #__align_Center|#__align_right)
+      SetAlignment(Widgets(Hex(4)), #__align_Center|#__align_bottom)
+      SetAlignment(Widgets(Hex(6)), 0)
+      SetAlignment(Widgets(Hex(7)), #__align_right)
+      SetAlignment(Widgets(Hex(9)), #__align_right|#__align_bottom)
+      SetAlignment(Widgets(Hex(8)), #__align_bottom)
+      SetAlignment(Widgets(Hex(5)), #__align_Center)
       
-      
-      ReDraw(Root())
+;       SetAlignment( Widgets(Hex(1)), #__align_auto, 1,0,0,0 )
+;     SetAlignment( Widgets(Hex(2)), #__align_auto, 0,1,0,0 )
+;     SetAlignment( Widgets(Hex(3)), #__align_auto, 0,0,1,0 )
+;     SetAlignment( Widgets(Hex(4)), #__align_auto, 0,0,0,1 )
+;     
+;     SetAlignment( Widgets(Hex(6)), #__align_auto, 1,1,0,0 )
+;     SetAlignment( Widgets(Hex(7)), #__align_auto, 0,1,1,0 )
+;     SetAlignment( Widgets(Hex(8)), #__align_auto, 1,0,0,1 )
+;     SetAlignment( Widgets(Hex(9)), #__align_auto, 0,0,1,1 )
+;     
+;     SetAlignment( Widgets(Hex(10)), #__align_auto, 1,0,1,0 )
+;     SetAlignment( Widgets(Hex(11)), #__align_auto, 0,1,0,1 )
+    
+;     SetAlignment( Widgets(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    
+       Resize(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, 360,260)
+    
+      ;ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
-    EndIf
+  EndIf
   EndProcedure
   
   Procedure Window_1()
@@ -165,7 +189,7 @@ UseLib(widget)
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 13
+; CursorPosition = 83
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
