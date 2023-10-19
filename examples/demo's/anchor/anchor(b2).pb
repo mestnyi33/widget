@@ -11,7 +11,7 @@ Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   EndIf    
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
   a_init(root( ))
   SetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
@@ -52,5 +52,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP

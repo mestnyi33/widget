@@ -77,75 +77,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ;SetActiveGadget( GetGadget( Root( ) ) )
     
-    ; WaitClose( )
-    Define _time_ = 0
-    Define _window_ = #PB_Any
-    
-    
-    Define event
-    Repeat 
-      event = events::WaitEvent( @EventHandler( ), WaitWindowEvent( ) )
-      ; event = WaitEvent( WaitWindowEvent( ) )
-    Until event = #PB_Event_CloseWindow
-    
-    If Root( )
-      ReDraw( Root( ) )
-      ; EndIf  
-      
-      Repeat 
-        Select WaitWindowEvent( _time_ ) 
-          Case #PB_Event_Gadget
-            If Root( )\canvas\bindevent = #False
-              ;Root( )\repaint = #True
-              EventHandler( )
-            EndIf
-            
-          Case #PB_Event_CloseWindow
-            If _window_ = #PB_Any 
-              If EventWidget( )
-                Debug " - close - " + EventWidget( ) ; +" "+ GetWindow( _window_ )
-                If EventWidget( )\container = #__type_window
-                  ;Else
-                  
-                  ForEach Root( )
-                    Debug Root( )
-                    free( Root( ) )
-                    ;               ForEach widget( )
-                    ;                 Debug ""+widget( )\root +" "+ _is_root_( widget( ) )
-                    ;               Next
-                  Next
-                  Break
-                EndIf
-              Else
-                Debug " - close0 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-                Break
-              EndIf
-              
-            ElseIf PB(EventGadget)( ) = _window_
-              Debug " - close1 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-              Free( _window_ )
-              Break
-              
-            ElseIf PB(EventWindow)( ) = _window_ 
-              If Post( #__event_Free, _window_ )
-                Debug " - close2 - " + PB(EventWindow)( ) ; +" "+ GetWindow( _window_ )
-                Break
-              EndIf
-            EndIf
-            
-        EndSelect
-      ForEver
-      
-      ReDraw( Root( ) )
-      If IsWindow( PB(EventWindow)( ) )
-        Debug "end"
-        PB(CloseWindow)( PB(EventWindow)( ) )
-        End 
-      EndIf
-    EndIf  
+     WaitClose( )
   EndIf
-  
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; CursorPosition = 81
+; FirstLine = 46
+; Folding = -
 ; EnableXP

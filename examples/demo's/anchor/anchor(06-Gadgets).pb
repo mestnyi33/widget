@@ -37,11 +37,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  Procedure a_mode( *this._s_widget, mode.i )
-    If *this\_a_
-      *this\_a_\mode = mode  
-    EndIf
-  EndProcedure
+;   Procedure a_mode( *this._s_widget, mode.i )
+;     If *this\_a_
+;       *this\_a_\mode = mode  
+;     EndIf
+;   EndProcedure
   
   
   
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Debug "Button '" + GetText(EventWidget( )) + "' was clicked."
       Case #__event_Draw
-        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
+        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\Gadget ))
         TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
         Callback_Button(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], EventWidget( )\data)
         StopVectorDrawing( )
@@ -252,7 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick, #__event_Left2Click, #__event_Left3Click
         SetState(EventWidget( ), 1-GetState(EventWidget( )))
       Case #__event_Draw
-        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\_root( )\canvas\Gadget ))
+        StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\Gadget ))
         TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
         Callback_CheckBox(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], 0)
         StopVectorDrawing( )
@@ -348,5 +348,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --4--
+; CursorPosition = 254
+; FirstLine = 127
+; Folding = --0--
 ; EnableXP

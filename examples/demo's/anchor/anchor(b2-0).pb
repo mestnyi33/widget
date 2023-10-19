@@ -4,11 +4,11 @@ Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 Uselib(widget)
 
-Procedure a_mode( *this._s_widget, mode.i )
-  If *this\_a_
-    *this\_a_\mode = mode  
-  EndIf
-EndProcedure
+; Procedure a_mode( *this._s_widget, mode.i )
+;   If *this\_a_
+;     *this\_a_\mode = mode  
+;   EndIf
+; EndProcedure
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_mode = mode  
@@ -18,7 +18,7 @@ Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   EndIf    
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
   Container(0,0,0,0, #__flag_autosize)
   a_init(widget(), 10)
@@ -60,5 +60,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Exemple 2: Multiple object, differe
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 23
+; FirstLine = 2
 ; Folding = -
 ; EnableXP
