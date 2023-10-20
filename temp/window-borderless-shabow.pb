@@ -60,6 +60,7 @@ EndProcedure
 
 ;\\
 hwnd = OpenWindow(0, 0, 0, 0, 0, "", #PB_Window_BorderLess)
+ButtonGadget(2,0,0,320,20,"button")
 SetWindowCallback(@WndCallback(), 0)
 
 ;\\

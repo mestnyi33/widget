@@ -12155,29 +12155,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      Procedure CreatePopupCallback(hWnd, Msg, wParam, lParam)
-        Select Msg
-            
-;           Case #WM_SIZE
-;             Protected lpRect.rect
-;             GetWindowRect_(hWnd, @lpRect)
-;            ; If Popup( )
-;               ; Debug ""+Popup( )\width +" "+ Popup( )\height
-;               SetWindowPos_(hWnd, 0, 0, 0, lpRect\right-lpRect\left-6, lpRect\bottom-lpRect\top-29, #SWP_NOMOVE|#SWP_NOZORDER|#SWP_NOCOPYBITS)
-;            ; EndIf
-            
-          Case #WM_NCCALCSIZE
-            If wParam
-              SetWindowLong_(hwnd, #DWL_MSGRESULT, 0);
-              ProcedureReturn 1
-            EndIf
-            ProcedureReturn 0
-            
-        EndSelect
-        ProcedureReturn #PB_ProcessPureBasicEvents 
-      EndProcedure
-    CompilerEndIf
+    ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    ;     Procedure CreatePopupCallback(hWnd, Msg, wParam, lParam)
+    ;         
+    ;         Select Msg
+    ; ;            Case #WM_SIZE;WINDOWPOSCHANGING
+    ; ;             Protected lpRect.rect
+    ; ;             GetWindowRect_(hWnd, @lpRect)
+    ; ;             ;GetClientRect_(hWnd, @lpRect)
+    ; ;             lpRect\right - 6
+    ; ;             lpRect\bottom - 29
+    ; ;             ;DefWindowProc_(hWnd, Msg, wParam, lParam)
+    ; ;            ; Popup( )\width +" "+ Popup( )\height+" "+
+    ; ;                Debug " - "+Str(lpRect\right-lpRect\left) +" "+Str( lpRect\bottom-lpRect\top)
+    ; ;              SetWindowPos_(hWnd, 0, 0, 0, lpRect\right-lpRect\left, lpRect\bottom-lpRect\top, #SWP_NOSENDCHANGING|#SWP_NOMOVE|#SWP_NOZORDER|#SWP_NOCOPYBITS)
+    ; ;            ; ProcedureReturn 
+    ;            Case #WM_NCCALCSIZE
+    ;              If wParam
+    ;               SetWindowLong_(hwnd, #DWL_MSGRESULT, 0);
+    ;               ProcedureReturn 1
+    ;             EndIf
+    ;         EndSelect
+    ;         ProcedureReturn #PB_ProcessPureBasicEvents 
+    ;       EndProcedure
+    ;     CompilerEndIf
     
     Procedure CreatePopup( *display._S_WIDGET = 0, flags.q = 0 )
       Protected Window
@@ -12197,31 +12198,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        If CocoaMessage(0, WindowID, "hasShadow") = 0
-          CocoaMessage(0, WindowID, "setHasShadow:", 1)
-        EndIf
+        ;         If CocoaMessage(0, WindowID, "hasShadow") = 0
+        ;           CocoaMessage(0, WindowID, "setHasShadow:", 1)
+        ;         EndIf
+        ;         
+        ;         ;\\
+        ;         ; CocoaMessage(0, WindowID, "styleMask") ; get
+        ;         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<5) ; borderless box
+        ;         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<6) ; borderless round
+        
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+        ;         ; https://www.purebasic.fr/english/viewtopic.php?p=562776&hilit=shadow#p562776
+        ;         Protected DWMEnabled, Margin.RECT
+        ;      SetWindowCallback(@CreatePopupCallback(), window)
+        ;         SetRect_(@Margin, 1, 0, 0, 0)
+        ;         If OpenLibrary(0, "dwmapi.dll")
+        ;           CallFunction(0, "DwmExtendFrameIntoClientArea", WindowID, @Margin)
+        ;           CallFunction(0, "DwmIsCompositionEnabled", @DWMEnabled)
+        ;           If DWMEnabled=0
+        ;             MessageRequester("Info", "Desktop composition is disabled! Sorry, no shadow...")
+        ;             SetWindowTheme_(WindowID, "", "")
+        ;           EndIf
+        ;           CloseLibrary(0)
+        ;         EndIf
+        ;         SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_CAPTION );
+        ;         SetWindowPos_(WindowID, 0, 0, 0, 0, 0, #SWP_NOSIZE|#SWP_NOMOVE|#SWP_FRAMECHANGED|#SWP_SHOWWINDOW)
         
         ;\\
-        ; CocoaMessage(0, WindowID, "styleMask") ; get
-        ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<5) ; borderless box
-        ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<6) ; borderless round
-        
-     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        ; https://www.purebasic.fr/english/viewtopic.php?p=562776&hilit=shadow#p562776
-        Protected DWMEnabled, Margin.RECT
-        SetWindowCallback(@CreatePopupCallback(), window)
-        SetRect_(@Margin, 1, 0, 0, 0)
-        If OpenLibrary(0, "dwmapi.dll")
-          CallFunction(0, "DwmExtendFrameIntoClientArea", WindowID, @Margin)
-          CallFunction(0, "DwmIsCompositionEnabled", @DWMEnabled)
-          If DWMEnabled=0
-            MessageRequester("Info", "Desktop composition is disabled! Sorry, no shadow...")
-            SetWindowTheme_(WindowID, "", "")
-          EndIf
-          CloseLibrary(0)
-        EndIf
-        SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_CAPTION );
-        SetWindowPos_(WindowID, 0, 0, 0, 0, 0, #SWP_NOSIZE|#SWP_NOMOVE|#SWP_FRAMECHANGED|#SWP_SHOWWINDOW)
+        ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_BORDER )
+        ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_SIZEBOX )
         
       CompilerElse
       CompilerEndIf
@@ -12327,8 +12332,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             Next
           Else
-            height = *this\height
+            height = *this\inner_height( )
           EndIf
+          
+          ;\\
+          width + *this\fs*2
+          height + *this\fs*2
           
           ;\\
           If width < *display\width - 2
@@ -12367,12 +12376,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           EndIf
           
-          ;\\
-          CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            ResizeWindow( Popup( )\canvas\window, x, y, width-6, height-29 )
-          CompilerElse
-            ResizeWindow( Popup( )\canvas\window, x, y, width, height )
-          CompilerEndIf
+          ;           ;\\
+          ;           CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+          ;             ResizeWindow( Popup( )\canvas\window, x, y, width-6, height-29 )
+          ;           CompilerElse
+          ResizeWindow( Popup( )\canvas\window, x, y, width, height )
+          ;           CompilerEndIf
           ProcedureReturn #True
         EndIf
       EndIf
@@ -16201,7 +16210,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         *this\PopupBox( ) = Create( *this, *this\class + "_ListView", #__type_ListView, 
-                                    0,0,0,0, #Null$, #__flag_child | #__flag_borderless | #__flag_nobuttons | #__flag_nolines )
+                                    0,0,0,0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
+        *this\PopupBox( )\fs = 2
         ;             *this\PopupBox( )\hidden = 1
         ;             *this\PopupBox( )\hide = 1
         Hide( *this\PopupBox( ), #True )
@@ -21300,8 +21310,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12209
-; FirstLine = 12198
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vr---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
