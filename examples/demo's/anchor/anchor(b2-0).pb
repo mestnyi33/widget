@@ -20,9 +20,9 @@ EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
-  Container(0,0,0,0, #__flag_autosize)
-  a_init(widget(), 10)
-  SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
+  Define *g = Container(0,0,0,0, #__flag_autosize)
+  a_init(*g, 10)
+  SetColor(*g, #__color_back, RGBA(128, 192, 64, alpha))
   
   ; Create five different objects
   *Object1 = a_object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
@@ -60,7 +60,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 2
+; CursorPosition = 24
+; FirstLine = 4
 ; Folding = -
 ; EnableXP

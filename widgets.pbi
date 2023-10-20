@@ -12206,7 +12206,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<5) ; borderless box
         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<6) ; borderless round
         
-      CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+        ; https://www.purebasic.fr/english/viewtopic.php?p=562776&hilit=shadow#p562776
         Protected DWMEnabled, Margin.RECT
         SetWindowCallback(@CreatePopupCallback(), window)
         SetRect_(@Margin, 1, 0, 0, 0)
@@ -21299,6 +21300,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 12209
+; FirstLine = 12198
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
