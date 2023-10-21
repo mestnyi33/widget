@@ -171,6 +171,7 @@ EndProcedure
 
 OpenWindow_(-1, 50,50, 300, 200, "Window_0")
 OpenWindow_(-1, 200,60, 300, 200, "Window_1")
+OpenWindow_(-1, 300,70, 300, 200, "Window_2")
 
 Debug GetCurrentWinCount()
 CocoaMessage(0, app, "run")
@@ -181,5 +182,7 @@ Debug "END"
 ; CocoaMessage(0, app, "runModalForWindow:",win)
 ; CocoaMessage(0, app, "terminate:", app)
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 173
+; FirstLine = 102
 ; Folding = -+
 ; EnableXP

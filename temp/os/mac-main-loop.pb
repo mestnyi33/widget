@@ -126,5 +126,7 @@ Debug "END"
 ; CocoaMessage(0, app, "runModalForWindow:",win)
 ; CocoaMessage(0, app, "terminate:", app)
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 93
 ; Folding = -
 ; EnableXP
