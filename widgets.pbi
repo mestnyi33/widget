@@ -12155,34 +12155,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;         Procedure CreatePopup_Callback(hWnd, Msg, wParam, lParam)
-;             
-;             Select Msg
-;     ;            Case #WM_SIZE;WINDOWPOSCHANGING
-;     ;             Protected lpRect.rect
-;     ;             GetWindowRect_(hWnd, @lpRect)
-;     ;             ;GetClientRect_(hWnd, @lpRect)
-;     ;             lpRect\right - 6
-;     ;             lpRect\bottom - 29
-;     ;             ;DefWindowProc_(hWnd, Msg, wParam, lParam)
-;     ;            ; Popup( )\width +" "+ Popup( )\height+" "+
-;     ;                Debug " - "+Str(lpRect\right-lpRect\left) +" "+Str( lpRect\bottom-lpRect\top)
-;     ;              SetWindowPos_(hWnd, 0, 0, 0, lpRect\right-lpRect\left, lpRect\bottom-lpRect\top, #SWP_NOSENDCHANGING|#SWP_NOMOVE|#SWP_NOZORDER|#SWP_NOCOPYBITS)
-;     ;            ; ProcedureReturn 
-;                 
-;               Case #WM_NCCALCSIZE
-;                  If wParam
-;                   SetWindowLong_(hwnd, #DWL_MSGRESULT, 0);
-;                   ProcedureReturn 1
-;                 EndIf
-;                 
-;             EndSelect
-;             
-;             ProcedureReturn #PB_ProcessPureBasicEvents 
-;           EndProcedure
-;         CompilerEndIf
-    
     Procedure CreatePopup( *display._S_WIDGET = 0, flags.q = 0 )
       Protected Window
       Protected WindowID
@@ -12201,42 +12173,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                If CocoaMessage(0, WindowID, "hasShadow") = 0
-                  CocoaMessage(0, WindowID, "setHasShadow:", 1)
-                EndIf
-        ;         
-        ;         ;\\
-        ;         ; CocoaMessage(0, WindowID, "styleMask") ; get
-        ;         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<5) ; borderless box
-        ;         ; CocoaMessage(0, WindowID, "setStyleMask:", 1<<6) ; borderless round
+        If CocoaMessage(0, WindowID, "hasShadow") = 0
+          CocoaMessage(0, WindowID, "setHasShadow:", 1)
+        EndIf
         
+        ;\\
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        ;         ; https://www.purebasic.fr/english/viewtopic.php?p=562776&hilit=shadow#p562776
-        ;         Protected DWMEnabled, Margin.RECT
-        ;      SetWindowCallback(@CreatePopupCallback(), window)
-        ;         SetRect_(@Margin, 1, 0, 0, 0)
-        ;         If OpenLibrary(0, "dwmapi.dll")
-        ;           CallFunction(0, "DwmExtendFrameIntoClientArea", WindowID, @Margin)
-        ;           CallFunction(0, "DwmIsCompositionEnabled", @DWMEnabled)
-        ;           If DWMEnabled=0
-        ;             MessageRequester("Info", "Desktop composition is disabled! Sorry, no shadow...")
-        ;             SetWindowTheme_(WindowID, "", "")
-        ;           EndIf
-        ;           CloseLibrary(0)
-        ;         EndIf
-        ;         SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_CAPTION );
-        ;         SetWindowPos_(WindowID, 0, 0, 0, 0, 0, #SWP_NOSIZE|#SWP_NOMOVE|#SWP_FRAMECHANGED|#SWP_SHOWWINDOW)
-        
-        ;\\
-        ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_BORDER )
-        ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_SIZEBOX )
-        ;\\
         If GetClassLongPtr_( WindowID, #GCL_STYLE ) & #CS_DROPSHADOW = 0
           SetClassLongPtr_( WindowID, #GCL_STYLE, #CS_DROPSHADOW )
         EndIf
+        
       CompilerElse
+        
       CompilerEndIf
       
+      ;\\ Important is #PB_Window_Invisible and 
+      ;\\ HideWindow()... Without them, there is no shadow....
       HideWindow( Window, #False, #PB_Window_NoActivate)
       ProcedureReturn *root
     EndProcedure
@@ -21318,5 +21270,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
