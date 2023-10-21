@@ -12155,30 +12155,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    ;     Procedure CreatePopupCallback(hWnd, Msg, wParam, lParam)
-    ;         
-    ;         Select Msg
-    ; ;            Case #WM_SIZE;WINDOWPOSCHANGING
-    ; ;             Protected lpRect.rect
-    ; ;             GetWindowRect_(hWnd, @lpRect)
-    ; ;             ;GetClientRect_(hWnd, @lpRect)
-    ; ;             lpRect\right - 6
-    ; ;             lpRect\bottom - 29
-    ; ;             ;DefWindowProc_(hWnd, Msg, wParam, lParam)
-    ; ;            ; Popup( )\width +" "+ Popup( )\height+" "+
-    ; ;                Debug " - "+Str(lpRect\right-lpRect\left) +" "+Str( lpRect\bottom-lpRect\top)
-    ; ;              SetWindowPos_(hWnd, 0, 0, 0, lpRect\right-lpRect\left, lpRect\bottom-lpRect\top, #SWP_NOSENDCHANGING|#SWP_NOMOVE|#SWP_NOZORDER|#SWP_NOCOPYBITS)
-    ; ;            ; ProcedureReturn 
-    ;            Case #WM_NCCALCSIZE
-    ;              If wParam
-    ;               SetWindowLong_(hwnd, #DWL_MSGRESULT, 0);
-    ;               ProcedureReturn 1
-    ;             EndIf
-    ;         EndSelect
-    ;         ProcedureReturn #PB_ProcessPureBasicEvents 
-    ;       EndProcedure
-    ;     CompilerEndIf
+;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;         Procedure CreatePopup_Callback(hWnd, Msg, wParam, lParam)
+;             
+;             Select Msg
+;     ;            Case #WM_SIZE;WINDOWPOSCHANGING
+;     ;             Protected lpRect.rect
+;     ;             GetWindowRect_(hWnd, @lpRect)
+;     ;             ;GetClientRect_(hWnd, @lpRect)
+;     ;             lpRect\right - 6
+;     ;             lpRect\bottom - 29
+;     ;             ;DefWindowProc_(hWnd, Msg, wParam, lParam)
+;     ;            ; Popup( )\width +" "+ Popup( )\height+" "+
+;     ;                Debug " - "+Str(lpRect\right-lpRect\left) +" "+Str( lpRect\bottom-lpRect\top)
+;     ;              SetWindowPos_(hWnd, 0, 0, 0, lpRect\right-lpRect\left, lpRect\bottom-lpRect\top, #SWP_NOSENDCHANGING|#SWP_NOMOVE|#SWP_NOZORDER|#SWP_NOCOPYBITS)
+;     ;            ; ProcedureReturn 
+;                 
+;               Case #WM_NCCALCSIZE
+;                  If wParam
+;                   SetWindowLong_(hwnd, #DWL_MSGRESULT, 0);
+;                   ProcedureReturn 1
+;                 EndIf
+;                 
+;             EndSelect
+;             
+;             ProcedureReturn #PB_ProcessPureBasicEvents 
+;           EndProcedure
+;         CompilerEndIf
     
     Procedure CreatePopup( *display._S_WIDGET = 0, flags.q = 0 )
       Protected Window
@@ -12192,15 +12195,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\
-      *root = Open( #PB_Any, 0,0,0,0, "", flags, ParentID )
+      *root = Open( #PB_Any, 0,0,1,1, "", flags|#PB_Window_Invisible, ParentID )
       Window = GetWindow( *root )
       WindowID = WindowID( Window )
       
       ;\\
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        ;         If CocoaMessage(0, WindowID, "hasShadow") = 0
-        ;           CocoaMessage(0, WindowID, "setHasShadow:", 1)
-        ;         EndIf
+                If CocoaMessage(0, WindowID, "hasShadow") = 0
+                  CocoaMessage(0, WindowID, "setHasShadow:", 1)
+                EndIf
         ;         
         ;         ;\\
         ;         ; CocoaMessage(0, WindowID, "styleMask") ; get
@@ -12227,10 +12230,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_BORDER )
         ;SetWindowLongPtr_(WindowID, #GWL_STYLE, GetWindowLongPtr_(WindowID, #GWL_STYLE )| #WS_SIZEBOX )
-        
+        ;\\
+        If GetClassLongPtr_( WindowID, #GCL_STYLE ) & #CS_DROPSHADOW = 0
+          SetClassLongPtr_( WindowID, #GCL_STYLE, #CS_DROPSHADOW )
+        EndIf
       CompilerElse
       CompilerEndIf
       
+      HideWindow( Window, #False, #PB_Window_NoActivate)
       ProcedureReturn *root
     EndProcedure
     
@@ -21310,8 +21317,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12200
-; FirstLine = 12183
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fX---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
