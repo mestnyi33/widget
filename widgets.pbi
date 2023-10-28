@@ -1048,9 +1048,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       draw_roundbox_( _x_, _y_, _width_, _height_, _round_, _round_, _color_frame_ & $FFFFFF | _alpha_ << 24 )
     EndMacro
     
-    Macro Close( )
-      PB(CloseGadgetList)( )
+    Macro draw_background_image_( _this_, _x_, _y_, _mode_= ); 
+       ; drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+       DrawAlphaImage( _this_\image#_mode_\id, _x_ + _this_\image#_mode_\x + _this_\scroll_x( ), _y_ + _this_\image#_mode_\y + _this_\scroll_y( ), _this_\color\_alpha )
     EndMacro
+    
+;     Macro Close( )
+;       PB(CloseGadgetList)( )
+;     EndMacro
     
     ;-  -----------------
     ;-   DECLARE_globals
@@ -2066,11 +2071,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ProcedureReturn Color
     EndProcedure
-    
-    Macro DrawBackGroundImage( _this_, _x_, _y_ )
-       drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-       DrawAlphaImage( _this_\image[#__image_background]\id, _x_ + _this_\image[#__image_background]\x + _this_\scroll_x( ), _y_ + _this_\image[#__image_background]\y + _this_\scroll_y( ), _this_\color\_alpha )
-    EndMacro
     
     
     ;-\\ DD
@@ -5244,7 +5244,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If _address_\image\id
         drawing_mode_alpha_( #PB_2DDrawing_Transparent )
         DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\color\_alpha )
-      EndIf
+        ; draw_background_image_(_address_, _x_, _y_ )
+     EndIf
       ; Draw items text
       If _address_\text\string
         drawing_mode_( #PB_2DDrawing_Transparent )
@@ -10676,6 +10677,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *rows( )\image\id
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *rows( )\image\id, xs + *rows( )\image\x, ys + *rows( )\image\y, *rows( )\color\_alpha )
+            ; draw_background_image_(*rows( ), xs, ys )
           EndIf
           
           ;\\ Draw items text
@@ -10868,7 +10870,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\image\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
-        EndIf
+          ; draw_background_image_(*this, 0, 0 )
+       EndIf
         
         ;\\
         clip_output_( *this, [#__c_draw2] )
@@ -11837,7 +11840,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             DrawAlphaImage( *this\image\id,
                             *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\image\x,
                             *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\image\y - 2, *this\color\_alpha )
-          EndIf
+            ; draw_background_image_(*this, *this\frame_x( ) + *this\bs, *this\frame_y( ) + *this\bs )
+         EndIf
           
           If *this\Title( )\string
             ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
@@ -11863,7 +11867,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; background image draw
         If *this\image[#__image_background]\id
-          DrawBackGroundImage( *this, *this\inner_x( ), *this\inner_y( ) )
+          draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
         EndIf
         
         ;clip_output_( *this, [#__c_draw] )
@@ -16440,6 +16444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\image\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
+          ; draw_background_image_(*this, 0,0)
         EndIf
         
         ;\\
@@ -16465,6 +16470,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If *this\columns( )\image\id
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *this\columns( )\image\id, x + *this\columns( )\image\x, y + *this\columns( )\image\y, *this\color\_alpha )
+            ; draw_background_image_(*this\columns( ), x, y)
           EndIf
           
           ;\\ Draw items text
@@ -16570,7 +16576,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ draw background 
         If *this\image[#__image_background]\id
           ; background image draw
-          DrawBackGroundImage( *this, x, y )
+          draw_background_image_( *this, x, y, [#__image_background] )
         Else
           If *this\color\back <> - 1
             If *this\color\fore <> - 1
@@ -16612,7 +16618,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\image\id
           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
           DrawAlphaImage( *this\image\id, x + *this\image\x, y + *this\image\y, *this\color\_alpha )
-        EndIf
+          ; draw_background_image_(*this, x,y)
+       EndIf
         
         ;\\ Draw frames
         If *this\fs
@@ -16728,7 +16735,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; background image draw
           If *this\image[#__image_background]\id
-            DrawBackGroundImage( *this, *this\inner_x( ), *this\inner_y( ) )
+            draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
           EndIf
           
           ; scroll image draw
@@ -16736,6 +16743,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             DrawAlphaImage( *this\image\id,
                             *this\inner_x( ) + *this\scroll_x( ) + *this\image\x,
                             *this\inner_y( ) + *this\scroll_y( ) + *this\image\y, *this\color\_alpha )
+            ; draw_background_image_(*this, *this\inner_x( ), *this\inner_y( ) )
           EndIf
         EndIf
         
@@ -21389,7 +21397,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3296
-; FirstLine = 3251
-; Folding = ----------------------------------------------------------------30f884-4V+------------0-f+4--P---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d-----------------0-X0----------------------------------------------------------------------------------------------------------------------------------------------------------80----
+; CursorPosition = 1050
+; FirstLine = 985
+; Folding = -----------------------------------+---------------------------f8+v008-8K-------------+-P-8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u-----------------+-r+-----------------------------------------------------------------------------------------------------------------------------------------------------------+----
 ; EnableXP
