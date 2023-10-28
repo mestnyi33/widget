@@ -17,12 +17,12 @@ CompilerIf #PB_Compiler_IsMainFile
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = Container(50, 50, 500, 500)
-  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  widget()\fs = fs*2 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-   object = Container(100, 100, 250, 250) : CloseList()
+  ; object = Window(100, 100, 250, 250, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  object = Window(100, 100, 250, 250, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+   ; object = Container(100, 100, 250, 250) : CloseList()
   ; object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
   ; object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
   
@@ -77,6 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 13
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
