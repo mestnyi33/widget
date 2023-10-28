@@ -110,62 +110,67 @@ Module Window
       rect\size\height = height
       
       Protected MASK  
-      If flags & #PB_Window_Tool = #PB_Window_Tool
-         MASK | #NSTitledWindowMask ; 1<<0 ; 1
-         ; MASK | 1<<8
-         MASK | 1<<9
-      EndIf
-      
       If flags & #PB_Window_NoActivate = #PB_Window_NoActivate
-         ;MASK | 1 << 7
+         
       EndIf
-      
-;       ;\\ minimize
-;       MASK | 1<<0
-;           MASK | 1<<1
-;           MASK | 1<<2
       
       If flags & #PB_Window_BorderLess = #PB_Window_BorderLess
-         ; MASK | #NSClosableWindowMask  | #NSTitledWindowMask 
-           MASK | #NSTitledWindowMask ; 1<<0
-         ; MASK | #NSClosableWindowMask ; 1<<1
-          ;MASK | #NSMiniaturizableWindowMask ; 1<<2
-          MASK | 1<<3
-          ;MASK | 1<<4
-          ;MASK | 1<<5
-          ;MASK | 1<<6
-          ;MASK | 1<<7
-          ;MASK | 1<<8
-          ;MASK | 1<<9
-          ;MASK | 1<<10
+         MASK | #NSBorderlessWindowMask
       Else
-         If flags & #PB_Window_TitleBar = #PB_Window_TitleBar Or flags & #PB_Window_SystemMenu = #PB_Window_SystemMenu
+         If flags & #PB_Window_TitleBar = #PB_Window_TitleBar
             MASK | #NSTitledWindowMask
          EndIf
          
-         If flags & #PB_Window_MinimizeGadget = #PB_Window_MinimizeGadget Or flags & #PB_Window_SystemMenu = #PB_Window_SystemMenu
+         If flags & #PB_Window_Tool = #PB_Window_Tool
+            If MASK & #NSTitledWindowMask = 0
+               MASK | #NSTitledWindowMask
+            EndIf
+            ; MASK | #NSTexturedBackgroundWindowMask ; 1<<8 ; 256
+            MASK | 1<<9
+         EndIf
+         
+         If flags & #PB_Window_MinimizeGadget = #PB_Window_MinimizeGadget 
+            If MASK & #NSTitledWindowMask = 0
+               MASK | #NSTitledWindowMask
+            EndIf
             MASK | #NSMiniaturizableWindowMask ; 1<<2 ; 4
+         EndIf
+         
+         If flags & #PB_Window_MaximizeGadget = #PB_Window_MaximizeGadget 
             If MASK & #NSTitledWindowMask = 0
                MASK | #NSTitledWindowMask
             EndIf
+            MASK | #NSResizableWindowMask ; 1<<3 ; 8
          EndIf
          
-         If flags & #PB_Window_MaximizeGadget = #PB_Window_MaximizeGadget Or flags & #PB_Window_SystemMenu = #PB_Window_SystemMenu
-            MASK | 1<<3 ; 8
+         If flags & #PB_Window_SizeGadget = #PB_Window_SizeGadget 
             If MASK & #NSTitledWindowMask = 0
                MASK | #NSTitledWindowMask
             EndIf
-         EndIf
-         
-         If flags & #PB_Window_SizeGadget = #PB_Window_SizeGadget Or flags & #PB_Window_SystemMenu = #PB_Window_SystemMenu
             MASK | #NSResizableWindowMask
          EndIf
          
          If flags & #PB_Window_SystemMenu = #PB_Window_SystemMenu
+            If MASK & #NSTitledWindowMask = 0
+               MASK | #NSTitledWindowMask
+            EndIf
+            If MASK & #NSMiniaturizableWindowMask = 0
+               MASK | #NSMiniaturizableWindowMask
+            EndIf
+            If MASK & #NSResizableWindowMask = 0
+               MASK | #NSResizableWindowMask
+            EndIf
            MASK |  #NSClosableWindowMask ; 1<<1 ; 2
-         EndIf
-      EndIf
-      
+        EndIf
+        
+       ; MASK | #NSFullScreenWindowMask
+        ; MASK | #NSFullSizeContentViewWindowMask
+        ; MASK | #NSUnifiedTitleAndToolbarWindowMask
+        
+;         CocoaMessage(0, CocoaMessage(0, win, "standardWindowButton:", 1), "setHidden:", #YES) ;Minimize
+;         CocoaMessage(0, CocoaMessage(0, win, "standardWindowButton:", 2), "setHidden:", #YES) ;Maximize
+     EndIf
+     
       CocoaMessage(0, win, "initWithContentRect:@", @rect, "styleMask:", MASK, "backing:", 2, "defer:", #NO)
       CocoaMessage(0, win, "makeKeyWindow")
       CocoaMessage(0, win, "makeKeyAndOrderFront:", app)
@@ -189,6 +194,7 @@ Module Window
       CocoaMessage(0, win, "setReleasedWhenClosed:", #YES)
       
       CocoaMessage(0, win, "setDelegate:", myWindowDelegate)
+      UseGadgetList( win )
       ProcedureReturn win
    EndProcedure
    
@@ -208,6 +214,8 @@ Module Window
          gtk_main_( )
          
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+         ; https://stackoverflow.com/questions/66165781/it-is-possible-to-adjust-the-offset-of-cs-dropshadow-on-a-window-class
+         ; https://learn.microsoft.com/en-us/windows/win32/dwm/customframe
          Protected msg.MSG
          ;         If PeekMessage_(@msg,0,0,0,1)
          ;           TranslateMessage_(@msg)
@@ -234,16 +242,19 @@ CompilerIf #PB_Compiler_IsMainFile
    Global win1, win2, win3
    
    win1 = Open( 1, 0,0,400,100, "window1", #PB_Window_SystemMenu )
+   ButtonGadget(1,0,0,400,100,"window1")
    
-   win2 = Open( 2, 100,100,400,100, "window2", #PB_Window_ScreenCentered|#PB_Window_BorderLess )
+   win2 = Open( 2, 100,100,400,100, "window2", #PB_Window_ScreenCentered|#PB_Window_SizeGadget )
+   ButtonGadget(2,0,0,400,100,"window2")
    
-   win3 = Open( 3, 100,100,400,100, "window3", #PB_Window_WindowCentered, win2 )
+   win3 = Open( 3, 100,100,400,100, "window3", #PB_Window_WindowCentered|#PB_Window_SystemMenu, win2 )
+   ButtonGadget(3,0,0,400,100,"window3")
    
    WaitClose( )
    Debug "END"
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 153
-; FirstLine = 135
-; Folding = -----
+; CursorPosition = 170
+; FirstLine = 158
+; Folding = ----8
 ; EnableXP

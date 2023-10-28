@@ -142,7 +142,7 @@ Module Parent
         CocoaMessage ( 0, ParentID, "addSubview:", GadgetID ) 
       Else
 ;         ; to desktop move
-         ParentID = CocoaMessage(0,0,"NSScreen mainScreen")
+         ParentID = CocoaMessage(0,0, "NSScreen mainScreen")
 ;         
 ;         
 ;         ParentID = CocoaMessage(  0, ParentID, "subviews" )
@@ -417,7 +417,7 @@ EndProcedure
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 190
-; FirstLine = 157
+; CursorPosition = 144
+; FirstLine = 130
 ; Folding = --------
 ; EnableXP

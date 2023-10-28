@@ -9,15 +9,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Define object
   Declare CustomEvents( )
   
-  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  a_init(root(), 4)
+  Open(0, 0, 0, 700, 700, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered); | #PB_Window_SizeGadget)
+  a_init(root(), 0)
   
-  Container(50, 0, 400, 400)
-  ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  object = Container(150, 150, 300, 300) : CloseList()
+ ; Container(48, 48, 604, 604)
+ object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   ; object = Container(150, 150, 300, 300) : CloseList()
   
   SizeBounds(object, 200, 200, 401, 401)
-  MoveBounds(object, 0, 0, 401, 401)
+  ;MoveBounds(object, 100, 100, 501, 501)
   
   Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
   WaitClose( )
@@ -31,8 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
         DrawingMode(#PB_2DDrawing_Outlined)
         
         If Eventwidget()\bounds\move
-          Box(Eventwidget()\parent\x[1]+Eventwidget()\bounds\move\min\x,
-              Eventwidget()\parent\y[1]+Eventwidget()\bounds\move\min\y,
+          Box(Eventwidget()\parent\x[1] + Eventwidget()\bounds\move\min\x,
+              Eventwidget()\parent\y[1] + Eventwidget()\bounds\move\min\y,
               Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
               Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
         EndIf
@@ -61,7 +61,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 34
-; FirstLine = 17
+; CursorPosition = 19
 ; Folding = -
 ; EnableXP

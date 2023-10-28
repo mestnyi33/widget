@@ -1093,7 +1093,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare RemoveItem( *this, Item.l )
     
     ;;Declare.b GetFocus( *this )
-    Declare.l GetButtons( )
+    Declare.l MouseButtons( )
     Declare.l GetIndex( *this )
     Declare.l GetDeltaX( *this )
     Declare.l GetDeltaY( *this )
@@ -2730,13 +2730,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro a_remove( _this_, _index_ )
-      ;Debug _this_\text\string
-      For _index_ = 0 To #__a_moved
-        If _this_\_a_\id[_index_]
-          FreeStructure( _this_\_a_\id[_index_] )
-          _this_\_a_\id[_index_] = #Null
-        EndIf
-      Next
+       If _this_
+          ; Debug "e_remove - " + _this_\class ;+" "+ _this_\text\string
+          For _index_ = 0 To #__a_moved
+             If _this_\_a_\id[_index_]
+                FreeStructure( _this_\_a_\id[_index_] )
+                _this_\_a_\id[_index_] = #Null
+             EndIf
+          Next
+       EndIf
     EndMacro
     
     Macro a_add( _this_, _index_ )
@@ -2814,9 +2816,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If a_entered( ) <> *this
-          If a_entered( ) And
-             a_entered( ) <> a_focused( )
-            ; Debug "e_remove - " + a_entered( )\class
+          If a_entered( ) <> a_focused( )
             a_remove( a_entered( ), i )
           EndIf
           
@@ -2885,7 +2885,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ 
             If Not ( EnteredWidget( ) And is_integral_( EnteredWidget( ) ) And EnteredWidget( )\parent = *this )
               a_remove( *this, i )
-              a_entered( )        = a_focused( )
+              a_entered( ) = a_focused( )
               *this\repaint = #True
             EndIf
           EndIf
@@ -3170,7 +3170,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_MouseEnter
-          Debug ""+a_focused( )+" "+*this +" "+ Bool( a_focused( ) And a_focused( )\state\press )
+          ; Debug " a_events( enter ) - "+a_focused( )+" "+*this +" "+ Bool( a_focused( ) And a_focused( )\state\press )
           If Not ( a_focused( ) And a_focused( )\state\press )
             If a_focused( ) = *this
               a_entered( ) = *this
@@ -3189,30 +3189,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If eventtype = #__event_LeftButtonDown
+          ;\\ set/remove current transformer
           If *this = a_transform( )\main
             ;
-            ; если нажали в главном "окне"
-            ; где находятся "изменяемые" виджеты
-            ; то будем убырать все якорья
+            ;\\ если нажали в главном "окне"
+            ;\\ где находятся "изменяемые" виджеты
+            ;\\ то будем убырать все якорья
             ;
-            If a_focused( )
-              a_remove( a_focused( ), i )
-            EndIf
+            a_remove( a_focused( ), i )
           Else
-            ;             ; get layout current position
-            ;             ; set layout last position
-            ;             *after = GetPosition( *this, #PB_List_After )
-            ;             If *after
-            ;                 *this\repaint = SetPosition( *this, #PB_List_Last )
-            ;             EndIf
-            
-            ; set current transformer
-            If a_set( *this )
-              *this\repaint = #True
-            EndIf
+            a_set( *this )
           EndIf
           
-          ; change frame color
+          ;\\ change frame color
           If a_transform( )\type = 0
             a_transform( )\dot_ted   = 1
             a_transform( )\dot_space = 3
@@ -3226,87 +3215,90 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_selector( )\color\front = $ffffffff
           EndIf
           
+          ;\\ set delta pos
+          mouse( )\delta\x = mouse_x
+          mouse( )\delta\y = mouse_y
+          
+          ;\\
           If a_index( ) And a_focused( ) And a_focused( )\parent And
              a_focused( )\_a_ And a_anchors([a_index( )])
-            ;\\ set current transform index
+             
+             ;\\ set current transformer index
             a_anchors([a_index( )])\color\state = #__S_2
             
             ;\\ set delta pos
             If a_focused( )\parent
-              If a_focused( )\_a_\transform = 1
-                If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 2 )
-                  mouse_x + a_focused( )\parent\inner_x( )
-                EndIf
-                If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 1 )
-                  mouse_y + a_focused( )\parent\inner_y( )
-                EndIf
-                
-                If Not is_integral_( a_focused( ) )
-                  mouse_x + a_focused( )\parent\scroll_x( )
-                  mouse_y + a_focused( )\parent\scroll_y( )
-                EndIf
-              EndIf
+               If a_focused( )\_a_\transform = 1
+                  If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 2 )
+                     mouse( )\delta\x + a_focused( )\parent\frame_x( ) + a_focused( )\parent\fs[1] + a_focused( )\parent\fs[3]
+                  EndIf
+                  If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 1 )
+                     mouse( )\delta\y + a_focused( )\parent\frame_y( ) + a_focused( )\parent\fs[2] + a_focused( )\parent\fs[4]
+                  EndIf
+                  
+                  If Not is_integral_( a_focused( ) )
+                     mouse( )\delta\x + a_focused( )\parent\scroll_x( )
+                     mouse( )\delta\y + a_focused( )\parent\scroll_y( )
+                  EndIf
+               EndIf
+               
+               ;\\
+               If a_focused( )\parent\scroll
+                  If a_focused( )\parent\scroll\v
+                     mouse( )\delta\y + a_focused( )\parent\scroll\v\bar\page\pos
+                  EndIf
+                  If a_focused( )\parent\scroll\h
+                     mouse( )\delta\x + a_focused( )\parent\scroll\h\bar\page\pos
+                  EndIf
+               EndIf
             EndIf
             
             ;\\
-            If a_focused( )\parent\scroll
-              If a_focused( )\parent\scroll\v
-                mouse_y + a_focused( )\parent\scroll\v\bar\page\pos
-              EndIf
-              If a_focused( )\parent\scroll\h
-                mouse_x + a_focused( )\parent\scroll\h\bar\page\pos
-              EndIf
-            EndIf
+            mouse( )\delta\x - a_anchors([a_index( )])\x
+            mouse( )\delta\y - a_anchors([a_index( )])\y 
             
             ;\\
-            mouse( )\delta\x = mouse_x - a_anchors([a_index( )])\x
-            mouse( )\delta\y = mouse_y - a_anchors([a_index( )])\y 
+            mouse( )\delta\x - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
+            mouse( )\delta\y - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
             
             ;\\
-            If a_index( ) = #__a_moved
-              ;               mouse( )\delta\x = mouse_x - a_focused( )\x
-              ;               mouse( )\delta\y = mouse_y - a_focused( )\y
-              
-              mouse( )\delta\x - a_focused( )\parent\fs ; - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
-              mouse( )\delta\y - a_focused( )\parent\fs ; - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
-            Else
-              ;               mouse( )\delta\x = mouse_x - a_anchors([a_index( )])\x
-              ;               mouse( )\delta\y = mouse_y - a_anchors([a_index( )])\y
-              
-              mouse( )\delta\x - a_focused( )\parent\fs - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
-              mouse( )\delta\y - a_focused( )\parent\fs - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
+            If a_focused( )\type = #__type_window
+               Select a_index( )
+                  Case #__a_right, #__a_right_top
+                     mouse( )\delta\x + a_focused( )\fs * 2 + a_focused( )\fs[1] + a_focused( )\fs[3]
+                     
+                  Case #__a_bottom, #__a_left_bottom
+                     mouse( )\delta\y + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4]
+                     
+                  Case #__a_right_bottom
+                     mouse( )\delta\x + a_focused( )\fs * 2 + a_focused( )\fs[1] + a_focused( )\fs[3]
+                     mouse( )\delta\y + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4]
+                     
+               EndSelect
             EndIf
             
+;             ;Debug ""+mouse( )\delta\x +" "+ mouse( )\delta\y
+;             
+;             If a_index( ) = #__a_moved
+;               i = 3
+;               Debug "  parent " + a_focused( )\parent\class + " " + a_focused( )\x[i] + " " + a_focused( )\y[i] + " " + a_focused( )\width[i] + " " + a_focused( )\height[i]
+;             EndIf
+;             
+;             ;\\ for the selector
+;           Else
+;             ;             If a_transform( )\main
+;             ;               mouse_x - a_transform( )\main\x[#__c_container]
+;             ;               mouse_y - a_transform( )\main\y[#__c_container]
+;             ;             EndIf
+;             
+;             ;             ; grid mouse pos
+;             ;             If a_transform( )\grid_size > 0
+;             ;               ;mouse_x + ( mouse_x % a_transform( )\grid_size )
+;             ;               mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
+;             ;               ;mouse_y + ( mouse_y % a_transform( )\grid_size )
+;             ;               mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
+;             ;             EndIf
             
-            ;             ;\\
-            ;             mouse( )\delta\x - a_focused( )\parent\fs - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
-            ;             mouse( )\delta\y - a_focused( )\parent\fs - ( a_focused( )\_a_\size - a_focused( )\_a_\pos )
-            
-            ;Debug ""+mouse( )\delta\x +" "+ mouse( )\delta\y
-            
-            If a_index( ) = #__a_moved
-              i = 3
-              Debug "  parent " + a_focused( )\parent\class + " " + a_focused( )\x[i] + " " + a_focused( )\y[i] + " " + a_focused( )\width[i] + " " + a_focused( )\height[i]
-            EndIf
-            
-            ;\\ for the selector
-          Else
-            ;             If a_transform( )\main
-            ;               mouse_x - a_transform( )\main\x[#__c_container]
-            ;               mouse_y - a_transform( )\main\y[#__c_container]
-            ;             EndIf
-            
-            ;             ; grid mouse pos
-            ;             If a_transform( )\grid_size > 0
-            ;               ;mouse_x + ( mouse_x % a_transform( )\grid_size )
-            ;               mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
-            ;               ;mouse_y + ( mouse_y % a_transform( )\grid_size )
-            ;               mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
-            ;             EndIf
-            
-            ; set delta pos
-            mouse( )\delta\x = mouse_x;+4; - 5
-            mouse( )\delta\y = mouse_y; - 2
           EndIf
           
           ;\\
@@ -3342,7 +3334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ;
+        ;\\
         If eventtype = #__event_DragStart
           If *this\container And
              *this\state\enter = 2
@@ -3365,6 +3357,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               mouse_x - mouse( )\delta\x
               mouse_y - mouse( )\delta\y
               
+              ;\\
               If a_transform( )\grid_size > 0
                 mouse_x + ( mouse_x % a_transform( )\grid_size )
                 mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
@@ -3372,6 +3365,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
               EndIf
               
+              ;\\
               If xx <> mouse_x Or yy <> mouse_y
                 xx = mouse_x
                 yy = mouse_y
@@ -3382,32 +3376,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   mh = #PB_Ignore
                   
                   If a_index( ) <> #__a_moved
-                    ;\\ horizontal
-                    Select a_index( )
-                      Case #__a_left, #__a_left_top, #__a_left_bottom ; left
-                        mw = ( a_focused( )\x[#__c_container] - mouse_x ) + a_focused( )\frame_width( )
-                        If mw <= 0
-                          mw      = 0
-                          mouse_x = a_focused( )\frame_x( ) + a_focused( )\frame_width( )
-                        EndIf
-                        
-                      Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                        mw = ( mouse_x - a_focused( )\x[#__c_container] ) + IsGrid
-                    EndSelect
-                    
-                    ;\\ vertical
-                    Select a_index( )
-                      Case #__a_top, #__a_left_top, #__a_right_top ; top
-                        mh = ( a_focused( )\y[#__c_container] - mouse_y ) + a_focused( )\frame_height( )
-                        If mh <= 0
-                          mh      = 0
-                          mouse_y = a_focused( )\frame_y( ) + a_focused( )\frame_height( )
-                        EndIf
-                        
-                      Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                        mh = ( mouse_y - a_focused( )\y[#__c_container] ) + IsGrid
-                    EndSelect
-                    
+                     ;\\ horizontal
+                     Select a_index( )
+                        Case #__a_left, #__a_left_top, #__a_left_bottom ; left
+                           mw = ( a_focused( )\x[#__c_container] - mouse_x ) + a_focused( )\inner_width( )
+                           If mw <= 0 
+                              mouse_x = a_focused( )\x[#__c_container] + a_focused( )\inner_width( )
+                              mw      = 0 
+                           EndIf
+                           If a_focused( )\fs
+                              If a_focused( )\type <> #__type_window
+                                 mw + a_focused( )\fs * 2 + a_focused( )\fs[1] + a_focused( )\fs[3] ; ( a_focused( )\frame_width( ) - a_focused( )\inner_width( ) )
+                              EndIf
+                           EndIf
+                           
+                        Case #__a_right, #__a_right_top, #__a_right_bottom ; right
+                           mw = ( mouse_x - a_focused( )\x[#__c_container] ) + IsGrid
+                     EndSelect
+                     
+                     ;\\ vertical
+                     Select a_index( )
+                        Case #__a_top, #__a_left_top, #__a_right_top ; top
+                           mh = ( a_focused( )\y[#__c_container] - mouse_y ) + a_focused( )\inner_height( )
+                           If mh <= 0
+                              mh      = 0
+                              mouse_y = a_focused( )\y[#__c_container] + a_focused( )\inner_height( ) 
+                           EndIf
+                           If a_focused( )\fs
+                              If a_focused( )\type <> #__type_window
+                                 mh + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4] ; ( a_focused( )\frame_height( ) - a_focused( )\inner_height( ) )
+                              EndIf
+                           EndIf
+                           
+                        Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
+                           mh = ( mouse_y - a_focused( )\y[#__c_container] ) + IsGrid
+                     EndSelect
+                     
                     ;\\
                     If a_index( ) <> #__a_left_top
                       If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
@@ -3420,7 +3424,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;Debug " " + mw + " " + mh
-                  *this\repaint | Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
+                   Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
                   
                 Else
                   If a_transform( )\main
@@ -4082,248 +4086,144 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
       Else
-        ;\\
-        If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
-          If *this\_a_\transform > 0
+         ;\\
+         If a_transform( ) And 
+            *this = a_focused( ) And
+            *this <> a_transform( )\main And
+            a_transform( )\grid_size > 1 
+            
+            If *this\_a_\transform > 0
+               If x <> #PB_Ignore
+                  x + ( x % a_transform( )\grid_size )
+                  x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+               EndIf
+               
+               If y <> #PB_Ignore
+                  y + ( y % a_transform( )\grid_size )
+                  y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+               EndIf
+               
+               If width <> #PB_Ignore
+                  width + ( width % a_transform( )\grid_size )
+                  width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+               EndIf
+               
+               If height <> #PB_Ignore
+                  height + ( height % a_transform( )\grid_size )
+                  height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\ move boundaries
+         If *this\bounds\move
             If x <> #PB_Ignore
-              x + ( x % a_transform( )\grid_size )
-              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
-            EndIf
-            
-            If y <> #PB_Ignore
-              y + ( y % a_transform( )\grid_size )
-              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
-            EndIf
-            
-            If width <> #PB_Ignore
-              width + ( width % a_transform( )\grid_size )
-              width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-            EndIf
-            
-            If height <> #PB_Ignore
-              height + ( height % a_transform( )\grid_size )
-              height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-            EndIf
-          EndIf
-        EndIf
-        
-        If *this\type = #__type_window
-          Protected h_frame =  *this\fs * 2 + *this\fs[1] + *this\fs[3]
-          Protected v_frame =  *this\fs * 2 + *this\fs[2] + *this\fs[4]
-          
-          ;\\ move boundaries
-          If *this\bounds\move
-            If x <> #PB_Ignore
-              If *this\bounds\move\min\x <> #PB_Ignore And
-                 x < *this\bounds\move\min\x
-                If width <> #PB_Ignore
-                  width - ( *this\bounds\move\min\x - x ) + h_frame
-                EndIf
-                x = *this\bounds\move\min\x
-              EndIf
-              If *this\bounds\move\max\x <> #PB_Ignore
-                If width <> #PB_Ignore
-                  If x > *this\bounds\move\max\x - width - h_frame
-                    x = *this\bounds\move\max\x - width - h_frame
+               If *this\bounds\move\min\x <> #PB_Ignore And
+                  x < *this\bounds\move\min\x
+                  If width <> #PB_Ignore
+                     width - ( *this\bounds\move\min\x - x )
                   EndIf
-                Else
-                  If x > *this\bounds\move\max\x - *this\frame_width( ) - h_frame
-                    x = *this\bounds\move\max\x - *this\frame_width( ) - h_frame
+                  x = *this\bounds\move\min\x
+               EndIf
+               If *this\bounds\move\max\x <> #PB_Ignore
+                  If width <> #PB_Ignore
+                     If x > *this\bounds\move\max\x - width
+                        x = *this\bounds\move\max\x - width
+                     EndIf
+                  Else
+                     If x > *this\bounds\move\max\x - *this\frame_width( )
+                        x = *this\bounds\move\max\x - *this\frame_width( )
+                     EndIf
                   EndIf
-                EndIf
-              EndIf
+               EndIf
             EndIf
             If y <> #PB_Ignore
-              If *this\bounds\move\min\y <> #PB_Ignore And
-                 y < *this\bounds\move\min\y
-                If height <> #PB_Ignore
-                  height - ( *this\bounds\move\min\y - y ) + v_frame
-                EndIf
-                y = *this\bounds\move\min\y
-              EndIf
-              If *this\bounds\move\max\y <> #PB_Ignore
-                If height <> #PB_Ignore
-                  If y > *this\bounds\move\max\y - height - v_frame
-                    y = *this\bounds\move\max\y - height - v_frame
+               If *this\bounds\move\min\y <> #PB_Ignore And
+                  y < *this\bounds\move\min\y
+                  If height <> #PB_Ignore
+                     height - ( *this\bounds\move\min\y - y )
                   EndIf
-                Else
-                  If y > *this\bounds\move\max\y - *this\frame_height( ) - v_frame
-                    y = *this\bounds\move\max\y - *this\frame_height( ) - v_frame
+                  y = *this\bounds\move\min\y
+               EndIf
+               If *this\bounds\move\max\y <> #PB_Ignore
+                  If height <> #PB_Ignore
+                     If y > *this\bounds\move\max\y - height
+                        y = *this\bounds\move\max\y - height
+                     EndIf
+                  Else
+                     If y > *this\bounds\move\max\y - *this\frame_height( )
+                        y = *this\bounds\move\max\y - *this\frame_height( )
+                     EndIf
                   EndIf
-                EndIf
-              EndIf
+               EndIf
             EndIf
-          EndIf
-          
-          ;\\ size boundaries
-          If *this\bounds\size
-            If width <> #PB_Ignore
+         EndIf
+         
+         ;\\ size boundaries
+        If *this\bounds\size
+           If *this\type = #__type_window
+              Protected h_frame =  *this\fs * 2 + *this\fs[1] + *this\fs[3]
+              Protected v_frame =  *this\fs * 2 + *this\fs[2] + *this\fs[4]
+           EndIf
+           
+           If width <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\width And
                  width < *this\bounds\size\min\width - h_frame
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\min\width ) + h_frame
-                EndIf
-                width = *this\bounds\size\min\width - h_frame
+                 If x <> #PB_Ignore
+                    x + ( width - *this\bounds\size\min\width ) + h_frame
+                 EndIf
+                 width = *this\bounds\size\min\width - h_frame
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\width And
                  width > *this\bounds\size\max\width - h_frame
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\max\width ) + h_frame
-                EndIf
-                width = *this\bounds\size\max\width - h_frame
+                 If x <> #PB_Ignore
+                    x + ( width - *this\bounds\size\max\width ) + h_frame
+                 EndIf
+                 width = *this\bounds\size\max\width - h_frame
               EndIf
               
               ;\\
               If *this\bounds\move
-                If x <> #PB_Ignore
-                  If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
-                    width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
-                  EndIf
-                Else
-                  If width > *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
-                    width = *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
-                  EndIf
-                EndIf
+                 If x <> #PB_Ignore
+                    If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
+                       width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x ) - h_frame
+                    EndIf
+                 Else
+                    If width > *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
+                       width = *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x ) - h_frame
+                    EndIf
+                 EndIf
               EndIf
-            EndIf
-            If height <> #PB_Ignore
+           EndIf
+           If height <> #PB_Ignore
               If #PB_Ignore <> *this\bounds\size\min\height And
                  height < *this\bounds\size\min\height - v_frame
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\min\height ) + v_frame
-                EndIf
-                height = *this\bounds\size\min\height - v_frame
+                 If y <> #PB_Ignore
+                    y + ( height - *this\bounds\size\min\height ) + v_frame
+                 EndIf
+                 height = *this\bounds\size\min\height - v_frame
               EndIf
               If #PB_Ignore <> *this\bounds\size\max\height And
                  height > *this\bounds\size\max\height - v_frame
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\max\height ) + v_frame
-                EndIf
-                height = *this\bounds\size\max\height - v_frame
+                 If y <> #PB_Ignore
+                    y + ( height - *this\bounds\size\max\height ) + v_frame
+                 EndIf
+                 height = *this\bounds\size\max\height - v_frame
               EndIf
               
               ;\\
               If *this\bounds\move
-                If y <> #PB_Ignore
-                  If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
-                    height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
-                  EndIf
-                Else
-                  If height > *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
-                    height = *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
-                  EndIf
-                EndIf
+                 If y <> #PB_Ignore
+                    If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
+                       height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y ) - v_frame
+                    EndIf
+                 Else
+                    If height > *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
+                       height = *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y ) - v_frame
+                    EndIf
+                 EndIf
               EndIf
-            EndIf
-          EndIf
-          
-          
-        Else
-          ;\\ move boundaries
-          If *this\bounds\move
-            If x <> #PB_Ignore
-              If *this\bounds\move\min\x <> #PB_Ignore And
-                 x < *this\bounds\move\min\x
-                If width <> #PB_Ignore
-                  width - ( *this\bounds\move\min\x - x )
-                EndIf
-                x = *this\bounds\move\min\x
-              EndIf
-              If *this\bounds\move\max\x <> #PB_Ignore
-                If width <> #PB_Ignore
-                  If x > *this\bounds\move\max\x - width
-                    x = *this\bounds\move\max\x - width
-                  EndIf
-                Else
-                  If x > *this\bounds\move\max\x - *this\frame_width( )
-                    x = *this\bounds\move\max\x - *this\frame_width( )
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            If y <> #PB_Ignore
-              If *this\bounds\move\min\y <> #PB_Ignore And
-                 y < *this\bounds\move\min\y
-                If height <> #PB_Ignore
-                  height - ( *this\bounds\move\min\y - y )
-                EndIf
-                y = *this\bounds\move\min\y
-              EndIf
-              If *this\bounds\move\max\y <> #PB_Ignore
-                If height <> #PB_Ignore
-                  If y > *this\bounds\move\max\y - height
-                    y = *this\bounds\move\max\y - height
-                  EndIf
-                Else
-                  If y > *this\bounds\move\max\y - *this\frame_height( )
-                    y = *this\bounds\move\max\y - *this\frame_height( )
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-          
-          ;\\ size boundaries
-          If *this\bounds\size
-            If width <> #PB_Ignore
-              If #PB_Ignore <> *this\bounds\size\min\width And
-                 width < *this\bounds\size\min\width
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\min\width )
-                EndIf
-                width = *this\bounds\size\min\width
-              EndIf
-              If #PB_Ignore <> *this\bounds\size\max\width And
-                 width > *this\bounds\size\max\width
-                If x <> #PB_Ignore
-                  x + ( width - *this\bounds\size\max\width )
-                EndIf
-                width = *this\bounds\size\max\width
-              EndIf
-              
-              ;\\
-              If *this\bounds\move
-                If x <> #PB_Ignore
-                  If width > *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
-                    width = *this\bounds\size\max\width - ( x - *this\bounds\move\min\x )
-                  EndIf
-                Else
-                  If width > *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x )
-                    width = *this\bounds\size\max\width - ( *this\x[#__c_container] - *this\bounds\move\min\x )
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            If height <> #PB_Ignore
-              If #PB_Ignore <> *this\bounds\size\min\height And
-                 height < *this\bounds\size\min\height
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\min\height )
-                EndIf
-                height = *this\bounds\size\min\height
-              EndIf
-              If #PB_Ignore <> *this\bounds\size\max\height And
-                 height > *this\bounds\size\max\height
-                If y <> #PB_Ignore
-                  y + ( height - *this\bounds\size\max\height )
-                EndIf
-                height = *this\bounds\size\max\height
-              EndIf
-              
-              ;\\
-              If *this\bounds\move
-                If y <> #PB_Ignore
-                  If height > *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
-                    height = *this\bounds\size\max\height - ( y - *this\bounds\move\min\y )
-                  EndIf
-                Else
-                  If height > *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y )
-                    height = *this\bounds\size\max\height - ( *this\y[#__c_container] - *this\bounds\move\min\y )
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-          EndIf
+           EndIf
         EndIf
         
         ;\\
@@ -4364,7 +4264,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ;
+        ;\\
         If width < 0
           width = 0
         EndIf
@@ -4399,13 +4299,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ; inner x&y position
+      ;\\ inner x&y position
       ix      = ( x + *this\fs + *this\fs[1] )
       iy      = ( y + *this\fs + *this\fs[2] )
       iwidth  = width - *this\fs * 2 - ( *this\fs[1] + *this\fs[3] )
       iheight = height - *this\fs * 2 - ( *this\fs[2] + *this\fs[4] )
       
-      ;
+      ;\\
       If *this\frame_x( ) <> x : Change_x = x - *this\frame_x( ) : EndIf
       If *this\frame_y( ) <> y : Change_y = y - *this\frame_y( ) : EndIf
       If *this\frame_width( ) <> width : Change_width = width - *this\frame_width( ) : EndIf
@@ -4416,7 +4316,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\width[#__c_container] <> iwidth : Change_width = iwidth - *this\width[#__c_container] : EndIf
       If *this\height[#__c_container] <> iheight : Change_height = iheight - *this\height[#__c_container] : EndIf
       
-      ;
+      ;\\
       If Change_x
         *this\resize | #__resize_x
         
@@ -5025,6 +4925,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\bar
         ProcedureReturn *this\bar\page\change
       EndIf
+    EndProcedure
+    
+    Procedure.l MouseButtons( )
+      ProcedureReturn mouse( )\buttons
     EndProcedure
     
     
@@ -13062,10 +12966,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn ( mouse( )\delta\y + *this\y[#__c_container] )
     EndProcedure
     
-    Procedure.l GetButtons( )
-      ProcedureReturn mouse( )\buttons
-    EndProcedure
-    
     Procedure.i GetFont( *this._S_WIDGET )
       ProcedureReturn *this\text\fontID
     EndProcedure
@@ -20743,8 +20643,80 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
-
-CompilerIf #PB_Compiler_IsMainFile =99
+CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  Uselib(widget)
+  
+  Global object, parent
+  Declare CustomEvents( )
+  
+  ;\\
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 4)
+  
+  ;\\
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
+  parent = Container(50, 50, 500, 500)
+  widget()\fs = 20 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  
+  ;\\
+  ; object = Window(150, 150, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  ; object = Window(150, 150, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  object = Container(150, 150, 250, 250) : CloseList()
+  
+  ;\\
+  widget()\fs = 20 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  
+  ;\\
+  a_mode(object, #__a_full, 40)
+;   SizeBounds(object, 200, 200, 401, 401)
+;   MoveBounds(object, 100, 100, 501, 501)
+  
+  ;\\
+  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  WaitClose( )
+  
+  ;\\
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+      Case #PB_EventType_Draw
+        
+        ; Demo draw on element
+        UnclipOutput()
+        DrawingMode(#PB_2DDrawing_Outlined)
+        
+        If Eventwidget()\bounds\move
+          Box(Eventwidget()\parent\x[#__c_frame] + Eventwidget()\bounds\move\min\x,
+              Eventwidget()\parent\y[#__c_frame] + Eventwidget()\parent\fs[2] + Eventwidget()\bounds\move\min\y,
+              Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
+        EndIf
+        
+        If Eventwidget()\bounds\size
+;           Box(Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\min\height,
+;               Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\min\height, $ff00ff00)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\max\width,
+              Eventwidget()\bounds\size\max\height, $ffff0000)
+        EndIf
+        
+        ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
+        
+    EndSelect
+    
+  EndProcedure
+CompilerEndIf
+CompilerIf #PB_Compiler_IsMainFile = 99
   Uselib(widget)
   
   Global MDI, MDI_splitter, Splitter
@@ -20767,7 +20739,7 @@ CompilerIf #PB_Compiler_IsMainFile =99
   
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
   
   EnableExplicit
   UseLIB(widget)
@@ -21269,6 +21241,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3232
+; FirstLine = 3215
+; Folding = ---------------------------------------------------------------0-884-4U+--------------v---3K--r7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f0---------------------------------------------------------------------------------------------------------------------------------------------------------v+----
 ; EnableXP

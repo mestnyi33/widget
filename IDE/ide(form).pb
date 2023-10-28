@@ -121,7 +121,7 @@ Macro properties_update_coordinate( _gadget_, _value_ )
    SetItemText( _gadget_, #_pi_height,  GetItemText( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
 EndMacro
 
-Macro properties_update( _gadget_, _value_ )
+Macro properties_updates( _gadget_, _value_ )
    properties_update_id( _gadget_, _value_ )
    properties_update_class( _gadget_, _value_ )
    
@@ -492,18 +492,15 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
 EndProcedure
 
 Procedure widget_events( )
-   Protected eventtype = WidgetEventType( ) 
+   Protected eventtype = WidgetEvent( )\type 
    Protected *new, *ew._s_widget = WidgetEvent( )\widget
-   Static *beforeWidget
+;    Static *beforeWidget
    
    Select eventtype 
       Case #PB_EventType_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
                SetCursor( *ew, #PB_Cursor_Arrows )
-               ;             *beforeWidget = GetPosition( *ew, #PB_List_Before ) 
-               ;             SetPosition( *ew, #PB_List_Last )
-               ; SetParent( *ew, id_design_form )
             EndIf
          EndIf
          
@@ -581,12 +578,6 @@ Procedure widget_events( )
          ;; ProcedureReturn #PB_Ignore
          
       Case #PB_EventType_LeftButtonUp
-         If *beforeWidget
-            SetPosition( *ew, #PB_List_After, *beforeWidget)
-            *beforeWidget = 0
-         EndIf
-         
-         
          ; then group select
          If IsContainer( *ew )
             If a_transform( ) And a_focused( ) And a_focused( )\_a_\transform =- 1
@@ -612,37 +603,33 @@ Procedure widget_events( )
             EndIf
             SetState( id_i_view_tree, GetData( *ew ) )
          EndIf
-         properties_update( id_i_properties_tree, *ew )
+         properties_updates( id_i_properties_tree, *ew )
          
       Case #PB_EventType_Resize
          properties_update_coordinate( id_i_properties_tree, *ew )
          SetWindowTitle( GetWindow(*ew\root), Str(width(*ew))+"x"+Str(height(*ew) ) )
          
       Case #PB_EventType_MouseEnter,
+           #PB_EventType_MouseLeave,
            #PB_EventType_MouseMove
          
-         If IsContainer( *ew ) 
-            If *ew\state\enter = 2 
-               If GetCursor( ) <> #PB_Cursor_Cross
-                  If Not GetButtons( ) 
-                     If GetState( id_elements_tree ) > 0 
-                        SetCursor( *ew, #PB_Cursor_Cross )
+         If Not MouseButtons( ) 
+            If IsContainer( *ew ) 
+               If GetState( id_elements_tree ) > 0 
+                  If eventtype = #PB_EventType_MouseLeave
+                     If GetCursor( ) <> #PB_Cursor_Default
+                        SetCursor( *ew, #PB_Cursor_Default )
+                     EndIf
+                  Else
+                     If *ew\state\enter = 2 
+                        If GetCursor( ) <> #PB_Cursor_Cross
+                           SetCursor( *ew, #PB_Cursor_Cross )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
          EndIf
-         
-      Case #PB_EventType_MouseLeave
-         
-         If IsContainer( *ew )
-            If Not GetButtons( )
-               If GetState( id_elements_tree) > 0 
-                  SetCursor( *ew, #PB_Cursor_Default )
-               EndIf
-            EndIf
-         EndIf
-         
    EndSelect
    
    ;\\
@@ -1282,8 +1269,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
-; Folding = ---------------f---f-
+; CursorPosition = 494
+; FirstLine = 482
+; Folding = ---------2u----4---4-
 ; EnableXP
