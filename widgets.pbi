@@ -20653,25 +20653,27 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
-  
+  Define fs = 20
   ;\\
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = Container(50, 50, 500, 500)
-  widget()\fs = 20 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  ; object = Window(150, 150, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(150, 150, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-  object = Container(150, 150, 250, 250) : CloseList()
+  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  ; object = Container(100, 100, 250, 250) : CloseList()
+  object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
+  ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
   
   ;\\
-  widget()\fs = 20 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  a_mode(object, #__a_full, 40)
-;   SizeBounds(object, 200, 200, 401, 401)
-;   MoveBounds(object, 100, 100, 501, 501)
+  a_mode(object, #__a_full, 8)
+; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
+; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   ;\\
   Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
@@ -20716,6 +20718,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
   Uselib(widget)
   
@@ -21242,5 +21245,5 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = ---------------------------------------------------------------0-884-4U+--------------v---3K--r7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f0---------------------------------------------------------------------------------------------------------------------------------------------------------v+----
+; Folding = ---------------------------------------------------------------0-884-4U+--------------v---3K--r7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f0----------------------------------------------------------------------------------------------------------------------------------------------------------+----
 ; EnableXP
