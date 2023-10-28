@@ -12,12 +12,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
   
-  Container(50, 0, 400, 400)
+  Container(50, 50, 400, 400)
   ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   object = Container(150, 150, 300, 300) : CloseList()
   
   SizeBounds(object, 200, 200, 401, 401)
-  MoveBounds(object, 0, 0, 401, 401)
+  MoveBounds(object, 100, 100, 401, 401)
   
   Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
   WaitClose( )
@@ -60,8 +60,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 34
-; FirstLine = 17
+; IDE Options = PureBasic 5.72 (Windows - x64)
 ; Folding = -
 ; EnableXP
