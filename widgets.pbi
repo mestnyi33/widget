@@ -4158,7 +4158,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ move boundaries
          If *this\bounds\move
             If x <> #PB_Ignore
-               If *this\bounds\move\min\x <> #PB_Ignore And
+               If *this\bounds\move\min\x <> #PB_Ignore And 
                   x < *this\bounds\move\min\x
                   If width <> #PB_Ignore
                      width - ( *this\bounds\move\min\x - x )
@@ -14911,10 +14911,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\bounds\move\max\y = MaximumY
       
       If *this\bounds\move\min\x = #PB_Ignore
-        *this\bounds\move\min\x = *this\parent\bs
+        *this\bounds\move\min\x = 0;*this\parent\bs
       EndIf
       If *this\bounds\move\min\y = #PB_Ignore
-        *this\bounds\move\min\y = *this\parent\bs
+        *this\bounds\move\min\y = 0;*this\parent\bs
       EndIf
       If *this\bounds\move\max\x = #PB_Ignore
         If *this\parent\scroll_width( ) ; *this\parent\scroll\h
@@ -21397,7 +21397,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1050
-; FirstLine = 985
-; Folding = -----------------------------------+---------------------------f8+v008-8K-------------+-P-8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u-----------------+-r+-----------------------------------------------------------------------------------------------------------------------------------------------------------+----
+; CursorPosition = 4323
+; FirstLine = 4084
+; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8-----------------------------------------------------------------------------------------------------------------------------------------------------------8-----
 ; EnableXP
