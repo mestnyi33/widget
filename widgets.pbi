@@ -2495,12 +2495,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           a_transform( )\grid_widget = _this_
           
-;           ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;           If _this_\container > 0 And _this_\type <> #__type_MDI
-;             _this_\image[#__image_background]\x = - _this_\fs
-;             _this_\image[#__image_background]\y = - _this_\fs
-;           EndIf
-          
           If a_transform( )\grid_size > 1
             SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
           EndIf
@@ -3185,10 +3179,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected mouse_y.l = mouse( )\y
       
       If a_transform( )
-        Static xx, yy, *after
-        Static move_x, move_y
+        Static move_x, move_y, resize_x, resize_y, *after
         Protected i
-        Protected mxw, myh
         Protected.l mx, my, mw, mh
         Protected.l Px, Py, IsGrid = Bool( a_transform( )\grid_size > 1 )
         
@@ -3262,18 +3254,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 1 )
                      mouse( )\delta\y + a_focused( )\parent\inner_y( )
                   EndIf
-                  
-;                   ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;                   If Not a_focused( )\bounds\attach
-;                      If a_focused( )\parent\fs
-;                         If a_focused( )\_a_\transform And
-;                            (a_focused( )\parent\container > 0 And
-;                             a_focused( )\parent\type <> #__type_MDI)
-;                            mouse( )\delta\x - a_focused( )\parent\fs
-;                            mouse( )\delta\y - a_focused( )\parent\fs
-;                         EndIf
-;                      EndIf
-;                   EndIf
                   
                   ;\\ 
                   If a_focused( )\child <= 0
@@ -3406,10 +3386,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
               
               ;\\
-              If xx <> mouse_x Or yy <> mouse_y
-                xx = mouse_x
-                yy = mouse_y
-                ; Debug mouse_x
+              If resize_x <> mouse_x Or
+                 resize_y <> mouse_y
+                resize_x = mouse_x
+                resize_y = mouse_y
                 
                 If a_focused( )\_a_\transform = 1
                   mw = #PB_Ignore
@@ -4320,16 +4300,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
             y + *this\parent\inner_y( )
           EndIf
-          
-;           ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;           If Not *this\bounds\attach
-;             If *this\_a_\transform And
-;                (*this\parent\container > 0 And
-;                 *this\parent\type <> #__type_MDI)
-;               y - *this\parent\fs
-;               x - *this\parent\fs
-;             EndIf
-;           EndIf
         EndIf
         
         ;\\ потому что окну задаются внутренные размеры
@@ -14376,16 +14346,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             y = *this\frame_y( ) - *parent\inner_y( )
             
             If *this\_a_\transform > 0
-;               ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;               If Not *this\bounds\attach
-;                 If *parent\container > 0 And
-;                    *parent\type <> #__type_MDI
-;                   
-;                   y + *parent\fs
-;                   x + *parent\fs
-;                 EndIf
-;               EndIf
-              
               x + ( x % a_transform( )\grid_size )
               x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
               
@@ -19004,16 +18964,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           mouse( )\drag\x = a_selector( )\x - *this\inner_x( ) - *this\scroll_x( )
           mouse( )\drag\y = a_selector( )\y - *this\inner_y( ) - *this\scroll_y( )
           
-;           ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;           ;           If Not *this\bounds\attach
-;           ;             If *this\_a_\transform And
-;           ;                (EnteredWidget( )\container > 0 And
-;           ;                 EnteredWidget( )\type <> #__type_MDI)
-;           mouse( )\drag\x + EnteredWidget( )\fs
-;           mouse( )\drag\y + EnteredWidget( )\fs
-;           ;             EndIf
-;           ;           EndIf
-;           ;             mouse( )\drag\x + ( mouse( )\drag\x % a_transform( )\grid_size )
+;           ;           mouse( )\drag\x + ( mouse( )\drag\x % a_transform( )\grid_size )
 ;           ;           mouse( )\drag\x = ( mouse( )\drag\x / a_transform( )\grid_size ) * a_transform( )\grid_size
 ;           ;           mouse( )\drag\y + ( mouse( )\drag\y % a_transform( )\grid_size )
 ;           ;           mouse( )\drag\y = ( mouse( )\drag\y / a_transform( )\grid_size ) * a_transform( )\grid_size
@@ -19027,17 +18978,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;           Protected dx =  mouse( )\delta\x - PressedWidget( )\parent\inner_x( ) - PressedWidget( )\parent\scroll_x( ) + PressedWidget( )\bs
           ;           Protected dy =   mouse( )\delta\y - PressedWidget( )\parent\inner_y( ) - PressedWidget( )\parent\scroll_y( ) + PressedWidget( )\bs
           ;           Debug ""+dx+" "+dy
-          
-;           ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-;           ;           If Not *this\bounds\attach
-;           ;             If *this\_a_\transform And
-;           ;                (EnteredWidget( )\container > 0 And
-;           ;                 EnteredWidget( )\type <> #__type_MDI)
-;           mouse( )\drag\x + EnteredWidget( )\fs
-;           mouse( )\drag\y + EnteredWidget( )\fs
-;           ;             EndIf
-;           ;           EndIf
-;           
+          ;           
           ;           If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
           ;             If *this\_a_\transform > 0
           ; ;               If x <> #PB_Ignore
@@ -21397,7 +21338,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4323
-; FirstLine = 4084
-; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8-----------------------------------------------------------------------------------------------------------------------------------------------------------8-----
+; CursorPosition = 2497
+; FirstLine = 2421
+; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8-----------------------------------------------------------------------------------------------------------------------------------------------------------8----
 ; EnableXP

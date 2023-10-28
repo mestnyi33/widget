@@ -31,9 +31,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   a_mode(object, #__a_full, 8)
-  ;\\ потому что точки внутри контейнера перемешаем надо перемести и детей
-  ;SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-  ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   SizeBounds(object, 200, 200, 501-fs*2-fs*2, 501-fs*2-fs*2)
   MoveBounds(object, fs, fs, 501-fs*2-fs, 501-fs*2-fs)
@@ -88,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 37
+; CursorPosition = 33
 ; FirstLine = 11
 ; Folding = -
 ; EnableXP
