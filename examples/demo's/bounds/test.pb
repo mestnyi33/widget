@@ -30,7 +30,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   a_mode(object, #__a_full, 40)
   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-  MoveBounds(object, fs, fs, 501-fs, 501-fs)
+  ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
+  MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
   ;\\
   Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
@@ -46,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
         DrawingMode(#PB_2DDrawing_Outlined)
         
         If Eventwidget()\bounds\move
-          Box(Eventwidget()\parent\x[#__c_frame] + Eventwidget()\bounds\move\min\x,
-              Eventwidget()\parent\y[#__c_frame] + Eventwidget()\parent\fs[2] + Eventwidget()\bounds\move\min\y,
+          Box(Eventwidget()\parent\x[#__c_inner] + Eventwidget()\bounds\move\min\x,
+              Eventwidget()\parent\y[#__c_inner] + Eventwidget()\bounds\move\min\y,
               Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
               Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
         EndIf
@@ -75,6 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 33
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

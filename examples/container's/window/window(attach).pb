@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi._s_widget = Container(x,y,Width, height)
   Define *mdi._s_widget = MDI(x,y,Width, height)
   ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
-  ;a_init( *mdi, 0 )
+  a_init( *mdi, 0 )
   OpenList(*mdi)
   Button(10,50,80,80,"mdi-top")
   Button(10,400+50,80,80,"mdi-bottom")
@@ -85,5 +85,6 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; CursorPosition = 55
+; Folding = 8
 ; EnableXP

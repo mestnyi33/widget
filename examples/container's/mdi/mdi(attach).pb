@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi._s_widget = MDI(x,y, width,height)
-  ;a_init( *mdi )
+  a_init( *mdi )
   
   Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
@@ -43,5 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17
+; FirstLine = 5
 ; Folding = -
 ; EnableXP
