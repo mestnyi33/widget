@@ -1069,6 +1069,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;{
     ; Requester
     Global resize_one
+    Declare Button_Draw( *this )
+    
     
     Declare.w ChangeValue( *this )
     Declare.i TypeFromClass( class.s )
@@ -17034,7 +17036,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        
         ;\\ draw current pressed-move-widget
         If PressedWidget( ) And 
            PressedWidget( )\dragstart And 
@@ -17044,7 +17045,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           Draw( PressedWidget( ) )
         EndIf
-        
         
         ;\\ draw anchors (movable & sizable)
         If a_transform( )
@@ -17092,8 +17092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
         EndIf
-        
-        
+       
         ;\\ draw current-popup-widget
         If Popup( ) = *this\root
           If Popup( )\widget
@@ -17102,7 +17101,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Draw( Popup( )\widget )
           EndIf
         EndIf
-        
         
         ;\\ temp
         If test_buttons_draw
@@ -17125,7 +17123,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
         EndIf
-        
         
         ;\\
         DrawingStop( )
@@ -21337,8 +21334,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2497
-; FirstLine = 2421
-; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8-----------------------------------------------------------------------------------------------------------------------------------------------------------8----
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8----------------------------------fZvF9-------03f+r--------------------------------------------------------------------------------------------------------8----
 ; EnableXP

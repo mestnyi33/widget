@@ -269,7 +269,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect     
    
    
-    If Not GetButtons( ) And EnterButton( ) ; EnterButton( );(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
+    If Not MouseButtons( ) And EnterButton( ) ; EnterButton( );(*this\scroll\h\bar\index Or *this\scroll\v\bar\index)
       Select EventType
         Case #PB_EventType_LeftButtonUp
           Debug "----------Up---------"
@@ -414,8 +414,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 362
-; FirstLine = 259
+; IDE Options = PureBasic 5.72 (Windows - x64)
 ; Folding = vu---v-----
 ; EnableXP

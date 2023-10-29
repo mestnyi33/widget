@@ -122,17 +122,17 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Button_Events( )
-      Protected *ev._s_widget = EventWidget( )
+      Protected *ew._s_widget = EventWidget( )
       
       Select WidgetEventType( ) 
          Case #__event_LeftClick
-            Debug "Button '" + GetText(*ev) + "' was clicked."
+            Debug "Button '" + GetText(*ew) + "' was clicked."
             
          Case #__event_Draw
-            With *ev
+            With *ew
                StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
                TranslateCoordinates(\x[#__c_frame], \y[#__c_frame])
-               Button_DrawCallback(*ev, \width[#__c_frame], \height[#__c_frame], \data)
+               Button_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], \data)
                StopVectorDrawing( )
             EndWith
       EndSelect
@@ -252,17 +252,17 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure CheckBox_Events( )
-      Protected *ev._s_widget = EventWidget( )
+      Protected *ew._s_widget = EventWidget( )
       
       Select WidgetEventType( ) 
          Case #__event_LeftClick, #__event_Left2Click, #__event_Left3Click
-            SetState(*ev, 1-GetState(*ev))
+            SetState(*ew, 1-GetState(*ew))
             
          Case #__event_Draw
-            With *ev
+            With *ew
                StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
                TranslateCoordinates(\x[#__c_frame], \y[#__c_frame])
-               CheckBox_DrawCallback(*ev, \width[#__c_frame], \height[#__c_frame], 0)
+               CheckBox_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], 0)
                StopVectorDrawing( )
             EndWith
       EndSelect
@@ -357,8 +357,6 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 144
-; FirstLine = 106
-; Folding = --+--
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; Folding = 4-+--
 ; EnableXP
