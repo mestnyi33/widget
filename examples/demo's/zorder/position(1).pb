@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "-widgets.pbi"
+XIncludeFile "widgets.pbi"
 
 
 
@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #demo = #after
   Global *c0,*b1,*b2
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     Button(5, 5, 200, 30,"btn0") : SetClass(widget(), GetText(widget()))  
     
@@ -66,5 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

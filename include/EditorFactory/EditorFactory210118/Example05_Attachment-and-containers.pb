@@ -178,10 +178,9 @@ DataSection
 	Data.q $2E978F38BB78DBE2,$FC5C6B851D2EAE27,$2B4D96B96187A0DD,$2A000C025F815FFD,$00A43BC08246DEFE
 	Data.q $AE444E4549000000,$0000000000826042
 EndDataSection
-
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
-; EnableCompileCount = 371
+; EnableCompileCount = 372
 ; EnableBuildCount = 0
 ; EnableExeConstant

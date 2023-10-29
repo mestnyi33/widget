@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         ClearDebugOutput( )
-        debug_position( )
+        ;debug_position( )
     EndSelect
     
   EndProcedure
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    debug_position(root())
+    ;debug_position(root())
     SetState(Panel, 1)
     Bind(#PB_All, @_Event())
     
@@ -61,5 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 55
+; FirstLine = 23
 ; Folding = -
 ; EnableXP

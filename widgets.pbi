@@ -116,32 +116,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug " " + _text_ + " - "
       ForEach _root_\_widgets( )
         If _root_\_widgets( ) <> _root_\_widgets( )\root
-          If _root_\_widgets( )\before\widget And _root_\_widgets( )\after\widget
-            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " " + _root_\_widgets( )\before\widget\class + " " + _root_\_widgets( )\class + " " + _root_\_widgets( )\after\widget\class
-          ElseIf _root_\_widgets( )\after\widget
-            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " none " + _root_\_widgets( )\class + " " + _root_\_widgets( )\after\widget\class
-          ElseIf _root_\_widgets( )\before\widget
-            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " " + _root_\_widgets( )\before\widget\class + " " + _root_\_widgets( )\class + " none"
+          If _root_\_widgets( )\BeforeWidget( ) And _root_\_widgets( )\AfterWidget( )
+            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " ( " + _root_\_widgets( )\BeforeWidget( )\class + " " + _root_\_widgets( )\class + " " + _root_\_widgets( )\AfterWidget( )\class + " )"
+          ElseIf _root_\_widgets( )\AfterWidget( )
+            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " ( -- " + _root_\_widgets( )\class + " " + _root_\_widgets( )\AfterWidget( )\class + " )"
+          ElseIf _root_\_widgets( )\BeforeWidget( )
+            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " ( " + _root_\_widgets( )\BeforeWidget( )\class + " " + _root_\_widgets( )\class + " -- )"
           Else
-            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " none " + _root_\_widgets( )\class + " none "
+            Debug " - " + Str(ListIndex( _root_\_widgets( ))) + " " + _root_\_widgets( )\index + " ( -- " + _root_\_widgets( )\class + " -- ) "
           EndIf
           
-          ;           If _root_\_widgets( )\before\widget And _root_\_widgets( )\after\widget
-          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\before\widget\class +"-"+ _root_\_widgets( )\before\widget\position +" "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" "+ _root_\_widgets( )\after\widget\class +"-"+ _root_\_widgets( )\after\widget\position
-          ;           ElseIf _root_\_widgets( )\after\widget
-          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" "+ _root_\_widgets( )\after\widget\class +"-"+ _root_\_widgets( )\after\widget\position
-          ;           ElseIf _root_\_widgets( )\before\widget
-          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\before\widget\class +"-"+ _root_\_widgets( )\before\widget\position +" "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" none"
+          ;           If _root_\_widgets( )\BeforeWidget( ) And _root_\_widgets( )\AfterWidget( )
+          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\BeforeWidget( )\class +"-"+ _root_\_widgets( )\BeforeWidget( )\position +" "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" "+ _root_\_widgets( )\AfterWidget( )\class +"-"+ _root_\_widgets( )\AfterWidget( )\position
+          ;           ElseIf _root_\_widgets( )\AfterWidget( )
+          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" "+ _root_\_widgets( )\AfterWidget( )\class +"-"+ _root_\_widgets( )\AfterWidget( )\position
+          ;           ElseIf _root_\_widgets( )\BeforeWidget( )
+          ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\BeforeWidget( )\class +"-"+ _root_\_widgets( )\BeforeWidget( )\position +" "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position +" none"
           ;           Else
           ;             Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class +"-"+ _root_\_widgets( )\position + " none "
           ;           EndIf
           ;
-          ;           ;         If _root_\_widgets( )\before\widget And _root_\_widgets( )\after\widget
-          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\before\widget\class +" "+ _root_\_widgets( )\class +" "+ _root_\_widgets( )\after\widget\class
-          ;           ;         ElseIf _root_\_widgets( )\after\widget
-          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class +" "+ _root_\_widgets( )\after\widget\class
-          ;           ;         ElseIf _root_\_widgets( )\before\widget
-          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\before\widget\class +" "+ _root_\_widgets( )\class +" none"
+          ;           ;         If _root_\_widgets( )\BeforeWidget( ) And _root_\_widgets( )\AfterWidget( )
+          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\BeforeWidget( )\class +" "+ _root_\_widgets( )\class +" "+ _root_\_widgets( )\AfterWidget( )\class
+          ;           ;         ElseIf _root_\_widgets( )\AfterWidget( )
+          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class +" "+ _root_\_widgets( )\AfterWidget( )\class
+          ;           ;         ElseIf _root_\_widgets( )\BeforeWidget( )
+          ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" "+ _root_\_widgets( )\BeforeWidget( )\class +" "+ _root_\_widgets( )\class +" none"
           ;           ;         Else
           ;           ;           Debug " - "+ Str(ListIndex( _root_\_widgets( ))) +" "+ _root_\_widgets( )\index +" none "+ _root_\_widgets( )\class + " none "
           ;           ;         EndIf
@@ -327,10 +327,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro EnteredWidget( ): mouse( )\entered\widget: EndMacro ; Returns mouse entered widget
     Macro PressedWidget( ): mouse( )\pressed\widget: EndMacro
     Macro FocusedWidget( ): Keyboard( )\focused\widget: EndMacro ; Returns keyboard focus widget
-    Macro EnteredItem( ): EnteredWidget( )\EnteredRow( ): EndMacro
     
     Macro ClosedWidget( ): last\root : EndMacro
     Macro OpenedWidget( ): widget::*canvas\opened: EndMacro
+    
+    ;-
+    Macro FirstWidget( ): first\widget: EndMacro
+    Macro LastWidget( ): last\widget: EndMacro
+    Macro AfterWidget( ): after\widget: EndMacro
+    Macro BeforeWidget( ): before\widget: EndMacro
+    
+    ;-
+    Macro EnteredItem( ): EnteredWidget( )\EnteredRow( ): EndMacro
     
     Macro PopupWindow( ): widget::*canvas\sticky\window: EndMacro
     Macro Popup( ): widget::*canvas\sticky\root: EndMacro
@@ -3235,6 +3243,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_selector( )\color\front = $ffffffff
           EndIf
           
+          ;\\ set delta pos
+          mouse( )\delta\x = mouse_x
+          mouse( )\delta\y = mouse_y
+          
           ;\\
           If a_index( ) And a_focused( ) And a_focused( )\parent And
              a_focused( )\_a_ And a_anchors([a_index( )])
@@ -3244,10 +3256,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ set delta pos
             If a_focused( )\_a_\transform = 1
-               ;\\ set delta pos
-               mouse( )\delta\x = mouse_x
-               mouse( )\delta\y = mouse_y
-               
                ;\\
                If a_focused( )\parent
                   If Not ( a_focused( )\bounds\attach And a_focused( )\bounds\attach\mode = 2 )
@@ -3321,7 +3329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;             ;               mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
 ;             ;             EndIf
             
-          EndIf
+               EndIf
           
           ;\\
           If a_is_atpoint_( *this )
@@ -3531,11 +3539,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; change selector coordinate
           If a_transform( )\grab
             
-            ;             If a_transform( )\main
-            ;               mouse_x - a_transform( )\main\container_x( )
-            ;               mouse_y - a_transform( )\main\container_y( )
-            ;             EndIf
-            
             If a_transform( )\grid_size > 0
               ;mouse_x + ( mouse_x % a_transform( )\grid_size )
               mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
@@ -3547,10 +3550,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If move_x <> mouse_x
               ; to left
               If mouse( )\delta\x > mouse_x
-                a_selector( )\x     = mouse_x + a_transform( )\grid_size
+                a_selector( )\x     = mouse_x + a_transform( )\grid_size 
                 a_selector( )\width = mouse( )\delta\x - mouse_x
               Else
-                a_selector( )\x     = mouse( )\delta\x
+                a_selector( )\x     = mouse( )\delta\x 
                 a_selector( )\width = mouse_x - mouse( )\delta\x
               EndIf
               
@@ -3566,10 +3569,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If move_y <> mouse_y
               ; to top
               If mouse( )\delta\y > mouse_y
-                a_selector( )\y      = mouse_y + a_transform( )\grid_size
+                a_selector( )\y      = mouse_y + a_transform( )\grid_size 
                 a_selector( )\height = mouse( )\delta\y - mouse_y
               Else
-                a_selector( )\y      = mouse( )\delta\y
+                a_selector( )\y      = mouse( )\delta\y  
                 a_selector( )\height = mouse_y - mouse( )\delta\y
               EndIf
               
@@ -3580,7 +3583,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\repaint = #True
               move_y              = mouse_y
             EndIf
-          EndIf
+            
+         EndIf
         EndIf
         
         ;- widget::a_key_events
@@ -3633,13 +3637,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 Select Keyboard( )\Key
                   Case #PB_Shortcut_Up
-                    If a_focused( )\before\widget
-                      *this\repaint = a_set( a_focused( )\before\widget )
+                    If a_focused( )\BeforeWidget( )
+                      *this\repaint = a_set( a_focused( )\BeforeWidget( ) )
                     EndIf
                     
                   Case #PB_Shortcut_Down
-                    If a_focused( )\after\widget
-                      *this\repaint = a_set( a_focused( )\after\widget )
+                    If a_focused( )\AfterWidget( )
+                      *this\repaint = a_set( a_focused( )\AfterWidget( ) )
                     EndIf
                     
                   Case #PB_Shortcut_Left
@@ -3648,10 +3652,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     EndIf
                     
                   Case #PB_Shortcut_Right
-                    If a_focused( )\first\widget
-                      *this\repaint = a_set( a_focused( )\first\widget )
-                    ElseIf a_focused( )\parent And a_focused( )\parent\last\widget
-                      *this\repaint = a_set( a_focused( )\parent\last\widget )
+                    If a_focused( )\FirstWidget( )
+                      *this\repaint = a_set( a_focused( )\FirstWidget( ) )
+                    ElseIf a_focused( )\parent And a_focused( )\parent\LastWidget( )
+                      *this\repaint = a_set( a_focused( )\parent\LastWidget( ) )
                     EndIf
                     
                 EndSelect
@@ -4779,7 +4783,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PushListPosition( *this\_widgets( ) )
         ChangeCurrentElement( *this\_widgets( ), *this\address )
         While NextElement( *this\_widgets( ) )
-          If *this\_widgets( ) = *this\after\widget
+          If *this\_widgets( ) = *this\AfterWidget( )
             Break
           EndIf
           
@@ -4812,7 +4816,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PushListPosition( *this\_widgets( ) )
         ChangeCurrentElement( *this\_widgets( ), *this\address )
         While NextElement( *this\_widgets( ) )
-          If *this\_widgets( ) = *this\after\widget
+          If *this\_widgets( ) = *this\AfterWidget( )
             Break
           EndIf
           
@@ -12265,7 +12269,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure IsChild( *this._S_WIDGET, *parent._S_WIDGET )
-      ; ProcedureReturn Bool( Not ( *parent\after\widget And *parent\after\widget = *this )) ;
+      ; ProcedureReturn Bool( Not ( *parent\AfterWidget( ) And *parent\AfterWidget( ) = *this )) ;
       Protected result
       
       If *this And
@@ -13060,7 +13064,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         PushListPosition( *this\_widgets( ) )
         ChangeCurrentElement( *this\_widgets( ), *this\address )
         While NextElement( *this\_widgets( ) )
-          If *this\_widgets( ) = *this\last\widget Or
+          If *this\_widgets( ) = *this\LastWidget( ) Or
              *this\_widgets( )\TabIndex( ) = tabindex
             *result = *this\_widgets( )
             Break
@@ -13079,14 +13083,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure GetLast( *this._S_WIDGET, tabindex.l )
       Protected result, *after._S_WIDGET, *parent._S_WIDGET
       
-      If *this\last\widget
+      If *this\LastWidget( )
         If *this\count\childrens
           LastElement( *this\_widgets( ) )
-          result = *this\_widgets( )\last\widget
+          result = *this\_widgets( )\LastWidget( )
           
           ; get after widget
-          If *this\after\widget
-            *after = *this\after\widget
+          If *this\AfterWidget( )
+            *after = *this\AfterWidget( )
           Else
             *parent = *this
             Repeat
@@ -13094,8 +13098,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If Not *parent
                 ProcedureReturn 0
               EndIf
-              If *parent\after\widget
-                *after = *parent\after\widget
+              If *parent\AfterWidget( )
+                *after = *parent\AfterWidget( )
                 Break
               EndIf
             Until *parent = *parent\root
@@ -13109,12 +13113,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Break
               EndIf
             Wend
-            result = *this\_widgets( )\last\widget
+            result = *this\_widgets( )\LastWidget( )
             PopListPosition( *this\_widgets( ) )
           EndIf
           
         Else
-          result = *this\last\widget
+          result = *this\LastWidget( )
         EndIf
         
         ProcedureReturn result
@@ -13128,9 +13132,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #PB_List_First
           result = GetFirst( *this\parent, *this\TabIndex( ) )
         Case #PB_List_Before
-          result = *this\before\widget
+          result = *this\BeforeWidget( )
         Case #PB_List_After
-          result = *this\after\widget
+          result = *this\AfterWidget( )
         Case #PB_List_Last
           result = GetLast( *this\parent, *this\TabIndex( ) )
       EndSelect
@@ -13965,10 +13969,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure SetPosition( *this._S_WIDGET, position.l, *widget._S_WIDGET = #Null ) ; Ok
       If *widget = #Null
         Select Position
-          Case #PB_List_First : *widget = *this\parent\first\widget
-          Case #PB_List_Before : *widget = *this\before\widget
-          Case #PB_List_After : *widget = *this\after\widget
-          Case #PB_List_Last : *widget = *this\parent\last\widget
+          Case #PB_List_First : *widget = *this\parent\FirstWidget( )
+          Case #PB_List_Before : *widget = *this\BeforeWidget( )
+          Case #PB_List_After : *widget = *this\AfterWidget( )
+          Case #PB_List_Last : *widget = *this\parent\LastWidget( )
         EndSelect
       EndIf
       
@@ -14028,51 +14032,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;
-        If *this\before\widget
-          *this\before\widget\after\widget = *this\after\widget
+        If *this\BeforeWidget( )
+          *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
         EndIf
-        If *this\after\widget
-          *this\after\widget\before\widget = *this\before\widget
+        If *this\AfterWidget( )
+          *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
         EndIf
-        If *this\parent\first\widget = *this
-          *this\parent\first\widget = *this\after\widget
+        If *this\parent\FirstWidget( ) = *this
+          *this\parent\FirstWidget( ) = *this\AfterWidget( )
         EndIf
-        If *this\parent\last\widget = *this
-          *this\parent\last\widget = *this\before\widget
+        If *this\parent\LastWidget( ) = *this
+          *this\parent\LastWidget( ) = *this\BeforeWidget( )
         EndIf
         
         ;
         If Position = #PB_List_First Or
            Position = #PB_List_Before
           
-          *this\after\widget    = *widget
-          *this\before\widget   = *widget\before\widget
-          *widget\before\widget = *this
+          *this\AfterWidget( )    = *widget
+          *this\BeforeWidget( )   = *widget\BeforeWidget( )
+          *widget\BeforeWidget( ) = *this
           
-          If *this\before\widget
-            *this\before\widget\after\widget = *this
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this
           Else
-            If *this\parent\first\widget
-              *this\parent\first\widget\before\widget = *this
+            If *this\parent\FirstWidget( )
+              *this\parent\FirstWidget( )\BeforeWidget( ) = *this
             EndIf
-            *this\parent\first\widget = *this
+            *this\parent\FirstWidget( ) = *this
           EndIf
         EndIf
         
         If Position = #PB_List_Last Or 
            Position = #PB_List_After
           
-          *this\before\widget  = *widget
-          *this\after\widget   = *widget\after\widget
-          *widget\after\widget = *this
+          *this\BeforeWidget( )  = *widget
+          *this\AfterWidget( )   = *widget\AfterWidget( )
+          *widget\AfterWidget( ) = *this
           
-          If *this\after\widget
-            *this\after\widget\before\widget = *this
+          If *this\AfterWidget( )
+            *this\AfterWidget( )\BeforeWidget( ) = *this
           Else
-            If *this\parent\last\widget
-              *this\parent\last\widget\after\widget = *this
+            If *this\parent\LastWidget( )
+              *this\parent\LastWidget( )\AfterWidget( ) = *this
             EndIf
-            *this\parent\last\widget = *this
+            *this\parent\LastWidget( ) = *this
           EndIf
         EndIf
         
@@ -14137,7 +14141,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\hide = Bool(*parent\TabBoxFocusedIndex( ) <> tabindex)
         EndIf
         
-        If *parent\last\widget
+        If *parent\LastWidget( )
           *last = GetLast( *parent, tabindex )
           
         EndIf
@@ -14216,27 +14220,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ; position in list
-          If *this\after\widget
-            *this\after\widget\before\widget = *this\before\widget
+          If *this\AfterWidget( )
+            *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
           EndIf
-          If *this\before\widget
-            *this\before\widget\after\widget = *this\after\widget
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
           EndIf
-          If *this\parent\first\widget = *this
-            ;             If *this\after\widget
-            *this\parent\first\widget = *this\after\widget
+          If *this\parent\FirstWidget( ) = *this
+            ;             If *this\AfterWidget( )
+            *this\parent\FirstWidget( ) = *this\AfterWidget( )
             ;             Else
-            ;               *this\parent\first\widget = *this\parent ; if last type
+            ;               *this\parent\FirstWidget( ) = *this\parent ; if last type
             ;             EndIf
           EndIf
-          If *this\parent\last\widget = *this
-            If *this\before\widget
-              *this\parent\last\widget = *this\before\widget
+          If *this\parent\LastWidget( ) = *this
+            If *this\BeforeWidget( )
+              *this\parent\LastWidget( ) = *this\BeforeWidget( )
             Else
-              *this\parent\last\widget = *this\parent ; if last type
+              *this\parent\LastWidget( ) = *this\parent ; if last type
             EndIf
           EndIf
         Else
+          ;\\
           If *parent\root
             If *last
               ChangeCurrentElement( *parent\_widgets( ) , *last\address )
@@ -14250,34 +14255,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\address       = @*parent\_widgets( )
           EndIf
           
-          *this\last\widget = *this ; if last type
+          *this\LastWidget( ) = *this ; if last type
         EndIf
         
-        If *parent\last\widget = *parent
-          *parent\first\widget = *this
-          *parent\last\widget  = *this
-          *this\before\widget  = #Null
-          *this\after\widget   = #Null
+        If *parent\LastWidget( ) = *parent
+          *parent\FirstWidget( ) = *this
+          *parent\LastWidget( )  = *this
+          *this\BeforeWidget( )  = #Null
+          *this\AfterWidget( )   = #Null
         Else
           ; if the parent had the last item
           ; then we make it "previous" instead of "present"
           ; and "present" becomes "subsequent" instead of "previous"
           If *this\parent
-            *this\before\widget = *last
+            *this\BeforeWidget( ) = *last
             ; for the panel element
             If *last\TabIndex( ) = *this\TabIndex( )
-              *this\after\widget = *last\after\widget
+              *this\AfterWidget( ) = *last\AfterWidget( )
             EndIf
           Else
             ; for the panel element
-            If *parent\last\widget And *parent\last\widget\TabIndex( ) = *this\TabIndex( )
-              *this\before\widget = *parent\last\widget
+            If *parent\LastWidget( ) And *parent\LastWidget( )\TabIndex( ) = *this\TabIndex( )
+              *this\BeforeWidget( ) = *parent\LastWidget( )
             EndIf
-            *parent\last\widget = *this
-            *this\after\widget  = #Null
+            *parent\LastWidget( ) = *this
+            *this\AfterWidget( )  = #Null
           EndIf
-          If *this\before\widget
-            *this\before\widget\after\widget = *this
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this
           EndIf
         EndIf
         
@@ -15654,11 +15659,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If *this\type = #__type_Option
           ;\\
-          If *this\before\widget
-            If *this\before\widget\type = #__type_Option
-              *this\GroupBox( ) = *this\before\widget\GroupBox( )
+          If *this\BeforeWidget( )
+            If *this\BeforeWidget( )\type = #__type_Option
+              *this\GroupBox( ) = *this\BeforeWidget( )\GroupBox( )
             Else
-              *this\GroupBox( ) = *this\before\widget
+              *this\GroupBox( ) = *this\BeforeWidget( )
             EndIf
           Else
             *this\GroupBox( ) = *parent
@@ -17007,15 +17012,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
               PushListPosition( *this\_widgets( ))
               ForEach *this\_widgets( )
                 If *this\_widgets( )\root = *this\root
-                  
-                  ;\\ begin draw all widgets
-                  If Not ( *this\_widgets( )\dragstart And 
-                           *this\_widgets( )\resize )
-                    Draw( *this\_widgets( ))
-                  EndIf
+                   ;\\ begin draw all widgets except pressed-move-widget
+                   If Not ( *this\_widgets( )\dragstart And 
+                            *this\_widgets( )\resize )
+                      Draw( *this\_widgets( ))
+                      
+                   EndIf
+                   
+                   ;\\ draw current pressed-move-widget
+                   If PressedWidget( ) And 
+                      PressedWidget( )\resize And 
+                      PressedWidget( )\dragstart And 
+                      PressedWidget( )\parent = *this\_widgets( )\parent
+                      If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
+                         ;Debug "press - draw " + *this\root\class
+                         
+                         Draw( PressedWidget( ) )
+                      EndIf
+                   EndIf
+                    
                 EndIf
-              Next
-              
+             Next
+             
               ;\\
               UnclipOutput( )
               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -17036,19 +17054,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ;\\ draw current pressed-move-widget
-        If PressedWidget( ) And 
-           PressedWidget( )\dragstart And 
-           PressedWidget( )\resize And 
-           PressedWidget( )\root = *this\root
-          ;Debug "press - draw " + *this\root\class
-          
-          Draw( PressedWidget( ) )
-        EndIf
-        
         ;\\ draw anchors (movable & sizable)
         If a_transform( )
-          
+          ;\\
           If a_focused( ) And 
              a_focused( )\hide = 0 And
              a_focused( )\_a_\transform And 
@@ -17059,8 +17067,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_draw( a_anchors( ) )
           EndIf
           
+          ;\\
           If a_transform( )\main And
-             a_transform( )\main\root\canvas\gadget = *this\root\canvas\gadget
+             a_transform( )\main\root = *this\root
             
             ; draw mouse selected widget anchors
             ; a_draw( a_selector( ) )
@@ -19267,14 +19276,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If eventtype = #__event_KeyDown And Not FocusedWidget( )\_a_\transform
             Select Keyboard( )\Key
               Case #PB_Shortcut_Tab
-                If FocusedWidget( )\after\widget And
-                   FocusedWidget( ) <> FocusedWidget( )\after\widget
-                  SetActive( FocusedWidget( )\after\widget )
-                ElseIf FocusedWidget( )\first\widget And
-                       FocusedWidget( ) <> FocusedWidget( )\first\widget
-                  SetActive( FocusedWidget( )\first\widget )
-                ElseIf FocusedWidget( ) <> FocusedWidget( )\root\first\widget
-                  SetActive( FocusedWidget( )\root\first\widget )
+                If FocusedWidget( )\AfterWidget( ) And
+                   FocusedWidget( ) <> FocusedWidget( )\AfterWidget( )
+                  SetActive( FocusedWidget( )\AfterWidget( ) )
+                ElseIf FocusedWidget( )\FirstWidget( ) And
+                       FocusedWidget( ) <> FocusedWidget( )\FirstWidget( )
+                  SetActive( FocusedWidget( )\FirstWidget( ) )
+                ElseIf FocusedWidget( ) <> FocusedWidget( )\root\FirstWidget( )
+                  SetActive( FocusedWidget( )\root\FirstWidget( ) )
                 EndIf
             EndSelect
           EndIf
@@ -20162,12 +20171,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             OpenList( *this\parent )
           EndIf
           
-          If *this\parent\first\widget = *this
-            *this\parent\first\widget = *this\after\widget
+          If *this\parent\FirstWidget( ) = *this
+            *this\parent\FirstWidget( ) = *this\AfterWidget( )
           EndIf
           
-          If *this\parent\last\widget = *this
-            *this\parent\last\widget = *this\before\widget
+          If *this\parent\LastWidget( ) = *this
+            *this\parent\LastWidget( ) = *this\BeforeWidget( )
           EndIf
           
           If *this\parent\TabBox( )
@@ -21334,6 +21343,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = -----------------------------------+---------------------------f8+v008-8K-----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------------8--8----------------------------------fZvF9-------03f+r--------------------------------------------------------------------------------------------------------8----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3249
+; FirstLine = 3163
+; Folding = -----------------------------------v----------------------------4+-bfv+-+y3----------------+--6---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8P9---u-----------------+--+----------------------------------X3bB-------fv--n2--------------------------------------------------------------------------------------------------------0----
 ; EnableXP

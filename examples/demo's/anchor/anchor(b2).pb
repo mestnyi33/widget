@@ -13,7 +13,7 @@ EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
-  a_init(root( ))
+  a_init(root( ), 0)
   SetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
   
   ; Create five different objects
@@ -52,6 +52,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13
+; CursorPosition = 15
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
