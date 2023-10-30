@@ -646,10 +646,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       state\transform
     EndMacro
     Macro a_transform( )
-      mouse( )\_transform
+      mouse( )\_a_
     EndMacro
     Macro a_index( )
-      mouse( )\anchors
+      a_transform( )\anchors
+      ; mouse( )\anchors
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
@@ -2416,8 +2417,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro a_draw( _address_ )
       drawing_mode_alpha_( #PB_2DDrawing_Outlined )
       
-      If _address_ = a_anchors( )
-        ; left line
+      If _address_ = a_focused( )\_a_\id
+        ;\\ left line
         If a_selector([#__a_line_left])
           If _address_[#__a_moved] And a_selector([#__a_line_left])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_left])\height = a_focused( )\frame_height( )
             draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
@@ -2426,7 +2427,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; top line
+        ;\\ top line
         If a_selector([#__a_line_top])
           If _address_[#__a_moved] And a_selector([#__a_line_top])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_top])\height = a_focused( )\frame_height( )
             draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
@@ -2435,7 +2436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; right line
+        ;\\ right line
         If a_selector([#__a_line_right])
           If _address_[#__a_moved] And a_selector([#__a_line_right])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_right])\width = a_focused( )\frame_width( )
             draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
@@ -2444,7 +2445,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ; bottom line
+        ;\\ bottom line
         If a_selector([#__a_line_bottom])
           If _address_[#__a_moved] And a_selector([#__a_line_bottom])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_bottom])\width = a_focused( )\frame_width( )
             draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
@@ -2464,7 +2465,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       drawing_mode_alpha_( #PB_2DDrawing_Default )
       
-      ; draw background anchors
+      ;\\ draw background anchors
       If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height , _address_[#__a_left]\color\back[_address_[#__a_left]\color\state] ) : EndIf
       If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height , _address_[#__a_top]\color\back[_address_[#__a_top]\color\state] ) : EndIf
       If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height , _address_[#__a_right]\color\back[_address_[#__a_right]\color\state] ) : EndIf
@@ -2476,7 +2477,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       drawing_mode_alpha_( #PB_2DDrawing_Outlined )
       
-      ; draw frame anchors
+      ;\\ draw frame anchors
       If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height, _address_[#__a_left]\color\frame[_address_[#__a_left]\color\state] ) : EndIf
       If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height, _address_[#__a_top]\color\frame[_address_[#__a_top]\color\state] ) : EndIf
       If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height, _address_[#__a_right]\color\frame[_address_[#__a_right]\color\state] ) : EndIf
@@ -16884,9 +16885,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If *this\state\enter And
-             Not *this\state\disable
-            
+          If *this\state\enter
             ;\\ draw entered anchors
             If a_transform( ) And
                a_focused( ) And
@@ -16895,7 +16894,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ draw drag & drop
-            If mouse( )\drag
+            If mouse( )\drag And
+              Not *this\state\disable
+            
               DropDraw( *this )
             EndIf
           EndIf
@@ -17011,7 +17012,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    EndIf
                     
                 EndIf
-             Next
+              Next
              
               ;\\
               UnclipOutput( )
@@ -17043,7 +17044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; draw key-focused-widget anchors
             clip_output_( a_transform( )\main, [#__c_draw2] )
-            a_draw( a_anchors( ) )
+            a_draw( a_focused( )\_a_\id )
           EndIf
           
           ;\\
@@ -21322,6 +21323,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = -----------------------------------f----------------------------v0---08-8Lb----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-w---8+-------------------8----------------------------------fZvF9-------0+-fW--------------------------------------------------------------------------------------------------------4----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------f----------------------------v0---08-8Lb----------------8--n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-w---8+-------------------8----------------------------------fZvF9-------0OdfW--------------------------------------------------------------------------------------------------------4----
 ; EnableXP

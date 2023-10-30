@@ -152,8 +152,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pressed._s_OBJECTTYPE      ; mouse button's pushed element
          leaved._s_OBJECTTYPE       ; mouse leaved element
          
-         anchors.a
-         *_transform._s_transform
+         ; anchors.a
+         *_a_._s_TRANSFORM
          interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
       EndStructure
       ;--     KEYBOARD
@@ -300,14 +300,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     TRANSFORM
-      Structure _s_a_group Extends _s_coordinate
+      Structure _s_A_GROUP Extends _s_coordinate
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-         *main._s_WIDGET
-         *widget._s_WIDGET
+        anchors.a
+        
+        *main._s_WIDGET
+         *widget._s_WIDGET ; a_focused( )
          *e_widget._s_WIDGET
-         List *group._s_a_group( )
+         List *group._s_A_GROUP( )
          
          *type
          *grab[2] ; grab image handle
@@ -766,6 +768,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = ----fAA---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -M--cAA---
 ; EnableXP
