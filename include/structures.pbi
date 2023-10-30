@@ -40,6 +40,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
+         transform.b
+        
          enter.b
          press.b
          hide.b
@@ -138,9 +140,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          y.l[3]
          x.l[3]
          
+         change.b                   ; mouse moved state
          click.a                    ; mouse clicked count
          buttons.l                  ; mouse clicked button
-         change.b                   ; mouse moved state
          
          *drag._s_DRAG
          wheel._s_POINT
@@ -327,11 +329,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
+         transform.b ; temp
          pos.l
          size.l
          
          index.b
-         transform.b
          mode.i
          
          *id._s_buttons[constants::#__a_moved+1]
@@ -718,7 +720,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *child._s_WIDGET( ) ; widget( )\
       EndStructure
       
-      ;--     Window
+      ;--     WINDOW
       Structure _s_WINDOW Extends _s_WIDGET
          *widget._s_WIDGET
       EndStructure
@@ -764,8 +766,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 589
-; FirstLine = 587
-; Folding = ----------
+; IDE Options = PureBasic 5.72 (Windows - x64)
+; Folding = ----fAA---
 ; EnableXP
