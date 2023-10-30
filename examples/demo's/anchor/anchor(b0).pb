@@ -81,7 +81,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 81
-; FirstLine = 46
 ; Folding = -
 ; EnableXP

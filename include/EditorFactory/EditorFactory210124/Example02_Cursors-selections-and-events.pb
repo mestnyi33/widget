@@ -226,10 +226,12 @@ ForEver
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 95
+; FirstLine = 103
 ; Folding = --
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 169
+; EnableCompileCount = 175
 ; EnableBuildCount = 0
 ; EnableExeConstant
