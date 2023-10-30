@@ -331,7 +331,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
-         transform.b ; temp
+        ; transform.b ; temp
          pos.l
          size.l
          
@@ -591,6 +591,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
+         *anchors._s_ANCHORS
+         _a_._s_ANCHORS
+         
          reclip.b
          
          type.b
@@ -610,7 +613,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          resize.i   ; state
          
          ;*Draw.DrawFunc        ; Function to Draw
-         _a_._s_ANCHORS
          caption._s_caption
          
          

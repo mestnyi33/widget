@@ -4,6 +4,11 @@ XIncludeFile #IDE_path + "widgets.pbi"
 
 EnableExplicit
 
+Macro a_trans( )
+  anchors 
+  ;_a_\transform 
+EndMacro
+
 Uselib( WIDGET )
 UsePNGImageDecoder( )
 
@@ -282,7 +287,7 @@ Declare widget_events( )
 Macro widget_copy( )
    ClearList( *copy( ) )
    
-   If a_focused( )\_a_\transform = 1
+   If a_focused( )\a_trans( )
       AddElement( *copy( ) ) 
       *copy.allocate( A_GROUP, ( ) )
       *copy( )\widget = a_focused( )
@@ -302,7 +307,7 @@ Macro widget_copy( )
 EndMacro
 
 Macro widget_delete( )
-   If a_focused( )\_a_\transform = 1
+   If a_focused( )\a_trans( )
       RemoveItem( id_i_view_tree, GetData( a_focused( ) ) )
       
       Free( a_focused( ) )
@@ -580,7 +585,7 @@ Procedure widget_events( )
       Case #PB_EventType_LeftButtonUp
          ; then group select
          If IsContainer( *ew )
-            If a_transform( ) And a_focused( ) And a_focused( )\_a_\transform =- 1
+            If a_transform( ) And a_focused( ) And a_focused( )\a_trans( ) = - 1
                SetState( id_i_view_tree, - 1 )
                If IsGadget( id_design_code )
                   SetGadgetState( id_design_code, - 1 )
@@ -1269,8 +1274,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 494
-; FirstLine = 482
-; Folding = ---------2u----4---4-
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------rf--------v-
 ; EnableXP
