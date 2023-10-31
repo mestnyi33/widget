@@ -2739,8 +2739,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Macro a_remove( _this_, _index_ )
       If _this_ ;;And _this_\anchors
-        ; Debug "e_remove - " + _this_\class ;+" "+ _this_\text\string
-        For _index_ = 0 To #__a_moved
+                ; Debug "e_remove - " + _this_\class ;+" "+ _this_\text\string
+        For _index_ = 0 To #__a_count
           If _this_\anchors\id[_index_]
             FreeStructure( _this_\anchors\id[_index_] )
             _this_\anchors\id[_index_] = #Null
@@ -2750,8 +2750,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro a_add( _this_, _index_ )
-      ;; If *this\anchors
-      For _index_ = 0 To #__a_moved
+      For _index_ = 0 To #__a_count
         If _this_\anchors\mode & #__a_height = 0 And
            _this_\anchors\mode & #__a_width = 0
           If _index_ = #__a_left Or
@@ -2790,7 +2789,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        ;
+;        If _index_ = 0
+;           Continue
+;         EndIf
+        
+         ;
         If Not _this_\anchors\id[_index_]
           _this_\anchors\id.allocate( A_BUTTONS, [_index_] )
         EndIf
@@ -2809,7 +2812,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\anchors\id[_index_]\color\back[#__S_1] = $80FF0000
         _this_\anchors\id[_index_]\color\back[#__S_2] = $800000FF
       Next _index_
-      ; EndIf
     EndMacro
     
     Procedure a_show( *this._S_WIDGET, state )
@@ -2853,19 +2855,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;\\
           i = 0
           
-         ; If *this\anchors
-            a_add( *this, i )
-            a_size( *this\anchors\id, *this\anchors\size )
-            a_move( *this\anchors\id, *this\container,
-                    *this\screen_x( ),
-                    *this\screen_y( ),
-                    *this\screen_width( ),
-                    *this\screen_height( ) )
-         ; EndIf
+          ; If *this\anchors
+          a_add( *this, i )
+          a_size( *this\anchors\id, *this\anchors\size )
+          a_move( *this\anchors\id, *this\container,
+                  *this\screen_x( ),
+                  *this\screen_y( ),
+                  *this\screen_width( ),
+                  *this\screen_height( ) )
+          ; EndIf
           
           ;\\
           i = 0
-          For i = 1 To #__a_moved
+          For i = 1 To #__a_count
             If a_entered( )\anchors\id[i] And
                is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
               ;
@@ -2884,11 +2886,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           Next
           
-          
-          ;\\
-          If *this\anchors\id\color\state <> #__S_1
-            *this\anchors\id\color\state = #__S_1
-          EndIf
           *this\repaint = #True
         EndIf
       Else
@@ -2934,14 +2931,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If _this_\anchors 
         If _this_\anchors\id
-        a_size( _this_\anchors\id, _this_\anchors\size )
-        a_move( _this_\anchors\id, _this_\container,
-                _this_\screen_x( ),
-                _this_\screen_y( ),
-                _this_\screen_width( ),
-                _this_\screen_height( ) )
+          a_size( _this_\anchors\id, _this_\anchors\size )
+          a_move( _this_\anchors\id, _this_\container,
+                  _this_\screen_x( ),
+                  _this_\screen_y( ),
+                  _this_\screen_width( ),
+                  _this_\screen_height( ) )
+        EndIf
       EndIf
-    EndIf
       
     EndMacro
     
@@ -2982,7 +2979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If ( *this\anchors And a_focused( ) <> *this ); Or ( *this\anchors\ = - 1 And Not a_index( ) )
-           
+          
           FocusedWidget( ) = *this
           a_entered( ) = a_focused( )
           a_focused( ) = *this
@@ -3043,7 +3040,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;;a_grid_change( *this )
       
       
-      For i = 0 To #__a_count
+      For i = 0 To 5;#__a_count
         a_transform( )\cursor[i] = *Data_Transform_Cursor\cursor[i]
         
         a_selector([i])\color\frame[0] = $ff000000
@@ -3160,13 +3157,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       ;If a_focused( ) And a_focused( )\anchors
-        a_size( a_selector( ), 7);a_transform( )\size )
-        a_move( a_selector( ), 0,
-                a_selector( )\x - 3,;a_transform( )\pos,
-                a_selector( )\y - 3,;a_transform( )\pos,
-                a_selector( )\width + 6,;a_transform( )\pos * 2,
-                a_selector( )\height + 6);a_transform( )\pos * 2 )
-      ;EndIf  
+      a_size( a_selector( ), 7);a_transform( )\size )
+      a_move( a_selector( ), 0,
+              a_selector( )\x - 3,;a_transform( )\pos,
+              a_selector( )\y - 3,;a_transform( )\pos,
+              a_selector( )\width + 6,;a_transform( )\pos * 2,
+              a_selector( )\height + 6);a_transform( )\pos * 2 )
+                                       ;EndIf  
     EndProcedure
     
     Procedure a_events( *this._S_WIDGET, eventtype.l, *button, *data )
@@ -3183,8 +3180,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_MouseEnter
-           ;Debug "e "+*this\class
-           If Not Mouse( )\buttons ; ( a_focused( ) And a_focused( )\state\press )
+          ;Debug "e "+*this\class
+          If Not Mouse( )\buttons ; ( a_focused( ) And a_focused( )\state\press )
             If a_focused( ) = *this
               a_entered( ) = *this
             Else
@@ -3203,106 +3200,106 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If eventtype = #__event_LeftButtonDown
-           ;\\
-           If is_integral_( *this )
-              If *this\parent\state\press = 0 
-                 *this\parent\state\press = - 1
-                *this\parent\repaint = #True
+          ;\\
+          If is_integral_( *this )
+            If *this\parent\state\press = 0 
+              *this\parent\state\press = - 1
+              *this\parent\repaint = #True
+            EndIf
+            *this = *this\parent
+          EndIf
+          
+          ;\\ set/remove current transformer
+          If *this = a_transform( )\main
+            ;
+            ;\\ если нажали в главном "окне"
+            ;\\ где находятся "изменяемые" виджеты
+            ;\\ то будем убырать все якорья
+            ;
+            a_remove( a_focused( ), i )
+          Else
+            a_set( *this )
+          EndIf
+          
+          ;\\ change frame color
+          If a_transform( )\type = 0
+            a_transform( )\dot_ted   = 1
+            a_transform( )\dot_space = 3
+            a_transform( )\dot_line  = 5
+            
+            a_selector( )\color\back  = $80DFE2E2
+            a_selector( )\color\frame = $BA161616
+          Else
+            a_selector( )\color\back  = $9F646565
+            a_selector( )\color\frame = $BA161616
+            a_selector( )\color\front = $ffffffff
+          EndIf
+          
+          ;\\ set delta pos
+          mouse( )\delta\x = mouse_x
+          mouse( )\delta\y = mouse_y
+          
+          ;\\
+          If a_index( ) And a_anchors([a_index( )])
+            
+            ;\\ set current transformer index state
+            a_anchors([a_index( )])\color\state = #__S_2
+            
+            ;\\ not multi group transformer
+            ;If Not *this\anchors\multi 
+            ;\\
+            If *this\parent
+              If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                mouse( )\delta\x + *this\parent\inner_x( )
               EndIf
-              *this = *this\parent
-           EndIf
-           
-           ;\\ set/remove current transformer
-           If *this = a_transform( )\main
-              ;
-              ;\\ если нажали в главном "окне"
-              ;\\ где находятся "изменяемые" виджеты
-              ;\\ то будем убырать все якорья
-              ;
-              a_remove( a_focused( ), i )
-           Else
-              a_set( *this )
-           EndIf
-           
-           ;\\ change frame color
-           If a_transform( )\type = 0
-              a_transform( )\dot_ted   = 1
-              a_transform( )\dot_space = 3
-              a_transform( )\dot_line  = 5
-              
-              a_selector( )\color\back  = $80DFE2E2
-              a_selector( )\color\frame = $BA161616
-           Else
-              a_selector( )\color\back  = $9F646565
-              a_selector( )\color\frame = $BA161616
-              a_selector( )\color\front = $ffffffff
-           EndIf
-           
-           ;\\ set delta pos
-           mouse( )\delta\x = mouse_x
-           mouse( )\delta\y = mouse_y
-           
-           ;\\
-           If a_index( ) And a_anchors([a_index( )])
-              
-              ;\\ set current transformer index state
-              a_anchors([a_index( )])\color\state = #__S_2
-              
-              ;\\ not multi group transformer
-              ;If Not *this\anchors\multi 
-              ;\\
-              If *this\parent
-                 If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                    mouse( )\delta\x + *this\parent\inner_x( )
-                 EndIf
-                 If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                    mouse( )\delta\y + *this\parent\inner_y( )
-                 EndIf
-                 
-                 ;\\ 
-                 If *this\child <= 0
-                    Select a_index( )
-                       Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                          mouse( )\delta\x + *this\parent\scroll_x( )
-                    EndSelect
-                    
-                    Select a_index( )
-                       Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                          mouse( )\delta\y + *this\parent\scroll_y( )
-                    EndSelect
-                 EndIf
+              If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                mouse( )\delta\y + *this\parent\inner_y( )
               EndIf
               
               ;\\ 
-              mouse( )\delta\x - a_anchors([a_index( )])\x
-              mouse( )\delta\y - a_anchors([a_index( )])\y 
-              
-              ;\\ 
-              If Not ( Not *this\container And a_index( ) = #__a_moved )
-                 mouse( )\delta\x - ( *this\anchors\size - *this\anchors\pos )
-                 mouse( )\delta\y - ( *this\anchors\size - *this\anchors\pos )
+              If *this\child <= 0
+                Select a_index( )
+                  Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                    mouse( )\delta\x + *this\parent\scroll_x( )
+                EndSelect
+                
+                Select a_index( )
+                  Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                    mouse( )\delta\y + *this\parent\scroll_y( )
+                EndSelect
               EndIf
-              
-              ;\\
-              If *this\type = #__type_window
-                 Select a_index( )
-                    Case #__a_right, #__a_right_top
-                       mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                       
-                    Case #__a_bottom, #__a_left_bottom
-                       mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                       
-                    Case #__a_right_bottom
-                       mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                       mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                       
-                 EndSelect
-              EndIf
-              ;EndIf
-              
-           EndIf
-           
-           *this\repaint = #True
+            EndIf
+            
+            ;\\ 
+            mouse( )\delta\x - a_anchors([a_index( )])\x
+            mouse( )\delta\y - a_anchors([a_index( )])\y 
+            
+            ;\\ 
+            If Not ( Not *this\container And a_index( ) = #__a_moved )
+              mouse( )\delta\x - ( *this\anchors\size - *this\anchors\pos )
+              mouse( )\delta\y - ( *this\anchors\size - *this\anchors\pos )
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_window
+              Select a_index( )
+                Case #__a_right, #__a_right_top
+                  mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                  
+                Case #__a_bottom, #__a_left_bottom
+                  mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                  
+                Case #__a_right_bottom
+                  mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                  mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                  
+              EndSelect
+            EndIf
+            ;EndIf
+            
+          EndIf
+          
+          *this\repaint = #True
         EndIf
         
         ;
@@ -3314,10 +3311,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *this\parent\repaint = #True
             EndIf
             *this = *this\parent
-         EndIf
-         
-         ;\\
-         If a_focused( )
+          EndIf
+          
+          ;\\
+          If a_focused( )
             If a_anchors([a_index( )])
               If is_atpoint_( a_anchors([a_index( )]), mouse_x, mouse_y )
                 a_anchors([a_index( )])\color\state = #__S_1
@@ -3341,8 +3338,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_DragStart
-           ;\\
-           If *this\container And
+          ;\\
+          If *this\container And
              *this\state\enter = 2
             
             If Not a_index( )
@@ -3358,161 +3355,161 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If eventtype = #__event_MouseMove
-           If Not a_transform( )\grab 
-             If mouse( )\buttons And a_focused( ) And a_focused( )\state\press
-               If a_index( ) And a_anchors([a_index( )]) And a_anchors([a_index( )])\color\state = #__S_2
-                    mouse_x - mouse( )\delta\x
-                    mouse_y - mouse( )\delta\y
+          If Not a_transform( )\grab 
+            If mouse( )\buttons And a_focused( ) And a_focused( )\state\press
+              If a_index( ) And a_anchors([a_index( )]) And a_anchors([a_index( )])\color\state = #__S_2
+                mouse_x - mouse( )\delta\x
+                mouse_y - mouse( )\delta\y
+                
+                ;\\
+                If a_transform( )\grid_size > 0
+                  mouse_x + ( mouse_x % a_transform( )\grid_size )
+                  mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
+                  mouse_y + ( mouse_y % a_transform( )\grid_size )
+                  mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
+                EndIf
+                
+                ;\\
+                If resize_x <> mouse_x Or
+                   resize_y <> mouse_y
+                  resize_x = mouse_x
+                  resize_y = mouse_y
+                  
+                  If a_focused( )\anchors ;= 1
+                    mw = #PB_Ignore
+                    mh = #PB_Ignore
                     
-                    ;\\
-                    If a_transform( )\grid_size > 0
-                       mouse_x + ( mouse_x % a_transform( )\grid_size )
-                       mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
-                       mouse_y + ( mouse_y % a_transform( )\grid_size )
-                       mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
-                    EndIf
-                    
-                    ;\\
-                    If resize_x <> mouse_x Or
-                       resize_y <> mouse_y
-                       resize_x = mouse_x
-                       resize_y = mouse_y
-                       
-                       If a_focused( )\anchors ;= 1
-                          mw = #PB_Ignore
-                          mh = #PB_Ignore
-                          
-                          If a_index( ) <> #__a_moved
-                             ;\\ horizontal
-                             Select a_index( )
-                                Case #__a_left, #__a_left_top, #__a_left_bottom ; left
-                                   mw = (( a_focused( )\container_x( ) - mouse_x ) + a_focused( )\container_width( )) - a_focused( )\parent\scroll_x( )
-                                   If mw <= 0 
-                                      mouse_x = ( a_focused( )\container_x( ) + a_focused( )\container_width( )) - a_focused( )\parent\scroll_x( )
-                                      mw      = 0 
-                                   EndIf
-                                   If a_focused( )\fs
-                                      If a_focused( )\type <> #__type_window
-                                         mw + a_focused( )\fs * 2 + a_focused( )\fs[1] + a_focused( )\fs[3] ; ( a_focused( )\frame_width( ) - a_focused( )\inner_width( ) )
-                                      EndIf
-                                   EndIf
-                                   
-                                Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                                   mw = ( mouse_x - a_focused( )\container_x( ) ) + IsGrid
-                             EndSelect
-                             
-                             ;\\ vertical
-                             Select a_index( )
-                                Case #__a_top, #__a_left_top, #__a_right_top ; top
-                                   mh = (( a_focused( )\container_y( ) - mouse_y ) + a_focused( )\container_height( )) - a_focused( )\parent\scroll_y( )
-                                   If mh <= 0
-                                      mouse_y = ( a_focused( )\container_y( ) + a_focused( )\container_height( )) - a_focused( )\parent\scroll_y( )
-                                      mh      = 0
-                                   EndIf
-                                   If a_focused( )\fs
-                                      If a_focused( )\type <> #__type_window
-                                         mh + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4] ; ( a_focused( )\frame_height( ) - a_focused( )\inner_height( ) )
-                                      EndIf
-                                   EndIf
-                                   
-                                Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                                   mh = ( mouse_y - a_focused( )\container_y( ) ) + IsGrid
-                             EndSelect
-                             
-                             ;\\
-                             If a_index( ) <> #__a_left_top
-                                If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
-                                   mouse_x = #PB_Ignore
-                                EndIf
-                                If a_index( ) <> #__a_top And a_index( ) <> #__a_right_top
-                                   mouse_y = #PB_Ignore
-                                EndIf
-                             EndIf
+                    If a_index( ) <> #__a_moved
+                      ;\\ horizontal
+                      Select a_index( )
+                        Case #__a_left, #__a_left_top, #__a_left_bottom ; left
+                          mw = (( a_focused( )\container_x( ) - mouse_x ) + a_focused( )\container_width( )) - a_focused( )\parent\scroll_x( )
+                          If mw <= 0 
+                            mouse_x = ( a_focused( )\container_x( ) + a_focused( )\container_width( )) - a_focused( )\parent\scroll_x( )
+                            mw      = 0 
+                          EndIf
+                          If a_focused( )\fs
+                            If a_focused( )\type <> #__type_window
+                              mw + a_focused( )\fs * 2 + a_focused( )\fs[1] + a_focused( )\fs[3] ; ( a_focused( )\frame_width( ) - a_focused( )\inner_width( ) )
+                            EndIf
                           EndIf
                           
-                          ;Debug " " + mw + " " + mh
-                          Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
-                          
-                       Else
-                          If a_transform( )\main
-                             mouse_x + a_transform( )\main\container_x( )
-                             mouse_y + a_transform( )\main\container_y( )
+                        Case #__a_right, #__a_right_top, #__a_right_bottom ; right
+                          mw = ( mouse_x - a_focused( )\container_x( ) ) + IsGrid
+                      EndSelect
+                      
+                      ;\\ vertical
+                      Select a_index( )
+                        Case #__a_top, #__a_left_top, #__a_right_top ; top
+                          mh = (( a_focused( )\container_y( ) - mouse_y ) + a_focused( )\container_height( )) - a_focused( )\parent\scroll_y( )
+                          If mh <= 0
+                            mouse_y = ( a_focused( )\container_y( ) + a_focused( )\container_height( )) - a_focused( )\parent\scroll_y( )
+                            mh      = 0
+                          EndIf
+                          If a_focused( )\fs
+                            If a_focused( )\type <> #__type_window
+                              mh + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4] ; ( a_focused( )\frame_height( ) - a_focused( )\inner_height( ) )
+                            EndIf
                           EndIf
                           
-                          ; horizontal
-                          Select a_index( )
-                             Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                                If a_index( ) <> #__a_moved
-                                   a_selector( )\width = ( a_selector( )\x - mouse_x ) + a_selector( )\width
-                                EndIf
-                                a_selector( )\x = mouse_x
-                                
-                             Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                                a_selector( )\width = ( mouse_x - a_selector( )\x ) + IsGrid
-                          EndSelect
-                          
-                          ; vertical
-                          Select a_index( )
-                             Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                                If a_index( ) <> #__a_moved
-                                   a_selector( )\height = ( a_selector( )\y - mouse_y ) + a_selector( )\height
-                                EndIf
-                                a_selector( )\y = mouse_y
-                                
-                             Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                                a_selector( )\height = ( mouse_y - a_selector( )\y ) + IsGrid
-                          EndSelect
-                          
-                          ;
-                          ;\\\ multi resize
-                          ;
-                          
-                          ;                   a_selector( )\x = _x_
-                          ;                   a_selector( )\y = _y_
-                          ;
-                          ;                   a_selector( )\width = _width_
-                          ;                   a_selector( )\height = _height_
-                          
-                          a_move( a_selector( ), 0,
-                                  a_selector( )\x - 0,;a_transform( )\pos,
-                                  a_selector( )\y - 0,;a_transform( )\pos,
-                                  a_selector( )\width + 0,;a_transform( )\pos * 2,
-                                  a_selector( )\height + 0);a_transform( )\pos * 2)
-                          
-                          Select a_index( )
-                             Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                                ForEach a_group( )
-                                   *this\repaint | Resize( a_group( )\widget,
-                                                           ( a_selector( )\x - a_focused( )\inner_x( ) ) + a_group( )\x,
-                                                           #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
-                                Next
-                                
-                             Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                                ForEach a_group( )
-                                   *this\repaint | Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
-                                Next
-                          EndSelect
-                          
-                          Select a_index( )
-                             Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                                ForEach a_group( )
-                                   *this\repaint | Resize( a_group( )\widget, #PB_Ignore,
-                                                           ( a_selector( )\y - a_focused( )\inner_y( ) ) + a_group( )\y,
-                                                           #PB_Ignore, a_selector( )\height - a_group( )\height )
-                                Next
-                                
-                             Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                                ForEach a_group( )
-                                   *this\repaint | Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height - a_group( )\height )
-                                Next
-                          EndSelect
-                          
-                       EndIf
-                       
+                        Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
+                          mh = ( mouse_y - a_focused( )\container_y( ) ) + IsGrid
+                      EndSelect
+                      
+                      ;\\
+                      If a_index( ) <> #__a_left_top
+                        If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
+                          mouse_x = #PB_Ignore
+                        EndIf
+                        If a_index( ) <> #__a_top And a_index( ) <> #__a_right_top
+                          mouse_y = #PB_Ignore
+                        EndIf
+                      EndIf
                     EndIf
-                 EndIf
+                    
+                    ;Debug " " + mw + " " + mh
+                    Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
+                    
+                  Else
+                    If a_transform( )\main
+                      mouse_x + a_transform( )\main\container_x( )
+                      mouse_y + a_transform( )\main\container_y( )
+                    EndIf
+                    
+                    ; horizontal
+                    Select a_index( )
+                      Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                        If a_index( ) <> #__a_moved
+                          a_selector( )\width = ( a_selector( )\x - mouse_x ) + a_selector( )\width
+                        EndIf
+                        a_selector( )\x = mouse_x
+                        
+                      Case #__a_right, #__a_right_top, #__a_right_bottom ; right
+                        a_selector( )\width = ( mouse_x - a_selector( )\x ) + IsGrid
+                    EndSelect
+                    
+                    ; vertical
+                    Select a_index( )
+                      Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                        If a_index( ) <> #__a_moved
+                          a_selector( )\height = ( a_selector( )\y - mouse_y ) + a_selector( )\height
+                        EndIf
+                        a_selector( )\y = mouse_y
+                        
+                      Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
+                        a_selector( )\height = ( mouse_y - a_selector( )\y ) + IsGrid
+                    EndSelect
+                    
+                    ;
+                    ;\\\ multi resize
+                    ;
+                    
+                    ;                   a_selector( )\x = _x_
+                    ;                   a_selector( )\y = _y_
+                    ;
+                    ;                   a_selector( )\width = _width_
+                    ;                   a_selector( )\height = _height_
+                    
+                    a_move( a_selector( ), 0,
+                            a_selector( )\x - 0,;a_transform( )\pos,
+                            a_selector( )\y - 0,;a_transform( )\pos,
+                            a_selector( )\width + 0,;a_transform( )\pos * 2,
+                            a_selector( )\height + 0);a_transform( )\pos * 2)
+                    
+                    Select a_index( )
+                      Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                        ForEach a_group( )
+                          *this\repaint | Resize( a_group( )\widget,
+                                                  ( a_selector( )\x - a_focused( )\inner_x( ) ) + a_group( )\x,
+                                                  #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
+                        Next
+                        
+                      Case #__a_right, #__a_right_top, #__a_right_bottom ; right
+                        ForEach a_group( )
+                          *this\repaint | Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
+                        Next
+                    EndSelect
+                    
+                    Select a_index( )
+                      Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                        ForEach a_group( )
+                          *this\repaint | Resize( a_group( )\widget, #PB_Ignore,
+                                                  ( a_selector( )\y - a_focused( )\inner_y( ) ) + a_group( )\y,
+                                                  #PB_Ignore, a_selector( )\height - a_group( )\height )
+                        Next
+                        
+                      Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
+                        ForEach a_group( )
+                          *this\repaint | Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height - a_group( )\height )
+                        Next
+                    EndSelect
+                    
+                  EndIf
+                  
+                EndIf
               EndIf
-           EndIf
+            EndIf
+          EndIf
           
           ; change selector coordinate
           If a_transform( )\grab
@@ -17398,7 +17395,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_entered( )\anchors And
              a_entered( )\root = *root
             
-            For i = 1 To #__a_moved
+            For i = 1 To #__a_count
               If a_entered( )\anchors\id[i] And
                  is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
                 ;
@@ -17426,7 +17423,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_focused( )\anchors And
              a_focused( )\root = *root
             
-            For i = 1 To #__a_moved
+            For i = 1 To #__a_count
               If a_anchors([i]) And is_atpoint_( a_anchors([i]), mouse( )\x, mouse( )\y )
                 
                 If a_index( ) <> i
@@ -17489,8 +17486,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ;
                     If Not is_interact_row_( LeavedWidget( )\_widgets( ) ) And
                        ;a_transformer( LeavedWidget( )\_widgets( ) ) And
-                       IsChild( LeavedWidget( ), LeavedWidget( )\_widgets( )) And
-                       Not IsChild( *widget, LeavedWidget( )\_widgets( ))
+                      IsChild( LeavedWidget( ), LeavedWidget( )\_widgets( )) And
+Not IsChild( *widget, LeavedWidget( )\_widgets( ))
                       LeavedWidget( )\_widgets( )\state\enter = 0
                       DoEvents( LeavedWidget( )\_widgets( ), #__event_StatusChange, - 1 )
                     EndIf
@@ -17525,9 +17522,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If *widget\_widgets( )\state\enter = 0 And
                    ;a_transformer( *widget\_widgets( ) ) And
-                   *widget\_widgets( )\count\childrens And
-                   Not is_interact_row_( *widget\_widgets( ) ) And
-                   IsChild( *widget, *widget\_widgets( ))
+                  *widget\_widgets( )\count\childrens And
+Not is_interact_row_( *widget\_widgets( ) ) And
+IsChild( *widget, *widget\_widgets( ))
                   
                   *widget\_widgets( )\state\enter = - 1
                   DoEvents( *widget\_widgets( ), #__event_StatusChange, 1 )
@@ -18922,19 +18919,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      ;\\
-        If eventtype = #__event_MouseEnter
-           Debug "e "+*this\class
-        EndIf
-        
-        ;\\
-        If eventtype = #__event_MouseLeave
-          Debug "l "+*this\class
-        EndIf
-        
+      ;         ;\\
+      ;         If eventtype = #__event_MouseEnter
+      ;            Debug "e "+*this\class
+      ;         EndIf
+      ;         
+      ;         ;\\
+      ;         If eventtype = #__event_MouseLeave
+      ;           Debug "l "+*this\class
+      ;         EndIf
+      
       ;\\ widget::_events_Anchors( )
       If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
-         If a_events( *this, eventtype, *button, *data)
+        If a_events( *this, eventtype, *button, *data)
           *this\repaint = #True
         EndIf
       EndIf
@@ -19061,9 +19058,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\ enabled mouse behavior
       If eventtype = #__event_Down
         If a_transform( )
-        If a_index( ) ;And a_index( ) <> #__a_moved
-          mouse( )\interact = #True
-        EndIf
+          If a_index( ) ;And a_index( ) <> #__a_moved
+            mouse( )\interact = #True
+          EndIf
         EndIf
         
         If *this\type = #__type_Splitter
@@ -21323,5 +21320,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------HP---v-v8---P----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-8--4-+--------------------------------v-----------------------------------------------------------+---
+; Folding = -------------------------------------------------------8--n8-0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

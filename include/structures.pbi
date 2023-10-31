@@ -307,7 +307,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-        index.a
+        index.b
         
         *main._s_WIDGET
          *widget._s_WIDGET ; a_focused( )

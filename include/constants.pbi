@@ -714,14 +714,14 @@
     #__a_right_top    = 6
     #__a_right_bottom = 7
     #__a_left_bottom  = 8
-    #__a_moved = 9
+    #__a_moved        = 9
     
     ;
     #__a_line_left   = 1;10
     #__a_line_top    = 2;12
     #__a_line_right  = 3;11
     #__a_line_bottom = 4;13
-    #__a_count = #__a_moved ;+ 4
+    #__a_count = 9;#__a_moved
     
     ; a_mode_
     EnumerationBinary 1
@@ -1037,8 +1037,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 213
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----
 ; EnableXP
