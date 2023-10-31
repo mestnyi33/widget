@@ -646,8 +646,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       mouse( )\_a_
     EndMacro
     Macro a_index( )
-      ; mouse( )\anchors
-      a_transform( )\anchors
+      mouse( )\anchors
+      ; a_transform( )\anchors
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
@@ -2395,7 +2395,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Global *Data_Transform_Cursor._S_DATA_TRANSFORM_CURSOR = ?DATA_TRANSFORM_CURSOR
     
     Macro a_transformer( _this_ )
-       Bool( _this_\anchors Or ( is_integral_( _this_ ) And _this_\parent\anchors ) )
+      Bool( _this_\anchors Or ( is_integral_( _this_ ) And _this_\parent\anchors ) )
     EndMacro
     
     Macro a_draw( _address_ )
@@ -3195,7 +3195,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If eventtype = #__event_MouseLeave
-          ;Debug "l "+*this\class
+          ;;Debug "l "+*this\class
           If Not Mouse( )\buttons ; ( a_focused( ) And a_focused( )\state\press )
             a_show( *this, #False )
           EndIf
@@ -17281,6 +17281,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
+    Macro i_moved( )
+      i <> #__a_moved
+    EndMacro
     
     ;-
     Procedure GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
@@ -17372,10 +17375,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\ entered anchor widget
-      If a_transform( ) 
+      If a_transform( )
         If Not ( PressedWidget( ) And PressedWidget( )\state\press )
           If a_index( ) > 0
-            
             If a_index( ) <> #__a_moved
               If a_entered( ) And
                  a_entered( )\anchors\id[a_index( )] And
@@ -17387,17 +17389,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;Debug "" + a_index( ) + " - e_leave"
                 EndIf
               EndIf
-              ;               If a_focused( ) And
-              ;                  a_focused( ) <> a_entered( ) And
-              ;                  a_anchors([a_index( )]) And
-              ;                  Not is_atpoint_( a_anchors([a_index( )]), mouse( )\x, mouse( )\y )
-              ;
-              ;                 If a_anchors([a_index( )])\color\state <> #__S_0
-              ;                   a_anchors([a_index( )])\color\state = #__S_0
-              ;                   a_focused( )\repaint = 1
-              ;                   Debug "" +a_index( )+ " - f_leave"
-              ;                 EndIf
-              ;               EndIf
             EndIf
             
             a_index( ) = 0
@@ -17405,7 +17396,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If a_entered( ) And
              a_entered( )\anchors And
-             a_entered( )\root\canvas\gadget = *root\canvas\gadget
+             a_entered( )\root = *root
             
             For i = 1 To #__a_moved
               If a_entered( )\anchors\id[i] And
@@ -17414,7 +17405,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If a_index( ) <> i
                   a_index( ) = i
                   
-                  If i <> #__a_moved
+                  If i_moved( )
                     If a_entered( )\anchors\id[i]\color\state <> #__S_1
                       ;Debug "" + i + " - a_enter"
                       a_entered( )\anchors\id[i]\color\state = #__S_1
@@ -17423,7 +17414,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 
-                If i <> #__a_moved
+                If i_moved( )
                   *widget = a_entered( )
                 EndIf
                 Break
@@ -17433,7 +17424,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           If a_focused( ) And
              a_focused( )\anchors And
-             a_focused( )\root\canvas\gadget = *root\canvas\gadget
+             a_focused( )\root = *root
             
             For i = 1 To #__a_moved
               If a_anchors([i]) And is_atpoint_( a_anchors([i]), mouse( )\x, mouse( )\y )
@@ -17441,7 +17432,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If a_index( ) <> i
                   a_index( ) = i
                   
-                  If i <> #__a_moved
+                  If i_moved( )
                     If a_anchors([i])\color\state <> #__S_1
                       ;Debug "f_enter " + i
                       a_anchors([i])\color\state = #__S_1
@@ -17450,7 +17441,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
                 
-                *widget = a_focused( )
+                If Not ( i = #__a_moved And Not a_focused( )\container)
+                  *widget = a_focused( )
+                EndIf
                 Break
               EndIf
             Next
@@ -17462,14 +17455,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If LeavedWidget( ) <> *widget
         EnteredWidget( ) = *widget
         
-        ;             If *widget
-        ;                Debug " -- "+*widget\class
-        ;             EndIf
-        
         ;\\ если оставлять событие вход/выход нажатого виджета
+        ; If LeavedWidget( ) And Not LeavedWidget( )\dragstart And
         If LeavedWidget( ) And Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) And 
-           ; If LeavedWidget( ) And Not LeavedWidget( )\dragstart And
-          LeavedWidget( )\state\enter <> 0
+           LeavedWidget( )\state\enter <> 0
           LeavedWidget( )\state\enter = 0
           
           ;\\
@@ -17479,8 +17468,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          ;Debug " >  leave - "+LeavedWidget( )\class
-          repaint | DoEvents( LeavedWidget( ), #__event_MouseLeave )
+          DoEvents( LeavedWidget( ), #__event_MouseLeave )
           
           ;\\
           If Not is_interact_row_( LeavedWidget( ) ) And Not a_transformer( LeavedWidget( ) )
@@ -17519,7 +17507,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *widget\state\enter = 1
           
           ;\\
-          ;Debug " >  enter - "+*widget\class
           DoEvents( *widget, #__event_MouseEnter )
           
           ;\\
@@ -18935,9 +18922,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      
+      ;\\
+        If eventtype = #__event_MouseEnter
+           Debug "e "+*this\class
+        EndIf
+        
+        ;\\
+        If eventtype = #__event_MouseLeave
+          Debug "l "+*this\class
+        EndIf
+        
       ;\\ widget::_events_Anchors( )
-      If a_transformer( *this )
+      If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
          If a_events( *this, eventtype, *button, *data)
           *this\repaint = #True
         EndIf
@@ -20861,7 +20857,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  
+  ;\\
   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
   
   Define i
@@ -20872,16 +20868,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
   view = Container(10, 10, 406, 238, #PB_Container_Flat)
   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-  ;a_enable( widget( ), 15 )
   a_init( view, 15 )
   
-  ;Define *a1._S_WIDGET = image( 5+170,5+140,60,60, -1 )
+  Define *a0._S_WIDGET = Button( 10, 10, 60, 60, "Button" )
   Define *a1._S_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
   ;Define *a2._S_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
   Define *a2._S_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
   Define *a3._S_WIDGET = image( 150, 110, 60, 60, -1 )
   
-  a_set( *a1 )
+  a_set( *a0 )
   
   CloseList( )
   size_value  = Track(56, 262, 240, 26, 0, 30)
@@ -20899,10 +20894,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\Close( )
   
-  ;;Bind( *root, @WidgetEventHandler( ) )
   
   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  
   
   ;\\ Open Root0
   Define *root0._S_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
@@ -21327,8 +21320,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3198
-; FirstLine = 2833
-; Folding = -------------------------------------------------------8--P4v8---P----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4vf---0----------------------------------8--------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ----------------------------------------------------------P4v8---P----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-8--4-+--------------------------------v----------------------------------------------------------0----
 ; EnableXP
