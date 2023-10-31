@@ -152,7 +152,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pressed._s_OBJECTTYPE      ; mouse button's pushed element
          leaved._s_OBJECTTYPE       ; mouse leaved element
          
-         anchors.a
+         anchors.a ; Temp
          *_a_._s_TRANSFORM
          interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
       EndStructure
@@ -280,7 +280,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     image
-      Structure _s_image Extends _s_coordinate
+      Structure _s_image Extends _s_COORDINATE
          *id  ; - ImageID( ) 
          *img ; - Image( )
          
@@ -300,11 +300,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     TRANSFORM
-      Structure _s_A_GROUP Extends _s_coordinate
+      Structure _s_A_BUTTONS Extends _s_COORDINATE
+         color._s_color[4]
+      EndStructure
+      Structure _s_A_GROUP Extends _s_COORDINATE
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-        anchors.a
+        index.a
         
         *main._s_WIDGET
          *widget._s_WIDGET ; a_focused( )
@@ -312,7 +315,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *group._s_A_GROUP( )
          
          *type
-         *grab[2] ; grab image handle
+         *grab;[2] ; grab image handle
          
          ;pos.l
          ;size.l
@@ -327,18 +330,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dot_space.l
          
          cursor.i[constants::#__a_count+1]
-         id._s_buttons[constants::#__a_count+1]
+         id._s_A_BUTTONS[constants::#__a_count+1]
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
-        ; transform.b ; temp
-         pos.l
-         size.l
+         transform.b ; temp
          
          index.b
+         pos.l
+         size.l
          mode.i
-         
-         *id._s_buttons[constants::#__a_moved+1]
+         *id._s_A_BUTTONS[constants::#__a_moved+1]
       EndStructure
       
       ;;--     margin
@@ -771,5 +773,5 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -M--cAA---
+; Folding = -M+-9AA+--
 ; EnableXP

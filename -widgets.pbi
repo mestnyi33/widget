@@ -649,8 +649,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       mouse( )\_a_
     EndMacro
     Macro a_index( )
-      ; mouse( )\anchors
-      a_transform( )\anchors
+       mouse( )\anchors
+     ; a_transform( )\anchors
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
@@ -2816,7 +2816,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If Not _this_\_a_\id[_index_]
-          _this_\_a_\id.allocate( BUTTONS, [_index_] )
+          _this_\_a_\id.allocate( A_BUTTONS, [_index_] )
         EndIf
         
         a_transform( )\cursor[_index_] = *Data_Transform_Cursor\cursor[_index_]

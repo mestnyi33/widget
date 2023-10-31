@@ -646,8 +646,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       mouse( )\_a_
     EndMacro
     Macro a_index( )
-      mouse( )\anchors
-      ; a_transform( )\anchors
+      ; mouse( )\anchors
+      a_transform( )\index
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
@@ -2792,7 +2792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If Not _this_\anchors\id[_index_]
-          _this_\anchors\id.allocate( BUTTONS, [_index_] )
+          _this_\anchors\id.allocate( A_BUTTONS, [_index_] )
         EndIf
         
         a_transform( )\cursor[_index_] = *Data_Transform_Cursor\cursor[_index_]
@@ -14324,7 +14324,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If ReParent
           *this\resize = #__resize_change
           ;
-          If a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
+          If a_transform( ) And a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
             *this\resize | #__resize_x | #__resize_y
             
             x = *this\frame_x( ) - *parent\inner_x( )
@@ -19060,8 +19060,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\ enabled mouse behavior
       If eventtype = #__event_Down
+        If a_transform( )
         If a_index( ) ;And a_index( ) <> #__a_moved
           mouse( )\interact = #True
+        EndIf
         EndIf
         
         If *this\type = #__type_Splitter
@@ -21321,5 +21323,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------P4v8---P----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-8--4-+--------------------------------v----------------------------------------------------------0----
+; Folding = -----------------------------------------------------HP---v-v8---P----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-8--4-+--------------------------------v-----------------------------------------------------------+---
 ; EnableXP
