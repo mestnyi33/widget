@@ -44,7 +44,7 @@ Module events
    Procedure.i WaitEvent(event.i, second.i=0)
       If Event = #PB_Event_Gadget
          If *setcallback
-            Select EventType( )
+           Select EventType( )
                Case #PB_EventType_LeftClick
                Case #PB_EventType_MouseEnter
                   EnteredGadget( ) = EventGadget()
@@ -780,8 +780,6 @@ CompilerIf #PB_Compiler_IsMainFile
       event = events::WaitEvent(WaitWindowEvent())
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 21
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -------------
 ; EnableXP
