@@ -109,7 +109,8 @@ If OpenWindow(0, 0, 0, 460, 400, "CanvasGadget", #PB_Window_SystemMenu | #PB_Win
   SetGadgetState(#GADGET_Brush, 1)
   SetGadgetAttribute(#GADGET_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Cross)
   
-  RemoveKeyboardShortcut(0, #PB_Shortcut_Tab)
+  ; RemoveKeyboardShortcut(0, #PB_Shortcut_Tab)
+  
   Repeat
     Event = WaitWindowEvent()
     
@@ -218,7 +219,7 @@ If OpenWindow(0, 0, 0, 460, 400, "CanvasGadget", #PB_Window_SystemMenu | #PB_Win
 
 EndIf
 
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; FirstLine = 39
 ; Folding = ----
 ; EnableXP

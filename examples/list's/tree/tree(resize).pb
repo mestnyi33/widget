@@ -32,9 +32,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case Button_2 : flag = #__tree_checkboxes
           Case Button_3 : flag = #__tree_optionboxes
           Case Button_4 : flag = #__tree_threestate
-          Case Button_5 : flag = #__tree_collapsed
-          Case Button_6 : flag = #__tree_expanded
-          Case Button_7 : flag = #__tree_gridlines
+          ;Case Button_5 : flag = #__tree_collapsed
+          ;Case Button_6 : flag = #__tree_expanded
+          ;Case Button_7 : flag = #__tree_gridlines
         EndSelect
         
         If flag
@@ -108,5 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 64
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

@@ -181,6 +181,6 @@ EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
-; EnableCompileCount = 372
+; EnableCompileCount = 373
 ; EnableBuildCount = 0
 ; EnableExeConstant

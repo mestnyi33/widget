@@ -6319,23 +6319,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
           bar_scroll_draw( _this_\scroll\h )
         EndIf
         
-        ;If #__draw_scroll_box
-        drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-        ; Scroll area coordinate
-        draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
-        draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-        
-        If _this_\scroll\v And _this_\scroll\h
-          draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-          
-          ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
-          ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
-          
-          ; page coordinate
-          draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
+        ;\\
+        If Not ( _this_\container And _this_\count\childrens )
+           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+           
+           ;\\ Scroll area coordinate
+           draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
+           draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+           
+           If _this_\scroll\v And _this_\scroll\h
+              draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+              
+              ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
+              ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
+              
+              ;\\ page coordinate
+              draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
+           EndIf
         EndIf
-        ;EndIf
-      EndIf
+     EndIf
     EndMacro
     
     Procedure bar_area_resize( *this._S_WIDGET, x.l, y.l, width.l, height.l )
@@ -16991,7 +16993,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not ( *this\_widgets( )\dragstart And
                            *this\_widgets( )\resize )
                     Draw( *this\_widgets( ))
-                    
                   EndIf
                   
                   ;\\ draw current pressed-move-widget
@@ -16999,11 +17000,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PressedWidget( )\resize And
                      PressedWidget( )\dragstart And
                      PressedWidget( )\parent = *this\_widgets( )\parent
-                    If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
-                      ;Debug "press - draw " + *this\root\class
-                      
-                      Draw( PressedWidget( ) )
-                    EndIf
+                     
+                     If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
+                        Draw( PressedWidget( ) )
+                     EndIf
+                  EndIf
+                  
+                  ;\\ draw current pressed-move-widget
+                  If *this\_widgets( ) = *this\_widgets( )\parent\LastWidget( )
+                     Protected *widget._s_widget = *this\_widgets( )\parent
+                     If Not *widget\hide
+                        If *widget\scroll\v And *widget\scroll\h
+                           clip_output_( *widget, [#__c_draw] )
+                           ; UnclipOutput()
+                           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                           
+                           ;\\ Scroll area coordinate
+                           draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                           
+                           ;\\
+                           draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                           
+                           ;\\ page coordinate
+                           draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
+                        EndIf
+                     EndIf
                   EndIf
                   
                 EndIf
@@ -17013,21 +17034,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
               UnclipOutput( )
               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
               ForEach *this\_widgets( )
-                If Not *this\_widgets( )\parent\hide And *this\_widgets( )\root = *this\root And
-                   Not ( Not *this\_widgets( )\hide And *this\_widgets( )\draw_width( ) > 0 And *this\_widgets( )\draw_height( ) > 0 )
-                  
-                  ;\\ draw clip out transform widgets frame
-                  If is_parent_( *this\_widgets( ), *this\_widgets( )\parent )
-                    draw_roundbox_( *this\_widgets( )\inner_x( ), *this\_widgets( )\inner_y( ), *this\_widgets( )\inner_width( ), *this\_widgets( )\inner_height( ), *this\_widgets( )\round, *this\_widgets( )\round, $ff00ffff )
-                  EndIf
-                EndIf
+                 If Not *this\_widgets( )\parent\hide And *this\_widgets( )\root = *this\root And
+                    Not ( Not *this\_widgets( )\hide And *this\_widgets( )\draw_width( ) > 0 And *this\_widgets( )\draw_height( ) > 0 )
+                    
+                    ;\\ draw clip out transform widgets frame
+                    If is_parent_( *this\_widgets( ), *this\_widgets( )\parent )
+                       draw_roundbox_( *this\_widgets( )\inner_x( ), *this\_widgets( )\inner_y( ), *this\_widgets( )\inner_width( ), *this\_widgets( )\inner_height( ), *this\_widgets( )\round, *this\_widgets( )\round, $ff00ffff )
+                    EndIf
+                 EndIf
               Next
+              
               PopListPosition( *this\_widgets( ))
-            EndIf
-          Else
-            Draw( *this )
-          EndIf
+           EndIf
+        Else
+           Draw( *this )
         EndIf
+     EndIf
         
         ;\\ draw anchors (movable & sizable)
         If a_transform( )
@@ -21319,6 +21341,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 10503
+; FirstLine = 10325
+; Folding = ---------------------------------------------------------------------------------------vv--0------X2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv+f-4--------------------------------------------------------------------------------------------------------------
 ; EnableXP
