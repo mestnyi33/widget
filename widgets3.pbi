@@ -595,7 +595,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare a_update( *parent )
     
     Macro a_transform( )
-      mouse( )\_transform
+      mouse( )\_a_
     EndMacro
     Macro a_index( )
       mouse( )\anchors
@@ -2758,7 +2758,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;
         If Not _this_\_a_\id[_index_]
-          _this_\_a_\id.allocate( BUTTONS, [_index_] )
+          _this_\_a_\id.allocate( A_BUTTONS, [_index_] )
         EndIf
         
         a_transform( )\cursor[_index_] = *Data_Transform_Cursor\cursor[_index_]
@@ -20593,8 +20593,48 @@ Macro UseLIB( _name_ )
   UseModule structures
 EndMacro
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4794
-; FirstLine = 4772
+CompilerIf #PB_Compiler_IsMainFile
+  
+  EnableExplicit
+  UseLIB(widget)
+  
+  Enumeration
+    #window_0
+    #window
+  EndEnumeration
+  
+  Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  Define Text.s, m.s   = #LF$, a
+  
+  Define *g = Editor(50, 50, 200 + 60-Bool(#PB_Compiler_OS=#PB_OS_Windows)*10, 200);, #__flag_autosize)
+  
+  Text.s = "This is a long line." + m.s +
+           "Who should show." + m.s +
+           m.s +
+           m.s +
+           m.s +
+           "I have to write the text in the box or not." + m.s +
+           m.s +
+           m.s +
+           m.s +
+           "The string must be very long." + m.s +
+           "Otherwise it will not work."
+  
+  SetText(*g, Text.s)
+  For a = 0 To 2
+    AddItem(*g, a, Str(a) + " Line " + Str(a))
+  Next
+  AddItem(*g, 7 + a, "_")
+  For a = 4 To 6
+    AddItem(*g, a, Str(a) + " Line " + Str(a))
+  Next
+  
+  ;CloseList( ) ; close panel lists
+  
+  
+  WaitClose( ) ;;;
+CompilerEndIf
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

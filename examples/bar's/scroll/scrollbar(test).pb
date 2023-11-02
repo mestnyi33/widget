@@ -1,5 +1,5 @@
 ﻿
-XIncludeFile "../../../widgets3.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 
 Uselib(widget)
 
@@ -125,8 +125,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 121
-; FirstLine = 42
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = +
 ; EnableXP
