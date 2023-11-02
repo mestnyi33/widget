@@ -52,11 +52,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-   a_init( root() )
+   a_init( root(),0 )
   
   ;Define *mdi = MDI(0,0,0,0,#__flag_autosize)
   ;Define *mdi = MDI(x,y,width, height)
-  Define *mdi = MDI(10, 10, 160,95) 
+  Define *mdi = MDI(100, 100, 160,95) 
   ; 
   Debug " * "+width(*mdi, #__c_inner)+" "+height(*mdi, #__c_inner)
   
@@ -134,8 +134,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 16
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

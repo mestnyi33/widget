@@ -3168,7 +3168,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If eventtype = #__event_MouseEnter
           ;Debug "e "+*this\class
-          If Not Mouse( )\buttons ; ( a_focused( ) And a_focused( )\state\press )
+          If Not Mouse( )\buttons
             If a_focused( ) = *this
               a_entered( ) = *this
             Else
@@ -3180,7 +3180,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If eventtype = #__event_MouseLeave
           ;;Debug "l "+*this\class
-          If Not Mouse( )\buttons ; ( a_focused( ) And a_focused( )\state\press )
+          If Not Mouse( )\buttons 
             a_show( *this, #False )
           EndIf
         EndIf
@@ -3222,16 +3222,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_selector( )\color\front = $ffffffff
           EndIf
           
-          ;\\ set delta pos
-          mouse( )\delta\x = mouse_x
-          mouse( )\delta\y = mouse_y
-          
           ;\\
           If a_index( ) And a_anchors([a_index( )])
             
             ;\\ set current transformer index state
             a_anchors([a_index( )])\color\state = #__S_2
             
+            ;\\ set delta pos
             ;\\ not multi group transformer
             ;If Not *this\anchors\multi
             ;\\
@@ -19626,20 +19623,24 @@ IsChild( *widget, *widget\_widgets( ))
           If eventtype = #__event_LeftButtonDown Or
              eventtype = #__event_RightButtonDown
             
+            ;\\ bar mouse delta pos
+            mouse( )\delta\x = mouse( )\x
+            mouse( )\delta\y = mouse( )\y
+            
             If EnteredButton( ) > 0 And PressedWidget( )\bar
-              ;\\ bar mouse delta pos
-              mouse( )\delta\x = mouse( )\x - PressedWidget( )\bar\thumb\pos
-              mouse( )\delta\y = mouse( )\y - PressedWidget( )\bar\thumb\pos
+              mouse( )\delta\x - PressedWidget( )\bar\thumb\pos
+              mouse( )\delta\y - PressedWidget( )\bar\thumb\pos
             Else
-              mouse( )\delta\x = mouse( )\x - PressedWidget( )\container_x( )
-              mouse( )\delta\y = mouse( )\y - PressedWidget( )\container_y( )
-              
-              ;             mouse( )\delta\x = mouse( )\x - PressedWidget( )\frame_x( )
-              ;             mouse( )\delta\y = mouse( )\y - PressedWidget( )\frame_y( )
-              
-              If Not PressedWidget( )\child And PressedWidget( )\parent
-                mouse( )\delta\x - PressedWidget( )\parent\scroll_x( )
-                mouse( )\delta\y - PressedWidget( )\parent\scroll_y( )
+              If Not a_transform( )
+                mouse( )\delta\x - PressedWidget( )\container_x( )
+                mouse( )\delta\y - PressedWidget( )\container_y( )
+                
+                If Not PressedWidget( )\child 
+                  If PressedWidget( )\parent
+                    mouse( )\delta\x - PressedWidget( )\parent\scroll_x( )
+                    mouse( )\delta\y - PressedWidget( )\parent\scroll_y( )
+                  EndIf
+                EndIf
               EndIf
             EndIf
           EndIf
