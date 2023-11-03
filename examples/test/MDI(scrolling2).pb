@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
@@ -176,19 +176,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
    
    Define round = 50
-   Define hole = CreateImage( #PB_Any,100,100,32 )
+   Define hole = CreateImage( #PB_Any,200,200,32 )
    If StartDrawing( ImageOutput( hole ) )
-      DrawingMode( #PB_2DDrawing_AllChannels )
-      ; transporent back 
-      Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
-      
-      Circle( 50,50,round,RGBA( $00,$FF,$FF,$FF ) )
-      Circle( 50,50,30,RGBA( $00,$00,$00,$00 ) )
-      StopDrawing( )
-   EndIf
-   
-   Define hole2 = CreateImage( #PB_Any,200,60,32 )
-   If StartDrawing( ImageOutput( hole2 ) )
       DrawingMode( #PB_2DDrawing_AllChannels )
       ; transporent back 
       Box( 0,0,OutputWidth(),OutputHeight(),RGBA( $00,$00,$00,$00 ) )
@@ -230,18 +219,15 @@ CompilerIf #PB_Compiler_IsMainFile
    vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
    hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
    
-   MDI_AddImage( *mdi, -80, -20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
-   MDI_AddImage( *mdi, 100, 120, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
-   MDI_AddImage( *mdi, 210, 250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+   MDI_AddImage( *mdi,-30,30,hole, 100 )
+   MDI_AddImage( *mdi, 100-b, 200-b, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
    
-   MDI_AddImage( *mdi,-70,240,hole, round )
-   MDI_AddImage( *mdi,90,30,hole2, 100 )
    
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 208
+; CursorPosition = 90
+; FirstLine = 54
 ; Folding = ---
 ; EnableXP

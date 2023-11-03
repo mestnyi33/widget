@@ -1,4 +1,5 @@
 ﻿
+
 ;  resize - MDI 10 10 160 95
 ;  resize - MDI-0-vertical-v 144 20 16 63
 ;  resize - MDI-0-horizontal-h 20 79 128 16
@@ -36,7 +37,7 @@
 ;   Draw - Window 280 180
 ;   reClip - Window 124 59
 
-XIncludeFile "../../../widgets.pbi"
+ XIncludeFile "../../../widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -56,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;Define *mdi = MDI(0,0,0,0,#__flag_autosize)
   ;Define *mdi = MDI(x,y,width, height)
-  Define *mdi = MDI(100, 100, 160,95) 
+  Define *mdi = MDI(100, 300, 160,95) 
   ; 
   Debug " * "+width(*mdi, #__c_inner)+" "+height(*mdi, #__c_inner)
   
@@ -134,6 +135,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
