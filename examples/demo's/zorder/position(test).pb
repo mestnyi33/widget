@@ -7,6 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(Widget)
    
    If Open(0, 0, 0, 610, 210, "z-order", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      a_init(root())
       
       Container(5, 5, 200, 200) : SetClass(widget(), "-0-") 
       Button(10, 10, 80, 50,"01") : SetClass(widget(), GetText(widget()))  
@@ -39,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
+; CursorPosition = 7
 ; FirstLine = 1
 ; Folding = -
 ; EnableXP

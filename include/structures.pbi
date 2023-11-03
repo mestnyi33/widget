@@ -94,11 +94,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     COUNT
       Structure _s_COUNT
          index.l
-         type.l;[100]
+         type.l
          items.l
-         events.l
-         parents.l
-         childrens.l
       EndStructure
       Structure _s_ANIMATION
          Value.i
@@ -307,18 +304,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-        index.b
-        
-        *main._s_WIDGET
-         *widget._s_WIDGET ; a_focused( )
-         *e_widget._s_WIDGET
+         index.b
+         *widget._s_WIDGET[3] ; a_main[0] ; a_entered[1] ; a_focused[2]
+         
          List *group._s_A_GROUP( )
          
          *type
-         *grab;[2] ; grab image handle
-         
-         ;pos.l
-         ;size.l
+         *grab ; grab image handle
          
          *grid_image
          grid_size.l
@@ -334,8 +326,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
-         transform.b ; temp
-         
          index.b
          pos.l
          size.l
@@ -383,24 +373,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_TABS
+         childrens.w ; Row( )\ ; rows( )\ ; row\
          
          checkbox._s_buttons ; \box[1]\ -> \checkbox\
          collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
          
-         childrens.w ; Row( )\ ; rows( )\ ; row\
-         
-         ;button._s_buttons ;temp \box[0]\ -> \button\
-         ;;checkbox._s_buttons ; \box[1]\ -> \checkbox\
          
          *parent._s_rows
          
          *first._s_rows           ;TEMP first elemnt in the list 
          *after._s_rows           ;TEMP first elemnt in the list 
          *before._s_rows          ;TEMP first elemnt in the list 
-         
-         *last._s_rows   ; if parent - \last\child ; if child - \parent\last\child
-         
-         ;parent._s_objecttype
+         *last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
          *OptionGroupRow._s_rows ; option group row 
          
@@ -574,7 +558,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          max._s_SIZE
       EndStructure
       Structure _s_BOUNDS
-         childrens.b        ; ???
          *move._s_BOUNDMOVE
          *size._s_BOUNDSIZE
          *attach._s_BOUNDATTACH
@@ -602,6 +585,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          round.a                ; drawing round
          container.b            ; is container
          child.b                ; is the widget composite?
+         children.l             ; if the has children
          
          create.b
          hide.b
@@ -772,6 +756,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -M+-9AA+--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 309
+; FirstLine = 188
+; Folding = -M+-9IA+--
 ; EnableXP

@@ -439,7 +439,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
-         Bool( _parent_\count\childrens )
+         Bool( _parent_\children )
          
          ;       PushMapPosition( Root( ) )
          ;       ChangeCurrentRoot(_parent_\root\canvas\GadgetID )
@@ -494,10 +494,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_widget_( _this_ ) : Bool( _this_ > 0 And _this_\address ) : EndMacro
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
       
-      Macro is_parent_( _this_, _parent_ )
+      Macro is_child_( _this_, _parent_ )
          Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBoxFocusedIndex( ) ))
       EndMacro
-      Macro is_parent_one_( _address_1, _address_2 )
+      Macro is_level_( _address_1, _address_2 )
          Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
       EndMacro
       
@@ -652,11 +652,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro a_selector( _index_ = )
          a_transform( )\id#_index_
       EndMacro
+      Macro a_main( )
+         a_transform( )\widget[0]
+      EndMacro
       Macro a_entered( )
-         a_transform( )\e_widget
+         a_transform( )\widget[1]
       EndMacro
       Macro a_focused( )
-         a_transform( )\widget
+         a_transform( )\widget[2]
       EndMacro
       Macro a_group( )
          a_transform( )\group( )
@@ -2669,9 +2672,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ListSize( enumWidget( ))
                PushListPosition( enumWidget( ))
                ForEach enumWidget( )
-                  If Not enumWidget( )\hide And enumWidget( )\anchors And enumWidget( ) <> a_focused( )
-                     If is_parent_one_( enumWidget( ), a_focused( ) ) Or
-                        ( EnteredWidget( ) And EnteredWidget( )\count\childrens And EnteredWidget( ) <> a_focused( )\parent)
+                  If enumWidget( )\anchors And Not enumWidget( )\hide And enumWidget( ) <> a_focused( )
+                     If is_level_( enumWidget( ), a_focused( ) ) 
                         
                         ;\\ left-line
                         If a_focused( )\frame_x( ) = enumWidget( )\frame_x( )
@@ -3015,7 +3017,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_transform( ).allocate( TRANSFORM )
          EndIf
          
-         a_transform( )\main = *this
+         a_main( ) = *this
          
          a_transform( )\grid_type = grid_type
          a_transform( )\grid_size = grid_size + 1
@@ -3047,7 +3049,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; check transform group
             ForEach *parent\_widgets( )
                If *parent\_widgets( ) <> *parent And
-                  is_parent_( *parent\_widgets( ), *parent ) And
+                  is_child_( *parent\_widgets( ), *parent ) And
                   is_intersect_( *parent\_widgets( ), a_selector( ), [#__c_frame] )
                   
                   ;             ;             *parent\_widgets( )\anchors = 2
@@ -3198,7 +3200,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ set/remove current transformer
-               If *this = a_transform( )\main
+               If *this = a_main( )
                   ;
                   ;\\ если нажали в главном "окне"
                   ;\\ где находятся "изменяемые" виджеты
@@ -3310,7 +3312,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\repaint = #True
                   EndIf
                   
-                  If *this = a_transform( )\main
+                  If *this = a_main( )
                      a_focused( ) = #Null
                   EndIf
                EndIf
@@ -3416,9 +3418,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Resize( a_focused( ), mouse_x, mouse_y, mw, mh )
                               
                            Else
-                              If a_transform( )\main
-                                 mouse_x + a_transform( )\main\container_x( )
-                                 mouse_y + a_transform( )\main\container_y( )
+                              If a_main( )
+                                 mouse_x + a_main( )\container_x( )
+                                 mouse_y + a_main( )\container_y( )
                               EndIf
                               
                               ; horizontal
@@ -3517,7 +3519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_selector( )\width = mouse_x - mouse( )\delta\x
                      EndIf
                      
-                     a_selector( )\x + a_transform( )\main\container_x( )
+                     a_selector( )\x + a_main( )\container_x( )
                      If a_transform( )\grid_size > 0
                         a_selector( )\width + 1
                      EndIf
@@ -3536,7 +3538,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_selector( )\height = mouse_y - mouse( )\delta\y
                      EndIf
                      
-                     a_selector( )\y + a_transform( )\main\container_y( )
+                     a_selector( )\y + a_main( )\container_y( )
                      If a_transform( )\grid_size > 0
                         a_selector( )\height + 1
                      EndIf
@@ -3600,8 +3602,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        If a_focused( )\parent\AfterWidget( )
                                           a_set( a_focused( )\parent\AfterWidget( ) )
                                        Else
-                                          If a_transform( )\main\FirstWidget( )
-                                             a_set( a_transform( )\main\FirstWidget( ) )
+                                          If a_main( )\FirstWidget( )
+                                             a_set( a_main( )\FirstWidget( ) )
                                           EndIf
                                        EndIf
                                     EndIf
@@ -3616,8 +3618,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If a_focused( )\parent\FirstWidget( )
                                        a_set( a_focused( )\parent\FirstWidget( ) )
                                     Else
-                                       If a_transform( )\main\FirstWidget( )
-                                          a_set( a_transform( )\main\FirstWidget( ) )
+                                       If a_main( )\FirstWidget( )
+                                          a_set( a_main( )\FirstWidget( ) )
                                        EndIf
                                     EndIf
                                  EndIf
@@ -3917,7 +3919,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _p_x2_ = *parent\inner_x( ) + *parent\inner_width( )
                _p_y2_ = *parent\inner_y( ) + *parent\inner_height( )
                
-               ; for the splitter childrens
+               ; for the splitter children's
                If *parent\type = #__type_Splitter
                   If *parent\splitter_gadget_1( ) = *this
                      _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
@@ -3937,7 +3939,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
                   EndIf
                   
-                  ; for the scrollarea childrens except scrollbars
+                  ; for the scrollarea children's except scrollbars
                Else
                   If *parent\scroll_width( ) And
                      _p_x2_ > *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
@@ -4096,7 +4098,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If a_transform( ) And
                *this = a_focused( ) And
-               *this <> a_transform( )\main And
+               *this <> a_main( ) And
                a_transform( )\grid_size > 1
                
                If *this\anchors > 0
@@ -4463,7 +4465,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;EndIf
                   
                   If Change_width Or Change_height
-                     ;If *this\count\childrens
+                     ;If *this\children
                      bar_mdi_update( *this, 0, 0, 0, 0 )
                      bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
                      ;EndIf
@@ -4574,9 +4576,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             
-            ;-\\ childrens resize
-            ;\\ then move and size parent resize all childrens
-            If *this\count\childrens And *this\container
+            ;-\\ children's resize
+            ;\\ then move and size parent resize all children's
+            If *this\children And *this\container
                Protected pw, ph
                
                If StartEnumerate( *this )
@@ -4758,7 +4760,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Break
                EndIf
                
-               ; hide all children except those whose parent-item is selected
+               ; hide all children's except those whose parent-item is selected
                *this\_widgets( )\hide = HideState( *this\_widgets( ) )
             Wend
             PopListPosition( *this\_widgets( ) )
@@ -4775,7 +4777,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\hide = HideState( *this )
             
-            If *this\count\childrens
+            If *this\children
                HideChildrens( *this )
             EndIf
          EndIf
@@ -4791,7 +4793,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Break
                EndIf
                
-               ; disable all children except those whose parent-item is selected
+               ; disable all children's except those whose parent-item is selected
                If *this\state\disable
                   *this\_widgets( )\state\disable = - 1
                Else
@@ -4855,7 +4857,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Debug " DISABLE - " + *this\class + " " + State
             ;         ;
             ;         If *this\state\disable =- 1
-            ;           If *this\count\childrens
+            ;           If *this\children
             ;             PushListPosition(enumWidget( ))
             ;             If StartEnumerate( *this )
             ;               ; Debug "enable "+enumWidget( )\text\string
@@ -4899,7 +4901,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If *this\count\childrens
+            If *this\children
                DisableChildrens( *this._S_WIDGET )
             EndIf
             
@@ -5111,8 +5113,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If is_integral_( *this )
                
-               ; enumerate all parent childrens
-               If *this\parent\count\childrens
+               ; enumerate all parent children's
+               If *this\parent\children
                   HideChildrens( *this\parent )
                EndIf
                
@@ -6318,7 +6320,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not ( _this_\container And _this_\count\childrens )
+            If Not ( _this_\container And _this_\children )
                drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                
                ;\\ Scroll area coordinate
@@ -6985,7 +6987,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ; for the scrollarea childrens
+                  ; for the scrollarea children's
                   If *bar\page\end And *bar\page\pos > *bar\page\end
                      ; Debug " bar end change - " + *bar\page\pos +" "+ *bar\page\end
                      *bar\PageChange( ) = *bar\page\pos - *bar\page\end
@@ -7589,7 +7591,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;                     *this\parent\change = 0
                            ;                   EndIf
                            
-                           ;\\ Area childrens x&y auto move
+                           ;\\ Area children's x&y auto move
                            If *this\parent\container
                               If StartEnumerate( *this\parent )
                                  If *this\parent = enumWidget( )\parent And
@@ -7612,7 +7614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\parent\change      = - 2
                            *this\parent\scroll_x( ) = - *bar\page\pos
                            
-                           ;\\ Area childrens x&y auto move
+                           ;\\ Area children's x&y auto move
                            If *this\parent\container
                               If StartEnumerate( *this\parent )
                                  If *this\parent = enumWidget( )\parent And
@@ -12066,9 +12068,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure ChangeParent( *this._S_WIDGET, *parent._S_WIDGET )
+         ;\\
+         *parent\children + 1
+         If *parent <> *parent\root
+            *parent\root\children + 1
+         EndIf
+         
+         ;\\
          *this\parent = *parent
          *this\root   = *parent\root
-         
+         *this\level  = *parent\level + 1
+               
          ;\\
          If is_window_( *parent )
             *this\_window( ) = *parent
@@ -12298,7 +12308,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this And
             ; *this <> *parent And
-            *parent\count\childrens
+            *parent\children
             
             Repeat
                If *parent = *this\parent
@@ -12828,7 +12838,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Wend
                PopListPosition( *this\_rows( ))
                
-               ; if the remove last parent childrens
+               ; if the remove last parent children's
                If *parent_row\last = *this\_rows( )
                   *parent_row\childrens = #False
                   *parent_row\last      = #Null
@@ -12837,7 +12847,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ; before deleting a parent, we delete its children
+            ; before deleting a parent, we delete its children's
             If *this\_rows( )\childrens
                PushListPosition( *this\_rows( ))
                While NextElement( *this\_rows( ))
@@ -13084,7 +13094,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure GetFirst( *this._S_WIDGET, tabindex.l )
          Protected *result._S_WIDGET
          
-         If *this\count\childrens
+         If *this\children
             PushListPosition( *this\_widgets( ) )
             ChangeCurrentElement( *this\_widgets( ), *this\address )
             While NextElement( *this\_widgets( ) )
@@ -13108,7 +13118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result, *after._S_WIDGET, *parent._S_WIDGET
          
          If *this\LastWidget( )
-            If *this\count\childrens
+            If *this\children
                LastElement( *this\_widgets( ) )
                result = *this\_widgets( )\LastWidget( )
                
@@ -13510,7 +13520,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\PressedRow( )
                            *this\_rows( )\index = State
                            
-                           Debug " ---------- *this\PressedRow( )\childrens " + *this\PressedRow( )\childrens
+                           Debug " ---------- *this\PressedRow( )\children's " + *this\PressedRow( )\childrens
                            
                            ;\\
                            PushListPosition( *this\_rows( ))
@@ -14014,7 +14024,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ChangeCurrentElement( *this\_widgets( ), *this\address )
                MoveElement( *this\_widgets( ), #PB_List_Before, *widget\address )
                
-               If *this\count\childrens
+               If *this\children
                   While PreviousElement( *this\_widgets( ))
                      If IsChild( *this\_widgets( ), *this )
                         MoveElement( *this\_widgets( ), #PB_List_After, *widget\address )
@@ -14039,7 +14049,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ChangeCurrentElement( *this\_widgets( ), *this\address )
                MoveElement( *this\_widgets( ), #PB_List_After, *last\address )
                
-               If *this\count\childrens
+               If *this\children
                   While NextElement( *this\_widgets( ))
                      If IsChild( *this\_widgets( ), *this )
                         MoveElement( *this\_widgets( ), #PB_List_Before, *last\address )
@@ -14161,7 +14171,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *parent\hide
                *this\hide = #True
             ElseIf *parent\TabBox( )
-               ; hide all children except the selected tab
+               ; hide all children's except the selected tab
                *this\hide = Bool(*parent\TabBoxFocusedIndex( ) <> tabindex)
             EndIf
             
@@ -14175,12 +14185,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\address
                   *lastParent = *this\parent
-                  *lastParent\count\childrens - 1
+                  *lastParent\children - 1
                   
                   ChangeCurrentElement( *this\_widgets( ), *this\address )
                   AddElement( *D( ) ) : *D( ) = *this\_widgets( )
                   
-                  If *this\count\childrens
+                  If *this\children
                      PushListPosition( *this\_widgets( ) )
                      While NextElement( *this\_widgets( ) )
                         If Not IsChild( *this\_widgets( ), *this )
@@ -14192,9 +14202,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         *D( )\_window( ) = *parent\_window( )
                         *D( )\root       = *parent\root
-                        ;; Debug " children - "+ *D( )\data +" - "+ *this\data
+                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
                         
-                        ;\\ integrall childrens
+                        ;\\ integrall children's
                         If *D( )\scroll
                            If *D( )\scroll\v
                               *D( )\scroll\v\root       = *D( )\root
@@ -14210,7 +14220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PopListPosition( *this\_widgets( ) )
                   EndIf
                   
-                  ; move with a parent and his children
+                  ; move with a parent and his children's
                   If *this\root = *parent\root
                      If *last
                         ; move inside the list
@@ -14310,37 +14320,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\
             ChangeParent( *this, *parent )
-            
-            ;\\
-            *parent\count\childrens + 1
-            If *parent <> *parent\root
-               *parent\root\count\childrens + 1
-            EndIf
-            
-            ;\\
-            *this\level         = *parent\level + 1
-            *this\count\parents = *parent\count\parents + 1
             
             ;\\ TODO
             If *this\_window( )
                Static NewMap typeCount.l( )
                typeCount( Hex( *this\_window( ) + *this\type ) ) + 1
                *this\count\index = typeCount( ) - 1
+               
                If *parent\anchors
                   typeCount( Str( *parent + *this\type ) ) + 1
                   *this\count\type = typeCount( ) - 1
                EndIf
-               
-               ; ;           If *this\type > 0
-               ; ;             *this\count\index = *this\_window( )\type[*this\type]
-               ; ;             *this\_window( )\type[*this\type] + 1
-               ; ;
-               ; ;             *this\_window( )\count\type[*this\type] + 1
-               ; ;             *this\_window( )\count\type[*this\type] + 1
-               ; ;           EndIf
             EndIf
             
             ;\\ Anchor init
@@ -14355,17 +14347,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ set transformation for the child
-            If Not *this\anchors And *parent\anchors
-               *this\data = - 1
-               *this\anchors.allocate( ANCHORS )
-               a_set( *this, #__a_full, #__a_anchors_size )
+            If *parent\anchors
+               If Not *this\anchors 
+                  *this\data = - 1
+                  *this\anchors.allocate( ANCHORS )
+                  a_set( *this, #__a_full, #__a_anchors_size )
+               EndIf
             EndIf
-            
-            ;\\
-            If *parent\bounds\childrens
-               MoveBounds( *this );, 0, 0, *parent\width, *parent\height )
-            EndIf
-            
+           
             ;\\
             If ReParent
                *this\resize = #__resize_change
@@ -14859,7 +14848,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; update parent childrens coordinate
+               ; update parent children's coordinate
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                PostCanvasRepaint( *this )
             EndIf
@@ -16788,7 +16777,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\state\disable = 1
                      *this\state\disable = - 1
                      
-                     If *this\count\childrens
+                     If *this\children
                         DisableChildrens( *this )
                      EndIf
                   EndIf
@@ -17033,7 +17022,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Draw( *this\root)
                   
                   If Not ( *this\root\autosize And
-                           *this\root\count\childrens = 0 )
+                           *this\root\children = 0 )
                      ;\\
                      PushListPosition( *this\_widgets( ))
                      ForEach *this\_widgets( )
@@ -17087,7 +17076,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Not ( Not *this\_widgets( )\hide And *this\_widgets( )\draw_width( ) > 0 And *this\_widgets( )\draw_height( ) > 0 )
                            
                            ;\\ draw clip out transform widgets frame
-                           If is_parent_( *this\_widgets( ), *this\_widgets( )\parent )
+                           If is_child_( *this\_widgets( ), *this\_widgets( )\parent )
                               draw_roundbox_( *this\_widgets( )\inner_x( ), *this\_widgets( )\inner_y( ), *this\_widgets( )\inner_width( ), *this\_widgets( )\inner_height( ), *this\_widgets( )\round, *this\_widgets( )\round, $ff00ffff )
                            EndIf
                         EndIf
@@ -17110,13 +17099,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_focused( )\root = *this\root
                   
                   ; draw key-focused-widget anchors
-                  clip_output_( a_transform( )\main, [#__c_draw2] )
+                  clip_output_( a_main( ), [#__c_draw2] )
                   a_draw( a_focused( )\anchors\id )
                EndIf
                
                ;\\
-               If a_transform( )\main And
-                  a_transform( )\main\root = *this\root
+               If a_main( ) And
+                  a_main( )\root = *this\root
                   
                   ; draw mouse selected widget anchors
                   ; a_draw( a_selector( ) )
@@ -17361,7 +17350,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *widget = Popup( )\widget
             EndIf
          Else
-            If *root\count\childrens
+            If *root\children
                ; If ListSize( *root\_widgets( ))
                LastElement( *root\_widgets( ))
                Repeat
@@ -17545,7 +17534,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If LeavedWidget( )\address
                         ChangeCurrentElement( LeavedWidget( )\_widgets( ), LeavedWidget( )\address )
                         Repeat
-                           If LeavedWidget( )\_widgets( )\count\childrens And LeavedWidget( )\_widgets( )\state\enter <> 0
+                           If LeavedWidget( )\_widgets( )\children And LeavedWidget( )\_widgets( )\state\enter <> 0
                               If is_atpoint_( LeavedWidget( )\_widgets( ), mouse_x, mouse_y, [#__c_draw] )
                                  If Not ( *widget And *widget\index > LeavedWidget( )\_widgets( )\index )
                                     Break
@@ -17591,7 +17580,7 @@ Not IsChild( *widget, LeavedWidget( )\_widgets( ))
                         
                         If *widget\_widgets( )\state\enter = 0 And
                            ;a_transformer( *widget\_widgets( ) ) And
-                           *widget\_widgets( )\count\childrens And
+                           *widget\_widgets( )\children And
 Not is_interact_row_( *widget\_widgets( ) ) And
 IsChild( *widget, *widget\_widgets( ))
                            
@@ -19031,7 +19020,7 @@ IsChild( *widget, *widget\_widgets( ))
                ;           Protected dy =   mouse( )\delta\y - PressedWidget( )\parent\inner_y( ) - PressedWidget( )\parent\scroll_y( ) + PressedWidget( )\bs
                ;           Debug ""+dx+" "+dy
                ;
-               ;           If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_transform( )\main
+               ;           If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_main( )
                ;             If *this\anchors > 0
                ; ;               If x <> #PB_Ignore
                ;                 mouse( )\drag\x + ( mouse( )\drag\x % a_transform( )\grid_size )
@@ -20265,16 +20254,16 @@ IsChild( *widget, *widget\_widgets( ))
                EndIf
                
                ;
-               If *this\parent\count\childrens
+               If *this\parent\children
                   LastElement(*this\_widgets( ))
                   Repeat
                      If *this\_widgets( ) = *this Or
                         IsChild( *this\_widgets( ), *this )
-                        If *this\_widgets( )\root\count\childrens > 0
-                           *this\_widgets( )\root\count\childrens - 1
+                        If *this\_widgets( )\root\children > 0
+                           *this\_widgets( )\root\children - 1
                            
                            If *this\_widgets( )\parent <> *this\_widgets( )\root
-                              *this\_widgets( )\parent\count\childrens - 1
+                              *this\_widgets( )\parent\children - 1
                            EndIf
                            
                            If *this\_widgets( )\TabBox( )
@@ -20325,7 +20314,7 @@ IsChild( *widget, *widget\_widgets( ))
                            DeleteElement( *this\_widgets( ), 1 )
                         EndIf
                         
-                        If *this\root\count\childrens = 0
+                        If *this\root\children = 0
                            Break
                         EndIf
                      ElseIf PreviousElement( *this\_widgets( )) = 0
@@ -21395,7 +21384,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3196
-; FirstLine = 3187
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------40--8x0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 655
+; FirstLine = 650
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v8--4j8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
