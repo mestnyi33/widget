@@ -89,8 +89,8 @@ EndProcedure
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322, 0, 322, 220)
   PanelGadget (0, 8, 8, 300, 200)
-  Define h = GetGadgetAttribute(0, #PB_Panel_ItemHeight )
-  Define w = GetGadgetAttribute(0, #PB_Panel_ItemWidth )
+  Define h = 200;GetGadgetAttribute(0, #PB_Panel_ItemHeight )
+  Define w = 300;GetGadgetAttribute(0, #PB_Panel_ItemWidth )
   
   AddGadgetItem(0, -1, "Panel 1")
   PanelGadget (1, 10, 10, w-20, h-20-34*3)
@@ -165,6 +165,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

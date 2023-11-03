@@ -705,6 +705,10 @@
     ;-\\ Anchors
     #__a_anchors_size  = 7
     
+    #__a_anchors_type1  = 1
+    #__a_anchors_type2  = 2
+    #__a_anchors_type3  = 3
+    
     ;
     #__a_left         = 1
     #__a_top          = 2

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
-   panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
+    panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
     For i = 0 To 5 
       AddGadgetItem( panel, i, Hex(i) ) 
       If i
@@ -89,6 +89,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
    
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
