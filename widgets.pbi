@@ -3189,11 +3189,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_LeftButtonDown
                ;\\
                If is_integral_( *this )
-                  If *this\parent\state\press = 0
-                     *this\parent\state\press = - 1
-                     *this\parent\repaint     = #True
-                  EndIf
-                  *this = *this\parent
+                  ProcedureReturn 0
+;                   If *this\parent\state\press = 0
+;                      *this\parent\state\press = - 1
+;                      *this\parent\repaint     = #True
+;                   EndIf
+;                   *this = *this\parent
                EndIf
                
                ;\\ set/remove current transformer
@@ -6575,16 +6576,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not ( *this\scroll And ( \v Or \h ))
                ProcedureReturn 0
             EndIf
-            
-;             If *this\scroll_width( ) < width - \v\width
-;                *this\scroll_width( ) = width - \v\width
-;             EndIf
-;             
-;             If *this\scroll_height( ) < height - \h\height
-;                *this\scroll_height( ) = height - \h\height
-;             EndIf
-;Debug "---"
-            
+                       
             ;\\
             scroll_x      = *this\scroll_x( )
             scroll_y      = *this\scroll_y( )
@@ -6604,8 +6596,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                scroll_y = y
             EndIf
             
-            ;Debug "  "+\h\bar\page\len +" "+ Str(width - \v\width)
-            
             ;\\ left set state
             If scroll_x < x
                \v\bar\page\len = height - \h\height
@@ -6619,7 +6609,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                scroll_x = x
             EndIf
             
-            
             ;\\
             If scroll_width > \h\bar\page\len - ( scroll_x - x )
                If scroll_width - sx <= width And scroll_height = \v\bar\page\len - ( scroll_y - y )
@@ -6629,12 +6618,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If \v\bar\max > height - \h\height
                      \v\bar\page\len = height - \h\height
                      \h\bar\page\len = width - \v\width
-                     scroll_height = \v\bar\max ; *this\scroll_height( ) ;
+                     scroll_height = \v\bar\max
                      
-;                      If scroll_y <= y
-;                         \v\bar\page\pos = - ( scroll_y - y )
-;                         ;v_max = 0
-;                      EndIf  
+                     If scroll_y <= y
+                        \v\bar\page\pos = - ( scroll_y - y )
+                     EndIf  
                      ;  Debug "w - " + \v\bar\max  + " " +  \v\height  + " " +  \v\bar\page\len
                   Else
                      scroll_height = \v\bar\page\len - ( scroll_x - x ) - \h\height
@@ -6660,11 +6648,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If \h\bar\max > width - \v\width
                      \h\bar\page\len = width - \v\width
                      \v\bar\page\len = height - \h\height
-                     scroll_width = \h\bar\max ; *this\scroll_width( ) ;
+                     scroll_width = \h\bar\max
                                                         
                      If scroll_x <= x
                         \h\bar\page\pos = - ( scroll_x - x )
-                        ;h_max = 0
                      EndIf
                      ;  Debug "h - " + \h\bar\max  + " " +  \h\width  + " " +  \h\bar\page\len
                   Else
@@ -6678,7 +6665,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   v_max = 0
                EndIf
             Else
-               \v\bar\max             = scroll_height
+               \v\bar\max = scroll_height
                scroll_height = \v\bar\page\len - ( scroll_y - y )
             EndIf
             
@@ -6698,7 +6685,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   \v\bar\Max = scroll_height
                   If scroll_y <= y
                      \v\bar\page\pos = - ( scroll_y - y )
-                     ;v_max = 0
                   EndIf
                EndIf
                
@@ -6715,7 +6701,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   \h\bar\Max = scroll_width
                   If scroll_x <= x
                      \h\bar\page\pos = - ( scroll_x - x )
-                     ;h_max = 0
                   EndIf
                EndIf
                
@@ -6730,7 +6715,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_scrollbars_resize
                Debug "  --- mdi_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( )
             EndIf
-            
              
             ;\\
             If v_max <> \v\bar\Max
@@ -6745,15 +6729,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                bar_Update( \h )
                result = 1
             EndIf
-       ;             If \v\bar\thumb\len = \v\bar\thumb\end
-;                   bar_Update( \v )
-;                EndIf
-           ;Debug ""+\h\bar\thumb\len +" "+ \h\bar\page\len +" "+ \h\bar\area\len +" "+ \h\bar\thumb\end +" "+ \h\bar\page\end +" "+ \h\bar\area\end
-             
-;              If \h\bar\page\end < 2 ; \h\bar\thumb\len = \h\bar\thumb\end
-;                \h\hide = 1
-;                EndIf
-     
+            
+            ; Debug ""+\h\bar\thumb\len +" "+ \h\bar\page\len +" "+ \h\bar\area\len +" "+ \h\bar\thumb\end +" "+ \h\bar\page\end +" "+ \h\bar\area\end
+          
             ;\\
             *this\scroll_x( )      = scroll_x
             *this\scroll_y( )      = scroll_y
@@ -21417,7 +21395,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6632
-; FirstLine = 6577
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v8--80----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3196
+; FirstLine = 3187
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------40--8x0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

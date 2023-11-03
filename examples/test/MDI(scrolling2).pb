@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton
    Global x=200,y=150, width=320, height=320 , focus
    
-    
+   
    Procedure MDI_ImageEvents( )
       Protected *ew._s_widget = EventWidget( )
       Static DragWidget
@@ -105,11 +105,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Select EventGadget()
          Case 2
             If GetGadgetState(2)
-                  SetGadgetText(2, "vertical bar")
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+               SetGadgetText(2, "vertical bar")
+               SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
             Else
-                SetGadgetText(2, "horizontal bar")
-                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+               SetGadgetText(2, "horizontal bar")
+               SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
             
          Case 3
@@ -219,7 +219,7 @@ CompilerIf #PB_Compiler_IsMainFile
    vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
    hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
    
-   MDI_AddImage( *mdi,-30,30,hole, 100 )
+   MDI_AddImage( *mdi,30,30,hole, 100 )
    MDI_AddImage( *mdi, 100-b, 200-b, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
    
    
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 54
+; CursorPosition = 221
+; FirstLine = 194
 ; Folding = ---
 ; EnableXP
