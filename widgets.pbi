@@ -2587,23 +2587,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If _address_ <> a_selector( )
         If a_entered( )
           If _address_[#__a_moved] ; moved
-            If _a_moved_type_
+;             If _a_moved_type_
               _address_[#__a_moved]\x      = _x_
               _address_[#__a_moved]\y      = _y_
               _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
               _address_[#__a_moved]\height = a_entered( )\anchors\size * 2
-            Else
-              
-              _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\size * 2
-              _address_[#__a_moved]\y      = _y_
-              _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
-              _address_[#__a_moved]\height = a_entered( )\anchors\size
-              
-              ;                      _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\pos
-              ;                      _address_[#__a_moved]\y      = _y_ + a_entered( )\anchors\pos
-              ;                      _address_[#__a_moved]\width  = _width_ - a_entered( )\anchors\pos * 2
-              ;                      _address_[#__a_moved]\height = _height_ - a_entered( )\anchors\pos * 2
-            EndIf
+;             Else
+;               
+;               _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\size * 2
+;               _address_[#__a_moved]\y      = _y_
+;               _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
+;               _address_[#__a_moved]\height = a_entered( )\anchors\size
+;               
+;               ;                      _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\pos
+;               ;                      _address_[#__a_moved]\y      = _y_ + a_entered( )\anchors\pos
+;               ;                      _address_[#__a_moved]\width  = _width_ - a_entered( )\anchors\pos * 2
+;               ;                      _address_[#__a_moved]\height = _height_ - a_entered( )\anchors\pos * 2
+;             EndIf
           EndIf
         EndIf
         
@@ -21399,6 +21399,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2589
+; FirstLine = 2582
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-2--f-8+-+-+-8---------8----------------0-u-e-----+----------------------------------------------------
 ; EnableXP
