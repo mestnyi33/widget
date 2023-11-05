@@ -1102,10 +1102,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare IsChild( *this, *parent )
     Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
-    Declare MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
-    Declare SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
     Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
     Declare.i SetAttachment( *this, *parent, mode.a )
+    
+    Declare   ChildrenBounds( *this )
+    Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
     
     Declare.l CountItems( *this )
     Declare.l ClearItems( *this )
@@ -11680,9 +11682,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\color\back[mouse_interact_state * *this\color\state] )
           Else
             If *this\round
-              draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+              draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\fore[mouse_interact_state * *this\color\state] )
             Else
-              draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+              draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\fore[mouse_interact_state * *this\color\state] )
             EndIf
           EndIf
         EndIf
@@ -11728,6 +11730,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\fs = 1
               gradient = 0
             EndIf
+            
+            If Not *this\fs[2]; top
+               If gradient
+                  LinearGradient( *this\frame_x( ), *this\frame_y( ) + *this\fs * 2, *this\frame_x( ), *this\frame_y( ) - *this\fs )
+               EndIf
+               draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
+               ; left&top
+               If gradient
+                  BoxedGradient(*this\frame_x( ), *this\frame_y( ), *this\fs * 2, *this\fs * 2)
+               EndIf
+               draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+               
+               ; right&top
+               If gradient
+                  BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ), *this\fs * 2, *this\fs * 2)
+               EndIf
+               draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+            EndIf
+         
             ; left
             If gradient
               LinearGradient( *this\frame_x( ) + *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) - *this\fs, *this\frame_y( ) + *this\fs + ch )
@@ -11779,17 +11800,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         If Not *this\round
-          If Not *this\fs[2]
-            ; left&top
-            draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
-            ; top
-            draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
-            ; right&top
-            draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
-          EndIf
+;           If Not *this\fs[2]
+;             ; left&top
+;             draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+;             ; top
+;             draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
+;             ; right&top
+;             draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+;           EndIf
           
           If *this\fs
-            ; frame bottom
+             If Not *this\fs[2]
+                ; frame top
+                Line( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), 1, *this\color\frame[\color\state] )
+             EndIf
+             ; frame bottom
             Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, *this\color\frame[\color\state] )
             ; frame left
             Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\color\state] )
@@ -11856,24 +11881,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\Title( )\string
-            ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
-            
-            ; Draw string
-            If *this\resize & #__resize_change
-              If *this\image\id
-                *this\Title( )\x = *this\caption\inner_x( ) + *this\Title( )\padding\x + *this\image\width + 10;\image\padding\x
-              Else
-                *this\Title( )\x = *this\caption\inner_x( ) + *this\Title( )\padding\x
-              EndIf
-              *this\Title( )\y = *this\caption\inner_y( ) + ( *this\caption\inner_height( ) - TextHeight( "A" )) / 2
-            EndIf
-            
-            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawText( *this\Title( )\x, *this\Title( )\y, *this\Title( )\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-            
-            ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-            ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
-            clip_output_( *this, [#__c_draw] )
+             If *this\inner_height( ) 
+                ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
+             EndIf
+             
+             ; Draw string
+             If *this\resize & #__resize_change
+                If *this\image\id
+                   *this\Title( )\x = *this\caption\inner_x( ) + *this\Title( )\padding\x + *this\image\width + 10;\image\padding\x
+                Else
+                   *this\Title( )\x = *this\caption\inner_x( ) + *this\Title( )\padding\x
+                EndIf
+                *this\Title( )\y = *this\caption\inner_y( ) + ( *this\caption\inner_height( ) - TextHeight( "A" )) / 2
+             EndIf
+             
+             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+             DrawText( *this\Title( )\x, *this\Title( )\y, *this\Title( )\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+             
+             ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+             ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
+             If *this\inner_height( ) 
+                clip_output_( *this, [#__c_draw] )
+             EndIf
           EndIf
         EndIf
         
@@ -12118,6 +12147,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\StringBox( )
         *this\StringBox( )\root       = *this\root
         *this\StringBox( )\_window( ) = *this\_window( )
+      EndIf
+     
+      If *parent\bounds\children
+        MoveBounds( *this )
       EndIf
     EndProcedure
     
@@ -14010,7 +14043,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure SetPosition( *this._S_WIDGET, position.l, *widget._S_WIDGET = #Null ) ; Ok
+    Procedure   SetPosition( *this._S_WIDGET, position.l, *widget._S_WIDGET = #Null ) ; Ok
       If *widget = #Null
         Select Position
           Case #PB_List_First : *widget = *this\parent\FirstWidget( )
@@ -14129,7 +14162,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure SetParent( *this._S_WIDGET, *parent._S_WIDGET, tabindex.l = 0 )
+    Procedure   SetParent( *this._S_WIDGET, *parent._S_WIDGET, tabindex.l = 0 )
       Protected parent, ReParent.b, x, y, *last._S_WIDGET, *lastParent._S_WIDGET, NewList *D._S_WIDGET( ), NewList *C._S_WIDGET( )
       ;\\
       If *this = *parent
@@ -14448,7 +14481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure SetAlignment( *this._S_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    Procedure   SetAlignment( *this._S_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Protected flag.q
       ;\\
       If Not (( mode & #__align_full = #__align_full ) Or ( mode & #__align_auto = #__align_auto ))
@@ -14865,7 +14898,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure SetFrame( *this._S_WIDGET, size.a, mode.b = 0 )
+    Procedure   SetFrame( *this._S_WIDGET, size.a, mode.b = 0 )
       Protected result
       If *this\fs <> size
         result   = *this\fs
@@ -14887,7 +14920,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure MoveBounds( *this._S_WIDGET, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    Procedure   MoveBounds( *this._S_WIDGET, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
       ; If the value is set to #PB_Ignore, the current value is not changed.
       ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
       Protected.l x = #PB_Ignore, y = #PB_Ignore, width = #PB_Ignore, height = #PB_Ignore
@@ -14966,7 +14999,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure SizeBounds( *this._S_WIDGET, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+    Procedure   SizeBounds( *this._S_WIDGET, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       ; If the value is set to #PB_Ignore, the current value is not changed.
       ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
       Protected.l x = #PB_Ignore, y = #PB_Ignore, width = #PB_Ignore, height = #PB_Ignore
@@ -15017,6 +15050,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Resize( *this, x, y, width, height )
     EndProcedure
     
+    Procedure   ChildrenBounds( *this._S_WIDGET )
+       *this\bounds\children = 1
+    EndProcedure
+
     ;-
     Procedure.i GetItemData( *this._S_WIDGET, item.l )
       Protected result.i
@@ -21404,6 +21441,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---0v8-8-8-v---------v----------------4-8+80----8------------+-fr-------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 11663
+; FirstLine = 11663
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+----------8+----------------8+-8f--------------------------------------------------------f-f0--4-u-v-v--+---------+---------------f-v8v4----v------------8--t+------------------------------------
 ; EnableXP

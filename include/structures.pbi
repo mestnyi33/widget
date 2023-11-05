@@ -558,6 +558,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          max._s_SIZE
       EndStructure
       Structure _s_BOUNDS
+         children.b
          *move._s_BOUNDMOVE
          *size._s_BOUNDSIZE
          *attach._s_BOUNDATTACH
@@ -757,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 309
-; FirstLine = 188
+; CursorPosition = 561
+; FirstLine = 305
 ; Folding = -M+-9IA+--
 ; EnableXP
