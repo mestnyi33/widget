@@ -3197,12 +3197,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If eventtype = #__event_LeftButtonDown
           ;\\
           If is_integral_( *this )
-            ProcedureReturn 0
-            ;                   If *this\parent\state\press = 0
-            ;                      *this\parent\state\press = - 1
-            ;                      *this\parent\repaint     = #True
-            ;                   EndIf
-            ;                   *this = *this\parent
+            If a_index( ) 
+              If *this\parent\state\press = 0
+                *this\parent\state\press = - 1
+                *this\parent\repaint     = #True
+              EndIf
+              *this = *this\parent
+            Else
+              ProcedureReturn 0
+            EndIf
           EndIf
           
           ;\\ set/remove current transformer
@@ -19514,9 +19517,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\y = mouse( )\y
             
             If PressedWidget( )\bar And EnteredButton( ) > 0 
-              mouse( )\delta\x - PressedWidget( )\bar\thumb\pos
+              If Not ( a_transform( ) And a_index( ))
+                mouse( )\delta\x - PressedWidget( )\bar\thumb\pos
               mouse( )\delta\y - PressedWidget( )\bar\thumb\pos
-            Else
+            EndIf
+          Else
               If Not a_transform( )
                 mouse( )\delta\x - PressedWidget( )\container_x( )
                 mouse( )\delta\y - PressedWidget( )\container_y( )
@@ -21399,8 +21404,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2589
-; FirstLine = 2582
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-2--f-8+-+-+-8---------8----------------0-u-e-----+----------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---0v8-8-8-v---------v----------------4-8+80----8------------+-fr-------------------------------------
 ; EnableXP
