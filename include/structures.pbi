@@ -18,7 +18,7 @@
 CompilerIf Not Defined(Structures, #PB_Module)
    DeclareModule Structures
       ;-- PROTOTIPEs
-      Prototype DrawFunc(*this)
+      ; Prototype DrawFunc(*this)
       Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
       
       ;{ 
@@ -571,14 +571,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *item             ; eventItem( )
          *data             ; eventData( )
       EndStructure
-      Structure _s_event Extends _s_EVENTDATA
+      Structure _s_EVENT Extends _s_EVENTDATA
          *function.EventFunc
       EndStructure
       
       ;--     WIDGET
       Structure _s_WIDGET
+         eventmask.q
          *anchors._s_ANCHORS
-         _a_._s_ANCHORS
          
          reclip.b
          
@@ -589,15 +589,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
          children.l             ; if the has children
          
          create.b
-         hide.b
-         hidden.b
+         hide.b                 ;
+         hidden.b               ; hide state
          dragstart.b
          checkstate.b
          repaint.b
          autosize.b
          
          change.l
-         resize.i   ; state
+         resize.i               ; state
          
          ;*Draw.DrawFunc        ; Function to Draw
          caption._s_caption
@@ -758,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 561
-; FirstLine = 305
-; Folding = -M+-9IA+--
+; CursorPosition = 579
+; FirstLine = 357
+; Folding = -O+-9IA+--
 ; EnableXP
