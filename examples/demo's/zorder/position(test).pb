@@ -31,6 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEach EnumWidget( )
          If EnumWidget( )\parent\FirstWidget( )
             Debug ""+ EnumWidget( )\class +" "+ EnumWidget( )\parent\FirstWidget( )\class +" "+ EnumWidget( )\parent\LastWidget( )\class
+         Else
+            Debug EnumWidget( )\class
+            Debug EnumWidget( )\FirstWidget( )\class
          EndIf
       Next
       
@@ -40,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7
-; FirstLine = 1
+; CursorPosition = 35
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

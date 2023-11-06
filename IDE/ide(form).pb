@@ -502,7 +502,7 @@ Procedure widget_events( )
 ;    Static *beforeWidget
    
    Select eventtype 
-      Case #PB_EventType_DragStart
+      Case #__event_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
                SetCursor( *ew, #PB_Cursor_Arrows )
@@ -538,7 +538,7 @@ Procedure widget_events( )
             ;           EndSelect
          EndIf
          
-      Case #PB_EventType_Drop
+      Case #__event_Drop
          Select EventDropPrivate( )
             Case #_DD_Group
                Debug " ----- DD_group ----- "
@@ -566,7 +566,7 @@ Procedure widget_events( )
                
          EndSelect
          
-      Case #PB_EventType_LeftButtonDown
+      Case #__event_LeftButtonDown
          If IsContainer( *ew )
             If a_transform( )\type > 0 Or group_select
                If group_select 
@@ -582,7 +582,7 @@ Procedure widget_events( )
          EndIf
          ;; ProcedureReturn #PB_Ignore
          
-      Case #PB_EventType_LeftButtonUp
+      Case #__event_LeftButtonUp
          ; then group select
          If IsContainer( *ew )
             If a_transform( ) And a_focused( ) And a_focused( )\a_trans( ) = - 1
@@ -600,7 +600,7 @@ Procedure widget_events( )
             EndIf
          EndIf
          
-      Case #PB_EventType_StatusChange
+      Case #__event_StatusChange
          ;\\ Debug " widget status change "
          If GetData( *ew ) >= 0
             If IsGadget( id_design_code )
@@ -610,18 +610,18 @@ Procedure widget_events( )
          EndIf
          properties_updates( id_i_properties_tree, *ew )
          
-      Case #PB_EventType_Resize
+      Case #__event_Resize
          properties_update_coordinate( id_i_properties_tree, *ew )
          SetWindowTitle( GetWindow(*ew\root), Str(width(*ew))+"x"+Str(height(*ew) ) )
          
-      Case #PB_EventType_MouseEnter,
-           #PB_EventType_MouseLeave,
-           #PB_EventType_MouseMove
+      Case #__event_MouseEnter,
+           #__event_MouseLeave,
+           #__event_MouseMove
          
          If Not MouseButtons( ) 
             If IsContainer( *ew ) 
                If GetState( id_elements_tree ) > 0 
-                  If eventtype = #PB_EventType_MouseLeave
+                  If eventtype = #__event_MouseLeave
                      If GetCursor( ) <> #PB_Cursor_Default
                         SetCursor( *ew, #PB_Cursor_Default )
                      EndIf
@@ -638,9 +638,9 @@ Procedure widget_events( )
    EndSelect
    
    ;\\
-   If eventtype = #PB_EventType_Drop Or 
-      eventtype = #PB_EventType_LeftButtonUp Or 
-      eventtype = #PB_EventType_RightButtonUp 
+   If eventtype = #__event_Drop Or 
+      eventtype = #__event_LeftButtonUp Or 
+      eventtype = #__event_RightButtonUp 
       
       ; end new create
       If GetState( id_elements_tree ) > 0 
@@ -795,7 +795,7 @@ Procedure ide_events( )
    Protected *ew._s_widget = WidgetEvent( )\widget
    
    Select e_type
-      Case #PB_EventType_DragStart
+      Case #__event_DragStart
          If *ew = id_elements_tree
             Debug " ------ drag ide_events() ----- "
             ;         DD_EventDragWidth( ) 
@@ -807,7 +807,7 @@ Procedure ide_events( )
             EndIf
          EndIf
          
-      Case #PB_EventType_StatusChange
+      Case #__event_StatusChange
          If *ew = listview_debug
             
             ; Debug Left( *ew\text\string, *ew\text\caret\pos ); GetState( listview_debug )
@@ -840,7 +840,7 @@ Procedure ide_events( )
             EndIf
          EndIf
          
-      Case #PB_EventType_Change
+      Case #__event_Change
          If *ew = id_i_view_tree
             *this = GetItemData( *ew, GetState( *ew ) )
             
@@ -908,7 +908,7 @@ Procedure ide_events( )
             ; Debug Left( *ew\text\string, *ew\text\caret\pos ); GetState( listview_debug )
          EndIf
          
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
          If getclass( *ew ) = "ToolBar"
             Protected transform, move_x, move_y, toolbarbutton = GetData( *ew )
             Static NewList *copy._s_a_group( )
@@ -1132,17 +1132,17 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ;
    Bind( id_i_view_tree, @ide_events( ) )
    
-   Bind( listview_debug, @ide_events( ), #PB_EventType_Change )
-   Bind( listview_debug, @ide_events( ), #PB_EventType_StatusChange )
+   Bind( listview_debug, @ide_events( ), #__event_Change )
+   Bind( listview_debug, @ide_events( ), #__event_StatusChange )
    
    ;Bind( id_elements_tree, @ide_events( ) )
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_LeftClick )
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_Change )
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_StatusChange )
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_DragStart )
+   Bind( id_elements_tree, @ide_events( ), #__event_LeftClick )
+   Bind( id_elements_tree, @ide_events( ), #__event_Change )
+   Bind( id_elements_tree, @ide_events( ), #__event_StatusChange )
+   Bind( id_elements_tree, @ide_events( ), #__event_DragStart )
    
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_MouseEnter )
-   Bind( id_elements_tree, @ide_events( ), #PB_EventType_MouseLeave )
+   Bind( id_elements_tree, @ide_events( ), #__event_MouseEnter )
+   Bind( id_elements_tree, @ide_events( ), #__event_MouseLeave )
    ProcedureReturn window_ide
 EndProcedure
 
@@ -1274,6 +1274,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------rf--------v-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1155
+; FirstLine = 1086
+; Folding = ---------rf----------
 ; EnableXP
