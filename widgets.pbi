@@ -644,7 +644,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
-      Declare a_mode( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
       Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
       Declare a_update( *parent )
       
@@ -2077,6 +2076,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Color
       EndProcedure
       
+      Procedure GetMainParent( *this._s_WIDGET )
+         Protected result
+         Protected *parent._s_WIDGET
+         
+         If *this\parent
+            *parent = *this\parent
+            
+            ;\\ get main parent
+            While *parent 
+               If IsChild( *this, *parent )
+                  If *parent\parent And
+                     Not *parent\parent\parent
+                     ; Debug "*parent "+*parent\class
+                     result = *parent
+                  EndIf
+                  *parent = *parent\parent
+               EndIf
+            Wend
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
       
       ;-\\ DD
       Macro macros_cursor_updates( address ) ; , cursor = )
@@ -2776,8 +2797,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro a_add( _this_, _index_ )
-       ; Debug "a_add "+_this_\class
-        For _index_ = 0 To #__a_count
+         ; Debug "a_add "+_this_\class
+         For _index_ = 0 To #__a_count
             If _this_\anchors\mode & #__a_height = 0 And
                _this_\anchors\mode & #__a_width = 0
                If _index_ = #__a_left Or
@@ -2847,25 +2868,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If state
             ;\\
             If is_integral_( *this )
-              *this = *this\parent
-              If *this\state\enter = 0
-                *this\state\enter = - 1
-              EndIf
+               *this = *this\parent
+               If *this\state\enter = 0
+                  *this\state\enter = - 1
+               EndIf
             EndIf
-           
+            
             ;\\
             If *this\parent And 
                *this\parent\type = #__type_splitter
-              
-;               If *this\parent\parent\type = #__type_splitter
-                ProcedureReturn 0  
-;               Else
-;                 *this = *this\parent\parent
-;               EndIf
-              
-              If *this\state\enter = 0
-                *this\state\enter = - 1
-              EndIf
+               
+               ;\\ get main parent
+               Protected *parent._s_WIDGET = *this\parent
+               While *parent 
+                  If IsChild( *this, *parent )
+                     If *parent\parent And
+                        Not *parent\parent\parent
+                       Debug "*parent "+*parent\class
+                       *this = *parent
+                    EndIf
+                    *parent = *parent\parent
+                  EndIf
+               Wend
+               
+               If *this\state\enter = 0
+                  *this\state\enter = - 1
+               EndIf
             EndIf
             
             ;\\
@@ -2948,63 +2976,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\repaint
       EndProcedure
       
-      Procedure a_mode( *this._S_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
-         ;If *this\anchors
-         If mode >= 0
-            *this\anchors\mode = mode
-         EndIf
-         
-         If size >= 0
-            *this\anchors\size = size
-            *this\bs - *this\anchors\pos
-            *this\anchors\pos = size / 2
-            *this\bs + *this\anchors\pos  ; + *this\fs
-         EndIf
-         
-         If position >= 0
-            *this\bs - *this\anchors\pos
-            *this\anchors\pos = position
-            *this\bs + *this\anchors\pos  ; + *this\fs
-         EndIf
-         
-         If *this\resize & #__resize_change = 0
-            *this\resize | #__resize_change
-         EndIf
-         If *this\screen_x( ) <> *this\frame_x( ) - ( *this\bs - *this\fs )
-            *this\screen_x( ) = *this\frame_x( ) - ( *this\bs - *this\fs )
-         EndIf
-         If *this\screen_y( ) <> *this\frame_y( ) - ( *this\bs - *this\fs )
-            *this\screen_y( ) = *this\frame_y( ) - ( *this\bs - *this\fs )
-         EndIf
-         If *this\screen_width( ) <> *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
-            *this\screen_width( ) = *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
-         EndIf
-         If *this\screen_height( ) <> *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
-            *this\screen_height( ) = *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
-         EndIf
-         
-         a_resize( *this )
-         ;EndIf
-      EndProcedure
-      
       Procedure.i a_set( *this._S_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
-         Protected result.i, i
+         Protected i
          
          If *this
-;             If is_scrollbars_( *this )
-;                ProcedureReturn 0
-;             EndIf
-            
-            ;\\
             If is_integral_( *this )
-               If a_index( ) 
+               If ( a_index( ) Or
+                    Not is_scrollbars_( *this ))
                   *this = *this\parent
                Else
-                  If is_scrollbars_( *this )
-                     ProcedureReturn 0
-                  Else
-                     *this = *this\parent
-                  EndIf
+                  ProcedureReturn 0
                EndIf
                If *this\state\press = 0
                   *this\state\press = - 1
@@ -3012,40 +2993,146 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;
-            If ( *this\anchors And a_focused( ) <> *this ); Or ( *this\anchors\ = - 1 And Not a_index( ) )
+            ;\\ set/remove current transformer
+            If *this = a_main( )
                
-                FocusedWidget( ) = *this
-               a_entered( )     = a_focused( )
-               a_focused( )     = *this
+               ;\\ если нажали в главном "окне"
+               ;\\ где находятся "изменяемые" виджеты
+               ;\\ то будем убырать все якорья
+                  
+               If a_focused( )
+                  a_remove( a_focused( ), i )
+               EndIf
+               FocusedWidget( ) = *this
+            Else
+               ;\\
+               If Not *this\anchors
+                  *this\anchors.allocate( ANCHORS )
+               EndIf
                
-               a_mode( *this, mode, size, position )
-               a_show( *this, #True )
-               a_grid_change( *this\parent )
+               ;\\
+               If mode >= 0
+                  *this\anchors\mode = mode
+               EndIf
                
-               ;
-               Post( *this, #__event_StatusChange, a_index( ) )
-               ;*this\repaint = 1
-               If Not result
-                  result = - 1
+               If size >= 0
+                  *this\anchors\size = size
+                  *this\bs - *this\anchors\pos
+                  *this\anchors\pos = size / 2
+                  *this\bs + *this\anchors\pos  ; + *this\fs
+               EndIf
+               
+               If position >= 0
+                  *this\bs - *this\anchors\pos
+                  *this\anchors\pos = position
+                  *this\bs + *this\anchors\pos  ; + *this\fs
+               EndIf
+               
+               If *this\resize & #__resize_change = 0
+                  *this\resize | #__resize_change
+               EndIf
+               If *this\screen_x( ) <> *this\frame_x( ) - ( *this\bs - *this\fs )
+                  *this\screen_x( ) = *this\frame_x( ) - ( *this\bs - *this\fs )
+               EndIf
+               If *this\screen_y( ) <> *this\frame_y( ) - ( *this\bs - *this\fs )
+                  *this\screen_y( ) = *this\frame_y( ) - ( *this\bs - *this\fs )
+               EndIf
+               If *this\screen_width( ) <> *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
+                  *this\screen_width( ) = *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
+               EndIf
+               If *this\screen_height( ) <> *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
+                  *this\screen_height( ) = *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
+               EndIf
+               
+               ;\\
+               If a_focused( ) <> *this 
+                  a_entered( )     = a_focused( )
+                  a_focused( )     = *this
+                  FocusedWidget( ) = *this
+                  
+                  a_show( *this, #True )
+                  a_grid_change( *this\parent )
+                  
+                  ;
+                  Post( *this, #__event_StatusChange, a_index( ) )
+                  *this\repaint = 1
+                  
+                  ;\\ reset multi group
+                  If ListSize( a_group( ))
+                     ForEach a_group( )
+                        ;             a_set_state( a_group( )\widget, 1 )
+                        ;             a_set_state( a_group( )\widget\root, 1 )
+                        ;             a_set_state( a_group( )\widget\parent, 1 )
+                     Next
+                     
+                     a_selector( )\x      = 0
+                     a_selector( )\y      = 0
+                     a_selector( )\width  = 0
+                     a_selector( )\height = 0
+                     ClearList( a_group( ))
+                  EndIf
                EndIf
             EndIf
-         EndIf
-         
-         If result
-            ;\\ reset multi group
-            If ListSize( a_group( ))
-               ForEach a_group( )
-                  ;             a_set_state( a_group( )\widget, 1 )
-                  ;             a_set_state( a_group( )\widget\root, 1 )
-                  ;             a_set_state( a_group( )\widget\parent, 1 )
-               Next
                
-               a_selector( )\x      = 0
-               a_selector( )\y      = 0
-               a_selector( )\width  = 0
-               a_selector( )\height = 0
-               ClearList( a_group( ))
+            ;\\
+            a_resize( *this )
+            
+            ;\\
+            If a_index( ) And a_anchors([a_index( )])
+               ;\\ set current transformer index state
+               a_anchors([a_index( )])\color\state = #__S_2
+               
+               ;\\ set delta pos
+               ;\\ not multi group transformer
+               ;If Not *this\anchors\multi
+               ;\\
+               If *this\parent
+                  If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                     mouse( )\delta\x + *this\parent\inner_x( )
+                  EndIf
+                  If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                     mouse( )\delta\y + *this\parent\inner_y( )
+                  EndIf
+                  
+                  ;\\
+                  If *this\child <= 0
+                     Select a_index( )
+                        Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                           mouse( )\delta\x + *this\parent\scroll_x( )
+                     EndSelect
+                     
+                     Select a_index( )
+                        Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                           mouse( )\delta\y + *this\parent\scroll_y( )
+                     EndSelect
+                  EndIf
+               EndIf
+               
+               ;\\
+               mouse( )\delta\x - a_anchors([a_index( )])\x
+               mouse( )\delta\y - a_anchors([a_index( )])\y
+               
+               ;\\
+               ;?If Not ( Not *this\container And a_index( ) = #__a_moved )
+               mouse( )\delta\x - ( *this\anchors\size - *this\anchors\pos )
+               mouse( )\delta\y - ( *this\anchors\size - *this\anchors\pos )
+               ;?EndIf
+               
+               ;\\
+               If *this\type = #__type_window
+                  Select a_index( )
+                     Case #__a_right, #__a_right_top
+                        mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                        
+                     Case #__a_bottom, #__a_left_bottom
+                        mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                        
+                     Case #__a_right_bottom
+                        mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                        mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                        
+                  EndSelect
+               EndIf
             EndIf
          EndIf
          
@@ -3236,37 +3323,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If eventtype = #__event_down
                If mouse( )\buttons & #PB_Canvas_LeftButton 
-;                   ;\\
-;                   If is_integral_( *this )
-;                      If a_index( ) 
-;                         *this = *this\parent
-;                      Else
-;                         If is_scrollbars_( *this )
-;                            ProcedureReturn 0
-;                         Else
-;                            *this = *this\parent
-;                         EndIf
-;                      EndIf
-;                      If *this\state\press = 0
-;                         *this\state\press = - 1
-;                         *this\repaint     = #True
-;                      EndIf
-;                   EndIf
-                  
-                  ;\\ set/remove current transformer
-                  If *this = a_main( )
-                     ;
-                     ;\\ если нажали в главном "окне"
-                     ;\\ где находятся "изменяемые" виджеты
-                     ;\\ то будем убырать все якорья
-                     ;
-                     If a_focused( )
-                        a_remove( a_focused( ), i )
-                     EndIf
-                  Else
-                     *this = a_set( *this )
-                  EndIf
-                  
                   ;\\ change frame color
                   If a_transform( )\type = 0
                      a_transform( )\dot_ted   = 1
@@ -3281,68 +3337,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      a_selector( )\color\front = $ffffffff
                   EndIf
                   
-                  ;\\
-                  If a_index( ) And a_anchors([a_index( )])
-                     
-                     ;\\ set current transformer index state
-                     a_anchors([a_index( )])\color\state = #__S_2
-                     
-                     ;\\ set delta pos
-                     ;\\ not multi group transformer
-                     ;If Not *this\anchors\multi
-                     ;\\
-                     If *this\parent
-                        If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                           mouse( )\delta\x + *this\parent\inner_x( )
-                        EndIf
-                        If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                           mouse( )\delta\y + *this\parent\inner_y( )
-                        EndIf
-                        
-                        ;\\
-                        If *this\child <= 0
-                           Select a_index( )
-                              Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                                 mouse( )\delta\x + *this\parent\scroll_x( )
-                           EndSelect
-                           
-                           Select a_index( )
-                              Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                                 mouse( )\delta\y + *this\parent\scroll_y( )
-                           EndSelect
-                        EndIf
-                     EndIf
-                     
-                     ;\\
-                     mouse( )\delta\x - a_anchors([a_index( )])\x
-                     mouse( )\delta\y - a_anchors([a_index( )])\y
-                     
-                     ;\\
-                     ;?If Not ( Not *this\container And a_index( ) = #__a_moved )
-                     mouse( )\delta\x - ( *this\anchors\size - *this\anchors\pos )
-                     mouse( )\delta\y - ( *this\anchors\size - *this\anchors\pos )
-                     ;?EndIf
-                     
-                     ;\\
-                     If *this\type = #__type_window
-                        Select a_index( )
-                           Case #__a_right, #__a_right_top
-                              mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                              
-                           Case #__a_bottom, #__a_left_bottom
-                              mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                              
-                           Case #__a_right_bottom
-                              mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                              mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                              
-                        EndSelect
-                     EndIf
-                     ;EndIf
-                     
-                  EndIf
-                  
-                  *this\repaint = #True
+                  ;\\ set current 
+                  ; transform widget
+                  a_set( *this )
                EndIf
             EndIf
             
@@ -3649,25 +3646,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Default
                         ;\\ tab focus
                         Select Keyboard( )\Key
-;                            Case #PB_Shortcut_Tab
-;                               If a_focused( )\container And
-;                                  a_focused( )\FirstWidget( )
-;                                  a_set( a_focused( )\FirstWidget( ) )
-;                               Else
-;                                  If a_focused( )\AfterWidget( )
-;                                     a_set( a_focused( )\AfterWidget( ) )
-;                                  Else
-;                                     If a_focused( )\parent
-;                                        If a_focused( )\parent\AfterWidget( )
-;                                           a_set( a_focused( )\parent\AfterWidget( ) )
-;                                        Else
-;                                           If a_main( )\FirstWidget( )
-;                                              a_set( a_main( )\FirstWidget( ) )
-;                                           EndIf
-;                                        EndIf
-;                                     EndIf
-;                                  EndIf
-;                               EndIf
+                              ;                            Case #PB_Shortcut_Tab
+                              ;                               If a_focused( )\container And
+                              ;                                  a_focused( )\FirstWidget( )
+                              ;                                  a_set( a_focused( )\FirstWidget( ) )
+                              ;                               Else
+                              ;                                  If a_focused( )\AfterWidget( )
+                              ;                                     a_set( a_focused( )\AfterWidget( ) )
+                              ;                                  Else
+                              ;                                     If a_focused( )\parent
+                              ;                                        If a_focused( )\parent\AfterWidget( )
+                              ;                                           a_set( a_focused( )\parent\AfterWidget( ) )
+                              ;                                        Else
+                              ;                                           If a_main( )\FirstWidget( )
+                              ;                                              a_set( a_main( )\FirstWidget( ) )
+                              ;                                           EndIf
+                              ;                                        EndIf
+                              ;                                     EndIf
+                              ;                                  EndIf
+                              ;                               EndIf
                               
                            Case #PB_Shortcut_Left
                               If a_focused( )\parent
@@ -14444,7 +14441,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *parent\type <> #__type_splitter
                   If Not *this\anchors 
                      *this\data = - 1
-                     *this\anchors.allocate( ANCHORS )
                      a_set( *this, #__a_full, #__a_anchors_size )
                   EndIf
                EndIf
@@ -16022,7 +16018,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                
                *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String, 
-                                           0, 0, 0, 0, #Null$, #__flag_child | #__text_numeric | #__flag_borderless )
+                                            0, 0, 0, 0, #Null$, #__flag_child | #__text_numeric | #__flag_borderless )
             EndIf
             
             ; - Create Track
@@ -16194,10 +16190,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\flag & #PB_ComboBox_Editable
-              *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String, 
-                                           0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
-              ;*this\StringBox( )\autosize = 1
-              *this\fs[3]        = 17
+               *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String, 
+                                            0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
+               ;*this\StringBox( )\autosize = 1
+               *this\fs[3]        = 17
             EndIf
             
             ;\\
@@ -17136,49 +17132,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Draw( *this\_widgets( ))
                            EndIf
                            
-;                            ;\\ draw current pressed-move-widget
-;                            If PressedWidget( ) And
-;                               PressedWidget( )\resize And
-;                               PressedWidget( )\dragstart And
-;                               PressedWidget( )\parent = *this\_widgets( )\parent
-;                               
-;                               If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
-;                                  Draw( PressedWidget( ) )
-;                               EndIf
-;                            EndIf
+                           ;                            ;\\ draw current pressed-move-widget
+                           ;                            If PressedWidget( ) And
+                           ;                               PressedWidget( )\resize And
+                           ;                               PressedWidget( )\dragstart And
+                           ;                               PressedWidget( )\parent = *this\_widgets( )\parent
+                           ;                               
+                           ;                               If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
+                           ;                                  Draw( PressedWidget( ) )
+                           ;                               EndIf
+                           ;                            EndIf
                            
                            ;\\ draw current pressed-move-widget
                            If *this\_widgets( ) = *this\_widgets( )\parent\LastWidget( )
-                            Protected *widget._s_widget = *this\_widgets( )\parent
-                            
-                            ;\\
-                            If Not *widget\hide
-                               If *widget\state\enter
-                                  If *widget\anchors
-                                     clip_output_( *widget, [#__c_draw] )
-                                     a_draw( *widget\anchors\id )
-                                  EndIf
-                               EndIf
-                               
-                               ;\\ UnclipOutput()
-                               If *widget\scroll\v And *widget\scroll\h
-                                  clip_output_( *widget, [#__c_draw] )
-                                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                                  
-                                  ;\\ Scroll area coordinate
-                                  draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                  
-                                  ;\\
-                                  draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                  
-                                  ;\\ page coordinate
-                                  draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
-                               EndIf
-                            EndIf
-                         EndIf
-                         
-                      EndIf
-                   Next
+                              Protected *widget._s_widget = *this\_widgets( )\parent
+                              
+                              ;\\
+                              If Not *widget\hide
+                                 If *widget\state\enter
+                                    If *widget\anchors
+                                       clip_output_( *widget, [#__c_draw] )
+                                       a_draw( *widget\anchors\id )
+                                    EndIf
+                                 EndIf
+                                 
+                                 ;\\ UnclipOutput()
+                                 If *widget\scroll\v And *widget\scroll\h
+                                    clip_output_( *widget, [#__c_draw] )
+                                    drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                                    
+                                    ;\\ Scroll area coordinate
+                                    draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\
+                                    draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\ page coordinate
+                                    draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+                        EndIf
+                     Next
                      
                      ;\\
                      UnclipOutput( )
@@ -17205,16 +17201,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If PressedWidget( ) And
                PressedWidget( )\resize And
                PressedWidget( )\dragstart
-              If PressedWidget( )\parent
-                clip_output_( PressedWidget( )\parent, [#__c_draw] )
-              EndIf
-              Draw( PressedWidget( ) )
+               If PressedWidget( )\parent
+                  clip_output_( PressedWidget( )\parent, [#__c_draw] )
+               EndIf
+               Draw( PressedWidget( ) )
             EndIf
             
             ;\\
             If FocusedWidget( )
                If *this\root = FocusedWidget( )\root
-                  If Not FocusedWidget( )\anchors
+                  If Not ( FocusedWidget( )\anchors And FocusedWidget( ) <> a_main( ) )
                      UnclipOutput( )
                      drawing_mode_(#PB_2DDrawing_Outlined)
                      draw_roundbox_( FocusedWidget( )\x-1, FocusedWidget( )\y-1, FocusedWidget( )\width+2, FocusedWidget( )\height+2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
@@ -19448,37 +19444,60 @@ IsChild( *widget, *widget\_widgets( ))
                
                ;\\ change keyboard focus-widget
                If eventtype = #PB_EventType_KeyDown 
-                 ; If Not FocusedWidget( )\anchors
-                     
-                     ;\\ tab focus
-                     Select Keyboard( )\Key
-                        Case #PB_Shortcut_Tab
-                           If FocusedWidget( )\container And
-                              FocusedWidget( )\FirstWidget( )
-                              SetActive( FocusedWidget( )\FirstWidget( ) )
+                  ; If Not FocusedWidget( )\anchors
+                  
+                  ;\\ tab focus
+                  Select Keyboard( )\Key
+                     Case #PB_Shortcut_Tab
+                        If FocusedWidget( )\container And
+                           FocusedWidget( )\FirstWidget( )
+                           SetActive( FocusedWidget( )\FirstWidget( ) )
+                        Else
+                           If FocusedWidget( )\AfterWidget( )
+                              SetActive( FocusedWidget( )\AfterWidget( ) )
                            Else
-                              If FocusedWidget( )\AfterWidget( )
-                                 SetActive( FocusedWidget( )\AfterWidget( ) )
-                              Else
-                                 If FocusedWidget( )\parent
-                                    If FocusedWidget( )\parent\AfterWidget( )
-                                       SetActive( FocusedWidget( )\parent\AfterWidget( ) )
-                                    Else
-                                       If FocusedWidget( )\anchors
-                                          If a_main( )\FirstWidget( )
-                                             SetActive( a_main( )\FirstWidget( ) )
+                              If FocusedWidget( )\parent
+                                 If FocusedWidget( )\parent\AfterWidget( )
+                                    SetActive( FocusedWidget( )\parent\AfterWidget( ) )
+                                 Else
+                                    
+;                                     If FocusedWidget( )\anchors
+;                                        If a_main( )\FirstWidget( )
+;                                           SetActive( a_main( )\FirstWidget( ) )
+;                                        EndIf
+;                                     Else
+;                                        If FocusedWidget( )\root\FirstWidget( )
+;                                           SetActive( FocusedWidget( )\root\FirstWidget( ) )
+;                                        EndIf
+;                                     EndIf
+                                    
+;                                     If FocusedWidget( )\parent
+;                                        If FocusedWidget( )\parent\FirstWidget( )
+;                                           Debug "777 "+FocusedWidget( )\parent\FirstWidget( )\class
+;                                           SetActive( FocusedWidget( )\parent\FirstWidget( ) )
+;                                        EndIf
+;                                     Else
+                                    
+                                    Protected *main._s_WIDGET = GetMainParent( FocusedWidget( ) )
+                                       If *main ;And *main\FirstWidget( )
+                                          If *main\AfterWidget( )
+                                             Debug "after "+*main\AfterWidget( )\class
+                                             SetActive( *main\AfterWidget( ) )
+                                          Else
+                                             SetActive( *main )
                                           EndIf
                                        Else
-                                          If FocusedWidget( )\root\FirstWidget( )
-                                             SetActive( FocusedWidget( )\root\FirstWidget( ) )
-                                          EndIf
+                                        If FocusedWidget( )\root\FirstWidget( )
+                                          SetActive( FocusedWidget( )\root\FirstWidget( ) )
                                        EndIf
-                                    EndIf
+                                     EndIf
+;                                     EndIf
                                  EndIf
                               EndIf
                            EndIf
-                     EndSelect
-                 ; EndIf
+                        EndIf
+                  EndSelect
+                  ; EndIf
                EndIf
                
                ;\\
@@ -19594,7 +19613,7 @@ IsChild( *widget, *widget\_widgets( ))
                   
                   If FocusedWidget( )\state\focus = 0
                      FocusedWidget( )\state\focus = 1
-                     DoEvents( FocusedWidget( ), #__event_Focus )
+                DoEvents( FocusedWidget( ), #__event_Focus )
                   EndIf
                EndIf
             EndIf
@@ -19675,7 +19694,11 @@ IsChild( *widget, *widget\_widgets( ))
                
                ;\\ set active widget
                If eventtype = #PB_EventType_LeftButtonDown
-                  If Not PressedWidget( )\anchors
+                  If PressedWidget( )\anchors
+                     If GetActiveGadget( ) <> eventgadget
+                        SetActiveGadget( eventgadget )
+                     EndIf
+                  Else
                      If FocusedWidget( ) <> PressedWidget( )
                         SetActive( PressedWidget( ))
                      EndIf
@@ -20920,12 +20943,12 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Button( 50, 50, 100, 100, GetClass(object))
    ; Container( 50,50,100,100) : CloseList()
    ; Window(50,50,100,100, GetClass(object), #PB_Window_BorderLess | #PB_Window_SizeGadget, object) : CloseList()
-   a_mode(widget(), #__a_full, 18)
+   a_set(widget(), #__a_full, 18)
    CloseList()
    
    ;\\
    SetFrame(object, fs)
-   a_mode(object, #__a_full, 8)
+   a_set(object, #__a_full, 8)
    ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
    ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
    
@@ -21001,7 +21024,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
    
    ;\\
-   a_mode(object, #__a_full, 8)
+   a_set(object, #__a_full, 8)
    ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
    ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
    
@@ -21119,7 +21142,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
    view = Container(10, 10, 406, 238, #PB_Container_Flat)
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-   a_init( view, 15 )
+   a_init( view, 8 )
    
    Define *a0._S_WIDGET = Button( 10, 10, 60, 60, "Button" )
    Define *a1._S_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
@@ -21127,7 +21150,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *a2._S_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
    Define *a3._S_WIDGET = image( 150, 110, 60, 60, -1 )
    
-   a_set( *a0 )
+   a_set( *a0, -1, 8)
+   a_set( *a0, -1, 18)
    
    CloseList( )
    size_value  = Track(56, 262, 240, 26, 0, 30)
@@ -21572,7 +21596,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3051
-; FirstLine = 2884
-; Folding = -------------------------------------------------------v-+-+--d------------------------8----------vq---------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0Hcev4-vxX-----f-----------------------------------------------------------W-vw-p--47--------------------------------------
+; CursorPosition = 3077
+; FirstLine = 2946
+; Folding = -------------------------------------------------------f9----0v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8f---0--W---------------------------------8-----
 ; EnableXP

@@ -322,8 +322,6 @@ Macro widget_delete( )
       
       ClearList( a_group( ) )
    EndIf
-   
-   ; a_set( transform )
 EndMacro
 
 Macro widget_paste( )
@@ -400,14 +398,18 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             SetColor( *new, #__color_back, $FFECECEC )
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
             Bind( *new, @widget_events( ) )
-            a_mode(*new, #__a_full, 14)
+            a_set(*new, #__a_full, 14)
             
          Case "container"   
             *new = Container( x,y,width,height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
+            a_set(*new, #__a_full, 10)
             
          Case "panel"       : *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
-         Case "scrollarea"  : *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
+         Case "scrollarea"  
+            *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
+            a_set(*new, #__a_full, 10)
+         
          Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
          Case "image"       : *new = Image( x,y,width,height, img, flag )
          Case "buttonimage" : *new = ButtonImage( x,y,width,height, img, flag )
@@ -843,12 +845,10 @@ Procedure ide_events( )
       Case #__event_Change
          If *ew = id_i_view_tree
             *this = GetItemData( *ew, GetState( *ew ) )
-            
             If a_set( *this )
                
+             ;;SetActive( a_focused( ) )
             EndIf
-            
-            ;;SetActive( *this )
          EndIf
          
          If *ew = id_elements_tree
@@ -1275,7 +1275,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1155
-; FirstLine = 1086
+; CursorPosition = 410
+; FirstLine = 383
 ; Folding = ---------rf----------
 ; EnableXP

@@ -25,7 +25,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-  Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+  ;Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+  Button_1 = Container(0, 0, 0, 0) ; as they will be sized automatically
+  Button(10, 10, 50, 50, "Button 1")
+  CloseList( )
   
   Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
   Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
@@ -100,7 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     event = WaitWindowEvent( )
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 29
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
