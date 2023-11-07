@@ -2991,12 +2991,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i, i
          
          If *this
+;             If is_scrollbars_( *this )
+;                ProcedureReturn 0
+;             EndIf
+            
+            ;\\
             If is_integral_( *this )
-               ;           If *this\parent\state\enter = 0
-               ;             *this\parent\state\enter = - 1
-               ;           EndIf
-               ;            *this = *this\parent
-               ProcedureReturn 0
+               If a_index( ) 
+                  *this = *this\parent
+               Else
+                  If is_scrollbars_( *this )
+                     ProcedureReturn 0
+                  Else
+                     *this = *this\parent
+                  EndIf
+               EndIf
+               If *this\state\press = 0
+                  *this\state\press = - 1
+                  *this\repaint     = #True
+               EndIf
             EndIf
             
             ;
@@ -3036,7 +3049,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ProcedureReturn result
+         ProcedureReturn *this
       EndProcedure
       
       Procedure.i a_init( *this._S_WIDGET, grid_size.a = 7, grid_type.b = 0 )
@@ -3223,18 +3236,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If eventtype = #__event_down
                If mouse( )\buttons & #PB_Canvas_LeftButton 
-                  ;\\
-                  If is_integral_( *this )
-                     If a_index( ) 
-                        If *this\parent\state\press = 0
-                           *this\parent\state\press = - 1
-                           *this\parent\repaint     = #True
-                        EndIf
-                        *this = *this\parent
-                     Else
-                        ProcedureReturn 0
-                     EndIf
-                  EndIf
+;                   ;\\
+;                   If is_integral_( *this )
+;                      If a_index( ) 
+;                         *this = *this\parent
+;                      Else
+;                         If is_scrollbars_( *this )
+;                            ProcedureReturn 0
+;                         Else
+;                            *this = *this\parent
+;                         EndIf
+;                      EndIf
+;                      If *this\state\press = 0
+;                         *this\state\press = - 1
+;                         *this\repaint     = #True
+;                      EndIf
+;                   EndIf
                   
                   ;\\ set/remove current transformer
                   If *this = a_main( )
@@ -3247,7 +3264,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_remove( a_focused( ), i )
                      EndIf
                   Else
-                     a_set( *this )
+                     *this = a_set( *this )
                   EndIf
                   
                   ;\\ change frame color
@@ -21554,6 +21571,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------+-----------------------------8----------vq---------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0Hcev4-vxX-----f-----------------------------------------------------------W-vw-p--47--------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3051
+; FirstLine = 2884
+; Folding = -------------------------------------------------------v-+-+--d------------------------8----------vq---------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0Hcev4-vxX-----f-----------------------------------------------------------W-vw-p--47--------------------------------------
 ; EnableXP
