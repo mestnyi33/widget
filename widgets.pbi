@@ -2847,22 +2847,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If state
             ;\\
             If is_integral_( *this )
-               If *this\parent\state\enter = 0
-                  *this\parent\state\enter = - 1
-               EndIf
-               *this = *this\parent
+              *this = *this\parent
+              If *this\state\enter = 0
+                *this\state\enter = - 1
+              EndIf
             EndIf
-            
+           
             ;\\
             If *this\parent And 
                *this\parent\type = #__type_splitter
-               If *this\parent\state\enter = 0
-                  *this\parent\state\enter = - 1
-               EndIf
-               *this = *this\parent
+              
+;               If *this\parent\parent\type = #__type_splitter
+                ProcedureReturn 0  
+;               Else
+;                 *this = *this\parent\parent
+;               EndIf
+              
+              If *this\state\enter = 0
+                *this\state\enter = - 1
+              EndIf
             EndIf
             
-             ;\\
+            ;\\
             If a_entered( ) <> *this
                If a_entered( ) And
                   a_entered( ) <> a_focused( )
@@ -4357,7 +4363,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If Change_x
             *this\resize | #__resize_x
-            
             *this\frame_x( )  = x
             *this\inner_x( )  = ix
             *this\screen_x( ) = x - ( *this\bs - *this\fs )
@@ -4367,7 +4372,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If Change_y
             *this\resize | #__resize_y
-            
             *this\frame_y( )  = y
             *this\inner_y( )  = iy
             *this\screen_y( ) = y - ( *this\bs - *this\fs )
@@ -4377,7 +4381,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If Change_width
             *this\resize | #__resize_width
-            
             *this\frame_width( )     = width
             *this\container_width( ) = iwidth
             *this\screen_width( )    = width + ( *this\bs * 2 - *this\fs * 2 )
@@ -4388,7 +4391,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If Change_height
             *this\resize | #__resize_height
-            
             *this\frame_height( )     = height
             *this\container_height( ) = iheight
             *this\screen_height( )    = height + ( *this\bs * 2 - *this\fs * 2 )
@@ -4398,12 +4400,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\inner_height( ) = *this\container_height( )
          EndIf
          
-         
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
+            *this\resize | #__resize_change | #__reclip
             *this\repaint = #True
-            *this\resize | #__reclip
-            *this\resize | #__resize_change
             
             ;\\
             a_resize( *this )
@@ -16111,6 +16111,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; - Create Splitter
             If *this\type = #__type_Splitter
+               *this\container = - 1
                *this\color\back = - 1
                
                *this\bar\invert   = Bool( Flag & #__bar_invert = #__bar_invert )
@@ -17009,8 +17010,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\state\enter
                   ;\\ draw entered anchors
                   If *this\anchors And 
-                     Not ( *this\container And 
-                           *this\children )
+                     Not ( *this\container And *this\children )
                      a_draw( *this\anchors\id )
                   EndIf
                   
@@ -17119,16 +17119,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Draw( *this\_widgets( ))
                            EndIf
                            
-                           ;\\ draw current pressed-move-widget
-                           If PressedWidget( ) And
-                              PressedWidget( )\resize And
-                              PressedWidget( )\dragstart And
-                              PressedWidget( )\parent = *this\_widgets( )\parent
-                              
-                              If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
-                                 Draw( PressedWidget( ) )
-                              EndIf
-                           EndIf
+;                            ;\\ draw current pressed-move-widget
+;                            If PressedWidget( ) And
+;                               PressedWidget( )\resize And
+;                               PressedWidget( )\dragstart And
+;                               PressedWidget( )\parent = *this\_widgets( )\parent
+;                               
+;                               If PressedWidget( )\parent\LastWidget( ) = *this\_widgets( )
+;                                  Draw( PressedWidget( ) )
+;                               EndIf
+;                            EndIf
                            
                            ;\\ draw current pressed-move-widget
                            If *this\_widgets( ) = *this\_widgets( )\parent\LastWidget( )
@@ -17184,6 +17184,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;\\ draw current pressed-move-widget
+            If PressedWidget( ) And
+               PressedWidget( )\resize And
+               PressedWidget( )\dragstart
+              If PressedWidget( )\parent
+                clip_output_( PressedWidget( )\parent, [#__c_draw] )
+              EndIf
+              Draw( PressedWidget( ) )
+            EndIf
+            
+            ;\\
             If FocusedWidget( )
                If *this\root = FocusedWidget( )\root
                   If Not FocusedWidget( )\anchors
@@ -21543,8 +21554,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19446
-; FirstLine = 18698
-; Folding = ---------------------------------------------------------+-----------------------------8---------------------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0H9fv4---------f-----------------------------------------------------------W-vw-p--47--------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------------------------------------------------------+-----------------------------8----------vq---------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0Hcev4-vxX-----f-----------------------------------------------------------W-vw-p--47--------------------------------------
 ; EnableXP
