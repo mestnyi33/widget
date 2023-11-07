@@ -2410,77 +2410,79 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro a_draw( _address_ )
-         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-         
-         If _address_ = a_focused( )\anchors\id
-            ;\\ left line
-            If a_selector([#__a_line_left])
-               If _address_[#__a_moved] And a_selector([#__a_line_left])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_left])\height = a_focused( )\frame_height( )
-                  draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
-               Else
-                  draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , a_selector([#__a_line_left])\color\frame[a_selector([#__a_line_left])\color\state] )
+         If a_transform( )
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+            
+            If a_focused( ) And _address_ = a_focused( )\anchors\id
+               ;\\ left line
+               If a_selector([#__a_line_left])
+                  If _address_[#__a_moved] And a_selector([#__a_line_left])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_left])\height = a_focused( )\frame_height( )
+                     draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
+                  Else
+                     draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , a_selector([#__a_line_left])\color\frame[a_selector([#__a_line_left])\color\state] )
+                  EndIf
                EndIf
+               
+               ;\\ top line
+               If a_selector([#__a_line_top])
+                  If _address_[#__a_moved] And a_selector([#__a_line_top])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_top])\height = a_focused( )\frame_height( )
+                     draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
+                  Else
+                     draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , a_selector([#__a_line_top])\color\frame[a_selector([#__a_line_top])\color\state] )
+                  EndIf
+               EndIf
+               
+               ;\\ right line
+               If a_selector([#__a_line_right])
+                  If _address_[#__a_moved] And a_selector([#__a_line_right])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_right])\width = a_focused( )\frame_width( )
+                     draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
+                  Else
+                     draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , a_selector([#__a_line_right])\color\frame[a_selector([#__a_line_right])\color\state] )
+                  EndIf
+               EndIf
+               
+               ;\\ bottom line
+               If a_selector([#__a_line_bottom])
+                  If _address_[#__a_moved] And a_selector([#__a_line_bottom])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_bottom])\width = a_focused( )\frame_width( )
+                     draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
+                  Else
+                     draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , a_selector([#__a_line_bottom])\color\frame[a_selector([#__a_line_bottom])\color\state] )
+                  EndIf
+               EndIf
+            Else
+               If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
             EndIf
             
-            ;\\ top line
-            If a_selector([#__a_line_top])
-               If _address_[#__a_moved] And a_selector([#__a_line_top])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_top])\height = a_focused( )\frame_height( )
-                  draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
-               Else
-                  draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , a_selector([#__a_line_top])\color\frame[a_selector([#__a_line_top])\color\state] )
-               EndIf
+            ;If _address_\container
+            If _address_[#__a_moved] And ( _address_[#__a_moved]\width <> _address_[0]\width And _address_[#__a_moved]\height <> _address_[0]\height )
+               draw_box_( _address_[#__a_moved]\x, _address_[#__a_moved]\y, _address_[#__a_moved]\width, _address_[#__a_moved]\height, _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
             EndIf
+            ;EndIf
             
-            ;\\ right line
-            If a_selector([#__a_line_right])
-               If _address_[#__a_moved] And a_selector([#__a_line_right])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_right])\width = a_focused( )\frame_width( )
-                  draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
-               Else
-                  draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , a_selector([#__a_line_right])\color\frame[a_selector([#__a_line_right])\color\state] )
-               EndIf
-            EndIf
+            drawing_mode_alpha_( #PB_2DDrawing_Default )
             
-            ;\\ bottom line
-            If a_selector([#__a_line_bottom])
-               If _address_[#__a_moved] And a_selector([#__a_line_bottom])\x = a_focused( )\frame_x( ) And a_selector([#__a_line_bottom])\width = a_focused( )\frame_width( )
-                  draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
-               Else
-                  draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , a_selector([#__a_line_bottom])\color\frame[a_selector([#__a_line_bottom])\color\state] )
-               EndIf
-            EndIf
-         Else
-            If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
+            ;\\ draw background anchors
+            If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height , _address_[#__a_left]\color\back[_address_[#__a_left]\color\state] ) : EndIf
+            If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height , _address_[#__a_top]\color\back[_address_[#__a_top]\color\state] ) : EndIf
+            If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height , _address_[#__a_right]\color\back[_address_[#__a_right]\color\state] ) : EndIf
+            If _address_[#__a_bottom] :draw_box_( _address_[#__a_bottom]\x, _address_[#__a_bottom]\y, _address_[#__a_bottom]\width, _address_[#__a_bottom]\height , _address_[#__a_bottom]\color\back[_address_[#__a_bottom]\color\state] ) : EndIf
+            If _address_[#__a_left_top] :draw_box_( _address_[#__a_left_top]\x, _address_[#__a_left_top]\y, _address_[#__a_left_top]\width, _address_[#__a_left_top]\height , _address_[#__a_left_top]\color\back[_address_[#__a_left_top]\color\state] ) : EndIf
+            If _address_[#__a_right_top] :draw_box_( _address_[#__a_right_top]\x, _address_[#__a_right_top]\y, _address_[#__a_right_top]\width, _address_[#__a_right_top]\height , _address_[#__a_right_top]\color\back[_address_[#__a_right_top]\color\state] ) : EndIf
+            If _address_[#__a_right_bottom] :draw_box_( _address_[#__a_right_bottom]\x, _address_[#__a_right_bottom]\y, _address_[#__a_right_bottom]\width, _address_[#__a_right_bottom]\height , _address_[#__a_right_bottom]\color\back[_address_[#__a_right_bottom]\color\state] ) : EndIf
+            If _address_[#__a_left_bottom] :draw_box_( _address_[#__a_left_bottom]\x, _address_[#__a_left_bottom]\y, _address_[#__a_left_bottom]\width, _address_[#__a_left_bottom]\height , _address_[#__a_left_bottom]\color\back[_address_[#__a_left_bottom]\color\state] ) : EndIf
+            
+            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+            
+            ;\\ draw frame anchors
+            If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height, _address_[#__a_left]\color\frame[_address_[#__a_left]\color\state] ) : EndIf
+            If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height, _address_[#__a_top]\color\frame[_address_[#__a_top]\color\state] ) : EndIf
+            If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height, _address_[#__a_right]\color\frame[_address_[#__a_right]\color\state] ) : EndIf
+            If _address_[#__a_bottom] :draw_box_( _address_[#__a_bottom]\x, _address_[#__a_bottom]\y, _address_[#__a_bottom]\width, _address_[#__a_bottom]\height, _address_[#__a_bottom]\color\frame[_address_[#__a_bottom]\color\state] ) : EndIf
+            If _address_[#__a_left_top] :draw_box_( _address_[#__a_left_top]\x, _address_[#__a_left_top]\y, _address_[#__a_left_top]\width, _address_[#__a_left_top]\height, _address_[#__a_left_top]\color\frame[_address_[#__a_left_top]\color\state] ) : EndIf
+            If _address_[#__a_right_top] :draw_box_( _address_[#__a_right_top]\x, _address_[#__a_right_top]\y, _address_[#__a_right_top]\width, _address_[#__a_right_top]\height, _address_[#__a_right_top]\color\frame[_address_[#__a_right_top]\color\state] ) : EndIf
+            If _address_[#__a_right_bottom] :draw_box_( _address_[#__a_right_bottom]\x, _address_[#__a_right_bottom]\y, _address_[#__a_right_bottom]\width, _address_[#__a_right_bottom]\height, _address_[#__a_right_bottom]\color\frame[_address_[#__a_right_bottom]\color\state] ) : EndIf
+            If _address_[#__a_left_bottom] :draw_box_( _address_[#__a_left_bottom]\x, _address_[#__a_left_bottom]\y, _address_[#__a_left_bottom]\width, _address_[#__a_left_bottom]\height, _address_[#__a_left_bottom]\color\frame[_address_[#__a_left_bottom]\color\state] ) : EndIf
          EndIf
-         
-         ;If _address_\container
-         If _address_[#__a_moved] And ( _address_[#__a_moved]\width <> _address_[0]\width And _address_[#__a_moved]\height <> _address_[0]\height )
-            draw_box_( _address_[#__a_moved]\x, _address_[#__a_moved]\y, _address_[#__a_moved]\width, _address_[#__a_moved]\height, _address_[#__a_moved]\color\frame[_address_[#__a_moved]\color\state] )
-         EndIf
-         ;EndIf
-         
-         drawing_mode_alpha_( #PB_2DDrawing_Default )
-         
-         ;\\ draw background anchors
-         If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height , _address_[#__a_left]\color\back[_address_[#__a_left]\color\state] ) : EndIf
-         If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height , _address_[#__a_top]\color\back[_address_[#__a_top]\color\state] ) : EndIf
-         If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height , _address_[#__a_right]\color\back[_address_[#__a_right]\color\state] ) : EndIf
-         If _address_[#__a_bottom] :draw_box_( _address_[#__a_bottom]\x, _address_[#__a_bottom]\y, _address_[#__a_bottom]\width, _address_[#__a_bottom]\height , _address_[#__a_bottom]\color\back[_address_[#__a_bottom]\color\state] ) : EndIf
-         If _address_[#__a_left_top] :draw_box_( _address_[#__a_left_top]\x, _address_[#__a_left_top]\y, _address_[#__a_left_top]\width, _address_[#__a_left_top]\height , _address_[#__a_left_top]\color\back[_address_[#__a_left_top]\color\state] ) : EndIf
-         If _address_[#__a_right_top] :draw_box_( _address_[#__a_right_top]\x, _address_[#__a_right_top]\y, _address_[#__a_right_top]\width, _address_[#__a_right_top]\height , _address_[#__a_right_top]\color\back[_address_[#__a_right_top]\color\state] ) : EndIf
-         If _address_[#__a_right_bottom] :draw_box_( _address_[#__a_right_bottom]\x, _address_[#__a_right_bottom]\y, _address_[#__a_right_bottom]\width, _address_[#__a_right_bottom]\height , _address_[#__a_right_bottom]\color\back[_address_[#__a_right_bottom]\color\state] ) : EndIf
-         If _address_[#__a_left_bottom] :draw_box_( _address_[#__a_left_bottom]\x, _address_[#__a_left_bottom]\y, _address_[#__a_left_bottom]\width, _address_[#__a_left_bottom]\height , _address_[#__a_left_bottom]\color\back[_address_[#__a_left_bottom]\color\state] ) : EndIf
-         
-         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-         
-         ;\\ draw frame anchors
-         If _address_[#__a_left] :draw_box_( _address_[#__a_left]\x, _address_[#__a_left]\y, _address_[#__a_left]\width, _address_[#__a_left]\height, _address_[#__a_left]\color\frame[_address_[#__a_left]\color\state] ) : EndIf
-         If _address_[#__a_top] :draw_box_( _address_[#__a_top]\x, _address_[#__a_top]\y, _address_[#__a_top]\width, _address_[#__a_top]\height, _address_[#__a_top]\color\frame[_address_[#__a_top]\color\state] ) : EndIf
-         If _address_[#__a_right] :draw_box_( _address_[#__a_right]\x, _address_[#__a_right]\y, _address_[#__a_right]\width, _address_[#__a_right]\height, _address_[#__a_right]\color\frame[_address_[#__a_right]\color\state] ) : EndIf
-         If _address_[#__a_bottom] :draw_box_( _address_[#__a_bottom]\x, _address_[#__a_bottom]\y, _address_[#__a_bottom]\width, _address_[#__a_bottom]\height, _address_[#__a_bottom]\color\frame[_address_[#__a_bottom]\color\state] ) : EndIf
-         If _address_[#__a_left_top] :draw_box_( _address_[#__a_left_top]\x, _address_[#__a_left_top]\y, _address_[#__a_left_top]\width, _address_[#__a_left_top]\height, _address_[#__a_left_top]\color\frame[_address_[#__a_left_top]\color\state] ) : EndIf
-         If _address_[#__a_right_top] :draw_box_( _address_[#__a_right_top]\x, _address_[#__a_right_top]\y, _address_[#__a_right_top]\width, _address_[#__a_right_top]\height, _address_[#__a_right_top]\color\frame[_address_[#__a_right_top]\color\state] ) : EndIf
-         If _address_[#__a_right_bottom] :draw_box_( _address_[#__a_right_bottom]\x, _address_[#__a_right_bottom]\y, _address_[#__a_right_bottom]\width, _address_[#__a_right_bottom]\height, _address_[#__a_right_bottom]\color\frame[_address_[#__a_right_bottom]\color\state] ) : EndIf
-         If _address_[#__a_left_bottom] :draw_box_( _address_[#__a_left_bottom]\x, _address_[#__a_left_bottom]\y, _address_[#__a_left_bottom]\width, _address_[#__a_left_bottom]\height, _address_[#__a_left_bottom]\color\frame[_address_[#__a_left_bottom]\color\state] ) : EndIf
       EndMacro
       
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
@@ -2774,8 +2776,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro a_add( _this_, _index_ )
-        Debug "a_add "+_this_\class
-        
+       ; Debug "a_add "+_this_\class
         For _index_ = 0 To #__a_count
             If _this_\anchors\mode & #__a_height = 0 And
                _this_\anchors\mode & #__a_width = 0
@@ -2852,6 +2853,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
+            ;\\
+            If *this\parent And 
+               *this\parent\type = #__type_splitter
+               If *this\parent\state\enter = 0
+                  *this\parent\state\enter = - 1
+               EndIf
+               *this = *this\parent
+            EndIf
+            
              ;\\
             If a_entered( ) <> *this
                If a_entered( ) And
@@ -2919,12 +2929,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                ;
-               If is_integral_( *this )
-                  If *this\parent\state\enter = - 1
-                     *this\parent\state\enter = 0
-                     *this\parent\repaint     = #True
-                  EndIf
+               If *this\parent And 
+                  *this\parent\anchors And 
+                  *this\parent\state\enter = - 1
+                  *this\parent\state\enter = 0
+                  *this\parent\repaint     = #True
                EndIf
+               
             EndIf
          EndIf
          
@@ -2985,7 +2996,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If ( *this\anchors And a_focused( ) <> *this ); Or ( *this\anchors\ = - 1 And Not a_index( ) )
                
-               FocusedWidget( ) = *this
+                FocusedWidget( ) = *this
                a_entered( )     = a_focused( )
                a_focused( )     = *this
                
@@ -16997,11 +17008,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If *this\state\enter
                   ;\\ draw entered anchors
-                  If a_transform( ) And
-                     a_focused( ) And
-                     a_focused( )\anchors And
-                     *this\anchors And
-                     *this\anchors
+                  If *this\anchors And 
+                     Not ( *this\container And 
+                           *this\children )
                      a_draw( *this\anchors\id )
                   EndIf
                   
@@ -17124,26 +17133,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ draw current pressed-move-widget
                            If *this\_widgets( ) = *this\_widgets( )\parent\LastWidget( )
                             Protected *widget._s_widget = *this\_widgets( )\parent
-                              If Not *widget\hide
-                                 If *widget\scroll\v And *widget\scroll\h
-                                    clip_output_( *widget, [#__c_draw] )
-                                    ; UnclipOutput()
-                                    drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                                    
-                                    ;\\ Scroll area coordinate
-                                    draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                    
-                                    ;\\
-                                    draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                    
-                                    ;\\ page coordinate
-                                    draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                        EndIf
-                     Next
+                            
+                            ;\\
+                            If Not *widget\hide
+                               If *widget\state\enter
+                                  If *widget\anchors
+                                     clip_output_( *widget, [#__c_draw] )
+                                     a_draw( *widget\anchors\id )
+                                  EndIf
+                               EndIf
+                               
+                               ;\\ UnclipOutput()
+                               If *widget\scroll\v And *widget\scroll\h
+                                  clip_output_( *widget, [#__c_draw] )
+                                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                                  
+                                  ;\\ Scroll area coordinate
+                                  draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                  
+                                  ;\\
+                                  draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                  
+                                  ;\\ page coordinate
+                                  draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
+                               EndIf
+                            EndIf
+                         EndIf
+                         
+                      EndIf
+                   Next
                      
                      ;\\
                      UnclipOutput( )
@@ -17168,10 +17186,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If FocusedWidget( )
                If *this\root = FocusedWidget( )\root
-                  UnclipOutput( )
-                  drawing_mode_(#PB_2DDrawing_Outlined)
-                  draw_roundbox_( FocusedWidget( )\x-1, FocusedWidget( )\y-1, FocusedWidget( )\width+2, FocusedWidget( )\height+2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
-                  draw_roundbox_( FocusedWidget( )\x, FocusedWidget( )\y, FocusedWidget( )\width, FocusedWidget( )\height, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+                  If Not FocusedWidget( )\anchors
+                     UnclipOutput( )
+                     drawing_mode_(#PB_2DDrawing_Outlined)
+                     draw_roundbox_( FocusedWidget( )\x-1, FocusedWidget( )\y-1, FocusedWidget( )\width+2, FocusedWidget( )\height+2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+                     draw_roundbox_( FocusedWidget( )\x, FocusedWidget( )\y, FocusedWidget( )\width, FocusedWidget( )\height, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+                  EndIf
                EndIf
             EndIf
             
@@ -21523,6 +21543,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------------------------------------------------v------------------------------0---------------------------------------------------------------------------------------------40-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r4----------------------------------------------38ov------------------v48---------0----------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 19446
+; FirstLine = 18698
+; Folding = ---------------------------------------------------------+-----------------------------8---------------------------------------------------------------------------------------------v8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xv----------------------------------------------t4Rf--------------n0H9fv4---------f-----------------------------------------------------------W-vw-p--47--------------------------------------
 ; EnableXP

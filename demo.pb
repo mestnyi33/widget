@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
     Widgets(Hex(301)) = Spin(0, 0, 100,20,0,10, #__spin_plus)
-    Widgets(Hex(302)) = Spin(0, 0, 100,20,0,10)                 
+    Widgets(Hex(302)) = Spin(0, 0, 100,20,0,10) ; Button(0, 0, 100,20,"splitt-button")                 
     Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)))
     Widgets(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95)
     Resize(AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0"), 7, 40, 120, 60)
@@ -100,6 +100,8 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 84
+; FirstLine = 59
 ; Folding = -
 ; EnableXP
