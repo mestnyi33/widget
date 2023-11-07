@@ -2774,7 +2774,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro a_add( _this_, _index_ )
-         For _index_ = 0 To #__a_count
+        Debug "a_add "+_this_\class
+        
+        For _index_ = 0 To #__a_count
             If _this_\anchors\mode & #__a_height = 0 And
                _this_\anchors\mode & #__a_width = 0
                If _index_ = #__a_left Or
@@ -2840,7 +2842,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_show( *this._S_WIDGET, state )
          Protected i
-         ;If *this\anchors
+         
          If state
             ;\\
             If is_integral_( *this )
@@ -2850,7 +2852,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
-            ;\\
+             ;\\
             If a_entered( ) <> *this
                If a_entered( ) And
                   a_entered( ) <> a_focused( )
@@ -2925,7 +2927,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         ; EndIf
+         
          ProcedureReturn *this\repaint
       EndProcedure
       
@@ -4594,12 +4596,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ if the widgets is composite
-            ;If *this\type = #__type_Spin
             If *this\StringBox( )
-               Resize( *this\StringBox( ), *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ) )
+               Resize( *this\StringBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
             EndIf
-            ;EndIf
-            
             
             
             ;-\\ children's resize
@@ -15994,7 +15993,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                
-               *this\StringBox( ) = String(0, 0, 0, 0, "0", Flag | #__text_numeric | #__flag_child | #__flag_borderless )
+               *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String, 
+                                           0, 0, 0, 0, #Null$, #__flag_child | #__text_numeric | #__flag_borderless )
             EndIf
             
             ; - Create Track
@@ -16165,8 +16165,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\flag & #PB_ComboBox_Editable
-               *this\StringBox( ) = String(0, 0, 0, 0, "", Flag | #__flag_child | #__flag_borderless )
-               *this\fs[3]        = 17
+              *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String, 
+                                           0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
+              ;*this\StringBox( )\autosize = 1
+              *this\fs[3]        = 17
             EndIf
             
             ;\\
@@ -16176,7 +16178,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             *this\PopupBox( )\hidden = 1
             ;             *this\PopupBox( )\hide = 1
             Hide( *this\PopupBox( ), #True )
-            
+            ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\PopupBox( )\parent\class
          EndIf
          
          ;\\ Set Attribute
@@ -16945,16 +16947,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\TabBox( ) And
                      *this\TabBox( )\count\items
                      bar_tab_draw( *this\TabBox( ) )
+                     ;clip_output_( *this, [#__c_draw] )
                   EndIf
                   
                   ;\\
                   If *this\StringBox( )
                      Draw( *this\StringBox( ) )
+                     clip_output_( *this, [#__c_draw] )
                   EndIf
                   
                   ;\\ draw area scrollbars
                   If *this\scroll And ( *this\scroll\v Or *this\scroll\h )
                      bar_area_draw_( *this )
+                     ;clip_output_( *this, [#__c_draw] )
                   EndIf
                   
                   ;\\ draw disable state
@@ -17118,7 +17123,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            ;\\ draw current pressed-move-widget
                            If *this\_widgets( ) = *this\_widgets( )\parent\LastWidget( )
-                              Protected *widget._s_widget = *this\_widgets( )\parent
+                            Protected *widget._s_widget = *this\_widgets( )\parent
                               If Not *widget\hide
                                  If *widget\scroll\v And *widget\scroll\h
                                     clip_output_( *widget, [#__c_draw] )
@@ -21518,8 +21523,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14420
-; FirstLine = 14350
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------40-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r4----------------------------------------------18ov-----------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------v------------------------------0---------------------------------------------------------------------------------------------40-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r4----------------------------------------------38ov------------------v48---------0----------------------------------------------------------------------------------------------------------
 ; EnableXP
