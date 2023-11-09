@@ -710,16 +710,16 @@
       #__event_rightbuttondown = #__event_rightdown
       #__event_leftbuttonup = #__event_leftup
       #__event_rightbuttonup = #__event_rightup
-      #__event_LeftDoubleClick = #__event_left2click
-      #__event_RightDoubleClick = #__event_right2click
+      #__event_leftdoubleclick = #__event_left2click
+      #__event_rightdoubleclick = #__event_right2click
       ;
-      #__event_ReturnKey = #__event_return
-      #__event_CursorUpdate = #__event_cursorchange
+      #__event_returnkey = #__event_return
+      #__event_cursorupdate = #__event_cursorchange
       ;
-      #__event_maximizewindow = #__event_maximize
-      #__event_minimizewindow = #__event_minimize
-      #__event_restorewindow = #__event_restore
-      #__event_closewindow = #__event_close
+;       #__event_maximizewindow = #__event_maximize
+;       #__event_minimizewindow = #__event_minimize
+;       #__event_restorewindow = #__event_restore
+;       #__event_closewindow = #__event_close
          
       ;-\\ create-type
       Enumeration - 1
@@ -1156,7 +1156,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 671
-; FirstLine = 648
+; CursorPosition = 721
+; FirstLine = 700
 ; Folding = ---
 ; EnableXP

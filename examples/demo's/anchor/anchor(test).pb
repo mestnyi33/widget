@@ -1,110 +1,144 @@
 ﻿ XIncludeFile "../../../widgets.pbi"
 ; fixed 778 commit
 ;-
-CompilerIf #PB_Compiler_IsMainFile ;= 100
-  Uselib(widget)
+ 
+ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  #__Text_Border = #PB_Text_Border
+  Uselib(widget)
   
-  Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
-  Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
-  Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
+  Global object, parent
+  Declare CustomEvents( )
   
-  Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
-  window_ide = widget::GetWindow(root())
-  canvas_ide = widget::GetGadget(root())
-  a_init(root())
+  ;\\
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 4)
+  Define fs = 20
+  ;\\
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
+  parent = Container(50, 50, 500, 500)
+  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  SetColor(parent, #__color_back, $FFE9E9E9)
   
-  s_tbar = Text(0,0,0,0,"", #__Text_Border)
-  s_desi = Text(0,0,0,0,"", #__Text_Border)
-  s_view = Text(0,0,0,0,"", #__Text_Border)
-  s_list = Text(0,0,0,0,"", #__Text_Border)
-  s_insp = Text(0,0,0,0,"", #__Text_Border)
-  s_help  = Text(0,0,0,0,"", #__Text_Border)
+  ;\\
+  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  ; object = Container(100, 100, 250, 250) : CloseList()
+  ;object = String(100, 100, 250, 250, "string", #__flag_borderless)
+  object = Button(100, 100, 250, 250, "button", #__flag_borderless)
   
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-  Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-  ;Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-  Button_1 = Container(0, 0, 0, 0) ; as they will be sized automatically
-  Button(10, 10, 50, 50, "Button 1")
-  CloseList( )
+;   ;\\
+;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
-  Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-  Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-  Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-  Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+  ;\\
+  a_set(parent, #__a_full, 40)
+  a_set(object, #__a_full, 40)
   
-  Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5)
-  Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2)
-  Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = widget::Splitter(0, 0, 0, 0, s_desi, Splitter_4, #PB_Splitter_Vertical)
+  ;\\
+  SizeBounds(object, 80, 80, 501-fs*2, 501-fs*2)
+  ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
+  MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
-  Splitter_design = widget::Splitter(0,0,0,0, s_tbar,Splitter_5, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-  Splitter_inspector = widget::Splitter(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-  splitter_debug = widget::Splitter(0,0,0,0, Splitter_design,s_view, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-  splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,s_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-  Splitter_ide = widget::Splitter(50,50,700,500, splitter_debug,splitter_help, #PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
+  ;\\
+  Bind( widget( ), @CustomEvents(), #__event_statuschange )
+  Bind( widget( ), @CustomEvents(), #__event_resize )
+  WaitClose( )
   
-  If minsize
-;         ; set splitter default minimum size
-;     widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
-    
-;   ; set splitter default minimum size
-    widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
-    widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
-    widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-   ; widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
-    widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
-    widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
-    widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
-    ;widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
-  EndIf
+  ;\\
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+          
+       Case #__event_statuschange
+          Debug "statuschange "
+          
+       Case #__event_resize
+          Debug "resize "+EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
+          
+    EndSelect
+ EndProcedure
+ 
+CompilerEndIf
 
-  If state
-    ; set splitters dafault positions
-    ;widget::SetState(Splitter_ide, -130)
-    widget::SetState(Splitter_ide, widget::width(Splitter_ide)-220)
-    widget::SetState(splitter_help, widget::height(splitter_help)-80)
-    widget::SetState(splitter_debug, widget::height(splitter_debug)-150)
-    widget::SetState(Splitter_inspector, 200)
-    widget::SetState(Splitter_design, 30)
-    widget::SetState(Splitter_5, 120)
+CompilerIf #PB_Compiler_IsMainFile = 99
+  EnableExplicit
+  Uselib(widget)
+  
+  Global object, parent
+  Declare CustomEvents( )
+  
+  ;\\
+  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  a_init(root(), 4)
+  Define fs = 20
+  ;\\
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
+  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
+  parent = Container(50, 50, 500, 500)
+  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  
+  ;\\
+  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  ; object = Container(100, 100, 250, 250) : CloseList()
+  ; object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
+  ; object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
+  
+  ;\\
+  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  
+  ;\\
+  a_set(parent, #__a_full, 18)
+  a_set(object, #__a_full, 18)
+  
+  ;\\
+; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
+; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
+  
+  ;\\
+  Bind( widget( ), @CustomEvents(), #__event_draw )
+  WaitClose( )
+  
+  ;\\
+  Procedure CustomEvents( )
+    Select WidgetEventType( )
+      Case #__event_draw
+        
+        ; Demo draw on element
+        UnclipOutput()
+        DrawingMode(#PB_2DDrawing_Outlined)
+        
+        If Eventwidget()\bounds\move
+          Box(Eventwidget()\parent\x[#__c_frame] + Eventwidget()\bounds\move\min\x,
+              Eventwidget()\parent\y[#__c_frame] + Eventwidget()\parent\fs[2] + Eventwidget()\bounds\move\min\y,
+              Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
+              Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
+        EndIf
+        
+        If Eventwidget()\bounds\size
+;           Box(Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\min\height,
+;               Eventwidget()\bounds\size\max\width-Eventwidget()\bounds\size\min\width,
+;               Eventwidget()\bounds\size\max\height-Eventwidget()\bounds\size\min\height, $ffff0000)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\min\width,
+              Eventwidget()\bounds\size\min\height, $ff00ff00)
+          
+          Box(Eventwidget()\x[#__c_frame],
+              Eventwidget()\y[#__c_frame],
+              Eventwidget()\bounds\size\max\width,
+              Eventwidget()\bounds\size\max\height, $ffff0000)
+        EndIf
+        
+        ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
+        
+    EndSelect
     
-    widget::SetState(Splitter_1, 20)
-  EndIf
-  
-  ;widget::Resize(Splitter_ide, 0,0,820,620)
-  
-  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(GetIndex( widget::GetParent( s_desi ))))
-  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(GetIndex( widget::GetParent( s_view ))))
-  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(GetIndex( widget::GetParent( s_list ))))
-  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
-  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
-  
-  ;WaitClose( )
-  Define event
-  Repeat 
-    event = WaitWindowEvent( )
-  Until event = #PB_Event_CloseWindow
+  EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 29
-; FirstLine = 15
-; Folding = -
+; CursorPosition = 60
+; FirstLine = 35
+; Folding = --
 ; EnableXP

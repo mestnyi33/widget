@@ -13,16 +13,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Static DragWidget
       
       Select WidgetEventType( )
-            ;       Case #PB_EventType_MouseEnter
+            ;       Case #__event_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
-            ;       Case #PB_EventType_MouseLeave
+            ;       Case #__event_MouseLeave
             ;         SetCursor( *ew, #PB_Cursor_Default )
             
-         Case #PB_EventType_LeftButtonUp 
+         Case #__event_LeftButtonUp 
             DragWidget = #Null
             
-         Case #PB_EventType_LeftButtonDown
+         Case #__event_LeftButtonDown
             ;         ; get alpha
             ;         If *ew\image[#__img_background]\id And
             ;            *ew\image[#__img_background]\depth > 31 And 
@@ -39,12 +39,12 @@ CompilerIf #PB_Compiler_IsMainFile
             ;         EndIf
             DragWidget = *ew
             
-         Case #PB_EventType_MouseMove
+         Case #__event_MouseMove
             If DragWidget = *ew
                Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
             EndIf
             
-         Case #PB_EventType_Draw
+         Case #__event_draw
             
             ; Demo draw line on the element
             UnclipOutput()
@@ -83,13 +83,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
       
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonUp )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonDown )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseMove )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseEnter )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseLeave )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_Draw )
-      Bind( #PB_All, @MDI_ImageEvents(), #PB_EventType_Repaint )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonUp )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonDown )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseMove )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseEnter )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseLeave )
+      Bind( *this, @MDI_ImageEvents(), #__event_draw )
+      Bind( #PB_All, @MDI_ImageEvents(), #__event_Repaint )
    EndProcedure
    
    ;- \\
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 221
-; FirstLine = 194
+; CursorPosition = 196
+; FirstLine = 192
 ; Folding = ---
 ; EnableXP
