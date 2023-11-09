@@ -40,8 +40,12 @@
   MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
   ;\\
-  Bind( widget( ), @CustomEvents(), #__event_statuschange )
-  Bind( widget( ), @CustomEvents(), #__event_resize )
+  Bind( parent, @CustomEvents(), #__event_statuschange )
+  Bind( parent, @CustomEvents(), #__event_resize )
+  
+  ;\\
+  Bind( object, @CustomEvents(), #__event_statuschange )
+  Bind( object, @CustomEvents(), #__event_resize )
   WaitClose( )
   
   ;\\
@@ -52,7 +56,7 @@
           Debug "statuschange "
           
        Case #__event_resize
-          Debug "resize "+EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
+          Debug "resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
           
     EndSelect
  EndProcedure
@@ -138,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 35
+; CursorPosition = 58
+; FirstLine = 39
 ; Folding = --
 ; EnableXP

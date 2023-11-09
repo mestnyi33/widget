@@ -2995,91 +2995,89 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If Not a_index( )
-               ;\\ set/remove current transformer
-               If *this = a_main( )
-                  
-                  ;\\ если нажали в главном "окне"
-                  ;\\ где находятся "изменяемые" виджеты
-                  ;\\ то будем убырать все якорья
-                  
-                  If a_focused( )
-                     a_remove( a_focused( ), i )
-                  EndIf
-                  FocusedWidget( ) = *this
-               Else
-                  ;\\
-                  If Not *this\anchors
-                     *this\anchors.allocate( ANCHORS )
-                  EndIf
-                  
-                  ;\\
-                  If mode >= 0
-                     *this\anchors\mode = mode
-                  EndIf
-                  
-                  If size >= 0
-                     *this\anchors\size = size
-                     *this\bs - *this\anchors\pos
-                     *this\anchors\pos = size / 2
-                     *this\bs + *this\anchors\pos  ; + *this\fs
-                  EndIf
-                  
-                  If position >= 0
-                     *this\bs - *this\anchors\pos
-                     *this\anchors\pos = position
-                     *this\bs + *this\anchors\pos  ; + *this\fs
-                  EndIf
-                  
-                  If *this\resize & #__resize_change = 0
-                     *this\resize | #__resize_change
-                  EndIf
-                  If *this\screen_x( ) <> *this\frame_x( ) - ( *this\bs - *this\fs )
-                     *this\screen_x( ) = *this\frame_x( ) - ( *this\bs - *this\fs )
-                  EndIf
-                  If *this\screen_y( ) <> *this\frame_y( ) - ( *this\bs - *this\fs )
-                     *this\screen_y( ) = *this\frame_y( ) - ( *this\bs - *this\fs )
-                  EndIf
-                  If *this\screen_width( ) <> *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
-                     *this\screen_width( ) = *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
-                  EndIf
-                  If *this\screen_height( ) <> *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
-                     *this\screen_height( ) = *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
-                  EndIf
-                  
-                  ;\\
-                  If a_focused( ) <> *this 
-                     a_entered( )     = a_focused( )
-                     a_focused( )     = *this
-                     FocusedWidget( ) = *this
-                     
-                     a_show( *this, #True )
-                     a_grid_change( *this\parent )
-                     
-                     ;
-                     Post( *this, #__event_StatusChange, a_index( ) )
-                     *this\repaint = 1
-                     
-                     ;\\ reset multi group
-                     If ListSize( a_group( ))
-                        ForEach a_group( )
-                           ;             a_set_state( a_group( )\widget, 1 )
-                           ;             a_set_state( a_group( )\widget\root, 1 )
-                           ;             a_set_state( a_group( )\widget\parent, 1 )
-                        Next
-                        
-                        a_selector( )\x      = 0
-                        a_selector( )\y      = 0
-                        a_selector( )\width  = 0
-                        a_selector( )\height = 0
-                        ClearList( a_group( ))
-                     EndIf
-                  EndIf
+            ;\\ set/remove current transformer
+            If *this = a_main( )
+               
+               ;\\ если нажали в главном "окне"
+               ;\\ где находятся "изменяемые" виджеты
+               ;\\ то будем убырать все якорья
+               
+               If a_focused( )
+                  a_remove( a_focused( ), i )
+               EndIf
+               FocusedWidget( ) = *this
+            Else
+               ;\\
+               If Not *this\anchors
+                  *this\anchors.allocate( ANCHORS )
                EndIf
                
                ;\\
-               a_resize( *this )
+               If mode >= 0
+                  *this\anchors\mode = mode
+               EndIf
+               
+               If size >= 0
+                  *this\anchors\size = size
+                  *this\bs - *this\anchors\pos
+                  *this\anchors\pos = size / 2
+                  *this\bs + *this\anchors\pos  ; + *this\fs
+               EndIf
+               
+               If position >= 0
+                  *this\bs - *this\anchors\pos
+                  *this\anchors\pos = position
+                  *this\bs + *this\anchors\pos  ; + *this\fs
+               EndIf
+               
+               If *this\resize & #__resize_change = 0
+                  *this\resize | #__resize_change
+               EndIf
+               If *this\screen_x( ) <> *this\frame_x( ) - ( *this\bs - *this\fs )
+                  *this\screen_x( ) = *this\frame_x( ) - ( *this\bs - *this\fs )
+               EndIf
+               If *this\screen_y( ) <> *this\frame_y( ) - ( *this\bs - *this\fs )
+                  *this\screen_y( ) = *this\frame_y( ) - ( *this\bs - *this\fs )
+               EndIf
+               If *this\screen_width( ) <> *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
+                  *this\screen_width( ) = *this\frame_width( ) + ( *this\bs * 2 - *this\fs * 2 )
+               EndIf
+               If *this\screen_height( ) <> *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
+                  *this\screen_height( ) = *this\frame_height( ) + ( *this\bs * 2 - *this\fs * 2 )
+               EndIf
+               
+               ;\\
+               If a_focused( ) <> *this 
+                  a_entered( )     = a_focused( )
+                  a_focused( )     = *this
+                  FocusedWidget( ) = *this
+                  
+                  a_show( *this, #True )
+                  a_grid_change( *this\parent )
+                  
+                  ;
+                  Post( *this, #__event_StatusChange, a_index( ) )
+                  *this\repaint = 1
+                  
+                  ;\\ reset multi group
+                  If ListSize( a_group( ))
+                     ForEach a_group( )
+                        ;             a_set_state( a_group( )\widget, 1 )
+                        ;             a_set_state( a_group( )\widget\root, 1 )
+                        ;             a_set_state( a_group( )\widget\parent, 1 )
+                     Next
+                     
+                     a_selector( )\x      = 0
+                     a_selector( )\y      = 0
+                     a_selector( )\width  = 0
+                     a_selector( )\height = 0
+                     ClearList( a_group( ))
+                  EndIf
+               EndIf
             EndIf
+            
+            ;\\
+            a_resize( *this )
             
             ;\\
             If a_index( ) And *this\anchors\id[a_index( )]
@@ -17660,7 +17658,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     a_entered( )\anchors\id[i]\color\state = #__S_1
                                     
                                     If a_entered( )\state\enter
-                                    ;   DoEvents( a_entered( ), #__event_mouseleave )
+                                      DoEvents( a_entered( ), #__event_mouseleave )
                                     EndIf
                                     a_entered( )\state\enter = - 1
                                     a_entered( )\repaint                   = 1
@@ -17674,57 +17672,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Next
                   EndIf
                EndIf
-               
-              
-;                ;\\
-;                If ( a_index( ) And a_index( ) <> #__a_moved )
-;                   If a_entered() And *widget <> a_entered()
-;                      *widget = 0
-;                      EnteredWidget( ) = a_focused()
-;                   EndIf
-;                EndIf
-;                
-            EndIf
+             EndIf
             
             ;\\
-            If a_index( ) ;And mouse( )\buttons
-               
-               ;\\
+            If a_index( )
                If a_entered( ) And
                   a_entered( )\anchors\id[a_index( )] And
-                  a_entered( )\anchors\id[a_index( )]\color\state = #__S_1
+                  a_entered( )\anchors\id[a_index( )]\color\state
                   
-                  If mouse( )\buttons
-                     a_focused( ) = a_entered( )
-                  Else
                   If *widget <> a_entered( )
-                     Debug "e "+*widget
                      *widget = a_entered( )
                      EnteredWidget( ) = a_entered( )
                      LeavedWidget( ) = a_entered( )
                   EndIf
                EndIf
-               EndIf
                
-              ;\\ 
+               ;\\ 
                If a_focused( ) And
                   a_focused( )\anchors\id[a_index( )] And
-                  a_focused( )\anchors\id[a_index( )]\color\state = #__S_1
+                  a_focused( )\anchors\id[a_index( )]\color\state
                   
                   If *widget <> a_focused( )
-                     Debug "f "+*widget
                      *widget = a_focused( )
                      EnteredWidget( ) = a_focused( )
                      LeavedWidget( ) = a_focused( )
                   EndIf
                EndIf
-             EndIf
+            EndIf
          EndIf
          
          ;\\ do events entered & leaved
          If LeavedWidget( ) <> *widget
             EnteredWidget( ) = *widget
-            Debug       ""+LeavedWidget( ) +" "+ *widget
+            
             ;\\ если оставлять событие вход/выход нажатого виджета
             ; If LeavedWidget( ) And Not LeavedWidget( )\dragstart And
             If LeavedWidget( ) And Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) And
@@ -19216,6 +19196,15 @@ IsChild( *widget, *widget\_widgets( ))
                  ;\\
                  If eventtype = #__event_MouseLeave
                    Debug "l "+*this\class
+                 EndIf
+                ;\\
+                 If eventtype = #__event_LeftDown
+                    Debug " d "+*this\class
+                 EndIf
+         
+                 ;\\
+                 If eventtype = #__event_LeftUp
+                   Debug " u "+*this\class
                  EndIf
          
          ;\\ widget::_events_Anchors( )
@@ -21684,7 +21673,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17689
-; FirstLine = 17067
-; Folding = -------------------------------------------------------fs----0-He4-----0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-8tf--0----------------------------------v+-87e-----+-8q8-8--0v---+-fr--------------------------------------
+; CursorPosition = 17668
+; FirstLine = 17076
+; Folding = -------------------------------------------------------fs---4BgDv8-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-0+--f-----------------------------------r+-uu4----v--8q8-8--0v---+-fr--------------------------------------
 ; EnableXP
