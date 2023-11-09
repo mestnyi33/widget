@@ -2431,7 +2431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If a_transform( )
             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             
-            If a_focused( ) And _address_ = a_focused( )\anchors\id And a_main( ) <> a_focused( )
+            If a_focused( ) And _address_ = a_focused( )\anchors\id
                ;\\ left line
                If a_selector([#__a_line_left])
                   If _address_[#__a_moved] And a_selector([#__a_line_left])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_left])\height = a_focused( )\frame_height( )
@@ -2468,10 +2468,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Else
-               If a_main( ) <> a_entered( )
+               ; If a_main( ) <> a_entered( )
                   ;\\ entered frame
                   If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
-               EndIf
+               ; EndIf
             EndIf
             
             ;If _address_\container
@@ -2609,17 +2609,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro a_move( _address_, _x_, _y_, _width_, _height_ )
          If _address_ And a_entered( ) ; frame
-;             If a_entered( )\fs
-               _address_\x      = _x_ + a_entered( )\anchors\pos 
-               _address_\y      = _y_ + a_entered( )\anchors\pos 
-               _address_\width  = _width_ - a_entered( )\anchors\pos * 2
-               _address_\height = _height_ - a_entered( )\anchors\pos * 2 
-;             Else
-;                _address_\x      = _x_ + a_entered( )\anchors\pos + 1
-;                _address_\y      = _y_ + a_entered( )\anchors\pos + 1
-;                _address_\width  = _width_ - a_entered( )\anchors\pos * 2 - 2
-;                _address_\height = _height_ - a_entered( )\anchors\pos * 2 - 2
-;             EndIf
+            _address_\x      = _x_ + a_entered( )\anchors\pos 
+            _address_\y      = _y_ + a_entered( )\anchors\pos 
+            _address_\width  = _width_ - a_entered( )\anchors\pos * 2
+            _address_\height = _height_ - a_entered( )\anchors\pos * 2 
          EndIf
          
          If _address_ <> a_selector( )
@@ -2772,6 +2765,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro a_resize( _this_ )
          If _this_\anchors
+            If a_entered( ) <> _this_
+               a_entered( ) = _this_
+            EndIf
             a_size( _this_\anchors\id, _this_\anchors\size )
             a_move( _this_\anchors\id,
                     _this_\screen_x( ),
@@ -17009,7 +17005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If *this\state\enter
                   ;\\ draw entered anchors
-                  If *this\anchors And 
+                  If *this\anchors And *this\anchors\mode And
                      Not ( *this\container And *this\children )
                      a_draw( *this\anchors\id )
                   EndIf
@@ -17136,8 +17132,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               ;\\
                               If Not *widget\hide
-                                 If *widget\state\enter
-                                    If *widget\anchors
+                                 If *widget\anchors And 
+                                    *widget\anchors\mode
+                                    If *widget\state\enter
                                        clip_output_( *widget, [#__c_draw] )
                                        a_draw( *widget\anchors\id )
                                     EndIf
@@ -17197,7 +17194,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If FocusedWidget( )
                If *this\root = FocusedWidget( )\root
-                  If Not ( FocusedWidget( )\anchors And FocusedWidget( ) <> a_main( ) )
+                  If Not ( FocusedWidget( )\anchors And 
+                           FocusedWidget( )\anchors\mode )
                      UnclipOutput( )
                      drawing_mode_(#PB_2DDrawing_Outlined)
                      draw_roundbox_( FocusedWidget( )\x-1, FocusedWidget( )\y-1, FocusedWidget( )\width+2, FocusedWidget( )\height+2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
@@ -17213,6 +17211,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_focused( )\anchors And
                   a_focused( )\hide = 0 And
                   a_focused( )\anchors And
+                  a_focused( )\anchors\mode And
                   a_focused( )\root = *this\root
                   
                   ; draw key-focused-widget anchors
@@ -21653,7 +21652,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2433
-; FirstLine = 2416
-; Folding = -------------------------------------------------------b+---85wh4-----f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
+; CursorPosition = 2767
+; FirstLine = 2719
+; Folding = -------------------------------------------------------b+---85wh4-----f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------80+4--------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
 ; EnableXP

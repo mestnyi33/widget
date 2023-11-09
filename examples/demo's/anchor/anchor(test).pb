@@ -25,7 +25,7 @@
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
   ; object = Container(100, 100, 250, 250) : CloseList()
   ;object = String(100, 100, 250, 250, "string", #__flag_borderless)
-  object = Button(100, 100, 250, 250, "button", #__flag_borderless)
+  object = Button(100, 100, 250, 250, "button");, #__flag_borderless)
   
 ;   ;\\
 ;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -142,6 +142,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14
+; CursorPosition = 27
 ; Folding = --
 ; EnableXP
