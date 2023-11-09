@@ -280,12 +280,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetChange( ): change: EndMacro      ; temp
       
       Macro splitter_gadget_1( )
-         ; gadget[1]
-         FirstWidget( )
+         gadget[1]
+         ; FirstWidget( )
       EndMacro
       Macro splitter_gadget_2( )
-         ; gadget[2]
-         LastWidget( )
+         gadget[2]
+         ; LastWidget( )
       EndMacro
       Macro splitter_is_gadget_1( ): index[1]: EndMacro
       Macro splitter_is_gadget_2( ): index[2]: EndMacro
@@ -16152,6 +16152,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ; EndIf
                
+               *this\splitter_gadget_1( ) = splitter_gadget_1
+               *this\splitter_gadget_2( ) = splitter_gadget_2
+               
             EndIf
             
          EndIf
@@ -19980,6 +19983,10 @@ IsChild( *widget, *widget\_widgets( ))
          ;\\ 1-test splitter
          If OpenedWidget( ) And 
             OpenedWidget( )\type = #__type_Splitter
+            
+            OpenedWidget( )\splitter_gadget_1( ) = OpenedWidget( )\FirstWidget( )
+            OpenedWidget( )\splitter_gadget_2( ) = OpenedWidget( )\LastWidget( )
+               
             Update(OpenedWidget( ))
          EndIf
          
@@ -21652,7 +21659,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2767
-; FirstLine = 2719
-; Folding = -------------------------------------------------------b+---85wh4-----f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------80+4--------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
+; CursorPosition = 19987
+; FirstLine = 18555
+; Folding = -------------------------------------------------------b+---85wh4-----f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------0+v8------------------80+4--------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
 ; EnableXP
