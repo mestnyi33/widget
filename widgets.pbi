@@ -669,9 +669,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro a_group( )
          a_transform( )\group( )
       EndMacro
-      Macro a_anchors( _index_ = )
-         a_focused( )\anchors\id#_index_
-      EndMacro
       
       
       
@@ -3359,11 +3356,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                   If a_focused( )
-                     If a_anchors([a_index( )])
-                        If is_atpoint_( a_anchors([a_index( )]), mouse_x, mouse_y )
-                           a_anchors([a_index( )])\color\state = #__S_1
+                     If a_focused( )\anchors\id[a_index( )]
+                        If is_atpoint_( a_focused( )\anchors\id[a_index( )], mouse_x, mouse_y )
+                           a_focused( )\anchors\id[a_index( )]\color\state = #__S_1
                         Else
-                           a_anchors([a_index( )])\color\state = #__S_0
+                           a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
                         EndIf
                         
                         *this\repaint = #True
@@ -3402,7 +3399,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_MouseMove
                If Not a_transform( )\grab
                   If mouse( )\buttons And a_focused( ) And a_focused( )\state\press
-                     If a_index( ) And a_anchors([a_index( )]) And a_anchors([a_index( )])\color\state = #__S_2
+                     If a_index( ) And a_focused( )\anchors\id[a_index( )] And a_focused( )\anchors\id[a_index( )]\color\state = #__S_2
                         mouse_x - mouse( )\delta\x
                         mouse_y - mouse( )\delta\y
                         
@@ -17609,15 +17606,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_focused( )\root = *root
                   
                   For i = 1 To #__a_count
-                     If a_anchors([i]) And is_atpoint_( a_anchors([i]), mouse( )\x, mouse( )\y )
+                     If a_focused( )\anchors\id[i] And is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
                         ;
                         If a_index( ) <> i
                            a_index( ) = i
                            ;
                            If i_moved( )
-                              If a_anchors([i])\color\state <> #__S_1
+                              If a_focused( )\anchors\id[i]\color\state <> #__S_1
                                  ; Debug "f_enter " + i
-                                 a_anchors([i])\color\state = #__S_1
+                                 a_focused( )\anchors\id[i]\color\state = #__S_1
                                  
                                  If a_focused( )\state\enter 
                                     DoEvents( a_focused( ), #__event_mouseleave )
@@ -21668,7 +21665,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17569
-; FirstLine = 17083
-; Folding = -------------------------------------------------------fs---4BgDv8-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-----4-----------------------------------q-vr80----8-8q8-8--0v---+-fr--------------------------------------
+; CursorPosition = 671
+; FirstLine = 671
+; Folding = -------------------------------------------------------P3---8Awh40----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
 ; EnableXP
