@@ -232,6 +232,6 @@ End
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 176
+; EnableCompileCount = 178
 ; EnableBuildCount = 0
 ; EnableExeConstant

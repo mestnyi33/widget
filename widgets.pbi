@@ -2468,7 +2468,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Else
-               If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
+               ;\\ entered frame
+               If _address_[0] :draw_box_( _address_[0]\x+1, _address_[0]\y+1, _address_[0]\width+2, _address_[0]\height-2 , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
             EndIf
             
             ;If _address_\container
@@ -2604,34 +2605,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro a_move( _address_, _a_moved_type_, _x_, _y_, _width_, _height_ )
+      Macro a_move( _address_, _x_, _y_, _width_, _height_ )
          If _address_ And a_entered( ) ; frame
-            _address_\x      = _x_ + a_entered( )\anchors\pos
-            _address_\y      = _y_ + a_entered( )\anchors\pos
-            _address_\width  = _width_ - a_entered( )\anchors\pos * 2
-            _address_\height = _height_ - a_entered( )\anchors\pos * 2
+;             If a_entered( )\fs
+               _address_\x      = _x_ + a_entered( )\anchors\pos 
+               _address_\y      = _y_ + a_entered( )\anchors\pos 
+               _address_\width  = _width_ - a_entered( )\anchors\pos * 2
+               _address_\height = _height_ - a_entered( )\anchors\pos * 2 
+;             Else
+;                _address_\x      = _x_ + a_entered( )\anchors\pos + 1
+;                _address_\y      = _y_ + a_entered( )\anchors\pos + 1
+;                _address_\width  = _width_ - a_entered( )\anchors\pos * 2 - 2
+;                _address_\height = _height_ - a_entered( )\anchors\pos * 2 - 2
+;             EndIf
          EndIf
          
          If _address_ <> a_selector( )
             If a_entered( )
                If _address_[#__a_moved] ; moved
-                                        ;             If _a_moved_type_
                   _address_[#__a_moved]\x      = _x_
                   _address_[#__a_moved]\y      = _y_
                   _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
                   _address_[#__a_moved]\height = a_entered( )\anchors\size * 2
-                  ;             Else
-                  ;               
-                  ;               _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\size * 2
-                  ;               _address_[#__a_moved]\y      = _y_
-                  ;               _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
-                  ;               _address_[#__a_moved]\height = a_entered( )\anchors\size
-                  ;               
-                  ;               ;                      _address_[#__a_moved]\x      = _x_ + a_entered( )\anchors\pos
-                  ;               ;                      _address_[#__a_moved]\y      = _y_ + a_entered( )\anchors\pos
-                  ;               ;                      _address_[#__a_moved]\width  = _width_ - a_entered( )\anchors\pos * 2
-                  ;               ;                      _address_[#__a_moved]\height = _height_ - a_entered( )\anchors\pos * 2
-                  ;             EndIf
                EndIf
             EndIf
             
@@ -2776,7 +2771,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro a_resize( _this_ )
          If _this_\anchors
             a_size( _this_\anchors\id, _this_\anchors\size )
-            a_move( _this_\anchors\id, _this_\container,
+            a_move( _this_\anchors\id,
                     _this_\screen_x( ),
                     _this_\screen_y( ),
                     _this_\screen_width( ),
@@ -3279,7 +3274,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;If a_focused( ) And a_focused( )\anchors
          a_size( a_selector( ), 7);a_transform( )\size )
-         a_move( a_selector( ), 0,
+         a_move( a_selector( ),
                  a_selector( )\x - 3, ;a_transform( )\pos,
                  a_selector( )\y - 3, ;a_transform( )\pos,
                  a_selector( )\width + 6, ;a_transform( )\pos * 2,
@@ -3512,7 +3507,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;                   a_selector( )\width = _width_
                               ;                   a_selector( )\height = _height_
                               
-                              a_move( a_selector( ), 0,
+                              a_move( a_selector( ),
                                       a_selector( )\x - 0, ;a_transform( )\pos,
                                       a_selector( )\y - 0, ;a_transform( )\pos,
                                       a_selector( )\width + 0, ;a_transform( )\pos * 2,
@@ -21665,7 +21660,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 671
-; FirstLine = 671
-; Folding = -------------------------------------------------------P3---8Awh40----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
+; CursorPosition = 2471
+; FirstLine = 2456
+; Folding = -------------------------------------------------------b+---85wh4-----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
 ; EnableXP
