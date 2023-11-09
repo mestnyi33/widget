@@ -15,7 +15,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;
   a_init(root( ), 0)
   ;SetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
-  SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
+  ;SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
   
   ;\\ Create five different objects
   *Object1 = a_object(20, 20, 200, 100, " left & right", RGBA(64, 128, 192, alpha)) 
@@ -59,7 +59,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
-; FirstLine = 24
+; CursorPosition = 17
+; FirstLine = 2
 ; Folding = -
 ; EnableXP

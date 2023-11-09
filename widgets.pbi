@@ -2431,7 +2431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If a_transform( )
             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             
-            If a_focused( ) And _address_ = a_focused( )\anchors\id
+            If a_focused( ) And _address_ = a_focused( )\anchors\id And a_main( ) <> a_focused( )
                ;\\ left line
                If a_selector([#__a_line_left])
                   If _address_[#__a_moved] And a_selector([#__a_line_left])\y = a_focused( )\frame_y( ) And a_selector([#__a_line_left])\height = a_focused( )\frame_height( )
@@ -2468,8 +2468,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Else
-               ;\\ entered frame
-               If _address_[0] :draw_box_( _address_[0]\x+1, _address_[0]\y+1, _address_[0]\width+2, _address_[0]\height-2 , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
+               If a_main( ) <> a_entered( )
+                  ;\\ entered frame
+                  If _address_[0] :draw_box_( _address_[0]\x, _address_[0]\y, _address_[0]\width, _address_[0]\height , _address_[0]\color\back[_address_[0]\color\state] ) : EndIf
+               EndIf
             EndIf
             
             ;If _address_\container
@@ -11829,15 +11831,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If Not *this\round
-               ;           If Not *this\fs[2]
-               ;             ; left&top
-               ;             draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
-               ;             ; top
-               ;             draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
-               ;             ; right&top
-               ;             draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
-               ;           EndIf
-               
                If *this\fs
                   If Not *this\fs[2]
                      ; frame top
@@ -16771,22 +16764,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure Container_Draw( *this._S_WIDGET )
+         Protected i
+         
          With *this
-            ;\\
             If *this\fs
                If *this\type <> #__type_panel And *this\type <> #__type_Frame
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  Protected i
-                  For i = 0 To *this\fs
+                  For i = 0 To *this\fs - 1
                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\color\state] )
-                     If i < *this\fs
+                     If *this\round
                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\color\state] )
                      EndIf
                   Next
                EndIf
             EndIf
             
-            ;\\
+            ;\\ backcolor
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\fs
                draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[*this\color\state] )
@@ -16806,12 +16799,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                
-               ; background image draw
+               ;\\ background image draw
                If *this\image[#__image_background]\id
                   draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
                EndIf
                
-               ; scroll image draw
+               ;\\ scroll image draw
                If *this\image\id
                   DrawAlphaImage( *this\image\id,
                                   *this\inner_x( ) + *this\scroll_x( ) + *this\image\x,
@@ -21660,7 +21653,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2471
-; FirstLine = 2456
-; Folding = -------------------------------------------------------b+---85wh4-----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
+; CursorPosition = 2433
+; FirstLine = 2416
+; Folding = -------------------------------------------------------b+---85wh4-----f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------84-----8----------------------------------f2-420+----0-d20-0--+4--f--v2--------------------------------------
 ; EnableXP
