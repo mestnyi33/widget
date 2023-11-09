@@ -17565,41 +17565,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not mouse( )\buttons
                ;\\ reset a_index
                If a_index( ) > 0
-                  If a_index( ) <> #__a_moved
-                     ;\\ 
-                     If a_focused( ) And
-                        a_focused( )\anchors\id[a_index( )] And
-                        Not is_atpoint_( a_focused( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
-                        
-                        If a_focused( )\anchors\id[a_index( )]\color\state <> #__S_0
-                           a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
-                           
-                           If a_focused( )\state\enter = - 1
-                             a_focused( )\state\enter = 0
-                             LeavedWidget( ) = 0
-                           EndIf
-                           
-                           a_focused( )\repaint                            = #True
-                           ;Debug "" + a_index( ) + " - f_leave"
-                        EndIf
-                     EndIf
+                  If a_focused( ) And
+                     a_focused( )\anchors\id[a_index( )] And
+                     Not is_atpoint_( a_focused( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
                      
-                     ;\\
-                     If a_entered( ) And
-                        a_entered( )\anchors\id[a_index( )] And
-                        Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                     If a_focused( )\anchors\id[a_index( )]\color\state <> #__S_0
+                        a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
                         
-                        If a_entered( )\anchors\id[a_index( )]\color\state <> #__S_0
-                           a_entered( )\anchors\id[a_index( )]\color\state = #__S_0
-                           
-                           If a_entered( )\state\enter = - 1
-                              a_entered( )\state\enter = 0
-                              LeavedWidget( ) = 0
-                           EndIf
-                           
-                           a_entered( )\repaint                            = #True
-                           ;Debug "" + a_index( ) + " - e_leave"
+                        If a_focused( )\state\enter = - 1
+                           a_focused( )\state\enter = 0
+                           LeavedWidget( ) = 0
                         EndIf
+                        
+                        a_focused( )\repaint                            = #True
+                        ;Debug "" + a_index( ) + " - f_leave"
+                     EndIf
+                  EndIf
+                  
+                  ;\\
+                  If a_entered( ) And
+                     a_entered( )\anchors\id[a_index( )] And
+                     Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                     
+                     If a_entered( )\anchors\id[a_index( )]\color\state <> #__S_0
+                        a_entered( )\anchors\id[a_index( )]\color\state = #__S_0
+                        
+                        If a_entered( )\state\enter = - 1
+                           a_entered( )\state\enter = 0
+                           LeavedWidget( ) = 0
+                        EndIf
+                        
+                        a_entered( )\repaint                            = #True
+                        ;Debug "" + a_index( ) + " - e_leave"
                      EndIf
                   EndIf
                   
@@ -17607,36 +17604,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ find first a_focused a_index
-               If Not a_index( )
-                  If a_focused( ) And
-                     a_focused( )\anchors And
-                     a_focused( )\root = *root
-                     
-                     For i = 1 To #__a_count
-                        If a_anchors([i]) And is_atpoint_( a_anchors([i]), mouse( )\x, mouse( )\y )
+               If a_focused( ) And
+                  a_focused( )\anchors And
+                  a_focused( )\root = *root
+                  
+                  For i = 1 To #__a_count
+                     If a_anchors([i]) And is_atpoint_( a_anchors([i]), mouse( )\x, mouse( )\y )
+                        ;
+                        If a_index( ) <> i
+                           a_index( ) = i
                            ;
-                           If a_index( ) <> i
-                              a_index( ) = i
-                              ;
-                              If i_moved( )
-                                 If a_anchors([i])\color\state <> #__S_1
-                                    ; Debug "f_enter " + i
-                                    a_anchors([i])\color\state = #__S_1
-                                    
-                                    If a_focused( )\state\enter 
-                                       DoEvents( a_focused( ), #__event_mouseleave )
-                                    EndIf
-                                    a_focused( )\state\enter = - 1
-                                    a_focused( )\repaint       = 1
+                           If i_moved( )
+                              If a_anchors([i])\color\state <> #__S_1
+                                 ; Debug "f_enter " + i
+                                 a_anchors([i])\color\state = #__S_1
+                                 
+                                 If a_focused( )\state\enter 
+                                    DoEvents( a_focused( ), #__event_mouseleave )
                                  EndIf
+                                 a_focused( )\state\enter = - 1
+                                 a_focused( )\repaint       = 1
                               EndIf
                            EndIf
-                           
-                           *widget = a_focused( )
-                           Break
                         EndIf
-                     Next
-                  EndIf
+                        
+                        *widget = a_focused( )
+                        Break
+                     EndIf
+                  Next
                EndIf
                
                ;\\ find second a_entered a_index
@@ -19188,24 +19183,24 @@ IsChild( *widget, *widget\_widgets( ))
          EndIf
          ;EndIf
          
-                 ;\\
-                 If eventtype = #__event_MouseEnter
-                    Debug "e "+*this\class
-                 EndIf
-         
-                 ;\\
-                 If eventtype = #__event_MouseLeave
-                   Debug "l "+*this\class
-                 EndIf
-                ;\\
-                 If eventtype = #__event_LeftDown
-                    Debug " d "+*this\class
-                 EndIf
-         
-                 ;\\
-                 If eventtype = #__event_LeftUp
-                   Debug " u "+*this\class
-                 EndIf
+;                  ;\\
+;                  If eventtype = #__event_MouseEnter
+;                     Debug "e "+*this\class
+;                  EndIf
+;          
+;                  ;\\
+;                  If eventtype = #__event_MouseLeave
+;                    Debug "l "+*this\class
+;                  EndIf
+;                 ;\\
+;                  If eventtype = #__event_LeftDown
+;                     Debug " d "+*this\class
+;                  EndIf
+;          
+;                  ;\\
+;                  If eventtype = #__event_LeftUp
+;                    Debug " u "+*this\class
+;                  EndIf
          
          ;\\ widget::_events_Anchors( )
          If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
@@ -21673,7 +21668,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17668
-; FirstLine = 17076
-; Folding = -------------------------------------------------------fs---4BgDv8-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-0+--f-----------------------------------r+-uu4----v--8q8-8--0v---+-fr--------------------------------------
+; CursorPosition = 17569
+; FirstLine = 17083
+; Folding = -------------------------------------------------------fs---4BgDv8-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-----4-----------------------------------q-vr80----8-8q8-8--0v---+-fr--------------------------------------
 ; EnableXP
