@@ -33,11 +33,12 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   SetFrame(*Object5, size)
   
   ;\\ Define different handles to the objects
-  a_set(*Object1, #__a_width | #__a_position, 15)
-  a_set(*Object2, #__a_height | #__a_position, 12)
-  a_set(*Object3, #__a_edge | #__a_position, 9);
-  a_set(*Object4, #__a_corner | #__a_position, 34)
-  a_set(*Object5, #__a_size | #__a_position)
+  a_set(*Object1, #__a_width | #__a_position, 8)
+  a_set(*Object2, #__a_height | #__a_position, 8)
+  a_set(*Object3, #__a_edge | #__a_position, 8);
+  a_set(*Object4, #__a_corner | #__a_position, 8)
+  a_set(*Object5, #__a_size | #__a_position, 8)
+  a_set( root( ))
   
   ;\\ Define different cursors to the objects
   SetCursor(*Object2, #PB_Cursor_Hand)
@@ -59,7 +60,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 2
+; CursorPosition = 41
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

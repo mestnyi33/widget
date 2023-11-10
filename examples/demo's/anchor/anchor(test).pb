@@ -31,11 +31,12 @@
 ;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  a_set(parent, #__a_full, 40)
-  a_set(object, #__a_full, 40)
+  Define anchor_size = 30
+  a_set(parent, #__a_full, anchor_size/2)
+  a_set(object, #__a_full, anchor_size)
   
   ;\\
-  SizeBounds(object, 80, 80, 501-fs*2, 501-fs*2)
+  SizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
   ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
   MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
@@ -142,6 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
+; CursorPosition = 34
+; FirstLine = 19
 ; Folding = --
 ; EnableXP
