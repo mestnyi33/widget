@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 32
+; CursorPosition = 30
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

@@ -117,9 +117,9 @@ Module Cursor
   Procedure Image( type.i = 0 )
     Protected image
     
-    If type = #PB_Cursor_Drop
+    If type = #__cursor_Drop
       image = CatchImage( #PB_Any, ?add, 601 )
-    ElseIf type = #PB_Cursor_Drag
+    ElseIf type = #__cursor_Drag
       image = CatchImage( #PB_Any, ?copy, 530 )
     EndIf
     
@@ -257,26 +257,26 @@ Module Cursor
         
         If icursor >= 0 And icursor <= 255
           Select icursor
-            Case #PB_Cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
-            Case #PB_Cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS) ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
-            Case #PB_Cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
-            Case #PB_Cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
-            Case #PB_Cursor_Busy      : *cursor\hcursor = gdk_cursor_new_(#GDK_WATCH)
-            Case #PB_Cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
-            Case #PB_Cursor_Arrows    : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
+            Case #__cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
+            Case #__cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS) ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
+            Case #__cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
+            Case #__cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
+            Case #__cursor_Busy      : *cursor\hcursor = gdk_cursor_new_(#GDK_WATCH)
+            Case #__cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
+            Case #__cursor_Arrows    : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
             
-            ;;Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BLANK_CURSOR)
-            Case #PB_Cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR); GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
+            ;;Case #__cursor_Invisible : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BLANK_CURSOR)
+            Case #__cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR); GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
               Debug 888
               
-            Case #PB_Cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; GDK_LEFT_TEE ; GDK_LEFT_SIDE ; #GDK_SB_LEFT_ARROW
-            Case #PB_Cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE) ; GDK_RIGHT_TEE ; GDK_RIGHT_SIDE ; #GDK_SB_RIGHT_ARROW
-            Case #PB_Cursor_LeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW);GDK_SB_H_DOUBLE_ARROW ; GDK_SB_LEFT_ARROW ; GDK_SB_RIGHT_ARROW
+            Case #__cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; GDK_LEFT_TEE ; GDK_LEFT_SIDE ; #GDK_SB_LEFT_ARROW
+            Case #__cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE) ; GDK_RIGHT_TEE ; GDK_RIGHT_SIDE ; #GDK_SB_RIGHT_ARROW
+            Case #__cursor_LeftRight2 : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW);GDK_SB_H_DOUBLE_ARROW ; GDK_SB_LEFT_ARROW ; GDK_SB_RIGHT_ARROW
               
-            Case #PB_Cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_SIDE) ; GDK_TOP_TEE ; GDK_TOP_SIDE
-            Case #PB_Cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE
-            ;Case #PB_Cursor_UpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW); GDK_SB_V_DOUBLE_ARROW ; GDK_SB_UP_ARROW ; GDK_SB_DOWN_ARROW
-             Case #PB_Cursor_UpDown       
+            Case #__cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_SIDE) ; GDK_TOP_TEE ; GDK_TOP_SIDE
+            Case #__cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE
+            ;Case #__cursor_UpDown2    : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW); GDK_SB_V_DOUBLE_ARROW ; GDK_SB_UP_ARROW ; GDK_SB_DOWN_ARROW
+             Case #__cursor_UpDown2       
               
               Define x = 0
               Define y = 0
@@ -310,19 +310,19 @@ Module Cursor
               
               *cursor\hcursor = Create(ImageID(img), width/2, height/2)
               
-            Case #PB_Cursor_LeftUpRightDown  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_LEFT_CORNER); GDK_UL_ANGLE ; GDK_TOP_LEFT_CORNER ; GDK_LR_ANGLE ; GDK_BOTTOM_RIGHT_CORNER
-            Case #PB_Cursor_LeftDownRightUp  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
+            Case #__cursor_LeftUpRightDown  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_LEFT_CORNER); GDK_UL_ANGLE ; GDK_TOP_LEFT_CORNER ; GDK_LR_ANGLE ; GDK_BOTTOM_RIGHT_CORNER
+            Case #__cursor_LeftDownRightUp  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
               
-            Case #PB_Cursor_LeftUp          : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
-            Case #PB_Cursor_RightUp         : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_RIGHT_CORNER)
-            Case #PB_Cursor_LeftDown       : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_LEFT_CORNER)
-            Case #PB_Cursor_RightDown      : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_RIGHT_CORNER)
+            Case #__cursor_LeftUp          : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
+            Case #__cursor_RightUp         : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_RIGHT_CORNER)
+            Case #__cursor_LeftDown       : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_LEFT_CORNER)
+            Case #__cursor_RightDown      : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_RIGHT_CORNER)
                
-            Case #PB_Cursor_Drag : *cursor\hcursor = New( icursor )
-            Case #PB_Cursor_Drop : *cursor\hcursor = New( icursor )
+            Case #__cursor_Drag : *cursor\hcursor = New( icursor )
+            Case #__cursor_Drop : *cursor\hcursor = New( icursor )
               
-            Case #PB_Cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
-            Case #PB_Cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #__cursor_Grab      : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
+            Case #__cursor_Grabbing  : *cursor\hcursor = gdk_cursor_new_(#GDK_ARROW)
          EndSelect 
         Else
           *cursor\hcursor = icursor 
@@ -343,29 +343,29 @@ Module Cursor
     ;     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
     ;     
     ;     If isHiden() ;  GetGadgetAttribute(EventGadget(), #PB_Canvas_CustomCursor) ; 
-    ;       result = #PB_Cursor_Invisible
+    ;       result = #__cursor_Invisible
     ;     Else
     ;       Select gdk_window_get_cursor( gdk_display_get_default_() )
-    ;         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #PB_Cursor_Default
-    ;         Case gdk_cursor_new_(#GDK_XTERM) : result = #PB_Cursor_IBeam
+    ;         Case gdk_cursor_new_(#GDK_LEFT_PTR) : result = #__cursor_Default
+    ;         Case gdk_cursor_new_(#GDK_XTERM) : result = #__cursor_IBeam
     ;           
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drop
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Drag
-    ;         Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #PB_Cursor_Denied
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Drop
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Drag
+    ;         Case gdk_cursor_new_(#GDK_X_CURSOR) : result = #__cursor_Denied
     ;           
-    ;         Case gdk_cursor_new_(#GDK_CROSS) : result = #PB_Cursor_Cross
-    ;         Case gdk_cursor_new_(#GDK_HAND2) : result = #PB_Cursor_Hand
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grab
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Grabbing
+    ;         Case gdk_cursor_new_(#GDK_CROSS) : result = #__cursor_Cross
+    ;         Case gdk_cursor_new_(#GDK_HAND2) : result = #__cursor_Hand
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Grab
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Grabbing
     ;           
-    ;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #PB_Cursor_Arrows
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Up
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Down
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_UpDown
+    ;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #__cursor_Arrows
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Up
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Down
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_UpDown2
     ;           
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Left
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_Right
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #PB_Cursor_LeftRight
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Left
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Right
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_LeftRight2
     ;       EndSelect 
     ;     EndIf
     ;     
@@ -373,5 +373,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 0-w---
+; CursorPosition = 367
+; FirstLine = 300
+; Folding = --w---
 ; EnableXP

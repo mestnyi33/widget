@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
   ;\\
   SetFrame(object, fs)
-  a_mode(object, #__a_full, 8)
+  a_set(object, #__a_full, 8)
 ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
 ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
   
@@ -48,13 +48,13 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList()
    
   ;\\
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  Bind( widget( ), @CustomEvents(), #__event_draw )
   WaitClose( )
   
   ;\\
   Procedure CustomEvents( )
     Select WidgetEventType( )
-      Case #PB_EventType_Draw
+      Case #__event_draw
         
         ; Demo draw on element
         UnclipOutput()
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 48
-; FirstLine = 23
+; CursorPosition = 56
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

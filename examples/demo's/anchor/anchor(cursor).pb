@@ -1,6 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
-; fixed 778 commit
-;-
+;bug когда с левого якорья переходит на сам сплиттер 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -98,9 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 12
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP

@@ -35,8 +35,8 @@ DeclareModule Cursor
     #__cursor_Denied          ; = 5  
     #__cursor_Arrows          ; = 6  
     
-    #__cursor_LeftRight       ; = 7 
-    #__cursor_UpDown          ; = 8  
+    #__cursor_LeftRight2       ; = 7 
+    #__cursor_UpDown2          ; = 8  
     #__cursor_LeftUpRightDown ; = 9
     #__cursor_LeftDownRightUp ; = 10
     
@@ -52,8 +52,8 @@ DeclareModule Cursor
     #__cursor_Up 
     #__cursor_Down           
     
-    #__cursor_LeftRight2      
-    #__cursor_UpDown2        
+    #__cursor_LeftRight      
+    #__cursor_UpDown        
     
     #__cursor_Drag
     #__cursor_Drop
@@ -81,6 +81,183 @@ DeclareModule Cursor
   Declare   Set(Gadget.i, icursor.i);, x.i = 0, y.i = 0)
   Declare   Change(GadgetID.i, state.b )
   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
+  
+  
+  ;\\
+  Macro DrawImageUp(x, y, size, bcolor, fcolor)
+      Line(x+7, y, 2, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+5, y+2, fcolor ) : Line(x+6, y+2, 4, 1, bcolor) : Plot(x+10, y+2, fcolor )                                  ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+      Plot(x+4, y+3, fcolor ) : Line(x+5, y+3, 6, 1, bcolor) : Plot(x+11, y+3, fcolor )                                  ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+      Line(x+4, y+4, 3, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+size/2+1, y+4, 3 , 1, fcolor)                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+size/2-2, y+5, fcolor ) : Line(x+7, y+5, 2, 1, bcolor) : Plot(x+size/2+1, y+5, fcolor )                     ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    EndMacro
+    Macro DrawImageDown(x, y, size, bcolor, fcolor)
+      Plot(x+size/2-2, y+4, fcolor ) : Line(x+7, y+4, 2, 1, bcolor) : Plot(x+size/2+1, y+4, fcolor )                     ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Line(x+4, y+5, 3, 1, fcolor) : Line(x+7, y+5, 2, 1, bcolor) : Line(x+size/2+1, y+5, 3, 1, fcolor)                  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+4, y+6, fcolor ) : Line(x+5, y+6, 6, 1, bcolor) : Plot(x+11, y+6, fcolor )                                  ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+      Plot(x+5, y+7, fcolor ) : Line(x+6, y+7, 4, 1, bcolor) : Plot(x+10, y+7, fcolor )                                  ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+      Plot(x+6, y+8, fcolor ) : Line(x+7, y+8, 2, 1, bcolor) : Plot(x+9, y+8, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Line(x+7, y+9, 2, 1, fcolor)                                                                                       ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    EndMacro
+    Macro DrawImageLeft(x, y, width, bcolor, fcolor)
+      Line(x, y+7, 1, 2, fcolor)                                                                                          ; 0,0,0,0,0,0,0,0,0
+      Plot(x+1, y+6, fcolor ) : Line(x+1, y+7, 1, 2, bcolor) : Plot(x+1, y+9, fcolor )                                    ; 1,0,0,0,0,0,0,0,0
+      Plot(x+2, y+5, fcolor ) : Line(x+2, y+6, 1, 4, bcolor) : Plot(x+2, y+10, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+      Plot(x+3, y+4, fcolor ) : Line(x+3, y+5, 1, 6, bcolor) : Plot(x+3, y+11, fcolor )                                   ; 1,0,0,0,0,0,0,0,0
+      Line(x+4, y+4, 1, 3, fcolor) : Line(x+4, y+7, 1, 2, bcolor) : Line(x+4, y+width/2+1, 1, 3, fcolor)                  ; 1,0,0,0,0,0,0,0,0
+      Plot(x+5, y+width/2-2, fcolor ) : Line(x+5, y+7, 1, 2, bcolor) : Plot(x+5, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+    EndMacro  
+    Macro DrawImageRight(x, y, width, bcolor, fcolor)
+      Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Line(x+5, y+4, 1, 3, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, 3, fcolor)                  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+      Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+      Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    EndMacro
+    
+    Macro DrawImageCursor2(x, y, width, height, bcolor, fcolor)
+      DrawImageUp(x, y, size, bcolor, fcolor)
+      DrawImageDown(x, y+height-2, size, bcolor, fcolor)
+      
+      LineXY(x,y+1,x+5,y+6,bcolor)
+      LineXY(x+1,y+1,x+5,y+5,bcolor)
+      ;     Plot(x+1, y+2, bcolor )
+      ;     Plot(x+2, y+1, bcolor )
+      ;     
+      ;     Plot(x+2, y+3, bcolor )
+      ;     Plot(x+3, y+2, bcolor )
+      ;     
+      ;     Plot(x+3, y+4, bcolor )
+      ;     Plot(x+4, y+3, bcolor )
+      ;     
+      ;     Plot(x+4, y+5, bcolor )
+      ;     Plot(x+5, y+4, bcolor )
+    EndMacro  
+    Macro DrawImageCursor6(x, y, width, bcolor, fcolor)
+      ;     Plot(x+4, y+width/2-2, fcolor ) : Line(x+4, y+7, 1, 2, bcolor) : Plot(x+4, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      ;     Line(x+5, y+3, 1, width/3-1, fcolor) : Line(x+5, y+7, 1, 2, bcolor) : Line(x+5, y+width/2+1, 1, width/3-1, fcolor)  ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      ;     Plot(x+6, y+4, fcolor ) : Line(x+6, y+5, 1, 6, bcolor) : Plot(x+6, y+11, fcolor )                                   ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
+      ;     Plot(x+7, y+5, fcolor ) : Line(x+7, y+6, 1, 4, bcolor) : Plot(x+7, y+10, fcolor )                                   ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
+      ;     Plot(x+8, y+6, fcolor ) : Line(x+8, y+7, 1, 2, bcolor) : Plot(x+8, y+9, fcolor )                                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      ;     Line(x+9, y+7, 1, 2, fcolor)                                                                                        ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    EndMacro
+    
+    Macro DrawImageCursorSplitterV(x, y, width, height, bcolor, fcolor)
+      DrawImageUp(x, y, width, bcolor, fcolor)
+      DrawImageCursorSplitterUp(x,y,width, bcolor, fcolor )
+      DrawImageCursorSplitterDown(x,y+height-1,width, bcolor, fcolor )
+      DrawImageDown(x, y+height-1, width, bcolor, fcolor)
+    EndMacro
+    Macro DrawImageCursorSplitterH(x, y, height, width, bcolor, fcolor)
+      DrawImageLeft(x, y, width, bcolor, fcolor)
+      DrawImageCursorSplitterLeft(x,y,width, bcolor, fcolor )
+      DrawImageCursorSplitterRight(x,y+height-1,width, bcolor, fcolor )
+      DrawImageRight(x, y+height-1, width, bcolor, fcolor)
+    EndMacro
+    
+    Macro DrawImageCursorUp(x, y, width, bcolor, fcolor)
+      DrawImageUp(x, y, width, bcolor, fcolor)
+      Plot(x+width/2-2, y+6, fcolor ) : Line(x+7, y+6, 2, 1, bcolor) : Plot(x+width/2+1, y+6, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+width/2-2, y+7, fcolor ) : Line(x+7, y+7, 2, 1, bcolor) : Plot(x+width/2+1, y+7, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    EndMacro
+    Macro DrawImageCursorDown(x, y, width, bcolor, fcolor)
+      Plot(x+width/2-2, y+2, fcolor ) : Line(x+7, y+2, 2, 1, bcolor) : Plot(x+width/2+1, y+2, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+width/2-2, y+3, fcolor ) : Line(x+7, y+3, 2, 1, bcolor) : Plot(x+width/2+1, y+3, fcolor )                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      DrawImageDown(x, y, width, bcolor, fcolor)
+    EndMacro
+    Macro DrawImageCursorLeft(x, y, width, bcolor, fcolor)
+      DrawImageLeft(x, y, width, bcolor, fcolor)
+      Plot(x+6, y+width/2-2, fcolor ) : Line(x+6, y+7, 1, 2, bcolor) : Plot(x+6, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+      Plot(x+7, y+width/2-2, fcolor ) : Line(x+7, y+7, 1, 2, bcolor) : Plot(x+7, y+width/2+1, fcolor )                    ; 1,0,0,0,0,1,0,0,0
+    EndMacro  
+    Macro DrawImageCursorRight(x, y, width, bcolor, fcolor)
+      Plot(x+2, y+width/2-2, fcolor ) : Line(x+2, y+7, 1, 2, bcolor) : Plot(x+2, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x+3, y+width/2-2, fcolor ) : Line(x+3, y+7, 1, 2, bcolor) : Plot(x+3, y+width/2+1, fcolor )                    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      DrawImageRight(x, y, width, bcolor, fcolor)
+    EndMacro
+    
+    Macro DrawImageCursorSplitterUp(x, y, width, bcolor, fcolor)
+      Line(x, y+6, width/2-1 , 1, fcolor) : Line(x+7, y+6, 2, 1, bcolor) : Line(x+width/2+1, y+6, width/2-1, 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      Plot(x, y+7, fcolor ) : Line(x+1, y+7, width-2, 1, bcolor) : Plot(x+width-1, y+7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+    EndMacro
+    Macro DrawImageCursorSplitterDown(x, y, width, bcolor, fcolor)
+      Plot(x, y+2, fcolor ) : Line(x+1, y+2, width-2, 1, bcolor) : Plot(x+width-1, y+2, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+      Line(x, y+3, width/2-1, 1, fcolor) : Line(x+7, y+3, 2, 1, bcolor) : Line(x+width/2+1, y+3, width/2-1 , 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+    EndMacro
+    Macro DrawImageCursorSplitterLeft(x, y, width, bcolor, fcolor)
+      ;Debug width
+      DrawImageLeft(x, y, width, bcolor, fcolor)
+      Line(x+6, y , 1, width/2-1, fcolor) : Line(x+6, y+7, 1, 2, bcolor) : Line(x+6, y+width/2+1, 1, width/2-1, fcolor)   ; 1,0,0,0,0,1,1,0,0
+      Plot(x+7, y, fcolor ) : Line(x+7, y+1, 1, width-2, bcolor) : Plot(x+7, y+width-1, fcolor )                          ; 1,1,1,1,1,1,1,1,0
+    EndMacro  
+    Macro DrawImageCursorSplitterRight(x, y, width, bcolor, fcolor)
+      Plot(x+2, y, fcolor ) : Line(x+2, y+1, 1, width-2, bcolor) : Plot(x+2, y+width-1, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+      Line(x+3, y, 1, width/2-1, fcolor) : Line(x+3, y+7, 1, 2, bcolor) : Line(x+3, y+width/2+1, 1, width/2-1, fcolor)    ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
+      DrawImageRight(x, y, width, bcolor, fcolor)
+    EndMacro
+    
+    Macro DrawImageCursorDiagonal1(x, y, size, bcolor, fcolor)
+      LineXY(x+3,y+2,x+13,y+12,bcolor)
+      LineXY(x+2,y+2,x+13,y+13,bcolor)
+      LineXY(x+2,y+3,x+12,y+13,bcolor)
+      
+      Plot(x+12,y+10,bcolor)
+      Plot(x+10,y+12,bcolor)
+      Plot(x+5,y+3,bcolor)
+      Plot(x+3,y+5,bcolor)
+      
+      Line(x+2,y+4,1,3,bcolor)
+      Line(x+4,y+2,3,1,bcolor)
+      Line(x+9,y+13,3,1,bcolor)
+      Line(x+13,y+9,1,3,bcolor)
+      
+      ;
+      LineXY(x+6,y+4,x+11,y+9,fcolor)
+      LineXY(x+4,y+6,x+9,y+11,fcolor)
+      
+      LineXY(x+2,y+7,x+3,y+6,fcolor)
+      LineXY(x+7,y+2,x+6,y+3,fcolor)
+      LineXY(x+8,y+13,x+9,y+12,fcolor)
+      LineXY(x+13,y+8,x+12,y+9,fcolor)
+      
+      Line(x+1,y+2,1,6,fcolor)
+      Line(x+14,y+8,1,6,fcolor)
+      Line(x+2,y+1,6,1,fcolor)
+      Line(x+8,y+14,6,1,fcolor)
+    EndMacro
+    Macro DrawImageCursorDiagonal2(x, y, size, bcolor, fcolor)
+      LineXY(x+2,y+12,x+12,y+2,bcolor)
+      LineXY(x+2,y+13,x+13,y+2,bcolor)
+      LineXY(x+3,y+13,x+13,y+3,bcolor)
+      
+      Plot(x+3,y+10,bcolor)
+      Plot(x+10,y+3,bcolor)
+      Plot(x+5,y+12,bcolor)
+      Plot(x+12,y+5,bcolor)
+      
+      Line(x+2,y+9,1,3,bcolor)
+      Line(x+9,y+2,3,1,bcolor)
+      Line(x+4,y+13,3,1,bcolor)
+      Line(x+13,y+4,1,3,bcolor)
+      
+      ;
+      LineXY(x+4,y+9,x+9,y+4,fcolor)
+      LineXY(x+6,y+11,x+11,y+6,fcolor)
+      
+      LineXY(x+2,y+8,x+3,y+9,fcolor)
+      LineXY(x+8,y+2,x+9,y+3,fcolor)
+      LineXY(x+6,y+12,x+7,y+13,fcolor)
+      LineXY(x+12,y+6,x+13,y+7,fcolor)
+      
+      Line(x+1,y+8,1,6,fcolor)
+      Line(x+8,y+1,6,1,fcolor)
+      Line(x+2,y+14,6,1,fcolor)
+      Line(x+14,y+2,1,6,fcolor)
+    EndMacro
+    
+    
 EndDeclareModule
 
 ;-\\ MODULE
@@ -241,7 +418,7 @@ CompilerIf #PB_Compiler_IsMainFile
   g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
   SplitterGadget(111,10,240,60,60, g1,g2)
   
-  ; If Set((111),#__cursor_UpDown)
+  ; If Set((111),#__cursor_UpDown2)
   ;   Debug "updown"           
   ; EndIf       
   
@@ -295,7 +472,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     Debug "setCursorHand"           
   ;   EndIf       
   ;   
-  ;   If cursor::Set((2),cursor::#__cursor_UpDown)
+  ;   If cursor::Set((2),cursor::#__cursor_UpDown2)
   ;     Debug "setCursorHand"           
   ;   EndIf       
   
@@ -330,31 +507,31 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Busy = CanvasGadget(#PB_Any, 264, 264, 56, 56) : GadgetToolTip( Busy, "#__cursor_Busy")
   
   ;   Canvas_4 = CanvasGadget(#PB_Any, 72, 8, 56, 56)
-  Define lt = CanvasGadget(#PB_Any, 72, 72, 56, 56)
-  Define lb = CanvasGadget(#PB_Any, 72, 200, 56, 56)
+  Define lt = CanvasGadget(#PB_Any, 72, 72, 56, 56) : GadgetToolTip( lt, "#__cursor_LeftUp")
+  Define lb = CanvasGadget(#PB_Any, 72, 200, 56, 56) : GadgetToolTip( lb, "#__cursor_LeftDown")
   ;   Canvas_72 = CanvasGadget(#PB_Any, 72, 264, 56, 56)
   
   Define up = CanvasGadget(#PB_Any, 136, 8, 56, 24) : GadgetToolTip( up, "#__cursor_Up")
-  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24) : GadgetToolTip( up2, "#__cursor_UpDown")
-  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56) : GadgetToolTip( up3, "#__cursor_UpDown2")
+  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24) : GadgetToolTip( up2, "#__cursor_UpDown2")
+  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56) : GadgetToolTip( up3, "#__cursor_UpDown")
   
   Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56) : GadgetToolTip( left, "#__cursor_Left")
-  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56) : GadgetToolTip( left2, "#__cursor_LeftRight")
-  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56) : GadgetToolTip( left3, "#__cursor_LeftRight2")
+  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56) : GadgetToolTip( left2, "#__cursor_LeftRight2")
+  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56) : GadgetToolTip( left3, "#__cursor_LeftRight")
   
   Define Arrows = CanvasGadget(#PB_Any, 136, 136, 56, 56) : GadgetToolTip( Arrows, "#__cursor_Arrows")
   
   Define right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56) : GadgetToolTip( right, "#__cursor_Right")
-  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#__cursor_LeftRight")
-  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#__cursor_LeftRight2")
+  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#__cursor_LeftRight2")
+  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#__cursor_LeftRight")
   
-  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#__cursor_UpDown2")
-  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#__cursor_UpDown")
+  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#__cursor_UpDown")
+  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#__cursor_UpDown2")
   Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#__cursor_Down")
   
   ;   Canvas_12 = CanvasGadget(#PB_Any, 200, 8, 56, 56)
-  Define rt = CanvasGadget(#PB_Any, 200, 72, 56, 56)
-  Define rb = CanvasGadget(#PB_Any, 200, 200, 56, 56)
+  Define rt = CanvasGadget(#PB_Any, 200, 72, 56, 56) : GadgetToolTip( rt, "#__cursor_RightUp")
+  Define rb = CanvasGadget(#PB_Any, 200, 200, 56, 56) : GadgetToolTip( rb, "#__cursor_RightDown")
   ;   Canvas_152 = CanvasGadget(#PB_Any, 200, 264, 56, 56)
   
   ;;Canvas_1 = CanvasGadget(#PB_Any, 8, 72, 56, 56)
@@ -364,10 +541,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
   
   
-  ;   Cursor::Set((lt), Cursor::#__cursor_LeftUpRightDown ) 
-  ;   Cursor::Set((rb), Cursor::#__cursor_LeftUpRightDown ) 
-  ;   Cursor::Set((rt), Cursor::#__cursor_LeftDownRightUp ) 
-  ;   Cursor::Set((lb), Cursor::#__cursor_LeftDownRightUp ) 
   Cursor::Set((lt), Cursor::#__cursor_LeftUp ) 
   Cursor::Set((rt), Cursor::#__cursor_RightUp ) 
   Cursor::Set((lb), Cursor::#__cursor_LeftDown ) 
@@ -378,15 +551,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Cursor::Set((right), Cursor::#__cursor_Right ) 
   Cursor::Set((down), Cursor::#__cursor_Down ) 
   
-  Cursor::Set((left2), Cursor::#__cursor_LeftRight ) 
-  Cursor::Set((right2), Cursor::#__cursor_LeftRight ) 
-  Cursor::Set((up2), Cursor::#__cursor_UpDown ) 
-  Cursor::Set((down2), Cursor::#__cursor_UpDown ) 
+  Cursor::Set((left2), Cursor::#__cursor_LeftRight2 ) 
+  Cursor::Set((right2), Cursor::#__cursor_LeftRight2 ) 
+  Cursor::Set((up2), Cursor::#__cursor_UpDown2 ) 
+  Cursor::Set((down2), Cursor::#__cursor_UpDown2 ) 
   
-  Cursor::Set((left3), Cursor::#__cursor_LeftRight2 ) 
-  Cursor::Set((right3), Cursor::#__cursor_LeftRight2 ) 
-  Cursor::Set((up3), Cursor::#__cursor_UpDown2 ) 
-  Cursor::Set((down3), Cursor::#__cursor_UpDown2 ) 
+  Cursor::Set((left3), Cursor::#__cursor_LeftRight ) 
+  Cursor::Set((right3), Cursor::#__cursor_LeftRight ) 
+  Cursor::Set((up3), Cursor::#__cursor_UpDown ) 
+  Cursor::Set((down3), Cursor::#__cursor_UpDown ) 
   
   Cursor::Set((Arrows), Cursor::#__cursor_Arrows ) 
   Cursor::Set((Cross), Cursor::#__cursor_Cross ) 
@@ -860,6 +1033,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----PAAw----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 259
+; FirstLine = 223
+; Folding = --------PAA5----
 ; EnableXP

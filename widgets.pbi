@@ -2409,10 +2409,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Data.i cursor::#__cursor_UpDown           ; 2
          Data.i cursor::#__cursor_LeftRight        ; 3
          Data.i cursor::#__cursor_UpDown           ; 4
-         Data.i cursor::#__cursor_LeftUp  ; 5
-         Data.i cursor::#__cursor_RightUp  ; 6
-         Data.i cursor::#__cursor_RightDown  ; 7
-         Data.i cursor::#__cursor_LeftDown  ; 8
+         Data.i cursor::#__cursor_LeftUp           ; 5
+         Data.i cursor::#__cursor_RightUp          ; 6
+         Data.i cursor::#__cursor_RightDown        ; 7
+         Data.i cursor::#__cursor_LeftDown         ; 8
          Data.i cursor::#__cursor_Arrows           ; 9
          
          ;       Data.i cursor::#__cursor_LeftRight        ; 10
@@ -3043,6 +3043,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
+               ;\\
+               If *this\anchors
+                  a_size( *this\anchors\id, *this\anchors\size )
+                  a_move( *this\anchors\id,
+                          *this\screen_x( ),
+                          *this\screen_y( ),
+                          *this\screen_width( ),
+                          *this\screen_height( ) )
+               EndIf
+         
                ;\\
                If a_index( ) And
                   a_focused( ) And 
@@ -16242,11 +16252,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If *this\type = #__type_Splitter
             If *this\bar\vertical
-               *this\cursor[1] = cursor::#__cursor_UpDown
+               *this\cursor[1] = cursor::#__cursor_UpDown2
                *this\cursor[2] = cursor::#__cursor_Up
                *this\cursor[3] = cursor::#__cursor_Down
             Else
-               *this\cursor[1] = cursor::#__cursor_LeftRight
+               *this\cursor[1] = cursor::#__cursor_LeftRight2
                *this\cursor[2] = cursor::#__cursor_Left
                *this\cursor[3] = cursor::#__cursor_Right
             EndIf
@@ -21694,6 +21704,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------------0----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+0v------f-f-f--0---------0----------------X0----------8qXv0--------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3055
+; FirstLine = 3005
+; Folding = ----------------------------------------------------------8------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08f-------+-+-+-8---------8----------------v7----------4Vve8--------------------------------------------------
 ; EnableXP
