@@ -27,44 +27,44 @@ DeclareModule Cursor
   UsePNGImageDecoder()
   
   Enumeration 
-    #PB_Cursor_Default         ; = 0 
-    #PB_Cursor_Cross           ; = 1 
-    #PB_Cursor_IBeam           ; = 2 
-    #PB_Cursor_Hand            ; = 3  
-    #PB_Cursor_Busy            ; = 4  
-    #PB_Cursor_Denied          ; = 5  
-    #PB_Cursor_Arrows          ; = 6  
+    #__cursor_Default         ; = 0 
+    #__cursor_Cross           ; = 1 
+    #__cursor_IBeam           ; = 2 
+    #__cursor_Hand            ; = 3  
+    #__cursor_Busy            ; = 4  
+    #__cursor_Denied          ; = 5  
+    #__cursor_Arrows          ; = 6  
     
-    #PB_Cursor_LeftRight       ; = 7 
-    #PB_Cursor_UpDown          ; = 8  
-    #PB_Cursor_LeftUpRightDown ; = 9
-    #PB_Cursor_LeftDownRightUp ; = 10
+    #__cursor_LeftRight       ; = 7 
+    #__cursor_UpDown          ; = 8  
+    #__cursor_LeftUpRightDown ; = 9
+    #__cursor_LeftDownRightUp ; = 10
     
-    #PB_Cursor_Invisible       ; = 11
+    #__cursor_Invisible       ; = 11
     
-    #PB_Cursor_LeftUp
-    #PB_Cursor_RightUp
-    #PB_Cursor_LeftDown
-    #PB_Cursor_RightDown
+    #__cursor_LeftUp
+    #__cursor_RightUp
+    #__cursor_LeftDown
+    #__cursor_RightDown
     
-    #PB_Cursor_Left  
-    #PB_Cursor_Right           
-    #PB_Cursor_Up 
-    #PB_Cursor_Down           
+    #__cursor_Left  
+    #__cursor_Right           
+    #__cursor_Up 
+    #__cursor_Down           
     
-    #PB_Cursor_LeftRight2      
-    #PB_Cursor_UpDown2        
+    #__cursor_LeftRight2      
+    #__cursor_UpDown2        
     
-    #PB_Cursor_Drag
-    #PB_Cursor_Drop
+    #__cursor_Drag
+    #__cursor_Drop
     
-    #PB_Cursor_Grab            
-    #PB_Cursor_Grabbing
-    #PB_Cursor_VIBeam
+    #__cursor_Grab            
+    #__cursor_Grabbing
+    #__cursor_VIBeam
   EndEnumeration
   
-  #PB_Cursor_DiagonalLeft  = #PB_Cursor_LeftUpRightDown
-  #PB_Cursor_DiagonalRight = #PB_Cursor_LeftDownRightUp
+  #__cursor_DiagonalLeft  = #__cursor_LeftUpRightDown
+  #__cursor_DiagonalRight = #__cursor_LeftDownRightUp
   
   
   Structure _s_cursor
@@ -241,19 +241,19 @@ CompilerIf #PB_Compiler_IsMainFile
   g2=CanvasGadget(-1,0,0,0,0,#PB_Canvas_Keyboard)
   SplitterGadget(111,10,240,60,60, g1,g2)
   
-  ; If Set((111),#PB_Cursor_UpDown)
+  ; If Set((111),#__cursor_UpDown)
   ;   Debug "updown"           
   ; EndIf       
   
-  If cursor::Set((100),#PB_Cursor_Hand)
+  If cursor::Set((100),#__cursor_Hand)
     Debug "setCursorHand"           
   EndIf       
   
-  If cursor::Set((g1),#PB_Cursor_IBeam)
+  If cursor::Set((g1),#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
-  If cursor::Set((g2),#PB_Cursor_IBeam)
+  If cursor::Set((g2),#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
@@ -264,15 +264,15 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   ;If cursor::Set((0), ImageID(0))
-  If cursor::Set((0), cursor::#PB_Cursor_drop)
+  If cursor::Set((0), cursor::#__cursor_drop)
     Debug "setCursorImage"           
   EndIf       
   
-  If cursor::Set((1),#PB_Cursor_Hand)
+  If cursor::Set((1),#__cursor_Hand)
     Debug "setCursorHand - " ;+CocoaMessage(0, 0, "NSCursor currentCursor")
   EndIf       
   
-  If cursor::Set((11),#PB_Cursor_Cross)
+  If cursor::Set((11),#__cursor_Cross)
     Debug "setCursorCross"           
   EndIf       
   
@@ -287,15 +287,15 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(2, 10, 10, 200, 200, g1,g2)
   BindEvent(#PB_Event_SizeWindow, @Resize_2(), 2)
   
-  ;   If cursor::Set((g1),#PB_Cursor_IBeam)
+  ;   If cursor::Set((g1),#__cursor_IBeam)
   ;     Debug "setCursorIBeam"           
   ;   EndIf       
   ;   
-  ;   If cursor::Set((g2),#PB_Cursor_Hand)
+  ;   If cursor::Set((g2),#__cursor_Hand)
   ;     Debug "setCursorHand"           
   ;   EndIf       
   ;   
-  ;   If cursor::Set((2),#PB_Cursor_UpDown)
+  ;   If cursor::Set((2),#__cursor_UpDown)
   ;     Debug "setCursorHand"           
   ;   EndIf       
   
@@ -310,11 +310,11 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(3,10, 10, 200, 200, g1,g2)
   BindEvent(#PB_Event_SizeWindow, @Resize_3(), 3)
   
-  If cursor::Set((g1),#PB_Cursor_IBeam)
+  If cursor::Set((g1),#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
-  ;   If cursor::Set((g2),#PB_Cursor_IBeam)
+  ;   If cursor::Set((g2),#__cursor_IBeam)
   ;     Debug "setCursorIBeam"           
   ;   EndIf       
   
@@ -324,33 +324,33 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;-\\ OPENWINDOW
   OpenWindow(4, 550, 300, 328, 328, "window_4", #PB_Window_SystemMenu)
-  Define Invisible = CanvasGadget(#PB_Any, 8, 8, 86, 86) : GadgetToolTip( Invisible, "#PB_Cursor_Invisible")
-  Define Denied = CanvasGadget(#PB_Any, 8, 264, 56, 56) : GadgetToolTip( Denied, "#PB_Cursor_Denied")
-  Define Cross = CanvasGadget(#PB_Any, 264, 8, 56, 56) : GadgetToolTip( Cross, "#PB_Cursor_Cross")
-  Define Busy = CanvasGadget(#PB_Any, 264, 264, 56, 56) : GadgetToolTip( Busy, "#PB_Cursor_Busy")
+  Define Invisible = CanvasGadget(#PB_Any, 8, 8, 86, 86) : GadgetToolTip( Invisible, "#__cursor_Invisible")
+  Define Denied = CanvasGadget(#PB_Any, 8, 264, 56, 56) : GadgetToolTip( Denied, "#__cursor_Denied")
+  Define Cross = CanvasGadget(#PB_Any, 264, 8, 56, 56) : GadgetToolTip( Cross, "#__cursor_Cross")
+  Define Busy = CanvasGadget(#PB_Any, 264, 264, 56, 56) : GadgetToolTip( Busy, "#__cursor_Busy")
   
   ;   Canvas_4 = CanvasGadget(#PB_Any, 72, 8, 56, 56)
   Define lt = CanvasGadget(#PB_Any, 72, 72, 56, 56)
   Define lb = CanvasGadget(#PB_Any, 72, 200, 56, 56)
   ;   Canvas_72 = CanvasGadget(#PB_Any, 72, 264, 56, 56)
   
-  Define up = CanvasGadget(#PB_Any, 136, 8, 56, 24) : GadgetToolTip( up, "#PB_Cursor_Up")
-  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24) : GadgetToolTip( up2, "#PB_Cursor_UpDown")
-  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56) : GadgetToolTip( up3, "#PB_Cursor_UpDown2")
+  Define up = CanvasGadget(#PB_Any, 136, 8, 56, 24) : GadgetToolTip( up, "#__cursor_Up")
+  Define up2 = CanvasGadget(#PB_Any, 136, 8+24+8, 56, 24) : GadgetToolTip( up2, "#__cursor_UpDown")
+  Define up3 = CanvasGadget(#PB_Any, 136, 72, 56, 56) : GadgetToolTip( up3, "#__cursor_UpDown2")
   
-  Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56) : GadgetToolTip( left, "#PB_Cursor_Left")
-  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56) : GadgetToolTip( left2, "#PB_Cursor_LeftRight")
-  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56) : GadgetToolTip( left3, "#PB_Cursor_LeftRight2")
+  Define left = CanvasGadget(#PB_Any, 8, 136, 24, 56) : GadgetToolTip( left, "#__cursor_Left")
+  Define left2 = CanvasGadget(#PB_Any, 8+24+8, 136, 24, 56) : GadgetToolTip( left2, "#__cursor_LeftRight")
+  Define left3 = CanvasGadget(#PB_Any, 72, 136, 56, 56) : GadgetToolTip( left3, "#__cursor_LeftRight2")
   
-  Define Arrows = CanvasGadget(#PB_Any, 136, 136, 56, 56) : GadgetToolTip( Arrows, "#PB_Cursor_Arrows")
+  Define Arrows = CanvasGadget(#PB_Any, 136, 136, 56, 56) : GadgetToolTip( Arrows, "#__cursor_Arrows")
   
-  Define right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56) : GadgetToolTip( right, "#PB_Cursor_Right")
-  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#PB_Cursor_LeftRight")
-  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#PB_Cursor_LeftRight2")
+  Define right = CanvasGadget(#PB_Any, 264+8+24, 136, 24, 56) : GadgetToolTip( right, "#__cursor_Right")
+  Define right2 = CanvasGadget(#PB_Any, 264, 136, 24, 56) : GadgetToolTip( right2, "#__cursor_LeftRight")
+  Define right3 = CanvasGadget(#PB_Any, 200, 136, 56, 56) : GadgetToolTip( right3, "#__cursor_LeftRight2")
   
-  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#PB_Cursor_UpDown2")
-  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#PB_Cursor_UpDown")
-  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#PB_Cursor_Down")
+  Define down3 = CanvasGadget(#PB_Any, 136, 200, 56, 56) : GadgetToolTip( down3, "#__cursor_UpDown2")
+  Define down2 = CanvasGadget(#PB_Any, 136, 264, 56, 24) : GadgetToolTip( down2, "#__cursor_UpDown")
+  Define down = CanvasGadget(#PB_Any, 136, 264+8+24, 56, 24) : GadgetToolTip( down, "#__cursor_Down")
   
   ;   Canvas_12 = CanvasGadget(#PB_Any, 200, 8, 56, 56)
   Define rt = CanvasGadget(#PB_Any, 200, 72, 56, 56)
@@ -364,35 +364,35 @@ CompilerIf #PB_Compiler_IsMainFile
   ;;Canvas_19 = CanvasGadget(#PB_Any, 264, 200, 56, 56)
   
   
-  ;   Cursor::Set((lt), Cursor::#PB_Cursor_LeftUpRightDown ) 
-  ;   Cursor::Set((rb), Cursor::#PB_Cursor_LeftUpRightDown ) 
-  ;   Cursor::Set((rt), Cursor::#PB_Cursor_LeftDownRightUp ) 
-  ;   Cursor::Set((lb), Cursor::#PB_Cursor_LeftDownRightUp ) 
-  Cursor::Set((lt), Cursor::#PB_Cursor_LeftUp ) 
-  Cursor::Set((rt), Cursor::#PB_Cursor_RightUp ) 
-  Cursor::Set((lb), Cursor::#PB_Cursor_LeftDown ) 
-  Cursor::Set((rb), Cursor::#PB_Cursor_RightDown ) 
+  ;   Cursor::Set((lt), Cursor::#__cursor_LeftUpRightDown ) 
+  ;   Cursor::Set((rb), Cursor::#__cursor_LeftUpRightDown ) 
+  ;   Cursor::Set((rt), Cursor::#__cursor_LeftDownRightUp ) 
+  ;   Cursor::Set((lb), Cursor::#__cursor_LeftDownRightUp ) 
+  Cursor::Set((lt), Cursor::#__cursor_LeftUp ) 
+  Cursor::Set((rt), Cursor::#__cursor_RightUp ) 
+  Cursor::Set((lb), Cursor::#__cursor_LeftDown ) 
+  Cursor::Set((rb), Cursor::#__cursor_RightDown ) 
   
-  Cursor::Set((left), Cursor::#PB_Cursor_Left ) 
-  Cursor::Set((up), Cursor::#PB_Cursor_Up ) 
-  Cursor::Set((right), Cursor::#PB_Cursor_Right ) 
-  Cursor::Set((down), Cursor::#PB_Cursor_Down ) 
+  Cursor::Set((left), Cursor::#__cursor_Left ) 
+  Cursor::Set((up), Cursor::#__cursor_Up ) 
+  Cursor::Set((right), Cursor::#__cursor_Right ) 
+  Cursor::Set((down), Cursor::#__cursor_Down ) 
   
-  Cursor::Set((left2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((right2), Cursor::#PB_Cursor_LeftRight ) 
-  Cursor::Set((up2), Cursor::#PB_Cursor_UpDown ) 
-  Cursor::Set((down2), Cursor::#PB_Cursor_UpDown ) 
+  Cursor::Set((left2), Cursor::#__cursor_LeftRight ) 
+  Cursor::Set((right2), Cursor::#__cursor_LeftRight ) 
+  Cursor::Set((up2), Cursor::#__cursor_UpDown ) 
+  Cursor::Set((down2), Cursor::#__cursor_UpDown ) 
   
-  Cursor::Set((left3), Cursor::#PB_Cursor_LeftRight2 ) 
-  Cursor::Set((right3), Cursor::#PB_Cursor_LeftRight2 ) 
-  Cursor::Set((up3), Cursor::#PB_Cursor_UpDown2 ) 
-  Cursor::Set((down3), Cursor::#PB_Cursor_UpDown2 ) 
+  Cursor::Set((left3), Cursor::#__cursor_LeftRight2 ) 
+  Cursor::Set((right3), Cursor::#__cursor_LeftRight2 ) 
+  Cursor::Set((up3), Cursor::#__cursor_UpDown2 ) 
+  Cursor::Set((down3), Cursor::#__cursor_UpDown2 ) 
   
-  Cursor::Set((Arrows), Cursor::#PB_Cursor_Arrows ) 
-  Cursor::Set((Cross), Cursor::#PB_Cursor_Cross ) 
-  Cursor::Set((Invisible), Cursor::#PB_Cursor_Invisible ) 
-  Cursor::Set((Denied), Cursor::#PB_Cursor_Denied ) 
-  Cursor::Set((Busy), Cursor::#PB_Cursor_Busy ) 
+  Cursor::Set((Arrows), Cursor::#__cursor_Arrows ) 
+  Cursor::Set((Cross), Cursor::#__cursor_Cross ) 
+  Cursor::Set((Invisible), Cursor::#__cursor_Invisible ) 
+  Cursor::Set((Denied), Cursor::#__cursor_Denied ) 
+  Cursor::Set((Busy), Cursor::#__cursor_Busy ) 
   
   
   
@@ -861,7 +861,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 30
+; CursorPosition = 44
+; FirstLine = 37
 ; Folding = -----PAAw----
 ; EnableXP

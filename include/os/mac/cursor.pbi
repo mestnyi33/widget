@@ -418,7 +418,7 @@ Module Cursor
       DrawingMode(#PB_2DDrawing_AlphaBlend)
       Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
       
-      If type = #PB_Cursor_Arrows
+      If type = #__cursor_Arrows
         x = 8
         y = 8
         Box(6,6,4,4, fcolor)
@@ -430,26 +430,26 @@ Module Cursor
         Box(7,7,2,2, bcolor)
       EndIf
       
-      If type = #PB_Cursor_LeftUp Or type = #PB_Cursor_RightDown
+      If type = #__cursor_LeftUp Or type = #__cursor_RightDown
         x = 7
         y = 7
         DrawCursorDiagonal1(0,0, size, bcolor, fcolor )
       EndIf
       
-      If type = #PB_Cursor_LeftDown Or type = #PB_Cursor_RightUp
+      If type = #__cursor_LeftDown Or type = #__cursor_RightUp
         x = 7
         y = 7
         DrawCursorDiagonal2(0,0, size, bcolor, fcolor )
       EndIf
       
-      If type = #PB_Cursor_UpDown2
+      If type = #__cursor_UpDown2
         x = 8
         y = 6
         DrawCursorUp(0,-1,height, bcolor, fcolor )
         DrawCursorDown(0,5,height, bcolor, fcolor )
       EndIf
       
-      If type = #PB_Cursor_LeftRight2
+      If type = #__cursor_LeftRight2
         x = 6
         y = 8
         DrawCursorLeft(-1,0,width, bcolor, fcolor )
@@ -465,9 +465,9 @@ Module Cursor
   Procedure   Image( type.i = 0 )
     Protected image
     
-    If type = #PB_Cursor_Drop
+    If type = #__cursor_Drop
       image = CatchImage( #PB_Any, ?add, 601 )
-    ElseIf type = #PB_Cursor_Drag
+    ElseIf type = #__cursor_Drag
       image = CatchImage( #PB_Any, ?copy, 530 )
     EndIf
     
@@ -652,31 +652,31 @@ Module Cursor
         ;           EndIf
         
         Select icursor
-          Case #PB_Cursor_Invisible : *cursor\hcursor = - 1
-          Case #PB_Cursor_Busy 
+          Case #__cursor_Invisible : *cursor\hcursor = - 1
+          Case #__cursor_Busy 
             SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
             
-          Case #PB_Cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-          Case #PB_Cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-          Case #PB_Cursor_Denied    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
+          Case #__cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+          Case #__cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+          Case #__cursor_Denied    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
             
-          Case #PB_Cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-          Case #PB_Cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+          Case #__cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+          Case #__cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
             
-          Case #PB_Cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
-          Case #PB_Cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
-          Case #PB_Cursor_LeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+          Case #__cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+          Case #__cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+          Case #__cursor_LeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
             
-          Case #PB_Cursor_Up        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
-          Case #PB_Cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
-          Case #PB_Cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-            ;             Case #PB_Cursor_UpDown       
+          Case #__cursor_Up        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+          Case #__cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+          Case #__cursor_UpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            ;             Case #__cursor_UpDown       
             ;               
             
             
-          Case #PB_Cursor_Arrows, #PB_Cursor_LeftRight2, #PB_Cursor_UpDown2, 
-               #PB_Cursor_LeftDownRightUp, #PB_Cursor_LeftDown, #PB_Cursor_RightUp, 
-               #PB_Cursor_LeftUpRightDown, #PB_Cursor_LeftUp, #PB_Cursor_RightDown 
+          Case #__cursor_Arrows, #__cursor_LeftRight2, #__cursor_UpDown2, 
+               #__cursor_LeftDownRightUp, #__cursor_LeftDown, #__cursor_RightUp, 
+               #__cursor_LeftUpRightDown, #__cursor_LeftUp, #__cursor_RightDown 
             
             If Not FindMapElement(images( ), Str(icursor))
               AddMapElement(images( ), Str(icursor))
@@ -684,12 +684,12 @@ Module Cursor
             EndIf
             *cursor\hcursor = images( )
             
-          Case #PB_Cursor_Drag : *cursor\hcursor = New( icursor )
-            ;Case #PB_Cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
-          Case #PB_Cursor_Drop : *cursor\hcursor = New( icursor )
+          Case #__cursor_Drag : *cursor\hcursor = New( icursor )
+            ;Case #__cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+          Case #__cursor_Drop : *cursor\hcursor = New( icursor )
             
-          Case #PB_Cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
-          Case #PB_Cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+          Case #__cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+          Case #__cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
             
         EndSelect 
       Else
@@ -714,29 +714,29 @@ Module Cursor
     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
     
     If isHiden( ) 
-      result = #PB_Cursor_Invisible
+      result = #__cursor_Invisible
     Else
       Select CocoaMessage(0, 0, "NSCursor currentCursor")
-        Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #PB_Cursor_Default
-        Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #PB_Cursor_IBeam
-          ; Case CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor") : result = #PB_Cursor_VIBeam
+        Case CocoaMessage(0, 0, "NSCursor arrowCursor") : result = #__cursor_Default
+        Case CocoaMessage(0, 0, "NSCursor IBeamCursor") : result = #__cursor_IBeam
+          ; Case CocoaMessage(0, 0, "NSCursor IBeamCursorForVerticalLayoutCursor") : result = #__cursor_VIBeam
           
-        Case CocoaMessage(0, 0, "NSCursor dragCopyCursor") : result = #PB_Cursor_Drop
-        Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #PB_Cursor_Drag
-        Case CocoaMessage(0, 0, "NSCursor disappearingItemCursor") : result = #PB_Cursor_Denied
+        Case CocoaMessage(0, 0, "NSCursor dragCopyCursor") : result = #__cursor_Drop
+        Case CocoaMessage(0, 0, "NSCursor operationNotAllowedCursor") : result = #__cursor_Drag
+        Case CocoaMessage(0, 0, "NSCursor disappearingItemCursor") : result = #__cursor_Denied
           
-        Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #PB_Cursor_Cross
-        Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #PB_Cursor_Hand
-        Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #PB_Cursor_Grab
-        Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #PB_Cursor_Grabbing
+        Case CocoaMessage(0, 0, "NSCursor crosshairCursor") : result = #__cursor_Cross
+        Case CocoaMessage(0, 0, "NSCursor pointingHandCursor") : result = #__cursor_Hand
+        Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #__cursor_Grab
+        Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #__cursor_Grabbing
           
-        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #PB_Cursor_Up
-        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #PB_Cursor_Down
-        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #PB_Cursor_UpDown
+        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #__cursor_Up
+        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #__cursor_Down
+        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #__cursor_UpDown
           
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #PB_Cursor_Left
-        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #PB_Cursor_Right
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #PB_Cursor_LeftRight
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #__cursor_Left
+        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #__cursor_Right
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #__cursor_LeftRight
       EndSelect 
     EndIf
     
@@ -744,7 +744,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 239
-; FirstLine = 221
-; Folding = --f---------f-
+; CursorPosition = 738
+; FirstLine = 651
+; Folding = --f-----------
 ; EnableXP
