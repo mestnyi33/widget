@@ -245,15 +245,15 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Debug "updown"           
   ; EndIf       
   
-  If cursor::Set((100),#__cursor_Hand)
+  If cursor::Set((100),cursor::#__cursor_Hand)
     Debug "setCursorHand"           
   EndIf       
   
-  If cursor::Set((g1),#__cursor_IBeam)
+  If cursor::Set((g1),cursor::#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
-  If cursor::Set((g2),#__cursor_IBeam)
+  If cursor::Set((g2),cursor::#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
@@ -268,11 +268,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "setCursorImage"           
   EndIf       
   
-  If cursor::Set((1),#__cursor_Hand)
+  If cursor::Set((1),cursor::#__cursor_Hand)
     Debug "setCursorHand - " ;+CocoaMessage(0, 0, "NSCursor currentCursor")
   EndIf       
   
-  If cursor::Set((11),#__cursor_Cross)
+  If cursor::Set((11),cursor::#__cursor_Cross)
     Debug "setCursorCross"           
   EndIf       
   
@@ -287,15 +287,15 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(2, 10, 10, 200, 200, g1,g2)
   BindEvent(#PB_Event_SizeWindow, @Resize_2(), 2)
   
-  ;   If cursor::Set((g1),#__cursor_IBeam)
+  ;   If cursor::Set((g1),cursor::#__cursor_IBeam)
   ;     Debug "setCursorIBeam"           
   ;   EndIf       
   ;   
-  ;   If cursor::Set((g2),#__cursor_Hand)
+  ;   If cursor::Set((g2),cursor::#__cursor_Hand)
   ;     Debug "setCursorHand"           
   ;   EndIf       
   ;   
-  ;   If cursor::Set((2),#__cursor_UpDown)
+  ;   If cursor::Set((2),cursor::#__cursor_UpDown)
   ;     Debug "setCursorHand"           
   ;   EndIf       
   
@@ -310,11 +310,11 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(3,10, 10, 200, 200, g1,g2)
   BindEvent(#PB_Event_SizeWindow, @Resize_3(), 3)
   
-  If cursor::Set((g1),#__cursor_IBeam)
+  If cursor::Set((g1),cursor::#__cursor_IBeam)
     Debug "setCursorIBeam"           
   EndIf       
   
-  ;   If cursor::Set((g2),#__cursor_IBeam)
+  ;   If cursor::Set((g2),cursor::#__cursor_IBeam)
   ;     Debug "setCursorIBeam"           
   ;   EndIf       
   
@@ -860,8 +860,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 37
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -----PAAw----
 ; EnableXP
