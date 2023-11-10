@@ -13,7 +13,7 @@ Module Cursor
     Select uMsg
 ;       Case #WM_NCDESTROY
 ;         ; RemoveProp_(hwnd, "__oldproc")
-;       ; RemoveProp_(hwnd, "__cursor")
+;       ; RemoveProp_(hwnd, "#__cursor")
       
       Case #WM_SETCURSOR
         ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
@@ -383,7 +383,7 @@ Module Cursor
   EndProcedure
   
   Procedure   Change( GadgetID.i, state.b )
-    Protected result, *cursor._s_cursor = GetProp_(GadgetID, "__cursor")
+    Protected result, *cursor._s_cursor = GetProp_(GadgetID, "#__cursor")
     If *cursor And
        *cursor\hcursor
       
@@ -426,12 +426,12 @@ Module Cursor
         Debug "setCursor"
       CompilerEndIf
       
-      *cursor = GetProp_(GadgetID, "__cursor")
+      *cursor = GetProp_(GadgetID, "#__cursor")
       
       If Not *cursor
         *cursor = AllocateStructure(_s_cursor)
         *cursor\windowID = ID::GetWindowID(GadgetID)
-        SetProp_(GadgetID, "__cursor", *cursor) 
+        SetProp_(GadgetID, "#__cursor", *cursor) 
         ;
         OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
         ; SetProp_(GadgetID,"__oldproc", SetWindowLongPtr_(GadgetID,#GWL_WNDPROC,@Proc()))
@@ -1334,5 +1334,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----v-----------------
+; Folding = 4---v2z---------------
 ; EnableXP
