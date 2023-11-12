@@ -12,7 +12,7 @@
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
-  Define fs = 10
+  Define i,fs = 10
   ;\\
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
@@ -23,17 +23,21 @@
   ;\\
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-  ; object = Container(100, 100, 250, 250) : CloseList()
+  ;object = Container(100, 100, 250, 250) : CloseList()
   ;object = String(100, 100, 250, 250, "string", #__flag_borderless)
-  object = Button(100, 100, 250, 250, "button");, #__flag_borderless)
-  
+  ;object = Button(100, 100, 250, 250, "button");, #__flag_borderless)
+  object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
+   
 ;   ;\\
-;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   widget()\fs = 50 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
   Define anchor_size = 30
   a_set(parent, #__a_full, anchor_size/2)
   a_set(object, #__a_full, anchor_size)
+;   a_set(object, #__a_full, anchor_size*2)
+;   a_set(object, #__a_full, anchor_size*2, 5)
+;   a_set(object, #__a_full, anchor_size)
   
   ;\\
   SizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
@@ -54,7 +58,9 @@
     Select WidgetEventType( )
           
        Case #__event_statuschange
-          Debug "statuschange "
+          If EventWidget( )\show
+             Debug "statuschange "
+          EndIf
           
        Case #__event_resize
           Debug "resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
@@ -143,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 34
-; FirstLine = 19
-; Folding = --
+; CursorPosition = 14
+; FirstLine = 10
+; Folding = v-
 ; EnableXP

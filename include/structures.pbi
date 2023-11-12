@@ -588,6 +588,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          child.b                ; is the widget composite?
          children.l             ; if the has children
          
+         show.b
          create.b
          hide.b                 ;
          hidden.b               ; hide state
@@ -758,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 579
-; FirstLine = 357
+; CursorPosition = 590
+; FirstLine = 358
 ; Folding = -O+-9IA+--
 ; EnableXP
