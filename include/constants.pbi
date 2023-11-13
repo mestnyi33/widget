@@ -853,13 +853,7 @@
       #__a_size = #__a_corner | #__a_edge
       #__a_full = #__a_position | #__a_size
       
-      
-      ;-\\ mouse-buttons
-;       #__button_left   = 1<<0
-;       #__button_right  = 1<<1
-;       #__button_middle = 1<<2
-;       #__button_up     = 1<<3
-      
+       
       ;-
       ;- GLOBAL
       ;-
@@ -1161,7 +1155,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 860
+; CursorPosition = 855
 ; FirstLine = 852
 ; Folding = ---
 ; EnableXP

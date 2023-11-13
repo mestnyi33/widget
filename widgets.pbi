@@ -2882,7 +2882,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
                ;\\
                If *this\anchors And *this\anchors\mode
-                  Debug " resize-anchors "
+                  ; Debug " resize-anchors "
                   a_size( *this\anchors\id, *this\anchors\size )
                   a_move( *this\anchors\id,
                           *this\screen_x( ),
@@ -3008,7 +3008,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DoEvents( *this, #__event_StatusChange, *this\data, a_index( ) )
                   Else
                      If a_entered( ) <> a_focused( )
-                        Debug "-s-"
+                        ;Debug "-s-"
                         a_show( *this, #True )
                         a_entered( ) = a_focused( )
                      EndIf
@@ -3245,7 +3245,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If eventtype = #__event_MouseEnter
                ;Debug "e "+*this\class
-               If Not Mouse( )\buttonpress
+               If Not Mouse( )\press
                   If a_focused( ) = *this
                      a_entered( ) = *this
                   Else
@@ -3257,7 +3257,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If eventtype = #__event_MouseLeave
                ;;Debug "l "+*this\class
-               If Not Mouse( )\buttonpress 
+               If Not Mouse( )\press 
                   a_show( *this, #False )
                EndIf
             EndIf
@@ -3363,7 +3363,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If eventtype = #__event_MouseMove
                If Not a_transform( )\grab
-                  If mouse( )\buttonpress And a_focused( ) And a_focused( )\state\press
+                  If mouse( )\press And a_focused( ) And a_focused( )\state\press
                      If a_index( ) And a_focused( )\anchors\id[a_index( )] And a_focused( )\anchors\id[a_index( )]\color\state = #__S_2
                         mouse_x - mouse( )\delta\x
                         mouse_y - mouse( )\delta\y
@@ -17530,7 +17530,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ entered anchor index
          If a_transform( )
-            If Not mouse( )\buttonpress  
+            If Not mouse( )\press  
               ;\\ reset a_index
                If a_index( ) > 0
                 If a_focused( ) And
@@ -17613,8 +17613,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               a_focused( )\state\enter = - 1 ; i+2
                               a_focused( )\repaint     = #True
                               
-                              If mouse( )\cursor <> a_transform( )\cursor[i]
-                                 mouse( )\cursor = a_transform( )\cursor[i]
+                              If Not a_focused( )\state\press
+                                 If mouse( )\cursor <> a_transform( )\cursor[i]
+                                    mouse( )\cursor = a_transform( )\cursor[i]
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
@@ -17652,8 +17654,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  a_entered( )\state\enter = - 1 ; i+2
                                  a_entered( )\repaint     = #True
                                  
-                                 If mouse( )\cursor <> a_transform( )\cursor[i]
-                                    mouse( )\cursor = a_transform( )\cursor[i]
+                                 If Not a_entered( )\state\press
+                                    If mouse( )\cursor <> a_transform( )\cursor[i]
+                                       mouse( )\cursor = a_transform( )\cursor[i]
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
@@ -17694,7 +17698,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If EnteredButton( )
-                  ; If Not mouse( )\buttonpress 
+                  ; If Not mouse( )\press 
                      If EnteredButton( )\state\enter = #True
                         EnteredButton( )\state\enter = #False
                         
@@ -18510,7 +18514,7 @@ IsChild( *widget, *widget\_widgets( ))
                
                ;\\
                If *this\row\multiselect
-                  If Mouse( )\buttonpress And *this\PressedRow( ) And *this\EnteredRow( )
+                  If Mouse( )\press And *this\PressedRow( ) And *this\EnteredRow( )
                      _multi_select_items_( *this, *this\EnteredRow( ) )
                   EndIf
                EndIf
@@ -19357,7 +19361,7 @@ IsChild( *widget, *widget\_widgets( ))
          
          ;\\ before send-widget-events change cursor
          If eventtype = #__event_CursorUpdate
-            Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
+            ;Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
            
            Cursor::Set( *this\root\canvas\gadget, mouse( )\cursor )
          EndIf
@@ -19442,7 +19446,7 @@ IsChild( *widget, *widget\_widgets( ))
          ;\\ cursor update
          Select eventtype
             Case #__event_MouseEnter, #__event_MouseMove, #__event_MouseLeave, #__event_Down, #__event_Up
-               If PressedWidget( ) And PressedWidget( )\state\press
+               If PressedWidget( ) And PressedWidget( )\state\press 
                   If Not ( a_transform( ) And a_index( ))
                      If mouse( )\cursor <> PressedWidget( )\cursor
                         mouse( )\cursor = PressedWidget( )\cursor
@@ -19480,11 +19484,13 @@ IsChild( *widget, *widget\_widgets( ))
                      Else
                         ; если внутри виджета покинули область где надо менять курсор
                         If a_transform( ) And a_index( )
-                           If mouse( )\cursor <> cursor::#__cursor_Default
+                           ;If Not mouse( )\buttons
+                              If mouse( )\cursor <> cursor::#__cursor_Default
                               If EnteredWidget( )
                                  DoEvents( EnteredWidget( ), #__event_CursorUpdate, mouse( )\cursor, 5 )
                               EndIf
                               mouse( )\cursor = cursor::#__cursor_Default
+                           ;EndIf
                            EndIf
                         Else
                            
@@ -19749,7 +19755,7 @@ IsChild( *widget, *widget\_widgets( ))
                     #PB_EventType_RightButtonDown,
                     #PB_EventType_MiddleButtonDown
                   
-                  mouse( )\buttonpress = 1
+                  mouse( )\press  = 1
                   mouse( )\change = 1 << 5
                   If eventtype = #PB_EventType_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
                   If eventtype = #PB_EventType_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
@@ -19763,7 +19769,7 @@ IsChild( *widget, *widget\_widgets( ))
                      mouse( )\interact = - 1
                   EndIf
                   
-                  mouse( )\buttonpress = 0
+                  mouse( )\press  = 0
                   mouse( )\change = 1 << 6
                   mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
                   mouse( )\y      = CanvasMouseY( Root( )\canvas\gadget )
@@ -19850,20 +19856,20 @@ IsChild( *widget, *widget\_widgets( ))
                   mouse( )\delta\x = mouse( )\x
                   mouse( )\delta\y = mouse( )\y
                   
-                  If PressedWidget( )\bar And EnteredButton( ) > 0 
-                     If Not ( a_transform( ) And a_index( ))
-                        mouse( )\delta\x - PressedWidget( )\bar\thumb\pos
-                        mouse( )\delta\y - PressedWidget( )\bar\thumb\pos
-                     EndIf
-                  Else
-                     If Not a_transform( )
-                        mouse( )\delta\x - PressedWidget( )\container_x( )
-                        mouse( )\delta\y - PressedWidget( )\container_y( )
-                        
-                        If Not PressedWidget( )\child 
-                           If PressedWidget( )\parent
-                              mouse( )\delta\x - PressedWidget( )\parent\scroll_x( )
-                              mouse( )\delta\y - PressedWidget( )\parent\scroll_y( )
+                  If Not ( a_transform( ) And a_index( ))
+                     If EnteredWidget( )\bar And EnteredButton( ) > 0 
+                        mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                        mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
+                     Else
+                        If Not a_transform( )
+                           mouse( )\delta\x - EnteredWidget( )\container_x( )
+                           mouse( )\delta\y - EnteredWidget( )\container_y( )
+                           
+                           If Not EnteredWidget( )\child 
+                              If EnteredWidget( )\parent
+                                 mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
+                                 mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -19894,7 +19900,7 @@ IsChild( *widget, *widget\_widgets( ))
                ClickTime = ElapsedMilliseconds
                
                ;\\
-               DoEvents( PressedWidget( ), #__event_Down )
+               DoEvents( EnteredWidget( ), #__event_Down )
                If mouse( )\click = 1
                   If eventtype = #PB_EventType_LeftButtonDown 
                      DoEvents( PressedWidget( ), #__event_leftdown )
@@ -21779,7 +21785,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19752
-; FirstLine = 18701
-; Folding = ----------------------------------------------------------------------87+------------------------------------------------------------------------------------------------------------------------------vv-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---84-70--8-8-v-------------------------------v3t8---V79vr+dv0---t+4--4--v28-------------------------------------
+; CursorPosition = 17661
+; FirstLine = 17413
+; Folding = ----------------------------------------------------------------------87+------------------------------------------------------------------------------------------------------------------------------vv-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v--8---v4--v-v-f+-0---------0-------------------K4m8--Xpz-u7403---47f--f---W--------------------------------------
 ; EnableXP

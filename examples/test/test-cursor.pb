@@ -50,20 +50,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
             
          Case #__event_cursorchange
-            ;Debug ""+ WidgetEvent( )\widget\class +" event( CURSOR ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
+            Debug ""+ WidgetEvent( )\widget\class +" event( CURSOR ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
             
          Case #__event_statuschange
-             ;Debug ""+ WidgetEvent( )\widget\class +" event( STATUS ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
+             Debug ""+ WidgetEvent( )\widget\class +" event( STATUS ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
             
          Case #__event_resize
-            ;Debug "resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
+             Debug ""+EventWidget( )\class +" event( RESIZE ) "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
             
       EndSelect
    EndProcedure
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 11
+; CursorPosition = 58
+; FirstLine = 28
 ; Folding = --
 ; EnableXP

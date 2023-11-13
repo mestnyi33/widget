@@ -139,8 +139,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          change.b                   ; mouse moved state
          click.a                    ; mouse clicked count
-         buttons.l                  ; mouse clicked button
-         buttonpress.b
+         buttons.a                  ; mouse clicked button
+         press.b
          
          *drag._s_DRAG
          wheel._s_POINT
@@ -760,7 +760,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 143
+; CursorPosition = 142
 ; FirstLine = 89
 ; Folding = -O+-9IA+--
 ; EnableXP
