@@ -17541,19 +17541,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
                     a_focused( )\state\enter                        = #False
                     a_focused( )\repaint                            = #True
-                    If *widget
-                       If is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_inner] ) And
-                          is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_draw] )   
-                          If Not ( *widget\type = #__type_Splitter And 
-                                   is_atpoint_( *widget\bar\button, mouse( )\x, mouse( )\y ) = 0 )
-                             If Not ( *widget\type = #__type_HyperLink And 
-                                      is_atpoint_( *widget, mouse( )\x - *widget\frame_x( ), mouse( )\y - *widget\frame_y( ), [#__c_Required] ) = 0 )
-                                mouse( )\cursor = *widget\cursor
-                             EndIf
-                          EndIf
+                    If *widget And 
+                       is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_inner] ) And
+                       is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_draw] ) And 
+                       Not ( *widget\type = #__type_Splitter And is_atpoint_( *widget\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And 
+                       Not ( *widget\type = #__type_HyperLink And is_atpoint_( *widget, mouse( )\x - *widget\frame_x( ), mouse( )\y - *widget\frame_y( ), [#__c_Required] ) = 0 )
+                       If mouse( )\cursor <> *widget\cursor
+                          mouse( )\cursor = *widget\cursor
+                          DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 2 )
+                       EndIf
+                    Else
+                       If mouse( )\cursor <> cursor::#__cursor_default
+                          mouse( )\cursor = cursor::#__cursor_default
+                          DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 3 )
                        EndIf
                     EndIf
-                    DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 2 )
                     LeavedWidget( ) = #Null
                   EndIf
                 EndIf
@@ -17567,19 +17569,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     a_entered( )\anchors\id[a_index( )]\color\state = #__S_0
                     a_entered( )\state\enter                        = #False
                     a_entered( )\repaint                            = #True
-                    If *widget
-                       If is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_inner] ) And
-                          is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_draw] )  
-                          If Not ( *widget\type = #__type_Splitter And 
-                                   is_atpoint_( *widget\bar\button, mouse( )\x, mouse( )\y ) = 0 )
-                             If Not ( *widget\type = #__type_HyperLink And 
-                                      is_atpoint_( *widget, mouse( )\x - *widget\frame_x( ), mouse( )\y - *widget\frame_y( ), [#__c_Required] ) = 0 )
-                                mouse( )\cursor = *widget\cursor
-                             EndIf
-                          EndIf
+                    If *widget And 
+                       is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_inner] ) And
+                       is_atpoint_( *widget, mouse( )\x, mouse( )\y, [#__c_draw] ) And 
+                       Not ( *widget\type = #__type_Splitter And is_atpoint_( *widget\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And 
+                       Not ( *widget\type = #__type_HyperLink And is_atpoint_( *widget, mouse( )\x - *widget\frame_x( ), mouse( )\y - *widget\frame_y( ), [#__c_Required] ) = 0 )
+                       If mouse( )\cursor <> *widget\cursor
+                          mouse( )\cursor = *widget\cursor
+                          DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 4 )
+                       EndIf
+                    Else
+                       If mouse( )\cursor <> cursor::#__cursor_default
+                          mouse( )\cursor = cursor::#__cursor_default
+                          DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 5 )
                        EndIf
                     EndIf
-                    DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 3 )
+                    
                     LeavedWidget( ) = #Null
                   EndIf
                 EndIf
@@ -17613,11 +17618,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               a_focused( )\state\enter = - 1 ; i+2
                               a_focused( )\repaint     = #True
                               
-                              If Not a_focused( )\state\press
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
                                     mouse( )\cursor = a_transform( )\cursor[i]
-                                 EndIf
-                              EndIf
+                                    DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, 7 )
+                                    EndIf
                            EndIf
                         EndIf
                         
@@ -17654,11 +17658,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  a_entered( )\state\enter = - 1 ; i+2
                                  a_entered( )\repaint     = #True
                                  
-                                 If Not a_entered( )\state\press
                                     If mouse( )\cursor <> a_transform( )\cursor[i]
                                        mouse( )\cursor = a_transform( )\cursor[i]
+                                       DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, 6 )
                                     EndIf
-                                 EndIf
                               EndIf
                            EndIf
                            
@@ -19483,24 +19486,14 @@ IsChild( *widget, *widget\_widgets( ))
                         
                      Else
                         ; если внутри виджета покинули область где надо менять курсор
-                        If a_transform( ) And a_index( )
-                           ;If Not mouse( )\buttons
-                              If mouse( )\cursor <> cursor::#__cursor_Default
-                              If EnteredWidget( )
-                                 DoEvents( EnteredWidget( ), #__event_CursorUpdate, mouse( )\cursor, 5 )
-                              EndIf
-                              mouse( )\cursor = cursor::#__cursor_Default
-                           ;EndIf
-                           EndIf
-                        Else
-                           
-                           If EnteredWidget( )
+                        If Not ( a_transform( ) And a_index( ))
+                          If EnteredWidget( )
                               If EnteredWidget( )\state\enter > 0
                                  If mouse( )\cursor <> cursor::#__cursor_Default
                                     mouse( )\cursor = cursor::#__cursor_Default
                                     If LeavedWidget( )
                                        ;  Debug ""+ *this\class +" "+ EnteredWidget( )\class +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                       DoEvents( LeavedWidget( ), #__event_CursorUpdate, mouse( )\cursor, 6 )
+                                       DoEvents( LeavedWidget( ), #__event_CursorUpdate, mouse( )\cursor, 5 )
                                     EndIf
                                  EndIf
                               Else
@@ -21785,7 +21778,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17661
-; FirstLine = 17413
-; Folding = ----------------------------------------------------------------------87+------------------------------------------------------------------------------------------------------------------------------vv-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v--8---v4--v-v-f+-0---------0-------------------K4m8--Xpz-u7403---47f--f---W--------------------------------------
+; CursorPosition = 17548
+; FirstLine = 17339
+; Folding = ----------------------------------------------------------------------87+------------------------------------------------------------------------------------------------------------------------------vv-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v-----4e---+-+-6-4---------4-------------------rcbu--flO-8qf4b---47f--f---W--------------------------------------
 ; EnableXP
