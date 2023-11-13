@@ -22,6 +22,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEach widget( )
       *object = widget( )
       If *object <> root( )
+         ;\\ для всех виджетов
+         Bind( *object, @CustomEvents( ), #__event_cursorchange )
+         
+         ;\\ исключаем некоторые виджеты
          If *object\child
             Continue
          EndIf
@@ -31,9 +35,8 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
          EndIf
          
-         ; Debug *object\class
+         ;\\ оставщиеся виджеты после исключеныя
          a_set( *object, #__a_full, 30 )
-         Bind( *object, @CustomEvents( ), #__event_cursorchange )
          Bind( *object, @CustomEvents( ), #__event_statuschange )
          Bind( *object, @CustomEvents( ), #__event_resize )
       EndIf
@@ -47,20 +50,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
             
          Case #__event_cursorchange
-           ; Debug "cursorchange "
+            ;Debug ""+ WidgetEvent( )\widget\class +" event( CURSOR ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
             
          Case #__event_statuschange
-            Debug "statuschange "
+             ;Debug ""+ WidgetEvent( )\widget\class +" event( STATUS ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
             
          Case #__event_resize
-            Debug "resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
+            ;Debug "resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
             
       EndSelect
    EndProcedure
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 6
+; CursorPosition = 25
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
