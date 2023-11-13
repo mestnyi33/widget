@@ -18927,8 +18927,10 @@ IsChild( *widget, *widget\_widgets( ))
          If *this\state\enter > 0 
             If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_inner] )
                If Not ( a_transform( ) And a_index( ) )
-                  If *this\type = #__type_Splitter
-                     If is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y )
+                  If *this\type = #__type_Splitter Or *this\type = #__type_HyperLink
+                     If ( *this\type = #__type_Splitter And is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y )) Or 
+                        ( *this\type = #__type_HyperLink And is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ))
+                        
                         If *this\state\enter = 1
                            *this\state\enter = 2
                            
@@ -18938,32 +18940,7 @@ IsChild( *widget, *widget\_widgets( ))
                            
                            *this\repaint = 1
                         EndIf
-                     Else
-                        If eventtype = #__event_mouseenter Or 
-                           *this\state\enter = 2 
-                           If *this\state\enter = 2
-                              *this\state\enter = 1
-                           EndIf
-                           
-                           If mouse( )\cursor <> cursor::#__cursor_default
-                              DoEvents( *this, #__event_CursorUpdate, cursor::#__cursor_default, 2 )
-                           EndIf
-                           
-                           *this\repaint = 1
-                        EndIf
-                     EndIf
-                     
-                  ElseIf *this\type = #__type_HyperLink
-                     If is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] )
-                        If *this\state\enter = 1
-                           *this\state\enter = 2
-                           
-                           If mouse( )\cursor <> *this\cursor
-                              DoEvents( *this, #__event_CursorUpdate, *this\cursor, 1 )
-                           EndIf
-                           
-                           *this\repaint = 1
-                        EndIf
+                        
                      Else
                         If eventtype = #__event_mouseenter Or 
                            *this\state\enter = 2 
@@ -19009,6 +18986,7 @@ IsChild( *widget, *widget\_widgets( ))
          Else
             If eventtype = #__event_mouseleave
                If *this\type = #__type_Splitter
+                  
                   If Not ( a_transform( ) And a_index( ) )
                      If EnteredWidget( )
                         If EnteredWidget( )\bar 
@@ -19020,6 +18998,7 @@ IsChild( *widget, *widget\_widgets( ))
                            EndIf
                         Else
                            If mouse( )\cursor <> cursor::#__cursor_default
+                              ; Debug *this\state\enter
                               *this\state\enter = 1
                               DoEvents( *this, #__event_CursorUpdate, cursor::#__cursor_default, 43 )
                            EndIf
@@ -21847,7 +21826,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19022
-; FirstLine = 17659
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84--f-+80--8-8-8-v---------v----------------------d2--------fX0---------------------------------------------------
+; CursorPosition = 18971
+; FirstLine = 17594
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84--f-+80--8-8-8-v---------v---------------------d2--------fX0---------------------------------------------------
 ; EnableXP
