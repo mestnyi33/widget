@@ -519,13 +519,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool( _this_\parent And _this_\child > 0 ) ; And _this_\type <> #__type_window ) ; and Not _this_\container
       EndMacro
       
-      Macro is_widgetinside_( _this_ )
-         Bool( is_atpoint_( _this_, mouse( )\x, mouse( )\y, [#__c_draw] ) And
-               is_atpoint_( _this_, mouse( )\x, mouse( )\y, [#__c_inner] ) And
-               Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
-               Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, mouse( )\x - _this_\frame_x( ), mouse( )\y - _this_\frame_y( ), [#__c_Required] ) = 0 ))
-      EndMacro
-
       Macro is_inside_( _position_, _size_, _mouse_ ) ;
          Bool( _mouse_ > _position_ And _mouse_ <= ( _position_ + _size_ ) And ( _position_ + _size_ ) > 0 )
       EndMacro
@@ -539,6 +532,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool( Sqr( Pow((( _position_x_ + _circle_radius_ ) - _mouse_x_ ), 2 ) + Pow((( _position_y_ + _circle_radius_ ) - _mouse_y_ ), 2 )) <= _circle_radius_ )
       EndMacro
       
+      Macro is_innerside_( _this_ )
+         Bool( is_atpoint_( _this_, mouse( )\x, mouse( )\y, [#__c_draw] ) And
+               is_atpoint_( _this_, mouse( )\x, mouse( )\y, [#__c_inner] ) And
+               Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
+               Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, mouse( )\x - _this_\frame_x( ), mouse( )\y - _this_\frame_y( ), [#__c_Required] ) = 0 ))
+      EndMacro
+
       Macro is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ = )
          Bool( is_inside_( _address_\x#_mode_, _address_\width#_mode_, _mouse_x_ ) And
                is_inside_( _address_\y#_mode_, _address_\height#_mode_, _mouse_y_ ) )
@@ -17548,7 +17548,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
                         a_focused( )\state\enter                        = #False
                         a_focused( )\repaint                            = #True
-                        If *widget And is_widgetinside_( *widget )
+                        If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
                               DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 2 )
@@ -17572,7 +17572,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_entered( )\anchors\id[a_index( )]\color\state = #__S_0
                         a_entered( )\state\enter                        = #False
                         a_entered( )\repaint                            = #True
-                        If *widget And is_widgetinside_( *widget )
+                        If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
                               DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 4 )
@@ -17614,7 +17614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  DoEvents( a_focused( ), #__event_mouseleave )
                               EndIf
                               
-                              a_focused( )\state\enter = - 1 ; i+2
+                              a_focused( )\state\enter = - 1
                               a_focused( )\repaint     = #True
                               
                               If mouse( )\cursor <> a_transform( )\cursor[i]
@@ -17654,7 +17654,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     DoEvents( a_entered( ), #__event_mouseleave )
                                  EndIf
                                  
-                                 a_entered( )\state\enter = - 1 ; i+2
+                                 a_entered( )\state\enter = - 1
                                  a_entered( )\repaint     = #True
                                  
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
@@ -18939,29 +18939,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ entered position state
          If *this\state\enter > 0
-             If is_widgetinside_( *this )
-;             If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_inner] )
-;                If *this\type = #__type_Splitter
-;                   If is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y )
-;                      If *this\state\enter = 1: *this\state\enter = 2: *this\repaint = 1: EndIf
-;                   Else
-;                      If *this\state\enter = 2: *this\state\enter = 1: *this\repaint = 1: EndIf
-;                   EndIf
-;                ElseIf *this\type = #__type_HyperLink
-;                   If is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] )
-;                      If *this\state\enter = 1: *this\state\enter = 2: *this\repaint = 1: EndIf
-;                   Else
-;                      If *this\state\enter = 2: *this\state\enter = 1: *this\repaint = 1: EndIf
-;                   EndIf
-;                Else
-                   If *this\state\enter = 1: *this\state\enter = 2: *this\repaint = 1: EndIf
-;                EndIf
-            Else
-               If *this\state\enter = 2: *this\state\enter = 1: *this\repaint = 1: EndIf
+            If is_innerside_( *this )
+               If *this\state\enter = 1 
+                  *this\state\enter = 2
+                  *this\repaint = 1
+               EndIf
+            ElseIf *this\state\enter = 2
+               *this\state\enter = 1
+               *this\repaint = 1
             EndIf
          EndIf
-         
-         
          
          ;\\ widget::_events_Anchors( )
          If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
@@ -21778,7 +21765,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18956
-; FirstLine = 17643
+; CursorPosition = 541
+; FirstLine = 524
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-----v-+--0-0-8-v---------v------------------------------------------------------------------------------------
 ; EnableXP
