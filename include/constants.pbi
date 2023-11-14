@@ -11,11 +11,6 @@
       
       ;{
       
-      Enumeration
-         #__action_create
-         #__action_add_items
-      EndEnumeration
-      
       Enumeration - 1
          #SelectionStyle_Default
          #SelectionStyle_none
@@ -46,19 +41,8 @@
       
       
       ;
-      ; default values
+      ;\\ default values
       ;
-      #__border_scroll = 10
-      
-      #__panel_height = 24 ;+ 4
-      #__panel_width  = 85
-      
-      #__menu_height = 25
-      
-      #__from_mouse_state = 0
-      #__focus_state      = 1
-      
-      ;#__splitter_buttonsize = 9
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          #__splitter_buttonsize = 9
       CompilerEndIf
@@ -68,6 +52,14 @@
       CompilerIf #PB_Compiler_OS = #PB_OS_Linux
          #__splitter_buttonsize = 9;4;4
       CompilerEndIf
+      
+      
+      #__panel_height = 24 ;+ 4
+      #__panel_width  = 85
+      
+      #__menu_height = 25
+      
+      #__scroll_border = 10
       #__scroll_buttonsize = 16
       
       #__arrow_type = 1 ; ;-1 ;0 ;1
@@ -124,10 +116,6 @@
          #__s_3
       EndEnumeration
       
-      #__s_entered  = 1 << 0
-      #__s_pressed  = 1 << 1
-      #__s_disabled = 1 << 2
-      
       ;-\\ Attribute
       #__displayMode = 1 << 13
       ;   #PB_image = 1<<13
@@ -135,7 +123,7 @@
       ;   #PB_flag = 1<<15
       ;   #PB_state = 1<<16
       
-      ;-\\ Resize (state)
+      ;-\\ resize-state
       EnumerationBinary
          #__resize_x
          #__resize_y
@@ -153,20 +141,21 @@
       
       ;-\\ create-flags
       EnumerationBinary 4096 ; 2
-         ; text
-         #__flag_numeric
-         #__flag_readonly
-         #__flag_lowercase
-         #__flag_uppercase
-         #__flag_password
-         #__flag_wordwrap
-         #__flag_multiline
+                             ; text
+         #__flag_textnumeric
+         #__flag_textreadonly
+         #__flag_textlowercase
+         #__flag_textuppercase
+         #__flag_textpassword
+         #__flag_textwordwrap
+         #__flag_textmultiline
          ;
          #__flag_textleft
          #__flag_texttop
          #__flag_textright
          #__flag_textbottom
          #__flag_textcenter
+         #__flag_textinline
          
          
          ; list
@@ -178,9 +167,6 @@
          #__flag_threeState
          #__flag_clickselect
          
-         ;#__flag_inline
-         ;#__flag_invisible
-         ;#__flag_sizegadget
          
          
          ; element
@@ -188,6 +174,7 @@
          #__flag_invert
          #__flag_vertical
          ;#__flag_transparent
+         ;#__flag_invisible
          #__flag_noscrollbars
          #__flag_autoSize
          
@@ -197,26 +184,27 @@
          #__flag_double
          #__flag_raised
          #__flag_single
-         
-         
-         
+         ;#__flag_sizegadget
          #__flag_anchorsgadget
+         
+         
+         
          #__flag_limit
       EndEnumeration
       
       ;\\
       #__flag_nogadgets = #__flag_nobuttons
-      #__flag_textnumeric = #__flag_numeric
-      #__flag_textwordwrap = #__flag_wordwrap
-      #__flag_textmultiline = #__flag_multiline
-      #__flag_textreadonly = #__flag_readonly
-      #__flag_textlowercase = #__flag_lowercase
-         #__flag_textuppercase = #__flag_uppercase
-         #__flag_textpassword = #__flag_password
-         #__flag_center = #__flag_textcenter
+      #__flag_numeric = #__flag_textnumeric
+      #__flag_wordwrap = #__flag_textwordwrap
+      #__flag_multiline = #__flag_textmultiline
+      #__flag_readonly = #__flag_textreadonly
+      #__flag_lowercase = #__flag_textlowercase
+      #__flag_uppercase = #__flag_textuppercase
+      #__flag_password = #__flag_textpassword
+      #__flag_center = #__flag_textcenter
       
-      ;     #__flag_autoright  = #__flag_autosize | #__flag_textright
-      ;     #__flag_autobottom = #__flag_autosize | #__flag_textbottom
+      ;     #__flag_autoright  = #__flag_autosize | #__flag_right
+      ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
       
       ;- \\ align-ment
       #__align_none         = 0
@@ -246,42 +234,23 @@
       #__bar_nobuttons  = #__flag_nogadgets
       
       
-;       ;-\\ Text
-;       #__text_left      = #__flag_textleft
-;       #__text_top       = #__flag_texttop
-;       #__text_right     = #__flag_textright
-;       #__text_bottom    = #__flag_textbottom
-;       #__text_center    = #__flag_textcenter
-;       #__text_invert    = #__flag_invert
-;       #__text_vertical  = #__flag_vertical
-;       #__text_multiline = #__flag_textmultiline
-;       #__text_wordwrap  = #__flag_textwordwrap
-;       #__text_numeric   = #__flag_numeric
-;       #__text_password  = #__flag_password
-;       #__text_readonly  = #__flag_readonly
-;       #__text_lowercase = #__flag_lowercase
-;       #__text_uppercase = #__flag_uppercase
+      ;-\\ Text
+      #__text_invert    = #__flag_invert
+      #__text_vertical  = #__flag_vertical
+      #__text_left      = #__flag_textleft
+      #__text_top       = #__flag_texttop
+      #__text_right     = #__flag_textright
+      #__text_bottom    = #__flag_textbottom
+      #__text_center    = #__flag_textcenter
+      #__text_multiline = #__flag_textmultiline
+      #__text_wordwrap  = #__flag_textwordwrap
+      #__text_numeric   = #__flag_textnumeric
+      #__text_password  = #__flag_textpassword
+      #__text_readonly  = #__flag_textreadonly
+      #__text_lowercase = #__flag_textlowercase
+      #__text_uppercase = #__flag_textuppercase
       
-      ;     ;                            ; m/l ; w         ;
-      ;     Debug #PB_text_right         ;  1  ; 2         ;
-      ;     Debug #PB_text_center        ;  2  ; 1         ;
-      ;     Debug #PB_text_border        ;  4  ; 131072    ;
-      ;
-      ;     Debug #PB_button_right       ;  1  ; 512       ;
-      ;     Debug #PB_button_left        ;  2  ; 256       ;
-      ;     Debug #PB_button_toggle      ;  4  ; 4099      ;
-      ;     Debug #PB_button_Default     ;  8  ; 1         ;
-      ;     Debug #PB_button_multiLine   ;  16 ; 8192      ;
-      ;
-      ;     Debug #PB_string_password    ;  1  ; 32        ;
-      ;     Debug #PB_string_readOnly    ;  2  ; 2048      ;
-      ;     Debug #PB_string_UpperCase   ;  4  ; 8         ;
-      ;     Debug #PB_string_lowerCase   ;  8  ; 16        ;
-      ;     Debug #PB_string_numeric     ;  16 ; 8192      ;
-      ;     Debug #PB_string_borderLess  ;  32 ; 131072    ;
-      ;
-      ;     Debug #PB_Editor_readOnly    ;  1  ; 2048      ;
-      ;     Debug #PB_Editor_wordWrap    ;  2  ; 268435456 ;
+      
       
       
       ;-\\ Image
@@ -444,26 +413,26 @@
       ;     #PB_ListIcon_List      : Режим значка списка
       ;     #PB_ListIcon_Report    : Режим отчета (столбцы, режим по умолчанию)
       
-;       ;-\\ Editor
-;       ;#__editor_inline = #__flag_inLine
-;       #__editor_readonly = #__flag_readonly
-;       #__editor_wordwrap = #__flag_textwordwrap
-;       ;#__editor_nomultiline   = #__flag_nolines
-;       ;#__editor_numeric       = #__flag_numeric | #__text_multiline
-;       ;#__editor_fullselection = #__flag_fullselection
-;       ;#__editor_gridlines     = #__flag_gridLines
-;       ;#__editor_borderless    = #__flag_borderless
-;       
-; ;       ;-\\ String
-;       #__string_right     = #__text_right
-;       #__string_center    = #__text_center
-;       #__string_numeric   = #__text_numeric
-;       #__string_password  = #__text_password
-;       #__string_readonly  = #__text_readonly
-;       #__string_uppercase = #__text_uppercase
-;       #__string_lowercase = #__text_lowercase
-;       #__string_multiline = #__text_multiline
-;       ;#__string_borderless = #__flag_borderless
+      ;       ;-\\ Editor
+      ;       ;#__editor_inline = #__flag_inLine
+      ;       #__editor_readonly = #__flag_readonly
+      ;       #__editor_wordwrap = #__flag_textwordwrap
+      ;       ;#__editor_nomultiline   = #__flag_nolines
+      ;       ;#__editor_numeric       = #__flag_numeric | #__text_multiline
+      ;       ;#__editor_fullselection = #__flag_fullselection
+      ;       ;#__editor_gridlines     = #__flag_gridLines
+      ;       ;#__editor_borderless    = #__flag_borderless
+      ;       
+      ; ;       ;-\\ String
+      ;       #__string_right     = #__text_right
+      ;       #__string_center    = #__text_center
+      ;       #__string_numeric   = #__text_numeric
+      ;       #__string_password  = #__text_password
+      ;       #__string_readonly  = #__text_readonly
+      ;       #__string_uppercase = #__text_uppercase
+      ;       #__string_lowercase = #__text_lowercase
+      ;       #__string_multiline = #__text_multiline
+      ;       ;#__string_borderless = #__flag_borderless
       
       ;-\\ Button
       #__button_toggle    = #PB_Button_Toggle
@@ -475,9 +444,9 @@
       #__button_invert    = #__flag_invert
       
       
-;       If (#__flag_limit >> 1) > 2147483647 ; 8589934592
-;          Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
-;       EndIf
+      ;       If (#__flag_limit >> 1) > 2147483647 ; 8589934592
+      ;          Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
+      ;       EndIf
       
       
       ;-\\ event-type
@@ -541,9 +510,9 @@
          #__event_close
          #__event_free
          
-;          #__event_titlechange ;
-;          #__event_closeItem
-;          #__event_sizeitem
+         ;          #__event_titlechange ;
+         ;          #__event_closeItem
+         ;          #__event_sizeitem
       EndEnumeration
       
       EnumerationBinary
@@ -609,10 +578,10 @@
       #__event_returnkey    = #__event_return
       #__event_cursorupdate = #__event_cursorchange
       ;
-;       #__event_maximizewindow = #__event_maximize
-;       #__event_minimizewindow = #__event_minimize
-;       #__event_restorewindow = #__event_restore
-;       #__event_closewindow = #__event_close
+      ;       #__event_maximizewindow = #__event_maximize
+      ;       #__event_minimizewindow = #__event_minimize
+      ;       #__event_restorewindow = #__event_restore
+      ;       #__event_closewindow = #__event_close
       
       ;-\\ create-type
       Enumeration - 1
@@ -732,7 +701,7 @@
       #__a_line_top    = 2;12
       #__a_line_right  = 3;11
       #__a_line_bottom = 4;13
-      #__a_count       = 9      ;#__a_moved
+      #__a_count       = 9;#__a_moved
       
       ; a_mode_
       EnumerationBinary 1
@@ -1048,7 +1017,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 163
-; FirstLine = 151
+; CursorPosition = 96
+; FirstLine = 82
 ; Folding = ---
 ; EnableXP

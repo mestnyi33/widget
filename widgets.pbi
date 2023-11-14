@@ -347,7 +347,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro EnteredItem( ): EnteredWidget( )\EnteredRow( ): EndMacro
       
       Macro PopupWindow( ): widget::*canvas\sticky\window: EndMacro
-      Macro Popup( ): widget::*canvas\sticky\root: EndMacro
+      Macro Popup( ): widget::*canvas\sticky\box: EndMacro
       
       Macro WidgetEvent( ): widget::*canvas\event: EndMacro
       Macro WidgetEventWidget( ): WidgetEvent( )\widget: EndMacro
@@ -13121,11 +13121,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i GetGadget( *this._S_WINDOW = #Null )
+      Procedure.i GetGadget( *this._S_WIDGET = #Null )
          If *this = #Null
             ProcedureReturn Root( )\canvas\gadget ; Returns current root canvas-gadget
          ElseIf is_window_( *this )
-            ProcedureReturn *this\widget ; Returns active gadget
+            ProcedureReturn *this\gadget ; Returns active gadget
          Else
             ProcedureReturn *this\root\canvas\gadget ; Returns canvas-gadget
          EndIf
@@ -13891,50 +13891,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; when we deactivate the window
          ; we will deactivate his last active gadget
-         If GetActive( )\widget And
-            GetActive( )\widget\state\focus = #True
-            GetActive( )\widget\state\focus = #False
-            DoEvents( GetActive( )\widget, #__event_LostFocus )
+         If GetActive( )\gadget And
+            GetActive( )\gadget\state\focus = #True
+            GetActive( )\gadget\state\focus = #False
+            DoEvents( GetActive( )\gadget, #__event_LostFocus )
             
             ; is integral scroll bars
-            If GetActive( )\widget\scroll
-               If GetActive( )\widget\scroll\v And
-                  Not GetActive( )\widget\scroll\v\hide And
-                  GetActive( )\widget\scroll\v\type
+            If GetActive( )\gadget\scroll
+               If GetActive( )\gadget\scroll\v And
+                  Not GetActive( )\gadget\scroll\v\hide And
+                  GetActive( )\gadget\scroll\v\type
                   
-                  If GetActive( )\widget\scroll\v\state\focus = #True
-                     GetActive( )\widget\scroll\v\state\focus = #False
-                     DoEvents( GetActive( )\widget\scroll\v, #__event_LostFocus )
+                  If GetActive( )\gadget\scroll\v\state\focus = #True
+                     GetActive( )\gadget\scroll\v\state\focus = #False
+                     DoEvents( GetActive( )\gadget\scroll\v, #__event_LostFocus )
                   EndIf
                EndIf
-               If GetActive( )\widget\scroll\h And
-                  Not GetActive( )\widget\scroll\h\hide And
-                  GetActive( )\widget\scroll\h\type
+               If GetActive( )\gadget\scroll\h And
+                  Not GetActive( )\gadget\scroll\h\hide And
+                  GetActive( )\gadget\scroll\h\type
                   
-                  If GetActive( )\widget\scroll\h\state\focus = #True
-                     GetActive( )\widget\scroll\h\state\focus = #False
-                     DoEvents( GetActive( )\widget\scroll\h, #__event_LostFocus )
+                  If GetActive( )\gadget\scroll\h\state\focus = #True
+                     GetActive( )\gadget\scroll\h\state\focus = #False
+                     DoEvents( GetActive( )\gadget\scroll\h, #__event_LostFocus )
                   EndIf
                EndIf
             EndIf
             
             ; is integral tab bar
-            If GetActive( )\widget\TabBox( ) And
-               Not GetActive( )\widget\TabBox( )\hide And
-               GetActive( )\widget\TabBox( )\type
+            If GetActive( )\gadget\TabBox( ) And
+               Not GetActive( )\gadget\TabBox( )\hide And
+               GetActive( )\gadget\TabBox( )\type
                
-               If GetActive( )\widget\TabBox( )\state\focus = #True
-                  GetActive( )\widget\TabBox( )\state\focus = #False
-                  DoEvents( GetActive( )\widget\TabBox( ), #__event_LostFocus )
+               If GetActive( )\gadget\TabBox( )\state\focus = #True
+                  GetActive( )\gadget\TabBox( )\state\focus = #False
+                  DoEvents( GetActive( )\gadget\TabBox( ), #__event_LostFocus )
                EndIf
             EndIf
          EndIf
          
          ; 			;// set deactive all parents
          ; 			Protected *active._S_WIDGET
-         ; 			If GetActive( )\widget And
-         ; 			   GetActive( )\widget\address
-         ; 				*active = GetActive( )\widget
+         ; 			If GetActive( )\gadget And
+         ; 			   GetActive( )\gadget\address
+         ; 				*active = GetActive( )\gadget
          ; 			ElseIf GetActive( )\address
          ; 				*active = GetActive( )
          ; 			EndIf
@@ -14028,10 +14028,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\child
                      ; Debug *this\class
                      GetActive( )        = *this\parent\_window( )
-                     GetActive( )\widget = *this\parent
+                     GetActive( )\gadget = *this\parent
                   Else
                      GetActive( )        = *this\_window( )
-                     GetActive( )\widget = *this
+                     GetActive( )\gadget = *this
                   EndIf
                EndIf
                
@@ -14049,10 +14049,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetActive( )
                   ; when we activate the window
                   ; we will activate his last gadget that lost focus
-                  If GetActive( )\widget And
-                     GetActive( )\widget\state\focus = #False
-                     GetActive( )\widget\state\focus = #True
-                     DoEvents( GetActive( )\widget, #__event_Focus )
+                  If GetActive( )\gadget And
+                     GetActive( )\gadget\state\focus = #False
+                     GetActive( )\gadget\state\focus = #True
+                     DoEvents( GetActive( )\gadget, #__event_Focus )
                   EndIf
                   
                   ; set window foreground position
@@ -15641,7 +15641,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\child
                *this\fs = *parent\fs
             Else
-               *this\fs = #__border_scroll
+               *this\fs = #__scroll_border
             EndIf
          EndIf
          If *this\type = #__type_ScrollArea Or
@@ -15655,7 +15655,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Property
             ;
             If Not *this\Flag & #__flag_borderLess
-               *this\fs = #__border_scroll
+               *this\fs = #__scroll_border
             EndIf
          Else
             If *this\type = #__type_Container Or
@@ -20409,7 +20409,7 @@ IsChild( *widget, *widget\_widgets( ))
          With *this
             Static pos_x.l, pos_y.l
             
-            Protected *this._S_WINDOW
+            Protected *this._S_WIDGET
             If MapSize And
                Not ListSize( EnumWidget( ) ) And
                Flag & #__flag_autosize = #__flag_autosize
@@ -20421,7 +20421,7 @@ IsChild( *widget, *widget\_widgets( ))
                *root\autosize = #True
                *this          = *root
             Else
-               *this.allocate( WINDOW )
+               *this.allocate( WIDGET )
             EndIf
             
             If x = #PB_Ignore : If a_transform( ) : x = pos_x + a_transform( )\grid_size : Else : x = pos_x : EndIf : EndIf : pos_x = x + #__window_frame_size
@@ -21828,7 +21828,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21471
-; FirstLine = 21446
+; CursorPosition = 353
+; FirstLine = 340
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
