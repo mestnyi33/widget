@@ -2406,10 +2406,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       DataSection
          DATA_TRANSFORM_CURSOR:
          Data.i cursor::#__cursor_Default          ; 0
-         Data.i cursor::#__cursor_LeftRight        ; 1
-         Data.i cursor::#__cursor_UpDown           ; 2
-         Data.i cursor::#__cursor_LeftRight        ; 3
-         Data.i cursor::#__cursor_UpDown           ; 4
+         Data.i cursor::#__cursor_Left             ; 1
+         Data.i cursor::#__cursor_Up               ; 2
+         Data.i cursor::#__cursor_Right            ; 3
+         Data.i cursor::#__cursor_Down             ; 4
          Data.i cursor::#__cursor_LeftUp           ; 5
          Data.i cursor::#__cursor_RightUp          ; 6
          Data.i cursor::#__cursor_RightDown        ; 7
@@ -16242,13 +16242,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If *this\type = #__type_Splitter
             If *this\bar\vertical
-               *this\cursor[1] = cursor::#__cursor_UpDown2
-               *this\cursor[2] = cursor::#__cursor_Up
-               *this\cursor[3] = cursor::#__cursor_Down
+               *this\cursor[1] = cursor::#__cursor_SplitUpDown
+               *this\cursor[2] = cursor::#__cursor_SplitUp
+               *this\cursor[3] = cursor::#__cursor_SplitDown
             Else
-               *this\cursor[1] = cursor::#__cursor_LeftRight2
-               *this\cursor[2] = cursor::#__cursor_Left
-               *this\cursor[3] = cursor::#__cursor_Right
+               *this\cursor[1] = cursor::#__cursor_SplitLeftRight
+               *this\cursor[2] = cursor::#__cursor_SplitLeft
+               *this\cursor[3] = cursor::#__cursor_SplitRight
             EndIf
          EndIf
          If *this\cursor[1]
@@ -21763,6 +21763,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2411
+; FirstLine = 2382
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-----v-+--0-0-8-v---------v----------------------------------------------------------------------------v-0+----
 ; EnableXP

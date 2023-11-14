@@ -1,4 +1,4 @@
-﻿;\\
+﻿;-\\ MAC OS
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
@@ -257,30 +257,80 @@ Module Cursor
         Box(7,7,2,2, bcolor)
       EndIf
       
-      If type = #__cursor_LeftUp Or type = #__cursor_RightDown
+      ;\\
+      If type = #__cursor_LeftUp Or
+         type = #__cursor_RightDown Or
+         type = #__cursor_Diagonal1 
         x = 7
         y = 7
         DrawImageCursorDiagonal1(0,0, size, bcolor, fcolor )
       EndIf
-      
-      If type = #__cursor_LeftDown Or type = #__cursor_RightUp
+      If type = #__cursor_LeftDown Or
+         type = #__cursor_RightUp Or
+         type = #__cursor_Diagonal2 
         x = 7
         y = 7
         DrawImageCursorDiagonal2(0,0, size, bcolor, fcolor )
       EndIf
       
+      ;\\
+      If type = #__cursor_SplitUp
+        x = 8
+        y = 6
+        DrawImageUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
+        Plot(0, 7, fcolor ) : Line(1, 7, width-2, 1, bcolor) : Plot(width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(0, 8, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      EndIf
       If type = #__cursor_UpDown
         x = 8
         y = 6
         DrawImageCursorUp(0,-1,height, bcolor, fcolor )
         DrawImageCursorDown(0,5,height, bcolor, fcolor )
       EndIf
+      If type = #__cursor_SplitUpDown
+        x = 8
+        y = 6
+        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorSplitDown(0,5,height, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitDown
+        x = 8
+        y = 6
+        Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitDown(0,0,height, bcolor, fcolor )
+        DrawImageDown(0,0,height, bcolor, fcolor )
+      EndIf
       
+      ;\\
+      If type = #__cursor_SplitLeft
+        x = 6
+        y = 8
+        DrawImageLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
+        Plot(7, 0, fcolor ) : Line(7, 1, 1, height-2, bcolor) : Plot(7, height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(8, 0, 1, height, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      EndIf
       If type = #__cursor_LeftRight
         x = 6
         y = 8
         DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
         DrawImageCursorRight(5,0,width, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitLeftRight
+        x = 6
+        y = 8
+        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorSplitRight(5,0,width, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitRight
+        x = 6
+        y = 8
+        Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitRight(0,0,width, bcolor, fcolor )
+        DrawImageRight(0,0,width, bcolor, fcolor )
       EndIf
       
       StopDrawing()
@@ -288,6 +338,7 @@ Module Cursor
     
     ProcedureReturn Create( ImageID( image ), x, y )
   EndProcedure
+  
   
   Procedure   Image( type.i = 0 )
     Protected image
@@ -490,21 +541,23 @@ Module Cursor
           Case #__cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
           Case #__cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
             
-          Case #__cursor_Left      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
-          Case #__cursor_Right     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
-          Case #__cursor_LeftRight2 : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+          Case #__cursor_SplitLeft      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+          Case #__cursor_SplitRight     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+          Case #__cursor_SplitLeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
             
-          Case #__cursor_Up        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
-          Case #__cursor_Down      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
-          Case #__cursor_UpDown2    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-            ;             Case #__cursor_UpDown2       
+          Case #__cursor_SplitUp        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+          Case #__cursor_SplitDown      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+          Case #__cursor_SplitUpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+            ;             Case #__cursor_SplitUpDown       
             ;               
             
             
-          Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown, 
-               #__cursor_LeftDownRightUp, #__cursor_LeftDown, #__cursor_RightUp, 
-               #__cursor_LeftUpRightDown, #__cursor_LeftUp, #__cursor_RightDown 
-            
+          Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
+;                  #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+;                  #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
+                 #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
+                 #__cursor_Diagonal2, #__cursor_Diagonal1 
+              
             If Not FindMapElement(images( ), Str(icursor))
               AddMapElement(images( ), Str(icursor))
               images( ) = Draw( icursor )
@@ -557,19 +610,21 @@ Module Cursor
         Case CocoaMessage(0, 0, "NSCursor openHandCursor") : result = #__cursor_Grab
         Case CocoaMessage(0, 0, "NSCursor closedHandCursor") : result = #__cursor_Grabbing
           
-        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #__cursor_Up
-        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #__cursor_Down
-        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #__cursor_UpDown2
+        Case CocoaMessage(0, 0, "NSCursor resizeUpCursor") : result = #__cursor_SplitUp
+        Case CocoaMessage(0, 0, "NSCursor resizeDownCursor") : result = #__cursor_SplitDown
+        Case CocoaMessage(0, 0, "NSCursor resizeUpDownCursor") : result = #__cursor_SplitUpDown
           
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #__cursor_Left
-        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #__cursor_Right
-        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #__cursor_LeftRight2
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftCursor") : result = #__cursor_SplitLeft
+        Case CocoaMessage(0, 0, "NSCursor resizeRightCursor") : result = #__cursor_SplitRight
+        Case CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor") : result = #__cursor_SplitLeftRight
       EndSelect 
     EndIf
     
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --f--------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 558
+; FirstLine = 314
+; Folding = --f--v2T8---
 ; EnableXP

@@ -1,9 +1,9 @@
-﻿;\\
+﻿;-\\ LINUX
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
   ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php#GdkCursorType
-  ;--- LINUX:
+  ; LINUX:
   ;   GDK_X_CURSOR 		  = 0,
   ;   GDK_ARROW 		  = 2,
   ;   GDK_BASED_ARROW_DOWN    = 4,
@@ -114,6 +114,118 @@ Module Cursor
   Global NewMap images.i()
   
   ;-\\
+  Procedure   Draw( type.i = 0 )
+    Protected image
+    Protected x = 0
+    Protected y = 0
+    Protected size = 16
+    Protected width = size
+    Protected height = size
+    Protected fcolor = $ffFFFFFF
+    Protected bcolor = $ff000000
+    
+    ;\\
+    image = CreateImage(#PB_Any, width, height, 32, #PB_Image_Transparent)
+    
+    ;\\
+    If StartDrawing(ImageOutput(image))
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
+      Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+      
+      If type = #__cursor_Arrows
+        x = 8
+        y = 8
+        Box(6,6,4,4, fcolor)
+        DrawImageCursorUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorDown(0,7,height, bcolor, fcolor )
+        ;         
+        DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorRight(7,0,width, bcolor, fcolor )
+        Box(7,7,2,2, bcolor)
+      EndIf
+      
+      ;\\
+      If type = #__cursor_LeftUp Or
+         type = #__cursor_RightDown Or
+         type = #__cursor_Diagonal1 
+        x = 7
+        y = 7
+        DrawImageCursorDiagonal1(0,0, size, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_LeftDown Or
+         type = #__cursor_RightUp Or
+         type = #__cursor_Diagonal2 
+        x = 7
+        y = 7
+        DrawImageCursorDiagonal2(0,0, size, bcolor, fcolor )
+      EndIf
+      
+      ;\\
+      If type = #__cursor_SplitUp
+        x = 8
+        y = 6
+        DrawImageUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
+        Plot(0, 7, fcolor ) : Line(1, 7, width-2, 1, bcolor) : Plot(width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(0, 8, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      EndIf
+      If type = #__cursor_UpDown
+        x = 8
+        y = 6
+        DrawImageCursorUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorDown(0,5,height, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitUpDown
+        x = 8
+        y = 6
+        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
+        DrawImageCursorSplitDown(0,5,height, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitDown
+        x = 8
+        y = 6
+        Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitDown(0,0,height, bcolor, fcolor )
+        DrawImageDown(0,0,height, bcolor, fcolor )
+      EndIf
+      
+      ;\\
+      If type = #__cursor_SplitLeft
+        x = 6
+        y = 8
+        DrawImageLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
+        Plot(7, 0, fcolor ) : Line(7, 1, 1, height-2, bcolor) : Plot(7, height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(8, 0, 1, height, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      EndIf
+      If type = #__cursor_LeftRight
+        x = 6
+        y = 8
+        DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorRight(5,0,width, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitLeftRight
+        x = 6
+        y = 8
+        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
+        DrawImageCursorSplitRight(5,0,width, bcolor, fcolor )
+      EndIf
+      If type = #__cursor_SplitRight
+        x = 6
+        y = 8
+        Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitRight(0,0,width, bcolor, fcolor )
+        DrawImageRight(0,0,width, bcolor, fcolor )
+      EndIf
+      
+      StopDrawing()
+    EndIf
+    
+    ProcedureReturn Create( ImageID( image ), x, y )
+  EndProcedure
+  
   Procedure Image( type.i = 0 )
     Protected image
     
@@ -257,67 +369,52 @@ Module Cursor
         
         If icursor >= 0 And icursor <= 255
           Select icursor
-            Case #__cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
-            Case #__cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS) ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
-            Case #__cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
-            Case #__cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
-            Case #__cursor_Busy      : *cursor\hcursor = gdk_cursor_new_(#GDK_WATCH)
-            Case #__cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
-            Case #__cursor_Arrows    : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
-            
             ;;Case #__cursor_Invisible : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BLANK_CURSOR)
             Case #__cursor_Invisible : *cursor\hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR); GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
               Debug 888
+            Case #__cursor_Busy      : *cursor\hcursor = gdk_cursor_new_(#GDK_WATCH)
+               
+            Case #__cursor_Default   : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
+            Case #__cursor_Cross     : *cursor\hcursor = gdk_cursor_new_(#GDK_CROSS) ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
+            Case #__cursor_IBeam     : *cursor\hcursor = gdk_cursor_new_(#GDK_XTERM)
+               
+            Case #__cursor_Hand      : *cursor\hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
+            Case #__cursor_Denied    : *cursor\hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
+            Case #__cursor_Arrows    : *cursor\hcursor = gdk_cursor_new_(#GDK_FLEUR)
+            
               
             Case #__cursor_Left      : *cursor\hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; GDK_LEFT_TEE ; GDK_LEFT_SIDE ; #GDK_SB_LEFT_ARROW
             Case #__cursor_Right     : *cursor\hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE) ; GDK_RIGHT_TEE ; GDK_RIGHT_SIDE ; #GDK_SB_RIGHT_ARROW
-            Case #__cursor_LeftRight2 : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW);GDK_SB_H_DOUBLE_ARROW ; GDK_SB_LEFT_ARROW ; GDK_SB_RIGHT_ARROW
+            Case #__cursor_SplitLeft      : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_LEFT_ARROW) 
+            Case #__cursor_SplitRight     : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_RIGHT_ARROW)
+            Case #__cursor_SplitLeftRight : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW)
               
-            Case #__cursor_Up        : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_SIDE) ; GDK_TOP_TEE ; GDK_TOP_SIDE
-            Case #__cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE
-            ;Case #__cursor_UpDown2    : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW); GDK_SB_V_DOUBLE_ARROW ; GDK_SB_UP_ARROW ; GDK_SB_DOWN_ARROW
-             Case #__cursor_UpDown2       
-              
-              Define x = 0
-              Define y = 0
-              Define width = 16
-              Define height = 16;7
-              Define fcolor = $ffFFFFFF
-              Define bcolor = $ff000000
-              Define img = CreateImage(#PB_Any, width, height, 32, #PB_Image_Transparent)
-              Macro DrawUp2(x, y, size, bcolor, fcolor)
-                Line(x+7, y, 2, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-                Plot(x+6, y+1, fcolor ) : Line(x+7, y+1, 2, 1, bcolor) : Plot(x+9, y+1, fcolor )                                   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-                Plot(x+5, y+2, fcolor ) : Line(x+6, y+2, 4, 1, bcolor) : Plot(x+10, y+2, fcolor )                                  ; 0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0
-                Plot(x+4, y+3, fcolor ) : Line(x+5, y+3, 6, 1, bcolor) : Plot(x+11, y+3, fcolor )                                  ; 0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0
-                Line(x+4, y+4, 3, 1, fcolor) : Line(x+7, y+4, 2, 1, bcolor) : Line(x+size/2+1, y+4, 3 , 1, fcolor)                 ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-                Plot(x+size/2-2, y+5, fcolor ) : Line(x+7, y+5, 2, 1, bcolor) : Plot(x+size/2+1, y+5, fcolor )                     ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-              EndMacro
-              Macro DrawCursorSplitterUp2(x, y, width, bcolor, fcolor)
-                Line(x, y+6, width/2-1 , 1, fcolor) : Line(x+7, y+6, 2, 1, bcolor) : Line(x+width/2+1, y+6, width/2-1, 1, fcolor)   ; 0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0
-                Plot(x, y+7, fcolor ) : Line(x+1, y+7, width-2, 1, bcolor) : Plot(x+width-1, y+7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-              EndMacro
-              If StartDrawing(ImageOutput(img))
-                DrawingMode(#PB_2DDrawing_AlphaBlend)
-                Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
-                ; up                                                 
-                DrawUp2(x, y, width, bcolor, fcolor)
-                DrawCursorSplitterUp2(x,y,width, bcolor, fcolor )
-                Plot(x, y+8, fcolor ) : Line(x+1, y+8, width-2, 1, bcolor) : Plot(x+width-1, y+8, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-                Line(x, y + 9, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-                StopDrawing()
-              EndIf
-              
-              *cursor\hcursor = Create(ImageID(img), width/2, height/2)
-              
-            Case #__cursor_LeftUpRightDown  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_LEFT_CORNER); GDK_UL_ANGLE ; GDK_TOP_LEFT_CORNER ; GDK_LR_ANGLE ; GDK_BOTTOM_RIGHT_CORNER
-            Case #__cursor_LeftDownRightUp  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
-              
+            Case #__cursor_Up       : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_SIDE) ; GDK_TOP_TEE ; GDK_TOP_SIDE ; GDK_SB_UP_ARROW 
+            Case #__cursor_Down      : *cursor\hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE ; GDK_SB_DOWN_ARROW
+            Case #__cursor_SplitUp        : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_UP_ARROW) 
+            Case #__cursor_SplitDown      : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_DOWN_ARROW) 
+            Case #__cursor_SplitUpDown    : *cursor\hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW)
+            
             Case #__cursor_LeftUp          : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
             Case #__cursor_RightUp         : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_TOP_RIGHT_CORNER)
             Case #__cursor_LeftDown       : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_LEFT_CORNER)
             Case #__cursor_RightDown      : *cursor\hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_(), #GDK_BOTTOM_RIGHT_CORNER)
                
+             Case #__cursor_LeftRight, #__cursor_UpDown, ;#__cursor_Arrows, 
+;                  #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+;                  #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
+;                  #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
+                 #__cursor_Diagonal2, #__cursor_Diagonal1 
+                 
+              If Not FindMapElement(images( ), Str(icursor))
+                AddMapElement(images( ), Str(icursor))
+                images( ) = Draw( icursor )
+              EndIf
+              *cursor\hcursor = images( )
+              
+            Case #__cursor_Diagonal1  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_LEFT_CORNER); GDK_UL_ANGLE ; GDK_TOP_LEFT_CORNER ; GDK_LR_ANGLE ; GDK_BOTTOM_RIGHT_CORNER
+            Case #__cursor_Diagonal2  : *cursor\hcursor = gdk_cursor_new_(#GDK_TOP_RIGHT_CORNER)
+              
             Case #__cursor_Drag : *cursor\hcursor = New( icursor )
             Case #__cursor_Drop : *cursor\hcursor = New( icursor )
               
@@ -359,13 +456,13 @@ Module Cursor
     ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Grabbing
     ;           
     ;         Case gdk_cursor_new_(#GDK_FLEUR) : result = #__cursor_Arrows
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Up
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Down
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_UpDown2
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitUp
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitDown
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitUpDown
     ;           
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Left
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_Right
-    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_LeftRight2
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitLeft
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitRight
+    ;         Case gdk_cursor_new_(#GDK_ARROW) : result = #__cursor_SplitLeftRight
     ;       EndSelect 
     ;     EndIf
     ;     
@@ -373,7 +470,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 367
-; FirstLine = 300
-; Folding = --w---
+; CursorPosition = 415
+; FirstLine = 348
+; Folding = ----h---
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿;\\
+﻿;-\\  WINDOWS
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
@@ -61,20 +61,22 @@ Module Cursor
       
       ;\\
       If type = #__cursor_LeftUp Or
-         type = #__cursor_RightDown
+         type = #__cursor_RightDown Or
+         type = #__cursor_Diagonal1 
         x = 7
         y = 7
         DrawImageCursorDiagonal1(0,0, size, bcolor, fcolor )
       EndIf
       If type = #__cursor_LeftDown Or
-         type = #__cursor_RightUp
+         type = #__cursor_RightUp Or
+         type = #__cursor_Diagonal2 
         x = 7
         y = 7
         DrawImageCursorDiagonal2(0,0, size, bcolor, fcolor )
       EndIf
       
       ;\\
-      If type = #__cursor_Up
+      If type = #__cursor_SplitUp
         x = 8
         y = 6
         DrawImageUp(0,-1,height, bcolor, fcolor )
@@ -88,13 +90,13 @@ Module Cursor
         DrawImageCursorUp(0,-1,height, bcolor, fcolor )
         DrawImageCursorDown(0,5,height, bcolor, fcolor )
       EndIf
-      If type = #__cursor_UpDown2
+      If type = #__cursor_SplitUpDown
         x = 8
         y = 6
         DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
         DrawImageCursorSplitDown(0,5,height, bcolor, fcolor )
       EndIf
-      If type = #__cursor_Down
+      If type = #__cursor_SplitDown
         x = 8
         y = 6
         Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -104,7 +106,7 @@ Module Cursor
       EndIf
       
       ;\\
-      If type = #__cursor_Left
+      If type = #__cursor_SplitLeft
         x = 6
         y = 8
         DrawImageLeft(-1,0,width, bcolor, fcolor )
@@ -118,13 +120,13 @@ Module Cursor
         DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
         DrawImageCursorRight(5,0,width, bcolor, fcolor )
       EndIf
-      If type = #__cursor_LeftRight2
+      If type = #__cursor_SplitLeftRight
         x = 6
         y = 8
         DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
         DrawImageCursorSplitRight(5,0,width, bcolor, fcolor )
       EndIf
-      If type = #__cursor_Right
+      If type = #__cursor_SplitRight
         x = 6
         y = 8
         Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -323,22 +325,24 @@ Module Cursor
             Case #__cursor_IBeam     : *cursor\hcursor = LoadCursor_(0,#IDC_IBEAM)
             Case #__cursor_Denied    : *cursor\hcursor = LoadCursor_(0,#IDC_NO)
               
-            Case #__cursor_Cross     : *cursor\hcursor = LoadCursor_(0,#IDC_CROSS)
             Case #__cursor_Hand      : *cursor\hcursor = LoadCursor_(0,#IDC_HAND)
+            Case #__cursor_Cross     : *cursor\hcursor = LoadCursor_(0,#IDC_CROSS)
+            Case #__cursor_Arrows      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEALL)
               
-            ;Case #__cursor_Left      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
-            ;Case #__cursor_Right     : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
-            ;Case #__cursor_LeftRight2 : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
+            ;Case #__cursor_SplitLeft      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
+            ;Case #__cursor_SplitRight     : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
+            ;Case #__cursor_SplitLeftRight : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
               
-            ;Case #__cursor_Up        : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
-            ;Case #__cursor_Down      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
-            ;Case #__cursor_UpDown2    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            ;Case #__cursor_SplitUp        : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            ;Case #__cursor_SplitDown      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            ;Case #__cursor_SplitUpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
               
-            Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-                 #__cursor_UpDown2, #__cursor_Up, #__cursor_Down,
-                 #__cursor_LeftRight2, #__cursor_Left, #__cursor_Right,
-                 #__cursor_LeftDownRightUp, #__cursor_LeftDown, #__cursor_RightUp, 
-                 #__cursor_LeftUpRightDown, #__cursor_LeftUp, #__cursor_RightDown 
+              
+            Case #__cursor_LeftRight, #__cursor_UpDown, ; #__cursor_Arrows, 
+                 #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+                 #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
+                 #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
+                 #__cursor_Diagonal2, #__cursor_Diagonal1 
               
               If Not FindMapElement(images( ), Str(icursor))
                 AddMapElement(images( ), Str(icursor))
@@ -346,10 +350,8 @@ Module Cursor
               EndIf
               *cursor\hcursor = images( )
               
-            Case #__cursor_LeftDownRightUp : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENESW)
-            Case #__cursor_LeftUpRightDown : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENWSE)
-              
-            Case #__cursor_Arrows      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEALL)
+            Case #__cursor_Diagonal2 : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENESW)
+            Case #__cursor_Diagonal1 : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENWSE)
               
             Case #__cursor_Drag : *cursor\hcursor = New( icursor )
             Case #__cursor_Drop : *cursor\hcursor = New( icursor )
@@ -387,16 +389,16 @@ Module Cursor
         Case LoadCursor_(0,#IDC_CROSS) : result = #__cursor_Cross
         Case LoadCursor_(0,#IDC_SIZEALL) : result = #__cursor_Arrows
           
-        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_Up
-        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_Down
-        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_UpDown2
+        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_SplitUp
+        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_SplitDown
+        Case LoadCursor_(0,#IDC_SIZEWE) : result = #__cursor_SplitUpDown
           
-        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_Left
-        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_Right
-        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_LeftRight2
+        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_SplitLeft
+        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_SplitRight
+        Case LoadCursor_(0,#IDC_SIZENS) : result = #__cursor_SplitLeftRight
           
-        Case LoadCursor_(0,#IDC_SIZENESW) : result = #__cursor_LeftDownRightUp
-        Case LoadCursor_(0,#IDC_SIZENWSE) : result = #__cursor_LeftUpRightDown
+        Case LoadCursor_(0,#IDC_SIZENESW) : result = #__cursor_Diagonal2
+        Case LoadCursor_(0,#IDC_SIZENWSE) : result = #__cursor_Diagonal1
           
         Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Drop
         Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Drag
@@ -412,8 +414,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -40------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 399
+; FirstLine = 290
+; Folding = -4t------
 ; EnableXP
