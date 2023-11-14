@@ -1041,7 +1041,7 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    id_design_form = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) 
    ;a_init( id_design_form, 0 )
    
-   AddItem( id_design_panel, -1, "Code" )
+   ;AddItem( id_design_panel, -1, "Code" )
    ;id_design_code = Editor( 0,0,0,0 ) ; bug then move anchors window
    CloseList( )
    
@@ -1275,7 +1275,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 410
-; FirstLine = 383
+; CursorPosition = 1043
+; FirstLine = 986
 ; Folding = ---------rf----------
 ; EnableXP

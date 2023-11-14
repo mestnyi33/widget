@@ -538,7 +538,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
                Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, mouse( )\x - _this_\frame_x( ), mouse( )\y - _this_\frame_y( ), [#__c_Required] ) = 0 ))
       EndMacro
-
+      
       Macro is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ = )
          Bool( is_inside_( _address_\x#_mode_, _address_\width#_mode_, _mouse_x_ ) And
                is_inside_( _address_\y#_mode_, _address_\height#_mode_, _mouse_y_ ) )
@@ -1074,7 +1074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Requester
       Global resize_one
       Declare Button_Draw( *this )
-      
+      Declare   GetBar( *this, type.b, index.b = 0 )
       
       Declare.w ChangeValue( *this )
       Declare.i TypeFromClass( class.s )
@@ -3811,19 +3811,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__event_LeftButtonDown : result.s = "#__event_LeftButtonDown"   ; The left mouse button was pressed
             Case #__event_LeftButtonUp : result.s = "#__event_LeftButtonUp"       ; The left mouse button was released
             Case #__event_LeftClick : result.s = "#__event_LeftClick"             ; A click With the left mouse button
-            Case #__event_LeftDoubleClick : result.s = "#__event_LeftDoubleClick" ; A double-click With the left mouse button
+            Case #__event_Left2Click : result.s = "#__event_LeftDoubleClick"      ; A double-click With the left mouse button
             Case #__event_RightButtonDown : result.s = "#__event_RightButtonDown" ; The right mouse button was pressed
             Case #__event_RightButtonUp : result.s = "#__event_RightButtonUp"     ; The right mouse button was released
             Case #__event_RightClick : result.s = "#__event_RightClick"           ; A click With the right mouse button
-            Case #__event_RightDoubleClick : result.s = "#__event_RightDoubleClick" ; A double-click With the right mouse button
-                                                                                    ;Case #__event_MiddleButtonDown : result.s = "#__event_MiddleButtonDown" ; The middle mouse button was pressed
-                                                                                    ;Case #__event_MiddleButtonUp : result.s = "#__event_MiddleButtonUp"     ; The middle mouse button was released
-            Case #__event_Focus : result.s = "#__event_Focus"                       ; The gadget gained keyboard focus
-            Case #__event_LostFocus : result.s = "#__event_LostFocus"               ; The gadget lost keyboard focus
-            Case #__event_KeyDown : result.s = "#__event_KeyDown"                   ; A key was pressed
-            Case #__event_KeyUp : result.s = "#__event_KeyUp"                       ; A key was released
-            Case #__event_Input : result.s = "#__event_Input"                       ; Text input was generated
-            Case #__event_Resize : result.s = "#__event_Resize"                     ; The gadget has been resized
+            Case #__event_Right2Click : result.s = "#__event_RightDoubleClick"    ; A double-click With the right mouse button
+                                                                                  ;Case #__event_MiddleButtonDown : result.s = "#__event_MiddleButtonDown" ; The middle mouse button was pressed
+                                                                                  ;Case #__event_MiddleButtonUp : result.s = "#__event_MiddleButtonUp"     ; The middle mouse button was released
+            Case #__event_Focus : result.s = "#__event_Focus"                     ; The gadget gained keyboard focus
+            Case #__event_LostFocus : result.s = "#__event_LostFocus"             ; The gadget lost keyboard focus
+            Case #__event_KeyDown : result.s = "#__event_KeyDown"                 ; A key was pressed
+            Case #__event_KeyUp : result.s = "#__event_KeyUp"                     ; A key was released
+            Case #__event_Input : result.s = "#__event_Input"                     ; Text input was generated
+            Case #__event_Resize : result.s = "#__event_Resize"                   ; The gadget has been resized
             Case #__event_StatusChange : result.s = "#__event_StatusChange"
                ;Case #__event_TitleChange : result.s = "#__event_TitleChange"
             Case #__event_Change : result.s = "#__event_Change"
@@ -5340,7 +5340,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\_tabs( )\image\x = *this\_tabs( )\x + Bool( *this\_tabs( )\image\width ) * *this\image\x ;+ Bool( *this\_tabs( )\text\width ) * ( *this\text\x )
                         *this\_tabs( )\text\x  = *this\_tabs( )\image\x + *this\_tabs( )\image\width + *this\text\x
                         *this\_tabs( )\width   = Bool( *this\_tabs( )\text\width ) * ( *this\text\x * 2 ) + *this\_tabs( )\text\width +
-                                               Bool( *this\_tabs( )\image\width ) * ( *this\image\x * 2 ) + *this\_tabs( )\image\width - ( Bool( *this\_tabs( )\image\width And *this\_tabs( )\text\width ) * ( *this\text\x ))
+                                                 Bool( *this\_tabs( )\image\width ) * ( *this\image\x * 2 ) + *this\_tabs( )\image\width - ( Bool( *this\_tabs( )\image\width And *this\_tabs( )\text\width ) * ( *this\text\x ))
                         
                         *bar\max + *this\_tabs( )\width + Bool( *this\_tabs( )\index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( *this\_tabs( )\index = *this\count\items - 1 ) * layout
                         ;
@@ -7747,7 +7747,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; example-scroll(area) fixed
                If *this\child
                   If *this\type = #__type_ScrollBar
+                     If *this\parent\event = 0 : *this\parent\event = - 1 : EndIf
                      DoEvents( *this\parent, #__event_ScrollChange, *bar\PageChange( ), *this )
+                     If *this\parent\event = - 1 : *this\parent\event = 0 : EndIf
+                     
                   EndIf
                Else
                   DoEvents( *this, #__event_Change, *bar\PageChange( ), EnteredButton( ) )
@@ -8445,8 +8448,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro edit_sel_end_( _char_ )
          Bool(( _char_ >= ' ' And _char_ <= '/' ) Or               ; ! " # $ % & ' ( ) * + , - .
               ( _char_ >= ':' And _char_ <= '@' ) Or               ;   ; < = > ?
-         ( _char_ >= '[' And _char_ <= '^' ) Or               ; \ ] ^ _ `
-         ( _char_ >= '{' And _char_ <= '~' ) Or _char_ = '`') ; | }
+              ( _char_ >= '[' And _char_ <= '^' ) Or               ; \ ] ^ _ `
+              ( _char_ >= '{' And _char_ <= '~' ) Or _char_ = '`') ; | }
          
       EndMacro
       
@@ -11109,6 +11112,70 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\count\items - 1
       EndProcedure
       
+      ;-
+      Macro set_state_list_( _address_, _state_ )
+         If _state_ > 0
+            If *this\row\clickselect
+               If _address_\state\enter = #False
+                  _address_\state\enter = #True
+               EndIf
+            Else
+               If _address_\state\press = #False
+                  _address_\state\press = #True
+               EndIf
+            EndIf
+            
+            If _address_\state\press = #True
+               _address_\color\state = #__S_2
+            ElseIf _address_\state\enter
+               _address_\color\state = #__S_1
+            EndIf
+            
+         ElseIf _address_
+            If Not *this\row\clickselect
+               If _address_\state\press = #True
+                  _address_\state\press = #False
+               EndIf
+            EndIf
+            
+            If _address_\state\enter
+               _address_\state\enter = #False
+            EndIf
+            
+            If _address_\state\press = #False
+               _address_\color\state = #__S_0
+            EndIf
+         EndIf
+      EndMacro
+      
+      Macro _multi_select_items_( _this_, _current_row_ )
+         PushListPosition( *this\_rows( ))
+         ForEach *this\_rows( )
+            If *this\_rows( )\visible
+               If Bool(( *this\PressedRow( )\index >= *this\_rows( )\index And _current_row_\index <= *this\_rows( )\index ) Or ; верх
+                       ( *this\PressedRow( )\index <= *this\_rows( )\index And _current_row_\index >= *this\_rows( )\index ))   ; вниз
+                  
+                  If *this\_rows( )\color\state <> #__S_2
+                     *this\_rows( )\color\state = #__S_2
+                     *this\repaint              = #True
+                  EndIf
+                  
+               Else
+                  
+                  If Not *this\_rows( )\state\press
+                     If *this\_rows( )\color\state <> #__S_0
+                        *this\_rows( )\color\state = #__S_0
+                        *this\repaint              = #True
+                     EndIf
+                  EndIf
+                  
+               EndIf
+            EndIf
+         Next
+         PopListPosition( *this\_rows( ))
+      EndMacro
+      
+      
       Procedure.l Tree_KeyEvents( *this._S_WIDGET, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
          Protected result, from = - 1
          Static cursor_change, Down, *rows_selected._S_rows
@@ -11238,70 +11305,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ProcedureReturn result
       EndProcedure
-      
-      ;-
-      Macro set_state_list_( _address_, _state_ )
-         If _state_ > 0
-            If *this\row\clickselect
-               If _address_\state\enter = #False
-                  _address_\state\enter = #True
-               EndIf
-            Else
-               If _address_\state\press = #False
-                  _address_\state\press = #True
-               EndIf
-            EndIf
-            
-            If _address_\state\press = #True
-               _address_\color\state = #__S_2
-            ElseIf _address_\state\enter
-               _address_\color\state = #__S_1
-            EndIf
-            
-         ElseIf _address_
-            If Not *this\row\clickselect
-               If _address_\state\press = #True
-                  _address_\state\press = #False
-               EndIf
-            EndIf
-            
-            If _address_\state\enter
-               _address_\state\enter = #False
-            EndIf
-            
-            If _address_\state\press = #False
-               _address_\color\state = #__S_0
-            EndIf
-         EndIf
-      EndMacro
-      
-      Macro _multi_select_items_( _this_, _current_row_ )
-         PushListPosition( *this\_rows( ))
-         ForEach *this\_rows( )
-            If *this\_rows( )\visible
-               If Bool(( *this\PressedRow( )\index >= *this\_rows( )\index And _current_row_\index <= *this\_rows( )\index ) Or ; верх
-                       ( *this\PressedRow( )\index <= *this\_rows( )\index And _current_row_\index >= *this\_rows( )\index ))   ; вниз
-                  
-                  If *this\_rows( )\color\state <> #__S_2
-                     *this\_rows( )\color\state = #__S_2
-                     *this\repaint              = #True
-                  EndIf
-                  
-               Else
-                  
-                  If Not *this\_rows( )\state\press
-                     If *this\_rows( )\color\state <> #__S_0
-                        *this\_rows( )\color\state = #__S_0
-                        *this\repaint              = #True
-                     EndIf
-                  EndIf
-                  
-               EndIf
-            EndIf
-         Next
-         PopListPosition( *this\_rows( ))
-      EndMacro
-      
       
       Procedure.l ListView_KeyEvents( *this._S_WIDGET, eventtype.l, *item._S_rows, item = - 1 )
          Protected Repaint, mouse_x.l = mouse( )\x, mouse_y.l = mouse( )\y
@@ -11487,95 +11490,106 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Repaint
       EndProcedure
       
-      
       Procedure.l Tree_events( *this._S_WIDGET, eventtype.l, mouse_x.l, mouse_y.l )
          Protected Repaint
          
          ;
-         If eventtype = #__event_LeftButtonDown
-            If *this\EnteredRow( ) And
-               *this\EnteredRow( )\state\enter
-               
-               ; collapsed/expanded button
-               If *this\EnteredRow( )\childrens And
-                  is_atpoint_( *this\EnteredRow( )\collapsebox, mouse_x - *this\EnteredRow( )\x, mouse_y - *this\EnteredRow( )\y )
+         If eventtype = #__event_Down
+            If mouse( )\buttons & #PB_Canvas_LeftButton
+               If *this\EnteredRow( ) And
+                  *this\EnteredRow( )\state\enter
                   
-                  If *this\EnteredRow( )\collapsebox\checkstate
-                     SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Expanded )
-                  Else
-                     SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Collapsed )
-                  EndIf
-               Else
-                  ; change box ( option&check )
-                  If is_atpoint_( *this\EnteredRow( )\checkbox, mouse_x - *this\EnteredRow( )\x, mouse_y - *this\EnteredRow( )\y )
-                     ; change box option
-                     If *this\mode\check = #__m_optionselect
-                        If *this\EnteredRow( )\ParentRow( ) And *this\EnteredRow( )\OptionGroupRow
-                           If *this\EnteredRow( )\OptionGroupRow\ParentRow( ) And
-                              *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate
-                              *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
-                           EndIf
-                           
-                           If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow <> *this\EnteredRow( )
-                              If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow
-                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
-                              EndIf
-                              *this\EnteredRow( )\OptionGroupRow\OptionGroupRow = *this\EnteredRow( )
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                     ; tree checkbox change check
-                     set_check_state_( *this\EnteredRow( )\checkbox, *this\mode\threestate )
-                     
-                     ;
-                     If *this\EnteredRow( )\color\state = #__S_2
-                        DoEvents( *this, #__event_Change, *this\EnteredRow( ), *this\EnteredRow( )\index )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         If eventtype = #__event_LeftButtonUp
-            If *this\EnteredRow( ) And
-               *this\EnteredRow( )\state\enter
-               
-               If *this\EnteredRow( )\color\state = #__S_0
-                  *this\EnteredRow( )\color\state = #__S_1
-                  
-                  ; Post event item status change
-                  If *this\anchors
-                     *this\repaint = #True
-                  Else
-                     DoEvents( *this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index )
-                  EndIf
-               Else
+                  ; collapsed/expanded button
                   If *this\EnteredRow( )\childrens And
                      is_atpoint_( *this\EnteredRow( )\collapsebox,
-                                  mouse_x + *this\scroll\h\bar\page\pos - *this\EnteredRow( )\x,
-                                  mouse_y + *this\scroll\v\bar\page\pos - *this\EnteredRow( )\y )
+                                  mouse_x + *this\scroll\h\bar\page\pos - *this\EnteredRow( )\x, 
+                                  mouse_y - *this\EnteredRow( )\y )
                      
-                     Post( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     If *this\EnteredRow( )\collapsebox\checkstate
+                        SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Expanded )
+                     Else
+                        SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Collapsed )
+                     EndIf
+                     
+                     Post( *this, #__event_Down, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                   Else
-                     Post( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     ; change box ( option&check )
+                     If is_atpoint_( *this\EnteredRow( )\checkbox, mouse_x - *this\EnteredRow( )\x, mouse_y - *this\EnteredRow( )\y )
+                        ; change box option
+                        If *this\mode\check = #__m_optionselect
+                           If *this\EnteredRow( )\ParentRow( ) And *this\EnteredRow( )\OptionGroupRow
+                              If *this\EnteredRow( )\OptionGroupRow\ParentRow( ) And
+                                 *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate
+                                 *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
+                              EndIf
+                              
+                              If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow <> *this\EnteredRow( )
+                                 If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow
+                                    *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
+                                 EndIf
+                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow = *this\EnteredRow( )
+                              EndIf
+                           EndIf
+                        EndIf
+                        
+                        ; tree checkbox change check
+                        set_check_state_( *this\EnteredRow( )\checkbox, *this\mode\threestate )
+                        
+                        ;                         ;\\
+                        ;                         If *this\EnteredRow( )\color\state = #__S_2
+                        ;                            if *this\event = 0 : *this\event = - 1 : endif
+                        ;                            DoEvents( *this, #__event_Change, *this\EnteredRow( ), *this\EnteredRow( )\index )
+                        ;                            if *this\event = - 1 : *this\event = 0 : endif
+                        ;                         EndIf
+                     EndIf
                   EndIf
                EndIf
             EndIf
          EndIf
          
-         ;
-         If eventtype = #__event_RightButtonUp Or
-            eventtype = #__event_LeftDoubleClick
+         If eventtype = #__event_Up
+            If mouse( )\buttons & #PB_Canvas_LeftButton
+               If *this\EnteredRow( ) And
+                  *this\EnteredRow( )\state\enter
+                  
+                  If *this\EnteredRow( )\color\state = #__S_0
+                     *this\EnteredRow( )\color\state = #__S_1
+                     
+                     ; Post event item status change
+                     If *this\anchors
+                        *this\repaint = #True
+                     Else
+                        If *this\event = 0 : *this\event = - 1 : EndIf
+                        DoEvents( *this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index )
+                        If *this\event = - 1 : *this\event = 0 : EndIf
+                     EndIf
+                  Else
+                     If *this\EnteredRow( )\childrens And
+                        is_atpoint_( *this\EnteredRow( )\collapsebox,
+                                     mouse_x + *this\scroll\h\bar\page\pos - *this\EnteredRow( )\x,
+                                     mouse_y - *this\EnteredRow( )\y )
+                        
+                        Post( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     Else
+                        Post( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If eventtype = #__event_Left2Click Or
+            eventtype = #__event_RightClick Or
+            eventtype = #__event_Right2Click
             
             If *this\EnteredRow( ) And
                *this\EnteredRow( )\state\enter
-               
                Post( *this, eventtype, *this\EnteredRow( )\index )
             EndIf
          EndIf
          
-         ; key events
+         ;\\ key events
          If eventtype = #__event_Input Or
             eventtype = #__event_KeyDown Or
             eventtype = #__event_KeyUp
@@ -13011,6 +13025,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   GetBar( *this._S_WIDGET, type.b, index.b = 0 )
+         If type = #__type_scrollbar
+            If *this\scroll
+               If index = 1
+                  ProcedureReturn *this\scroll\v
+               EndIf
+               If index = 2
+                  ProcedureReturn *this\scroll\h
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure.i GetItem( *this._S_WIDGET, parent_sublevel.l = - 1 ) ;???
          Protected result
          Protected *rows._S_rows
@@ -13618,14 +13645,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\FocusedRow( )\color\state = #__S_3
                            EndIf
                            
+                           If *this\event = 0 : *this\event = - 1 : EndIf
                            DoEvents( *this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index )
+                           If *this\event = - 1 : *this\event = 0 : EndIf
                         Else
                            *this\FocusedRow( )\state\focus = 1
                            *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
                            If *this\anchors
                               *this\repaint = #True
                            Else
+                              If *this\event = 0 : *this\event = - 1 : EndIf
                               DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
+                              If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
                         
@@ -17400,6 +17431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this > 0
+            *this\event = 1
             ; is bind event callback
             ForEach *this\events( )
                If *this\events( )\function = *callback And
@@ -17756,7 +17788,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If Not is_interact_row_( LeavedWidget( )\_widgets( ) ) And
                                  ;a_transformer( LeavedWidget( )\_widgets( ) ) And
                                  IsChild( LeavedWidget( ), LeavedWidget( )\_widgets( )) And
-                                 Not IsChild( *widget, LeavedWidget( )\_widgets( ))
+Not IsChild( *widget, LeavedWidget( )\_widgets( ))
                                  LeavedWidget( )\_widgets( )\state\enter = 0
                                  If Not LeavedWidget( )\_widgets( )\anchors
                                     DoEvents( LeavedWidget( )\_widgets( ), #__event_StatusChange, - 1 )
@@ -17794,8 +17826,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *widget\_widgets( )\state\enter = 0 And
                            ;a_transformer( *widget\_widgets( ) ) And
                            *widget\_widgets( )\children And
-                           Not is_interact_row_( *widget\_widgets( ) ) And
-                           IsChild( *widget, *widget\_widgets( ))
+Not is_interact_row_( *widget\_widgets( ) ) And
+IsChild( *widget, *widget\_widgets( ))
                            
                            *widget\_widgets( )\state\enter = - 1
                            If Not *widget\_widgets( )\anchors
@@ -17908,7 +17940,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;Debug 888
                ;           ReDraw(   *this\root )
                ; If Not *this\anchors
-               ;           DoEvents( *this, #__event_StatusChange )
+               ;   if *this\event = 0 : *this\event = - 1 : endif
+               ;   DoEvents( *this, #__event_StatusChange )
+               ;   if *this\event = - 1 : *this\event = 0 : endif
                ; EndIf
             EndIf
          EndIf
@@ -18551,7 +18585,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\anchors
                            *this\repaint = #True
                         Else
+                           If *this\event = 0 : *this\event = - 1 : EndIf
                            DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                           If *this\event = - 1 : *this\event = 0 : EndIf
                         EndIf
                      Else
                         *this\repaint = #True
@@ -18565,11 +18601,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\anchors
                      *this\repaint = #True
                   Else
+                     If *this\event = 0 : *this\event = - 1 : EndIf
                      If *this\FocusedRow( )
                         DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                      ElseIf *this\LeavedRow( )
                         DoEvents(*this, #__event_StatusChange, *this\LeavedRow( ), *this\LeavedRow( )\index)
                      EndIf
+                     If *this\event = - 1 : *this\event = 0 : EndIf
                   EndIf
                EndIf
                
@@ -18628,7 +18666,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\FocusedRow( ) And ;*this\state\press = 0 And
                   Not ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) )
                   ; If Not *this\anchors
+                  ;   if *this\event = 0 : *this\event = - 1 : endif
                   ;	  DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                  ;   if *this\event = - 1 : *this\event = 0 : endif
                   ; EndIf
                EndIf
             EndIf
@@ -18672,7 +18712,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ; If Not *this\anchors
+                        ;  if *this\event = 0 : *this\event = - 1 : endif
                         ;    DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                        ;     if *this\event = - 1 : *this\event = 0 : endif
                         ; EndIf
                      Else
                         *this\PressedRow( )\state\press = 1
@@ -18685,14 +18727,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\anchors
                                  *this\repaint = #True
                               Else
+                                 If *this\event = 0 : *this\event = - 1 : EndIf
                                  DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                                 If *this\event = - 1 : *this\event = 0 : EndIf
                               EndIf
                            EndIf
                            
                            If *this\anchors
                               *this\repaint = #True
                            Else
+                              If *this\event = 0 : *this\event = - 1 : EndIf
                               DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                              If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -18734,7 +18780,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\anchors
                            *this\repaint = #True
                         Else
+                           If *this\event = 0 : *this\event = - 1 : EndIf
                            DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                           If *this\event = - 1 : *this\event = 0 : EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -18831,7 +18879,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\EnteredRow( )\state\press = 1
                                     *this\EnteredRow( )\color\state = #__S_2
                                     
+                                    If *this\event = 0 : *this\event = - 1 : EndIf
+                                    Debug "change1"
                                     DoEvents(*this, #__event_Change, *this\EnteredRow( ), *this\EnteredRow( )\index)
+                                    If *this\event = - 1 : *this\event = 0 : EndIf
                                  Else
                                     If *this\PressedRow( )\state\press
                                        *this\PressedRow( )\color\state = #__S_0
@@ -18843,7 +18894,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  EndIf
                               EndIf
                            Else
+                              If *this\event = 0 : *this\event = - 1 : EndIf
+                              Debug "change2"
                               DoEvents(*this, #__event_Change, *this\PressedRow( ), *this\PressedRow( )\index)
+                              If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
                      Else
@@ -18885,7 +18939,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *this\anchors
                                     *this\repaint = #True
                                  Else
+                                    If *this\event = 0 : *this\event = - 1 : EndIf
                                     DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                                    If *this\event = - 1 : *this\event = 0 : EndIf
                                  EndIf
                               EndIf
                            EndIf
@@ -18893,7 +18949,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\FocusedRow( )\state\focus = 0
                               *this\FocusedRow( )\state\focus = 1
                               
+                              If *this\event = 0 : *this\event = - 1 : EndIf
+                              ; Debug "change3"
                               DoEvents(*this, #__event_Change, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                              If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -18937,8 +18996,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;                    Debug " u "+*this\class
          ;                  EndIf
          
+         ;\\
+         If *this\root And 
+            *this\root\event
+            If Not *this\event
+               *this\event = - 1
+            EndIf
+         EndIf
+         
          ;\\ entered position state
-         If *this\state\enter > 0
+         If *this\state\enter > 0 
             If is_innerside_( *this )
                If *this\state\enter = 1 
                   *this\state\enter = 2
@@ -19026,14 +19093,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_MouseLeave,
                     #__event_RightButtonDown,
                     #__event_RightButtonUp,
-                    #__event_RightDoubleClick,
+                    #__event_Right2Click,
                     #__event_Right3Click,
                     #__event_RightClick,
                     #__event_Down,
                     #__event_Up,
                     #__event_LeftButtonDown,
                     #__event_LeftButtonUp,
-                    #__event_LeftDoubleClick,
+                    #__event_Left2Click,
                     #__event_Left3Click,
                     #__event_LeftClick,
                     #__event_KeyDown,
@@ -19207,6 +19274,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Case #__type_Tree, #__type_ListView, #__type_ListIcon
+                  
+                  If eventtype = #__event_down
+                     *this\event = 0
+                  EndIf
+                  If eventtype = #__event_Up
+                     *this\event = 0
+                  EndIf
                   Tree_events( *this, eventtype, mouse_x, mouse_y )
                   
                Case #__type_Editor, #__type_String
@@ -19365,21 +19439,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
             ;             EndIf
             
-            If eventtype = #__event_Create
-               Post( *this, eventtype, *button, *data )
-            ElseIf eventtype = #__event_CursorUpdate
-               Send( *this, eventtype, *button, *data )
-            Else
-               If *this\row
-                  If eventtype = #__event_Focus Or
-                     eventtype = #__event_LostFocus Or
-                     eventtype = #__event_Change Or
-                     eventtype = #__event_StatusChange Or
-                     eventtype = #__event_DragStart Or
-                     eventtype = #__event_Drop
-                     Post( *this, eventtype, *button, *data )
-                  EndIf
+            If *this\event
+               If eventtype = #__event_Create
+                  Post( *this, eventtype, *button, *data )
+               ElseIf eventtype = #__event_CursorUpdate
+                  Send( *this, eventtype, *button, *data )
                Else
+                  ;                If *this\row
+                  ;                   If eventtype = #__event_Focus Or
+                  ;                      eventtype = #__event_LostFocus Or
+                  ;                      eventtype = #__event_Change Or
+                  ;                      eventtype = #__event_StatusChange Or
+                  ;                      eventtype = #__event_DragStart Or
+                  ;                      eventtype = #__event_Drop
+                  ;                      Post( *this, eventtype, *button, *data )
+                  ;                   EndIf
+                  ;                Else
                   If eventtype = #__event_Change
                      Post( *this, eventtype, *button, *data )
                   ElseIf eventtype = #__event_Focus
@@ -19389,6 +19464,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      Send( *this, eventtype, *button, *data )
                   EndIf
+                  ;                EndIf
                EndIf
             EndIf
             
@@ -21082,17 +21158,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Global object, parent
    Declare CustomEvents( )
    
-   Procedure GetBar( *this._s_widget, type = 1)
-      If *this\scroll
-         If type = 1
-            ProcedureReturn *this\scroll\v
-         EndIf
-         If type = 2
-            ProcedureReturn *this\scroll\h
-         EndIf
-      EndIf
-   EndProcedure
-   
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    a_init(root(), 4)
@@ -21296,7 +21361,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Drop : Debug " - " + *this + " - drop"
          Case #__event_LeftButtonUp : Debug " - " + *this + " - up"
          Case #__event_LeftClick : Debug " - " + *this + " - click"
-         Case #__event_LeftDoubleClick : Debug " - " + *this + " - 2_click"
+         Case #__event_Left2Click : Debug " - " + *this + " - 2_click"
       EndSelect
    EndProcedure
    
@@ -21764,7 +21829,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2411
-; FirstLine = 2382
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf-----v-+--0-0-8-v---------v----------------------------------------------------------------------------v-0+----
+; CursorPosition = 21829
+; FirstLine = 21794
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

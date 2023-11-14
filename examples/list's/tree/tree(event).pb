@@ -3,22 +3,22 @@ Uselib(widget)
 
 Global g,*g._s_widget
 
-Procedure events_gadgets()
-  Select EventType()
+Procedure events_gadgets( )
+  Select EventType( )
     Case #PB_EventType_DragStart
-      Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+      Debug  ""+ EventGadget( ) +" - gadget DragStart "+GetGadgetState(EventGadget( ))
       
     Case #PB_EventType_Change
-      Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+      Debug  ""+ EventGadget( ) +" - gadget Change "+GetGadgetState(EventGadget( ))
       
     Case #PB_EventType_LeftClick
-      Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+      Debug  ""+ EventGadget( ) +" - gadget LeftClick "+GetGadgetState(EventGadget( ))
       
     Case #PB_EventType_LeftDoubleClick
-      Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+      Debug  ""+ EventGadget( ) +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget( ))
       
     Case #PB_EventType_RightClick
-      Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+      Debug  ""+ EventGadget( ) +" - gadget RightClick "+GetGadgetState(EventGadget( ))
       
   EndSelect
 EndProcedure
@@ -27,37 +27,43 @@ Procedure events_widgets()
   ;; ClearDebugOutput()
   
   Select WidgetEventType()
-    Case #PB_EventType_Focus
-      Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
-    Case #PB_EventType_LostFocus
-      Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+    Case #__event_Focus
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_LostFocus
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_Up
-      Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
+    Case #__event_Drop
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( DROP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_Down
-      Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
+    Case #__event_DragStart
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( DRAGSTART ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_ScrollChange
-      Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_Up
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( UP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_StatusChange
-      Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_Down
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( DOWN ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_DragStart
-      Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_Change
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( CHANGE ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_Change
-      Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_ScrollChange
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_LeftClick
-      Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_StatusChange
+      ;Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_LeftDoubleClick
-      Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_LeftClick
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
-    Case #PB_EventType_RightClick
-      Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+    Case #__event_Left2Click
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #__event_RightClick
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      
+    Case #__event_Right2Click
+      Debug  ""+GetIndex(EventWidget())+" "+GetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
   EndSelect
 EndProcedure
@@ -125,7 +131,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   SetGadgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
   
   For i = 0 To 2
-    BindGadgetEvent(i, @events_gadgets())
+    BindGadgetEvent(i, @events_gadgets( ))
   Next
   ;}
   ;--------------
@@ -178,15 +184,15 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
+    Bind(GetWidget(i), @events_widgets( ))
   Next
   
-  Bind(*g, @events_widgets())
+  Bind(*g, @events_widgets( ))
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 32
+; CursorPosition = 53
+; FirstLine = 28
 ; Folding = ---
 ; EnableXP

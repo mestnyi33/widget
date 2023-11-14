@@ -578,7 +578,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
-         eventmask.q
          *anchors._s_ANCHORS
          
          reclip.b
@@ -695,6 +694,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          List columns._s_column( )
          List *events._s_EVENT( )
+         event.b
+         eventmask.q
          
          *root._s_ROOT     
          *window._s_WIDGET
@@ -760,7 +761,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 142
-; FirstLine = 89
-; Folding = -O+-9IA+--
+; CursorPosition = 696
+; FirstLine = 495
+; Folding = -P+-9IA+--
 ; EnableXP

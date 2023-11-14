@@ -556,7 +556,7 @@ Module Cursor
 ;                  #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
 ;                  #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
                  #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
-                 #__cursor_Diagonal2, #__cursor_Diagonal1 
+                 #__cursor_Diagonal1, #__cursor_Diagonal2 
               
             If Not FindMapElement(images( ), Str(icursor))
               AddMapElement(images( ), Str(icursor))
@@ -624,7 +624,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 558
-; FirstLine = 314
+; CursorPosition = 540
+; FirstLine = 341
 ; Folding = --f--v2T8---
 ; EnableXP
