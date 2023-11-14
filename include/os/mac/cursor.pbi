@@ -570,8 +570,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 239
-; FirstLine = 176
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --f--------
 ; EnableXP

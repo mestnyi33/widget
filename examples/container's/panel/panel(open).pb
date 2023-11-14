@@ -1,4 +1,8 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  XIncludeFile "../../../include/os/win/id.pbi"
+  XIncludeFile "../../../include/os/win/ClipGadgets.pbi"
+CompilerEndIf
+XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -43,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 20,25,80,35, "_0" ) 
     CloseList( )
     
-;     *butt0 = Button( 20,25,80,35, "_0" )
-;     SetParent( *butt0, *panel, 0 )
+    ;     *butt0 = Button( 20,25,80,35, "_0" )
+    ;     SetParent( *butt0, *panel, 0 )
     
     ;
     *butt1 = Button( x,5,80,25, "*butt1" ) 
@@ -84,11 +88,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Debug "<<----"
     
-    
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ClipGadgets( UseGadgetList(0) )
+    CompilerEndIf
     Repeat: Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-   
+
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

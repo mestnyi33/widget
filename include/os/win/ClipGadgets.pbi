@@ -12,7 +12,7 @@ Procedure GadgetsClipCallBack( GadgetID, lParam )
   ; 
   If GadgetID
     Protected Gadget = ID::Gadget(GadgetID)
-    
+          
     If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
       If IsGadget( Gadget ) 
         Select GadgetType( Gadget )
@@ -21,7 +21,9 @@ Procedure GadgetsClipCallBack( GadgetID, lParam )
             SetWindowLongPtr_( SpinNext, #GWL_STYLE, GetWindowLongPtr_( SpinNext, #GWL_STYLE ) | #WS_CLIPSIBLINGS | #WS_CLIPCHILDREN )
             SetWindowPos_( SpinNext, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
             
-          Case #PB_GadgetType_ComboBox
+          Case #PB_GadgetType_Panel
+           SetWindowLongPtr_( GadgetID( gadget ), #GWL_EXSTYLE, GetWindowLongPtr_( GadgetID( gadget ), #GWL_EXSTYLE ) | #WS_EX_COMPOSITED )
+         Case #PB_GadgetType_ComboBox
             Protected Height = GadgetHeight( Gadget )
             
             ;             Case #PB_GadgetType_Container 
@@ -45,6 +47,13 @@ Procedure GadgetsClipCallBack( GadgetID, lParam )
       EndIf
       
       SetWindowPos_( GadgetID, #HWND_TOP, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
+    Else
+      If IsGadget( Gadget ) 
+        Select GadgetType( Gadget )
+          Case #PB_GadgetType_Panel
+           SetWindowLongPtr_( GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_( GadgetID, #GWL_EXSTYLE ) | #WS_EX_COMPOSITED )
+        EndSelect
+      EndIf
     EndIf
     
   EndIf
@@ -122,8 +131,6 @@ CompilerIf #PB_Compiler_IsMainFile = 1
 CompilerEndIf
 
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 57
-; FirstLine = 36
-; Folding = -v-
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = v-+
 ; EnableXP
