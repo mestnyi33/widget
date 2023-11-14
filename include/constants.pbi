@@ -6,7 +6,7 @@
       
       ;- - CONSTANTs
       ;-\\ DD
-      #PB_Drag_Drop = 1<<5
+      #PB_Drag_Drop = 1 << 5
       ;#PB_Drag_Resize = - 1; #PB_Drag_Move
       
       ;{
@@ -48,7 +48,7 @@
       ;
       ; default values
       ;
-      #__border_scroll         = 10
+      #__border_scroll = 10
       
       #__panel_height = 24 ;+ 4
       #__panel_width  = 85
@@ -75,7 +75,7 @@
       
       #__sOC = SizeOf(Character)
       
-      ;-\\ edit errors 
+      ;-\\ edit errors
       Enumeration 1
          #__error_text_input
          #__error_text_back
@@ -124,9 +124,9 @@
          #__s_3
       EndEnumeration
       
-      #__s_entered = 1<<0
-      #__s_pressed = 1<<1
-      #__s_disabled = 1<<2
+      #__s_entered  = 1 << 0
+      #__s_pressed  = 1 << 1
+      #__s_disabled = 1 << 2
       
       ;-\\ Attribute
       #__displayMode = 1 << 13
@@ -147,13 +147,13 @@
          #__resize_restore
          #__resize_minimize
          #__resize_maximize
-         #__reclip 
+         #__reclip
          #__resize_start
       EndEnumeration
       
-      ;-\\ Constant create-flags
+      ;-\\ create-flags
       EnumerationBinary 4096 ; 2
-         
+         ; text
          #__flag_numeric
          #__flag_readonly
          #__flag_lowercase
@@ -161,7 +161,15 @@
          #__flag_password
          #__flag_wordwrap
          #__flag_multiline
+         ;
+         #__flag_textleft
+         #__flag_texttop
+         #__flag_textright
+         #__flag_textbottom
+         #__flag_textcenter
          
+         
+         ; list
          #__flag_fullselection
          #__flag_nolines
          #__flag_nobuttons
@@ -175,58 +183,51 @@
          ;#__flag_sizegadget
          
          
-         ;\\
+         ; element
          #__flag_child
          #__flag_invert
          #__flag_vertical
-         
-         ;\\
-         #__flag_transparent
+         ;#__flag_transparent
          #__flag_noscrollbars
-         #__flag_anchorsgadget
+         #__flag_autoSize
          
-         ;\\
+         ;frame
          #__flag_borderless
          #__flag_flat
          #__flag_double
          #__flag_raised
          #__flag_single
          
-         ;\\
-         #__flag_left
-         #__flag_top
-         #__flag_right
-         #__flag_bottom
-         #__flag_center
-         #__flag_full
-         #__flag_autoSize
-         #__flag_proportional
          
+         
+         #__flag_anchorsgadget
          #__flag_limit
       EndEnumeration
       
       ;\\
       #__flag_nogadgets = #__flag_nobuttons
+      #__flag_textnumeric = #__flag_numeric
+      #__flag_textwordwrap = #__flag_wordwrap
+      #__flag_textmultiline = #__flag_multiline
+      #__flag_textreadonly = #__flag_readonly
+      #__flag_textlowercase = #__flag_lowercase
+         #__flag_textuppercase = #__flag_uppercase
+         #__flag_textpassword = #__flag_password
+         #__flag_center = #__flag_textcenter
       
-      ;     #__flag_autoright  = #__flag_autosize | #__flag_right
-      ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
+      ;     #__flag_autoright  = #__flag_autosize | #__flag_textright
+      ;     #__flag_autobottom = #__flag_autosize | #__flag_textbottom
       
-      ;- \\ Alignment
-      ; align type
-      #__align_widget = 1
-      #__align_text   = 2
-      #__align_image  = 3
-      
-      #__align_none   = 0
-      #__align_left   = #__flag_left
-      #__align_top    = #__flag_top
-      #__align_right  = #__flag_right
-      #__align_bottom = #__flag_bottom
-      #__align_center = #__flag_center
-      
-      #__align_full         = #__flag_full
-      #__align_auto         = #__flag_autoSize
-      #__align_proportional = #__flag_proportional
+      ;- \\ align-ment
+      #__align_none         = 0
+      #__align_left         = 1 << 1 
+      #__align_top          = 1 << 2 
+      #__align_right        = 1 << 3 
+      #__align_bottom       = 1 << 4 
+      #__align_center       = 1 << 5 
+      #__align_proportional = 1 << 6
+      #__align_full         = 1 << 7
+      #__align_auto         = 1 << 8 ; #__flag_autoSize
       
       
       ;-
@@ -245,21 +246,21 @@
       #__bar_nobuttons  = #__flag_nogadgets
       
       
-      ;-\\ Text
-      #__text_left      = #__flag_left
-      #__text_top       = #__flag_top
-      #__text_right     = #__flag_right
-      #__text_bottom    = #__flag_bottom
-      #__text_center    = #__flag_center
-      #__text_invert    = #__flag_invert
-      #__text_vertical  = #__flag_vertical
-      #__text_multiline = #__flag_multiline
-      #__text_wordwrap  = #__flag_wordwrap
-      #__text_numeric   = #__flag_numeric
-      #__text_password  = #__flag_password
-      #__text_readonly  = #__flag_readonly
-      #__text_lowercase = #__flag_lowercase
-      #__text_uppercase = #__flag_uppercase
+;       ;-\\ Text
+;       #__text_left      = #__flag_textleft
+;       #__text_top       = #__flag_texttop
+;       #__text_right     = #__flag_textright
+;       #__text_bottom    = #__flag_textbottom
+;       #__text_center    = #__flag_textcenter
+;       #__text_invert    = #__flag_invert
+;       #__text_vertical  = #__flag_vertical
+;       #__text_multiline = #__flag_textmultiline
+;       #__text_wordwrap  = #__flag_textwordwrap
+;       #__text_numeric   = #__flag_numeric
+;       #__text_password  = #__flag_password
+;       #__text_readonly  = #__flag_readonly
+;       #__text_lowercase = #__flag_lowercase
+;       #__text_uppercase = #__flag_uppercase
       
       ;     ;                            ; m/l ; w         ;
       ;     Debug #PB_text_right         ;  1  ; 2         ;
@@ -287,11 +288,11 @@
       #__image_released   = 1
       #__image_pressed    = 2
       #__image_background = 3
-      #__image_left       = #__flag_left
-      #__image_top        = #__flag_top
-      #__image_center     = #__flag_center
-      #__image_right      = #__flag_right
-      #__image_bottom     = #__flag_bottom
+      #__image_left       = #__flag_textleft
+      #__image_top        = #__flag_texttop
+      #__image_center     = #__flag_textcenter
+      #__image_right      = #__flag_textright
+      #__image_bottom     = #__flag_textbottom
       
       ;-\\ MDI
       #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
@@ -299,9 +300,9 @@
       ;-\\ Window
       ; caption bar buttons
       #__wb_close = 1
-      #__wb_maxi = 2
-      #__wb_mini = 3
-      #__wb_help = 4
+      #__wb_maxi  = 2
+      #__wb_mini  = 3
+      #__wb_help  = 4
       
       #__window_frame_size     = 4
       #__window_caption_height = 24
@@ -334,11 +335,11 @@
                                                            ;#PB_window                 = #PB_window_noActivate<<2
       
       ;-\\  Spin
-      #__spin_barsize      = #__scroll_buttonsize + 3
-      #__spin_vertical     = #__bar_vertical
-      #__spin_left         = 1 << 1
-      #__spin_right        = 1 << 2
-      #__spin_plus         = 1 << 3
+      #__spin_barsize  = #__scroll_buttonsize + 3
+      #__spin_vertical = #__bar_vertical
+      #__spin_left     = 1 << 1
+      #__spin_right    = 1 << 2
+      #__spin_plus     = 1 << 3
       
       ;     ;-
       ; Debug #PB_checkbox_Unchecked ; 0
@@ -354,7 +355,7 @@
       #__m_optionselect = 4
       
       #__listview_clickselect = #__flag_clickselect
-      #__listview_multiselect = #__flag_multiline
+      #__listview_multiselect = #__flag_textmultiline
       
       ;-\\ Tree
       #__tree_nolines     = #__flag_nolines
@@ -386,7 +387,7 @@
       ;     #PB_Tree_NoButtons : скрыть кнопки узлов «+».
       ;     #PB_Tree_CheckBoxes : добавьте флажок перед каждым элементом.
       ;     #PB_Tree_ThreeState : Флажки могут иметь промежуточное состояние.
-      ;     Флаг #PB_Tree_ThreeState можно использовать в сочетании с флагом #PB_Tree_CheckBoxes, 
+      ;     Флаг #PB_Tree_ThreeState можно использовать в сочетании с флагом #PB_Tree_CheckBoxes,
       ;     чтобы получить флажки, которые могут иметь состояние «включено», «выключено» и «промежуточное».
       ;     Пользователь может выбрать только состояния «включено» или «выключено».
       ;     Промежуточное состояние можно установить программно с помощью функции SetGadgetItemState().
@@ -396,7 +397,7 @@
       ;         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;           Debug #PB_ListView_MultiSelect  ; 1
       ;           Debug #PB_ListView_ClickSelect  ; 2
-      ;     
+      ;
       ;           Debug #PB_Tree_AlwaysShowSelection ; 0
       ;           Debug #PB_Tree_NoLines    ; 1
       ;           Debug #PB_Tree_Selected   ; 1
@@ -408,11 +409,11 @@
       ;           Debug #PB_Tree_ThreeState ; 8
       ;           Debug #PB_Tree_Collapsed  ; 8
       ;           Debug #PB_Tree_Inbetween  ; 16
-      ;     
+      ;
       ;           Debug #PB_ListIcon_AlwaysShowSelection ; 0
       ;           Debug #PB_ListIcon_Selected   ; 1
       ;           Debug #PB_ListIcon_Checked    ; 2
-      ;     
+      ;
       ;           Debug #PB_ListIcon_CheckBoxes ; 2
       ;           Debug #PB_ListIcon_Inbetween  ; 4
       ;           Debug #PB_ListIcon_ThreeState ; 8
@@ -443,169 +444,57 @@
       ;     #PB_ListIcon_List      : Режим значка списка
       ;     #PB_ListIcon_Report    : Режим отчета (столбцы, режим по умолчанию)
       
-      ;-\\ Editor
-      ;#__editor_inline = #__flag_inLine
-      #__editor_readonly      = #__text_readonly
-      #__editor_wordwrap      = #__text_wordwrap
-      ;#__editor_nomultiline   = #__flag_nolines
-      ;#__editor_numeric       = #__flag_numeric | #__text_multiline
-      ;#__editor_fullselection = #__flag_fullselection
-      ;#__editor_gridlines     = #__flag_gridLines
-      ;#__editor_borderless    = #__flag_borderless
-      
-      ;-\\ String
-      #__string_right      = #__text_right
-      #__string_center     = #__text_center
-      #__string_numeric    = #__text_numeric
-      #__string_password   = #__text_password
-      #__string_readonly   = #__text_readonly
-      #__string_uppercase  = #__text_uppercase
-      #__string_lowercase  = #__text_lowercase
-      #__string_multiline  = #__text_multiline
-      ;#__string_borderless = #__flag_borderless
+;       ;-\\ Editor
+;       ;#__editor_inline = #__flag_inLine
+;       #__editor_readonly = #__flag_readonly
+;       #__editor_wordwrap = #__flag_textwordwrap
+;       ;#__editor_nomultiline   = #__flag_nolines
+;       ;#__editor_numeric       = #__flag_numeric | #__text_multiline
+;       ;#__editor_fullselection = #__flag_fullselection
+;       ;#__editor_gridlines     = #__flag_gridLines
+;       ;#__editor_borderless    = #__flag_borderless
+;       
+; ;       ;-\\ String
+;       #__string_right     = #__text_right
+;       #__string_center    = #__text_center
+;       #__string_numeric   = #__text_numeric
+;       #__string_password  = #__text_password
+;       #__string_readonly  = #__text_readonly
+;       #__string_uppercase = #__text_uppercase
+;       #__string_lowercase = #__text_lowercase
+;       #__string_multiline = #__text_multiline
+;       ;#__string_borderless = #__flag_borderless
       
       ;-\\ Button
       #__button_toggle    = #PB_Button_Toggle
       #__button_default   = #PB_Button_Default
       #__button_multiline = #PB_Button_MultiLine
-      #__button_left      = #__text_left
-      #__button_right     = #__text_right
-      #__button_vertical  = #__text_vertical
-      #__button_invert    = #__text_invert
+      #__button_left      = #__flag_textleft
+      #__button_right     = #__flag_textright
+      #__button_vertical  = #__flag_vertical
+      #__button_invert    = #__flag_invert
       
       
-      If (#__flag_limit >> 1) > 2147483647 ; 8589934592
-         Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
-      EndIf
+;       If (#__flag_limit >> 1) > 2147483647 ; 8589934592
+;          Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
+;       EndIf
       
       
       ;-\\ event-type
-      ; ;     Enumeration #PB_Event_FirstCustomValue
-      ; ;       #PB_Event_create
-      ; ;       #PB_Event_mouseMove
-      ; ;       #PB_Event_leftButtonDown
-      ; ;       #PB_Event_leftButtonUp
-      ; ;       #PB_Event_Destroy
-      ; ;     EndEnumeration
+      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
+         #PB_EventType_Resize = 6
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
+         #PB_EventType_ReturnKey = 7
+      CompilerEndIf
+      Enumeration 65510 ; #PB_EventType_FirstCustomValue
+         #PB_EventType_Repaint
+      EndEnumeration
+      Enumeration 65519
+         #PB_EventType_MouseWheelX
+         #PB_EventType_MouseWheelY
+      EndEnumeration
       
-      ; ;     CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
-      ; ;       #PB_EventType_Resize = 6
-      ; ;     CompilerEndIf
-      ; ;     CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
-      ; ;       #PB_EventType_ReturnKey = 7
-      ; ;     CompilerEndIf
-      ; ;     CompilerIf Not Defined(PB_EventType_SizeItem, #PB_Constant)
-      ; ;       #PB_EventType_SizeItem = 65535
-      ; ;     CompilerEndIf
-      ; ;     CompilerIf Not Defined(PB_EventType_CloseItem, #PB_Constant)
-      ; ;       #PB_EventType_CloseItem = 65534
-      ; ;     CompilerEndIf
-      ; ;     #PB_EventType_Left3Click = 8
-      ; ;     #PB_EventType_Right3Click = 9
-          Enumeration 65510 ; #PB_EventType_FirstCustomValue
-            ;#PB_EventType_Create
-            #PB_EventType_Repaint
-            ;#PB_EventType_ResizeBegin
-            ;#PB_EventType_ResizeEnd
-            
-            ;#PB_EventType_Draw
-            ;#PB_EventType_Free
-            ;#PB_EventType_Drop
-          EndEnumeration
-          Enumeration 65519
-            #PB_EventType_MouseWheelX
-            #PB_EventType_MouseWheelY
-            
-            ;#PB_EventType_CursorUpdate
-            ;#PB_EventType_ScrollChange
-          
-            ;#PB_EventType_CloseWindow
-            ;#PB_EventType_MaximizeWindow
-            ;#PB_EventType_MinimizeWindow
-            ;#PB_EventType_RestoreWindow
-          EndEnumeration
-      ; ;       
-      ; ;     #__event_CursorUpdate = #PB_EventType_CursorUpdate
-      ; ;     #__event_resizeBegin  = #PB_EventType_ResizeBegin
-      ; ;     #__event_resizeEnd    = #PB_EventType_ResizeEnd
-      ; ;     
-      ; ;     #__event_free     = #PB_EventType_Free
-      ; ;     #__event_create   = #PB_EventType_Create
-      ; ;     #__event_sizeitem = #PB_EventType_SizeItem                ; 65535
-      ; ;     
-      ; ;     #__event_Drop     = #PB_EventType_Drop
-      ; ;     #__event_DragStart        = #PB_EventType_DragStart        ; 2048
-      ; ;     
-      ; ;     #__event_Draw        = #PB_EventType_Draw
-      ; ;     #__event_Repaint      = #PB_EventType_Repaint
-      ; ;     #__event_scrollChange = #PB_EventType_ScrollChange
-      ; ;     
-      ; ;     #__event_closeWindow    = #PB_EventType_CloseWindow
-      ; ;     #__event_maximizeWindow = #PB_EventType_MaximizeWindow
-      ; ;     #__event_minimizeWindow = #PB_EventType_MinimizeWindow
-      ; ;     #__event_restoreWindow  = #PB_EventType_RestoreWindow
-      ; ;     
-      ; ;     #__event_mouseEnter      = #PB_EventType_MouseEnter       ; 65537 The mouse cursor entered the gadget
-      ; ;     #__event_mouseLeave      = #PB_EventType_MouseLeave       ; 65538 The mouse cursor left the gadget
-      ; ;     #__event_mouseMove       = #PB_EventType_MouseMove        ; 65539 The mouse cursor moved
-      ; ;     #__event_mouseWheel      = #PB_EventType_MouseWheel       ; 65546 The mouse wheel was moved
-      ; ;     #__event_mouseWheelX     = #PB_EventType_MouseWheelX
-      ; ;     #__event_mouseWheelY     = #PB_EventType_MouseWheelY
-      ; ;     
-      ; ;     #__event_ButtonleftDown        = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
-      ; ;     #__event_ButtonleftUp          = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
-      ; ;     #__event_ButtonleftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
-      ; ;     #__event_Buttonleft2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
-      ; ;     #__event_Buttonleft3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
-      ; ;     #__event_ButtonrightDown        = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
-      ; ;     #__event_ButtonrightUp          = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
-      ; ;     #__event_ButtonrightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
-      ; ;     #__event_Buttonright2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
-      ; ;     #__event_Buttonright3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
-      ; ;     
-      ; ;     #__event_Up              = #PB_EventType_Up                    ; 4
-      ; ;     #__event_Down            = #PB_EventType_Down                  ; 5
-      ; ;     
-      ; ;     #__event_leftButtonDown  = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
-      ; ;     #__event_leftButtonUp    = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
-      ; ;     #__event_leftDoubleClick = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
-      ; ;     
-      ; ;     #__event_rightButtonDown  = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
-      ; ;     #__event_rightButtonUp    = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
-      ; ;     #__event_rightDoubleClick = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
-      ; ;     
-      ; ;     #__event_middleButtonDown = #PB_EventType_MiddleButtonDown ; 65544 The middle mouse button was pressed
-      ; ;     #__event_middleButtonUp   = #PB_EventType_MiddleButtonUp   ; 65545 The middle mouse button was released
-      ; ;     
-      ; ;     #__event_leftDown        = #PB_EventType_LeftButtonDown   ; 65540 The left mouse button was pressed
-      ; ;     #__event_leftUp          = #PB_EventType_LeftButtonUp     ; 65541 The left mouse button was released
-      ; ;     #__event_leftClick       = #PB_EventType_LeftClick        ; 0     A click With the left mouse button
-      ; ;     #__event_left2Click      = #PB_EventType_LeftDoubleClick  ; 2     A double-click With the left mouse button
-      ; ;     #__event_left3Click      = #PB_EventType_left3Click       ;       A click With the left mouse button
-      ; ;     
-      ; ;     #__event_rightDown        = #PB_EventType_RightButtonDown  ; 65542 The right mouse button was pressed
-      ; ;     #__event_rightUp          = #PB_EventType_RightButtonUp    ; 65543 The right mouse button was released
-      ; ;     #__event_rightClick       = #PB_EventType_RightClick       ; 1     A click With the right mouse button
-      ; ;     #__event_right2Click      = #PB_EventType_RightDoubleClick ; 3     A double-click With the right mouse button
-      ; ;     #__event_right3Click      = #PB_EventType_Right3Click      ; A click With the right mouse button
-      ; ;     
-      ; ;     #__event_middleDown       = #PB_EventType_MiddleButtonDown ; 65544 The middle mouse button was pressed
-      ; ;     #__event_middleUp         = #PB_EventType_MiddleButtonUp   ; 65545 The middle mouse button was released
-      ; ;     
-      ; ;     #__event_Focus            = #PB_EventType_Focus            ; 256   The gadget gained keyboard focus
-      ; ;     #__event_lostFocus        = #PB_EventType_LostFocus        ; 512   The gadget lost keyboard focus
-      ; ;     #__event_Resize           = #PB_EventType_Resize           ; 6     The gadget has been resized
-      ; ;     #__event_statusChange     = #PB_EventType_StatusChange     ; 65518
-      ; ;     #__event_titleChange      = #PB_EventType_TitleChange      ; 65517
-      ; ;     #__event_Change           = #PB_EventType_Change           ; 768
-      ; ;     #__event_closeItem        = #PB_EventType_CloseItem        ; 65534
-      ; ;     
-      ; ;     #__event_KeyDown          = #PB_EventType_KeyDown          ; 65547 A key was pressed
-      ; ;     #__event_KeyUp            = #PB_EventType_KeyUp            ; 65548 A key was released
-      ; ;     #__event_Input            = #PB_EventType_Input            ; 65549 Text input was generated
-      ; ;     #__event_returnKey        = #PB_EventType_ReturnKey        ; 7
-      ; ;     
-      ; ;     
       
       Enumeration 1
          #__event_create
@@ -651,6 +540,10 @@
          #__event_restore
          #__event_close
          #__event_free
+         
+;          #__event_titlechange ;
+;          #__event_closeItem
+;          #__event_sizeitem
       EndEnumeration
       
       EnumerationBinary
@@ -700,27 +593,27 @@
       EndEnumeration
       
       ; TEMP
-      #__event_mouseenter = #__event_enter
-      #__event_mouseleave = #__event_leave
-      #__event_mousewheel = #__event_wheel
+      #__event_mouseenter  = #__event_enter
+      #__event_mouseleave  = #__event_leave
+      #__event_mousewheel  = #__event_wheel
       #__event_mousewheelX = #__event_wheelx
       #__event_mousewheely = #__event_wheely
       ;
-      #__event_leftbuttondown = #__event_leftdown
-      #__event_rightbuttondown = #__event_rightdown
-      #__event_leftbuttonup = #__event_leftup
-      #__event_rightbuttonup = #__event_rightup
-      #__event_leftdoubleclick = #__event_left2click
+      #__event_leftbuttondown   = #__event_leftdown
+      #__event_rightbuttondown  = #__event_rightdown
+      #__event_leftbuttonup     = #__event_leftup
+      #__event_rightbuttonup    = #__event_rightup
+      #__event_leftdoubleclick  = #__event_left2click
       #__event_rightdoubleclick = #__event_right2click
       ;
-      #__event_returnkey = #__event_return
+      #__event_returnkey    = #__event_return
       #__event_cursorupdate = #__event_cursorchange
       ;
 ;       #__event_maximizewindow = #__event_maximize
 ;       #__event_minimizewindow = #__event_minimize
 ;       #__event_restorewindow = #__event_restore
 ;       #__event_closewindow = #__event_close
-         
+      
       ;-\\ create-type
       Enumeration - 1
          #__type_all
@@ -754,7 +647,7 @@
          #__type_tree          = #PB_GadgetType_Tree          ; 27
          #__type_panel         = #PB_GadgetType_Panel         ; 28
          #__type_splitter      = #PB_GadgetType_Splitter      ; 29
-         #__type_mDI           = #PB_GadgetType_MDI           ; 30
+         #__type_MDI           = #PB_GadgetType_MDI           ; 30
          #__type_scintilla     = #PB_GadgetType_Scintilla     ; 31
          #__type_shortcut      = #PB_GadgetType_Shortcut      ; 32
          #__type_canvas        = #PB_GadgetType_Canvas        ; 33
@@ -817,11 +710,11 @@
       
       
       ;-\\ Anchors
-      #__a_anchors_size  = 7
+      #__a_anchors_size = 7
       
-      #__a_anchors_type1  = 1
-      #__a_anchors_type2  = 2
-      #__a_anchors_type3  = 3
+      #__a_anchors_type1 = 1
+      #__a_anchors_type2 = 2
+      #__a_anchors_type3 = 3
       
       ;
       #__a_left         = 1
@@ -839,13 +732,13 @@
       #__a_line_top    = 2;12
       #__a_line_right  = 3;11
       #__a_line_bottom = 4;13
-      #__a_count = 9      ;#__a_moved
+      #__a_count       = 9      ;#__a_moved
       
       ; a_mode_
       EnumerationBinary 1
          #__a_position ; положение
          #__a_width    ;= #__align_left | #__align_right  ; по ширине
-         #__a_height   ;= #__align_top | #__align_bottom  ; по высоте 
+         #__a_height   ;= #__align_top | #__align_bottom  ; по высоте
          #__a_corner   ; = #__align_left | #__align_top | #__align_bottom | #__align_right    ; по углам
                        ;  #__a_rb
       EndEnumeration
@@ -853,7 +746,7 @@
       #__a_size = #__a_corner | #__a_edge
       #__a_full = #__a_position | #__a_size
       
-       
+      
       ;-
       ;- GLOBAL
       ;-
@@ -1155,7 +1048,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 855
-; FirstLine = 852
+; CursorPosition = 163
+; FirstLine = 151
 ; Folding = ---
 ; EnableXP

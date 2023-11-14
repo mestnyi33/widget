@@ -1455,40 +1455,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\text\x        = _x_
             _this_\text\y        = _y_
             
-            _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ))
-            _this_\text\lower    = constants::_check_( _flag_, #__text_lowercase )
-            _this_\text\upper    = constants::_check_( _flag_, #__text_uppercase )
-            _this_\text\pass     = constants::_check_( _flag_, #__text_password )
-            _this_\text\invert   = constants::_check_( _flag_, #__text_invert )
-            _this_\text\vertical = constants::_check_( _flag_, #__text_vertical )
+            _this_\text\editable = Bool( Not constants::_check_( _flag_, #__flag_textreadonly ))
+            _this_\text\lower    = constants::_check_( _flag_, #__flag_textlowercase )
+            _this_\text\upper    = constants::_check_( _flag_, #__flag_textuppercase )
+            _this_\text\pass     = constants::_check_( _flag_, #__flag_textpassword )
+            _this_\text\invert   = constants::_check_( _flag_, #__flag_invert )
+            _this_\text\vertical = constants::_check_( _flag_, #__flag_vertical )
             
             ;
-            _this_\text\align\left  = constants::_check_( _flag_, #__text_left )
-            _this_\text\align\right = constants::_check_( _flag_, #__text_right )
+            _this_\text\align\left  = constants::_check_( _flag_, #__flag_textleft )
+            _this_\text\align\right = constants::_check_( _flag_, #__flag_textright )
             
-            _this_\text\align\top    = constants::_check_( _flag_, #__text_top )
-            _this_\text\align\bottom = constants::_check_( _flag_, #__text_bottom )
+            _this_\text\align\top    = constants::_check_( _flag_, #__flag_texttop )
+            _this_\text\align\bottom = constants::_check_( _flag_, #__flag_textbottom )
             
             If Not _this_\text\align\top And
                Not _this_\text\align\left And
                Not _this_\text\align\right And
                Not _this_\text\align\bottom And
-               Not constants::_check_( _flag_, #__text_center )
+               Not constants::_check_( _flag_, #__flag_textcenter )
                
                If Not _this_\text\align\right
-                  _this_\flag | #__text_left
+                  _this_\flag | #__flag_textleft
                   _this_\text\align\left = #True
                EndIf
                If Not _this_\text\align\bottom
-                  _this_\flag | #__text_top
+                  _this_\flag | #__flag_texttop
                   _this_\text\align\top = #True
                EndIf
             EndIf
             
             
-            If constants::_check_( _flag_, #__text_wordwrap )
+            If constants::_check_( _flag_, #__flag_textwordwrap )
                _this_\text\multiLine = - 1
-            ElseIf constants::_check_( _flag_, #__text_multiline )
+            ElseIf constants::_check_( _flag_, #__flag_textmultiline )
                _this_\text\multiLine = 1
             Else
                _this_\text\multiLine = 0
@@ -1534,7 +1534,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _this_\text\multiLine = 1
                   EndIf
                   ;           Else
-                  ;             _this_\text\multiline = constants::_check_( _this_\flag, #__string_multiline )
+                  ;             _this_\text\multiline = constants::_check_( _this_\flag, #__flag_textmultiline )
                EndIf
             EndIf
             
@@ -1553,7 +1553,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\text\numeric       = Bool( _flag_ & #__string_numeric )
+                  _this_\text\numeric       = Bool( _flag_ & #__flag_textnumeric )
                EndIf
             EndIf
             
@@ -7750,7 +7750,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\parent\event = 0 : *this\parent\event = - 1 : EndIf
                      DoEvents( *this\parent, #__event_ScrollChange, *bar\PageChange( ), *this )
                      If *this\parent\event = - 1 : *this\parent\event = 0 : EndIf
-                     
                   EndIf
                Else
                   DoEvents( *this, #__event_Change, *bar\PageChange( ), EnteredButton( ) )
@@ -12419,35 +12418,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_CheckBox
                If PBFlag & #PB_CheckBox_Right = #PB_CheckBox_Right
                   flags & ~ #PB_CheckBox_Right
-                  flags | #__text_right
+                  flags | #__flag_textright
                EndIf
                If PBFlag & #PB_CheckBox_Center = #PB_CheckBox_Center
                   flags & ~ #PB_CheckBox_Center
-                  flags | #__text_center
+                  flags | #__flag_textcenter
                EndIf
                
             Case #__type_Text
                If PBFlag & #PB_Text_Center = #PB_Text_Center
                   flags & ~ #PB_Text_Center
-                  flags | #__text_center
+                  flags | #__flag_textcenter
                EndIf
                If PBFlag & #PB_Text_Right = #PB_Text_Right
                   flags & ~ #PB_Text_Right
-                  flags | #__text_right
+                  flags | #__flag_textright
                EndIf
                
             Case #__type_Button
                If PBFlag & #PB_Button_MultiLine = #PB_Button_MultiLine
                   flags & ~ #PB_Button_MultiLine
-                  flags | #__text_wordwrap
+                  flags | #__flag_textwordwrap
                EndIf
                If PBFlag & #PB_Button_Left = #PB_Button_Left
                   flags & ~ #PB_Button_Left
-                  flags | #__text_left
+                  flags | #__flag_textleft
                EndIf
                If PBFlag & #PB_Button_Right = #PB_Button_Right
                   flags & ~ #PB_Button_Right
-                  flags | #__text_right
+                  flags | #__flag_textright
                EndIf
                
             Case #__type_Tree, #__type_listicon
@@ -12481,16 +12480,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Select Type
             Case #__type_Button
-               If Flag & #__text_wordwrap = #__text_wordwrap
-                  flags & ~ #__text_wordwrap
+               If Flag & #__flag_textwordwrap = #__flag_textwordwrap
+                  flags & ~ #__flag_textwordwrap
                   flag | #PB_Button_MultiLine
                EndIf
-               If Flag & #__text_left = #__text_left
-                  flags & ~ #__text_left
+               If Flag & #__flag_textleft = #__flag_textleft
+                  flags & ~ #__flag_textleft
                   flags | #PB_Button_Left
                EndIf
-               If Flag & #__text_right = #__text_right
-                  flags & ~ #__text_right
+               If Flag & #__flag_textright = #__flag_textright
+                  flags & ~ #__flag_textright
                   flags | #PB_Button_Right
                EndIf
          EndSelect
@@ -12531,51 +12530,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\type = #__type_Hyperlink Or
                   *this\type = #__type_CheckBox
                   
-                  If flag & #__text_multiline
+                  If flag & #__flag_textmultiline
                      *this\text\multiline = state
                   EndIf
                   
-                  If flag & #__text_wordwrap
+                  If flag & #__flag_textwordwrap
                      *this\text\multiline = - state
                   EndIf
                   
-                  If flag & #__text_vertical
+                  If flag & #__flag_vertical
                      *this\text\vertical = state
                   EndIf
                   
-                  If flag & #__text_invert
+                  If flag & #__flag_invert
                      *this\text\invert = state
                   EndIf
                   
-                  If flag & #__text_left
+                  If flag & #__flag_textleft
                      *this\text\align\left = state
-                     If Not state And *this\flag & #__text_right
+                     If Not state And *this\flag & #__flag_textright
                         *this\text\align\right = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__text_right
+                  If flag & #__flag_textright
                      *this\text\align\right = state
-                     If Not state And *this\flag & #__text_left
+                     If Not state And *this\flag & #__flag_textleft
                         *this\text\align\left = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__text_top
+                  If flag & #__flag_texttop
                      *this\text\align\top = state
-                     If Not state And *this\flag & #__text_bottom
+                     If Not state And *this\flag & #__flag_textbottom
                         *this\text\align\bottom = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__text_bottom
+                  If flag & #__flag_textbottom
                      *this\text\align\bottom = state
-                     If Not state And *this\flag & #__text_top
+                     If Not state And *this\flag & #__flag_texttop
                         *this\text\align\top = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__text_center
+                  If flag & #__flag_textcenter
                      *this\text\align\left   = #False
                      *this\text\align\top    = #False
                      *this\text\align\right  = #False
@@ -12717,14 +12716,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;           If flag & #__text_bottom
+               ;           If flag & #__flag_textbottom
                ;             *this\ImageChange( )              = #__text_update
                ;             *this\image\align\top    = 0
                ;             *this\image\align\bottom = state
                ;           EndIf
                
                
-               ; ;           If flag & #__text_right
+               ; ;           If flag & #__flag_textright
                ; ;             *this\image\align\left  = 0
                ; ;             *this\ImageChange( )             = #__text_update
                ; ;             *this\image\align\right = state
@@ -15617,7 +15616,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\flag = Flag
          If *this\type = #__type_Button Or
             *this\type = #__type_HyperLink
-            *this\flag | #__text_center
+            *this\flag | #__flag_textcenter
             
          ElseIf *this\type = #__type_ComboBox Or
                 *this\type = #__type_Spin Or
@@ -15625,13 +15624,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\type = #__type_Option Or
                 *this\type = #__type_CheckBox
             
-            If Not flag & #__text_center
-               *this\flag | #__text_center | #__text_left
+            If Not flag & #__flag_textcenter
+               *this\flag | #__flag_textcenter | #__flag_textleft
             EndIf
             
             If *this\type = #__type_CheckBox And Flag & #PB_CheckBox_Right
-               *this\flag & ~ #__text_left
-               *this\flag | #__text_right
+               *this\flag & ~ #__flag_textleft
+               *this\flag | #__flag_textright
             EndIf
          EndIf
          
@@ -15747,7 +15746,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\mode\fullselection = constants::_check_( *this\flag, #__flag_fullselection, #False ) * 7
                *this\mode\gridlines     = constants::_check_( *this\flag, #__flag_gridlines ) * 10
                
-               *this\MarginLine( )\hide        = constants::_check_( *this\flag, #__text_numeric, #False )
+               *this\MarginLine( )\hide        = constants::_check_( *this\flag, #__flag_textnumeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
                *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
             EndIf
@@ -16002,7 +16001,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
                      *this\bar\vertical = #True
                   EndIf
-                  *this\flag = flag | #__text_center
+                  *this\flag = flag | #__flag_textcenter
                Else
                   If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
                      *this\bar\vertical = #True
@@ -16018,7 +16017,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                
                *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String,
-                                            0, 0, 0, 0, #Null$, #__flag_child | #__text_numeric | #__flag_borderless )
+                                            0, 0, 0, 0, #Null$, #__flag_child | #__flag_textnumeric | #__flag_borderless )
             EndIf
             
             ; - Create Track
@@ -17583,12 +17582,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
-                              DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 2 )
+                              DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, - 2 )
                            EndIf
                         Else
                            If mouse( )\cursor <> cursor::#__cursor_default
                               mouse( )\cursor = cursor::#__cursor_default
-                              DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, - 3 )
+                              DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, - 3 )
                            EndIf
                         EndIf
                         LeavedWidget( ) = #Null
@@ -17607,12 +17606,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
-                              DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 4 )
+                              DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, - 4 )
                            EndIf
                         Else
                            If mouse( )\cursor <> cursor::#__cursor_default
                               mouse( )\cursor = cursor::#__cursor_default
-                              DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, - 5 )
+                              DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, - 5 )
                            EndIf
                         EndIf
                         
@@ -17651,7 +17650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               If mouse( )\cursor <> a_transform( )\cursor[i]
                                  mouse( )\cursor = a_transform( )\cursor[i]
-                                 DoEvents( a_focused( ), #__event_CursorUpdate, mouse( )\cursor, 7 )
+                                 DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, 7 )
                               EndIf
                            EndIf
                         EndIf
@@ -17691,7 +17690,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
                                     mouse( )\cursor = a_transform( )\cursor[i]
-                                    DoEvents( a_entered( ), #__event_CursorUpdate, mouse( )\cursor, 6 )
+                                    DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, 6 )
                                  EndIf
                               EndIf
                            EndIf
@@ -19408,7 +19407,7 @@ IsChild( *widget, *widget\_widgets( ))
          
          ;\\
          If *this\row
-            If eventtype <> #__event_CursorUpdate
+            If eventtype <> #__event_CursorChange
                If *this\dragstart
                   If *this\FocusedRow( )
                      *button = *this\FocusedRow( )\index
@@ -19424,7 +19423,7 @@ IsChild( *widget, *widget\_widgets( ))
          EndIf
          
          ;\\ before send-widget-events change cursor
-         If eventtype = #__event_CursorUpdate
+         If eventtype = #__event_CursorChange
             ;Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
             
             Cursor::Set( *this\root\canvas\gadget, mouse( )\cursor )
@@ -19442,7 +19441,7 @@ IsChild( *widget, *widget\_widgets( ))
             If *this\event
                If eventtype = #__event_Create
                   Post( *this, eventtype, *button, *data )
-               ElseIf eventtype = #__event_CursorUpdate
+               ElseIf eventtype = #__event_CursorChange
                   Send( *this, eventtype, *button, *data )
                Else
                   ;                If *this\row
@@ -19516,7 +19515,7 @@ IsChild( *widget, *widget\_widgets( ))
                   If Not ( a_transform( ) And a_index( ))
                      If mouse( )\cursor <> PressedWidget( )\cursor
                         mouse( )\cursor = PressedWidget( )\cursor
-                        DoEvents( PressedWidget( ), #__event_CursorUpdate, mouse( )\cursor, 2 )
+                        DoEvents( PressedWidget( ), #__event_CursorChange, mouse( )\cursor, 2 )
                      EndIf
                   EndIf
                   
@@ -19524,7 +19523,7 @@ IsChild( *widget, *widget\_widgets( ))
                   If *this\state\enter = 2
                      If mouse( )\cursor <> *this\cursor
                         mouse( )\cursor = *this\cursor
-                        DoEvents( *this, #__event_CursorUpdate, mouse( )\cursor, 1 )
+                        DoEvents( *this, #__event_CursorChange, mouse( )\cursor, 1 )
                      EndIf
                      
                   Else
@@ -19535,7 +19534,7 @@ IsChild( *widget, *widget\_widgets( ))
                            PressedWidget( )\root <> EnteredWidget( )\root
                            If mouse( )\cursor <> PressedWidget( )\root\cursor
                               mouse( )\cursor = PressedWidget( )\root\cursor
-                              DoEvents( PressedWidget( )\root, #__event_CursorUpdate, mouse( )\cursor, - 1 )
+                              DoEvents( PressedWidget( )\root, #__event_CursorChange, mouse( )\cursor, - 1 )
                            EndIf
                         EndIf
                         
@@ -19543,7 +19542,7 @@ IsChild( *widget, *widget\_widgets( ))
                         If mouse( )\cursor <> EnteredWidget( )\cursor
                            mouse( )\cursor = EnteredWidget( )\cursor
                            ; If Not ( a_transform( ) And a_index( ))
-                           DoEvents( EnteredWidget( ), #__event_CursorUpdate, mouse( )\cursor, 3 )
+                           DoEvents( EnteredWidget( ), #__event_CursorChange, mouse( )\cursor, 3 )
                            ; EndIf
                         EndIf
                         
@@ -19556,7 +19555,7 @@ IsChild( *widget, *widget\_widgets( ))
                                     mouse( )\cursor = cursor::#__cursor_Default
                                     If LeavedWidget( )
                                        ;  Debug ""+ *this\class +" "+ EnteredWidget( )\class +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                       DoEvents( LeavedWidget( ), #__event_CursorUpdate, mouse( )\cursor, 5 )
+                                       DoEvents( LeavedWidget( ), #__event_CursorChange, mouse( )\cursor, 5 )
                                     EndIf
                                  EndIf
                               Else
@@ -19565,7 +19564,7 @@ IsChild( *widget, *widget\_widgets( ))
                                     If mouse( )\cursor <> EnteredWidget( )\cursor
                                        mouse( )\cursor = EnteredWidget( )\cursor
                                        ; Debug ""+ *this\class +" "+ EnteredWidget( )\class +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                       DoEvents( EnteredWidget( ), #__event_CursorUpdate, mouse( )\cursor, 4 )
+                                       DoEvents( EnteredWidget( ), #__event_CursorChange, mouse( )\cursor, 4 )
                                     EndIf
                                  EndIf
                               EndIf
@@ -19575,7 +19574,7 @@ IsChild( *widget, *widget\_widgets( ))
                                  mouse( )\cursor = cursor::#__cursor_Default
                                  
                                  Debug " default ";+ *this +" "+ EnteredWidget( ) +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                 DoEvents( *this, #__event_CursorUpdate, mouse( )\cursor, 7 )
+                                 DoEvents( *this, #__event_CursorChange, mouse( )\cursor, 7 )
                               EndIf
                            EndIf
                         EndIf
@@ -21013,7 +21012,7 @@ IsChild( *widget, *widget\_widgets( ))
          
          Container( f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
          Image( f2, f2, iw, iw, img, #PB_Image_Border | #__flag_center )
-         Text( f2 + iw + f2, f2, width - iw, iw, Text, #__text_center | #__text_left )
+         Text( f2 + iw + f2, f2, width - iw, iw, Text, #__flag_textcenter | #__flag_textleft )
          CloseList( )
          
          Protected._S_WIDGET *ok, *no, *cancel
@@ -21470,7 +21469,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__string_password | #__string_right)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_textpassword | #__flag_textright)
    
    ;\\
    Procedure button_panel_events( )
@@ -21829,7 +21828,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21829
-; FirstLine = 21794
+; CursorPosition = 21471
+; FirstLine = 21446
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
