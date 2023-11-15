@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ Open Root
    Define *root._S_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root\class = "root": SetText(*root, "root")
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__string_password | #__string_right)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password | #__flag_textright)
    
    Procedure button_panel_events( )
       Select GetText( EventWidget( ) )
@@ -33,6 +33,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13
+; CursorPosition = 18
 ; Folding = -
 ; EnableXP

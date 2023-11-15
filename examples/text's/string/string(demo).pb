@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../" : XIncludeFile "widgets3.pbi"
+IncludePath "../../../" : XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -35,15 +35,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected eventtype = WidgetEventType( )
     
     Select eventtype
-      Case #PB_EventType_Focus
+      Case #__event_Focus
         String.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_LostFocus
+      Case #__event_LostFocus
         String.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_Change
+      Case #__event_Change
         String.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
     EndSelect
     
-    If eventtype = #PB_EventType_Focus
+    If eventtype = #__event_Focus
       Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
       ; Debug String.s +" - widget"
@@ -146,13 +146,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    EString(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #__string_readonly)
-    EString(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #__string_numeric|#__string_center)
-    EString(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__string_right)
-    EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #__string_lowercase)
-    EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #__string_uppercase)
-    EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #__flag_borderless)
-    EString(305+8, (height+5)*6+10, 290, height, "Password", #__string_password)
+    EString(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
+    EString(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_textcenter)
+    EString(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_textright)
+    EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    EString(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
     EString(305+8, (height+5)*7+10, 290, height, "")
     EString(305+8, (height+5)*8+10, 290, 90, Text)
     
@@ -168,6 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = +--
+; CursorPosition = 17
+; FirstLine = 133
+; Folding = ---
 ; EnableXP

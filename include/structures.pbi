@@ -585,8 +585,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          type.b
          round.a                ; drawing round
          container.b            ; is container
+         ; container = 1        ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
+         ; container = - 1      ; if the not has children ( Splitter( ); Frame( ))
+         haschildren.l          ; if the has children
          child.b                ; is the widget composite?
-         children.l             ; if the has children
          
          show.b
          create.b
@@ -711,13 +713,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *GadgetID                ; canvas handle
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
-         List *child._s_WIDGET( ) ; widget( )\
       EndStructure
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
          *widget._s_WIDGET
          canvas._s_canvas
+         List *children._s_WIDGET( ) ; widget( )\
       EndStructure
       
       ;--     STICKY
@@ -754,7 +756,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 727
-; FirstLine = 532
-; Folding = -f+-9IA+--
+; CursorPosition = 587
+; FirstLine = 416
+; Folding = -f+-9oA+--
 ; EnableXP

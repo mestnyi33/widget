@@ -1,32 +1,36 @@
 ﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
-; XIncludeFile "../empty5.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
-  EnableExplicit
-  
-Define text.s = "abc" + Chr( 10 ) + "def" + Chr( 10 ) + "ghi" + Chr( 10 ) + "jkl" + Chr( 10 ) + "mno" + Chr( 10 ) + "pqr" + Chr( 10 ) + "stu" + Chr( 10 ) + "vwxyz"
-
-#WINDOW = 0
-#TEXT_GADGET = 0
-#__Text_Border = #PB_Text_Border
-
-Define *w._S_widget, text_gadget_width = 500
-
-If OpenWindow( #WINDOW, 0, 0, text_gadget_width + 20, 400, "TextGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  Open( #WINDOW )
-  *w = Text( 10,  10, text_gadget_width, 200, text.s, #__Text_Border )
-	;*w = Editor( 10,  10, text_gadget_width, 200, #__Text_Border ):   SetText(*w, text.s )
-	Redraw( *w )
-	
-	Debug Height( *w, #__c_Required )
-	Resize( *w, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height( *w, #__c_Required ) )
-	
-	Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-EndIf
+   UseLib(widget)
+   EnableExplicit
+   
+   Define text.s = "abc" + Chr( 10 ) + "def" + Chr( 10 ) + "ghi" + Chr( 10 ) + "jkl" + Chr( 10 ) + "mno" + Chr( 10 ) + "pqr" + Chr( 10 ) + "stu" + Chr( 10 ) + "vwxyz"
+   
+   #WINDOW = 0
+   #TEXT_GADGET = 0
+   
+   Define *widget._S_widget, *gadget, text_gadget_width = 300
+   
+   If Open( #WINDOW, 0, 0, text_gadget_width*2 + 30, 100, "TextGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
+      *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
+      
+      *widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
+      
+      ;Redraw( *widget )
+      
+      Define widget_required_size = Height( *widget, #__c_Required )
+      Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
+      
+      Debug ""+ gadget_required_size +" "+ widget_required_size
+      ResizeGadget( *gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, gadget_required_size )
+      Resize( *widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, widget_required_size )
+      
+      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
+; CursorPosition = 18
 ; Folding = -
 ; EnableXP
