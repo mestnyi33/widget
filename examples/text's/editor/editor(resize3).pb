@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetGadgetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      ;Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
       Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
@@ -86,11 +86,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
@@ -150,5 +150,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 105
+; FirstLine = 117
 ; Folding = -----
 ; EnableXP

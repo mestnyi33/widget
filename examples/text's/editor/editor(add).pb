@@ -1,8 +1,8 @@
-﻿; IncludePath "../../../": XIncludeFile "-widgets-editor.pbi
+﻿XIncludeFile "../../../widgets.pbi"
+;IncludePath "../../../": XIncludeFile "-widgets-editor.pbi
 ;XIncludeFile "../../../-widgets-edit.pbi"
 ;XIncludeFile "../../../-widgets.pbi"
-;XIncludeFile "../../../widgets.pbi"
-XIncludeFile "../../../widget-events.pbi"
+;XIncludeFile "../../../widget-events.pbi"
  ;XIncludeFile "editor(code).pb"
  ;XIncludeFile "empty.pb"
 
@@ -55,6 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     BindEvent( #PB_Event_Repaint, @event_repaint() )
+    
     Open(0, 270, 10, 250, 680)
     Define *w = Editor(0, 0, 250, 680) 
     
@@ -102,5 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

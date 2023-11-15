@@ -2,10 +2,7 @@
 ; demo state
 ;
 IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
-;XIncludeFile "-widgets-edit.pbi"
-;XIncludeFile "widget-events.pb"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -42,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected count
     
     Select widget::WidgetEventType( )
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         
         Select widget::EventWidget( )
           Case *added
@@ -69,14 +66,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events()
     Select WidgetEventType( )
-      Case #PB_EventType_RightClick
+      Case #__event_RightClick
         widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
         widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
         
         AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
-      Case #PB_EventType_Change
+      Case #__event_Change
         widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
         
     EndSelect
@@ -97,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu))
+  If Open(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = EditorGadget(#PB_Any, 10, 10, 250, 150)
     *g2 = EditorGadget(#PB_Any, 10, 165, 250, 260)
@@ -123,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(*w1, a-1)
     widget::SetState(*w2, a-1) 
     widget::Bind(*w2, @widget_events())
-    widget::Bind(*w2, @widget_events(), #PB_EventType_RightClick)
+    widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
     *reset = widget::Button( 10, 435, 100, 30, "reset state", #__button_toggle)
     widget::SetState( *reset, 1)
@@ -232,5 +229,7 @@ CompilerEndIf
 ; ;   Until  Event= #PB_Event_CloseWindow
 ; ; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 96
+; FirstLine = 93
 ; Folding = ---
 ; EnableXP

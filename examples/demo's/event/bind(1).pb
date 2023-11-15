@@ -9,9 +9,9 @@ CompilerIf #PB_Compiler_IsMainFile
 	Global.i gEvent, gQuit, *but, *win
 	
 	Procedure events_widgets( )
-		If WidgetEventType() <> #PB_EventType_MouseMove And 
-		   WidgetEventType() <> #PB_EventType_Draw And 
-		   WidgetEventType() <> #PB_EventType_StatusChange
+		If WidgetEventType() <> #__event_MouseMove And 
+		   WidgetEventType() <> #__event_Draw And 
+		   WidgetEventType() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
@@ -19,10 +19,10 @@ CompilerIf #PB_Compiler_IsMainFile
 			EndIf
 			
 			If GetIndex(EventWidget()) = 1
-				If WidgetEventType() = #PB_EventType_MouseEnter
+				If WidgetEventType() = #__event_MouseEnter
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
-				If WidgetEventType() = #PB_EventType_MouseLeave
+				If WidgetEventType() = #__event_MouseLeave
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 240, #PB_Ignore)
 				EndIf
 				ProcedureReturn #PB_Ignore ; no send to (window & root) - event
@@ -31,9 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
 	EndProcedure
 	
 	Procedure events_windows( )
-		If WidgetEventType() <> #PB_EventType_MouseMove And 
-		   WidgetEventType() <> #PB_EventType_Draw And
-		   WidgetEventType() <> #PB_EventType_StatusChange
+		If WidgetEventType() <> #__event_MouseMove And 
+		   WidgetEventType() <> #__event_Draw And
+		   WidgetEventType() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
@@ -46,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
 	EndProcedure
 	
 	Procedure events_roots( )
-		If WidgetEventType() <> #PB_EventType_MouseMove And 
-		   WidgetEventType() <> #PB_EventType_Draw And
-		   WidgetEventType() <> #PB_EventType_StatusChange
+		If WidgetEventType() <> #__event_MouseMove And 
+		   WidgetEventType() <> #__event_Draw And
+		   WidgetEventType() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
@@ -132,14 +132,14 @@ CompilerEndIf
 ;     SetActive(widget())
 ;     
 ;     Debug ""
-;     Bind( #PB_All, @click(), #PB_EventType_LeftClick)
-;     Bind( #PB_All, @deactive(), #PB_EventType_LostFocus)
-;     Bind( #PB_All, @active(), #PB_EventType_Focus)
+;     Bind( #PB_All, @click(), #__event_LeftClick)
+;     Bind( #PB_All, @deactive(), #__event_LostFocus)
+;     Bind( #PB_All, @active(), #__event_Focus)
 ;     
 ;     Debug ""
-; ;     Bind( #PB_All, @events(), #PB_EventType_LeftClick)
-; ;     Bind( #PB_All, @events(), #PB_EventType_LostFocus)
-; ;     Bind( #PB_All, @events(), #PB_EventType_Focus)
+; ;     Bind( #PB_All, @events(), #__event_LeftClick)
+; ;     Bind( #PB_All, @events(), #__event_LostFocus)
+; ;     Bind( #PB_All, @events(), #__event_Focus)
 ;     Bind( #PB_All, @events())
 ;     
 ;     Repeat
@@ -155,7 +155,7 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 7
+; CursorPosition = 141
+; FirstLine = 106
 ; Folding = ----
 ; EnableXP

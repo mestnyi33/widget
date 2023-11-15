@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
     
-    Debug ""+GadgetHeight(0) +" "+ GadgetHeight(g)
+    ;Debug ""+GadgetHeight(0) +" "+ GadgetHeight(g)
     Repeat 
       Define Event = WaitWindowEvent()
       
@@ -87,5 +87,7 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 60
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

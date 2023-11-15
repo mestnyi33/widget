@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_roots( )
-    If WidgetEventType( ) <> #PB_EventType_MouseMove
+    If WidgetEventType( ) <> #__event_MouseMove
       Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
     EndIf
   EndProcedure
@@ -22,36 +22,36 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *butt0, @events_roots( ) )
       
       Define *butt = Button(50, 50+45, 280, 35, "test-button-events") 
-      Bind( *butt, @events_roots( ), #PB_EventType_Change )
-      Bind( *butt, @events_roots( ), #PB_EventType_CloseItem )
-      Bind( *butt, @events_roots( ), #PB_EventType_Down )
-      Bind( *butt, @events_roots( ), #PB_EventType_DragStart )
-      Bind( *butt, @events_roots( ), #PB_EventType_Focus )
-      Bind( *butt, @events_roots( ), #PB_EventType_Input )
-      Bind( *butt, @events_roots( ), #PB_EventType_KeyDown )
-      Bind( *butt, @events_roots( ), #PB_EventType_KeyUp )
-      Bind( *butt, @events_roots( ), #PB_EventType_LeftButtonDown )
-      Bind( *butt, @events_roots( ), #PB_EventType_LeftButtonUp )
-      Bind( *butt, @events_roots( ), #PB_EventType_LeftClick )
-      Bind( *butt, @events_roots( ), #PB_EventType_LeftDoubleClick )
-      Bind( *butt, @events_roots( ), #PB_EventType_LostFocus )
-      Bind( *butt, @events_roots( ), #PB_EventType_MiddleButtonDown )
-      Bind( *butt, @events_roots( ), #PB_EventType_MiddleButtonUp )
-      Bind( *butt, @events_roots( ), #PB_EventType_MouseEnter )
-      Bind( *butt, @events_roots( ), #PB_EventType_MouseLeave )
-      Bind( *butt, @events_roots( ), #PB_EventType_MouseMove )
-      Bind( *butt, @events_roots( ), #PB_EventType_MouseWheel )
-      Bind( *butt, @events_roots( ), #PB_EventType_PopupMenu )
-      Bind( *butt, @events_roots( ), #PB_EventType_PopupWindow )
-      Bind( *butt, @events_roots( ), #PB_EventType_Resize )
-      Bind( *butt, @events_roots( ), #PB_EventType_RightButtonDown )
-      Bind( *butt, @events_roots( ), #PB_EventType_RightButtonUp )
-      Bind( *butt, @events_roots( ), #PB_EventType_RightClick )
-      Bind( *butt, @events_roots( ), #PB_EventType_RightDoubleClick )
-      Bind( *butt, @events_roots( ), #PB_EventType_SizeItem )
-      Bind( *butt, @events_roots( ), #PB_EventType_StatusChange )
-      Bind( *butt, @events_roots( ), #PB_EventType_TitleChange )
-      Bind( *butt, @events_roots( ), #PB_EventType_Up )
+      Bind( *butt, @events_roots( ), #__event_Change )
+      ;Bind( *butt, @events_roots( ), #__event_CloseItem )
+      Bind( *butt, @events_roots( ), #__event_Down )
+      Bind( *butt, @events_roots( ), #__event_DragStart )
+      Bind( *butt, @events_roots( ), #__event_Focus )
+      Bind( *butt, @events_roots( ), #__event_Input )
+      Bind( *butt, @events_roots( ), #__event_KeyDown )
+      Bind( *butt, @events_roots( ), #__event_KeyUp )
+      Bind( *butt, @events_roots( ), #__event_LeftButtonDown )
+      Bind( *butt, @events_roots( ), #__event_LeftButtonUp )
+      Bind( *butt, @events_roots( ), #__event_LeftClick )
+      Bind( *butt, @events_roots( ), #__event_LeftDoubleClick )
+      Bind( *butt, @events_roots( ), #__event_LostFocus )
+      Bind( *butt, @events_roots( ), #__event_MiddleDown )
+      Bind( *butt, @events_roots( ), #__event_MiddleUp )
+      Bind( *butt, @events_roots( ), #__event_MouseEnter )
+      Bind( *butt, @events_roots( ), #__event_MouseLeave )
+      Bind( *butt, @events_roots( ), #__event_MouseMove )
+      Bind( *butt, @events_roots( ), #__event_MouseWheel )
+      ;Bind( *butt, @events_roots( ), #__event_PopupMenu )
+      ;Bind( *butt, @events_roots( ), #__event_PopupWindow )
+      Bind( *butt, @events_roots( ), #__event_Resize )
+      Bind( *butt, @events_roots( ), #__event_RightButtonDown )
+      Bind( *butt, @events_roots( ), #__event_RightButtonUp )
+      Bind( *butt, @events_roots( ), #__event_RightClick )
+      Bind( *butt, @events_roots( ), #__event_RightDoubleClick )
+      ;Bind( *butt, @events_roots( ), #__event_SizeItem )
+      Bind( *butt, @events_roots( ), #__event_StatusChange )
+      ;Bind( *butt, @events_roots( ), #__event_TitleChange )
+      Bind( *butt, @events_roots( ), #__event_Up )
       
       Define *butt1 = Button(350, 50, 80, 80, "Deactivate")
       
@@ -82,5 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

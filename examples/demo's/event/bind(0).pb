@@ -47,11 +47,11 @@ CompilerIf #PB_Compiler_IsMainFile
         ;Bind(id, @events_widgets())
         
         ; post this events
-        Bind(*id, @events_gadgets(), #PB_EventType_MouseEnter)
-       ; Bind(id, @events_widgets(), #PB_EventType_MouseEnter)
-        Bind(*id, @events_widgets(), #PB_EventType_MouseLeave)
-        ; Bind(id, @events_widgets(), #PB_EventType_LeftButtonDown)
-        Bind(*id, @events_widgets(), #PB_EventType_LeftClick)
+        Bind(*id, @events_gadgets(), #__event_MouseEnter)
+       ; Bind(id, @events_widgets(), #__event_MouseEnter)
+        Bind(*id, @events_widgets(), #__event_MouseLeave)
+        ; Bind(id, @events_widgets(), #__event_LeftButtonDown)
+        Bind(*id, @events_widgets(), #__event_LeftClick)
         
 ;         Debug @events_widgets()
 ;         
@@ -88,5 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 53
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

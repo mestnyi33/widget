@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 UseLib(widget)
 
@@ -35,5 +34,6 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

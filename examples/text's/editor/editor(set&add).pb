@@ -1,6 +1,5 @@
 ﻿
- IncludePath "../../../" : XIncludeFile "widget-events.pbi"
-; XIncludeFile "../empty5.pb"
+ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -176,5 +175,6 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = ---
 ; EnableXP

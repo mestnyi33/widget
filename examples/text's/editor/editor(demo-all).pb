@@ -1,7 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets-plus.pbi"
-;XIncludeFile "-widgets-edit.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -150,17 +148,17 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetText(7, "GaT")
     Debug "Get gadget text "+GetGadgetText(7)
     
-    *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #__string_readonly|#__text_top)
-    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #__string_numeric|#__string_center)
-    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__string_right|#__text_bottom)
-    *S_3 = String( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #__string_lowercase)
-    *S_4 = String( 305+8, (height+5)*4+10, 290, height, "uppercase...", #__string_uppercase)
-    *S_5 = String( 305+8, (height+5)*5+10, 290, height, Text1, #__flag_borderless)
+    *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__text_top)
+    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_textcenter)
+    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__flag_textright|#__flag_textbottom)
+    *S_3 = String( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    *S_4 = String( 305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    *S_5 = String( 305+8, (height+5)*5+10, 290, height, Text1, #PB_String_BorderLess)
     *S_6 = String( 305+8, (height+5)*6+10, 140, height, "")
-    *S_7 = String( 305+150+8, (height+5)*6+10, 140, height, "Password", #__string_password)
-    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_numeric|#__text_multiline)
-    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_numeric|#__text_multiline)
-    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_numeric|#__text_wordwrap)
+    *S_7 = String( 305+150+8, (height+5)*6+10, 140, height, "Password", #PB_String_Password )
+    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textmultiline)
+    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textmultiline)
+    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textwordwrap)
     
     SetText(*S_7, "GaT")
     Debug "Get widget text "+GetText(*S_7)
@@ -170,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
     
     *S_21 = Editor( 0,0,0,0);, #__flag_gridlines)
-    *S_22 = Editor( 0,0,0,0, #__editor_wordwrap)  ;#__flag_gridlines|
+    *S_22 = Editor( 0,0,0,0, #PB_Editor_WordWrap)  ;#__flag_gridlines|
     
     SetGadgetText(21, get_text(#LF$))
     SetGadgetText(22, get_text(""))
@@ -367,5 +365,7 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 170
+; FirstLine = 156
 ; Folding = ---
 ; EnableXP

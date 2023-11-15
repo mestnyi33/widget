@@ -9,9 +9,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_widgets( )
-    If WidgetEventType() <> #PB_EventType_MouseMove And 
-       WidgetEventType() <> #PB_EventType_Draw And 
-       WidgetEventType() <> #PB_EventType_StatusChange
+    If WidgetEventType() <> #__event_MouseMove And 
+       WidgetEventType() <> #__event_Draw And 
+       WidgetEventType() <> #__event_StatusChange
       
       If Type( EventWidget( ) ) = #PB_GadgetType_Button
         ; ClearDebugOutput()
@@ -25,9 +25,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_windows( )
-    If WidgetEventType() <> #PB_EventType_MouseMove And 
-       WidgetEventType() <> #PB_EventType_Draw And
-       WidgetEventType() <> #PB_EventType_StatusChange
+    If WidgetEventType() <> #__event_MouseMove And 
+       WidgetEventType() <> #__event_Draw And
+       WidgetEventType() <> #__event_StatusChange
       
       If Type( EventWidget( ) ) = #PB_GadgetType_Button
         Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
@@ -40,9 +40,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_roots( )
-    If WidgetEventType() <> #PB_EventType_MouseMove And 
-       WidgetEventType() <> #PB_EventType_Draw And
-       WidgetEventType() <> #PB_EventType_StatusChange
+    If WidgetEventType() <> #__event_MouseMove And 
+       WidgetEventType() <> #__event_Draw And
+       WidgetEventType() <> #__event_StatusChange
       
       If Type( EventWidget( ) ) = #PB_GadgetType_Button
         Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Open(0, 10,10, 480, 480)
         Bind(#PB_All, @events_roots())
-        Bind(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
+        Bind(Window(80, 100, 300, 280, "Window_2", Editable|#PB_Window_SystemMenu), @events_windows())
         ;SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
         
         Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 62
-; FirstLine = 42
+; CursorPosition = 60
+; FirstLine = 41
 ; Folding = ---
 ; EnableXP

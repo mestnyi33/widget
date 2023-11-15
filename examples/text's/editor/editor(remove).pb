@@ -1,6 +1,4 @@
-﻿;XIncludeFile "../../../-widgets.pbi"
- ;XIncludeFile "editor(code).pb"
- XIncludeFile "empty.pb"
+﻿XIncludeFile "../../../widgets.pbi"
  UseLib(widget)
 
 LN=300;0; количесвто итемов 
@@ -71,5 +69,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 41
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -9,20 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_widgets1()
-    Debug ""+#PB_Compiler_Procedure+ " event - " +this()\event
+    Debug ""+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type
   EndProcedure
   
   Procedure events_widgets2()
     ; ClearDebugOutput()
-    Debug " "+#PB_Compiler_Procedure+ " event - " +this()\event
+    Debug " "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type
   EndProcedure
   
   Procedure events_windows()
-    Debug "   "+#PB_Compiler_Procedure+ " event - " +this()\event+ "  item - " +this()\item +" (window)"
+    Debug "   "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type+ "  item - " +WidgetEvent( )\item +" (window)"
   EndProcedure
   
   Procedure events_roots()
-    Debug "     "+#PB_Compiler_Procedure+ " event - " +this()\event+ "  item - " +this()\item +" (root)"
+    Debug "     "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type+ "  item - " +WidgetEvent( )\item +" (root)"
   EndProcedure
   
   
@@ -39,14 +39,14 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; post this events
         ;;Bind(*id, @events_roots())
-        Bind(*id, @events_widgets1(), #PB_EventType_LeftButtonDown)
-        Bind(*id, @events_widgets1(), #PB_EventType_LeftButtonUp)
+        Bind(*id, @events_widgets1(), #__event_LeftButtonDown)
+        Bind(*id, @events_widgets1(), #__event_LeftButtonUp)
         
-        Bind(*id, @events_widgets2(), #PB_EventType_LeftButtonDown)
-        Bind(*id, @events_widgets2(), #PB_EventType_LeftButtonUp)
+        Bind(*id, @events_widgets2(), #__event_LeftButtonDown)
+        Bind(*id, @events_widgets2(), #__event_LeftButtonUp)
         
         ;;Unbind(*id, @events_roots())
-        Unbind(*id, @events_widgets1(), #PB_EventType_LeftButtonDown)
+        Unbind(*id, @events_widgets1(), #__event_LeftButtonDown)
        
 ;         Debug @events_widgets()
 ;         
@@ -64,6 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

@@ -1,6 +1,4 @@
-﻿;IncludePath "../../../" : XIncludeFile "widgets-plus.pbi"
-IncludePath "../../../" : XIncludeFile "widget-events.pbi"
-; XIncludeFile "../empty5.pb"
+﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -55,15 +53,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected eventtype = WidgetEventType( )
     
     Select eventtype
-      Case #PB_EventType_Focus
+      Case #__event_Focus
         String.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_LostFocus
+      Case #__event_LostFocus
         String.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_Change
+      Case #__event_Change
         String.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
     EndSelect
     
-    If eventtype = #PB_EventType_Focus
+    If eventtype = #__event_Focus
       Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
      ; Debug String.s +" - widget"
@@ -134,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(#PB_Any, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
     StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
     StringGadget(2, 8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
@@ -155,13 +153,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #__string_readonly)
-    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #__string_numeric|#__string_center)
-    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__string_right)
-    String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #__string_lowercase)
-    String(305+8, (height+5)*4+10, 290, height, "uppercase...", #__string_uppercase)
-    String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #__flag_borderless)
-    String(305+8, (height+5)*6+10, 290, height, "Password", #__string_password)
+    String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
+    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_textcenter)
+    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_textright)
+    String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    String(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    String(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
     String(305+8, (height+5)*7+10, 290, height, "")
     String(305+8, (height+5)*8+10, 290, 90, Text)
     
@@ -177,5 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 37
+; FirstLine = 34
 ; Folding = ---
 ; EnableXP

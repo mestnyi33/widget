@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget( )
           Case *this
             If Flag(*this, #__button_toggle)
@@ -71,16 +71,18 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
         EndIf
-        Post(#__event_repaint, #PB_All)
+        ; Post(#__event_repaint, #PB_All)
     EndSelect
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     ;*this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_vertical) 
-    *this = widget::Editor(100, 100, 250, 250);, #__text_wordwrap) 
+    Container(10, 10, width, height) : a_init( widget( ))
+    *this = widget::Editor(10, 10, 250, 250);, #__text_wordwrap) 
+    CloseList( )
     SetText(*this, get_text())
     
     Define y = 10
@@ -108,18 +110,20 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_6, Flag(*this, #__text_bottom))
     Hide(Button_type, 1)
     
-        Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-        Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-        Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-        Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-;         SetState(Splitter_0, vert)
-;         SetState(Splitter_1, horiz)
-         SetState(Splitter_3, width-horiz)
-         SetState(Splitter_2, height-vert)
+;         Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+;         Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+;         Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+;         Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+; ;         SetState(Splitter_0, vert)
+; ;         SetState(Splitter_1, horiz)
+;          SetState(Splitter_3, width-horiz)
+;          SetState(Splitter_2, height-vert)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 78
+; FirstLine = 63
 ; Folding = --
 ; EnableXP

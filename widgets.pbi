@@ -9070,8 +9070,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\text\string   = RemoveString( *this\text\string, StringField( *this\text\string, item + 1, #LF$ ) + #LF$ )
             
             If ListSize( *this\_rows( ) )
-               SelectElement( *this\_rows( ), item )
-               DeleteElement( *this\_rows( ), 1 )
+               If SelectElement( *this\_rows( ), item )
+                  DeleteElement( *this\_rows( ), 1 )
+               EndIf
             EndIf
          EndIf
          
@@ -11534,7 +11535,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\repaint = #True
                      Else
                         If *this\event = 0 : *this\event = - 1 : EndIf
-                        DoEvents( *this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index )
+                        ;DoEvents( *this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index )
                         If *this\event = - 1 : *this\event = 0 : EndIf
                      EndIf
                   Else
@@ -12449,6 +12450,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If PBFlag & #PB_String_ReadOnly = #PB_String_ReadOnly
                   flags & ~ #PB_String_ReadOnly
                   flags | #__flag_textreadonly
+               EndIf
+               
+            Case #__type_Editor
+               If PBFlag & #PB_Editor_ReadOnly = #PB_Editor_ReadOnly
+                  flags & ~ #PB_Editor_ReadOnly
+                  flags | #__flag_textReadOnly
+               EndIf
+               If PBFlag & #PB_Editor_WordWrap = #PB_Editor_WordWrap
+                  flags & ~ #PB_Editor_WordWrap
+                  flags | #__flag_textWordWrap
                EndIf
                
                
@@ -13657,7 +13668,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\repaint = #True
                            Else
                               If *this\event = 0 : *this\event = - 1 : EndIf
-                              DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
+                              ;DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
                               If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
@@ -18735,7 +18746,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\repaint = #True
                               Else
                                  If *this\event = 0 : *this\event = - 1 : EndIf
-                                 DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                                 ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                                  If *this\event = - 1 : *this\event = 0 : EndIf
                               EndIf
                            EndIf
@@ -18744,7 +18755,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\repaint = #True
                            Else
                               If *this\event = 0 : *this\event = - 1 : EndIf
-                              DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
+                              ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
                               If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
                         EndIf
@@ -18788,7 +18799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\repaint = #True
                         Else
                            If *this\event = 0 : *this\event = - 1 : EndIf
-                           DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                           ; DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                            If *this\event = - 1 : *this\event = 0 : EndIf
                         EndIf
                      EndIf
@@ -18887,7 +18898,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\EnteredRow( )\color\state = #__S_2
                                     
                                     If *this\event = 0 : *this\event = - 1 : EndIf
-                                    Debug "change1"
+                                    ;Debug "change1"
                                     DoEvents(*this, #__event_Change, *this\EnteredRow( ), *this\EnteredRow( )\index)
                                     If *this\event = - 1 : *this\event = 0 : EndIf
                                  Else
@@ -18902,7 +18913,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            Else
                               If *this\event = 0 : *this\event = - 1 : EndIf
-                              Debug "change2"
+                              ;Debug "change2" ; click-select flag
                               DoEvents(*this, #__event_Change, *this\PressedRow( ), *this\PressedRow( )\index)
                               If *this\event = - 1 : *this\event = 0 : EndIf
                            EndIf
@@ -18947,7 +18958,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\repaint = #True
                                  Else
                                     If *this\event = 0 : *this\event = - 1 : EndIf
-                                    DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                                    ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                                     If *this\event = - 1 : *this\event = 0 : EndIf
                                  EndIf
                               EndIf
@@ -21838,7 +21849,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12406
-; FirstLine = 12305
-; Folding = -f+---P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Bw------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
+; CursorPosition = 18801
+; FirstLine = 18669
+; Folding = -f+---P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Dg-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
 ; EnableXP

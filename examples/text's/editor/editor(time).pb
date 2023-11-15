@@ -1,14 +1,11 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "-widgets.pbi"
-;XIncludeFile "-widgets-edit.pbi"
-;XIncludeFile "widgets-plus.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
   Uselib(Widget)
   EnableExplicit
-  Define a, Event, LN=1500; количесвто итемов 
+  Define a, Event, LN=10000; количесвто итемов 
   
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     EditorGadget(0, 10, 10, 250, 680)
@@ -47,5 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; CursorPosition = 7
+; FirstLine = 2
+; Folding = -
 ; EnableXP

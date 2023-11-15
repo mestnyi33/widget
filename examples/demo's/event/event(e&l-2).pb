@@ -1,6 +1,6 @@
 ﻿; #__from_mouse_state = 1
 
-XIncludeFile "../../../widgets3.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
@@ -10,9 +10,9 @@ Procedure events_widgets()
   Protected *ew._s_widget = EventWidget( )
   
   Select WidgetEventType( )
-    Case #PB_EventType_MouseEnter 
+    Case #__event_MouseEnter 
       *ew\color\back = $ff0000ff : repaint = 1
-    Case #PB_EventType_MouseLeave 
+    Case #__event_MouseLeave 
       *ew\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
@@ -88,12 +88,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
     Bind(#PB_All, @events_widgets())
   Else
     ;     ; TODO
-    ;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseEnter)
-    ;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseLeave)
+    ;     Bind(#PB_All, @events_widgets(), #__event_MouseEnter)
+    ;     Bind(#PB_All, @events_widgets(), #__event_MouseLeave)
     
     ForEach widget()
-      Bind(widget(), @events_widgets(), #PB_EventType_MouseEnter)
-      Bind(widget(), @events_widgets(), #PB_EventType_MouseLeave)
+      Bind(widget(), @events_widgets(), #__event_MouseEnter)
+      Bind(widget(), @events_widgets(), #__event_MouseLeave)
     Next
   EndIf
   
@@ -101,7 +101,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
   ;Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 67
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP

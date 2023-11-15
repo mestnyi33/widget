@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure CustomEvents( )
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Debug "open - Title"
         Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
         Debug " close - Title " + Result
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Result = Message("Information", a$, flag)
         Debug "close - Information "+Result
         
-      Case #PB_EventType_Draw
+      Case #__event_Draw
         ; Demo draw on element
         UnclipOutput()
         DrawingMode(#PB_2DDrawing_Outlined)
@@ -75,16 +75,17 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g3._s_widget = Window(X(*g2, #__c_container), Y(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetClass(widget(), "SubChild") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
-  Bind(*g1b, @CustomEvents(), #PB_EventType_LeftClick )
+  Bind(*g1b, @CustomEvents(), #__event_LeftClick )
   
-;   Bind(*g0, @CustomEvents(), #PB_EventType_Draw)
-;   Bind(*g1, @CustomEvents(), #PB_EventType_Draw)
-;   Bind(*g2, @CustomEvents(), #PB_EventType_Draw)
-;   Bind(*g3, @CustomEvents(), #PB_EventType_Draw)
+;   Bind(*g0, @CustomEvents(), #__event_Draw)
+;   Bind(*g1, @CustomEvents(), #__event_Draw)
+;   Bind(*g2, @CustomEvents(), #__event_Draw)
+;   Bind(*g3, @CustomEvents(), #__event_Draw)
   
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; Folding = 8
+; CursorPosition = 17
+; FirstLine = 14
+; Folding = -
 ; EnableXP

@@ -13,11 +13,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetText(*g1, "left 00000000000000000000000000000000000")
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
-    *g2 = Editor( 30+210, 30, 200, h, #__text_center|#__text_top)
+    *g2 = Editor( 30+210, 30, 200, h, #__flag_textcenter|#__flag_texttop)
     SetText(*g2, "0000000000000000000 center 00000000000000000000" )
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     
-    *g3 = Editor( 30+420, 30, 200, h, #__text_right|#__text_top)
+    *g3 = Editor( 30+420, 30, 200, h, #__flag_textright|#__flag_texttop)
     SetText(*g3, "00000000000000000000000000000000000 right" )
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     
@@ -32,6 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP

@@ -21,31 +21,31 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Select WidgetEventType( )
-      Case #PB_EventType_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
-      Case #PB_EventType_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
         
         If GetText( EventWidget( ) ) = "new"
           Free( EventWidget( ) )
         EndIf
         
-      Case #PB_EventType_DragStart       : AddItem(w_flag, -1, Space + " drag")
+      Case #__event_DragStart       : AddItem(w_flag, -1, Space + " drag")
         DragText( "drag" )
         
-      Case #PB_EventType_Drop            : AddItem(w_flag, -1, Space + " drop")
+      Case #__event_Drop            : AddItem(w_flag, -1, Space + " drop")
         widget::Button( 145, 240, 30, 30, "new" )
-        widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseEnter)
-        widget::Bind(widget( ), @events_widgets(), #PB_EventType_MouseLeave)
+        widget::Bind(widget( ), @events_widgets(), #__event_MouseEnter)
+        widget::Bind(widget( ), @events_widgets(), #__event_MouseLeave)
     
-      Case #PB_EventType_LeftButtonDown
+      Case #__event_LeftButtonDown
         If _2click = 2
           _2click = 0
           ClearItems(w_flag)
         EndIf
         AddItem(w_flag, -1, Space + "down")
         
-      Case #PB_EventType_LeftButtonUp    : AddItem(w_flag, -1, Space + " up")
-      Case #PB_EventType_LeftClick       : AddItem(w_flag, -1, Space + "  click") : _2click + 1
-      Case #PB_EventType_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
+      Case #__event_LeftButtonUp    : AddItem(w_flag, -1, Space + " up")
+      Case #__event_LeftClick       : AddItem(w_flag, -1, Space + "  click") : _2click + 1
+      Case #__event_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
     EndSelect
     
     SetState(w_flag, countitems(w_flag) - 1)
@@ -56,34 +56,36 @@ CompilerIf #PB_Compiler_IsMainFile
     w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
     w_this = widget::Tree( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
     
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonDown)
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftButtonUp)
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftClick)
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftButtonDown)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftClick)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftDoubleClick)
     
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseEnter)
-    widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseLeave)
+    widget::Bind(w_this, @events_widgets(), #__event_MouseEnter)
+    widget::Bind(w_this, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(w_this, @events_widgets(), #PB_EventType_DragStart)
-    widget::bind(w_this, @events_widgets(), constants::#PB_EventType_Drop)
+    widget::bind(w_this, @events_widgets(), #__event_DragStart)
+    widget::bind(w_this, @events_widgets(), constants::#__event_Drop)
       
     w_this1 = widget::Tree( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
     EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonDown)
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftButtonUp)
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftClick)
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_LeftDoubleClick)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftButtonDown)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftClick)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftDoubleClick)
     
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseEnter)
-    widget::Bind(w_this1, @events_widgets(), #PB_EventType_MouseLeave)
+    widget::Bind(w_this1, @events_widgets(), #__event_MouseEnter)
+    widget::Bind(w_this1, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(w_this1, @events_widgets(), #PB_EventType_DragStart)
-    widget::bind(w_this1, @events_widgets(), constants::#PB_EventType_Drop)
+    widget::bind(w_this1, @events_widgets(), #__event_DragStart)
+    widget::bind(w_this1, @events_widgets(), constants::#__event_Drop)
       
     widget::WaitClose()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 81
+; FirstLine = 50
 ; Folding = --
 ; EnableXP
