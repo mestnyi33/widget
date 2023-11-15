@@ -548,13 +548,8 @@ Module Cursor
           Case #__cursor_SplitUp        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
           Case #__cursor_SplitDown      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
           Case #__cursor_SplitUpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-            ;             Case #__cursor_SplitUpDown       
-            ;               
-            
             
           Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-;                  #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
-;                  #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
                  #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
                  #__cursor_Diagonal1, #__cursor_Diagonal2 
               
@@ -623,8 +618,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 540
-; FirstLine = 341
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --f--v2T8---
 ; EnableXP

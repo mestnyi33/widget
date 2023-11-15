@@ -11,9 +11,10 @@ Module Cursor
     Protected *cursor._s_cursor
     
     Select uMsg
-        ;       Case #WM_NCDESTROY
-        ;         ; RemoveProp_(hwnd, "__oldproc")
-        ;       ; RemoveProp_(hwnd, "#__cursor")
+      Case #WM_NCDESTROY
+        Debug "event( DESTROY ) "+hwnd
+        RemoveProp_(hwnd, "#__cursor")
+        ; RemoveProp_(hwnd, "__oldproc")
         
       Case #WM_SETCURSOR
         ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
@@ -264,13 +265,7 @@ Module Cursor
     If *cursor And
        *cursor\hcursor
       
-      ; reset
-      If state = 0 
-        ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
-        result = SetCursor_( LoadCursor_(0,#IDC_ARROW) )
-      EndIf
-      
-      ; set
+      ;\\ set
       If state = 1 
         If *cursor\hcursor =- 1
           If GetCursor_( )
@@ -283,6 +278,12 @@ Module Cursor
           ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
           result = SetCursor_( *cursor\hcursor )
         EndIf
+      EndIf
+      
+      ;\\ reset
+      If state = 0 
+        ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
+        result = SetCursor_( LoadCursor_(0,#IDC_ARROW) )
       EndIf
       
       If result <> *cursor\hcursor
@@ -309,7 +310,7 @@ Module Cursor
         *cursor = AllocateStructure(_s_cursor)
         *cursor\windowID = ID::GetWindowID(GadgetID)
         SetProp_(GadgetID, "#__cursor", *cursor) 
-        ;
+        ;\\
         OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
         ; SetProp_(GadgetID,"__oldproc", SetWindowLongPtr_(GadgetID,#GWL_WNDPROC,@Proc()))
       EndIf
@@ -320,7 +321,8 @@ Module Cursor
         If icursor >= 0 And icursor <= 255
           Select icursor
             Case #__cursor_Invisible : *cursor\hcursor =- 1
-              
+            Case #__cursor_Busy      : *cursor\hcursor = LoadCursor_(0,#IDC_WAIT)
+            
             Case #__cursor_Default   : *cursor\hcursor = LoadCursor_(0,#IDC_ARROW)
             Case #__cursor_IBeam     : *cursor\hcursor = LoadCursor_(0,#IDC_IBEAM)
             Case #__cursor_Denied    : *cursor\hcursor = LoadCursor_(0,#IDC_NO)
@@ -329,19 +331,22 @@ Module Cursor
             Case #__cursor_Cross     : *cursor\hcursor = LoadCursor_(0,#IDC_CROSS)
             Case #__cursor_Arrows      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEALL)
               
-            ;Case #__cursor_SplitLeft      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
-            ;Case #__cursor_SplitRight     : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
-            ;Case #__cursor_SplitLeftRight : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
+            Case #__cursor_UpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            Case #__cursor_LeftRight : *cursor\hcursor = LoadCursor_(0,#IDC_SIZEWE)
+               
+            Case #__cursor_Diagonal1,
+                 #__cursor_LeftUp,
+                 #__cursor_RightDown 
+              *cursor\hcursor = LoadCursor_(0,#IDC_SIZENWSE)
               
-            ;Case #__cursor_SplitUp        : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
-            ;Case #__cursor_SplitDown      : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
-            ;Case #__cursor_SplitUpDown    : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENS)
+            Case #__cursor_Diagonal2,
+                 #__cursor_RightUp,
+                 #__cursor_LeftDown 
+              *cursor\hcursor = LoadCursor_(0,#IDC_SIZENESW)
               
-              
-            Case #__cursor_LeftRight, #__cursor_UpDown, ; #__cursor_Arrows, 
-                 #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+              ;\\  custom cursors
+            Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
                  #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight,
-                 #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
                  #__cursor_Diagonal1, #__cursor_Diagonal2  
               
               If Not FindMapElement(images( ), Str(icursor))
@@ -349,9 +354,6 @@ Module Cursor
                 images( ) = Draw( icursor )
               EndIf
               *cursor\hcursor = images( )
-              
-            Case #__cursor_Diagonal2 : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENESW)
-            Case #__cursor_Diagonal1 : *cursor\hcursor = LoadCursor_(0,#IDC_SIZENWSE)
               
             Case #__cursor_Drag : *cursor\hcursor = New( icursor )
             Case #__cursor_Drop : *cursor\hcursor = New( icursor )
@@ -367,7 +369,7 @@ Module Cursor
       
       If *cursor\hcursor And 
          GadgetID = mouse::Gadget(*cursor\windowID)
-        Change( GadgetID, 1 )
+        cursor::Change( GadgetID, 1 )
         ProcedureReturn #True
       EndIf
     EndIf
@@ -414,8 +416,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 344
-; FirstLine = 262
-; Folding = -4t------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = 44t------
 ; EnableXP

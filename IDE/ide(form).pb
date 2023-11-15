@@ -1005,6 +1005,8 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    window_ide = widget::GetWindow( root )
    canvas_ide = widget::GetGadget( root )
    
+;    Debug "create window - "+WindowID(window_ide)
+;    Debug "create canvas - "+GadgetID(canvas_ide)
    
    toolbar_design = ToolBar( toolbar_design )
    group_select = ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle )
@@ -1274,8 +1276,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1043
-; FirstLine = 986
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---------rf----------
 ; EnableXP
