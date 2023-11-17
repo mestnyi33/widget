@@ -224,7 +224,7 @@ EndProcedure
     Protected EventItem = GetGadgetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      ;Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
       Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
@@ -241,16 +241,16 @@ EndProcedure
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
         DragText(GetItemText(EventGadget, EventItem))
         
-      Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
+      Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         Debug EventDropText()
         
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
     EndWith
   EndProcedure
@@ -513,29 +513,29 @@ EndProcedure
     
  ;{  4_example
     *g = Tree(670, 100, 210, 210, #__tree_nolines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
-        AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-        AddItem(*g, 1, "Tree_1", -1, 1) 
-        AddItem(*g, 2, "Tree_2_2", -1, 2) 
-        AddItem(*g, 2, "Tree_2_1", -1, 1) 
-        AddItem(*g, 3, "Tree_3_1", -1, 1) 
-        AddItem(*g, 3, "Tree_3_2", -1, 2) 
-        For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
-; ;     AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
-; ;     AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
-; ;     AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
-; ;     AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-; ;     AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-; ;     AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
-; ;                                                       ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
-; ;     AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
-; ;     AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
-; ;     
-; ;     AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
-; ;     AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
-; ;     AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
-; ;     AddItem (*g, -1, "#PB_Window_ScreenCentered", -1, 1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
-; ;     AddItem (*g, -1, "#PB_Window_WindowCentered", -1, 1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
+;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+;         AddItem(*g, 1, "Tree_1", -1, 1) 
+;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
+;         AddItem(*g, 2, "Tree_2_1", -1, 1) 
+;         AddItem(*g, 3, "Tree_3_1", -1, 1) 
+;         AddItem(*g, 3, "Tree_3_2", -1, 2) 
+;         For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
+    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
+    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
+    AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
+    AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+    AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
+                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
+    AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
+    AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
+    
+    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
+    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
+    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1, 1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_WindowCentered", -1, 1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
     ;}                                                    ;
     
     ;{  3_example
@@ -581,6 +581,7 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = f-b--v---
+; CursorPosition = 226
+; FirstLine = 68
+; Folding = f-b------
 ; EnableXP

@@ -20,14 +20,15 @@
 ;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;   SetColor(parent, #__color_back, $FFE9E9E9)
   
+  Define text.s = "object"+#LF$+" multiline "+#LF$+"text"
   ;\\
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-  ;object = Container(100, 100, 250, 250) : CloseList()
-  ;object = String(100, 100, 250, 250, "string", #__flag_borderless)
-  ;object = Button(100, 100, 250, 250, "button"+#LF$+" multiline "+#LF$+"text", #__flag_textmultiline);, #__flag_borderless)
-  object = Button(100, 100, 250, 250, "button"+#LF$+" multiline "+#LF$+"text", #__flag_textwordwrap);, #__flag_borderless)
-  ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
+  ;object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  ;object = Container(100, 100, 250, 250) : CloseList( )
+  ;object = String(100, 100, 250, 250, text, #__flag_textwordwrap|#__flag_textcenter)
+  ;object = Button(100, 100, 250, 250, text, #__flag_textmultiline);, #__flag_borderless)
+  ;object = Button(100, 100, 250, 250, text, #__flag_textwordwrap);, #__flag_borderless)
+  ;object = Editor(100, 100, 250, 250, #__flag_textwordwrap|#__flag_textcenter) : SetText(object, text)
+  object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1, "tree element line "+Str(i)) : Next
    
 ; ;   ;\\
 ;    widget()\fs = 50 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -72,6 +73,7 @@
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; FirstLine = 15
+; CursorPosition = 30
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

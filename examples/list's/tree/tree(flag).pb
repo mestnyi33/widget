@@ -39,10 +39,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag
     
     Select WidgetEventType( )
-      Case #PB_EventType_Change
+      Case #__event_Change
         Debug  "change"
         
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget( )
           Case Button_type 
             
@@ -59,8 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
         EndIf
-        ;Post(#__event_repaint, #PB_All)
-    EndSelect
+        
+  EndSelect
     
   EndProcedure
   
@@ -70,41 +70,63 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__tree_optionBoxes | #__tree_nolines | #__tree_nobuttons );| #__tree_OptionBoxes)  ; |#__tree_GridLines
+    *this = widget::tree(100, 100, 250, 200, #__tree_optionBoxes | #__tree_nolines | #__tree_nobuttons )  ; |#__tree_GridLines
     CloseList()
+    #__flag_optionBoxes = #__tree_optionBoxes
+    ;\\
+    ; optionbox
+    AddItem (*this, -1, "SistemMenu",     -1,-1)                                    
+    ;   checkbox and child
+    AddItem (*this, -1, "MaximizeGadget", -1, 1)                                    
+    AddItem (*this, -1, "MinimizeGadget", -1, 1)                                    
+    AddItem (*this, -1, "CloseGadget",    -1, 1)                                    
     
-    ; ;     Define i
-    ; ;     AddItem (*this, 0, "Tree_option_0", -1, 1)                                    
-    ; ;     For i=1 To 6
-    ; ;       If i=3 ;Or i%3=0
-    ; ;         AddItem(*this, -1, "Tree_checkbox_"+Str(i), 0, 0) 
-    ; ;       Else
-    ; ;         AddItem(*this, -1, "Tree_option_"+Str(i), -1, -1) 
-    ; ;       EndIf
-    ; ;     Next 
+    ; optionbox
+    AddItem (*this, -1, "TitleBar",       -1,-1)                                    
+    AddItem (*this, -1, "BorderLess",     -1,-1)                                    
     
-    ;  2_example
-    AddItem(*this, 0, "Tree_0", img )
-    AddItem(*this, 1, "Tree_1_1", 0, 1) 
-    AddItem(*this, 4, "Tree_1_1_1", img, 2) 
-    AddItem(*this, 5, "Tree_1_1_2", img, 2) 
-    AddItem(*this, 6, "Tree_1_1_2_1", img, 3) 
-    AddItem(*this, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", img, 4) 
-    AddItem(*this, 7, "Tree_1_1_2_2 980980_", img, 3) 
-    AddItem(*this, 2, "Tree_1_2", img, 1) 
-    AddItem(*this, 3, "Tree_1_3", img, 1) 
-    AddItem(*this, 9, "Tree_2", img )
-    AddItem(*this, 10, "Tree_3", img )
-    AddItem(*this, 11, "Tree_4", img )
-    AddItem(*this, 12, "Tree_5", img )
-    AddItem(*this, 13, "Tree_6", img )
+    ; checkbox
+    AddItem (*this, -1, "SizeGadget",     -1, 0)                                    
+    AddItem (*this, -1, "Invizible",      -1, 0)                                    
+    AddItem (*this, -1, "Tool",           -1, 0)                                    
     
-    SetItemState(*this, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-    SetItemState(*this, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    ; optionbox
+    AddItem (*this, -1, "Normal",         -1,-1)                                    
+    AddItem (*this, -1, "Maximize",       -1,-1)                                    
+    AddItem (*this, -1, "Minimize",       -1,-1)                                    
     
-    ;             SetState(*this, 5) 
-    ;             SetState(*this, 7) 
-    ;             SetState(*this, 9) 
+    ; checkbox
+    AddItem (*this, -1, "NoGadget",       -1, 0)                                    
+    AddItem (*this, -1, "NoActive",       -1, 0)                                    
+    
+    ; optionbox
+    AddItem (*this, -1, "WindowCenter",   -1,-1)                                    
+    AddItem (*this, -1, "ScreenCenter",   -1,-1)                                    
+    
+    
+    
+;     ;  2_example
+;     AddItem(*this, 0, "Tree_0", img )
+;     AddItem(*this, 1, "Tree_1_1", 0, 1) 
+;     AddItem(*this, 4, "Tree_1_1_1", img, 2) 
+;     AddItem(*this, 5, "Tree_1_1_2", img, 2) 
+;     AddItem(*this, 6, "Tree_1_1_2_1", img, 3) 
+;     AddItem(*this, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", img, 4) 
+;     AddItem(*this, 7, "Tree_1_1_2_2 980980_", img, 3) 
+;     AddItem(*this, 2, "Tree_1_2", img, 1) 
+;     AddItem(*this, 3, "Tree_1_3", img, 1) 
+;     AddItem(*this, 9, "Tree_2", img )
+;     AddItem(*this, 10, "Tree_3", img )
+;     AddItem(*this, 11, "Tree_4", img )
+;     AddItem(*this, 12, "Tree_5", img )
+;     AddItem(*this, 13, "Tree_6", img )
+;     
+;     SetItemState(*this, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+;     SetItemState(*this, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+;     
+;     ;             SetState(*this, 5) 
+;     ;             SetState(*this, 7) 
+;     ;             SetState(*this, 9) 
     
     Define y = 10
     ; flag
@@ -155,5 +177,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 78
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

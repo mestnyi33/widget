@@ -4399,19 +4399,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *this\count\items
-                  If Change_height
-                     If *this\scroll_height( ) >= *this\inner_height( )
-                        *this\WidgetChange( ) = 1
-                     EndIf
-                  EndIf
-                  
-                  If Change_width
-                     If *this\scroll_width( ) >= *this\inner_width( )
-                        If *this\type <> #__type_Tree
-                           *this\WidgetChange( ) = #__resize_width
-                        EndIf
-                     EndIf
-                  EndIf
+;                   If *this\text\multiLine = - 1
+;                      If Change_height
+;                         If *this\scroll_height( ) >= *this\inner_height( )
+;                            *this\WidgetChange( ) = #__resize_height
+;                         EndIf
+;                      EndIf
+;                      
+;                      If Change_width
+;                         If *this\scroll_width( ) >= *this\inner_width( )
+;                            If *this\type <> #__type_Tree
+;                               *this\WidgetChange( ) = #__resize_width
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
                EndIf
             EndIf
             
@@ -10313,9 +10315,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndWith
          
-         If *this\TextChange( )
-            *this\WidgetChange( ) = 1
-         EndIf
+;          If *this\TextChange( )
+;             *this\WidgetChange( ) = 1
+;          EndIf
          
          If Repaint
             ; *this\repaint = #True
@@ -10862,7 +10864,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\
-            If *this\WidgetChange( ) > 0
+            If *this\resize & #__resize_width Or *this\resize & #__resize_height Or 
+               *this\WidgetChange( ) > 0 
                ; Debug "   " + #PB_Compiler_Procedure + "( )"+*this\width +" "+*this\height+" "+*this\scroll_width( )+" "+*this\scroll_height( )
                bar_area_update( *this )
                *this\WidgetChange( ) = - 2
@@ -21962,7 +21965,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21962
-; FirstLine = 21926
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 10867
+; FirstLine = 10862
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
