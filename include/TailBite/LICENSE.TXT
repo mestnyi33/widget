@@ -1,0 +1,14 @@
+USER AGREEMENT
+--------------
+
+TailBite is free, the source code is included an you can do whatever you want with both of them. It is provided AS IS, with no warranty, meaning that the author is not liable for any damage caused by its use or by the libraries compiled through it, nor by damage caused by other programs based on its source code.
+
+
+Nevertheless, I wouldn´t like nobody to lose any files (it happened once and I still don´t know why or how), so my advice can´t be other than: don´t install nor use TailBite at all. You´ve been warned.
+
+
+TailBite is not a compiler, it mainly splits an asm file into several asm files. It uses the following external programs for automation of the library building process: PBCompiler.exe, FAsm.exe, polib.exe or lcclib.exe, and Library Maker.exe. These programs are not included in TailBite, and it´s your responsibility to comply with the terms of the licenses of those programs. Just the same as when you use those tools to manually code an ASM PureLibrary.
+
+
+
+

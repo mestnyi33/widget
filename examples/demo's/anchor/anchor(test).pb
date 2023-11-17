@@ -40,7 +40,7 @@
 ;   a_set(object, #__a_full, anchor_size)
   
   ;\\
-  SizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
+  SizeBounds(object, anchor_size*2, anchor_size*2, 460, 460)
   ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
   MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
@@ -149,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; CursorPosition = 42
+; FirstLine = 28
 ; Folding = v-
 ; EnableXP

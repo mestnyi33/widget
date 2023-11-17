@@ -354,7 +354,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FindMapElement( widget::Root( ), Str( _canvas_gadget_address_ ) )
       EndMacro
       
-      Macro PostCanvasRepaint( _address_, _data_ = #Null )
+      Macro PostEventCanvasRepaint( _address_, _data_ = #Null )
          If _address_\root And
             _address_\root\canvas\repaint = 0
             _address_\root\canvas\repaint = 1
@@ -630,9 +630,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
-      Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
-      Declare a_update( *parent )
+      Declare   a_init( *this, grid_size.a = 7, grid_type.b = 0 )
+      Declare   a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
+      Declare   a_update( *parent )
+      Declare   a_free( *this )
+      Declare   a_object( x.l, y.l, width.l, height.l, text.s, Color.l, flag.q = #Null, framesize = 1 )
+      
       
       Macro a_transform( )
          mouse( )\_a_
@@ -1053,8 +1056,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
-      Declare Button_Draw( *this )
-      Declare GetBar( *this, type.b, index.b = 0 )
+      Declare   Button_Draw( *this )
+      Declare   GetBar( *this, type.b, index.b = 0 )
+      Declare   GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
       
       Declare.w ChangeValue( *this )
       Declare.i TypeFromClass( class.s )
@@ -1068,14 +1072,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.i Tree_properties( x.l, y.l, width.l, height.l, flag.q = 0 )
       
-      Declare a_object( x.l, y.l, width.l, height.l, text.s, Color.l, flag.q = #Null, framesize = 1 )
-      
       Declare.i TypeFromClass( class.s )
       Declare.s ClassFromType( type.i )
       Declare.b IsContainer( *this )
       
       Declare.b Draw( *this )
-      Declare ReDraw( *this )
+      Declare   ReDraw( *this )
       
       Declare.l x( *this, mode.l = #__c_frame )
       Declare.l Y( *this, mode.l = #__c_frame )
@@ -1088,19 +1090,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       
       Declare.b Update( *this )
-      Declare IsChild( *this, *parent )
+      Declare   IsChild( *this, *parent )
       Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
       Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Declare.i SetAttachment( *this, *parent, mode.a )
       
-      Declare ChildrenBounds( *this )
-      Declare MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
-      Declare SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+      Declare   ChildrenBounds( *this )
+      Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+      Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       
       Declare.l CountItems( *this )
       Declare.l ClearItems( *this )
-      Declare RemoveItem( *this, Item.l )
+      Declare   RemoveItem( *this, Item.l )
       
       ;;Declare.b GetFocus( *this )
       Declare.l MouseButtons( )
@@ -1114,24 +1116,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i GetWindow( *this = #Null )
       Declare.i GetGadget( *this = #Null )
       
-      Declare GetWidget( index )
+      Declare   GetWidget( index )
       Declare.l GetCount( *this, mode.b = #False )
       Declare.i GetItem( *this, parent_sublevel.l = - 1 )
       
-      Declare GetLast( *last, tabindex.l )
+      Declare   GetLast( *last, tabindex.l )
       
       Declare.i GetAddress( *this )
       ;
       Declare.i SetActive( *this )
       
       Declare.a GetFrame( *this, mode.b = 0 )
-      Declare SetFrame( *this, size.a, mode.b = 0 )
+      Declare   SetFrame( *this, size.a, mode.b = 0 )
       
       Declare.s GetClass( *this )
-      Declare SetClass( *this, class.s )
+      Declare   SetClass( *this, class.s )
       
       Declare.s GetText( *this )
-      Declare SetText( *this, Text.s )
+      Declare   SetText( *this, Text.s )
       
       Declare.i GetData( *this )
       Declare.i SetData( *this, *data )
@@ -1143,10 +1145,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b SetState( *this, state.f )
       
       Declare.i GetParent( *this )
-      Declare SetParent( *this, *parent, tabindex.l = 0 )
+      Declare   SetParent( *this, *parent, tabindex.l = 0 )
       
-      Declare GetPosition( *this, position.l )
-      Declare SetPosition( *this, position.l, *widget = #Null )
+      Declare   GetPosition( *this, position.l )
+      Declare   SetPosition( *this, position.l, *widget = #Null )
       
       Declare.l GetColor( *this, ColorType.l )
       Declare.l SetColor( *this, ColorType.l, Color.l, Column.l = 0 )
@@ -1178,10 +1180,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i SetItemAttribute( *this, Item.l, Attribute.l, *value, Column.l = 0 )
       
       Declare.i GetCursor( *this = #Null )
-      Declare SetCursor( *this, *cursor )
+      Declare   SetCursor( *this, *cursor )
       
-      Declare SetImage( *this, *image )
-      Declare SetBackgroundImage( *this, *image )
+      Declare   SetImage( *this, *image )
+      Declare   SetBackgroundImage( *this, *image )
       
       Declare.i Create( *parent, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
       
@@ -1222,20 +1224,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 )
       
       ; menu
-      Declare ToolBar( *parent, flag.q = #PB_ToolBar_Small )
+      Declare   ToolBar( *parent, flag.q = #PB_ToolBar_Small )
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
       
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, State.l )
-      Declare bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
-      Declare bar_mdi_update( *this, x.l, y.l, width.l, height.l )
-      Declare bar_area_resize( *this, x.l, y.l, width.l, height.l )
+      Declare   bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
+      Declare   bar_mdi_update( *this, x.l, y.l, width.l, height.l )
+      Declare   bar_area_resize( *this, x.l, y.l, width.l, height.l )
       Declare.b bar_Change( *this, ScrollPos.l )
       Declare.b bar_Update( *this, mode.b = 1 )
       
-      Declare AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
-      Declare AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
+      Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
+      Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
       
       Declare.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
       
@@ -1248,10 +1250,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i CloseList( )
       Declare.i OpenList( *this, item.l = 0 )
       ;
-      Declare DoEvents( *this, eventtype.l, *data = #Null, *button = #PB_All ) ;, mouse_x.l, mouse_y.l
-      Declare Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, canvas = #PB_Any )
+      Declare   DoEvents( *this, eventtype.l, *data = #Null, *button = #PB_All ) ;, mouse_x.l, mouse_y.l
+      Declare   Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, canvas = #PB_Any )
       Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
-      Declare Free( *this )
+      Declare   Free( *this )
       ;}
    EndDeclareModule
    
@@ -2964,9 +2966,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *this\resize & #__resize_change = 0
-                     *this\resize | #__resize_change
-                  EndIf
+;                   If *this\resize & #__resize_change = 0
+;                      *this\resize | #__resize_change
+;                   EndIf
                   If *this\screen_x( ) <> *this\frame_x( ) - ( *this\bs - *this\fs )
                      *this\screen_x( ) = *this\frame_x( ) - ( *this\bs - *this\fs )
                   EndIf
@@ -3099,6 +3101,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          Next i
          
+      EndProcedure
+      
+      Procedure   a_free( *this._S_WIDGET )
+         Protected i
+         a_set( *this\parent )
+         a_remove( *this, i ) 
+         FreeStructure( *this\anchors\id ) 
+         FreeStructure( *this\anchors )
+         *this\anchors\id = 0
+         *this\anchors = 0
       EndProcedure
       
       Procedure a_update( *parent._S_WIDGET )
@@ -4050,11 +4062,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
          
          
-         ;       If *this\resize & #__resize_start = #False
-         ;         *this\resize | #__resize_start
-         ;         Debug "resize - start "+*this\class
-         ;       EndIf
-         ;
          If *this\anchors And *this\anchors
             If *this\bs < *this\fs + *this\anchors\pos
                *this\bs = *this\fs + *this\anchors\pos
@@ -4362,7 +4369,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
-            *this\resize | #__resize_change | #__reclip
+            If mouse( )\press
+               If Not *this\child
+                  If Not *this\resize & #__resize_change
+                     Debug "start-resize "+*this\class
+                     *this\resize | #__resize_change
+                  EndIf
+               EndIf
+            EndIf
+            
+            *this\resize | #__reclip
             *this\repaint = #True
             
             ;\\
@@ -4380,11 +4396,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type = #__type_Image Or
                   *this\type = #__type_ButtonImage
                   *this\ImageChange( ) = 1
-               EndIf
-               
-               If *this\type = #__type_Button
-                  *this\TextChange( )   = #True
-                  *this\WidgetChange( ) = #True
                EndIf
                
                If *this\count\items
@@ -4452,9 +4463,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                EndIf
             EndIf
             
-            ;\\
+            ;\\ Post Event
             If Not ( *this\bar And *this\child )
-               Send( *this, #__event_resize )
+               If *this\show
+                  Send( *this, #__event_resize )
+               Else
+                  Post( *this, #__event_resize )
+               EndIf
             EndIf
             
             ;\\ resize vertical&horizontal scrollbars
@@ -4578,10 +4593,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Resize( *this\StringBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
             EndIf
             
-            
+           
             ;-\\ children's resize
             ;\\ then move and size parent resize all children's
-            If *this\haschildren
+         If *this\haschildren 
+           ; If Not mouse( )\press
                Protected pw, ph
                
                If StartEnumerate( *this )
@@ -4703,13 +4719,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Resize( enumWidget( ), x, y, width, height )
                      Else
                         If (Change_x Or Change_y)
-                           Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
                            If enumWidget( )\autosize
                               Resize( enumWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                            Else
                               enumWidget( )\resize | #__reclip
-                              enumWidget( )\resize | #__resize_change
+;                               enumWidget( )\resize | #__resize_change
                            EndIf
                         EndIf
                      EndIf
@@ -4718,15 +4734,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;Next
                   StopEnumerate( )
                EndIf
+               
             EndIf
-            
-         Else
+          
+        Else
             If test_scrollbars_resize = - 1
                Debug "------ " + *this\class + x + " " + y + " " + width + " " + height
             EndIf
          EndIf
          
-         ;\\
+           ;\\
          If *this = Popup( )
             If Popup( )\widget
                Resize( Popup( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -4735,6 +4752,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
+         PostEventCanvasRepaint( *this\root )
          ProcedureReturn *this\repaint
       EndProcedure
       
@@ -4745,8 +4763,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ( _this_\parent\TabBox( ) And
                  _this_\parent\TabBox( )\FocusedTabIndex( ) <> _this_\TabIndex( ) ))
          
+         ;          _this_\resize | #__resize_change
+         
          ; Чтобы обновить границы отоброжения (clip-coordinate)
-         _this_\resize | #__resize_change
          _this_\resize | #__reclip
       EndMacro
       
@@ -4904,7 +4923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DisableChildrens( *this._S_WIDGET )
             EndIf
             
-            PostCanvasRepaint( *this )
+            PostEventCanvasRepaint( *this )
          EndIf
          
          ProcedureReturn result
@@ -5073,7 +5092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          set_image_( *this, *this\_tabs( )\Image, Image )
-         PostCanvasRepaint( *this )
+         PostEventCanvasRepaint( *this )
          
          ProcedureReturn Item
       EndProcedure
@@ -6436,7 +6455,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                If \v\hide <> #True
                   \v\hide = #True
-                  *this\resize | #__resize_change
+;                   *this\resize | #__resize_change
                   ;// reset page pos then hide scrollbar
                   If \v\bar\page\pos > \v\bar\min
                      If bar_Change( \v, \v\bar\min )
@@ -6458,7 +6477,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                If \h\hide <> #True
                   \h\hide = #True
-                  *this\resize | #__resize_change
+;                   *this\resize | #__resize_change
                   ;// reset page pos then hide scrollbar
                   If \h\bar\page\pos > \h\bar\min
                      If bar_Change( \h, \h\bar\min )
@@ -6774,7 +6793,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If mode > 0
-            *this\resize | #__resize_change ; ???
+;             *this\resize | #__resize_change ; ???
             
             ;\\ get area size
             If *bar\vertical
@@ -7449,7 +7468,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Resize( *this\split_1( ),
                                    *BB1\x - *this\frame_x( ),
                                    *BB1\y - *this\frame_y( ),
-                                   *BB1\width - #__window_frame_size * 2, *BB1\height - #__window_frame_size * 2 - #__window_caption_height)
+                                   *BB1\width - #__window_frame_size * 2,
+                                   *BB1\height - #__window_frame_size * 2 - #__window_caption_height)
                         Else
                            Resize( *this\split_1( ),
                                    *BB1\x - *this\frame_x( ),
@@ -7484,7 +7504,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Resize( *this\split_2( ),
                                    *BB2\x - *this\frame_x( ),
                                    *BB2\y - *this\frame_y( ),
-                                   *BB2\width - #__window_frame_size * 2, *BB2\height - #__window_frame_size * 2 - #__window_caption_height )
+                                   *BB2\width - #__window_frame_size * 2, 
+                                   *BB2\height - #__window_frame_size * 2 - #__window_caption_height )
                         Else
                            Resize( *this\split_2( ),
                                    *BB2\x - *this\frame_x( ),
@@ -7495,6 +7516,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
+               
             EndIf
             
             ;\\
@@ -7926,7 +7948,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            bar_Update( *this )
-                           PostCanvasRepaint( *this )
+                           PostEventCanvasRepaint( *this )
                            ProcedureReturn #True
                         EndIf
                      EndIf
@@ -9056,7 +9078,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\EnteredLineIndex( ) = 0
          EndIf
          
-         PostCanvasRepaint( *this ) ;?
+         PostEventCanvasRepaint( *this ) ;?
          ProcedureReturn 1
       EndProcedure
       
@@ -9521,7 +9543,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If *this\TextChange( )
+            ;\\
+            If *this\TextChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
                bar_area_update( *this )
                
                ; make horizontal scroll x
@@ -9589,7 +9612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( )
+               If *this\TextChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
                   Text_Update( *this )
                   
                   ;             If *this\EnteredLineIndex( ) >= 0
@@ -11078,7 +11101,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\scroll\state = - 1
                   EndIf
                   
-                  PostCanvasRepaint( *this )
+                  PostEventCanvasRepaint( *this )
                EndIf
             EndIf
          EndIf
@@ -12312,7 +12335,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Popup( )\widget = *this
                Popup( )\parent = *display
                ChangeParent( *this, Popup( ) )
-               PostCanvasRepaint( Popup( ) )
+               PostEventCanvasRepaint( Popup( ) )
                
                ;\\
                If *display\round
@@ -12975,7 +12998,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\WidgetChange( ) = 1
             *this\count\items - 1
             DeleteElement( *this\_rows( ))
-            PostCanvasRepaint( *this )
+            PostEventCanvasRepaint( *this )
             result = #True
          EndIf
          
@@ -13021,7 +13044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ClearList( *this\_rows( ))
-               PostCanvasRepaint( *this )
+               PostEventCanvasRepaint( *this )
             EndIf
          EndIf
          
@@ -13425,7 +13448,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If result
-            PostCanvasRepaint( *this )
+            PostEventCanvasRepaint( *this )
          EndIf
          
          ProcedureReturn result
@@ -13516,7 +13539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   DoEvents( *this, #__event_Change )
-                  PostCanvasRepaint( *this )
+                  PostEventCanvasRepaint( *this )
                   ProcedureReturn #True
                EndIf
             EndIf
@@ -13538,7 +13561,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\checkstate = State
                
                DoEvents( *this, #__event_Change )
-               PostCanvasRepaint( *this )
+               PostEventCanvasRepaint( *this )
                ProcedureReturn #True
             EndIf
          EndIf
@@ -13673,7 +13696,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        PostCanvasRepaint( *this )
+                        PostEventCanvasRepaint( *this )
                         ProcedureReturn #True
                      EndIf
                   EndIf
@@ -13698,7 +13721,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result = bar_SetState( *this, state )
          EndSelect
          
-         PostCanvasRepaint( *this )
+         PostEventCanvasRepaint( *this )
          ProcedureReturn result
       EndProcedure
       
@@ -13816,7 +13839,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *This\text\string.s = Text.s
                   *This\TextChange( ) = #True
                   result              = #True
-                  PostCanvasRepaint( *This )
+                  PostEventCanvasRepaint( *This )
                EndIf
             EndIf
          EndIf
@@ -13844,7 +13867,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *This\text\string.s = Text.s
                *This\TextChange( ) = #True
                result              = #True
-               PostCanvasRepaint( *This )
+               PostEventCanvasRepaint( *This )
             EndIf
          EndIf
          
@@ -14463,11 +14486,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If ReParent
-               *this\resize = #__resize_change
                ;
                If a_transform( ) And a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
                   *this\resize | #__resize_x | #__resize_y
-                  
+;                   *this\resize = #__resize_change
+               
                   x = *this\frame_x( ) - *parent\inner_x( )
                   y = *this\frame_y( ) - *parent\inner_y( )
                   
@@ -14505,8 +14528,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               PostCanvasRepaint( *parent )
-               PostCanvasRepaint( *lastParent )
+               PostEventCanvasRepaint( *parent )
+               PostEventCanvasRepaint( *lastParent )
                
                ;           ChangeCurrentRoot(*parent\root\canvas\GadgetID)
                ;           ReDraw(Root( ))
@@ -14956,7 +14979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; update parent children's coordinate
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PostCanvasRepaint( *this )
+               PostEventCanvasRepaint( *this )
             EndIf
          EndIf
       EndProcedure
@@ -15365,7 +15388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         PostCanvasRepaint( *this )
+         PostEventCanvasRepaint( *this )
          ProcedureReturn result
       EndProcedure
       
@@ -15384,7 +15407,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         PostCanvasRepaint( *this )
+         PostEventCanvasRepaint( *this )
          ProcedureReturn result
       EndProcedure
       
@@ -15523,7 +15546,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; result = bar_SetState( *this, state )
          EndIf
          
-         PostCanvasRepaint( *this )
+         PostEventCanvasRepaint( *this )
          ProcedureReturn result
       EndProcedure
       
@@ -16368,7 +16391,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          DoEvents( *this, #__event_create )
          ;; Debug ""+*this\class+" "+*this\root
-         PostCanvasRepaint( *this, #__event_Create)
+         PostEventCanvasRepaint( *this, #__event_Create)
          ProcedureReturn *this
       EndProcedure
       
@@ -16613,7 +16636,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; update text
-            If *this\WidgetChange( )
+            If *this\WidgetChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
                Text_Update( *this )
             EndIf
             
@@ -16878,14 +16901,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\repaint = #False
             EndIf
             
-            ;\\ init drawing font
-            draw_font_( *this )
-            
             ;\\ draw belowe drawing
             If Not *this\hide
-               ;           If *this\resize & #__resize_change
-               ;              *this\resize | #__reclip
-               ;           EndIf
+               ;\\ init drawing font
+               draw_font_( *this )
+               
                If *this\resize & #__reclip
                   *this\resize & ~ #__reclip
                   Reclip( *this )
@@ -16921,6 +16941,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Case #__type_Image : Container_Draw( *this )
                      Case #__type_Panel : Container_Draw( *this )
                         
+                        
+                     Case #__type_String : Editor_Draw( *this )
+                     Case #__type_Editor : Editor_Draw( *this )
+                        
+                     Case #__type_Tree : Tree_Draw( *this )
+                     Case #__type_Property : Tree_Draw( *this )
+                     Case #__type_ListView : Tree_Draw( *this )
+                     Case #__type_ListIcon : ListIcon_Draw( *this )
+                        
+                     Case #__type_Text : Button_Draw( *this )
+                     Case #__type_Button : Button_Draw( *this )
+                     Case #__type_ButtonImage : Button_Draw( *this )
+                     Case #__type_Option : Button_Draw( *this )
+                     Case #__type_CheckBox : Button_Draw( *this )
+                     Case #__type_HyperLink : Button_Draw( *this )
                         
                         ; Draw frames
                      Case #__type_Frame
@@ -16965,21 +17000,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                      *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
                                      *this\text\string, *this\color\front & $FFFFFF | *this\color\_alpha << 24 )
                         EndIf
-                        
-                     Case #__type_String : Editor_Draw( *this )
-                     Case #__type_Editor : Editor_Draw( *this )
-                        
-                     Case #__type_Tree : Tree_Draw( *this )
-                     Case #__type_Property : Tree_Draw( *this )
-                     Case #__type_ListView : Tree_Draw( *this )
-                     Case #__type_ListIcon : ListIcon_Draw( *this )
-                        
-                     Case #__type_Text : Button_Draw( *this )
-                     Case #__type_Button : Button_Draw( *this )
-                     Case #__type_ButtonImage : Button_Draw( *this )
-                     Case #__type_Option : Button_Draw( *this )
-                     Case #__type_CheckBox : Button_Draw( *this )
-                     Case #__type_HyperLink : Button_Draw( *this )
                         
                      Case #__type_Spin ,
                           #__type_TabBar, #__type_ToolBar,
@@ -17030,9 +17050,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\ImageChange( ) <> 0
                   *this\ImageChange( ) = 0
                EndIf
-               If *this\resize & #__resize_change
-                  *this\resize & ~ #__resize_change
-               EndIf
+;                If *this\resize & #__resize_change
+;                   *this\resize & ~ #__resize_change
+;                EndIf
                
                ;\\ test
                If *this\type
@@ -17058,7 +17078,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DropDraw( *this )
                   EndIf
                EndIf
-               
+;                
                
                If test_clip And *this\parent
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -17072,12 +17092,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug "    Draw - " + *this\class
             EndIf
             
-            ;\\
-            If Not *this\dragstart
-               If *this\resize <> 0
-                  *this\resize = 0
+            
+             If Not mouse( )\press
+               If *this\resize & #__resize_change
+                  Debug "stop-resize "+*this\class
+                  *this\resize &~ #__resize_change
                EndIf
             EndIf
+            
+            
+            ;\\
+            ;             If Not *this\dragstart
+            ;                If *this\resize <> 0
+            ;                   *this\resize = 0
+            ;                EndIf
+            ;             EndIf
+            
+            If *this\resize & #__resize_width
+               *this\resize &~ #__resize_width
+            EndIf
+            
+            If *this\resize & #__resize_height
+               *this\resize &~ #__resize_height
+            EndIf
+            
          EndWith
       EndProcedure
       
@@ -17153,8 +17191,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ begin draw all widgets except pressed-move-widget
                            If Not ( *this\_widgets( )\dragstart And
                                     *this\_widgets( )\resize )
+;                            If *this\_widgets( )\drawimg
+;                               drawing_mode_( #PB_2DDrawing_Default )
+;                               ClipOutput( *this\_widgets( )\parent\inner_x( ),
+;                                           *this\_widgets( )\parent\inner_y( ),
+;                                           *this\_widgets( )\parent\inner_width( ),
+;                                           *this\_widgets( )\parent\inner_height( ) )
+;                               
+;                               DrawImage( ImageID(*this\_widgets( )\drawimg), 
+;                                          *this\_widgets( )\frame_x( ),
+;                                          *this\_widgets( )\frame_y( ) )
+;                            Else
                               Draw( *this\_widgets( ))
-                           EndIf
+;                            EndIf
+                            EndIf
                            
                            ;                            ;\\ draw current pressed-move-widget
                            ;                            If PressedWidget( ) And
@@ -17227,10 +17277,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If PressedWidget( ) And
                PressedWidget( )\resize And
                PressedWidget( )\dragstart
-               If PressedWidget( )\parent
-                  clip_output_( PressedWidget( )\parent, [#__c_draw] )
+               If PressedWidget( )\root = *this\root
+                  If PressedWidget( )\parent
+                     clip_output_( PressedWidget( )\parent, [#__c_draw] )
+                  EndIf
+                  Draw( PressedWidget( ) )
                EndIf
-               Draw( PressedWidget( ) )
             EndIf
             
             ;\\
@@ -17498,7 +17550,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
+      Procedure   GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
          Protected i, Repaint, *widget._S_WIDGET
          
          ;\\ get at point address
@@ -17855,9 +17907,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Next
                   EndIf
                   
-                  If Not *widget\anchors
-                     DoEvents( *widget, #__event_StatusChange, 1 )
-                  EndIf
+;                   If Not *widget\anchors
+;                      DoEvents( *widget, #__event_StatusChange, 1 )
+;                   EndIf
                EndIf
             EndIf
             
@@ -19479,6 +19531,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Post( *this, eventtype, *button, *data )
                   ElseIf eventtype = #__event_LostFocus
                      Post( *this, eventtype, *button, *data )
+;                   ElseIf eventtype = #__event_resize
+;                      If *this\show
+;                         Send( *this, eventtype, *button, *data )
+;                      Else
+;                         Post( *this, eventtype, *button, *data )
+;                      EndIf
                   Else
                      Send( *this, eventtype, *button, *data )
                   EndIf
@@ -19605,7 +19663,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If *this\repaint And
             *this\state\disable = 0
-            PostCanvasRepaint( *this )
+            PostEventCanvasRepaint( *this )
          EndIf
       EndProcedure
       
@@ -19820,6 +19878,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PressedWidget( )\state\enter = 2 And
                         PressedWidget( )\dragstart = #PB_Drag_None
                         PressedWidget( )\dragstart = #PB_Drag_Update
+                        
+;                         If mouse( )\press
+;                            If PressedWidget( )
+;                               If PressedWidget( )\split_1( )
+;                                  Hide( PressedWidget( )\split_1( ), 1 )
+;                               EndIf
+;                               If PressedWidget( )\split_2( )
+;                                  Hide( PressedWidget( )\split_2( ), 1 )
+;                               EndIf
+;                            EndIf
+;                         EndIf
+                        
                         DoEvents( PressedWidget( ), #__event_DragStart )
                      EndIf
                   EndIf
@@ -19829,6 +19899,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #PB_EventType_RightButtonDown,
                     #PB_EventType_MiddleButtonDown
                   
+;                   ;\\
+;                   If EnteredWidget( )
+;                      If StartDrawing( Output( EnteredWidget( )\root ))
+;                         Draw( EnteredWidget( ) )
+;                         EnteredWidget( )\drawimg = GrabDrawingImage( #PB_Any, EnteredWidget( )\frame_x( ), EnteredWidget( )\frame_y( ), EnteredWidget( )\frame_width( ), EnteredWidget( )\frame_height( ) )
+;                         StopDrawing( )
+;                      EndIf
+;                   EndIf
+                  
+                  ;\\
                   mouse( )\press  = 1
                   mouse( )\change = 1 << 5
                   If eventtype = #PB_EventType_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
@@ -19843,7 +19923,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      mouse( )\interact = - 1
                   EndIf
                   
-                  mouse( )\press  = 0
+                  ;\\
+                  If mouse( )\press
+                     mouse( )\press  = 0
+                     
+                     If PressedWidget( )
+                        If PressedWidget( )\resize & #__resize_change
+                           Debug "stop-resize "+PressedWidget( )\class
+                           PressedWidget( )\resize &~ #__resize_change
+                        EndIf
+                     EndIf
+                  
+                     
+;                      If PressedWidget( )
+;                         If PressedWidget( )\split_1( )
+;                            If PressedWidget( )\split_1( )\hide
+;                               Hide( PressedWidget( )\split_1( ), 0 )
+;                               Resize( PressedWidget( )\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                            EndIf
+;                         EndIf
+;                         If PressedWidget( )\split_2( )
+;                            If PressedWidget( )\split_2( )\hide
+;                               Hide( PressedWidget( )\split_2( ), 0 )
+;                               Resize( PressedWidget( )\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                            EndIf
+;                         EndIf
+;                         
+;                         If PressedWidget( )\drawimg
+;                            FreeImage( PressedWidget( )\drawimg )
+;                            PressedWidget( )\drawimg = #Null
+;                         EndIf
+;                      EndIf
+                  EndIf
+                  
+                  ;\\
                   mouse( )\change = 1 << 6
                   mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
                   mouse( )\y      = CanvasMouseY( Root( )\canvas\gadget )
@@ -20376,7 +20489,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; post repaint canvas event
-            PostCanvasRepaint( Root( ), #__event_Create )
+            PostEventCanvasRepaint( Root( ), #__event_Create )
             
             ; BindGadgetEvent( Canvas, @EventCanvas( ))
          EndIf
@@ -20590,7 +20703,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             DoEvents( *this, #__event_create )
-            PostCanvasRepaint( *this, #__event_Create)
+            PostEventCanvasRepaint( *this, #__event_Create)
          EndWith
          
          ProcedureReturn *this
@@ -20798,7 +20911,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                FocusedWidget( ) = *this\parent
             EndIf
             
-            PostCanvasRepaint( *this\parent, #__event_free )
+            PostEventCanvasRepaint( *this\parent, #__event_free )
             ;ClearStructure( *this, _S_WIDGET )
          EndIf
          
@@ -21059,7 +21172,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EventHandler( *message\root\canvas\gadget, #__event_Repaint)
          BindGadgetEvent( *message\root\canvas\gadget, @MessageEvents( ));, #__event_Repaint )
                                                                          ;PostEvent( #PB_Event_Gadget, *message\root\canvas\window, *message\root\canvas\gadget, #__event_Repaint)
-         PostCanvasRepaint( *message\root )
+         PostEventCanvasRepaint( *message\root )
          
          ;
          WaitEvents( *message )
@@ -21089,7 +21202,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             PushMapPosition(Root( ))
             ForEach Root( )
-               PostCanvasRepaint( Root( ), #__event_create )
+               PostEventCanvasRepaint( Root( ), #__event_create )
             Next
             PopMapPosition(Root( ))
             
@@ -21849,7 +21962,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18801
-; FirstLine = 18669
-; Folding = -f+---P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Dg-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
+; CursorPosition = 4473
+; FirstLine = 3716
+; Folding = -f+---P9-------------------------------------------------02-0----++---------------------3+------------zfu88P0st33------------------------------------------------------------------------0f--------------------------f-j--------------3-+-8---------------------------------------------------------------------------fA9---------------------------------------------------------------------------------------------------------------------------------ev8---------+08---------------------------------------------Xr7---------u7------W-8--8U--3--------------------------------------
 ; EnableXP

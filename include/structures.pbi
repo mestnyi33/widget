@@ -578,6 +578,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
+         *drawimg
          *anchors._s_ANCHORS
          
          reclip.b
@@ -756,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 587
-; FirstLine = 416
+; CursorPosition = 580
+; FirstLine = 414
 ; Folding = -f+-9oA+--
 ; EnableXP

@@ -13,11 +13,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    ;*g = Container(310, 10, 290, 300)
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
     CloseList()
     
     ;
     Splitter(10,10,590,480, -1, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
+    ;Splitter(10,10,590,480, -1, *g)
     
     If count
       OpenList(*g)
@@ -27,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;          ; Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
 ;         Else
            Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
-           Hide(widget( ),1)
+           ;Hide(widget( ),1)
 ;         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -72,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 4
-; Folding = -
+; CursorPosition = 16
+; FirstLine = 5
+; Folding = --
 ; EnableXP
