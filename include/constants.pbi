@@ -140,7 +140,7 @@
       EndEnumeration
       
       ;-\\ create-flags
-      EnumerationBinary 4096 ; 2
+      EnumerationBinary 1<<18 ; 2
                              ; text
          #__flag_textnumeric
          #__flag_textreadonly
@@ -870,8 +870,6 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 721
-; FirstLine = 718
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

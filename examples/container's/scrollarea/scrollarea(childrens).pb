@@ -3,7 +3,7 @@ XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global show, ev, *g._s_widget, *b, i, time, Sw = 350, Sh = 300, wcount=10000
+  Global show, ev, *g._s_widget, *b, i, time, Sw = 350, Sh = 300, wcount=1000
   
   Procedure events_widgets()
     Debug ""+EventWidget()+ " - widget event - " +WidgetEventType()
@@ -12,8 +12,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
-    Bind(*g, @events_widgets(), #PB_EventType_ScrollChange )
-    Bind(*g, @events_widgets(), #PB_EventType_Resize )
+    Bind(*g, @events_widgets(), #__event_ScrollChange )
+    Bind(*g, @events_widgets(), #__event_Resize )
     
     Button(10,  10, 230, 30,"Button 1")
     Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
@@ -52,6 +52,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until ev = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
