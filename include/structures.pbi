@@ -577,7 +577,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     WIDGET
-      Structure _s_WIDGET
+      Structure _s_WIDGET 
          *drawimg
          *anchors._s_ANCHORS
          
@@ -724,7 +724,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     STICKY
-      Structure _s_STICKY
+      Structure _s_STICKY 
          *box._s_ROOT                  ; popup root element
          *message._s_WIDGET            ; message window element
          *tooltip._s_WIDGET            ; tool tip element
@@ -732,7 +732,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
      EndStructure
       
       ;--     STRUCT
-      Structure _s_STRUCT
+      Structure _s_STRUCT 
          repaint.b
          *drawing                      ; 
          *opened._s_WIDGET             ; last-list opened element
@@ -750,6 +750,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;Global *event._s_events = Allocatestructure(_s_events)
       ;}
       
+     ; Debug SizeOf(_s_WIDGET) ; 5952
    EndDeclareModule 
    
    Module Structures 
@@ -757,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 580
-; FirstLine = 414
+; CursorPosition = 579
+; FirstLine = 562
 ; Folding = -f+-9oA+--
 ; EnableXP
