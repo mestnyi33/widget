@@ -1,4 +1,6 @@
 ﻿; windows 3528 - time add gadget
+; macos 4014 - time add gadget ; прокрутка по лучше
+
 
 CompilerIf #PB_Compiler_IsMainFile
   Global g=-1,i, time, Sw = 350, Sh = 300, count = 5000
@@ -27,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

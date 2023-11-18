@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
 ; windows 474 - time add widget
+; macos 571 - time add widget
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -28,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP
