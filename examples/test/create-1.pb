@@ -27,8 +27,8 @@
   ;object = String(100, 100, 250, 250, text, #__flag_textwordwrap|#__flag_textcenter)
   ;object = Button(100, 100, 250, 250, text, #__flag_textmultiline);, #__flag_borderless)
   ;object = Button(100, 100, 250, 250, text, #__flag_textwordwrap);, #__flag_borderless)
-  ;object = Editor(100, 100, 250, 250, #__flag_textwordwrap|#__flag_textcenter) : SetText(object, text)
-  object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1, "tree element line "+Str(i)) : Next
+  object = Editor(100, 100, 250, 250, #__flag_textwordwrap|#__flag_textcenter) : SetText(object, text)
+  ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1, "tree element line "+Str(i)) : Next
    
 ; ;   ;\\
 ;    widget()\fs = 50 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -72,8 +72,6 @@
  
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 7
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
