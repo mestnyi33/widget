@@ -1,32 +1,10 @@
 ﻿DeclareModule Macros
-  Macro From(_this_, _buttons_=0)
-    Bool(canvasaddress\Mouse\X>=_this_\x[_buttons_] And canvasaddress\Mouse\X<_this_\x[_buttons_]+_this_\Width[_buttons_] And 
-         canvasaddress\Mouse\Y>=_this_\y[_buttons_] And canvasaddress\Mouse\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
-  EndMacro
-  
   Macro isItem(_item_, _list_)
     Bool(_item_ >= 0 And _item_ < ListSize(_list_))
   EndMacro
   
   Macro itemSelect(_item_, _list_)
     Bool(isItem(_item_, _list_) And _item_ <> ListIndex(_list_) And SelectElement(_list_, _item_))
-  EndMacro
-  
-  Macro add_widget(_widget_, _hande_)
-    If _widget_ =- 1 Or _widget_ > ListSize(List()) - 1
-      LastElement(List())
-      _hande_ = AddElement(List()) 
-      _widget_ = ListIndex(List())
-    Else
-      _hande_ = SelectElement(List(), _widget_)
-      _hande_ = InsertElement(List())
-      
-      PushListPosition(List())
-      While NextElement(List())
-        List()\Widget\Index = ListIndex(List())
-      Wend
-      PopListPosition(List())
-    EndIf
   EndMacro
   
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
@@ -100,7 +78,7 @@
   Macro Distance(_mouse_x_, _mouse_y_, _position_x_, _position_y_, _radius_)
     Bool(Sqr(Pow(((_position_x_+_radius_) - _mouse_x_),2) + Pow(((_position_y_+_radius_) - _mouse_y_),2)) =< _radius_)
   EndMacro
-
+  
   Macro Max(_a_, _b_)
     ((_a_) * Bool((_a_) > = (_b_)) + (_b_) * Bool((_b_) > (_a_)))
   EndMacro
@@ -137,6 +115,19 @@
     ((_mask_ & _flag_) = _flag_)
   EndMacro
   
+  ;-
+  
+  Macro From(_this_, _buttons_=0)
+    Bool(mouse( )\X>=_this_\x[_buttons_] And mouse( )\X<_this_\x[_buttons_]+_this_\Width[_buttons_] And 
+         mouse( )\Y>=_this_\y[_buttons_] And mouse( )\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
+  EndMacro
+  
+  Macro Widget( ): canvasaddress\children( ): EndMacro           ; Returns current-root last added widget
+  
+  Macro Mouse( ): canvasaddress\Mouse: EndMacro
+  Macro Keyboard( ): canvasaddress\keyboard: EndMacro
+  Macro FocusedWidget( ): Keyboard( )\widget: EndMacro ; Returns keyboard focus widget
+  
   ; val = %10011110
   ; Debug Bin(GetBits(val, 0, 3))
   
@@ -164,8 +155,8 @@ DeclareModule Constants
   EndEnumeration
   
   EnumerationBinary WidgetFlags
-;     #PB_Text_Center
-;     #PB_Text_Right
+    ;     #PB_Text_Center
+    ;     #PB_Text_Right
     #PB_Text_Bottom = 4
     #PB_Text_Middle 
     
@@ -227,9 +218,9 @@ DeclareModule Constants
   #SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
   #LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
   
-;   #PB_Text_Left = ~#PB_Text_Center
-;   #PB_Text_Top = ~#PB_Text_Middle
-;   
+  ;   #PB_Text_Left = ~#PB_Text_Center
+  ;   #PB_Text_Top = ~#PB_Text_Middle
+  ;   
   If WidgetFlags > 2147483647
     Debug "Исчерпан лимит в x32"+WidgetFlags
   EndIf
@@ -242,8 +233,8 @@ Module Constants
   
 EndModule 
 
+;-
 DeclareModule Structures
-  
   ;- STRUCTURE
   Structure COORDINATE
     y.i[4]
@@ -270,15 +261,6 @@ DeclareModule Structures
     Pos.i
     Length.i
     ScrollStep.i
-  EndStructure
-  
-  Structure CANVAS
-    Mouse.MOUSE
-    Gadget.i
-    Window.i
-    *activeWidget.Widget_S
-    Input.c
-    Key.i[2]
   EndStructure
   
   Structure COLOR
@@ -350,8 +332,7 @@ DeclareModule Structures
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
     
-    *Widget.Widget_S
-    
+    ;
     Color.COLOR[4]
     Text.TEXT[4]
     
@@ -362,7 +343,7 @@ DeclareModule Structures
     Cursor.i[2]
     
     Caret.i[2] ; 0 = Pos ; 1 = PosFixed
-    Line.i[2] ; 0 = Pos ; 1 = PosFixed
+    Line.i[2]  ; 0 = Pos ; 1 = PosFixed
     
     
     Type.i
@@ -380,7 +361,7 @@ DeclareModule Structures
     Radius.i
     Buttons.i
     
-   
+    
     ; tree
     time.i
     adress.i[2]
@@ -409,22 +390,39 @@ DeclareModule Structures
     
   EndStructure
   
+  Structure KEYBOARD ; Ok
+         *widget.Widget_S      ; keyboard focus element
+         change.b
+         input.c
+         key.i[2]
+  EndStructure
+      
+  Structure CANVAS
+    List *children.Widget_S( )
+    Mouse.MOUSE
+    Gadget.i
+    Window.i
+    keyboard.KEYBOARD          ; keyboard( )\
+  EndStructure
+  
+  
   Global canvasaddress.CANVAS
-  Global NewList List.Widget_S()
+  ;Global NewList canvasaddress\Widget.Widget_S()
   Global Use_List_Canvas_Gadget
 EndDeclareModule 
+;-
 
 Module Structures 
   
 EndModule 
 
 UseModule Macros
-  UseModule Constants
-  UseModule Structures
-  
-  
-  ;-
-DeclareModule Text
+UseModule Constants
+UseModule Structures
+
+
+;- DECLAREs
+DeclareModule String
   
   EnableExplicit
   UseModule Macros
@@ -432,25 +430,21 @@ DeclareModule Text
   UseModule Structures
   
   
-  ;- - DECLAREs PROCEDUREs
-  Declare.i Draw(*thisWidget_S, Canvas.i=-1)
-  Declare.s GetText(*this.Widget_S)
-  Declare.i SetText(*this.Widget_S, Text.s)
-  Declare.i GetFont(*this.Widget_S)
-  Declare.i SetFont(*this.Widget_S, FontID.i)
-  Declare.i GetColor(*this.Widget_S, ColorType.i, State.i=0)
-  Declare.i SetColor(*this.Widget_S, ColorType.i, Color.i, State.i=1)
-  Declare.i Resize(*this.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-  Declare.i CallBack(*Function, *this.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-  Declare.i Widget(*this.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  Declare.i Draw(*this)
+  Declare.s GetText(*this)
+  Declare.i SetText(*this, Text.s)
+  Declare.i GetFont(*this)
+  Declare.i SetFont(*this, FontID.i)
+  Declare.i GetColor(*this, ColorType.i, State.i=0)
+  Declare.i SetColor(*this, ColorType.i, Color.i, State.i=1)
+  Declare.i Resize(*this, X.i,Y.i,Width.i,Height.i)
   
+  Declare.i Events(*this, EventType.i)
+  Declare.i Create(Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
 EndDeclareModule
 
-Module Text
-  
-  ;- MACROS
-  ;- PROCEDUREs
+Module String
   Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
     Protected line$, ret$="", LineRet$=""
     Protected.i CountString, i, start, ii, found, length
@@ -525,23 +519,12 @@ Module Text
     EndIf
   EndProcedure
   
-  Procedure.i Draw(*this.Widget_S, Canvas.i=-1)
+  Procedure.i Draw(*this.Widget_S)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
     If Not *this\Hide
       With *this
-        If Canvas=-1 
-          Canvas = EventGadget()
-        EndIf
-        If Canvas <> canvasaddress\Gadget
-          ProcedureReturn
-        EndIf
-        
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-        CompilerEndIf
-        
         DrawingMode(\DrawingMode)
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
         
@@ -566,7 +549,7 @@ Module Text
             EndIf
             
             If \Text\MultiLine
-              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, \Text\MultiLine)
+              \Text\String.s[2] = Wrap(\Text\String.s, Width, \Text\MultiLine)
               \Text\CountString = CountString(\Text\String.s[2], #LF$)
             EndIf
             
@@ -667,8 +650,8 @@ Module Text
       EndWith 
       
       ; Draw items text
-      If ListSize(*this\Items())
-        With *this\Items()
+      With *this\Items()
+        If ListSize(*this\Items())
           PushListPosition(*this\Items())
           ForEach *this\Items()
             ; Draw image
@@ -683,10 +666,6 @@ Module Text
             EndIf 
             
             If \Text\String.s
-              CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                ClipOutput(\X,\Y,\Width,\Height) ; Bug in Mac os
-              CompilerEndIf
-              
               If \Text\FontID 
                 DrawingFont(\Text\FontID) 
               EndIf
@@ -710,7 +689,7 @@ Module Text
                   *this\Scroll\X = Left
                 ElseIf *this\Scroll\X > Right
                   *this\Scroll\X = Right
-                ElseIf (*this\Scroll\X < 0 And *this\Caret = *this\Caret[1] And Not canvasaddress\Input) ; Back string
+                ElseIf (*this\Scroll\X < 0 And *this\Caret = *this\Caret[1] And Not Keyboard( )\input) ; Back string
                   *this\Scroll\X = (\Width-\Text[3]\Width) + Left
                   If *this\Scroll\X>0
                     *this\Scroll\X=0
@@ -718,7 +697,14 @@ Module Text
                 EndIf
               EndIf
               
-              If *this\Text\Editable And \Text[2]\Len > 0 ; And #PB_Compiler_OS <> #PB_OS_MacOS
+              Protected text_sel_width = \text[2]\width ;+ Bool( *this\state\focus = #False ) * *this\text\caret\width
+                        ;\\
+              If \Text[2]\Len
+                Debug " sel "+text_sel_width
+              EndIf
+              
+              
+              If *this\Text\Editable And \Text[2]\Len > 0 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS ; Bug in Mac os 
                   If *this\Caret[1] > *this\Caret
                     \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *this\Caret[1])) 
@@ -759,19 +745,20 @@ Module Text
                   EndIf
                   
                 CompilerElse
-                  If \Text[1]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText((\Text[0]\X+*this\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**this\Text\Rotate, *this\Color\Front)
-                  EndIf
-                  If \Text[2]\String.s
+                  If \Text[2]\Width
                     DrawingMode(#PB_2DDrawing_Default)
                     Box((\Text[2]\X+*this\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $DE9541)
                     
-                    DrawingMode(#PB_2DDrawing_Transparent)
+                  EndIf
+                  
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  If \Text[1]\String.s
+                    DrawRotatedText((\Text[0]\X+*this\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**this\Text\Rotate, *this\Color\Front)
+                  EndIf
+                  If \Text[2]\String.s
                     DrawRotatedText((\Text[2]\X+*this\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**this\Text\Rotate, $FFFFFF)
                   EndIf
                   If \Text[3]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
                     DrawRotatedText((\Text[3]\X+*this\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**this\Text\Rotate, *this\Color\Front)
                   EndIf
                 CompilerEndIf
@@ -796,15 +783,11 @@ Module Text
               Line(((\Text\X+*this\Scroll\X) + \Text[1]\Width) - Bool(*this\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
             EndIf
           EndIf
-        EndWith  
-      EndIf
+        EndIf
+      EndWith  
       
       ; Draw frames
       With *this
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
-        CompilerEndIf
-        
         ; Draw image
         If \Image\handle
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
@@ -836,48 +819,6 @@ Module Text
       EndWith
     EndIf
     
-  EndProcedure
-  ;-
-  Procedure.s GetText(*this.Widget_S)
-    With *this
-      If \Text\Pass
-        ProcedureReturn \Text\String.s[1]
-      Else
-        ProcedureReturn \Text\String
-      EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i SetText(*this.Widget_S, Text.s)
-    Protected Result,i,Len
-    
-    With *this
-      If \Text\String.s <> Text.s
-        \Text\String.s[1] = Text.s
-        
-        If \Text\Pass
-          Len = Len(Text.s) : Text.s = "" 
-          For i = 1 To Len : Text.s + "●" : Next
-        Else
-          Select #True
-            Case \Text\Lower : Text.s = LCase(Text.s)
-            Case \Text\Upper : Text.s = UCase(Text.s)
-          EndSelect
-        EndIf
-        
-        If Not \Text\MultiLine
-          \Text\String.s[2] = RemoveString(Text.s, #LF$)
-          \Text\CountString = #True
-        EndIf
-        
-        \Text\String.s = Text.s
-        \Text\Len = Len(Text.s)
-        \Text\Change = #True
-        Result = #True
-      EndIf
-    EndWith
-  
-    ProcedureReturn Result
   EndProcedure
   
   Procedure.i GetFont(*this.Widget_S)
@@ -946,17 +887,8 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Resize(*this.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Procedure.i Resize(*this.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *this
-      If Canvas=-1 
-        Canvas = EventGadget()
-      EndIf
-      If Canvas = canvasaddress\Gadget
-        canvasaddress\Window = EventWindow()
-      Else
-        ProcedureReturn
-      EndIf
-      
       If X<>#PB_Ignore 
         \X[0] = X 
         \X[2]=X+\bSize
@@ -986,181 +918,47 @@ Module Text
     EndWith
   EndProcedure
   
-  Procedure.i CallBack(*Function, *this.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    ; Canvas events bug fix
-    Protected Result.b
-    Static MouseLeave.b
-    Protected EventGadget.i = EventGadget()
+  Procedure.s GetText(*this.Widget_S)
+    With *this
+      If \Text\Pass
+        ProcedureReturn \Text\String.s[1]
+      Else
+        ProcedureReturn \Text\String
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.i SetText(*this.Widget_S, Text.s)
+    Protected Result,i,Len
     
-    Protected Width = GadgetWidth(EventGadget)
-    Protected Height = GadgetHeight(EventGadget)
-    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    With *this
+      If \Text\String.s <> Text.s
+        \Text\String.s[1] = Text.s
+        
+        If \Text\Pass
+          Len = Len(Text.s) : Text.s = "" 
+          For i = 1 To Len : Text.s + "●" : Next
+        Else
+          Select #True
+            Case \Text\Lower : Text.s = LCase(Text.s)
+            Case \Text\Upper : Text.s = UCase(Text.s)
+          EndSelect
+        EndIf
+        
+        If Not \Text\MultiLine
+          \Text\String.s[2] = RemoveString(Text.s, #LF$)
+          \Text\CountString = #True
+        EndIf
+        
+        \Text\String.s = Text.s
+        \Text\Len = Len(Text.s)
+        \Text\Change = #True
+        Result = #True
+      EndIf
+    EndWith
     
-    If Canvas =- 1
-      With *this
-        Select EventType
-          Case #PB_EventType_Input 
-            canvasaddress\Input = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Input)
-            canvasaddress\Key[1] = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_KeyDown
-            canvasaddress\Key = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Key)
-            canvasaddress\Key[1] = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-            canvasaddress\Mouse\X = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_MouseX)
-            canvasaddress\Mouse\Y = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_MouseY)
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-            
-          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            canvasaddress\Mouse\Buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
-                                    (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
-                                    (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
-          CompilerElse
-            canvasaddress\Mouse\Buttons = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Buttons)
-          CompilerEndIf
-        EndSelect
-      EndWith
-    EndIf
-    
-    
-    ; Это из за ошибки в мак ос и линукс
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-      Select EventType 
-        Case #PB_EventType_MouseEnter 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 0
-          EndIf
-          
-        Case #PB_EventType_MouseLeave 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 1
-          EndIf
-          
-        Case #PB_EventType_LeftButtonDown
-          If GetActiveGadget()<>EventGadget
-            SetActiveGadget(EventGadget)
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-            MouseLeave = 0
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | CallCFunctionFast(*Function, *this, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-              EventType = #PB_EventType_MouseLeave
-            CompilerEndIf
-          Else
-            MouseLeave =- 1
-            Result | CallCFunctionFast(*Function, *this, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-            EventType = #PB_EventType_LeftClick
-          EndIf
-          
-        Case #PB_EventType_LeftClick : ProcedureReturn 0
-      EndSelect
-    CompilerEndIf
-    
-    Result | CallCFunctionFast(*Function, *this, EventType, Canvas, CanvasModifiers)
     ProcedureReturn Result
   EndProcedure
-  
-  Procedure Widget(*this.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-    If *this
-      With *this
-        \Type = #PB_GadgetType_Text
-        \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Default
-        canvasaddress\Gadget = Canvas
-        \Radius = Radius
-        \Alpha = 255
-        
-        ; Set the default widget flag
-        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly|#PB_Widget_BorderLess
-        
-        If Bool(Flag&#PB_Text_WordWrap)
-          Flag&~#PB_Text_MultiLine
-        EndIf
-        
-        If Bool(Flag&#PB_Text_MultiLine)
-          Flag&~#PB_Text_WordWrap
-        EndIf
-        
-        If Not \Text\FontID
-          \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        EndIf
-        
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
-        \bSize = \fSize
-        
-        If Resize(*this, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
-            \Text\MultiLine =- 1
-          EndIf
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
-          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
-          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          
-          
-          If \Text\Vertical
-            \Text\X = \fSize 
-            \Text\y = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12
-          Else
-            \Text\X = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12 
-            \Text\y = \fSize
-          EndIf
-          
-          If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
-          Else
-            \Color[0]\Back[1] = $F0F0F0  
-          EndIf
-          \Color[0]\Frame[1] = $BABABA
-          ResetColor(*this)
-          
-          SetText(*this, Text.s)
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn *this
-  EndProcedure
-EndModule
-
-;-
-DeclareModule String
-  
-  EnableExplicit
-  UseModule Macros
-  UseModule Constants
-  UseModule Structures
-  
-  
-  ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
-  Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
-  Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
-  Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
-  Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
-  Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
-  
-  ;- - DECLAREs PRACEDUREs
-  Declare.i Widget(*this.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.i Events(*this.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-EndDeclareModule
-
-Module String
-  ;-
-  ;- - MACROS
-  ;- - PROCEDUREs
   
   Procedure Caret(*this.Widget_S, Line.i = 0)
     Static LastLine.i,  LastItem.i
@@ -1190,7 +988,7 @@ Module String
             
             For i = 0 To Len
               CursorX = X + TextWidth(Left(String.s, i))
-              Distance = (canvasaddress\Mouse\X-CursorX)*(canvasaddress\Mouse\X-CursorX)
+              Distance = (mouse( )\X-CursorX)*(mouse( )\X-CursorX)
               
               ; Получаем позицию коpректора
               If MinDistance > Distance 
@@ -1387,18 +1185,18 @@ Module String
   Procedure ToInput(*this.Widget_S)
     Static Dot
     Protected Repaint, Input, Input_2
-      
+    
     With *this
       Select #True
-        Case \Text\Lower : Input = Asc(LCase(Chr(canvasaddress\Input))) : Input_2 = Input
-        Case \Text\Upper : Input = Asc(UCase(Chr(canvasaddress\Input))) : Input_2 = Input
-        Case \Text\Pass  : Input = 9679 : Input_2 = canvasaddress\Input ; "●"
-        Case \Text\Numeric                                             ; : Debug Chr(canvasaddress\Input)
-          Select canvasaddress\Input 
-            Case '.','0' To '9' : Input = canvasaddress\Input : Input_2 = Input
+        Case \Text\Lower : Input = Asc(LCase(Chr(Keyboard( )\input))) : Input_2 = Input
+        Case \Text\Upper : Input = Asc(UCase(Chr(Keyboard( )\input))) : Input_2 = Input
+        Case \Text\Pass  : Input = 9679 : Input_2 = Keyboard( )\input ; "●"
+        Case \Text\Numeric                                            ; : Debug Chr(Keyboard( )\input)
+          Select Keyboard( )\input 
+            Case '.','0' To '9' : Input = Keyboard( )\input : Input_2 = Input
             Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
             Default
-              Input_2 = canvasaddress\Input
+              Input_2 = Keyboard( )\input
           EndSelect
           
           ; Чтобы нельзя было ставить точки подряд
@@ -1411,7 +1209,7 @@ Module String
           EndIf
           
         Default
-          Input = canvasaddress\Input : Input_2 = Input
+          Input = Keyboard( )\input : Input_2 = Input
       EndSelect
       
       If Input_2
@@ -1430,7 +1228,7 @@ Module String
           PostEvent(#PB_Event_Widget, canvasaddress\Window, *this, #PB_EventType_Change)
         EndIf
         
-        canvasaddress\Input = 0
+        Keyboard( )\input = 0
         Repaint = #True 
       EndIf
     EndWith
@@ -1481,7 +1279,7 @@ Module String
   EndProcedure
   
   ;-
-  Procedure.i Events(*this.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i Events(*this.Widget_S, EventType.i)
     Static *Last.Widget_S, *Widget.Widget_S
     Static Text$, DoubleClick, LastX, LastY, Last, Drag
     Protected.i Repaint, Control, Buttons, Widget
@@ -1489,28 +1287,28 @@ Module String
     ; widget_events_type
     If *this
       Protected Result.b
-    Static MouseLeave.b
-    Protected EventGadget.i = EventGadget()
-    
-    Protected Width = GadgetWidth(EventGadget)
-    Protected Height = GadgetHeight(EventGadget)
-    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
-    
-    
-    Static MoveX, MoveY
-    Protected Caret,Item.i, String.s
-    
-    If  canvasaddress\Mouse\Buttons
-      If canvasaddress\Mouse\Y < *this\Y
-        *this\Line =- 1
-      Else
-        *this\Line = (((canvasaddress\Mouse\Y-*this\Y-*this\Text\Y)-*this\Scroll\Y) / *this\Height[2])
+      Static MouseLeave.b
+      Protected EventGadget.i = EventGadget()
+      
+      Protected Width = GadgetWidth(EventGadget)
+      Protected Height = GadgetHeight(EventGadget)
+      Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+      Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+      
+      
+      Static MoveX, MoveY
+      Protected Caret,Item.i, String.s
+      
+      If  mouse( )\Buttons
+        If mouse( )\Y < *this\Y
+          *this\Line =- 1
+        Else
+          *this\Line = (((mouse( )\Y-*this\Y-*this\Text\Y)-*this\Scroll\Y) / *this\Height[2])
+        EndIf
       EndIf
-    EndIf
-    
-    With *this\items()
-      If ListSize(*this\items())
+      
+      With *this\items()
+        If ListSize(*this\items())
           Select EventType
             Case #PB_EventType_LostFocus 
               *this\Caret = 0
@@ -1551,220 +1349,227 @@ Module String
               Repaint = 2
               
             Case #PB_EventType_MouseMove
-              If canvasaddress\Mouse\Buttons & #PB_Canvas_LeftButton
+              If mouse( )\Buttons & #PB_Canvas_LeftButton
                 *this\Caret = Caret(*this)
                 Repaint = 2
               EndIf
               
           EndSelect
-        
-        If *this\focus And *this\Text\Editable
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            Control = Bool(canvasaddress\Key[1] & #PB_Canvas_Command)
-          CompilerElse
-            Control = Bool(canvasaddress\Key[1] & #PB_Canvas_Control)
-          CompilerEndIf
           
-          Select EventType
-            Case #PB_EventType_Input
-              If Not Control
-                Repaint = ToInput(*this)
-              EndIf
-              
-            Case #PB_EventType_KeyUp
-              If \Text\Numeric
-                \Text\String.s[1]=\Text\String.s 
-              EndIf
-              Repaint = #True 
-              
-            Case #PB_EventType_KeyDown
-              Select canvasaddress\Key
-                Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *this\Caret = 0 : *this\Caret[1] = *this\Caret : Repaint = #True 
-                Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *this\Caret = \Text\Len : *this\Caret[1] = *this\Caret : Repaint = #True 
-                  
-                Case #PB_Shortcut_Left, #PB_Shortcut_Up : Repaint = ToLeft(*this) ; Ok
-                Case #PB_Shortcut_Right, #PB_Shortcut_Down : Repaint = ToRight(*this) ; Ok
-                Case #PB_Shortcut_Back : Repaint = ToBack(*this)
-                Case #PB_Shortcut_Delete : Repaint = ToDelete(*this)
-                  
-                Case #PB_Shortcut_A
-                  If Control
-                    *this\Caret = 0
-                    *this\Caret[1] = \Text\Len
-                    \Text[2]\Len = \Text\Len
-                    Repaint = 1
-                  EndIf
-                  
-                Case #PB_Shortcut_X
-                  If Control And \Text[2]\String.s 
-                    SetClipboardText(\Text[2]\String.s)
-                    RemoveText(*this)
-                    *this\Caret[1] = *this\Caret
-                    \Text\Len = Len(\Text\String.s)
-                    Repaint = #True 
-                  EndIf
-                  
-                Case #PB_Shortcut_C
-                  If Control And \Text[2]\String.s 
-                    SetClipboardText(\Text[2]\String.s)
-                  EndIf
-                  
-                Case #PB_Shortcut_V
-                  If Control
-                    Protected ClipboardText.s = GetClipboardText()
+          If *this\focus And *this\Text\Editable
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(Keyboard( )\key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(Keyboard( )\key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
+            Select EventType
+              Case #PB_EventType_Input
+                If Not Control
+                  Repaint = ToInput(*this)
+                EndIf
+                
+              Case #PB_EventType_KeyUp
+                If \Text\Numeric
+                  \Text\String.s[1]=\Text\String.s 
+                EndIf
+                Repaint = #True 
+                
+              Case #PB_EventType_KeyDown
+                Select Keyboard( )\key
+                  Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *this\Caret = 0 : *this\Caret[1] = *this\Caret : Repaint = #True 
+                  Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *this\Caret = \Text\Len : *this\Caret[1] = *this\Caret : Repaint = #True 
                     
-                    If ClipboardText.s
-                      If \Text[2]\String.s
-                        RemoveText(*this)
-                      EndIf
-                      
-                      Select #True
-                        Case *this\Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
-                        Case *this\Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
-                        Case *this\Text\Numeric 
-                          If Val(ClipboardText.s)
-                            ClipboardText.s = Str(Val(ClipboardText.s))
-                          EndIf
-                      EndSelect
-                      
-                      \Text\String.s = InsertString(\Text\String.s, ClipboardText.s, *this\Caret + 1)
-                      *this\Caret + Len(ClipboardText.s)
+                  Case #PB_Shortcut_Left, #PB_Shortcut_Up : Repaint = ToLeft(*this) ; Ok
+                  Case #PB_Shortcut_Right, #PB_Shortcut_Down : Repaint = ToRight(*this) ; Ok
+                  Case #PB_Shortcut_Back : Repaint = ToBack(*this)
+                  Case #PB_Shortcut_Delete : Repaint = ToDelete(*this)
+                    
+                  Case #PB_Shortcut_A
+                    If Control
+                      *this\Caret = 0
+                      *this\Caret[1] = \Text\Len
+                      \Text[2]\Len = \Text\Len
+                      Repaint = 1
+                    EndIf
+                    
+                  Case #PB_Shortcut_X
+                    If Control And \Text[2]\String.s 
+                      SetClipboardText(\Text[2]\String.s)
+                      RemoveText(*this)
                       *this\Caret[1] = *this\Caret
                       \Text\Len = Len(\Text\String.s)
-                      Repaint = #True
+                      Repaint = #True 
                     EndIf
-                  EndIf
-                  
-              EndSelect 
-              
-          EndSelect
-        EndIf
-        
-        If Repaint 
-          *this\Text[3]\Change = Bool(Repaint =- 1)
-          
-          SelectionText(*this)
-        EndIf
-      EndIf
-    EndWith
-  EndIf
-  
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i Widget(*this.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-    If *this
-      With *this
-        \Type = #PB_GadgetType_String
-        \Cursor = #PB_Cursor_IBeam
-        \DrawingMode = #PB_2DDrawing_Default
-        canvasaddress\Gadget = Canvas
-        \Radius = Radius
-        \Alpha = 255
-        \Interact = 1
-        \Caret[1] =- 1
-        
-        ; Set the default widget flag
-        If Bool(Flag&#PB_Text_Top)
-          Flag&~#PB_Text_Middle
-        Else
-          Flag|#PB_Text_Middle
-        EndIf
-        
-        If Bool(Flag&#PB_Text_WordWrap)
-          Flag&~#PB_Text_MultiLine
-        EndIf
-        
-        If Bool(Flag&#PB_Text_MultiLine)
-          Flag&~#PB_Text_WordWrap
-        EndIf
-        
-        If Not \Text\FontID
-          \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        EndIf
-        
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
-        \bSize = \fSize
-        
-        If Resize(*this, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
-            \Text\MultiLine =- 1
-          EndIf
-          \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-          \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-          \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-          \Text\Pass = Bool(Flag&#PB_Text_Password)
-          
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
-          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
-          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If \Text\Vertical
-              \Text\X = \fSize+5
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize+5
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+2
-            Else
-              \Text\X = \fSize+2
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize
-            EndIf
-          CompilerEndIf
-          
-          If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
-          Else
-            \Color[0]\Back[1] = $FAFAFA  
+                    
+                  Case #PB_Shortcut_C
+                    If Control And \Text[2]\String.s 
+                      SetClipboardText(\Text[2]\String.s)
+                    EndIf
+                    
+                  Case #PB_Shortcut_V
+                    If Control
+                      Protected ClipboardText.s = GetClipboardText()
+                      
+                      If ClipboardText.s
+                        If \Text[2]\String.s
+                          RemoveText(*this)
+                        EndIf
+                        
+                        Select #True
+                          Case *this\Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
+                          Case *this\Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
+                          Case *this\Text\Numeric 
+                            If Val(ClipboardText.s)
+                              ClipboardText.s = Str(Val(ClipboardText.s))
+                            EndIf
+                        EndSelect
+                        
+                        \Text\String.s = InsertString(\Text\String.s, ClipboardText.s, *this\Caret + 1)
+                        *this\Caret + Len(ClipboardText.s)
+                        *this\Caret[1] = *this\Caret
+                        \Text\Len = Len(\Text\String.s)
+                        Repaint = #True
+                      EndIf
+                    EndIf
+                    
+                EndSelect 
+                
+            EndSelect
           EndIf
           
-          ; default frame color
-          \Color[0]\Frame[1] = $BABABA
-          
-          ; focus frame color
-          \Color[0]\Frame[3] = $D5A719
-          
-          ; set default colors
-          ResetColor(*this)
-          
-          SetText(*this, Text.s)
+          If Repaint 
+            *this\Text[3]\Change = Bool(Repaint =- 1)
+            
+            SelectionText(*this)
+          EndIf
         EndIf
       EndWith
     EndIf
     
-    ProcedureReturn *this
+    ProcedureReturn Repaint
   EndProcedure
   
-  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-    Protected *Widget, *this.Widget_S = AllocateStructure(Widget_S)
+  Procedure Create(Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+    Protected *this.Widget_S = AllocateStructure(Widget_S)
     
     If *this
-      add_widget(Widget, *Widget)
+      If Widget =- 1 Or Widget > ListSize(Widget()) - 1
+        LastElement(Widget())
+        *this\Handle = AddElement(Widget()) 
+        Widget = ListIndex(Widget())
+      Else
+        *this\Handle = SelectElement(Widget(), Widget)
+        *this\Handle = InsertElement(Widget())
+        
+        PushListPosition(Widget())
+        While NextElement(Widget())
+          Widget()\Index = ListIndex(Widget())
+        Wend
+        PopListPosition(Widget())
+      EndIf
+      
+      Widget() = *this
       
       *this\Index = Widget
-      *this\Handle = *Widget
-      List()\Widget = *this
       
-      Widget(*this, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+      If *this
+        With *this
+          \Type = #PB_GadgetType_String
+          \Cursor = #PB_Cursor_IBeam
+          \DrawingMode = #PB_2DDrawing_Default
+          \Radius = Radius
+          \Alpha = 255
+          \Interact = 1
+          \Caret[1] =- 1
+          
+          ; Set the default widget flag
+          If Bool(Flag&#PB_Text_Top)
+            Flag&~#PB_Text_Middle
+          Else
+            Flag|#PB_Text_Middle
+          EndIf
+          
+          If Bool(Flag&#PB_Text_WordWrap)
+            Flag&~#PB_Text_MultiLine
+          EndIf
+          
+          If Bool(Flag&#PB_Text_MultiLine)
+            Flag&~#PB_Text_WordWrap
+          EndIf
+          
+          If Not \Text\FontID
+            \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+          EndIf
+          
+          \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+          \bSize = \fSize
+          
+          If Resize(*this, X,Y,Width,Height)
+            \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+            \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+            If Bool(Flag&#PB_Text_WordWrap)
+              \Text\MultiLine = 1
+            ElseIf Bool(Flag&#PB_Text_MultiLine)
+              \Text\MultiLine =- 1
+            EndIf
+            \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+            \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+            \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+            \Text\Pass = Bool(Flag&#PB_Text_Password)
+            
+            \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+            \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
+            \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+            \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+            
+            
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              If \Text\Vertical
+                \Text\X = \fSize+5
+                \Text\y = \fSize+5
+              Else
+                \Text\X = \fSize+5
+                \Text\y = \fSize+5
+              EndIf
+            CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+              If \Text\Vertical
+                \Text\X = \fSize 
+                \Text\y = \fSize+2
+              Else
+                \Text\X = \fSize+2
+                \Text\y = \fSize
+              EndIf
+            CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+              If \Text\Vertical
+                \Text\X = \fSize 
+                \Text\y = \fSize+5
+              Else
+                \Text\X = \fSize+5
+                \Text\y = \fSize
+              EndIf
+            CompilerEndIf
+            
+            If \Text\Editable
+              \Color[0]\Back[1] = $FFFFFF 
+            Else
+              \Color[0]\Back[1] = $FAFAFA  
+            EndIf
+            
+            ; default frame color
+            \Color[0]\Frame[1] = $BABABA
+            
+            ; focus frame color
+            \Color[0]\Frame[3] = $D5A719
+            
+            ; set default colors
+            ResetColor(*this)
+            
+            SetText(*this, Text.s)
+          EndIf
+        EndWith
+      EndIf
+      
     EndIf
     
     ProcedureReturn *this
@@ -1776,17 +1581,17 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   
-  Global *S_0.Widget_S = AllocateStructure(Widget_S)
-  Global *S_1.Widget_S = AllocateStructure(Widget_S)
-  Global *S_2.Widget_S = AllocateStructure(Widget_S)
-  Global *S_3.Widget_S = AllocateStructure(Widget_S)
-  Global *S_4.Widget_S = AllocateStructure(Widget_S)
-  Global *S_5.Widget_S = AllocateStructure(Widget_S)
-  Global *S_6.Widget_S = AllocateStructure(Widget_S)
-  Global *S_7.Widget_S = AllocateStructure(Widget_S)
+  Global *S_0.Widget_S
+  Global *S_1.Widget_S
+  Global *S_2.Widget_S
+  Global *S_3.Widget_S
+  Global *S_4.Widget_S
+  Global *S_5.Widget_S
+  Global *S_6.Widget_S
+  Global *S_7.Widget_S
   
-  Global *Button_0.Widget_S = AllocateStructure(Widget_S)
-  Global *Button_1.Widget_S = AllocateStructure(Widget_S)
+  Global *Button_0.Widget_S
+  Global *Button_1.Widget_S
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -1803,12 +1608,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     canvasaddress\Gadget = Canvas
-        
+    
     
     Select EventType
       Case #PB_EventType_Resize
-        ForEach List()
-          Resize(List()\Widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+        ForEach Widget()
+          Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         Next
         
         Result = 1
@@ -1820,54 +1625,59 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventType
           Case #PB_EventType_Input 
-            canvasaddress\Input = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Input)
-            canvasaddress\Key[1] = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Modifiers)
+            Keyboard( )\input = GetGadgetAttribute(Canvas, #PB_Canvas_Input)
+            Keyboard( )\key[1] = GetGadgetAttribute(Canvas, #PB_Canvas_Modifiers)
           Case #PB_EventType_KeyDown
-            canvasaddress\Key = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Key)
-            canvasaddress\Key[1] = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Modifiers)
+            Keyboard( )\key = GetGadgetAttribute(Canvas, #PB_Canvas_Key)
+            Keyboard( )\key[1] = GetGadgetAttribute(Canvas, #PB_Canvas_Modifiers)
           Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-            canvasaddress\Mouse\X = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_MouseX)
-            canvasaddress\Mouse\Y = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_MouseY)
+            mouse( )\X = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+            mouse( )\Y = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
                #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
                #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
             
-            canvasaddress\Mouse\Buttons = GetGadgetAttribute(canvasaddress\Gadget, #PB_Canvas_Buttons)
+            mouse( )\Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
         EndSelect
-      
+        
         
         If EventType = #PB_EventType_KeyDown Or 
            EventType = #PB_EventType_KeyUp Or
            EventType = #PB_EventType_Input
           
-          If canvasaddress\activeWidget
-            Result | Events(canvasaddress\activeWidget, EventType) 
+          If FocusedWidget( )
+            If Events(FocusedWidget( ), EventType)
+              Result = 1
+            EndIf  
           EndIf
         Else
-          ForEach List()
-            canvasaddress\Mouse\From = From(List()\Widget)
+          ForEach Widget()
+            mouse( )\From = From(Widget())
             
-            If canvasaddress\Mouse\From
+            If mouse( )\From
               If EventType = #PB_EventType_LeftButtonDown
-                If canvasaddress\activeWidget
-                  canvasaddress\activeWidget\focus = 0
+                If FocusedWidget( )
+                  FocusedWidget( )\focus = 0
                 EndIf
-                canvasaddress\activeWidget = List()\Widget
-                canvasaddress\activeWidget\focus = 1
+                FocusedWidget( ) = Widget()
+                FocusedWidget( )\focus = 1
               EndIf
               
-              Result | Events(List()\Widget, EventType) 
+              If Events(Widget(), EventType) 
+                Result = 1
+              EndIf
             EndIf
           Next
         EndIf
     EndSelect
     
+    ; ReDraw( )
     If Result
       If StartDrawing(CanvasOutput(Canvas))
         Box(0,0,Width,Height, $F0F0F0)
         
-        ForEach List()
-          Draw(List()\Widget)
+        ForEach Widget()
+          Draw(Widget())
         Next
         
         StopDrawing()
@@ -1879,7 +1689,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
-  
+    
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       height = 20
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -1909,23 +1719,21 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
     BindGadgetEvent(10, @CallBacks())
     
-    *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
-    *S_1 = Create(10, -1, 8,  35, 290, height, "1234567", #PB_Text_Numeric|#PB_Text_Center)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
-    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
-    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
-    *S_6 = Create(10, -1, 8, 170, 290, height, "Password", #PB_Text_Password)
-    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
-    *S_7 = Create(10, -1, 8,  200, 290, 100, Text);, #PB_Text_Top)
-    ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    *S_0 = Create(0, 8,  10, 290, height, "Normal StringGadget...")
+    *S_1 = Create(1, 8,  35, 290, height, "1234567", #PB_Text_Numeric|#PB_Text_Center)
+    *S_2 = Create(2, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
+    *S_3 = Create(3, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
+    *S_4 = Create(4, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
+    *S_5 = Create(5, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
+    *S_6 = Create(6, 8, 170, 290, height, "Password", #PB_Text_Password)
+    *S_7 = Create(7, 8,  200, 290, 100, Text)
     
-    Text::SetText(*S_6, "GaT")
+    SetText(*S_6, "GaT")
     
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------
+; Folding = --------------+-----------------------
 ; EnableXP

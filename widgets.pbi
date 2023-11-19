@@ -327,7 +327,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro EnteredWidget( ): mouse( )\entered\widget: EndMacro ; Returns mouse entered widget
       Macro LeavedWidget( ): mouse( )\leaved\widget: EndMacro   ; Returns mouse leaved widget
       Macro PressedWidget( ): mouse( )\pressed\widget: EndMacro
-      Macro FocusedWidget( ): Keyboard( )\focused\widget: EndMacro ; Returns keyboard focus widget
+      Macro FocusedWidget( ): Keyboard( )\widget: EndMacro ; Returns keyboard focus widget
       
       Macro ClosedWidget( ): last\root : EndMacro
       Macro OpenListWidget( ): widget::*canvas\opened: EndMacro
@@ -8193,11 +8193,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             ReDrawing( *this, 1 )
             
+            ; в окнах это обязательно перед TextWidth( )
+            DrawingFont( *this\EnteredLine( )\text\fontID )
+             
             mouse_x = mouse( )\x - row_x_( *this, *this\EnteredLine( ) ) - *this\EnteredLine( )\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
             For i = 0 To *this\EnteredLine( )\text\len
                caret_x = TextWidth( Left( *this\EnteredLine( )\text\string, i ))
-               
+            
                Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
                
                If MinDistance > Distance
@@ -9850,6 +9853,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;Debug *this\_rows( )\color\state
                         Protected text_sel_state = *this\color\state
                         Protected text_no_sel_state = 0
+                        
                         
                         ; Draw text
                         ; Draw string
@@ -14991,6 +14995,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result
          If *this\fs <> size
             result   = *this\fs
+            *this\bs = size
             *this\fs = size
             
             If *this\anchors
@@ -21970,5 +21975,5 @@ CompilerEndIf
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -f+----------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
