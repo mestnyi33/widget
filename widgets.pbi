@@ -212,52 +212,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;Macro PB( _pb_function_name_ ): _pb_function_name_: EndMacro
       Macro Mouse( ): widget::*canvas\mouse: EndMacro
       Macro Keyboard( ): widget::*canvas\keyboard: EndMacro
-      ;-
-      Macro Drawing( )
-         widget::*canvas\drawing
-         ;          ;\\     DrawingStop( )
-         ;          If Not Drawing( )
-         ;             Drawing( ) = StartDrawing( CanvasOutput( canvas ) )
-         ;          EndIf
-      EndMacro
-      Macro ReDrawing( _this_, _item_ = 0 )
-         ;DrawingStop( )
-         If Not Drawing( )
-            Drawing( ) = StartDrawing( Output( _this_\root ))
-            
-            If _item_ = 1
-               draw_font_item_( _this_, _this_\EnteredLine( ), 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
-            ElseIf _item_ = - 1
-               draw_font_( _this_ )
-            EndIf
-            
-            If test_startdrawing
-               Debug "  ReDrawing( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) + " " + _this_\class
-            EndIf
-         EndIf
-      EndMacro
-      Macro DrawingStart( _canvas_ )
-         If Drawing( )
-            StopDrawing( )
-            
-            If _canvas_ = #PB_Default
-               Drawing( ) = 0
-               If test_startdrawing
-                  Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-               EndIf
-            EndIf
-         EndIf
-         If _canvas_ >= 0
-            Drawing( ) = StartDrawing( CanvasOutput( _canvas_ ))
-            If test_startdrawing
-               Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-            EndIf
-         EndIf
-      EndMacro
-      Macro DrawingStop( )
-         DrawingStart( #PB_Default )
-      EndMacro
-      Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
       
       ;-
       Macro Popup( ): widget::*canvas\sticky\box: EndMacro
@@ -684,6 +638,57 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
       
       ;-
+      ;-
+      Macro Drawing( )
+         widget::*canvas\drawing
+         ;          ;\\     DrawingStop( )
+         ;          If Not Drawing( )
+         ;             Drawing( ) = StartDrawing( CanvasOutput( canvas ) )
+         ;          EndIf
+      EndMacro
+      Macro ReDrawing( _this_, _item_ = 0 )
+         ;DrawingStop( )
+         If Not Drawing( )
+            Drawing( ) = StartDrawing( Output( _this_\root ))
+            
+            If _item_ > 0
+               draw_font_item_( _this_, _item_, 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
+              
+               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                  DrawingFont( _item_\text\fontID )
+               CompilerEndIf
+            ElseIf _item_ = - 1
+               draw_font_( _this_ )
+            EndIf
+            
+            If test_startdrawing
+               Debug "  ReDrawing( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) + " " + _this_\class
+            EndIf
+         EndIf
+      EndMacro
+      Macro DrawingStart( _canvas_ )
+         If Drawing( )
+            StopDrawing( )
+            
+            If _canvas_ = #PB_Default
+               Drawing( ) = 0
+               If test_startdrawing
+                  Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
+               EndIf
+            EndIf
+         EndIf
+         If _canvas_ >= 0
+            Drawing( ) = StartDrawing( CanvasOutput( _canvas_ ))
+            If test_startdrawing
+               Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
+            EndIf
+         EndIf
+      EndMacro
+      Macro DrawingStop( )
+         DrawingStart( #PB_Default )
+      EndMacro
+      Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
+      
       Macro draw_box_( _x_, _y_, _width_, _height_, _color_ = $ffffffff )
          Box( _x_, _y_, _width_, _height_, _color_ )
       EndMacro
@@ -8191,11 +8196,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\EnteredLine( )
             ;\\
-            ReDrawing( *this, 1 )
+            ReDrawing( *this, *this\EnteredLine( ) )
             
-            ; в окнах это обязательно перед TextWidth( )
-            DrawingFont( *this\EnteredLine( )\text\fontID )
-             
             mouse_x = mouse( )\x - row_x_( *this, *this\EnteredLine( ) ) - *this\EnteredLine( )\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
             For i = 0 To *this\EnteredLine( )\text\len
@@ -8221,7 +8223,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\index + " " + mode
          
          ;\\
-         ReDrawing( *this )
+         ReDrawing( *this, *rowLine )
          
          *this\repaint = #True
          ;\\ *rowLine\color\state = #__s_2
@@ -8623,7 +8625,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If Chr.s
             *rowLine = *this\FocusedLine( )
-            If *rowLine
+            ;\\
+            ReDrawing( *this, *rowLine )
+            
+             If *rowLine
                Count = CountString( Chr.s, #LF$)
                
                If *this\edit_caret_1( ) > *this\edit_caret_2( )
@@ -8977,10 +8982,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *rowLine._S_rows
          Protected add_index = - 1, add_y, add_pos, add_height
          
-         ;\\
-         ReDrawing( *this )
-         
-         
          If position < 0 Or position > ListSize( *this\_rows( )) - 1
             LastElement( *this\_rows( ))
             *rowLine = AddElement( *this\_rows( ))
@@ -9007,6 +9008,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PopListPosition(*this\_rows( ))
             
          EndIf
+         
+         ;\\
+         ReDrawing( *this, *this\_rows( ) )
          
          *this\_rows( )\index       = position
          *this\_rows( )\text\len    = string_len
@@ -10460,7 +10464,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
                   
                   ;\\
-                  ReDrawing( *this )
+                  ReDrawing( *this, *this\EnteredLine( )  )
                   
                   
                   ;\\ if the item list has changed
@@ -21948,8 +21952,6 @@ CompilerEndIf
 ; FirstLine = 10862
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2303
-; FirstLine = 2121
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -f+------------------------------------------6---------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
