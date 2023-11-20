@@ -697,13 +697,7 @@ Module String
                 EndIf
               EndIf
               
-              Protected text_sel_width = \text[2]\width ;+ Bool( *this\state\focus = #False ) * *this\text\caret\width
-                        ;\\
-              If \Text[2]\Len
-                Debug " sel "+text_sel_width
-              EndIf
-              
-              
+              ;\\
               If *this\Text\Editable And \Text[2]\Len > 0 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS ; Bug in Mac os 
                   If *this\Caret[1] > *this\Caret
@@ -1734,6 +1728,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------+-----------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 699
+; FirstLine = 686
+; Folding = -------------f------------------------
 ; EnableXP

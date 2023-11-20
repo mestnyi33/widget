@@ -188,12 +188,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i DropPrivate( )
       Declare.i DropImage( Image.i = -1, Depth.i = 24 )
       
-      Declare.i DragText_( Text.S, Actions.i = #PB_Drag_Copy )
-      Declare.i DragImage_( Image.i, Actions.i = #PB_Drag_Copy )
-      Declare.i DragPrivate_( Type.i, Actions.i = #PB_Drag_Copy )
-      Declare.i DragFiles_( Files.s, Actions.i = #PB_Drag_Copy )
+      Declare.i DragText_( Text.S, Actions.b = #PB_Drag_Copy )
+      Declare.i DragImage_( Image.i, Actions.b = #PB_Drag_Copy )
+      Declare.i DragPrivate_( Type.i, Actions.b = #PB_Drag_Copy )
+      Declare.i DragFiles_( Files.s, Actions.b = #PB_Drag_Copy )
       
-      Declare.i DropEnable( *this, Format.i, Actions.i, PrivateType.i = 0 )
+      Declare.i DropEnable( *this, Format.l, Actions.b, PrivateType.i = 0 )
       
       ;-
       Macro allocate( _struct_name_, _struct_type_ = )
@@ -638,7 +638,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       Macro a_transform( )
-         mouse( )\_a_
+         mouse( )\transform
       EndMacro
       Macro a_index( )
          ; mouse( )\anchors
@@ -2255,13 +2255,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.s DropFiles( )
          ; эта функция возвращает имена файлов, который был сброшен.
          ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Files (формат можно получить с помощью EventDropType( ))
-         ; ProcedureReturn mouse( )\drag\files
+         ; ProcedureReturn mouse( )\drag\files\s
       EndProcedure
       
       Procedure.s DropText( )
          ; эта функция возвращает текст, который был сброшен.
          ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Text (формат можно получить с помощью EventDropType( ))
-         ProcedureReturn mouse( )\drag\string
+         ProcedureReturn mouse( )\drag\string\s
       EndProcedure
       
       Procedure.i DropImage( Image.i = - 1, Depth.i = 24 )
@@ -2286,7 +2286,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i DropEnable( *this._S_WIDGET, Format.i, Actions.i, PrivateType.i = 0 )
+      Procedure.i DropEnable( *this._S_WIDGET, Format.l, Actions.b, PrivateType.i = 0 )
          ;                        ; windows ;    macos   ; linux ;
          ; = Format
          ; #PB_Drop_Text          ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
@@ -2322,7 +2322,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\drop\private = PrivateType
       EndProcedure
       
-      Procedure.i DragText_( Text.s, Actions.i = #PB_Drag_Copy )
+      Procedure.i DragText_( Text.s, Actions.b = #PB_Drag_Copy )
          ;Debug "  drag text - " + Text
          
          If Not mouse( )\drag
@@ -2330,12 +2330,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          mouse( )\drag\format  = #PB_Drop_Text
          mouse( )\drag\actions = Actions
-         mouse( )\drag\string  = Text
+         mouse( )\drag\string\s  = Text
          
          ProcedureReturn mouse( )\drag
       EndProcedure
       
-      Procedure.i DragImage_( Image.i, Actions.i = #PB_Drag_Copy )
+      Procedure.i DragImage_( Image.i, Actions.b = #PB_Drag_Copy )
          ;Debug "  drag image - " + Image
          
          If Not mouse( )\drag
@@ -2353,7 +2353,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn mouse( )\drag
       EndProcedure
       
-      Procedure.i DragFiles_( Files.s, Actions.i = #PB_Drag_Copy )
+      Procedure.i DragFiles_( Files.s, Actions.b = #PB_Drag_Copy )
          ;         ;Debug "  drag files - " + Files
          ;
          ;         If Not mouse( )\drag
@@ -2366,7 +2366,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn mouse( )\drag
       EndProcedure
       
-      Procedure.i DragPrivate_( PrivateType.i, Actions.i = #PB_Drag_Copy )
+      Procedure.i DragPrivate_( PrivateType.i, Actions.b = #PB_Drag_Copy )
          ; Debug "  drag PrivateType - " + PrivateType +" - Actions - "+ Actions
          
          If Not mouse( )\drag
@@ -19415,38 +19415,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                mouse( )\drag\x = a_selector( )\x - *this\inner_x( ) - *this\scroll_x( )
                mouse( )\drag\y = a_selector( )\y - *this\inner_y( ) - *this\scroll_y( )
                
-               ;           ;           mouse( )\drag\x + ( mouse( )\drag\x % a_transform( )\grid_size )
-               ;           ;           mouse( )\drag\x = ( mouse( )\drag\x / a_transform( )\grid_size ) * a_transform( )\grid_size
-               ;           ;           mouse( )\drag\y + ( mouse( )\drag\y % a_transform( )\grid_size )
-               ;           ;           mouse( )\drag\y = ( mouse( )\drag\y / a_transform( )\grid_size ) * a_transform( )\grid_size
-               
                mouse( )\drag\width  = a_selector( )\width
                mouse( )\drag\height = a_selector( )\height
             Else
                mouse( )\drag\x = mouse( )\x - *this\inner_x( ) - *this\scroll_x( )
                mouse( )\drag\y = mouse( )\y - *this\inner_y( ) - *this\scroll_y( )
                
-               ;           Protected dx =  mouse( )\delta\x - PressedWidget( )\parent\inner_x( ) - PressedWidget( )\parent\scroll_x( ) + PressedWidget( )\bs
-               ;           Protected dy =   mouse( )\delta\y - PressedWidget( )\parent\inner_y( ) - PressedWidget( )\parent\scroll_y( ) + PressedWidget( )\bs
-               ;           Debug ""+dx+" "+dy
-               ;
-               ;           If a_transform( ) And a_transform( )\grid_size > 1 And *this = a_focused( ) And *this <> a_main( )
-               ;             If *this\anchors > 0
-               ; ;               If x <> #PB_Ignore
-               ;                 mouse( )\drag\x + ( mouse( )\drag\x % a_transform( )\grid_size )
-               ;                 mouse( )\drag\x = ( mouse( )\drag\x / a_transform( )\grid_size ) * a_transform( )\grid_size
-               ; ;               EndIf
-               ; ;
-               ; ;               If y <> #PB_Ignore
-               ;                 mouse( )\drag\y + ( mouse( )\drag\y % a_transform( )\grid_size )
-               ;                 mouse( )\drag\y = ( mouse( )\drag\y / a_transform( )\grid_size ) * a_transform( )\grid_size
-               ; ;               EndIf
-               ;             EndIf
-               ;           EndIf
-               
-               ;           If mouse( )\drag\string = ""
-               ;             mouse( )\drag\string = GetClass( PressedWidget( ) )
-               ;           EndIf
                mouse( )\drag\width  = #PB_Ignore
                mouse( )\drag\height = #PB_Ignore
             EndIf
@@ -21974,6 +21948,8 @@ CompilerEndIf
 ; FirstLine = 10862
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -f+----------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2303
+; FirstLine = 2121
+; Folding = -f+------------------------------------------6---------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -56,6 +56,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure window_timer()
       Static i
       
+      ;\\
+      GetAtPoint( root( ), mouse( )\x, mouse( )\y )
+      
       If EnteredWidget( ) = object
          i = EnteredWidget( )\frame_width( ) - 5
          Debug "timer "+i
@@ -91,9 +94,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 45
+; CursorPosition = 61
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

@@ -1,7 +1,7 @@
 ﻿XIncludeFile "constants.pbi"
 
 ; StructureUnion
-;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255] 
+;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255]
 ;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
 ;   c.c[0]    ; CAHR    : 2 Byte unsigned [0..65535]
 ;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
@@ -9,7 +9,7 @@
 ;   l.l[0]    ; LONG    : 4 Byte signed   [-2147483648..2147483647]
 ;   f.f[0]    ; FLOAT   : 4 Byte
 ;   q.q[0]    ; QUAD    : 8 Byte signed   [-9223372036854775808..9223372036854775807]
-;   d.d[0]    ; DOUBLE  : 8 Byte float    
+;   d.d[0]    ; DOUBLE  : 8 Byte float
 ;   i.i[0]    ; INTEGER : 4 or 8 Byte INT, depending on System
 ;   *p.TUPtr[0] ; Pointer for TUPtr (it's possible and it's done in PB-IDE Source) This can be used as a PointerPointer like the C **Pointer
 ; EndStructureUnion
@@ -21,7 +21,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ; Prototype DrawFunc(*this)
       Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
       
-      ;{ 
+      ;{
       ;-- STRUCTUREs
       ;--     POINT
       Structure _s_POINT
@@ -41,7 +41,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     STATE
       Structure _s_STATE
          transform.b
-        
+         
          enter.b
          press.b
          hide.b
@@ -71,7 +71,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
          ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
          ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
-         ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+         ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry.
          ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
          ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
          ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
@@ -82,7 +82,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
          
          ;inline.b
-         check.b  
+         check.b
          
          lines.b
          buttons.b
@@ -113,54 +113,48 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *button._s_BUTTONS
       EndStructure
       ;--     D&D
-      Structure _s_DROP 
-         format.i
-         actions.i
+      Structure _s_DROP
+         format.l
+         actions.b
          private.i
          
-         *imageID
-         string.s
-         ; files.s
+         StructureUnion
+            *imageID
+            *string.String
+            *files.String
+         EndStructureUnion
       EndStructure
       Structure _s_DRAG Extends _s_DROP
          y.l
          x.l
          width.l
          height.l
-         *cursor
          state.b
+         *cursor
       EndStructure
       ;--     MOUSE
-      Structure _s_MOUSE ; Extends _s_POINT
-         *cursor                    ; current visible cursor
-         
-         y.l[3]
-         x.l[3]
-         
-         change.b                   ; mouse moved state
-         click.a                    ; mouse clicked count
-         buttons.a                  ; mouse clicked button
-         press.b
-         
-         *drag._s_DRAG
-         wheel._s_POINT
-         delta._s_POINT
-         
-         entered._s_OBJECTTYPE      ; mouse entered element
-         pressed._s_OBJECTTYPE      ; mouse button's pushed element
-         leaved._s_OBJECTTYPE       ; mouse leaved element
-         
-         anchors.a ; Temp
-         *_a_._s_TRANSFORM
-         interact.b                 ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+      Structure _s_MOUSE Extends _s_POINT
+         *cursor                 ; current visible cursor
+         press.b                 ;
+         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+         change.b                ; mouse moved state
+         click.a                 ; mouse clicked count
+         buttons.a               ; mouse clicked button
+         wheel._s_POINT          ;
+         delta._s_POINT          ;
+         *drag._s_DRAG           ;
+         *transform._s_TRANSFORM ;
+         entered._s_OBJECTTYPE   ; mouse entered element
+         pressed._s_OBJECTTYPE   ; mouse button's pushed element
+         leaved._s_OBJECTTYPE    ; mouse leaved element
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
          *window._S_WIDGET  ; active window element ; GetActive( )\
-         *widget._S_WIDGET  ; keyboard focus element ;FocusedWidget( )
+         *widget._S_WIDGET  ; keyboard focus element ; FocusedWidget( )\
          change.b
          input.c
-         key.i[2]
+         key.l[2]
       EndStructure
       ;--     COLOR
       Structure _s_COLOR
@@ -180,7 +174,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          top.b
          right.b
          bottom.b
-         
          autodock._s_COORDINATE
       EndStructure
       
@@ -195,7 +188,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_BUTTONS Extends _s_COORDINATE
          checkstate.b
          
-         size.l 
+         size.l
          round.a
          
          state._s_state
@@ -279,7 +272,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     image
       Structure _s_image Extends _s_COORDINATE
-         *id  ; - ImageID( ) 
+         *id  ; - ImageID( )
          *img ; - Image( )
          
          ;;*output;transparent.b
@@ -290,8 +283,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;;rotate.f
          align._s_align
          padding._s_point
-         ;       
-         ;       
+         ;
+         ;
          ;       *pressed._s_image
          ;       *released._s_image
          ;       *background._s_image
@@ -322,8 +315,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dot_line.l
          dot_space.l
          
-         cursor.i[constants::#__a_count+1]
-         id._s_A_BUTTONS[constants::#__a_count+1]
+         cursor.i[constants::#__a_count + 1]
+         id._s_A_BUTTONS[constants::#__a_count + 1]
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
@@ -331,7 +324,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pos.l
          size.l
          mode.i
-         *id._s_A_BUTTONS[constants::#__a_moved+1]
+         *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
       
       ;;--     margin
@@ -343,13 +336,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          *widget._s_WIDGET
-         index.i 
+         index.i
          change.b
          
          ; tab
-         *entered._s_rows 
+         *entered._s_rows
          *pressed._s_rows
-         *focused._s_rows 
+         *focused._s_rows
       EndStructure
       
       ;--     TABS
@@ -358,7 +351,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          
          visible.b
-         round.a ; ?- 
+         round.a ; ?-
          
          ;hide.b
          state._s_state
@@ -382,12 +375,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *parent._s_rows
          
-         *first._s_rows           ;TEMP first elemnt in the list 
-         *after._s_rows           ;TEMP first elemnt in the list 
-         *before._s_rows          ;TEMP first elemnt in the list 
+         *first._s_rows           ;TEMP first elemnt in the list
+         *after._s_rows           ;TEMP first elemnt in the list
+         *before._s_rows          ;TEMP first elemnt in the list
          *last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
-         *OptionGroupRow._s_rows ; option group row 
+         *OptionGroupRow._s_rows ; option group row
          
          ; edit
          margin._s_edit
@@ -397,8 +390,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       Structure _s_VISIBLEITEMS
-         *first._s_rows           ; first draw-elemnt in the list 
-         *last._s_rows            ; last draw-elemnt in the list 
+         *first._s_rows           ; first draw-elemnt in the list
+         *last._s_rows            ; last draw-elemnt in the list
          List *_s._s_rows( )      ; all draw-elements
       EndStructure
       
@@ -419,8 +412,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *entered._s_rows         ; entered item
          *leaved._s_rows          ; leaved item
          
-         *first._s_rows           ; first elemnt in the list 
-         *last._s_rows            ; last elemnt in the list 
+         *first._s_rows           ; first elemnt in the list
+         *last._s_rows            ; last elemnt in the list
          *added._s_rows           ; last added last element
          
          visible._s_VISIBLEITEMS
@@ -429,7 +422,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          
-         ;box._s_buttons          
+         ;box._s_buttons
          ;List _s._s_rows( )
          
       EndStructure
@@ -437,7 +430,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     BAR
       Structure _s_BAR
          max.l
-         min.l[3]   ; fixed min[1&2] bar size 
+         min.l[3]   ; fixed min[1&2] bar size
          fixed.l[3] ; fixed bar[1&2] position (splitter)
          
          invert.b
@@ -448,7 +441,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          page._s_page
          area._s_page
-         thumb._s_thumb  
+         thumb._s_thumb
          
          *button._s_buttons[3]
          
@@ -518,22 +511,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;       *parent._s_items
       ;       draw.b
       ;       hide.b
-      ;       
+      ;
       ;       image._s_image
       ;       text._s_text[4]
       ;       box._s_buttons[2]
       ;       color._s_color
-      ;       
+      ;
       ;       ;state.b
       ;       round.a
-      ;       
+      ;
       ;       sublevel.w
       ;       childrens.l
       ;       sublevelsize.l
-      ;       
+      ;
       ;       *data      ; set/get item data
       ;     Endstructure
-      ;     
+      ;
       
       ;--     COLUMN
       Structure _s_COLUMN Extends _s_COORDINATE
@@ -577,7 +570,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     WIDGET
-      Structure _s_WIDGET 
+      Structure _s_WIDGET
          *drawimg
          *anchors._s_ANCHORS
          
@@ -618,9 +611,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW ; multi-text; buttons; lists; - gadgets
          *_box_._s_BUTTONS ; checkbox; optionbox
          
-         tab._s_TAB        
+         tab._s_TAB
          
-         *GroupWidget._s_WIDGET      ; = Option( ) group widget  
+         *GroupWidget._s_WIDGET      ; = Option( ) group widget
                                      ; StructureUnion
                                      ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
          *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
@@ -629,7 +622,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          
          BarWidth.w ; bar v size
-         BarHeight.w; bar h size 
+         BarHeight.w; bar h size
          MenuBarHeight.w
          ToolBarHeight.w
          StatusBarHeight.w
@@ -656,14 +649,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          count._s_COUNT
          
          
-         *gadget._s_WIDGET[3] 
+         *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
-         ; \gadget[0] - window active child gadget 
+         ; \gadget[0] - window active child gadget
          ; \gadget[1] - splitter( ) first gadget
          ; \gadget[2] - splitter( ) second gadget
          
-         *index[4]  
-         ; \index[0] - widget index 
+         *index[4]
+         ; \index[0] - widget index
          ;
          ; \index[1] - panel opened tab index     - OpenedTabIndex( )
          ; \index[2] - panel selected item index  - FocusedTabIndex( )
@@ -675,7 +668,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \index[2] - edit focused line index    - FocusedLineIndex( )
          ; \index[3] - edit pressed line index    - PressedLineIndex( )
          
-         image._s_image[4]       
+         image._s_image[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
@@ -685,8 +678,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *data
          *cursor[4]
          
-         level.l 
-         class.s  
+         level.l
+         class.s
          
          
          *errors
@@ -700,7 +693,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          event.b
          eventmask.q
          
-         *root._s_ROOT     
+         *root._s_ROOT
          *window._s_WIDGET
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
@@ -724,17 +717,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     STICKY
-      Structure _s_STICKY 
+      Structure _s_STICKY
          *box._s_ROOT                  ; popup root element
          *message._s_WIDGET            ; message window element
          *tooltip._s_WIDGET            ; tool tip element
          *window._s_ROOT               ; top level window element
-     EndStructure
+      EndStructure
       
       ;--     STRUCT
-      Structure _s_STRUCT 
+      Structure _s_STRUCT
          repaint.b
-         *drawing                      ; 
+         *drawing                      ;
          *opened._s_WIDGET             ; last-list opened element
          
          mouse._s_mouse                ; mouse( )\
@@ -744,19 +737,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
          List *events._s_EVENTDATA( )  ; post events list
          
-         Map *roots._s_ROOT( )         ; 
+         Map *roots._s_ROOT( )         ;
       EndStructure
       
       ;Global *event._s_events = Allocatestructure(_s_events)
       ;}
       
      ; Debug SizeOf(_s_WIDGET) ; 5952
-   EndDeclareModule 
+   EndDeclareModule
    
-   Module Structures 
+   Module Structures
       
-   EndModule 
+   EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -f+-9oA+--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 131
+; FirstLine = 121
+; Folding = ----9oA+--
 ; EnableXP

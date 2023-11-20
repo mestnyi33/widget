@@ -6,7 +6,7 @@
   EnableExplicit
   Uselib(widget)
   
-  Global object1, object2, object3, parent
+  Global object1, object2, object3, parent, width = 60
   Declare CustomEvents( )
   
   ;\\
@@ -16,9 +16,9 @@
   ;\\
   parent = Container(50, 50, 500, 500)
   
-  object1 = Text(50, 50, 30, 150, "thisis text element", #__flag_textwordwrap)
-  object2 = String(100, 150, 30, 150, "thisis text element", #__flag_textwordwrap)
-  object3 = Editor(150, 250, 30, 150, #__flag_textwordwrap) : SetText(object3, "thisis text element")
+  object1 = Text(50, 50, width, 150, "thisis text element", #__flag_textwordwrap)
+  object2 = String(100, 150, width, 150, "thisis text element", #__flag_textwordwrap)
+  object3 = Editor(150, 250, width, 150, #__flag_textwordwrap) : SetText(object3, "thisis text element")
   
 ;   a_free( object1 )
 ;   a_free( object2 )
@@ -53,8 +53,8 @@
  EndProcedure
  
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; FirstLine = 2
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
