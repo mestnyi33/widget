@@ -80,21 +80,20 @@ DeclareModule Cursor
    #__cursor_LeftUpRightDown = #__cursor_Diagonal1
    #__cursor_LeftDownRightUp = #__cursor_Diagonal2
    
-   
    Structure _s_cursor
-      icursor.i
+      ;type.a
       *hcursor
-      *windowID
+      windowID.i
    EndStructure
    
    ;Declare   isHiden( )
-   ;Declare   Hide(state.b)
-   Declare   Free(hCursor.i)
+   ;Declare   Hide( state.b )
+   Declare   Free( *cursor )
    ;Declare   Get( )
-   Declare   Image( type.i = 0 )
-   Declare   Set(Gadget.i, icursor.i);, x.i = 0, y.i = 0)
-   Declare   Change(GadgetID.i, state.b )
-   Declare.i Create(ImageID.i, x.l = 0, y.l = 0)
+   Declare   Image( type.a = 0 )
+   Declare   Set( Gadget.i, *cursor );, x.i = 0, y.i = 0)
+   Declare   Change( GadgetID.i, state.b )
+   Declare.i Create( ImageID.i, x.l = 0, y.l = 0 )
    
    
    ;\\
@@ -870,7 +869,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 50
+; CursorPosition = 85
+; FirstLine = 78
 ; Folding = -------------
 ; EnableXP

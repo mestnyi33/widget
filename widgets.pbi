@@ -13467,7 +13467,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure SetCursor( *this._S_WIDGET, *cursor )
         If *this
           Protected result = *this\cursor
-          Debug "set-widget-cursor " + *cursor
+          Debug "SetCursor( " + *cursor +" )"
+          
           ;\\
           If mouse( )\drag
             If *this\dragstart = #PB_Drag_Finish ;And Not ( a_index( ) = #__a_moved And PressedWidget( ) And PressedWidget( )\dragstart )
@@ -16317,27 +16318,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ Cursor
-         If *this\type = #__type_Editor Or
-            *this\type = #__type_String
-            *this\cursor[1] = cursor::#__cursor_IBeam
-         EndIf
-         If *this\type = #__type_HyperLink
-            *this\cursor[1] = cursor::#__cursor_Hand
-            ;*this\cursor[2] = cursor::#__cursor_Grab
-         EndIf
-         If *this\type = #__type_Splitter
-            If *this\bar\vertical
-               *this\cursor[1] = cursor::#__cursor_SplitUpDown
-               *this\cursor[2] = cursor::#__cursor_SplitUp
-               *this\cursor[3] = cursor::#__cursor_SplitDown
-            Else
-               *this\cursor[1] = cursor::#__cursor_SplitLeftRight
-               *this\cursor[2] = cursor::#__cursor_SplitLeft
-               *this\cursor[3] = cursor::#__cursor_SplitRight
+         If Not *this\cursor
+            If *this\type = #__type_Editor Or
+               *this\type = #__type_String
+               *this\cursor[1] = cursor::#__cursor_IBeam
             EndIf
-         EndIf
-         If *this\cursor[1]
-            *this\cursor = *this\cursor[1]
+            If *this\type = #__type_HyperLink
+               *this\cursor[1] = cursor::#__cursor_Hand
+               ;*this\cursor[2] = cursor::#__cursor_Grab
+            EndIf
+            If *this\type = #__type_Splitter
+               If *this\bar\vertical
+                  *this\cursor[1] = cursor::#__cursor_SplitUpDown
+                  *this\cursor[2] = cursor::#__cursor_SplitUp
+                  *this\cursor[3] = cursor::#__cursor_SplitDown
+               Else
+                  *this\cursor[1] = cursor::#__cursor_SplitLeftRight
+                  *this\cursor[2] = cursor::#__cursor_SplitLeft
+                  *this\cursor[3] = cursor::#__cursor_SplitRight
+               EndIf
+            EndIf
+            If *this\cursor[1]
+               *this\cursor = *this\cursor[1]
+            EndIf
          EndIf
          
          ;\\
@@ -21977,6 +21980,8 @@ CompilerEndIf
 ; FirstLine = 10862
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -f+------------------------------------------6----80---------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+-----------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------------8--+---0-+-0----8--8--a4--------u70-----W-8--8U-----------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 13471
+; FirstLine = 13205
+; Folding = -f+------------------------------------------8----80---------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+-----------------------------------------------------------------------------------------------8----------------------------------------------------------------------------v8e6Tv--0----------------------------------------------------------4--0---8-0-8----4--4--2u--------d28-----t+4--4p+----------------------------------------
 ; EnableXP

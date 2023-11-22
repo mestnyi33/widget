@@ -26,11 +26,11 @@ Module Cursor
   ImportC ""
     SetAnimatedThemeCursor(CursorType.i, AnimationStep.i)
     ;SetThemeCursor(CursorType.i)
-    CGCursorIsVisible()
+    CGCursorIsVisible( )
   EndImport
   
   ImportC ""
-    CFRunLoopGetCurrent()
+    CFRunLoopGetCurrent( )
     CFRunLoopAddCommonMode(rl, mode)
     
     GetCurrentProcess(*psn)
@@ -49,7 +49,7 @@ Module Cursor
   ;   ; -> An array of pointers of type Method describing
   ;   ;    the instance methods implemented by the class
   ;   ;    Any instance methods implemented by superclasses are Not included
-  ;   ;    You must free the array with free()
+  ;   ;    You must free the array with free( )
   ;   class_getName(*Class) ; -> UnsafePointer<Int8> -> *string
   ;   sel_getName(*Selector); -> const char *
   ;   method_getName(*Method) ; -> Selector
@@ -70,10 +70,10 @@ Module Cursor
     Static PressedID
     
     If eType = #NSLeftMouseDown
-      PressedID = Mouse::Gadget(Mouse::Window())
+      PressedID = Mouse::Gadget(Mouse::Window( ))
       
     ElseIf eType = #NSLeftMouseUp
-      handle = Mouse::Gadget(Mouse::Window())
+      handle = Mouse::Gadget(Mouse::Window( ))
       
       If handle <> PressedID
         If PressedID  
@@ -95,7 +95,7 @@ Module Cursor
       PressedID = #Null
       
     ElseIf eType = #NSMouseMoved
-      Protected EnteredWindowID = Mouse::Window()
+      Protected EnteredWindowID = Mouse::Window( )
       handle = Mouse::Gadget(EnteredWindowID)
       
       If EnteredID <> handle
@@ -206,8 +206,8 @@ Module Cursor
       CompilerIf #PB_Compiler_IsMainFile
         ; event =  __NSCFType
         Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-        Debug ""+eType +" "+ event +" "+ NSEvent ;+" "+ ID::ClassName(NSEvent) ; GetWindowTitle(GetActiveWindow())
-                                                 ;CocoaMessage(0, WindowID(GetActiveWindow()), "disableCursorRects")
+        Debug ""+eType +" "+ event +" "+ NSEvent ;+" "+ ID::ClassName(NSEvent) ; GetWindowTitle(GetActiveWindow( ))
+                                                 ;CocoaMessage(0, WindowID(GetActiveWindow( )), "disableCursorRects")
                                                  ;Debug CocoaMessage(0, 0, "eventType:", event)
         
         ;         If EnteredID 
@@ -224,10 +224,10 @@ Module Cursor
     CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
   EndIf
   
-  Global NewMap images.i()
+  Global NewMap images.i( )
   
   ;-\\
-  Procedure   Draw( type.i = 0 )
+  Procedure   Draw( type.a )
     Protected image
     Protected x = 0
     Protected y = 0
@@ -243,7 +243,7 @@ Module Cursor
     ;\\
     If StartDrawing(ImageOutput(image))
       DrawingMode(#PB_2DDrawing_AlphaBlend)
-      Box(0,0,OutputWidth(),OutputHeight(), $A9B7B6)
+      Box(0,0,OutputWidth( ),OutputHeight( ), $A9B7B6)
       
       If type = #__cursor_Arrows
         x = 8
@@ -333,14 +333,14 @@ Module Cursor
         DrawImageRight(0,0,width, bcolor, fcolor )
       EndIf
       
-      StopDrawing()
+      StopDrawing( )
     EndIf
     
     ProcedureReturn Create( ImageID( image ), x, y )
   EndProcedure
   
   
-  Procedure   Image( type.i = 0 )
+  Procedure   Image( type.a = 0 )
     Protected image
     
     If type = #__cursor_Drop
@@ -405,37 +405,37 @@ Module Cursor
     ProcedureReturn image
   EndProcedure
   
-  Procedure New( icursor.i )
-    If Not FindMapElement(images(), Str(icursor))
-      AddMapElement(images(), Str(icursor))
-      images() = Create(ImageID(Image( icursor )))
+  Procedure New( type.a, ImageID.i )
+    If Not FindMapElement(images( ), Str(type))
+      AddMapElement(images( ), Str(type))
+      images( ) = ImageID
     EndIf
     
-    ProcedureReturn images()
+    ProcedureReturn ImageID
   EndProcedure
   
-  Procedure   Free(hCursor.i) 
-    ; Debug "cursor-free "+hCursor
+  Procedure   Free(*cursor) 
+    ; Debug "cursor-free "+*cursor
     
-    If hCursor >= 0 And hCursor <= 255
-      If FindMapElement(images(), Str(hCursor))
-        DeleteMapElement(images());, Str(hCursor))
+    If *cursor >= 0 And *cursor <= 255
+      If FindMapElement(images( ), Str(*cursor))
+        DeleteMapElement(images( ));, Str(*cursor))
       EndIf
     Else
-      If MapSize(images())
-        PushMapPosition(images())
-        ForEach images()
-          If hCursor = images()
-            DeleteMapElement(images())
+      If MapSize(images( ))
+        PushMapPosition(images( ))
+        ForEach images( )
+          If *cursor = images( )
+            DeleteMapElement(images( ))
           EndIf
         Next
-        PopMapPosition(images())
+        PopMapPosition(images( ))
       EndIf
-      ProcedureReturn CocoaMessage(0, hCursor, "release")
+      ProcedureReturn CocoaMessage(0, *cursor, "release")
     EndIf
   EndProcedure
   
-  Procedure   isHiden()
+  Procedure   isHiden( )
     ProcedureReturn Bool( CGCursorIsVisible( ) = 0 )
   EndProcedure
   
@@ -447,7 +447,7 @@ Module Cursor
     EndIf
   EndProcedure
   
-  Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
+  Procedure.i Create( ImageID.i, x.l = 0, y.l = 0 )
     Protected *ic, Hotspot.NSPoint
     If ImageID
     	CompilerIf #test_cursor
@@ -504,86 +504,85 @@ Module Cursor
     ;EndIf
   EndProcedure
   
-  Procedure   Set(Gadget.i, icursor.i)
-    If Gadget >= 0
-      Protected *cursor._s_cursor
-      Protected GadgetID = GadgetID(Gadget)
-      
-      CompilerIf #test_cursor
-        Debug " ::setCursor "+ GadgetType(Gadget) +" "+ icursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-      CompilerEndIf
-      
-      *cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
-      
-      If Not *cursor
-        *cursor = AllocateStructure(_s_cursor)
-        *cursor\windowID = ID::GetWindowID(GadgetID)
-        objc_setAssociatedObject_(GadgetID, "__cursor", *cursor, 0) 
-      EndIf
-      
-      If icursor >= 0 And
-         icursor <= 255
-        *cursor\icursor = icursor
-        ;           ; if ishidden cursor show cursor
-        ;           If isHiden( )
-        ;             CocoaMessage(0, 0, "NSCursor unhide")
-        ;           EndIf
-        
-        Select icursor
-          Case #__cursor_Invisible : *cursor\hcursor = - 1
-          Case #__cursor_Busy 
-            SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
-            
-          Case #__cursor_Default   : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-          Case #__cursor_IBeam     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-          Case #__cursor_Denied    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
-            
-          Case #__cursor_Hand      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-          Case #__cursor_Cross     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-            
-          Case #__cursor_SplitLeft      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
-          Case #__cursor_SplitRight     : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
-          Case #__cursor_SplitLeftRight : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-            
-          Case #__cursor_SplitUp        : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
-          Case #__cursor_SplitDown      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
-          Case #__cursor_SplitUpDown    : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-            
-          Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-                 #__cursor_LeftUp, #__cursor_RightUp, #__cursor_LeftDown, #__cursor_RightDown, 
-                 #__cursor_Diagonal1, #__cursor_Diagonal2 
+  Procedure   Set( Gadget.i, *cursor )
+     Protected *memory._s_cursor
+     
+     With *memory
+        If IsGadget( Gadget )
+           Protected GadgetID = GadgetID( Gadget )
+           
+           CompilerIf #test_cursor
+              Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+           CompilerEndIf
+           
+           *memory = objc_getAssociatedObject_( GadgetID, "__cursor" )
+           
+           If Not *memory
+              *memory = AllocateStructure( _s_cursor )
+              \windowID = ID::GetWindowID( GadgetID )
+              objc_setAssociatedObject_( GadgetID, "__cursor", *memory, 0 ) 
+           EndIf
+           
+           ;       If \type <> *cursor
+           ;          \type = *cursor
+           If *cursor > 255
+              \hcursor = *cursor 
+           Else
+              ;           ; if ishidden cursor show cursor
+              ;           If isHiden( )
+              ;             CocoaMessage(0, 0, "NSCursor unhide")
+              ;           EndIf
               
-            If Not FindMapElement(images( ), Str(icursor))
-              AddMapElement(images( ), Str(icursor))
-              images( ) = Draw( icursor )
-            EndIf
-            *cursor\hcursor = images( )
-            
-          Case #__cursor_Drag : *cursor\hcursor = New( icursor )
-            ;Case #__cursor_Drop      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
-          Case #__cursor_Drop : *cursor\hcursor = New( icursor )
-            
-          Case #__cursor_Grab      : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
-          Case #__cursor_Grabbing  : *cursor\hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
-            
-        EndSelect 
-      Else
-        *cursor\icursor = - 1
-        *cursor\hcursor = icursor 
-      EndIf
-      
-      
-      If *cursor\hcursor And ( GadgetID = mouse::Gadget( *cursor\windowID ) Or
-                               CocoaMessage(0, 0, "NSEvent pressedMouseButtons") )
-        
-        EnteredID = GadgetID
-        Change( GadgetID, 1 )
-        ProcedureReturn #True
-      EndIf
-    EndIf
+              Select *cursor
+                 Case #__cursor_Invisible : \hcursor = - 1
+                 Case #__cursor_Busy 
+                    SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
+                    
+                 Case #__cursor_Default        : \hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+                 Case #__cursor_IBeam          : \hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+                 Case #__cursor_Denied         : \hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
+                    
+                 Case #__cursor_Hand           : \hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+                 Case #__cursor_Cross          : \hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+                    
+                 Case #__cursor_SplitLeft      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+                 Case #__cursor_SplitRight     : \hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+                 Case #__cursor_SplitLeftRight : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+                    
+                 Case #__cursor_SplitUp        : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+                 Case #__cursor_SplitDown      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+                 Case #__cursor_SplitUpDown    : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+                    
+                 Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
+                      #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
+                      #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown 
+                    
+                    \hcursor = New( *cursor, Draw( *cursor ) )
+                    
+                 Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+                    ;Case #__cursor_Drop      : \hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+                 Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+                    
+                 Case #__cursor_Grab      : \hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+                 Case #__cursor_Grabbing  : \hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+                    
+              EndSelect 
+           EndIf
+           ;       EndIf
+           
+           
+           If \hcursor And 
+              ( GadgetID = mouse::Gadget( \windowID ) Or
+                CocoaMessage(0, 0, "NSEvent pressedMouseButtons") )
+              EnteredID = GadgetID
+              cursor::Change( GadgetID, 1 )
+              ProcedureReturn #True
+           EndIf
+        EndIf
+     EndWith
   EndProcedure
   
-  Procedure   Get()
+  Procedure   Get( )
     Protected result.i, currentSystemCursor
     
     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
@@ -618,6 +617,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --f--v2T8---
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 229
+; FirstLine = 166
+; Folding = --f--v-X----
 ; EnableXP

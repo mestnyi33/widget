@@ -360,15 +360,24 @@ Procedure widget_events( )
   
 EndProcedure
 
+
+Procedure ListIconWidget( x,y,width,height, title.s, titleWidth )
+   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
+  
+   ;\\
+   Text(x,y,width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
+   ProcedureReturn Tree(x,y+20,width,height-20)
+EndProcedure
+
 If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
   ;Bind(, #PB_Default )
   ; Create and fill the Gadget_Source s
   ;
-  Gadget_SourceText = ListIcon( 10, 10, 140, 140, "Drag Text here", 130 )   
+  Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
   Gadget_SourceImage = Image( 160, 10, 140, 140, ( #ImageGadget_Source ), #PB_Image_Border ) 
   Gadget_SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
-  Gadget_SourcePrivate = ListIcon( 610, 10, 140, 140, "Drag private stuff here", 260 )
-  Gadget_SourceItem = ListIcon( 760, 10, 140, 290, "Drag item here", 130 )   
+  Gadget_SourcePrivate = ListIconWidget( 610, 10, 140, 140, "Drag private stuff here", 260 )
+  Gadget_SourceItem = ListIconWidget( 760, 10, 140, 290, "Drag item here", 130 )   
   
   SetFrame( Gadget_SourceText, 1 )
   SetFrame( Gadget_SourceImage, 1 )
@@ -398,9 +407,9 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
   For i = 0 To 20
     If i % 5 = 0
-      AddItem(Gadget_SourceItem, -1, "Directory" + Str(i), 0, 0)
+      AddItem(Gadget_SourceItem, -1, "Directory" + Str(i), -1, 0)
     Else
-      AddItem(Gadget_SourceItem, -1, "Item" + Str(i), 0, 0)
+      AddItem(Gadget_SourceItem, -1, "Item" + Str(i), -1, 1)
     EndIf
   Next i
   
@@ -409,11 +418,11 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
   ; Create the Gadget_Target s
   ;
-  Gadget_TargetText = ListIcon( 10, 160, 140, 140, "Drop Text here", 130 )
+  Gadget_TargetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
   Gadget_TargetImage = Image( 160, 160, 140, 140, ( #ImageGadget_Target ), #PB_Image_Border ) 
-  Gadget_TargetFiles = ListIcon( 310, 160, 140, 140, "Drop Files here", 130 )
-  Gadget_TargetPrivate1 = ListIcon( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
-  Gadget_TargetPrivate2 = ListIcon( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
+  Gadget_TargetFiles = ListIconWidget( 310, 160, 140, 140, "Drop Files here", 130 )
+  Gadget_TargetPrivate1 = ListIconWidget( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
+  Gadget_TargetPrivate2 = ListIconWidget( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
   Gadget_TargetItem = Gadget_SourceItem
   
   
@@ -422,6 +431,7 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   SetFrame( Gadget_TargetFiles, 1 )
   ;SetFrame( Gadget_TargetPrivate1, 1 )
   SetFrame( Gadget_TargetPrivate2, 1 )
+  
   ; Now enable the dropping on the Gadget_Target s
   ;
   EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
@@ -457,6 +467,8 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 367
+; FirstLine = 356
 ; Folding = ----
 ; EnableXP

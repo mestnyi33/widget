@@ -162,11 +162,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     COLOR
       Structure _s_COLOR
          state.b ; entered; selected; disabled;
-         front.i[4]
-         line.i[4]
-         fore.i[4]
-         back.i[4]
-         frame.i[4]
+         front.l[4]
+         line.l[4]
+         fore.l[4]
+         back.l[4]
+         frame.l[4]
          _alpha.a[2]
          *alpha._s_color
       EndStructure
@@ -746,13 +746,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;Global *event._s_events = Allocatestructure(_s_events)
       ;}
       
-     ; Debug SizeOf(_s_WIDGET) ; 5952
+      Debug SizeOf(_s_WIDGET) ; 5952 - cursor 5924 - color 3924
    EndDeclareModule
    
    Module Structures
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 683
+; FirstLine = 514
 ; Folding = ----9oA+--
 ; EnableXP
