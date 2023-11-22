@@ -103,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected count
     
     Select widget::WidgetEventType( )
-      Case #PB_EventType_Up
+      Case #__event_Up
         
         If *this\EnteredRow( )
           Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events()
     Select WidgetEventType( )
-      Case #PB_EventType_Change
+      Case #__event_Change
         If *this\EnteredRow( )
           Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
         EndIf
@@ -174,7 +174,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     Define h = 20, y = 20
-    widget::Bind(*this, @widget_events(), #PB_EventType_Change)
+    widget::Bind(*this, @widget_events(), #__event_Change)
     
     *item1 = widget::Button( 250, y+(1+h)*1, 100, h, "1")
     *item2 = widget::Button( 250, y+(1+h)*2, 100, h, "2")
@@ -182,15 +182,15 @@ CompilerIf #PB_Compiler_IsMainFile
     *item4 = widget::Button( 250, y+(1+h)*4, 100, h, "4")
     
     
-    widget::Bind(*item1, @button_events(), #PB_EventType_Up)
-    widget::Bind(*item2, @button_events(), #PB_EventType_Up)
-    widget::Bind(*item3, @button_events(), #PB_EventType_Up)
-    widget::Bind(*item4, @button_events(), #PB_EventType_Up)
+    widget::Bind(*item1, @button_events(), #__event_Up)
+    widget::Bind(*item2, @button_events(), #__event_Up)
+    widget::Bind(*item3, @button_events(), #__event_Up)
+    widget::Bind(*item4, @button_events(), #__event_Up)
     
     
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = 4------
 ; EnableXP

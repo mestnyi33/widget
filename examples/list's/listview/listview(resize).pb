@@ -20,10 +20,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag
     
     Select WidgetEventType()
-      Case #PB_EventType_Change
+      Case #__event_Change
         Debug  "change"
         
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget()
           Case Button_type 
             
@@ -107,6 +107,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

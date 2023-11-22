@@ -1,69 +1,13 @@
 ﻿IncludePath "../../../"
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  XIncludeFile "include/os/win/id.pbi"
+  XIncludeFile "include/os/win/ClipGadgets.pbi"
+CompilerEndIf
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib(widget)
-  
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Procedure GadgetsClipCallBack( GadgetID, lParam )
-      If GadgetID
-        Protected Gadget = GetProp_( GadgetID, "PB_ID" )
-        
-        If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
-          SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
-          
-          If IsGadget( Gadget ) 
-            Select GadgetType( Gadget )
-              Case #PB_GadgetType_ComboBox
-                Protected Height = GadgetHeight( Gadget )
-                
-              Case #PB_GadgetType_Text
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) & #SS_NOTIFY) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) | #SS_NOTIFY)
-                EndIf
-                
-              Case #PB_GadgetType_Frame, #PB_GadgetType_Image
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-                ; Для панел гаджета темный фон убирать
-              Case #PB_GadgetType_Panel 
-                If Not IsGadget( Gadget ) And (GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-            EndSelect
-            
-            ;             If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-            ;               SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-            ;             EndIf
-          EndIf
-          
-          
-          If Height
-            ResizeGadget( Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
-          EndIf
-          
-          SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-        EndIf
-        
-      EndIf
-      
-      ProcedureReturn GadgetID
-    EndProcedure
-  CompilerEndIf
-  
-  Procedure ClipGadgets( WindowID )
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      WindowID = GetAncestor_( WindowID, #GA_ROOT )
-      If Not (GetWindowLongPtr_(WindowID, #GWL_STYLE)&#WS_CLIPCHILDREN)
-        SetWindowLongPtr_( WindowID, #GWL_STYLE, GetWindowLongPtr_( WindowID, #GWL_STYLE )|#WS_CLIPCHILDREN )
-      EndIf
-      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-    CompilerEndIf
-  EndProcedure
   
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
@@ -171,7 +115,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
@@ -195,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetGadgetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
       Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
@@ -211,11 +154,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
@@ -289,10 +232,10 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent(#g_splitter, @SplitterCallBack())
     CompilerEndIf
     
-    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
+    ;PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
     
-    ;ClipGadgets(UseGadgetList(0))
+    ; ClipGadgets(UseGadgetList(0))
     
     Repeat
       Select WaitWindowEvent()   
@@ -303,6 +246,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = 8--2--
 ; EnableXP

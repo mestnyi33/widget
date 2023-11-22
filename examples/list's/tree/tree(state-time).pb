@@ -1,5 +1,4 @@
-﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 DisableExplicit
 
 UseLib(widget)
@@ -41,12 +40,12 @@ Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
 EndProcedure
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
-  ;TreeGadget_(0, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)
-  ListViewGadget_(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
+  TreeGadget_(0, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+  ;ListViewGadget_(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
   
   
   Open(0, 270, 10, 250, 150)
-  *w=Tree(0, 0, 250, 150, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
+  *w=Tree(0, 0, 250, 150, #__Flag_NoButtons|#__Flag_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
   
   a=0
   Define time = ElapsedMilliseconds()
@@ -142,7 +141,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

@@ -140,8 +140,8 @@
       EndEnumeration
       
       ;-\\ create-flags
-      EnumerationBinary 1<<18 ; 2
-                             ; text
+      EnumerationBinary 1<<18 
+         ; text
          #__flag_textnumeric
          #__flag_textreadonly
          #__flag_textlowercase
@@ -166,7 +166,7 @@
          #__flag_gridlines
          #__flag_threeState
          #__flag_clickselect
-         
+         #__flag_multiselect
          
          
          ; element
@@ -187,8 +187,6 @@
          ;#__flag_sizegadget
          #__flag_anchorsgadget
          
-         
-         
          #__flag_limit
       EndEnumeration
       
@@ -196,12 +194,12 @@
       #__flag_nogadgets = #__flag_nobuttons
       #__flag_numeric = #__flag_textnumeric
       #__flag_wordwrap = #__flag_textwordwrap
-      #__flag_multiline = #__flag_textmultiline
       #__flag_readonly = #__flag_textreadonly
       #__flag_lowercase = #__flag_textlowercase
       #__flag_uppercase = #__flag_textuppercase
       #__flag_password = #__flag_textpassword
       #__flag_center = #__flag_textcenter
+      #__flag_multiline = #__flag_textmultiline
       
       ;     #__flag_autoright  = #__flag_autosize | #__flag_right
       ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
@@ -323,9 +321,6 @@
       #__m_multiselect  = 3
       #__m_optionselect = 4
       
-      #__listview_clickselect = #__flag_clickselect
-      #__listview_multiselect = #__flag_textmultiline
-      
       ;-\\ Tree
       #__tree_nolines     = #__flag_nolines
       #__tree_nobuttons   = #__flag_nogadgets
@@ -333,10 +328,6 @@
       #__tree_threestate  = #__flag_threeState
       #__tree_collapse    = 32
       #__tree_optionboxes = 64
-      
-      #__tree_multiselect = #__listview_multiselect
-      #__tree_clickselect = #__listview_clickselect
-      
       
       #__tree_property = #__flag_numeric
       #__tree_listview = #__flag_readonly

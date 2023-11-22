@@ -8,19 +8,6 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Procedure Events()
-    If EventType() = #PB_EventType_LeftClick
-      If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
-        Debug GetGadgetText(EventGadget())
-        Debug GetGadgetState(EventGadget())
-        Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
-      Else
-        Debug GetText(EventGadget())
-        Debug GetState(EventGadget())
-        Debug GetItemState(EventGadget(), GetState(EventGadget()))
-      EndIf
-    EndIf
-  EndProcedure
   
   UsePNGImageDecoder()
   ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
@@ -121,12 +108,12 @@ CompilerIf #PB_Compiler_IsMainFile
           ;           Select EventGadget()
           ;             Case 13
           ;               Select EventType()
-          ;                 Case #PB_EventType_ScrollChange : Debug "widget ScrollChange" +" "+ EventData()
-          ;                 Case #PB_EventType_DragStart : Debug "widget dragStart"
-          ;                 Case #PB_EventType_Change, #PB_EventType_LeftClick
+          ;                 Case #__event_ScrollChange : Debug "widget ScrollChange" +" "+ EventData()
+          ;                 Case #__event_DragStart : Debug "widget dragStart"
+          ;                 Case #__event_Change, #__event_LeftClick
           ;                   Debug "widget id = " + GetState(EventGadget())
           ;                   
-          ;                   If EventType() = #PB_EventType_Change
+          ;                   If EventType() = #__event_Change
           ;                     Debug "  widget change"
           ;                   EndIf
           ;               EndSelect
@@ -136,7 +123,6 @@ CompilerIf #PB_Compiler_IsMainFile
           Select EventGadget()
             Case 3
               Select EventType()
-                Case #PB_EventType_ScrollChange : Debug "ScrollChange" +" "+ EventData()
                 Case #PB_EventType_DragStart : Debug "gadget dragStart"
                 Case #PB_EventType_Change, #PB_EventType_LeftClick
                   Debug "gadget id = " + GetGadgetState(EventGadget())
@@ -150,6 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --
 ; EnableXP

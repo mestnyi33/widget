@@ -5,14 +5,22 @@
 ; 7 - remove widget items time count - 2500
 ;  1242 - remove gadget items time count - 2500
 
+; windows
+; 67 - widget add items time count - 5001
+;  5111 - gadget add items time count - 5001
+; 
+; 6 - remove widget items time count - 2500
+; 19192 - remove gadget items time count - 2500
+
 XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib(widget)
   
-  Define gLN=5000;0      ;0; количесвто итемов 
-  Define LN=5000 ;0;0
+  Define count = 5000
+  Define gLN=count;5000;0      ;0; количесвто итемов 
+  Define LN=count;5000 ;0;0
   Global *w._S_widget
   
   Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
@@ -31,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
-    *w=Tree(0, 0, 250, 680, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
+    *w=Tree(0, 0, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
     
     TreeGadget_(0, 10, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect
     
@@ -96,6 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until  Event= #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

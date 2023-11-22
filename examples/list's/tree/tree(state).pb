@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected count
     
     Select widget::WidgetEventType( )
-      Case #PB_EventType_Up
+      Case #__event_Up
         
         Select widget::EventWidget( )
           Case *first
@@ -105,14 +105,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events()
     Select WidgetEventType( )
-      Case #PB_EventType_RightClick
+      Case #__event_RightClick
         widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
         widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
         
         AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
-      Case #PB_EventType_Change
+      Case #__event_Change
         widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
         
     EndSelect
@@ -148,8 +148,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
-    *w1 = widget::Tree(265, 10, 250, 100, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
-    *w2 = widget::Tree(265, 115, 250, 310, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines) ; |#PB_Flag_MultiSelect
+    *w1 = widget::Tree(265, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines
+    *w2 = widget::Tree(265, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines) ; |#__Flag_GridLines
     
     For a = 0 To countitems
       widget::AddItem(*w1, -1, "Item "+Str(a), 0)
@@ -159,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(*w1, a-1)
     widget::SetState(*w2, a-1) 
     widget::Bind(*w2, @widget_events())
-    widget::Bind(*w2, @widget_events(), #PB_EventType_RightClick)
+    widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
     *reset = widget::Button( 10, 435, 100, 30, "reset state", #__button_toggle)
     *first = widget::Button( 525 - (10+120)*3, 435, 120, 30, "first item state", #__button_toggle)
@@ -169,14 +169,14 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState( *reset, 1)
     widget::SetState( *last, 1)
     
-    widget::Bind(*reset, @button_events(), #PB_EventType_Up)
-    widget::Bind(*first, @button_events(), #PB_EventType_Up)
-    widget::Bind(*last, @button_events(), #PB_EventType_Up)
-    widget::Bind(*added, @button_events(), #PB_EventType_Up)
+    widget::Bind(*reset, @button_events(), #__event_Up)
+    widget::Bind(*first, @button_events(), #__event_Up)
+    widget::Bind(*last, @button_events(), #__event_Up)
+    widget::Bind(*added, @button_events(), #__event_Up)
     
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

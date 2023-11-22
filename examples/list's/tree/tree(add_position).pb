@@ -32,6 +32,6 @@ If OpenWindow(#PB_Any, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu | #PB
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

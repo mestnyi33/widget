@@ -115,7 +115,7 @@ Procedure DrawBarEvents( )
   ;Left down
   ;¯¯¯¯¯¯¯¯¯
   
-  If EventType = #PB_EventType_LeftButtonDown
+  If EventType = #__event_LeftButtonDown
     ;\\ Store MouseDown
     MouseDownX = MouseX
     MouseDownY = MouseY
@@ -161,7 +161,7 @@ Procedure DrawBarEvents( )
   ;Mouse move
   ;¯¯¯¯¯¯¯¯¯¯
   
-  If EventType = #PB_EventType_MouseMove
+  If EventType = #__event_MouseMove
     If *TabSwap
       ;*TabSwap\OffsetMove = (MouseY - MouseDownY)
       
@@ -195,7 +195,7 @@ Procedure DrawBarEvents( )
   ;Left up
   ;¯¯¯¯¯¯¯
   
-  If EventType = #PB_EventType_LeftButtonUp
+  If EventType = #__event_LeftButtonUp
     
     ;Sum-up Offsets and sort list
     ForEach Tabs()
@@ -232,10 +232,10 @@ Procedure events( )
   
   If EventWidget( ) = *tree                     
     Select WidgetEventType( ) 
-      Case #PB_EventType_Change
+      Case #__event_Change
         Debug "change - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
         
-      Case #PB_EventType_DragStart 
+      Case #__event_DragStart 
         ; 
         ; The DragStart event tells us that the user clicked on an item and
         ; wants to start draging it. We save this item for later use and
@@ -255,11 +255,11 @@ Procedure events( )
           DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            SetCursor( *tree, CreateCursor( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
+            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
           EndIf
         EndIf
         
-      Case #PB_EventType_Drop 
+      Case #__event_Drop 
         ;
         ; Here we get a drop event. Make sure it is on the right gadget and of right type,
         ; especially if you have multiple Drag & Drop stuff in your program.
@@ -443,7 +443,7 @@ Procedure events( )
 EndProcedure
 
 If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
-  *tree = Tree( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#PB_tree_GridLines)
+  *tree = Tree( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#__flag_GridLines)
   
   ; Add some items. We will be able to move items into the
   ; "Directory" ones.
@@ -519,15 +519,15 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ;Bind( *tree, @events( ) )
   
   Bind( *tree, @DrawBarEvents( ), #__event_Draw )
-  Bind( *tree, @DrawBarEvents( ), #PB_EventType_LeftButtonDown )
-  Bind( *tree, @DrawBarEvents( ), #PB_EventType_LeftButtonUp )
-  Bind( *tree, @DrawBarEvents( ), #PB_EventType_MouseMove )
+  Bind( *tree, @DrawBarEvents( ), #__event_LeftButtonDown )
+  Bind( *tree, @DrawBarEvents( ), #__event_LeftButtonUp )
+  Bind( *tree, @DrawBarEvents( ), #__event_MouseMove )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --v--
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----
 ; EnableXP

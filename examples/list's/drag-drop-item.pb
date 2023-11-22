@@ -1,5 +1,4 @@
 ﻿XIncludeFile "../../widgets.pbi"
-;XIncludeFile "../../widget-events.pbi"
 
 EnableExplicit
 Uselib(widget)
@@ -9,8 +8,11 @@ Global  *list2
 Global i, drop, source, appQuit, dropText$, selectedIndex, selectedText$
 
 Procedure event_widget()
+  
   Select WidgetEventType()
-    Case #PB_EventType_DragStart      
+    Case #__event_DragStart      
+      Debug "event( DRAGSTART )"
+      
       Select EventWidget()         
         Case *list1, *list2         
           source = EventWidget()
@@ -20,14 +22,14 @@ Procedure event_widget()
           
       EndSelect
       
-    Case #PB_EventType_Drop
+    Case #__event_Drop
+      Debug "event( DROP )"
       drop = EventWidget()
-      Debug drop
       
       If drop <> source
         dropText$ = EventDropText()
         
-        For i = 0 To CountItems(drop)
+        For i = 0 To CountItems(drop)-1
           If GetItemText(drop, i) = dropText$
             SetActive(drop)
             SetState(drop, i)           
@@ -38,13 +40,10 @@ Procedure event_widget()
       
       source = 0
   EndSelect
-  
-  
 EndProcedure
 
 Define wFlags = #PB_Window_SystemMenu | #PB_Window_ScreenCentered
-Open( OpenWindow(#PB_Any, #PB_Ignore, #PB_Ignore, 600, 400,
-                 "Drag & Drop Text Matching", wFlags ))
+Open( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
 
 Text(20, 10, 200, 30, "Bank Statement")
 Text(320, 10, 200, 30, "Personal Records")
@@ -67,23 +66,23 @@ AddItem(*list2, -1, "30JAN21#999")
 EnableDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
 EnableDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
 
-Bind(*list1, @event_widget( ), #PB_EventType_DragStart)
-Bind(*list1, @event_widget( ), #PB_EventType_Drop)
+Bind(*list1, @event_widget( ), #__event_DragStart)
+Bind(*list1, @event_widget( ), #__event_Drop)
 
-Bind(*list2, @event_widget( ), #PB_EventType_DragStart)
-Bind(*list2, @event_widget( ), #PB_EventType_Drop)
+Bind(*list2, @event_widget( ), #__event_DragStart)
+Bind(*list2, @event_widget( ), #__event_Drop)
 
 WaitClose()
-Repeat
-  
-  Select WaitWindowEvent()   
-      
-    Case #PB_Event_CloseWindow
-      appQuit = #True       
-      
-  EndSelect 
-  
-Until appQuit
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; Repeat
+;   
+;   Select WaitWindowEvent()   
+;       
+;     Case #PB_Event_CloseWindow
+;       appQuit = #True       
+;       
+;   EndSelect 
+;   
+; Until appQuit
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -
 ; EnableXP

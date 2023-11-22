@@ -15,6 +15,47 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
+  Procedure events_tree_widget()
+    ;Debug " gadget - "+EventGadget()+" "+EventType()
+    Static click
+    Protected Text$
+    Protected EventGadget = EventWidget()
+    Protected EventType = WidgetEventType()
+    Protected EventData = WidgetEventData()
+    Protected EventItem = GetState(EventGadget)
+    Protected State = GetItemState(EventGadget, EventItem)
+    
+    Select EventType
+        ;     Case #__event_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
+        ;     Case #__event_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "gadget " +EventGadget+ " lclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_LeftDoubleClick : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_Change    : Debug "gadget " +EventGadget+ " change item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_RightClick : Debug "gadget " +EventGadget+ " rclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
+      Case #__event_Drop
+    EndSelect 
+    
+    If EventType = #__event_LeftClick
+      If State & #PB_Tree_Selected
+        Debug "Selected "+#PB_Tree_Selected
+      EndIf
+      If State & #PB_Tree_Expanded
+        Debug "Expanded "+#PB_Tree_Expanded
+      EndIf
+      If State & #PB_Tree_Collapsed
+        Debug "Collapsed "+#PB_Tree_Collapsed
+      EndIf
+      If State & #PB_Tree_Checked
+        Debug "Checked "+#PB_Tree_Checked
+      EndIf
+      If State & #PB_Tree_Inbetween
+        Debug "Inbetween "+#PB_Tree_Inbetween
+      EndIf
+    EndIf
+  EndProcedure  
+  
   Procedure events_tree_gadget()
     ;Debug " gadget - "+EventGadget()+" "+EventType()
     Static click
@@ -106,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Text$ = GetGadgetItemText(EventGadget, GetGadgetState(EventGadget))
         DragText(Text$)
         
-      Case #PB_EventType_Drop
+      Case #__event_Drop
         AddGadgetItem(EventGadget, -1, EventDropText())
         
         
@@ -147,12 +188,12 @@ CompilerIf #PB_Compiler_IsMainFile
   ProcedureReturn gadget
 EndProcedure
 
-
+Define a
+    
   If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ;ListViewGadget(0, 10, 10, 160, 160) 
     tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-    *tree = Tree(190, 10, 170, 160, #__flag_GridLines | #PB_Tree_CheckBoxes | #__tree_nolines | #PB_Tree_ThreeState );| #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
-    Define a
+    *tree = Tree(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
     
     For a = 0 To 10
       AddGadgetItem(tree, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
@@ -168,7 +209,6 @@ EndProcedure
     Debug " gadget "+ tree +" count items "+ PB(CountGadgetItems)(tree) +" "+ PB(GadgetType)(tree)
     PB(EnableGadgetDrop)(tree, #PB_Drop_Text, #PB_Drag_Copy)
     
-    
     For a = 0 To 10
       AddItem(*tree, -1, "Normal Item "+Str(a), img, 0) ; if you want to add an image, use
       AddItem(*tree, -1, "Node "+Str(a), img, 0)        ; ImageID(x) as 4th parameter
@@ -181,8 +221,13 @@ EndProcedure
     Next
     
     ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
-    ;         EnableGadgetDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
+    EnableGadgetDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
+    ;\\
+    For a=0 To CountItems(*tree) : SetItemState(*tree, a, #PB_Tree_Collapsed) : Next
+    ;For a=0 To CountGadgetItems(tree) : SetGadgetItemState(tree, a, #PB_Tree_Expanded) : Next
+    
+    ;\\
     PB(ButtonGadget)(3, 10, 180, 110, 24, "change Item state")
     BindGadgetEvent(3, @events_tree_gadget())
     PB(ButtonGadget)(4, 130, 180, 110, 24, "add Item")
@@ -202,13 +247,14 @@ EndProcedure
     BindGadgetEvent(10, @events_tree_gadget())
     
     BindGadgetEvent(tree, @events_tree_gadget())
-    ;       BindGadgetEvent(1, @events_tree_gadget())
+    Bind(*tree, @events_tree_widget())
     
+    ;\\
     WaitClose( )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --yC--
 ; EnableXP

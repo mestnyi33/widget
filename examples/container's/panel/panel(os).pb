@@ -1,4 +1,8 @@
 ﻿IncludePath "../../../"
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  XIncludeFile "include/os/win/id.pbi"
+  XIncludeFile "include/os/win/ClipGadgets.pbi"
+CompilerEndIf
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -72,26 +76,26 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      PostCanvasRepaint( *this\root )
+      PostEventCanvasRepaint( *this\root )
     EndIf
   EndProcedure
   
-;   Procedure events_widget( )
-;     
-;     Select GetText( EventWidget( ) )
-;       Case "Top"
-;         TabViewType( *panel, 2 )
-;       Case "Left"
-;         TabViewType( *panel, 1 )
-;       Case "Right"
-;         TabViewType( *panel, 3 )
-;       Case "Bottom"
-;         TabViewType( *panel, 4 )
-;       Case "Hide"
-;         TabViewType( *panel, 0 )
-;     EndSelect
-;     
-;   EndProcedure
+  ;   Procedure events_widget( )
+  ;     
+  ;     Select GetText( EventWidget( ) )
+  ;       Case "Top"
+  ;         TabViewType( *panel, 2 )
+  ;       Case "Left"
+  ;         TabViewType( *panel, 1 )
+  ;       Case "Right"
+  ;         TabViewType( *panel, 3 )
+  ;       Case "Bottom"
+  ;         TabViewType( *panel, 4 )
+  ;       Case "Hide"
+  ;         TabViewType( *panel, 0 )
+  ;     EndSelect
+  ;     
+  ;   EndProcedure
   
   Procedure GadgetTabViewType( gadget, position.i )
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -148,26 +152,27 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem (*panel, -1, "Tab 2")
   CloseList() ; *panel
   
-;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
-;   *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
-;   Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
-;   Option(300+130, GadgetY(1) + 45, 80, 20, "Hide")
-;   Option(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
-;   Option(300+210, GadgetY(1) + 45, 80, 20, "Right")
-;   SetState(*option, #True)
-;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
+  ;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
+  ;   *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
+  ;   Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
+  ;   Option(300+130, GadgetY(1) + 45, 80, 20, "Hide")
+  ;   Option(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
+  ;   Option(300+210, GadgetY(1) + 45, 80, 20, "Right")
+  ;   SetState(*option, #True)
+  ;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    ClipGadgets( UseGadgetList(0) )
+  CompilerEndIf
   Repeat
     Select WaitWindowEvent()
       Case #PB_Event_CloseWindow
         Break
-      
+        
     EndSelect
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 69
-; Folding = ---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ----
 ; EnableXP

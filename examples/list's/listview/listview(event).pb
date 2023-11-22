@@ -64,31 +64,31 @@ EndProcedure
 
 Procedure events_widgets()
   Select WidgetEventType( )
-    Case #PB_EventType_DragStart
+    Case #__event_DragStart
       Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-    Case #PB_EventType_Change
+    Case #__event_Change
       Debug  ""+GetIndex(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       Debug  ""+GetIndex(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-    Case #PB_EventType_LeftDoubleClick
+    Case #__event_LeftDoubleClick
       Debug  ""+GetIndex(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-    Case #PB_EventType_RightClick
+    Case #__event_RightClick
       Debug  ""+GetIndex(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
-;     Case #PB_EventType_Up
+;     Case #__event_Up
 ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
 ;       
-;     Case #PB_EventType_Down
+;     Case #__event_Down
 ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
 ;       
-;     Case #PB_EventType_ScrollChange
+;     Case #__event_ScrollChange
 ;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
-;     Case #PB_EventType_StatusChange
+;     Case #__event_StatusChange
 ;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
@@ -177,6 +177,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

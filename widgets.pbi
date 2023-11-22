@@ -2266,7 +2266,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.s DropText( )
          ; эта функция возвращает текст, который был сброшен.
          ; после того, как произошло событие #__event_Drop с форматом #PB_Drop_Text (формат можно получить с помощью EventDropType( ))
-         ProcedureReturn mouse( )\drag\string\s
+         ProcedureReturn mouse( )\drag\string
       EndProcedure
       
       Procedure.i DropImage( Image.i = - 1, Depth.i = 24 )
@@ -2335,8 +2335,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          mouse( )\drag\format  = #PB_Drop_Text
          mouse( )\drag\actions = Actions
-         mouse( )\drag\string\s  = Text
-         
+         mouse( )\drag\string  = Text
          ProcedureReturn mouse( )\drag
       EndProcedure
       
@@ -12672,10 +12671,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\row\multiselect = 1
                      EndIf
                   EndIf
-                  If flag & #__listview_clickselect = #__listview_clickselect
+                  If flag & #__flag_clickselect = #__flag_clickselect
                      *this\row\clickselect = 1
                   EndIf
-                  If flag & #__listview_multiselect = #__listview_multiselect
+                  If flag & #__flag_multiselect = #__flag_multiselect
                      *this\row\multiselect = 1
                   EndIf
                   
@@ -13364,8 +13363,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ListView
             
-            
-            If *this\FocusedRow( )
+           ProcedureReturn *this\row\index
+           If *this\FocusedRow( )
                ProcedureReturn *this\FocusedRow( )\index
             Else
                ProcedureReturn - 1
@@ -13466,26 +13465,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure SetCursor( *this._S_WIDGET, *cursor )
-         Protected result = *this\cursor
-         Debug "set-widget-cursor " + *cursor
-         ;\\
-         If mouse( )\drag
+        If *this
+          Protected result = *this\cursor
+          Debug "set-widget-cursor " + *cursor
+          ;\\
+          If mouse( )\drag
             If *this\dragstart = #PB_Drag_Finish ;And Not ( a_index( ) = #__a_moved And PressedWidget( ) And PressedWidget( )\dragstart )
-               mouse( )\drag\cursor = *cursor
+              mouse( )\drag\cursor = *cursor
             Else
-               mouse( )\drag\cursor = *this\cursor
+              mouse( )\drag\cursor = *this\cursor
             EndIf
             If mouse( )\drag\cursor = 0
-               mouse( )\drag\cursor = - 1
+              mouse( )\drag\cursor = - 1
             EndIf
-         EndIf
-         
-         ;\\
-         If *this\cursor <> *cursor
+          EndIf
+          
+          ;\\
+          If *this\cursor <> *cursor
             *this\cursor = *cursor
-         EndIf
-         
-         ProcedureReturn result
+          EndIf
+          
+          ProcedureReturn result
+        EndIf
       EndProcedure
       
       Procedure SetClass( *this._S_WIDGET, class.s )
@@ -16852,9 +16853,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ backcolor
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[*this\color\state] )
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\color\state] )
             Else
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[*this\color\state] )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\color\state] )
             EndIf
             
             ;\\
@@ -18755,6 +18756,74 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;\\ ok
+            If eventtype = #__event_Focus
+               If *this\EnteredRow( )
+                  *this\row\index = *this\EnteredRow( )\index
+               EndIf
+               
+               ;\\
+               If *this\row\multiselect Or *this\row\clickselect
+                  PushListPosition( *this\_rows( ) )
+                  ForEach *this\_rows( )
+                     If *this\_rows( ) <> *this\FocusedRow( )
+                        If *this\_rows( )\color\state = #__S_3
+                           *this\_rows( )\color\state = #__S_2
+                           *this\repaint              = 1
+                        EndIf
+                     EndIf
+                  Next
+                  PopListPosition( *this\_rows( ) )
+               EndIf
+               
+               ;\\
+               If *this\FocusedRow( )
+                  If *this\FocusedRow( )\state\focus And
+                     *this\FocusedRow( )\color\state = #__S_3
+                     *this\FocusedRow( )\color\state = #__S_2
+                     *this\repaint                   = 1
+                     
+                     ;\\
+                     If *this\FocusedRow( )\state\focus = - 1
+                        *this\FocusedRow( )\state\focus = 1
+                     Else
+                        If *this\anchors
+                           *this\repaint = #True
+                        Else
+                           If *this\event = 0 : *this\event = - 1 : EndIf
+                           ; DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+                           If *this\event = - 1 : *this\event = 0 : EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ ok
+            If eventtype = #__event_LostFocus
+               If *this\row\multiselect Or *this\row\clickselect
+                  PushListPosition( *this\_rows( ) )
+                  ForEach *this\_rows( )
+                     If *this\_rows( ) <> *this\FocusedRow( )
+                        If *this\_rows( )\color\state = #__S_2
+                           *this\_rows( )\color\state = #__S_3
+                           *this\repaint              = 1
+                        EndIf
+                     EndIf
+                  Next
+                  PopListPosition( *this\_rows( ) )
+               EndIf
+               
+               ;\\
+               If *this\FocusedRow( )
+                  ; Debug ""+*this\x+" "+*this\y ;????????????????????
+                  If *this\FocusedRow( )\state\focus
+                     *this\FocusedRow( )\color\state = #__S_3
+                     *this\repaint                   = 1
+                  EndIf
+               EndIf
+            EndIf
+            
             ;\\
             If eventtype = #__event_Down
                If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -18828,74 +18897,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ ok
-            If eventtype = #__event_Focus
-               If *this\EnteredRow( )
-                  *this\row\index = *this\EnteredRow( )\index
-               EndIf
-               
-               ;\\
-               If *this\row\multiselect Or *this\row\clickselect
-                  PushListPosition( *this\_rows( ) )
-                  ForEach *this\_rows( )
-                     If *this\_rows( ) <> *this\FocusedRow( )
-                        If *this\_rows( )\color\state = #__S_3
-                           *this\_rows( )\color\state = #__S_2
-                           *this\repaint              = 1
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition( *this\_rows( ) )
-               EndIf
-               
-               ;\\
-               If *this\FocusedRow( )
-                  If *this\FocusedRow( )\state\focus And
-                     *this\FocusedRow( )\color\state = #__S_3
-                     *this\FocusedRow( )\color\state = #__S_2
-                     *this\repaint                   = 1
-                     
-                     ;\\
-                     If *this\FocusedRow( )\state\focus = - 1
-                        *this\FocusedRow( )\state\focus = 1
-                     Else
-                        If *this\anchors
-                           *this\repaint = #True
-                        Else
-                           If *this\event = 0 : *this\event = - 1 : EndIf
-                           ; DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
-                           If *this\event = - 1 : *this\event = 0 : EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
+            ;\\
+            If eventtype = #__event_DragStart ; Ok
+;               If *this\PressedRow( )
+;                 If *this\FocusedRow( )
+;                   If *this\FocusedRow( )\state\focus = 1
+; ;                     *this\FocusedRow( )\state\focus = 0
+; ;                     
+; ;                     *this\FocusedRow( )\color\state = #__S_0
+; ;                                     
+; ;                     If *this\event = 0 : *this\event = - 1 : EndIf
+; ;                      Debug "change5"
+; ;                     DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
+; ;                     If *this\event = - 1 : *this\event = 0 : EndIf
+; ;                     ;*this\repaint = #True
+;                   EndIf 
+;                 EndIf
+;                 
+;                 *this\FocusedRow( ) = *this\PressedRow( )
+;               EndIf
             EndIf
-            
-            ;\\ ok
-            If eventtype = #__event_LostFocus
-               If *this\row\multiselect Or *this\row\clickselect
-                  PushListPosition( *this\_rows( ) )
-                  ForEach *this\_rows( )
-                     If *this\_rows( ) <> *this\FocusedRow( )
-                        If *this\_rows( )\color\state = #__S_2
-                           *this\_rows( )\color\state = #__S_3
-                           *this\repaint              = 1
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition( *this\_rows( ) )
-               EndIf
-               
-               ;\\
-               If *this\FocusedRow( )
-                  ; Debug ""+*this\x+" "+*this\y ;????????????????????
-                  If *this\FocusedRow( )\state\focus
-                     *this\FocusedRow( )\color\state = #__S_3
-                     *this\repaint                   = 1
-                  EndIf
-               EndIf
-            EndIf
-            
+             
             ;\\
             If eventtype = #__event_Drop ; Ok
                If *this\EnteredRow( )
@@ -19209,6 +19231,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_LostFocus,
                     #__event_Down,
                     #__event_Up,
+                    #__event_DragStart,
                     #__event_Drop
                   
                   
@@ -19357,12 +19380,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                Case #__type_Tree, #__type_ListView, #__type_ListIcon
                   
-                  If eventtype = #__event_down
-                     *this\event = 0
-                  EndIf
-                  If eventtype = #__event_Up
-                     *this\event = 0
-                  EndIf
+;                   If eventtype = #__event_down
+;                      *this\event = 0
+;                   EndIf
+;                   If eventtype = #__event_Up
+;                      *this\event = 0
+;                    EndIf
+                   
                   Tree_events( *this, eventtype, mouse_x, mouse_y )
                   
                Case #__type_Editor, #__type_String
@@ -19494,9 +19518,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
             ;                mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
             ;             EndIf
-            
+             
+              
             If *this\event
-               If eventtype = #__event_Create
+              If eventtype = #__event_Create
                   Post( *this, eventtype, *button, *data )
                ElseIf eventtype = #__event_CursorChange
                   Send( *this, eventtype, *button, *data )
@@ -21885,7 +21910,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Container( 70, 180, 80, 80): CloseList( )
    
    ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__tree_multiselect) ; |#__flag_gridlines
+   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_multiselect) ; |#__flag_gridlines
    SetColor( *w, #__color_back, $FF07EAF6 )
    For i = 1 To 10;00000
       AddItem(*w, i, "text-" + Str(i))
@@ -21893,7 +21918,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*w, i - 1 )
    
    ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_clickselect )
+   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_clickselect )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -21953,5 +21978,5 @@ CompilerEndIf
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -f+------------------------------------------6---------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -f+------------------------------------------6----80---------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------P+-----------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------------8--+---0-+-0----8--8--a4--------u70-----W-8--8U-----------------------------------------
 ; EnableXP

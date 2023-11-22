@@ -22,7 +22,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *g8._S_widget
   Global *g9._S_widget
   
-  
+  LoadFont(5, "Arial", 16)
+    LoadFont(6, "Arial", 25)
+    
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
@@ -39,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetGadgetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
       Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
       Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
@@ -56,16 +58,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
         DragText(GetItemText(EventGadget, EventItem))
         
-      Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
+      Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         Debug EventDropText()
         
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
     EndWith
   EndProcedure
@@ -312,13 +314,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
-    LoadFont(5, "Arial", 16)
+    ;LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
     SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
     SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
-    LoadFont(6, "Arial", 25)
+    ;LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
     SetItemText(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
@@ -329,6 +331,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

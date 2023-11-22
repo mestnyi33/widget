@@ -12,11 +12,11 @@ Repeat
       Break
     Case #PB_Event_Gadget
       If EventGadget() = 1 And EventType() = #PB_EventType_LeftClick
-        CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
+        ;CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
         DisableGadget(1, #True)
       EndIf
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

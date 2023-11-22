@@ -1,8 +1,9 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  XIncludeFile "../../../include/os/win/id.pbi"
-  XIncludeFile "../../../include/os/win/ClipGadgets.pbi"
+﻿IncludePath "../../../"
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  XIncludeFile "include/os/win/id.pbi"
+  XIncludeFile "include/os/win/ClipGadgets.pbi"
 CompilerEndIf
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

@@ -102,36 +102,36 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     Select WidgetEventType()
-;       Case #PB_EventType_Focus
+;       Case #__event_Focus
 ;         Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
-;       Case #PB_EventType_LostFocus
+;       Case #__event_LostFocus
 ;         Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
 ;         
-;       Case #PB_EventType_Up
+;       Case #__event_Up
 ;         Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
 ;         
-;       Case #PB_EventType_Down
+;       Case #__event_Down
 ;         Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
 ;         
-;       Case #PB_EventType_ScrollChange
+;       Case #__event_ScrollChange
 ;         Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
-;       Case #PB_EventType_StatusChange
+;       Case #__event_StatusChange
 ;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-;       Case #PB_EventType_DragStart
+;       Case #__event_DragStart
 ;         Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-      Case #PB_EventType_Change
+      Case #__event_Change
         Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
-;       Case #PB_EventType_LeftDoubleClick
+;       Case #__event_LeftDoubleClick
 ;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
-      Case #PB_EventType_RightClick
+      Case #__event_RightClick
         ; Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
       	Protected a
       	If GetData( eventWidget()) = Bool(itext)
@@ -233,6 +233,7 @@ EndProcedure
     BindGadgetEvent(*g4, @events_gadgets())
     BindGadgetEvent(*g5, @events_gadgets())
     BindGadgetEvent(*g6, @events_gadgets())
+    
     ;\\
     Bind(*w1, @events_widgets())
     Bind(*w2, @events_widgets())
@@ -244,8 +245,6 @@ EndProcedure
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 139
-; FirstLine = 132
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

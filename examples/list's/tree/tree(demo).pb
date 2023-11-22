@@ -101,7 +101,9 @@ EndProcedure
   Global *g8._S_widget
   Global *g9._S_widget
   
-  
+  LoadFont(5, "Arial", 16)
+    LoadFont(6, "Arial", 25)
+    
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
@@ -551,13 +553,13 @@ EndProcedure
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
-    LoadFont(5, "Arial", 16)
+    ;LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemColor(*g, 3, #__Color_Front, $FFFFFF00)
     SetItemColor(*g, 3, #__Color_Back, $FFFF00FF)
     SetItemText(*g, 3, "16_font backcolor text change")
-    ;SetItemText(*g, 3, "16_font and text change")
-    LoadFont(6, "Arial", 25)
+    ;;SetItemText(*g, 3, "16_font and text change")
+    ;LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
     SetItemText(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
@@ -580,8 +582,6 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 226
-; FirstLine = 68
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = f-b------
 ; EnableXP

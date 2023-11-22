@@ -116,12 +116,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_DROP
          format.l
          actions.b
-         private.i
          
          StructureUnion
-            *imageID
-            *string.String
-            *files.String
+           *private
+           *imageID
+         EndStructureUnion
+      
+         StructureUnion
+            string.s
+            files.s
          EndStructureUnion
       EndStructure
       Structure _s_DRAG Extends _s_DROP
@@ -750,8 +753,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 131
-; FirstLine = 121
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----9oA+--
 ; EnableXP
