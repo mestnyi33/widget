@@ -507,37 +507,16 @@ Procedure widget_events( )
       Case #__event_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
-               SetCursor( *ew, #PB_Cursor_Arrows )
+               ChangeCursor( *ew, #PB_Cursor_Arrows )
             EndIf
          EndIf
          
          If GetState( id_elements_tree) > 0 
             If IsContainer( *ew )
                If DragPrivate( #_DD_CreateNew, #PB_Drag_Drop )
-                  SetCursor( *ew, #PB_Cursor_Cross )
+                 ChangeCursor( *ew, #PB_Cursor_Cross )
                EndIf
             EndIf
-         Else
-            
-            ;           Select DragType( ) 
-            ;             Case #PB_Drag_Resize 
-            ;               If DragPrivate( #_DD_reParent )
-            ;                 SetCursor( *ew, #PB_Cursor_Arrows )
-            ;               EndIf
-            ;               
-            ;             Case #PB_Drag_Copy
-            ;               If DragPrivate( #_DD_CreateCopy )
-            ;                 SetCursor( *ew, #PB_Cursor_Hand )
-            ;               EndIf
-            ;               
-            ;             Default 
-            ;               If IsContainer( *ew )
-            ;                 If DragPrivate( #_DD_Group, #PB_Drag_Drop )
-            ;                   SetCursor( *ew, #PB_Cursor_Cross )
-            ;                 EndIf
-            ;               EndIf
-            ;               
-            ;           EndSelect
          EndIf
          
       Case #__event_Drop
@@ -625,12 +604,12 @@ Procedure widget_events( )
                If GetState( id_elements_tree ) > 0 
                   If eventtype = #__event_MouseLeave
                      If GetCursor( ) <> #PB_Cursor_Default
-                        SetCursor( *ew, #PB_Cursor_Default )
+                        ChangeCursor( *ew, #PB_Cursor_Default )
                      EndIf
                   Else
                      If *ew\state\enter = 2 
                         If GetCursor( ) <> #PB_Cursor_Cross
-                           SetCursor( *ew, #PB_Cursor_Cross )
+                           ChangeCursor( *ew, #PB_Cursor_Cross )
                         EndIf
                      EndIf
                   EndIf
@@ -648,7 +627,7 @@ Procedure widget_events( )
       If GetState( id_elements_tree ) > 0 
          SetState( id_elements_tree, 0 )
          a_transform( )\type = 0
-         SetCursor( *ew, #PB_Cursor_Default )
+         ChangeCursor( *ew, #PB_Cursor_Default )
       EndIf
    EndIf
 EndProcedure
@@ -799,13 +778,11 @@ Procedure ide_events( )
    Select e_type
       Case #__event_DragStart
          If *ew = id_elements_tree
-            Debug " ------ drag ide_events() ----- "
-            ;         DD_EventDragWidth( ) 
-            ;         DD_EventDragHeight( )
-            
             a_transform( )\type = 0
+            
+            Debug " ------ drag ide_events() ----- "
             If DragPrivate( #_DD_CreateNew, #PB_Drag_Copy )
-               SetCursor( *ew, Cursor::Create( ImageID( GetItemData( *ew, GetState( *ew ) ) ) ) )
+               ChangeCursor( *ew, Cursor::Create( ImageID( GetItemData( *ew, GetState( *ew ) ) ) ) )
             EndIf
          EndIf
          
@@ -1276,6 +1253,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------rf----------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 516
+; FirstLine = 503
+; Folding = ---------vf----------
 ; EnableXP

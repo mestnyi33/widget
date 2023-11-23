@@ -129,6 +129,8 @@ Procedure widget_events( )
             DragPrivate( 2 )
           EndIf
           
+          ChangeCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
+          
       EndSelect
       
       ; Drop event on the Gadget_Target gadgets, receive the EventDrop data
@@ -385,14 +387,11 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   SetFrame( Gadget_SourcePrivate, 1 )
   SetFrame( Gadget_SourceItem, 1 )
   
-  ;   ;
-  ;   ;
-  SetCursor( Gadget_SourceText, #PB_Cursor_Hand )
-  ;   SetCursor( Gadget_SourceImage, #PB_Cursor_Hand )
-  ;   SetCursor( Gadget_SourceFiles, #PB_Cursor_Hand )
-  ;   SetCursor( Gadget_SourcePrivate, #PB_Cursor_Hand )
+    
+  ;\\   
+  SetCursor( Gadget_SourceText, cursor::#__cursor_Hand )
   
-  ;
+  ;\\
   AddItem( Gadget_SourceText, -1, "hello world" )
   AddItem( Gadget_SourceText, -1, "The quick brown fox jumped over the lazy dog" )
   AddItem( Gadget_SourceText, -1, "abcdefg" )
@@ -468,7 +467,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 367
-; FirstLine = 356
+; CursorPosition = 132
+; FirstLine = 109
 ; Folding = ----
 ; EnableXP

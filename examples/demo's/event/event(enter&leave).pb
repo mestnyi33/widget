@@ -100,9 +100,8 @@ Procedure events_widgets()
       Debug "change state"
    EndIf
 EndProcedure
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 87
-; FirstLine = 55
+; CursorPosition = 97
+; FirstLine = 63
 ; Folding = ---
 ; EnableXP
