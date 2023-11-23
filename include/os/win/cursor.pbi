@@ -2,24 +2,24 @@
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
-  Global OldProc
+  #test_cursor = 0
   
   Procedure   Proc(hWnd, uMsg, wParam, lParam)
     Protected result
-    ; oldproc = GetProp_(hWnd, "__oldproc")
+    Protected oldproc = GetProp_(hWnd, "#__oldproc")
     
     Select uMsg
       Case #WM_NCDESTROY
         Debug "event( DESTROY ) "+hwnd
         RemoveProp_(hwnd, "#__cursor")
-        ; RemoveProp_(hwnd, "__oldproc")
+        RemoveProp_(hwnd, "#__oldproc")
         
       Case #WM_SETCURSOR
-        ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam
+        ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam +" "+ Mouse::Gadget(Mouse::Window( ))
         Cursor::Change( wParam, 1 )
         
       Default
-        result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
+        result = CallWindowProc_(oldproc, hWnd, uMsg, wParam, lParam)
     EndSelect
     
     ProcedureReturn result
@@ -81,7 +81,7 @@ Module Cursor
         DrawImageUp(0,-1,height, bcolor, fcolor )
         DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
         Plot(0, 7, fcolor ) : Line(1, 7, width-2, 1, bcolor) : Plot(width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(0, 8, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Line(0, 8, width , 1, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
       If type = #__cursor_UpDown
         x = 8
@@ -99,7 +99,7 @@ Module Cursor
         x = 8
         y = 6
         Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
         DrawImageCursorSplitDown(0,0,height, bcolor, fcolor )
         DrawImageDown(0,0,height, bcolor, fcolor )
       EndIf
@@ -111,7 +111,7 @@ Module Cursor
         DrawImageLeft(-1,0,width, bcolor, fcolor )
         DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
         Plot(7, 0, fcolor ) : Line(7, 1, 1, height-2, bcolor) : Plot(7, height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(8, 0, 1, height, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Line(8, 0, 1, height, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
       If type = #__cursor_LeftRight
         x = 6
@@ -129,7 +129,7 @@ Module Cursor
         x = 6
         y = 8
         Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
         DrawImageCursorSplitRight(0,0,width, bcolor, fcolor )
         DrawImageRight(0,0,width, bcolor, fcolor )
       EndIf
@@ -263,110 +263,110 @@ Module Cursor
     If *cursor And
        *cursor\hcursor
       
-      ;\\ set
-      If state = 1 
-        If *cursor\hcursor =- 1
-          If GetCursor_( )
-            result = SetCursor_( #NUL )
-          Else
-            result = *cursor\hcursor
-          EndIf
-        Else
-          ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
-          ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
-          result = SetCursor_( *cursor\hcursor )
-        EndIf
-      EndIf
-      
       ;\\ reset
       If state = 0 
         ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
         result = SetCursor_( LoadCursor_(0,#IDC_ARROW) )
       EndIf
       
-      If result <> *cursor\hcursor
-        CompilerIf #PB_Compiler_IsMainFile
-          Debug "changeCursor"
-        CompilerEndIf
-      EndIf
+      ;\\ set
+      ; If *cursor\hcursor <> GetCursor_( )
+        If state > 0
+          If *cursor\hcursor =- 1
+            If GetCursor_( )
+              result = SetCursor_( #NUL )
+            Else
+              result = *cursor\hcursor
+            EndIf
+          Else
+            ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
+            ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
+            result = SetCursor_( *cursor\hcursor )
+          EndIf
+        EndIf
+        
+        If result <> *cursor\hcursor
+          CompilerIf #test_cursor
+            Debug " :: changeCursor "+ state +" "+ GadgetID +" "+ result +" "+ *cursor\hcursor
+          CompilerEndIf
+        EndIf
+      ; EndIf
     EndIf
   EndProcedure
   
   Procedure   Set( Gadget.i, *cursor )
-     Protected *memory._s_cursor
-     
-     With *memory
-        If IsGadget( Gadget )
-           Protected GadgetID = GadgetID( Gadget )
-           CompilerIf #test_cursor
-              Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-           CompilerEndIf
-           
-           *memory = GetProp_(GadgetID, "#__cursor")
-           
-           If Not *memory
-              *memory = AllocateStructure(_s_cursor)
-              \windowID = ID::GetWindowID(GadgetID)
-              SetProp_(GadgetID, "#__cursor", *memory) 
-              ;\\
-              OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc( ))
-              ; SetProp_(GadgetID,"__oldproc", SetWindowLongPtr_(GadgetID,#GWL_WNDPROC,@Proc( )))
-           EndIf
-           
-           ;       If \type <> *cursor
-           ;         \type = *cursor
-           
-           If *cursor > 255
-              \hcursor = *cursor 
-           Else
-              Select *cursor
-                 Case #__cursor_Invisible : \hcursor =- 1
-                 Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
-                    
-                 Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                 Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
-                 Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
-                    
-                 Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
-                 Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
-                 Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
-                    
-                 Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
-                 Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
-                    
-                 Case #__cursor_Diagonal1,
-                      #__cursor_LeftUp,
-                      #__cursor_RightDown 
-                    \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
-                    
-                 Case #__cursor_Diagonal2,
-                      #__cursor_RightUp,
-                      #__cursor_LeftDown 
-                    \hcursor = LoadCursor_(0,#IDC_SIZENESW)
-                    
-                    ;\\  custom cursors
-                 Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
-                      #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
-                      
-                    \hcursor = New( *cursor, Draw( *cursor ) )
-                    
-                 Case #__cursor_Drag      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                 Case #__cursor_Drop      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                    
-                 Case #__cursor_Grab      : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                 Case #__cursor_Grabbing  : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                    
-              EndSelect 
-           EndIf
-           ;       EndIf
-           
-           If \hcursor And 
-              GadgetID = mouse::Gadget( \windowID )
-              cursor::Change( GadgetID, 1 )
-              ProcedureReturn #True
-           EndIf
+    Protected *memory._s_cursor
+    
+    With *memory
+      If IsGadget( Gadget )
+        Protected GadgetID = GadgetID( Gadget )
+        CompilerIf #test_cursor
+          Debug " :: setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+        CompilerEndIf
+        
+        *memory = GetProp_( GadgetID, "#__cursor" )
+        
+        If Not *memory
+          *memory = AllocateStructure( _s_cursor )
+          \windowID = ID::GetWindowID( GadgetID )
+          SetProp_( GadgetID, "#__cursor", *memory ) 
+          SetProp_( GadgetID, "#__oldproc", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
         EndIf
-     EndWith
+        
+        ;       If \type <> *cursor
+        ;         \type = *cursor
+        
+        If *cursor > 255
+          \hcursor = *cursor 
+        Else
+          Select *cursor
+            Case #__cursor_Invisible : \hcursor =- 1
+            Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
+              
+            Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
+            Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
+            Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
+              
+            Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
+            Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
+            Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
+              
+            Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
+            Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
+              
+            Case #__cursor_Diagonal1,
+                 #__cursor_LeftUp,
+                 #__cursor_RightDown 
+              \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
+              
+            Case #__cursor_Diagonal2,
+                 #__cursor_RightUp,
+                 #__cursor_LeftDown 
+              \hcursor = LoadCursor_(0,#IDC_SIZENESW)
+              
+              ;\\  custom cursors
+            Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+                 #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
+              
+              \hcursor = New( *cursor, Draw( *cursor ) )
+              
+            Case #__cursor_Drag      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+            Case #__cursor_Drop      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+              
+            Case #__cursor_Grab      : \hcursor = LoadCursor_(0,#IDC_ARROW)
+            Case #__cursor_Grabbing  : \hcursor = LoadCursor_(0,#IDC_ARROW)
+              
+          EndSelect 
+        EndIf
+        ;       EndIf
+        
+        If \hcursor And 
+           GadgetID = mouse::Gadget( \windowID )
+          cursor::Change( GadgetID, 1 )
+          ProcedureReturn #True
+        EndIf
+      EndIf
+    EndWith
   EndProcedure
   
   Procedure   Get( )
@@ -401,7 +401,6 @@ Module Cursor
           
         Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Grab
         Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Grabbing
-          
       EndSelect 
     Else
       result = #__cursor_Invisible
@@ -410,8 +409,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 30
-; Folding = -4t------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------
 ; EnableXP

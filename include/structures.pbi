@@ -746,15 +746,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;Global *event._s_events = Allocatestructure(_s_events)
       ;}
       
-      Debug SizeOf(_s_WIDGET) ; 5952 - cursor 5924 - color 3924
+      ;Debug SizeOf(_s_WIDGET) ; 5952 - cursor 5924 - color 3924
    EndDeclareModule
    
    Module Structures
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 683
-; FirstLine = 514
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----9oA+--
 ; EnableXP
