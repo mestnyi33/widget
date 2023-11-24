@@ -84,28 +84,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CustomEvents( )
       Select WidgetEventType( )
             
-         Case #__event_cursor
-            If a_transform( )
-               If mouse( )\cursor
-                  If a_index( )
-                    mouse( )\cursor = #PB_Cursor_Hand 
-                  Else
-                    mouse( )\cursor = #PB_Cursor_Cross 
-                  EndIf
-                   ;ChangeCursor( EventWidget( ), mouse( )\cursor )
-                  
+;             ;\\ demo change current cursor
+;          Case #__event_cursor
+;             If a_transform( )
+;                If GetCursor( )
 ;                   If a_index( )
-;                      ChangeCursor( EventWidget( ), #PB_Cursor_Hand )
+;                      ProcedureReturn cursor::#__cursor_Hand
 ;                   Else
-;                      ChangeCursor( EventWidget( ), #PB_Cursor_Cross )
-;                    EndIf
-;                    If mouse( )\cursor 
-;                      mouse( )\cursor = EventWidget( )\cursor
-;                    EndIf
-                  ;
-               EndIf
-            EndIf
-            ProcedureReturn 1
+;                      ProcedureReturn cursor::#__cursor_Cross
+;                   EndIf
+;                EndIf
+;             EndIf
             
          Case #__event_statuschange
             Debug "statuschange "
@@ -117,6 +106,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 86
+; FirstLine = 68
+; Folding = --
 ; EnableXP

@@ -13439,16 +13439,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i  SetCursor( *this._S_WIDGET, *cursor )
-         Protected result.i = *this\cursor[1]
-         
-         If *this\cursor[1] <> *cursor
-            ; Debug "setCURSOR( " + *cursor +" )"
-            
-            ChangeCursor( *this, *cursor )
-            *this\cursor[1] = *cursor
+         If *this > 0 
+            If *this\cursor[1] <> *cursor
+               ; Debug "setCURSOR( " + *cursor +" )"
+               
+               ChangeCursor( *this, *cursor )
+               *this\cursor[1] = *cursor
+               ProcedureReturn 1
+            EndIf
+         Else
+            If mouse( )\cursor <> *cursor 
+               mouse( )\cursor = *cursor 
+               ProcedureReturn 1
+            EndIf
          EndIf
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure.l SetColor( *this._S_WIDGET, ColorType.l, Color.l, Column.l = 0 )
@@ -17558,7 +17562,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure   GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
-         Protected i, Repaint, *widget._S_WIDGET
+         Protected i, a_index, Repaint, *widget._S_WIDGET
          
          ;\\ get at point address
          If Popup( ) = *root
@@ -17645,16 +17649,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ entered anchor index
-         If a_transform( )
+         If a_transform( ) ; Ok
             If Not mouse( )\press
                ;\\ reset a_index
                If a_index( ) > 0
+                  a_index = a_index( )
+                  a_index( ) = 0
+                
                   If a_focused( ) And
-                     a_focused( )\anchors\id[a_index( )] And
-                     Not is_atpoint_( a_focused( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                     a_focused( )\anchors\id[a_index] And
+                     Not is_atpoint_( a_focused( )\anchors\id[a_index], mouse( )\x, mouse( )\y )
                      
-                     If a_focused( )\anchors\id[a_index( )]\color\state <> #__S_0
-                        a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
+                     If a_focused( )\anchors\id[a_index]\color\state <> #__S_0
+                        a_focused( )\anchors\id[a_index]\color\state = #__S_0
                         a_focused( )\state\enter                        = #False
                         a_focused( )\repaint                            = #True
                         If *widget And is_innerside_( *widget )
@@ -17674,11 +17681,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                   If a_entered( ) And
-                     a_entered( )\anchors\id[a_index( )] And
-                     Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                     a_entered( )\anchors\id[a_index] And
+                     Not is_atpoint_( a_entered( )\anchors\id[a_index], mouse( )\x, mouse( )\y )
                      
-                     If a_entered( )\anchors\id[a_index( )]\color\state <> #__S_0
-                        a_entered( )\anchors\id[a_index( )]\color\state = #__S_0
+                     If a_entered( )\anchors\id[a_index]\color\state <> #__S_0
+                        a_entered( )\anchors\id[a_index]\color\state = #__S_0
                         a_entered( )\state\enter                        = #False
                         a_entered( )\repaint                            = #True
                         If *widget And is_innerside_( *widget )
@@ -17696,8 +17703,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         LeavedWidget( ) = #Null
                      EndIf
                   EndIf
-                  
-                  a_index( ) = 0
                EndIf
                
                ;\\ find first a_focused a_index
@@ -17721,6 +17726,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               If a_focused( )\state\enter > 0
                                  DoEvents( a_focused( ), #__event_mouseleave )
+                              Else
+                                 a_entered( ) = a_focused( )
                               EndIf
                               
                               a_focused( )\state\enter = - 1
@@ -19500,13 +19507,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
              
               
             If *this\event
-              If eventtype = #__event_Create
+               If eventtype = #__event_Create
                   Post( *this, eventtype, *button, *data )
-              ElseIf eventtype = #__event_cursor
-                  If Send( *this, eventtype, *button, *data )
-;                      If mouse( )\cursor 
-;                         mouse( )\cursor = *this\cursor
-;                      EndIf
+               ElseIf eventtype = #__event_cursor
+                  *data = Send( *this, eventtype, *button, *data )
+                  If *data <= 0
+                     *Data = mouse( )\cursor
                   EndIf
                Else
                   ;                If *this\row
@@ -19547,9 +19553,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ before send-widget-events change cursor
          If eventtype = #__event_cursor
-            Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
+             Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
             
-            Cursor::Set( *this\root\canvas\gadget, mouse( )\cursor )
+            Cursor::Set( *this\root\canvas\gadget, *data )
          EndIf
          
          ;\\ enabled mouse behavior
@@ -22017,6 +22023,8 @@ CompilerEndIf
 ; FirstLine = 10862
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -f+-----------------------------------------------0----------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------H------------------------------------------------------------------------------------------------0---v-------------------------------------------------------------------------8uX+18-f-------------------------------+0--------------------------0-f----+f--+----0--0-f2+e-----+4V-v------47f--fn7-470------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17729
+; FirstLine = 17079
+; Folding = -f+-----------------------------------------------0----------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------H------------------------------------------------------------------------------------------------0----+------------------------------------------------------------------------v8e6Tv--0------------------------------84-+------------------------4--0---8-0-8----4--4--V880----8fX0-+b----fr-0--dq-fr4------------------------------------
 ; EnableXP
