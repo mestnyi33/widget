@@ -514,7 +514,7 @@ Procedure widget_events( )
          If GetState( id_elements_tree) > 0 
             If IsContainer( *ew )
                If DragPrivate( #_DD_CreateNew, #PB_Drag_Drop )
-                 ChangeCursor( *ew, #PB_Cursor_Cross )
+                  ChangeCursor( *ew, #PB_Cursor_Cross )
                EndIf
             EndIf
          EndIf
@@ -1255,6 +1255,6 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 516
-; FirstLine = 503
+; FirstLine = 505
 ; Folding = ---------vf----------
 ; EnableXP
