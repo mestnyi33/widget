@@ -73,7 +73,7 @@ AddItem(*list3, -1, "30JAN21#999")
 
 EnableDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
 EnableDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
-EnableDrop(*list3, #PB_Drop_Text, #PB_Drag_Copy)
+;EnableDrop(*list3, #PB_Drop_Text, #PB_Drag_Copy)
 
 Bind(*list1, @event_widget( ), #__event_DragStart)
 Bind(*list1, @event_widget( ), #__event_Drop)
@@ -97,6 +97,6 @@ WaitClose()
 ; Until appQuit
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 75
-; FirstLine = 58
+; FirstLine = 56
 ; Folding = -
 ; EnableXP

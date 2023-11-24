@@ -94,7 +94,7 @@ Procedure widget_events( )
               DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
               StopDrawing()
               If IsImage(img)
-                SetCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
+                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
               EndIf
             EndIf
           EndIf
@@ -467,7 +467,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 132
-; FirstLine = 109
+; CursorPosition = 96
+; FirstLine = 78
 ; Folding = ----
 ; EnableXP

@@ -58,21 +58,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    If object
-      Bind( object, @CustomEvents(), #__event_cursorchange )
+      Bind( object, @CustomEvents(), #__event_cursor )
       Bind( object, @CustomEvents(), #__event_statuschange )
       Bind( object, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object1
-      Bind( object1, @CustomEvents(), #__event_cursorchange )
+      Bind( object1, @CustomEvents(), #__event_cursor )
       Bind( object1, @CustomEvents(), #__event_statuschange )
       Bind( object1, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object2
-      Bind( object2, @CustomEvents(), #__event_cursorchange )
+      Bind( object2, @CustomEvents(), #__event_cursor )
       Bind( object2, @CustomEvents(), #__event_statuschange )
       Bind( object2, @CustomEvents(), #__event_resize )
    EndIf
@@ -84,8 +84,19 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CustomEvents( )
       Select WidgetEventType( )
             
-         Case #__event_cursorchange
-           ; Debug "cursorchange "
+         Case #__event_cursor
+            If a_transform( )
+               If mouse( )\cursor
+                  If a_index( )
+                     mouse( )\cursor = #PB_Cursor_Hand ; ChangeCursor( EventWidget( ), #PB_Cursor_Hand )
+                  Else
+                     mouse( )\cursor = #PB_Cursor_Cross ; ChangeCursor( EventWidget( ), #PB_Cursor_Cross )
+                     ChangeCursor( EventWidget( ), mouse( )\cursor )
+                  EndIf
+                  ;
+               EndIf
+            EndIf
+            ProcedureReturn 1
             
          Case #__event_statuschange
             Debug "statuschange "
@@ -98,6 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
-; Folding = --
+; CursorPosition = 94
+; FirstLine = 67
+; Folding = ---
 ; EnableXP

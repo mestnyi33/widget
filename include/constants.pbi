@@ -488,7 +488,7 @@
          #__event_change
          #__event_statuschange
          #__event_scrollchange
-         #__event_cursorchange
+         #__event_cursor
          #__event_keydown
          #__event_input
          #__event_return
@@ -538,7 +538,7 @@
          #__eventmask_change       = 1 << #__event_change
          #__eventmask_statuschange = 1 << #__event_statuschange
          #__eventmask_scrollchange = 1 << #__event_scrollchange
-         #__eventmask_cursorchange = 1 << #__event_cursorchange
+         #__eventmask_cursorchange = 1 << #__event_cursor
          #__eventmask_keydown      = 1 << #__event_keydown
          #__eventmask_input        = 1 << #__event_input
          #__eventmask_return       = 1 << #__event_return
@@ -567,7 +567,6 @@
       #__event_rightdoubleclick = #__event_right2click
       ;
       #__event_returnkey    = #__event_return
-      #__event_cursorupdate = #__event_cursorchange
       ;
       ;       #__event_maximizewindow = #__event_maximize
       ;       #__event_minimizewindow = #__event_minimize
@@ -861,6 +860,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 540
+; FirstLine = 502
 ; Folding = ---
 ; EnableXP

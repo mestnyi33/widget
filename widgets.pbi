@@ -13403,11 +13403,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i = *this\cursor
          
          If *this\cursor <> *cursor
+            If *this\cursor
+               If *this\cursor = cursor::#__cursor_Drop
+                  Cursor::Free( *this\cursor )
+               EndIf
+               If *this\cursor = cursor::#__cursor_Drag
+                  Cursor::Free( *this\cursor )
+               EndIf
+            EndIf
+            
+            ;\\
             If mouse( )\drag 
                If *this\dragstart
                   If *this\state\enter > 0
-                     ; Debug "changeDRAG-CURSOR ( "+ *cursor +" ) "
-                     mouse( )\drag\cursor = *cursor
+                     If mouse( )\drag\state <> #PB_Drag_Leave
+                        ; Debug "changeDRAG-CURSOR ( "+ *cursor +" ) " + mouse( )\drag\cursor
+                        mouse( )\drag\cursor = *cursor
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -13415,6 +13427,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug "changeCURSOR ( "+ *cursor +" ) "
             *this\cursor = *cursor
          EndIf
+         
+;          ;\\
+;          If Not mouse( )\drag\cursor
+;             If mouse( )\cursor 
+;                mouse( )\cursor = *this\cursor
+;             EndIf
+;          EndIf
          
          ProcedureReturn result
       EndProcedure
@@ -13425,8 +13444,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\cursor[1] <> *cursor
             ; Debug "setCURSOR( " + *cursor +" )"
             
-            *this\cursor[1] = *cursor
             ChangeCursor( *this, *cursor )
+            *this\cursor[1] = *cursor
          EndIf
          
          ProcedureReturn result
@@ -17453,6 +17472,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             WidgetEvent( )\data   = #Null
             
          EndIf
+         
+         ProcedureReturn result
       EndProcedure
       
       Procedure.i Post( *this._S_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
@@ -17639,12 +17660,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
-                              DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, - 2 )
+                              DoEvents( a_focused( ), #__event_cursor, mouse( )\cursor, - 2 )
                            EndIf
                         Else
                            If mouse( )\cursor <> cursor::#__cursor_default
                               mouse( )\cursor = cursor::#__cursor_default
-                              DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, - 3 )
+                              DoEvents( a_focused( ), #__event_cursor, mouse( )\cursor, - 3 )
                            EndIf
                         EndIf
                         LeavedWidget( ) = #Null
@@ -17663,12 +17684,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
-                              DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, - 4 )
+                              DoEvents( a_entered( ), #__event_cursor, mouse( )\cursor, - 4 )
                            EndIf
                         Else
                            If mouse( )\cursor <> cursor::#__cursor_default
                               mouse( )\cursor = cursor::#__cursor_default
-                              DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, - 5 )
+                              DoEvents( a_entered( ), #__event_cursor, mouse( )\cursor, - 5 )
                            EndIf
                         EndIf
                         
@@ -17707,7 +17728,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               If mouse( )\cursor <> a_transform( )\cursor[i]
                                  mouse( )\cursor = a_transform( )\cursor[i]
-                                 DoEvents( a_focused( ), #__event_CursorChange, mouse( )\cursor, 7 )
+                                 DoEvents( a_focused( ), #__event_cursor, mouse( )\cursor, 7 )
                               EndIf
                            EndIf
                         EndIf
@@ -17747,7 +17768,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
                                     mouse( )\cursor = a_transform( )\cursor[i]
-                                    DoEvents( a_entered( ), #__event_CursorChange, mouse( )\cursor, 6 )
+                                    DoEvents( a_entered( ), #__event_cursor, mouse( )\cursor, 6 )
                                  EndIf
                               EndIf
                            EndIf
@@ -19100,44 +19121,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
-         ;\\ drag & drop state
-         If mouse( )\drag
-            If eventtype = #__event_DragStart Or
-               eventtype = #__event_MouseEnter Or
-               eventtype = #__event_MouseLeave Or
-               ( eventtype = #__event_MouseMove And *this\state\enter > 0 )
-               
-               If *this\drop 
-                  If *this\state\enter = 2
-                     If *this\drop\format = mouse( )\drag\format And
-                        *this\drop\actions & mouse( )\drag\actions And
-                        ( *this\drop\private = mouse( )\drag\private Or
-                          *this\drop\private & mouse( )\drag\private )
-                        
-                        If mouse( )\drag\state <> #PB_Drag_Enter
-                           mouse( )\drag\state = #PB_Drag_Enter
-                           ; Debug "#PB_Drag_Enter"
-                           
-                           If Not mouse( )\drag\cursor
-                              ChangeCursor( PressedWidget( ), cursor::#__cursor_Drop )
-                           EndIf
-                        EndIf
-                     EndIf
-                  Else
-                     If mouse( )\drag\state = #PB_Drag_Enter
-                        mouse( )\drag\state = #PB_Drag_Leave
-                        ; Debug "#PB_Drag_Leave"
-                        
-                        If Not mouse( )\drag\cursor
-                           ChangeCursor( PressedWidget( ), cursor::#__cursor_Drag )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
          ;\\ widget::_events_Anchors( )
          If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
             If a_events( *this, eventtype, *button, *data)
@@ -19490,7 +19473,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If eventtype <> #__event_CursorChange
+         If eventtype <> #__event_cursor
             If *this\row
                If *this\dragstart
                   If *this\FocusedRow( )
@@ -19506,13 +19489,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\ before send-widget-events change cursor
-         If eventtype = #__event_CursorChange
-            Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
-            
-            Cursor::Set( *this\root\canvas\gadget, mouse( )\cursor )
-         EndIf
-         
          ;\\ send-widget-events
          If *this\root And
             *this\state\disable = 0
@@ -19526,8 +19502,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\event
               If eventtype = #__event_Create
                   Post( *this, eventtype, *button, *data )
-               ElseIf eventtype = #__event_CursorChange
-                  Send( *this, eventtype, *button, *data )
+              ElseIf eventtype = #__event_cursor
+                  If Send( *this, eventtype, *button, *data )
+;                      If mouse( )\cursor 
+;                         mouse( )\cursor = *this\cursor
+;                      EndIf
+                  EndIf
                Else
                   ;                If *this\row
                   ;                   If eventtype = #__event_Focus Or
@@ -19565,6 +19545,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
          EndIf
          
+         ;\\ before send-widget-events change cursor
+         If eventtype = #__event_cursor
+            Debug ""+*this\class +" event( CURSOR ) - "+ mouse( )\cursor +" "+ *data +" "+ *button
+            
+            Cursor::Set( *this\root\canvas\gadget, mouse( )\cursor )
+         EndIf
+         
          ;\\ enabled mouse behavior
          If eventtype = #__event_Down
             If a_transform( )
@@ -19581,15 +19568,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\ after post-widget-events dragStart
-         If eventtype = #__event_DragStart
-            If mouse( )\drag
-               If mouse( )\drag\actions & #PB_Drag_Drop
-                  mouse( )\interact = #True
-               EndIf
-            EndIf
-         EndIf
-         
          ;\\ after post-widget-events then drop if create new widget
          If eventtype = #__event_Drop
             If *this <> Widget( )
@@ -19598,6 +19576,55 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
+         ;\\ after post&send drag-start-event 
+         If mouse( )\drag
+            If eventtype = #__event_DragStart
+               If mouse( )\drag\actions & #PB_Drag_Drop
+                  mouse( )\interact = #True
+               EndIf
+               
+               ;\\
+               If Not mouse( )\drag\cursor
+                  mouse( )\drag\cursor = cursor::#__cursor_Drop
+                  PressedWidget( )\cursor = cursor::#__cursor_Drag 
+               EndIf
+            EndIf
+         
+            ;\\ drag & drop state
+            If eventtype = #__event_MouseEnter Or
+               eventtype = #__event_MouseLeave Or
+               ( eventtype = #__event_MouseMove And *this\state\enter > 0 )
+               
+               If *this\drop 
+                  If *this\state\enter = 2
+                     If *this\drop\format = mouse( )\drag\format And
+                        *this\drop\actions & mouse( )\drag\actions And
+                        ( *this\drop\private = mouse( )\drag\private Or
+                          *this\drop\private & mouse( )\drag\private )
+                        
+                        If mouse( )\drag\state <> #PB_Drag_Enter
+                           mouse( )\drag\state = #PB_Drag_Enter
+                           ; Debug "#PB_Drag_Enter"
+                           
+                           If PressedWidget( )\cursor <> mouse( )\drag\cursor
+                              ChangeCursor( PressedWidget( ), mouse( )\drag\cursor )
+                           EndIf
+                        EndIf
+                     EndIf
+                  Else
+                     If mouse( )\drag\state = #PB_Drag_Enter
+                        mouse( )\drag\state = #PB_Drag_Leave
+                        ; Debug "#PB_Drag_Leave"
+                        
+                        If PressedWidget( )\cursor = cursor::#__cursor_Drop
+                           ChangeCursor( PressedWidget( ), cursor::#__cursor_Drag )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+              
          ;\\ cursor update
          Select eventtype
             Case #__event_MouseEnter, #__event_MouseMove, #__event_MouseLeave, #__event_Down, #__event_Up
@@ -19606,14 +19633,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If mouse( )\cursor <> PressedWidget( )\cursor
                         
                         If mouse( )\cursor = cursor::#__cursor_Drop
+                           Debug "  free DROP cursor"
                            Cursor::Free( mouse( )\cursor )
                         EndIf
                         If mouse( )\cursor = cursor::#__cursor_Drag
+                           Debug "  free DRAG cursor"
                            Cursor::Free( mouse( )\cursor )
                         EndIf
                         
                         mouse( )\cursor = PressedWidget( )\cursor
-                        DoEvents( PressedWidget( ), #__event_CursorChange, mouse( )\cursor, 2 )
+                        DoEvents( PressedWidget( ), #__event_cursor, mouse( )\cursor, 2 )
                      EndIf
                   EndIf
                   
@@ -19621,7 +19650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\state\enter = 2
                      If mouse( )\cursor <> *this\cursor
                         mouse( )\cursor = *this\cursor
-                        DoEvents( *this, #__event_CursorChange, mouse( )\cursor, 1 )
+                        DoEvents( *this, #__event_cursor, mouse( )\cursor, 1 )
                      EndIf
                      
                   Else
@@ -19632,7 +19661,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            PressedWidget( )\root <> EnteredWidget( )\root
                            If mouse( )\cursor <> PressedWidget( )\root\cursor
                               mouse( )\cursor = PressedWidget( )\root\cursor
-                              DoEvents( PressedWidget( )\root, #__event_CursorChange, mouse( )\cursor, - 1 )
+                              DoEvents( PressedWidget( )\root, #__event_cursor, mouse( )\cursor, - 1 )
                            EndIf
                         EndIf
                         
@@ -19640,7 +19669,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If mouse( )\cursor <> EnteredWidget( )\cursor
                            mouse( )\cursor = EnteredWidget( )\cursor
                            ; If Not ( a_transform( ) And a_index( ))
-                           DoEvents( EnteredWidget( ), #__event_CursorChange, mouse( )\cursor, 3 )
+                           DoEvents( EnteredWidget( ), #__event_cursor, mouse( )\cursor, 3 )
                            ; EndIf
                         EndIf
                         
@@ -19653,7 +19682,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     mouse( )\cursor = cursor::#__cursor_Default
                                     If LeavedWidget( )
                                        ;  Debug ""+ *this\class +" "+ EnteredWidget( )\class +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                       DoEvents( LeavedWidget( ), #__event_CursorChange, mouse( )\cursor, 5 )
+                                       DoEvents( LeavedWidget( ), #__event_cursor, mouse( )\cursor, 5 )
                                     EndIf
                                  EndIf
                               Else
@@ -19662,7 +19691,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If mouse( )\cursor <> EnteredWidget( )\cursor
                                        mouse( )\cursor = EnteredWidget( )\cursor
                                        ; Debug ""+ *this\class +" "+ EnteredWidget( )\class +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                       DoEvents( EnteredWidget( ), #__event_CursorChange, mouse( )\cursor, 4 )
+                                       DoEvents( EnteredWidget( ), #__event_cursor, mouse( )\cursor, 4 )
                                     EndIf
                                  EndIf
                               EndIf
@@ -19672,7 +19701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  mouse( )\cursor = cursor::#__cursor_Default
                                  
                                  Debug " default ";+ *this +" "+ EnteredWidget( ) +" "+ *this\state\enter +" "+ EnteredWidget( )\state\enter
-                                 DoEvents( *this, #__event_CursorChange, mouse( )\cursor, 7 )
+                                 DoEvents( *this, #__event_cursor, mouse( )\cursor, 7 )
                               EndIf
                            EndIf
                         EndIf
@@ -20154,8 +20183,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\ reset dragged cursor
                      If PressedWidget( )\cursor <> PressedWidget( )\cursor[1]
                         Debug "free drop CURSOR " +mouse( )\cursor +" "+ PressedWidget( )\cursor +" "+ PressedWidget( )\cursor[1]
-                        Cursor::Free( PressedWidget( )\cursor )
-                        PressedWidget( )\cursor = PressedWidget( )\cursor[1]
+                        ChangeCursor( PressedWidget( ), PressedWidget( )\cursor[1] )
                      EndIf
                      
                      ;\\ reset
@@ -21990,7 +22018,7 @@ CompilerEndIf
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----4---8-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19126
-; FirstLine = 18106
-; Folding = -f+-----------------------------------------------0----------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------H------------------------------------------------------------------------------------------------0---+------------------------------------------------------------------------v8e6Tv--0-------------------------------4v-------------------------4--0---8-0-8----4--4----afv----f-8qv-----v2-+--O2-v28------------------------------------
+; CursorPosition = 19508
+; FirstLine = 18314
+; Folding = -f+-----------------------------------------------0----------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------H------------------------------------------------------------------------------------------------0---v-------------------------------------------------------------------------8uX+18-f-------------------------------+0--------------------------0-f----+f--+----0--0-f2+e-----+4V-v------47f--fn7-470------------------------------------
 ; EnableXP
