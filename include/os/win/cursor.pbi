@@ -215,7 +215,7 @@ Module Cursor
   EndProcedure
   
   Procedure   Free( *cursor ) 
-    ; Debug "cursor-free "+*cursor
+     Debug "cursor-free "+*cursor
     
     If *cursor >= 0 And *cursor <= 255
       If FindMapElement(images( ), Str(*cursor))
@@ -315,6 +315,10 @@ Module Cursor
         
         ;       If \type <> *cursor
         ;         \type = *cursor
+        
+        If \hcursor > 0
+          cursor::Free( \hcursor  ) 
+        EndIf
         
         If *cursor > 255
           \hcursor = *cursor 

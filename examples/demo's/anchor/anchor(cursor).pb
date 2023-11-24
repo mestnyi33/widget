@@ -88,11 +88,20 @@ CompilerIf #PB_Compiler_IsMainFile
             If a_transform( )
                If mouse( )\cursor
                   If a_index( )
-                     mouse( )\cursor = #PB_Cursor_Hand ; ChangeCursor( EventWidget( ), #PB_Cursor_Hand )
+                    mouse( )\cursor = #PB_Cursor_Hand 
                   Else
-                     mouse( )\cursor = #PB_Cursor_Cross ; ChangeCursor( EventWidget( ), #PB_Cursor_Cross )
-                     ChangeCursor( EventWidget( ), mouse( )\cursor )
+                    mouse( )\cursor = #PB_Cursor_Cross 
                   EndIf
+                   ;ChangeCursor( EventWidget( ), mouse( )\cursor )
+                  
+;                   If a_index( )
+;                      ChangeCursor( EventWidget( ), #PB_Cursor_Hand )
+;                   Else
+;                      ChangeCursor( EventWidget( ), #PB_Cursor_Cross )
+;                    EndIf
+;                    If mouse( )\cursor 
+;                      mouse( )\cursor = EventWidget( )\cursor
+;                    EndIf
                   ;
                EndIf
             EndIf
@@ -108,8 +117,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 67
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP
