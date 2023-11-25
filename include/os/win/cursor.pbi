@@ -223,14 +223,12 @@ Module Cursor
       EndIf
     Else
       If MapSize(images( ))
-        ; PushMapPosition(images( ))
         ForEach images( )
           If *cursor = images( )
             DeleteMapElement(images( ))
             Break 
           EndIf
         Next
-        ; PopMapPosition(images( ))
       EndIf
       ProcedureReturn DestroyCursor_( *cursor )
     EndIf
@@ -419,6 +417,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 231
+; FirstLine = 213
 ; Folding = ---------
 ; EnableXP

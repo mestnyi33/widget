@@ -423,13 +423,11 @@ Module Cursor
       EndIf
     Else
       If MapSize(images( ))
-        PushMapPosition(images( ))
         ForEach images( )
           If *cursor = images( )
             DeleteMapElement(images( ))
           EndIf
         Next
-        PopMapPosition(images( ))
       EndIf
       ProcedureReturn CocoaMessage(0, *cursor, "release")
     EndIf
@@ -628,6 +626,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 430
+; FirstLine = 401
 ; Folding = -------------
 ; EnableXP

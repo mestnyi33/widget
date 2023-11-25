@@ -296,13 +296,11 @@ Module Cursor
       EndIf
     Else
       If MapSize(images( ))
-        PushMapPosition(images( ))
         ForEach images( )
           If *cursor = images( )
             DeleteMapElement(images( ))
           EndIf
         Next
-        PopMapPosition(images( ))
       EndIf
       ;     ; Используйте g_object_unref( )
       ;     ProcedureReturn gdk_cursor_unref_(*cursor)
@@ -471,6 +469,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 303
+; FirstLine = 285
 ; Folding = --------
 ; EnableXP
