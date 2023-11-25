@@ -280,7 +280,7 @@ Module Cursor
         DrawImageUp(0,-1,height, bcolor, fcolor )
         DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
         Plot(0, 7, fcolor ) : Line(1, 7, width-2, 1, bcolor) : Plot(width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(0, 8, width , 1, fcolor)                                                                                   ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Line(0, 8, width , 1, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
       If type = #__cursor_UpDown
         x = 8
@@ -298,7 +298,7 @@ Module Cursor
         x = 8
         y = 6
         Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
         DrawImageCursorSplitDown(0,0,height, bcolor, fcolor )
         DrawImageDown(0,0,height, bcolor, fcolor )
       EndIf
@@ -310,7 +310,7 @@ Module Cursor
         DrawImageLeft(-1,0,width, bcolor, fcolor )
         DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
         Plot(7, 0, fcolor ) : Line(7, 1, 1, height-2, bcolor) : Plot(7, height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(8, 0, 1, height, fcolor)                                                                                  ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Line(8, 0, 1, height, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
       If type = #__cursor_LeftRight
         x = 6
@@ -328,7 +328,7 @@ Module Cursor
         x = 6
         y = 8
         Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                           ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
         DrawImageCursorSplitRight(0,0,width, bcolor, fcolor )
         DrawImageRight(0,0,width, bcolor, fcolor )
       EndIf
@@ -450,9 +450,9 @@ Module Cursor
   Procedure.i Create( ImageID.i, x.l = 0, y.l = 0 )
     Protected *ic, Hotspot.NSPoint
     If ImageID
-    	CompilerIf #test_cursor
-    		Debug " ::---------------- create-cursor -----------------"
-    	CompilerEndIf
+      CompilerIf #test_cursor
+        Debug " ::---------------- create-cursor -----------------"
+      CompilerEndIf
       Hotspot\x = x
       Hotspot\y = y
       *ic = CocoaMessage(0, 0, "NSCursor alloc")
@@ -468,10 +468,10 @@ Module Cursor
     If *cursor And *cursor\hcursor
       ; reset
       If state = 0 
-;         Protected EnteredWindowID = Mouse::window( )
-;         If EnteredWindowID 
-;           CocoaMessage(0, EnteredWindowID, "disableCursorRects")
-;         EndIf
+        ;         Protected EnteredWindowID = Mouse::window( )
+        ;         If EnteredWindowID 
+        ;           CocoaMessage(0, EnteredWindowID, "disableCursorRects")
+        ;         EndIf
         If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
           CocoaMessage(0, *cursor\windowID, "enableCursorRects")
         EndIf
@@ -505,81 +505,92 @@ Module Cursor
   EndProcedure
   
   Procedure   Set( Gadget.i, *cursor )
-     Protected *memory._s_cursor
-     
-     With *memory
-        If IsGadget( Gadget )
-           Protected GadgetID = GadgetID( Gadget )
-           
-           CompilerIf #test_cursor
-              Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-           CompilerEndIf
-           
-           *memory = objc_getAssociatedObject_( GadgetID, "__cursor" )
-           
-           If Not *memory
-              *memory = AllocateStructure( _s_cursor )
-              \windowID = ID::GetWindowID( GadgetID )
-              objc_setAssociatedObject_( GadgetID, "__cursor", *memory, 0 ) 
-           EndIf
-           
-           ;       If \type <> *cursor
-           ;          \type = *cursor
-           If *cursor > 255
-              \hcursor = *cursor 
-           Else
-              ;           ; if ishidden cursor show cursor
-              ;           If isHiden( )
-              ;             CocoaMessage(0, 0, "NSCursor unhide")
-              ;           EndIf
-              
-              Select *cursor
-                 Case #__cursor_Invisible : \hcursor = - 1
-                 Case #__cursor_Busy 
-                    SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
-                    
-                 Case #__cursor_Default        : \hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-                 Case #__cursor_IBeam          : \hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-                 Case #__cursor_Denied         : \hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
-                    
-                 Case #__cursor_Hand           : \hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-                 Case #__cursor_Cross          : \hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-                    
-                 Case #__cursor_SplitLeft      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
-                 Case #__cursor_SplitRight     : \hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
-                 Case #__cursor_SplitLeftRight : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-                    
-                 Case #__cursor_SplitUp        : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
-                 Case #__cursor_SplitDown      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
-                 Case #__cursor_SplitUpDown    : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-                    
-                 Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-                      #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
-                      #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown 
-                    
-                    \hcursor = New( *cursor, Draw( *cursor ) )
-                    
-                 Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                    ;Case #__cursor_Drop      : \hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
-                 Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                    
-                 Case #__cursor_Grab      : \hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
-                 Case #__cursor_Grabbing  : \hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
-                    
-              EndSelect 
-           EndIf
-           ;       EndIf
-           
-           
-           If \hcursor And 
-              ( GadgetID = mouse::Gadget( \windowID ) Or
-                CocoaMessage(0, 0, "NSEvent pressedMouseButtons") )
-              EnteredID = GadgetID
-              cursor::Change( GadgetID, 1 )
-              ProcedureReturn #True
-           EndIf
+    Protected *memory._s_cursor
+    
+    With *memory
+      If IsGadget( Gadget )
+        Protected GadgetID = GadgetID( Gadget )
+        
+        CompilerIf #test_cursor
+          Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+        CompilerEndIf
+        
+        *memory = objc_getAssociatedObject_( GadgetID, "__cursor" )
+        
+        If Not *memory
+          *memory = AllocateStructure( _s_cursor )
+          \windowID = ID::GetWindowID( GadgetID )
+          objc_setAssociatedObject_( GadgetID, "__cursor", *memory, 0 ) 
         EndIf
-     EndWith
+        
+        If \type <> *cursor
+          If \hcursor > 0
+            Select \type
+              Case #__cursor_Drag, #__cursor_Drop,
+                   #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
+                   #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
+                   #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown
+                cursor::Free( \hcursor )
+            EndSelect
+          EndIf
+          \type = *cursor
+          
+          ;\\
+          If *cursor > 255
+            \hcursor = *cursor 
+          Else
+            ;           ; if ishidden cursor show cursor
+            ;           If isHiden( )
+            ;             CocoaMessage(0, 0, "NSCursor unhide")
+            ;           EndIf
+            
+            Select *cursor
+              Case #__cursor_Invisible : \hcursor = - 1
+              Case #__cursor_Busy 
+                SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
+                
+              Case #__cursor_Default        : \hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+              Case #__cursor_IBeam          : \hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+              Case #__cursor_Denied         : \hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
+                
+              Case #__cursor_Hand           : \hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+              Case #__cursor_Cross          : \hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+                
+              Case #__cursor_SplitLeft      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+              Case #__cursor_SplitRight     : \hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+              Case #__cursor_SplitLeftRight : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+                
+              Case #__cursor_SplitUp        : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+              Case #__cursor_SplitDown      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+              Case #__cursor_SplitUpDown    : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+                
+              Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
+                   #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
+                   #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown 
+                
+                \hcursor = New( *cursor, Draw( *cursor ) )
+                
+              Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+                ;Case #__cursor_Drop      : \hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+              Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+                
+              Case #__cursor_Grab      : \hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+              Case #__cursor_Grabbing  : \hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+                
+            EndSelect 
+          EndIf
+        EndIf
+        
+        
+        If \hcursor And 
+           ( GadgetID = mouse::Gadget( \windowID ) Or
+             CocoaMessage(0, 0, "NSEvent pressedMouseButtons") )
+          EnteredID = GadgetID
+          cursor::Change( GadgetID, 1 )
+          ProcedureReturn #True
+        EndIf
+      EndIf
+    EndWith
   EndProcedure
   
   Procedure   Get( )
@@ -617,8 +628,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 229
-; FirstLine = 166
-; Folding = --f--v-X----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------------
 ; EnableXP

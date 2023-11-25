@@ -1,5 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pbi"
-;XIncludeFile "../empty.pb"
+﻿XIncludeFile "../../../widgets.pbi"
 UseLib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -96,6 +95,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

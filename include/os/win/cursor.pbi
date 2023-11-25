@@ -215,7 +215,7 @@ Module Cursor
   EndProcedure
   
   Procedure   Free( *cursor ) 
-     Debug "cursor-free "+*cursor
+    ;Debug "cursor-free "+*cursor
     
     If *cursor >= 0 And *cursor <= 255
       If FindMapElement(images( ), Str(*cursor))
@@ -223,13 +223,14 @@ Module Cursor
       EndIf
     Else
       If MapSize(images( ))
-        PushMapPosition(images( ))
+        ; PushMapPosition(images( ))
         ForEach images( )
           If *cursor = images( )
             DeleteMapElement(images( ))
+            Break 
           EndIf
         Next
-        PopMapPosition(images( ))
+        ; PopMapPosition(images( ))
       EndIf
       ProcedureReturn DestroyCursor_( *cursor )
     EndIf
@@ -271,25 +272,25 @@ Module Cursor
       
       ;\\ set
       ; If *cursor\hcursor <> GetCursor_( )
-        If state > 0
-          If *cursor\hcursor =- 1
-            If GetCursor_( )
-              result = SetCursor_( #NUL )
-            Else
-              result = *cursor\hcursor
-            EndIf
+      If state > 0
+        If *cursor\hcursor =- 1
+          If GetCursor_( )
+            result = SetCursor_( #NUL )
           Else
-            ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
-            ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
-            result = SetCursor_( *cursor\hcursor )
+            result = *cursor\hcursor
           EndIf
+        Else
+          ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
+          ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
+          result = SetCursor_( *cursor\hcursor )
         EndIf
-        
-        If result <> *cursor\hcursor
-          CompilerIf #test_cursor
-            Debug " :: changeCursor "+ state +" "+ GadgetID +" "+ result +" "+ *cursor\hcursor
-          CompilerEndIf
-        EndIf
+      EndIf
+      
+      If result <> *cursor\hcursor
+        CompilerIf #test_cursor
+          Debug " :: changeCursor "+ state +" "+ GadgetID +" "+ result +" "+ *cursor\hcursor
+        CompilerEndIf
+      EndIf
       ; EndIf
     EndIf
   EndProcedure
@@ -313,56 +314,61 @@ Module Cursor
           SetProp_( GadgetID, "#__oldproc", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
         EndIf
         
-        ;       If \type <> *cursor
-        ;         \type = *cursor
-        
-        If \hcursor > 0
-          cursor::Free( \hcursor  ) 
+        If \type <> *cursor
+          If \hcursor > 0
+            Select \type
+              Case #__cursor_Drag, #__cursor_Drop,
+                   #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+                   #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
+                cursor::Free( \hcursor )
+            EndSelect
+          EndIf
+          \type = *cursor
+          
+          ;\\
+          If *cursor > 255
+            \hcursor = *cursor 
+          Else
+            Select *cursor
+              Case #__cursor_Invisible : \hcursor =- 1
+              Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
+                
+              Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
+              Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
+              Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
+                
+              Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
+              Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
+              Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
+                
+              Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
+              Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
+                
+              Case #__cursor_Diagonal1,
+                   #__cursor_LeftUp,
+                   #__cursor_RightDown 
+                \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
+                
+              Case #__cursor_Diagonal2,
+                   #__cursor_RightUp,
+                   #__cursor_LeftDown 
+                \hcursor = LoadCursor_(0,#IDC_SIZENESW)
+                
+                ;\\  custom cursors
+              Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+                   #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
+                
+                \hcursor = New( *cursor, Draw( *cursor ) )
+                
+              Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+              Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
+                
+              Case #__cursor_Grab      : \hcursor = LoadCursor_(0,#IDC_ARROW)
+              Case #__cursor_Grabbing  : \hcursor = LoadCursor_(0,#IDC_ARROW)
+                
+            EndSelect 
+          EndIf
         EndIf
-        
-        If *cursor > 255
-          \hcursor = *cursor 
-        Else
-          Select *cursor
-            Case #__cursor_Invisible : \hcursor =- 1
-            Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
-              
-            Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
-            Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
-            Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
-              
-            Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
-            Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
-            Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
-              
-            Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
-            Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
-              
-            Case #__cursor_Diagonal1,
-                 #__cursor_LeftUp,
-                 #__cursor_RightDown 
-              \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
-              
-            Case #__cursor_Diagonal2,
-                 #__cursor_RightUp,
-                 #__cursor_LeftDown 
-              \hcursor = LoadCursor_(0,#IDC_SIZENESW)
-              
-              ;\\  custom cursors
-            Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
-                 #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
-              
-              \hcursor = New( *cursor, Draw( *cursor ) )
-              
-            Case #__cursor_Drag      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-            Case #__cursor_Drop      : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-              
-            Case #__cursor_Grab      : \hcursor = LoadCursor_(0,#IDC_ARROW)
-            Case #__cursor_Grabbing  : \hcursor = LoadCursor_(0,#IDC_ARROW)
-              
-          EndSelect 
-        EndIf
-        ;       EndIf
         
         If \hcursor And 
            GadgetID = mouse::Gadget( \windowID )

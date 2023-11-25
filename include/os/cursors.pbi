@@ -81,7 +81,7 @@ DeclareModule Cursor
    #__cursor_LeftDownRightUp = #__cursor_Diagonal2
    
    Structure _s_cursor
-      ;type.a
+      type.a
       *hcursor
       windowID.i
    EndStructure

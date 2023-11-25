@@ -70,13 +70,12 @@ EndProcedure
 
 #PB_Tree_ClickSelect = 0;#PB_ListView_ClickSelect
 #PB_Tree_MultiSelect = 0;#PB_ListView_MultiSelect
-
-If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+Define i,a
+  
+If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;{
-  Define i,a
   ;
   g = TreeGadget(0, 10, 30, 250, 120, #PB_Tree_CheckBoxes) 
-  TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
   For a = 0 To 6
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Tree",0,0) ; define Tree content
     AddGadgetItem (0, -1, "Subtem " + Str(a) + " of the Tree",0,1) ; define Tree content
@@ -94,7 +93,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   
   ;
   TreeGadget(1, 10, 30+150, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_ClickSelect)
-  TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
   For a = 0 To 6
     AddGadgetItem (1, -1, "Item " + Str(a) + " of the Tree long long long long long",0,0) ; define Tree content
     AddGadgetItem (1, -1, "Subtem " + Str(a) + " of the Tree",0,1)                        ; define Tree content
@@ -113,7 +111,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   
   ;
   TreeGadget(2, 10, 30+150+150, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_MultiSelect)
-  TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
   For a = 0 To 6
     AddGadgetItem (2, -1, "Item " + Str(a) + " of the Tree",0,0) ; define Tree content
     AddGadgetItem (2, -1, "Subtem " + Str(a) + " of the Tree",0,1) ; define Tree content
@@ -133,10 +130,14 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   For i = 0 To 2
     BindGadgetEvent(i, @events_gadgets( ))
   Next
+  
+  TextGadget(#PB_Any, 10,10, 250,20, "flag = no")
+  TextGadget(#PB_Any, 10,10+150, 250,20, "flag = ClickSelect")
+  TextGadget(#PB_Any, 10,10+150+150, 250,20, "flag = MultiSelect")
   ;}
   ;--------------
   
-  *g = Tree(270, 30, 250, 120, #__Flag_GridLines|#__tree_CheckBoxes)
+  *g = Tree(270, 30, 250, 120, #__tree_CheckBoxes|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (*g, -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (*g, -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -148,7 +149,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   Next
   
   
-  Tree(270, 30+150, 250, 120, #__Flag_GridLines|#__tree_CheckBoxes|#__tree_clickselect)
+  Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_clickselect|#__Flag_GridLines)
   For a = 0 To 2
     AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
     AddItem (GetWidget(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
@@ -164,7 +165,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   SetState(GetWidget(1), 9) 
   
   
-  Tree(270, 30+150+150, 250, 120, #__Flag_GridLines|#__tree_CheckBoxes|#__tree_multiselect)
+  Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_multiselect|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (GetWidget(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -179,20 +180,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window
   SetState(GetWidget(2), 7) 
   SetState(GetWidget(2), 9) 
   
+  For i = 0 To 2
+    Bind(GetWidget(i), @events_widgets( ))
+  Next
+  ;Bind(*g, @events_widgets( ))
+  
   Text(270,10, 250,20, "flag = no")
   Text(270,10+150, 250,20, "flag = ClickSelect")
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
-  For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets( ))
-  Next
-  
-  Bind(*g, @events_widgets( ))
   
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 40
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP
