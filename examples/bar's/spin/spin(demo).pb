@@ -1,5 +1,6 @@
-﻿XIncludeFile "../../../widget-events.pbi" : Uselib(widget)
-;XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" 
+
+Uselib(widget)
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
@@ -25,15 +26,15 @@ Procedure events_widgets()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Up
+    Case #__event_Up
       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
       Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
-    Case #PB_EventType_Down
+    Case #__event_Down
       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
       Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
        
-    Case #PB_EventType_Change
+    Case #__event_Change
       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
       Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
   EndSelect
@@ -55,7 +56,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
 ; ; ;   SetGadgetState(2, 8000)
   
   TextGadget    (#PB_Any, 10,  10, 250, 20,"Spin Standard", #PB_Text_Center)
-  TextGadget    (#PB_Any, 10, 100, 250, 20, "Spin Ticks", #PB_Text_Center)
+  TextGadget    (#PB_Any, 10, 100, 250, 20, "Spin numeric", #PB_Text_Center)
 ;   TextGadget    (#PB_Any,  90, 180, 200, 20, "Spin Vertical", #PB_Text_Right)
   
   For i = 0 To 1
@@ -83,8 +84,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
     
     
   Spin(10, 30, 250, 18, 0, 30)
-  Spin(10, 30+18+1, 250, 21, 0, 30, #__text_center);|#__bar_Vertical)
-  Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__text_right)
+  Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter);|#__bar_Vertical)
+  Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_textright)
   SetState(GetWidget(0), 0)
   SetState(GetWidget(1), 15)
   SetState(GetWidget(2), 30)
@@ -97,7 +98,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
 ; ; ;   SetState(GetWidget(2), 8000)
   
   Text(10,  10, 250, 20,"Spin Standard", #__Text_Center)
-  Text(10, 100, 250, 20, "Spin Ticks", #__Text_Center)
+  Text(10, 100, 250, 20, "Spin numeric", #__Text_Center)
 ;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
   
   ;Bind(#PB_All, @events_widgets())
@@ -108,6 +109,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

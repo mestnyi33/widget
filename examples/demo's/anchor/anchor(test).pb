@@ -21,12 +21,12 @@
   SetColor(parent, #__color_back, $FFE9E9E9)
   
   ;\\
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
   ;object = Container(100, 100, 250, 250) : CloseList()
   ;object = String(100, 100, 250, 250, "string", #__flag_borderless)
   ;object = Button(100, 100, 250, 250, "button");, #__flag_borderless)
-  object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
+  ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
    
 ;   ;\\
    widget()\fs = 50 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -34,7 +34,10 @@
   ;\\
   Define anchor_size = 30
   a_set(parent, #__a_full, anchor_size/2)
-  a_set(object, #__a_full, anchor_size)
+  ;a_set(object, #__a_full, anchor_size)
+  a_set(object, #__a_full, anchor_size, 0)
+  ;a_set(object, #__a_full, anchor_size, anchor_size)
+  
 ;   a_set(object, #__a_full, anchor_size*2)
 ;   a_set(object, #__a_full, anchor_size*2, 5)
 ;   a_set(object, #__a_full, anchor_size)
@@ -148,8 +151,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 28
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = v-
 ; EnableXP

@@ -3007,8 +3007,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\y - a_focused( )\anchors\id[a_index( )]\y
             
             ;\\
-            mouse( )\delta\x - ( a_focused( )\anchors\size - a_focused( )\anchors\pos )
-            mouse( )\delta\y - ( a_focused( )\anchors\size - a_focused( )\anchors\pos )
+            Select a_index( )
+              Case #__a_left_top
+                mouse( )\delta\x - a_focused( )\anchors\pos
+                mouse( )\delta\y - a_focused( )\anchors\pos
+              Case #__a_left 
+                mouse( )\delta\x - a_focused( )\anchors\pos
+              Case #__a_top  
+                mouse( )\delta\y - a_focused( )\anchors\pos
+              Case #__a_right, #__a_right_top
+                mouse( )\delta\x + a_focused( )\anchors\pos - a_focused( )\anchors\size
+                mouse( )\delta\y - a_focused( )\anchors\pos
+              Case #__a_bottom, #__a_left_bottom
+                mouse( )\delta\y + a_focused( )\anchors\pos - a_focused( )\anchors\size 
+                mouse( )\delta\x - a_focused( )\anchors\pos
+              Case #__a_right_bottom
+                mouse( )\delta\x + a_focused( )\anchors\pos - a_focused( )\anchors\size 
+                mouse( )\delta\y + a_focused( )\anchors\pos - a_focused( )\anchors\size
+            EndSelect
             
             ;\\
             If a_focused( )\type = #__type_window
@@ -3024,6 +3040,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   mouse( )\delta\y + a_focused( )\fs * 2 + a_focused( )\fs[2] + a_focused( )\fs[4]
                   
               EndSelect
+            Else
             EndIf
           EndIf
         EndIf
@@ -16028,7 +16045,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *BB1\color = _get_colors_( )
           *BB2\color = _get_colors_( )
-          ;*SB\color = _get_colors_( )
           
           ;
           *this\bar\invert = Bool( Flag & #__bar_invert = #__bar_invert )
@@ -16052,8 +16068,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           
-          *this\StringBox( ) = Create( *this, *this\class + "_string", #__type_String,
-                                       0, 0, 0, 0, #Null$, #__flag_child | #__flag_textnumeric | #__flag_borderless )
+          *this\StringBox( ) = Create( *this, *this\class + "_string",
+                                       #__type_String, 0, 0, 0, 0, #Null$,
+                                       #__flag_child | #__flag_textnumeric | #__flag_borderless )
         EndIf
         
         ; - Create Track
@@ -21991,8 +22008,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19539
-; FirstLine = 19349
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----f--q------------------------------------------4-------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------------------------------------++-fr0v+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vX+18+------------------------------------------------------------------------------------f-----+-V------------------------------------------v-------------
 ; EnableXP

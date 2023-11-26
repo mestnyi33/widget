@@ -10,35 +10,33 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._s_widget = EventWidget( )
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick
-      Case #PB_EventType_StatusChange
+      Case #__event_StatusChange
         If *size
-          SetText(*size, Str(*this\_a_\size) )
+          SetText(*size, Str(*this\anchors\size) )
         EndIf
         
         If *position
-          SetText(*position, Str(*this\_a_\pos) )
+          SetText(*position, Str(*this\anchors\pos) )
         EndIf
         
         If *grid
           SetText(*grid, Str(a_transform( )\grid_size) )
         EndIf
         
-      Case #PB_EventType_Change
-        If *this = *size
-          a_mode( a_focused( ), #__a_full, Val(GetText(*this)))
-          
-          SetText(*position, Str(a_focused( )\_a_\pos) )
-        EndIf
-        
-        If *this = *position
-          a_mode( a_focused( ), #__a_full, Val(GetText(*size)), Val(GetText(*position)))
-        EndIf
-        
-        If *this = *grid
-          a_init(a_transform( )\main, Val(GetText(*grid)))
-        EndIf
-        
+      Case #__event_Change
+        Select *this 
+          Case *size
+            a_set( a_focused( ), #__a_full, Val(GetText(*this)))
+            SetText(*position, Str(a_focused( )\anchors\pos) )
+            
+          Case *position
+            a_set( a_focused( ), #__a_full, Val(GetText(*size)), Val(GetText(*position)))
+            SetText(*size, Str(a_focused( )\anchors\size) )
+            
+          Case *grid
+            a_init(a_main(), Val(GetText(*grid)))
+            
+        EndSelect
     EndSelect
   EndProcedure
   
@@ -49,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( )
       Case #__Event_LeftClick
         *val = Val( GetText( *widget ) )
-          
+        
         Select GetText( EventWidget( ) ) 
           Case "+"
             *val + 1
@@ -94,14 +92,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Container( 10,10,220,210 )
-    a_init( widget( ), 15 )
+    a_init( widget( ),0 )
     
     image( 5,5,60,60, -1 )
-    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
+    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
+    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     image( 150,110,60,60, -1 )
-    Bind( widget( ), @events_widgets( ), #PB_EventType_StatusChange )
+    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     a_set( *a )
     CloseList( )
     
@@ -111,26 +109,26 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Frame( 0,0,230-2,205-2, "preferences" )
     Text( 10,10+y,100,18, "grid size", #PB_Text_Border )
     *grid = Spin( 10,30+y,100,30, 0,100 )
-    Bind( *grid, @events_widgets( ), #PB_EventType_Change )
+    Bind( *grid, @events_widgets( ), #__event_Change )
     
     Text( 10,70+y,100,18, "anchor size", #PB_Text_Border )
     *size = Spin( 10,90+y,100,30, 0,100 )
-    Bind( *size, @events_widgets( ), #PB_EventType_Change )
+    Bind( *size, @events_widgets( ), #__event_Change )
     
     Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
     ;*position = PB(Spin)( 10,150+y,100,30, 0,100 )
     *position = Spin( 10,150+y,100,30, 0,100 )
-    Bind( *position, @events_widgets( ), #PB_EventType_Change )
+    Bind( *position, @events_widgets( ), #__event_Change )
     
     *BackColor = Button( 120,90+y,100,30, "BackColor" )
-    Bind( *BackColor, @events_widgets( ), #PB_EventType_LeftClick )
+    Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
     
     *FrameColor = Button( 120,150+y,100,30, "FrameColor" )
-    Bind( *FrameColor, @events_widgets( ), #PB_EventType_LeftClick )
+    Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
     
     
     If a_focused( )
-     ; SetText(*size, Str(a_focused( )\_a_\size) )
+      ; SetText(*size, Str(a_focused( )\anchors\size) )
     EndIf
     
     WaitClose( )
@@ -138,6 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---
 ; EnableXP
