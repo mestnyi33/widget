@@ -40,8 +40,8 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 320,0,320,200)
+; Shows possible flags of ButtonGadget in action...  
+If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   SpinGadget(0, 10,  30, 250, 18, 0, 30)
   SpinGadget(1, 10,  30+18+1, 250, 21, 0, 30)
   SpinGadget(2, 10,  30+18+1+21+1, 250, 25, 0, 30)
@@ -83,32 +83,36 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
     CompilerEndIf
     
     
-  Spin(10, 30, 250, 18, 0, 30)
-  Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter);|#__bar_Vertical)
-  Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_textright)
-  SetState(GetWidget(0), 0)
-  SetState(GetWidget(1), 15)
-  SetState(GetWidget(2), 30)
-  
-  Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
-  Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
-  SetState(widget( ), 5000)
-  
-; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
-; ; ;   SetState(GetWidget(2), 8000)
-  
-  Text(10,  10, 250, 20,"Spin Standard", #__Text_Center)
-  Text(10, 100, 250, 20, "Spin numeric", #__Text_Center)
-;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
-  
-  ;Bind(#PB_All, @events_widgets())
-  
-  For i = 0 To 1
-    Bind(GetWidget(i), @events_widgets())
-  Next
-  
+    If Open(0, 320,0,320,200)
+       Spin(10, 30, 250, 18, 0, 30)
+       Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter);|#__bar_Vertical)
+       Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_textright)
+       SetState(GetWidget(0), 0)
+       SetState(GetWidget(1), 15)
+       SetState(GetWidget(2), 30)
+       
+       Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
+       Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
+       SetState(widget( ), 5000)
+       
+       ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
+       ; ; ;   SetState(GetWidget(2), 8000)
+       
+       Text(10,  10, 250, 20,"Spin Standard", #__Text_Center)
+       Text(10, 100, 250, 20, "Spin numeric", #__Text_Center)
+       ;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
+       
+       ;Bind(#PB_All, @events_widgets())
+       
+       For i = 0 To 1
+          Bind(GetWidget(i), @events_widgets())
+       Next
+    EndIf
+
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 105
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

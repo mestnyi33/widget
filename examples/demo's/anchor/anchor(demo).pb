@@ -86,9 +86,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn *string
   EndProcedure
   
-  Macro Spin(x,y,width,height, min, max)
-    _temp_spin_(x,y,width,height, min, max)
-  EndMacro
+;   Macro Spin(x,y,width,height, min, max)
+;     _temp_spin_(x,y,width,height, min, max)
+;   EndMacro
   
   If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Container( 10,10,220,210 )
@@ -104,38 +104,44 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
     Define y = 0
-    Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
-    ;Container( 235,10,230,205, #PB_Container_BorderLess )
-    ;Frame( 0,0,230-2,205-2, "preferences" )
+    ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
+    Container( 235,10,230,210, #PB_Container_BorderLess )
+    ;Frame( 0,0,230,210, " preferences " )
+    
+    y = 20
     Text( 10,10+y,100,18, "grid size", #PB_Text_Border )
     *grid = Spin( 10,30+y,100,30, 0,100 )
-    Bind( *grid, @events_widgets( ), #__event_Change )
     
     Text( 10,70+y,100,18, "anchor size", #PB_Text_Border )
     *size = Spin( 10,90+y,100,30, 0,100 )
-    Bind( *size, @events_widgets( ), #__event_Change )
     
     Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
-    ;*position = PB(Spin)( 10,150+y,100,30, 0,100 )
     *position = Spin( 10,150+y,100,30, 0,100 )
-    Bind( *position, @events_widgets( ), #__event_Change )
     
     *BackColor = Button( 120,90+y,100,30, "BackColor" )
-    Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
     
     *FrameColor = Button( 120,150+y,100,30, "FrameColor" )
-    Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
-    
     
     If a_focused( )
-      ; SetText(*size, Str(a_focused( )\anchors\size) )
+      SetState(*grid, a_transform( )\grid_size )
+      SetState(*size, a_focused( )\anchors\size )
+      SetState(*position, a_focused( )\anchors\pos )
     EndIf
+    
+    ;\\
+    Bind( *grid, @events_widgets( ), #__event_Change )
+    Bind( *size, @events_widgets( ), #__event_Change )
+    Bind( *position, @events_widgets( ), #__event_Change )
+    Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
+    Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
     
     WaitClose( )
   EndIf
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 125
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP

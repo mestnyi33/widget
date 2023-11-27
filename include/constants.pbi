@@ -634,48 +634,14 @@
       
       
       
-      
-      
-      
-      
-      
-      
-      
-      
-      ;     ; temp
-      ;     #__c_0 = 0
-      ;     #__c_1 = 1
-      ;     #__c_2 = 2
-      ;     #__c_3 = 3
-      ;     #__c_4 = 4
-      ;     #__c_5 = 5
-      ;     #__c_6 = 6
-      
-      
       #__text_update = - 124
       
-      #debug                       = 0
-      #debug_draw_font             = #debug
-      #debug_draw_font_change      = #debug
-      #debug_draw_item_font_change = #debug
-      #__debug_events_tab          = 0
-      
-      #__draw_scroll_box     = 0
-      #__test_scrollbar_size = 0
-      
-      #debug_update_text = 0
-      #debug_multiline   = 0
-      #debug_repaint     = 0 ; Debug " - -  Canvas repaint - -  "
       
       
       ;-\\ Anchors
       #__a_anchors_size = 7
       
-      #__a_anchors_type1 = 1
-      #__a_anchors_type2 = 2
-      #__a_anchors_type3 = 3
-      
-      ;
+      ; a_index( )
       #__a_left         = 1
       #__a_top          = 2
       #__a_right        = 3
@@ -693,13 +659,12 @@
       #__a_line_bottom = 4;13
       #__a_count       = 9;#__a_moved
       
-      ; a_mode_
+      ; a_set( ) flags
       EnumerationBinary 1
          #__a_position ; положение
-         #__a_width    ;= #__align_left | #__align_right  ; по ширине
-         #__a_height   ;= #__align_top | #__align_bottom  ; по высоте
-         #__a_corner   ; = #__align_left | #__align_top | #__align_bottom | #__align_right    ; по углам
-                       ;  #__a_rb
+         #__a_width    ; по ширине
+         #__a_height   ; по высоте
+         #__a_corner   ; по углам
       EndEnumeration
       #__a_edge = #__a_width | #__a_height ; по крайам
       #__a_size = #__a_corner | #__a_edge
@@ -861,7 +826,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 540
-; FirstLine = 502
+; CursorPosition = 634
+; FirstLine = 788
 ; Folding = ---
 ; EnableXP
