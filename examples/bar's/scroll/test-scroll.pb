@@ -14,14 +14,14 @@ If Open(0, 0, 0, 210, 350, "ScrollGadget", #PB_Window_SystemMenu | #PB_Window_Sc
   Define *spin2 = Scroll(80, 50, 50, 250,  5, 30, 15, #PB_ScrollBar_Vertical)
   SetState(*spin2, 15)
   
-  Define *spin3 = Scroll(140, 50, 50, 250,  30, 30, 0, #PB_ScrollBar_Vertical)
-  SetState(*spin3, 30)
+  Define *spin3 = Scroll(140, 50, 50, 250,  0, 30, 0, #PB_ScrollBar_Vertical)
+  SetState(*spin3, 0)
   
   
   WaitClose( )
 EndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; CursorPosition = 17
 ; Folding = -
 ; EnableXP

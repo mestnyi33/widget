@@ -302,7 +302,7 @@
                                                            ;#PB_window                 = #PB_window_noActivate<<2
       
       ;-\\  Spin
-      #__spin_barsize  = #__scroll_buttonsize + 3
+      #__spin_barsize  = #__scroll_buttonsize + 5
       #__spin_vertical = #__bar_vertical
       #__spin_left     = 1 << 1
       #__spin_right    = 1 << 2
@@ -826,7 +826,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 634
-; FirstLine = 788
+; CursorPosition = 304
+; FirstLine = 291
 ; Folding = ---
 ; EnableXP

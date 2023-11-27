@@ -5995,12 +5995,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
+;       Procedure.i bar_spin_draw( *this._s_widget ) 
+;          Protected *bar._S_BAR = *this\bar
+;          Protected._s_BUTTONS *BB1, *BB2
+;          *BB1 = *bar\button[1]
+;          *BB2 = *bar\button[2]
+;          bar_scroll_draw( *this )
+;          
+;          DrawingMode( #PB_2DDrawing_Outlined )
+;          Box( *BB1\x - 2,*this\y[#__c_frame],*this\x[#__c_inner] + *this\width[#__c_container] - *BB1\x + 3,*this\height[#__c_frame], *this\color\frame[*this\color\state] )
+;          Box( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\color\frame[*this\color\state] )
+;          
+;          
+;          ; Draw string
+;          If *this\text And *this\text\string
+;             DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+;             DrawRotatedText( *this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0] ) ; *this\color\state] )
+;          EndIf
+;       EndProcedure
       Procedure.i bar_spin_draw( *this._S_WIDGET )
          Protected *bar._S_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
          
+         drawing_mode_( #PB_2DDrawing_Default )
+         ; draw split-string back
+         ;Box( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*this\color\state] )
+         ;draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\back[*this\color\state] )
+         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\back )
+         
+         ;\\
          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
          draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
          draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
@@ -6058,14 +6083,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
-         drawing_mode_( #PB_2DDrawing_Default )
-         ; draw split-string back
-         ;Box( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*this\color\state] )
-         draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\back[*this\color\state] )
-         
-         drawing_mode_( #PB_2DDrawing_Outlined )
+         ;drawing_mode_( #PB_2DDrawing_Outlined )
          ; draw split-string frame
          draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\frame[Bool(FocusedWidget( ) = *this) * 2] )
+         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\frame[*this\color\state] )
          
          ; Draw string
          If *this\text And *this\text\string
@@ -6756,7 +6777,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; set real spin-buttons height
                If Not *this\flag & #__spin_Plus
                   *BB1\size = height / 2 + Bool( height % 2 )
-                  *BB2\size = *BB1\size
+                  *BB2\size = *BB1\size + Bool( Not height % 2 )
                EndIf
                
                ;*bar\area\pos = ( *BB1\size + *bar\min[1] )
@@ -7302,16 +7323,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If Not *this\flag & #__spin_Plus
                   If *BB2\size
-                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size
-                     *BB2\y      = *this\frame_y( )
-                     *BB2\width  = *SB\size
-                     *BB2\height = *BB2\size
+                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size + 2
+                     *BB2\y      = *this\frame_y( ) + 2
+                     *BB2\width  = *SB\size - 4
+                     *BB2\height = *BB2\size - 3
                   EndIf
                   If *BB1\size
                      *BB1\x      = *BB2\x
-                     *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size
-                     *BB1\height = *BB1\size
-                     *BB1\width  = *SB\size
+                     *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size + 1
+                     *BB1\height = *BB1\size - 3
+                     *BB1\width  = *BB2\width
                   EndIf
                Else
                   ; spin buttons numeric plus -/+
@@ -7715,10 +7736,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.b bar_SetThumbPos( *this._S_WIDGET, ThumbPos.i )
          Protected *bar._S_BAR = *this\bar
-         Protected ScrollPos.i
+         Protected ScrollPos.f
          
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
          If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+         
+         
+;          ;       If *bar\thumb\end <> ThumbPos : *bar\thumb\end = ThumbPos
+;          If *bar\thumb\pos <> ThumbPos 
+;             ; Debug ""+ThumbPos +" "+ *bar\thumb\pos
+;             ProcedureReturn Bar_SetState( *this, bar_invert_page_pos_( *bar, bar_page_pos_( *bar, ThumbPos ) ) )
+;          EndIf
+;          
          
          If *bar\thumb\pos <> ThumbPos
             ScrollPos = bar_page_pos_( *bar, ThumbPos )
@@ -21966,7 +21995,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7723
-; FirstLine = 7024
-; Folding = -----------------------------------------------------------------------------------------+----------r8-r7v-s--------------------------------------------------------------------------4-4-------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4L-+dfu----------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 6025
+; FirstLine = 5518
+; Folding = -----------------------------------------------------------------------------------------+----------r8-r7v-s----------------------------------------------------------0--4---2-+44-8--4-4-------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4L-+dfu----------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

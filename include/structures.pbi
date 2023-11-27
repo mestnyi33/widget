@@ -201,21 +201,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          interact.b ; temp
       EndStructure
       
-      ;--     PAGE
-      Structure _s_PAGE
-         pos.l
-         len.l
-         *end
-         change.w
-      EndStructure
-      
-      Structure _S_THUMB Extends _s_BUTTONS
-         pos.l
-         len.l
-         *end
-         change.w
-      EndStructure
-      
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
          mode.i
@@ -431,6 +416,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     BAR
+      Structure _s_PAGE
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
+      Structure _S_THUMB Extends _s_BUTTONS
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
       Structure _s_BAR
          max.l
          min.l[3]   ; fixed min[1&2] bar size
@@ -753,6 +750,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----9oA+--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 450
+; FirstLine = 330
+; Folding = ---PP7D+--
 ; EnableXP
