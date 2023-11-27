@@ -34,8 +34,8 @@
   ;\\
   Define anchor_size = 30
   a_set(parent, #__a_full, anchor_size/2)
-  ;a_set(object, #__a_full, anchor_size)
-  a_set(object, #__a_full, anchor_size, 0)
+  a_set(object, #__a_full, anchor_size)
+  ;a_set(object, #__a_full, anchor_size, 0)
   ;a_set(object, #__a_full, anchor_size, anchor_size)
   
 ;   a_set(object, #__a_full, anchor_size*2)
