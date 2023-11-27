@@ -6049,11 +6049,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_plus_( *BB2, Bool( Not *bar\invert ) )
          Else
             ; arrows on the buttons
-            If *BB1\arrow\size
-               draw_arrows_( *BB1, Bool(*bar\vertical ))
-            EndIf
             If *BB2\arrow\size
-               draw_arrows_( *BB2, Bool(*bar\vertical ) + 2 )
+               draw_arrows_( *BB2, Bool(*bar\vertical ) )
+            EndIf
+            If *BB1\arrow\size
+               draw_arrows_( *BB1, Bool(*bar\vertical ) + 2)
             EndIf
          EndIf
          
@@ -7301,19 +7301,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *SB\height = *this\inner_height( )
                
                If Not *this\flag & #__spin_Plus
-                  If *BB1\size
-                     *BB1\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size
-                     *BB1\y      = *this\frame_y( )
-                     *BB1\width  = *SB\size
-                     *BB1\height = *BB1\size
-                  EndIf
                   If *BB2\size
-                     *BB2\x      = *BB1\x
-                     *BB2\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB2\size
-                     *BB2\height = *BB2\size
+                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size
+                     *BB2\y      = *this\frame_y( )
                      *BB2\width  = *SB\size
+                     *BB2\height = *BB2\size
                   EndIf
-                  
+                  If *BB1\size
+                     *BB1\x      = *BB2\x
+                     *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size
+                     *BB1\height = *BB1\size
+                     *BB1\width  = *SB\size
+                  EndIf
                Else
                   ; spin buttons numeric plus -/+
                   If *bar\vertical
@@ -8066,9 +8065,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Repaint | bar_SetThumbPos( *this, ( mouse( )\x - mouse( )\delta\x ))
                EndIf
                
-               If Repaint
+               ;If Repaint
                   SetWindowTitle( EventWindow( ), Str( *bar\page\pos ) + " " + Str( *bar\thumb\pos - *bar\area\pos ))
-               EndIf
+               ;EndIf
             EndIf
          EndIf
          
@@ -16012,7 +16011,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
                      *this\bar\vertical = #True
-                     *this\bar\invert   = #True
+                     ;*this\bar\invert   = #True
                   EndIf
                   
                   *BB1\arrow\size = #__arrow_size
@@ -21967,7 +21966,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4974
-; FirstLine = 4462
-; Folding = -----------------------------------------------------------------------------------------+----------r8-r7v-s--------------------------------------------------------------------------4-4-------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vX+-8+c----------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 7723
+; FirstLine = 7024
+; Folding = -----------------------------------------------------------------------------------------+----------r8-r7v-s--------------------------------------------------------------------------4-4-------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4L-+dfu----------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

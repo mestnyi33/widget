@@ -85,7 +85,7 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
     
     If Open(0, 320,0,320,200)
        Spin(10, 30, 250, 18, 0, 30)
-       Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter);|#__bar_Vertical)
+       Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter)
        Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_textright)
        SetState(GetWidget(0), 0)
        SetState(GetWidget(1), 15)
@@ -99,7 +99,7 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        ; ; ;   SetState(GetWidget(2), 8000)
        
        Text(10,  10, 250, 20,"Spin Standard", #__Text_Center)
-       Text(10, 100, 250, 20, "Spin numeric", #__Text_Center)
+       Text(10, 100, 250, 20, "Spin plus&minus", #__Text_Center)
        ;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
        
        ;Bind(#PB_All, @events_widgets())
@@ -112,7 +112,7 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 105
+; CursorPosition = 101
 ; FirstLine = 74
 ; Folding = --
 ; EnableXP
