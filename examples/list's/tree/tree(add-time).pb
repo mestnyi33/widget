@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define gLN=5000
   Define LN=gLN
 
-  If Open(OpenWindow(#PB_Any, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu))
+  If Open(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
     
     Define time = ElapsedMilliseconds()
@@ -69,6 +69,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

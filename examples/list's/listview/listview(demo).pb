@@ -143,7 +143,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(GetWidget(0), 9) 
   ;SetItemState(GetWidget(0), 5, 1) 
   
-  ListView(10+270, 190, 250, 120, #__listview_clickselect)
+  ListView(10+270, 190, 250, 120, #__flag_clickselect)
   For a = 0 To 12
     AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
@@ -151,7 +151,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(GetWidget(1), 7) 
   SetState(GetWidget(1), 9) 
   
-  ListView(10+270+270, 190, 250, 120, #__listview_multiselect)
+  ListView(10+270+270, 190, 250, 120, #__flag_multiselect)
   For a = 0 To 12
     AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next

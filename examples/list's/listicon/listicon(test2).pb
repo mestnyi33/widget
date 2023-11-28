@@ -295,7 +295,7 @@ CompilerIf #PB_Compiler_IsMainFile
 EndProcedure
 
   Define i
-  Open(#PB_Any, 0,0, 530,460, "Demo ListIcon") 
+  Open(0, 0,0, 530,460, "Demo ListIcon") 
   Define g = ListIconGadget(#PB_Any,10,10,508,200, "Column_0",160, #PB_ListIcon_CheckBoxes|#PB_ListIcon_AlwaysShowSelection);|#PB_ListIcon_HeaderDragDrop)           
   Debug AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
   Debug AddGadgetItem(g, -1, "ListIcon_2") 
@@ -348,6 +348,6 @@ EndProcedure
   WaitClose( )
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = t0---
 ; EnableXP

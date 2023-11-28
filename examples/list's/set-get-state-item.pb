@@ -87,14 +87,14 @@ CompilerIf #PB_Compiler_IsMainFile
               *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
             EndIf
             
-            PostCanvasRepaint( *this )
+            PostEventCanvasRepaint( *this )
             ProcedureReturn #True
           EndIf
         EndIf
       EndIf
       EndIf
       
-      PostCanvasRepaint( *this )
+      PostEventCanvasRepaint( *this )
       ProcedureReturn result
     EndProcedure
     
@@ -179,7 +179,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *item1 = widget::Button( 250, y+(1+h)*1, 100, h, "1")
     *item2 = widget::Button( 250, y+(1+h)*2, 100, h, "2")
     *item3 = widget::Button( 250, y+(1+h)*3, 100, h, "3")
-    *item4 = widget::Button( 250, y+(1+h)*4, 100, h, "4")
+    *item4 = widget::Button( 250, y+(1+h)*4, 100, h, "90")
     
     
     widget::Bind(*item1, @button_events(), #__event_Up)

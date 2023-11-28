@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    Define *Tree = widget::Tree_Properties(10, 10, 250, 200, #__tree_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree = widget::Tree_Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
     widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
     
-    Define *Tree1 = widget::Tree_Properties(10, 10, 250, 200, #__tree_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree1 = widget::Tree_Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree1
     widget::AddItem(*Tree1, #_pi_group_0, "common")
     widget::AddItem(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
@@ -71,6 +71,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

@@ -1,4 +1,29 @@
-﻿
+﻿; Debug #PB_ListIcon_CheckBoxes           ; = 1
+; Debug #PB_ListIcon_ThreeState           ; = 4
+; Debug #PB_ListIcon_MultiSelect          ; = 4
+; Debug #PB_ListIcon_AlwaysShowSelection  ; = 8
+; Debug #PB_ListIcon_GridLines            ; = 65536
+; Debug #PB_ListIcon_HeaderDragDrop       ; = 268435456
+; Debug #PB_ListIcon_FullRowSelect        ; = 1073741824
+; 
+; ; GetGadgetAttribute
+; Debug #PB_ListIcon_ColumnCount          ; = 3
+; ; SetGadgetAttribute & GetGadgetAttribute
+; Debug #PB_ListIcon_DisplayMode          ; = 2
+;   Debug #PB_ListIcon_LargeIcon          ; = 0
+;   Debug #PB_ListIcon_SmallIcon          ; = 1
+;   Debug #PB_ListIcon_List               ; = 2
+;   Debug #PB_ListIcon_Report             ; = 3
+;   
+;   ; SetGadgetItemAttribute & GetGadgetItemAttribute
+; Debug #PB_ListIcon_ColumnWidth          ; = 1
+; 
+; Debug #PB_ListIcon_Selected             ; = 1
+; Debug #PB_ListIcon_Checked              ; = 2
+; Debug #PB_ListIcon_Inbetween            ; = 4
+; 
+; ListIconGadget(
+
 ;- 
 ;- example list-icon
 ;-

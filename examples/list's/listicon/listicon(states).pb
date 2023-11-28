@@ -6,9 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  #PB_ListIcon_ClickSelect = #__flag_clickselect
-  ;#PB_ListIcon_MultiSelect = #__flag_multiline
-  
+   
   
   Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=4; количесвто итемов 
   
@@ -140,16 +138,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *g2 = ListIconGadget_(#PB_Any, 10+125, 10, 120, 180, "column", 100)
     
     ;\\
-    *g3 = ListIconGadget_(#PB_Any, 10, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect)
-    *g4 = ListIconGadget_(#PB_Any, 10+125, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect)
+    *g3 = ListIconGadget_(#PB_Any, 10, 195, 120, 180, "column", 100)
+    *g4 = ListIconGadget_(#PB_Any, 10+125, 195, 120, 180, "column", 100)
     
     ;\\
-    *g5 = ListIconGadget_(#PB_Any, 10, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect)
-    *g6 = ListIconGadget_(#PB_Any, 10+125, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect)
+    *g5 = ListIconGadget_(#PB_Any, 10, 380, 120, 180, "column", 100)
+    *g6 = ListIconGadget_(#PB_Any, 10+125, 380, 120, 180, "column", 100)
     
     ;\\
-    *g7 = ListIconGadget_(#PB_Any, 10, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect)
-    *g8 = ListIconGadget_(#PB_Any, 10+125, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect)
+    *g7 = ListIconGadget_(#PB_Any, 10, 565, 120, 180, "column", 100)
+    *g8 = ListIconGadget_(#PB_Any, 10+125, 565, 120, 180, "column", 100)
     
     ;\\
     For a = 0 To countitems
@@ -176,16 +174,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *w2 = widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
     
     ;\\
-    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect )
-    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #PB_ListIcon_ClickSelect )
+    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_ClickSelect )
+    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_ClickSelect )
     
     ;\\
-    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect )
-    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #PB_ListIcon_MultiSelect )
+    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_MultiSelect )
+    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_MultiSelect )
     
     ;\\
-    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect )
-    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #PB_ListIcon_MultiSelect|#PB_ListIcon_ClickSelect )
+    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_MultiSelect|#__flag_ClickSelect )
+    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_MultiSelect|#__flag_ClickSelect )
     
     ;\\
     For a = 0 To countitems

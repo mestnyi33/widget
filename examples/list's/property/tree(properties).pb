@@ -4,7 +4,7 @@
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   IncludePath "/media/sf_as/Documents/GitHub/Widget"
 CompilerElse
-  IncludePath "Z:/Documents/GitHub/Widget"
+  IncludePath "F:/Documents/GitHub/Widget"
 CompilerEndIf
 
 
@@ -14762,6 +14762,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
