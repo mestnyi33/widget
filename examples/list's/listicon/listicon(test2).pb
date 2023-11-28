@@ -317,37 +317,11 @@ EndProcedure
     Debug AddItem(e, -1, Chr(10)+"ListIcon_"+Str(i)) 
   Next
   
-  ;     Define a=e,b
-  ;   ;For a = 0 To 4            ; add columns to each of the first 5 listicons
-  ;       For b = 2 To 4          ; add 3 more columns to each listicon
-  ;         AddColumn(a, b, "Column " + Str(b), 65)
-  ;       Next
-  ;       For b = 0 To 2          ; add 4 items to each line of the listicons
-  ;         AddItem(a, b, "Item 1"+Chr(10)+"Item 2"+Chr(10)+"Item 3"+Chr(10)+"Item 4")
-  ;       Next
-  ;    ; Next
-  
-  ;SetState(e, 0)
-  
-  ; SetItemState(e, 1, #PB_ListIcon_Selected|#PB_ListIcon_Checked|#PB_ListIcon_Inbetween)
-  
-;   With *CreateElement
-;     ChangeCurrentElement(\This(), ElementID(e))
-;     If ListSize(\This()\Columns())
-;       PushListPosition(\This()\Columns()) 
-;       ForEach \This()\Columns() 
-;         
-;         Debug "Index "+ListIndex(\This()\Columns())+" List "+\This()\Columns()\Element+" "+\This()\Columns()\text\string$+" "+Str(\This()\Columns()\FrameCoordinate\Y)
-;         
-;       Next
-;       PopListPosition(\This()\Columns()) 
-;     EndIf
-;   EndWith
-  
+
   Bind(e, @Events(), #__Event_Change|#__Event_LeftClick)
   WaitClose( )
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = t0---
+; Folding = l----
 ; EnableXP
