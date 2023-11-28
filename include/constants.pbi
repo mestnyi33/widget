@@ -59,7 +59,7 @@
       
       #__menu_height = 25
       
-      #__scroll_border = 10
+      #__scroll_border = 2
       #__scroll_buttonsize = 16
       
       #__arrow_type = 1 ; ;-1 ;0 ;1
@@ -826,7 +826,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 304
-; FirstLine = 291
+; CursorPosition = 61
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP
