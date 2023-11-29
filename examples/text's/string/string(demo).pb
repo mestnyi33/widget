@@ -125,10 +125,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Editor(x,y,width,height, flag) : setText(widget(), text)
   EndMacro
   
+  Define null$ = "" ;"00000 00000 00000 00000"
+    
   If Open(OpenWindow(#PB_Any, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
-    StringGadget(2, 8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
+    StringGadget(0, 8, 10, 290, height, "Read-only StringGadget..."+null$ + null$, #PB_String_ReadOnly)
+    StringGadget(1, 8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 " + null$, #PB_String_Numeric)
+    StringGadget(2, 8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget")
     StringGadget(3, 8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     StringGadget(4, 8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     StringGadget(5, 8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
@@ -146,9 +148,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    EString(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    EString(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_textcenter)
-    EString(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_textright)
+    EString(305+8, 10, 290, height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
+    EString(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_textcenter)
+    EString(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__flag_textright)
     EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
@@ -168,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 133
+; CursorPosition = 127
+; FirstLine = 112
 ; Folding = ---
 ; EnableXP

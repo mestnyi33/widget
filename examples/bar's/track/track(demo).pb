@@ -18,7 +18,10 @@ CompilerIf #PB_Compiler_IsMainFile
          Case 0 : SetState(w_0, GetGadgetState(EventGadget()))
          Case 1 : SetState(w_1, GetGadgetState(EventGadget()))
          Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
-        EndSelect
+      EndSelect
+      
+      ReDraw( root( ) )
+      ; PostEventCanvasRepaint( root( ))
     EndSelect
   EndProcedure
   
@@ -27,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
     
     Select WidgetEventType( )
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
+      Case #__event_LeftClick, #__event_Change
         Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
         
         Select EventWidget( )
@@ -56,37 +59,37 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget    (#PB_Any, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     TextGadget    (#PB_Any,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     
+    BindGadgetEvent(0, @events_gadgets())
+    BindGadgetEvent(1, @events_gadgets())
+    BindGadgetEvent(2, @events_gadgets())
+    
+    ;\\
     w_0 = Track(10+320,  40, 250, 20, 0, 30)
-    SetState(Splitter(10 + 320,  40, 250, 20, w_0,  #Null, #PB_Splitter_Vertical ), 250)
+    SetState(Splitter(10 + 320,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
     SetState(w_0, 25)
     
     w_1 = Track(10+320, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-    SetState(Splitter(10 + 320,  120, 250, 20, w_1,  #Null, #PB_Splitter_Vertical ), 250)
+    SetState(Splitter(10 + 320,  120, 250, 20, w_1,  #PB_Default, #PB_Splitter_Vertical ), 250)
     ;SetState(w_1, 30)
     
     w_2 = Track(270+320, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetState(Splitter(270+320, 10, 20, 170, w_2,  #Null ), 170)
+    SetState(Splitter(270+320, 10, 20, 170, w_2,  #PB_Default ), 170)
     SetState(w_2, 8000)
     
-;     Text(10+320,  20, 250, 20,"TrackBar Standard", #__Text_Center)
-;     Text(10+320, 100, 250, 20, "TrackBar Ticks", #__Text_Center)
-;     Text(90+320, 180, 200, 20, "TrackBar Vertical", #__Text_Right)
-;     
-    ;Bind(#PB_All, @events_widgets())
+    Text(10+320,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
+    Text(10+320, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
+    Text(90+320, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     
-; ;     ;For i = 0 To 2
-; ;         Bind(w_0, @events_widgets())
-; ;         Bind(w_1, @events_widgets())
-; ;         Bind(w_2, @events_widgets())
-; ;     ;Next
-; ;     For i = 0 To 2
-; ;       BindGadgetEvent(i, @events_gadgets())
-; ;     Next
-    
+    Bind(w_0, @events_widgets())
+    Bind(w_1, @events_widgets())
+    Bind(w_2, @events_widgets())
+
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22
+; FirstLine = 5
 ; Folding = --
 ; EnableXP

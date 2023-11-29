@@ -490,6 +490,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ))
       EndMacro
       
+      Macro is_resize_( _this_ )
+         Bool( _this_\resize & #__resize_width Or 
+               _this_\resize & #__resize_height )
+      EndMacro
+      
       ;-
       Macro is_text_gadget_( _this_ )
          Bool( _this_\type = #__type_Editor Or
@@ -1342,7 +1347,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If _rotate_ = 0
             If _this_\align\right
-               _address_\x = ( _width_ - _address_\width ) - _this_\padding\x
+               _address_\x = ( _width_ - _address_\width ) - _this_\padding\x 
             ElseIf Not _this_\align\left
                _address_\x = ( _width_ - _address_\width ) / 2
             Else
@@ -4387,32 +4392,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug " resize - " + *this\class + " " + *this\x + " " + *this\y + " " + *this\width + " " + *this\height
             EndIf
             
-            ;\\
-            If *this\bar
-               ;             If *this\type = #__type_Spin Or
-               ;                *this\type = #__type_TabBar Or
-               ;                *this\type = #__type_ToolBar Or
-               ;                *this\type = #__type_TrackBar Or
-               ;                *this\type = #__type_ScrollBar Or
-               ;                *this\type = #__type_ProgressBar Or
-               ;                *this\type = #__type_Splitter
-               
-               ; ???
-               If ( Change_width Or Change_height )
-                  *this\TabChange( ) = - 1
-               EndIf
-               
-               ; Debug "-- bar_Update -- "+" "+ *this\class
-               bar_Update( *this, Bool( Change_width Or Change_height ) )
-            EndIf
-            
-            ;\\ Post Event
-            If *this\child <= 0
-               If *this\show
-                  Send( *this, #__event_resize )
-               Else
-                  Post( *this, #__event_resize )
-               EndIf
+            ;\\ if the widgets is composite
+            If *this\StringBox( )
+               Resize( *this\StringBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
             EndIf
             
             ;\\ resize vertical&horizontal scrollbars
@@ -4535,12 +4517,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\_box_\height = *this\inner_height( )
             EndIf
             
-            ;\\ if the widgets is composite
-            If *this\StringBox( )
-               Debug ""+*this\frame_width( ) +" "+ *this\inner_width( )
-               Resize( *this\StringBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
+            ;\\
+            If *this\bar
+               ;             If *this\type = #__type_Spin Or
+               ;                *this\type = #__type_TabBar Or
+               ;                *this\type = #__type_ToolBar Or
+               ;                *this\type = #__type_TrackBar Or
+               ;                *this\type = #__type_ScrollBar Or
+               ;                *this\type = #__type_ProgressBar Or
+               ;                *this\type = #__type_Splitter
+               
+               ; ???
+               If ( Change_width Or Change_height )
+                  *this\TabChange( ) = - 1
+               EndIf
+               
+               ; Debug "-- bar_Update -- "+" "+ *this\class
+               bar_Update( *this, Bool( Change_width Or Change_height ) )
             EndIf
             
+            ;
+            ;\\ Post Event
+            ;
+            If *this\child <= 0
+               If *this\show
+                  Send( *this, #__event_resize )
+               Else
+                  Post( *this, #__event_resize )
+               EndIf
+            EndIf
             
             ;-\\ children's resize
             ;\\ then move and size parent
@@ -5995,79 +6000,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-;       Procedure.i bar_spin_draw( *this._s_widget ) 
-;          Protected *bar._S_BAR = *this\bar
-;          Protected._s_BUTTONS *BB1, *BB2
-;          *BB1 = *bar\button[1]
-;          *BB2 = *bar\button[2]
-;          bar_scroll_draw( *this )
-;          
-;          DrawingMode( #PB_2DDrawing_Outlined )
-;          Box( *BB1\x - 2,*this\y[#__c_frame],*this\x[#__c_inner] + *this\width[#__c_container] - *BB1\x + 3,*this\height[#__c_frame], *this\color\frame[*this\color\state] )
-;          Box( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\color\frame[*this\color\state] )
-;          
-;          
-;          ; Draw string
-;          If *this\text And *this\text\string
-;             DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-;             DrawRotatedText( *this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0] ) ; *this\color\state] )
-;          EndIf
-;       EndProcedure
       Procedure.i bar_spin_draw( *this._S_WIDGET )
+         Protected state = *this\color\state ; Bool(FocusedWidget( ) = *this) * 2
          Protected *bar._S_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
          
          drawing_mode_( #PB_2DDrawing_Default )
-         ; draw split-string back
-         ;Box( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*this\color\state] )
-         ;draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\back[*this\color\state] )
-         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\back )
+;          ; draw split-string back
+;          ;          draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\back )
+;          draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\back[0] )
+;          
+;          ; draw split-bar back
+;          If *this\fs[1] ; left
+;             draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs[1] + 1, *this\frame_height( ), *this\color\back[0] )
+;          EndIf
+;          If *this\fs[2] ; top
+;             draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + 1, *this\color\back[0] )
+;          EndIf
+;          If *this\fs[3] ; right
+;             draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - 1, *this\frame_y( ), *this\fs[3] + 1, *this\frame_height( ), *this\color\back[0] )
+;          EndIf
+;          If *this\fs[4] ; bottom
+;             draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - 1, *this\frame_width( ), *this\fs[4] + 1, *this\color\back[0] )
+;          EndIf
          
-         ;\\
+         
+         ;\\ draw spin-buttons back
          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
          draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
          draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
          
+         ;\\
          drawing_mode_( #PB_2DDrawing_Outlined )
-         
-         ; spin-buttons center line
-         If EnteredButton( ) <> *BB1 And *BB1\color\state <> #__S_3
-            draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\color\state] )
-         EndIf
-         If EnteredButton( ) <> *BB2 And *BB2\color\state <> #__S_3
-            draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\color\state] )
-         EndIf
-         
-         If FocusedWidget( ) = *this
-            If *this\fs[1] ;And Not bar_in_start_( *bar )
-               draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs[1] + 1, *this\frame_height( ), *this\color\frame[2] )
-            EndIf
-            If *this\fs[2] ;And Not bar_in_stop_( *bar )
-               draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + 1, *this\color\frame[2] )
-            EndIf
-            If *this\fs[3] ;And Not bar_in_stop_( *bar )
-               draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - 1, *this\frame_y( ), *this\fs[3] + 1, *this\frame_height( ), *this\color\frame[2] )
-            EndIf
-            If *this\fs[4] ;And Not bar_in_start_( *bar )
-               draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - 1, *this\frame_width( ), *this\fs[4] + 1, *this\color\frame[2] )
-            EndIf
-         EndIf
-         
-         If *BB1\color\state = #__S_3
-            draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\color\state] )
-         EndIf
-         
-         If *BB2\color\state = #__S_3
-            draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\color\state] )
-         EndIf
-         
-         If EnteredButton( )
-            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, EnteredButton( )\color\frame[EnteredButton( )\color\state] )
-         EndIf
-         
-         ;
          If *this\flag & #__spin_Plus
             ; -/+
             draw_plus_( *BB1, Bool( *bar\invert ) )
@@ -6082,17 +6048,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
-         ;drawing_mode_( #PB_2DDrawing_Outlined )
-         ; draw split-string frame
-         draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\frame[Bool(FocusedWidget( ) = *this) * 2] )
-         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\frame[*this\color\state] )
-         
-         ; Draw string
-         If *this\text And *this\text\string
-            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawRotatedText( *this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0] ) ; *this\color\state] )
+         ;\\ draw spin-bar frame
+         If *this\fs[1] 
+            draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs[1] + 1, *this\frame_height( ), *this\color\frame[state] )
          EndIf
+         If *this\fs[2] 
+            draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + 1, *this\color\frame[state] )
+         EndIf
+         If *this\fs[3] 
+            draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - 1, *this\frame_y( ), *this\fs[3] + 1, *this\frame_height( ), *this\color\frame[state] )
+         EndIf
+         If *this\fs[4] 
+            draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - 1, *this\frame_width( ), *this\fs[4] + 1, *this\color\frame[state] )
+         EndIf
+         
+         ;\\ draw spin-buttons frame
+         If EnteredButton( ) <> *BB1 
+            draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\color\state] )
+         EndIf
+         If EnteredButton( ) <> *BB2 
+            draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\color\state] )
+         EndIf
+         If EnteredButton( )
+            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, EnteredButton( )\color\frame[EnteredButton( )\color\state] )
+         EndIf
+         
+         ;\\ draw split-string frame
+         draw_box_( *this\frame_x( ) + *this\fs[1], *this\frame_y( ) + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3], *this\frame_height( ) - *this\fs[2] - *this\fs[4], *this\color\frame[state] )
       EndProcedure
       
       Procedure.b bar_track_draw( *this._S_WIDGET )
@@ -7322,16 +7304,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *SB\height = *this\inner_height( )
                
                If Not *this\flag & #__spin_Plus
+                  Protected draw_tipe = 1
                   If *BB2\size
-                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size + 2
-                     *BB2\y      = *this\frame_y( ) + 2
-                     *BB2\width  = *SB\size - 4
-                     *BB2\height = *BB2\size - 3
+                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size + draw_tipe*2
+                     *BB2\y      = *this\frame_y( ) + draw_tipe*2
+                     *BB2\width  = *SB\size - draw_tipe*4
+                     *BB2\height = *BB2\size - draw_tipe*3
                   EndIf
                   If *BB1\size
                      *BB1\x      = *BB2\x
-                     *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size + 1
-                     *BB1\height = *BB1\size - 3
+                     *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size + draw_tipe
+                     *BB1\height = *BB1\size - draw_tipe*3
                      *BB1\width  = *BB2\width
                   EndIf
                Else
@@ -7635,18 +7618,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If *this\type = #__type_Spin
-                  Debug " update spin-change " + *bar\PageChange( )
-                  Protected i
-                  For i = 0 To 3
-                     If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                        *this\TextChange( ) = 1
-                        *this\text\string   = StrF( *bar\page\pos, i )
-                        If *this\StringBox( )
-                           SetText( *this\StringBox( ), *this\text\string )
+                  If *this\StringBox( )
+                     Debug " update spin-change " + *bar\PageChange( )
+                     Protected i
+                     For i = 0 To 3
+                        If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+                           SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
+                           Break
                         EndIf
-                        Break
-                     EndIf
-                  Next
+                     Next
+                  EndIf
                EndIf
                
                *bar\PageChange( ) = 0
@@ -7742,12 +7723,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
          
          
-;          ;       If *bar\thumb\end <> ThumbPos : *bar\thumb\end = ThumbPos
-;          If *bar\thumb\pos <> ThumbPos 
-;             ; Debug ""+ThumbPos +" "+ *bar\thumb\pos
-;             ProcedureReturn Bar_SetState( *this, bar_invert_page_pos_( *bar, bar_page_pos_( *bar, ThumbPos ) ) )
-;          EndIf
-;          
+         ;          ;       If *bar\thumb\end <> ThumbPos : *bar\thumb\end = ThumbPos
+         ;          If *bar\thumb\pos <> ThumbPos 
+         ;             ; Debug ""+ThumbPos +" "+ *bar\thumb\pos
+         ;             ProcedureReturn Bar_SetState( *this, bar_invert_page_pos_( *bar, bar_page_pos_( *bar, ThumbPos ) ) )
+         ;          EndIf
+         ;          
          
          If *bar\thumb\pos <> ThumbPos
             ScrollPos = bar_page_pos_( *bar, ThumbPos )
@@ -7899,7 +7880,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\fs[3] = *BB2\size - 1
                               EndIf
                            Else
-                              *this\fs[3] = *value - 1
+                              If *bar\vertical
+                                 If *bar\invert
+                                    *this\fs[1] = *value - 1
+                                 Else
+                                    *this\fs[3] = *value - 1
+                                 EndIf
+                              Else
+                                 If *bar\invert
+                                    *this\fs[2] = *value - 1
+                                 Else
+                                    *this\fs[4] = *value - 1
+                                 EndIf
+                              EndIf
                            EndIf
                         Else
                            ; to reset the button size to default
@@ -7998,7 +7991,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ( *BB1\state\press And Not *bar\invert )
                      
                      If bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) 
-                       ; If bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
+                        ; If bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
                         *this\repaint = #True
                      EndIf
                   ElseIf ( *BB1\state\press And *bar\invert ) Or
@@ -8095,7 +8088,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;If Repaint
-                  SetWindowTitle( EventWindow( ), Str( *bar\page\pos ) + " " + Str( *bar\thumb\pos - *bar\area\pos ))
+               SetWindowTitle( EventWindow( ), Str( *bar\page\pos ) + " " + Str( *bar\thumb\pos - *bar\area\pos ))
                ;EndIf
             EndIf
          EndIf
@@ -9515,7 +9508,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\TextChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
                bar_area_update( *this )
                
                ; make horizontal scroll x
@@ -9535,7 +9527,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                
                ; vertical bar one before displaying
-               If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( )
+               If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( ) ;And Not *this\show
                   If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len
                      If *this\text\align\bottom
                         If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end )
@@ -9553,7 +9545,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; horizontal bar one before displaying
-               If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( )
+               If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( ) ;And Not *this\show
                   If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len
                      If *this\text\align\right
                         If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end )
@@ -9570,7 +9562,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-            EndIf
             
          EndWith
       EndProcedure
@@ -9582,8 +9573,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not *this\hide
             
             With *this
-               ; Make output multi line text
-               If *this\TextChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
+              ; Make output multi line text
+               If *this\TextChange( ) Or is_resize_( *this )
                   Text_Update( *this )
                   
                   ;             If *this\EnteredLineIndex( ) >= 0
@@ -10834,8 +10825,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\
-            If *this\resize & #__resize_width Or *this\resize & #__resize_height Or 
-               *this\WidgetChange( ) > 0 
+            If *this\WidgetChange( ) > 0 Or is_resize_( *this ) 
                ; Debug "   " + #PB_Compiler_Procedure + "( )"+*this\width +" "+*this\height+" "+*this\scroll_width( )+" "+*this\scroll_height( )
                bar_area_update( *this )
                *this\WidgetChange( ) = - 2
@@ -16048,14 +16038,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *BB1\arrow\type = #__arrow_type ; -1 0 1
                   *BB2\arrow\type = #__arrow_type ; -1 0 1
-                  *this\fs[3] = 30
                EndIf
                
-               
-               *this\StringBox( ) = Create( *this, *this\class + "_string",
-                                            #__type_String, 0, 0, 0, 0, #Null$,
-                                            #__flag_child | #__flag_textnumeric | #__flag_borderless | *this\flag )
-               
+                  ;\\
+                  *this\StringBox( ) = Create( *this,
+                                               *this\class + "_string",
+                                               #__type_String, 0,0,0,0, #Null$,
+                                               #__flag_child | #__flag_textnumeric | #__flag_borderless | *this\flag )
+                  
                
             EndIf
             
@@ -16244,7 +16234,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\PopupBox( )\parent\class
          EndIf
          
-         ;\\ Set Attribute
+         ;\\ Set Attribute 
          If *this\type = #__type_ScrollBar Or
             *this\type = #__type_ProgressBar Or
             *this\type = #__type_TrackBar Or
@@ -16384,6 +16374,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\row
             set_text_flag_( *this, text, *this\flag )
          EndIf
+         
+         
+         
          ;
          DoEvents( *this, #__event_create )
          ;; Debug ""+*this\class+" "+*this\root
@@ -16632,7 +16625,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; update text
-            If *this\WidgetChange( ) Or ( *this\resize & #__resize_width Or *this\resize & #__resize_height )
+            If *this\WidgetChange( ) Or is_resize_( *this )
                Text_Update( *this )
             EndIf
             
@@ -17011,7 +17004,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\TabBox( ) And
                      *this\TabBox( )\count\items
                      bar_tab_draw( *this\TabBox( ) )
-                     ;clip_output_( *this, [#__c_draw] )
+                     ; clip_output_( *this, [#__c_draw] )
                   EndIf
                   
                   ;\\
@@ -17023,7 +17016,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ draw area scrollbars
                   If *this\scroll And ( *this\scroll\v Or *this\scroll\h )
                      bar_area_draw_( *this )
-                     ;clip_output_( *this, [#__c_draw] )
+                     ; clip_output_( *this, [#__c_draw] )
                   EndIf
                   
                   ;\\ draw disable state
@@ -21919,7 +21912,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 210, 250, 25, 5, 30 )
+   Spin(10, 210, 250, 25, 25, 30, #__flag_textright )
    Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
    
    ;\\
@@ -21994,6 +21987,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------------------------------------------+----------r8-r7v-s----------------------------------------------------------0--4---2-+44-8--4-4-------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4L-+dfu----------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 7886
+; FirstLine = 7868
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-4---0+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y--------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

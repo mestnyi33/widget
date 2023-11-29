@@ -33,6 +33,53 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "disable - state", #PB_Window_Sy
  
   WaitClose( )
 EndIf
+
+
+
+; XIncludeFile "../../../widgets.pbi" 
+; ; ; 
+; Uselib(widget)
+; Define vertical = 0
+; 
+; ; Splitter( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
+; 
+; If vertical
+;    #PB_SplitterBar_Vertical = #PB_Splitter_Vertical
+;    ;\\ vertical
+;    If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+;       
+;       Define *spin1 = Splitter(20, 50, 50, 250,  #PB_Default, #PB_Default, #PB_SplitterBar_Vertical|#__flag_invert)
+;       SetState(*spin1, 10)
+;       
+;       Define *spin2 = Splitter(80, 50, 50, 250,  #PB_Default, #PB_Default, #PB_SplitterBar_Vertical)
+;       SetState(*spin2, 10)
+;       
+;       Define *spin3 = Splitter(140, 50, 50, 250,  #PB_Default, #PB_Default, #PB_SplitterBar_Vertical)
+;       SetState(*spin3, 0)
+;       
+;       
+;       WaitClose( )
+;    EndIf
+; Else
+;    
+;    ;\\ horizontal
+;    If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+;       
+;       Define *spin1 = Splitter(50, 20, 250, 50,  #PB_Default, #PB_Default, #__flag_invert)
+;       SetState(*spin1, 0)
+;       
+;       Define *spin2 = Splitter(50, 80, 250, 50,  #PB_Default, #PB_Default)
+;       SetState(*spin2, 10)
+;       
+;       Define *spin3 = Splitter(50, 140, 250, 50,  #PB_Default, #PB_Default)
+;       SetState(*spin3, 0)
+;       
+;       
+;       WaitClose( )
+;    EndIf
+; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
