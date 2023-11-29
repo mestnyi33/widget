@@ -7549,6 +7549,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\
+            If *this\type = #__type_Spin
+              If *bar\PageChange( ) Or
+                 *bar\ThumbChange( )
+                
+                If *this\StringBox( )
+                  Debug " update spin-change " + *bar\PageChange( ) +" "+ Str( *bar\thumb\pos - *bar\area\pos )
+                  Protected i
+                  For i = 0 To 3
+                    If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+                      SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
+                      ;SetText( *this\StringBox( ), StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
+                      Break
+                    EndIf
+                  Next
+                EndIf
+              EndIf
+            EndIf
+            
+            ;\\
             If *bar\PageChange( ) <> 0
                ;\\
                If *this\type = #__type_ScrollBar
@@ -7620,26 +7639,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\text\string = "%" + Str( *bar\page\pos )
                EndIf
                
-               ;\\
-               If *this\type = #__type_Spin
-                  If *this\StringBox( )
-                     Debug " update spin-change " + *bar\PageChange( )
-                     Protected i
-                     For i = 0 To 3
-                        If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                           SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
-                           Break
-                        EndIf
-                     Next
-                  EndIf
-               EndIf
-               
                *bar\PageChange( ) = 0
             EndIf
             
             ;
             If *bar\ThumbChange( ) <> 0
-               *bar\ThumbChange( ) = 0
+                *bar\ThumbChange( ) = 0
             EndIf
             
          EndIf
@@ -7994,18 +7999,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ( *BB2\state\press And *bar\invert ) Or
                      ( *BB1\state\press And Not *bar\invert )
                      
-                     If bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) 
-                        ; If bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
+                    If *this\type = #__type_spin
+                      If bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
                         *this\repaint = #True
-                     EndIf
-                  ElseIf ( *BB1\state\press And *bar\invert ) Or
+                      EndIf
+                    Else
+                      If bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) 
+                        *this\repaint = #True
+                      EndIf
+                    EndIf
+                 ElseIf ( *BB1\state\press And *bar\invert ) Or
                          ( *BB2\state\press And Not *bar\invert )
                      
-                     If bar_SetThumbPos( *this, *bar\thumb\pos + *this\scroll\increment) 
-                        ; If bar_SetState( *this, *bar\page\pos + *this\scroll\increment )
+                    If *this\type = #__type_spin
+                      If bar_SetState( *this, *bar\page\pos + *this\scroll\increment )
                         *this\repaint = #True
-                     EndIf
-                  EndIf
+                      EndIf
+                    Else
+                      If bar_SetThumbPos( *this, *bar\thumb\pos + *this\scroll\increment) 
+                        *this\repaint = #True
+                      EndIf
+                    EndIf
+                 EndIf
                   
                   If *this\repaint
                      SetWindowTitle( EventWindow( ), Str( *bar\page\pos ) + " " + Str( *bar\thumb\pos - *bar\area\pos ))
@@ -22005,5 +22020,5 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu----------------------------------------------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y----f----------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+-8----------------------------------------f--8f+0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------e6----v----------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

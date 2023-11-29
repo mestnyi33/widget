@@ -13,7 +13,7 @@ If vertical
       Define *spin1 = Track(20, 50, 50, 250,  0, 30, #PB_TrackBar_Vertical|#__flag_invert)
       SetState(*spin1, 5)
       
-      Define *spin2 = Track(80, 50, 50, 250,  5, 30, #PB_TrackBar_Vertical)
+      Define *spin2 = Track(80, 50, 50, 250,  25, 30, #PB_TrackBar_Vertical)
       SetState(*spin2, 10)
       
       Define *spin3 = Track(140, 50, 50, 250,  0, 30, #PB_TrackBar_Vertical)
@@ -42,8 +42,6 @@ Else
 EndIf
 
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 7
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

@@ -10,6 +10,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._s_widget = EventWidget( )
     
     Select WidgetEventType( )
+      Case #__event_LeftClick
+        Select *this 
+          Case *FrameColor
+            
+          Case *BackColor
+            
+        EndSelect
+        
       Case #__event_StatusChange
         If *size
           SetState(*size, *this\anchors\size )
@@ -67,9 +75,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
     *position = Spin( 10,150+y,100,30, 0,59 )
     
-    *BackColor = Button( 120,90+y,100,30, "BackColor" )
     
-    *FrameColor = Button( 120,150+y,100,30, "FrameColor" )
+    *FrameColor = Button( 120,90+y,100,30, "FrameColor" )
+    *BackColor = Button( 120,150+y,100,30, "BackColor" )
+    
     
     If a_focused( )
       SetState(*grid, a_transform( )\grid_size )
@@ -89,7 +98,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 43
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
