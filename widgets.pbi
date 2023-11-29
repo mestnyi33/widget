@@ -491,7 +491,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro is_resize_( _this_ )
-         Bool( _this_\resize & #__resize_width Or 
+         Bool( _this_\resize & #__resize_x Or 
+               _this_\resize & #__resize_y Or 
+               _this_\resize & #__resize_width Or 
                _this_\resize & #__resize_height )
       EndMacro
       
@@ -660,7 +662,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_font_item_( _this_, _item_, 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
                
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  DrawingFont( _item_\text\fontID )
+                 If _item_\text\fontID
+                   DrawingFont( _item_\text\fontID )
+                 EndIf
                CompilerEndIf
             ElseIf _item_ = - 1
                draw_font_( _this_ )
@@ -6387,15 +6391,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             height + y
             
             If \v\frame_x( ) <> width - \v\width
-               v1 = 1
-               x1 = width - \v\width
+              v1 = 1
+              x1 = width - \v\width
             EndIf
             
             If \h\frame_y( ) <> height - \h\height
-               h1 = 1
-               y1 = height - \h\height
+              h1 = 1
+              y1 = height - \h\height
             EndIf
-            
+          
             If \v\bar\max > \v\bar\page\len
                v1     = 1
                height = ( \v\bar\page\len + Bool( \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
@@ -9276,7 +9280,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;If #debug_update_text
                ;  Debug ""+#PB_Compiler_Procedure +" - "+  *this\index
                ; EndIf
-               
+                    
                Protected *str.Character
                Protected *end.Character
                Protected TxtHeight = *this\text\height
@@ -9509,8 +9513,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
                bar_area_update( *this )
-               
-               ; make horizontal scroll x
+                
+              ; make horizontal scroll x
                make_scrollarea_x( *this, *this\text )
                
                ; make vertical scroll y
@@ -16322,19 +16326,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ Resize
          If *this\child
-            If *this\parent
-               If *this\type = #__type_ScrollBar
-                  If *this\bar\vertical
-                     *this\parent\scroll\v = *this
-                     Resize( *this, *this\parent\container_width( ) - width, y, width, *this\parent\container_height( ) - width + Bool(*this\Round) * (width / 4) )
-                  Else
-                     *this\parent\scroll\h = *this
-                     Resize( *this, x, *this\parent\container_height( ) - height, *this\parent\container_width( ) - height + Bool(*this\Round) * (height / 4), height )
-                  EndIf
+           If *this\parent
+             If *this\type = #__type_ScrollBar
+               If *this\bar\vertical
+                 *this\parent\scroll\v = *this
+                 
+                 If *this\parent\container_width( ) > width Or *this\parent\parent\type = #__type_combobox
+                   Resize( *this, *this\parent\container_width( ) - width, y, width, *this\parent\container_height( ) - width + Bool(*this\Round) * (width / 4) )
+                 EndIf
+               Else
+                 *this\parent\scroll\h = *this
+                 If *this\parent\container_height( ) > height Or *this\parent\parent\type = #__type_combobox
+                   Resize( *this, x, *this\parent\container_height( ) - height, *this\parent\container_width( ) - height + Bool(*this\Round) * (height / 4), height )
+                 EndIf
                EndIf
-            EndIf
+             EndIf
+           EndIf
          Else
-            Resize( *this, x, y, width, height )
+           Resize( *this, x, y, width, height )
          EndIf
          
          ;\\ Scroll bars
@@ -17096,6 +17105,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                   *this\resize = 0
             ;                EndIf
             ;             EndIf
+            
+            If *this\resize & #__resize_x
+               *this\resize &~ #__resize_x
+            EndIf
+            
+            If *this\resize & #__resize_y
+               *this\resize &~ #__resize_y
+            EndIf
             
             If *this\resize & #__resize_width
                *this\resize &~ #__resize_width
@@ -21987,8 +22004,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7886
-; FirstLine = 7868
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-4---0+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y--------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu----------------------------------------------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y----f----------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
