@@ -16209,13 +16209,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         ;\\ - Create image
-         If *this\type = #__type_Image
-            *this\color\back = $FFF9F9F9
-            *param_1         = *this\image\width
-            *param_2         = *this\image\height
-         EndIf
-         
          ;\\ - Create ComboBox
          If *this\type = #__type_ComboBox
             ;*this\round = 16
@@ -16330,22 +16323,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ Resize
          If *this\child
-           If *this\parent
-             If *this\type = #__type_ScrollBar
-               If *this\bar\vertical
-                 *this\parent\scroll\v = *this
-                 
-                 If *this\parent\container_width( ) > width Or *this\parent\parent\type = #__type_combobox
-                   Resize( *this, *this\parent\container_width( ) - width, y, width, *this\parent\container_height( ) - width + Bool(*this\Round) * (width / 4) )
-                 EndIf
-               Else
-                 *this\parent\scroll\h = *this
-                 If *this\parent\container_height( ) > height Or *this\parent\parent\type = #__type_combobox
-                   Resize( *this, x, *this\parent\container_height( ) - height, *this\parent\container_width( ) - height + Bool(*this\Round) * (height / 4), height )
-                 EndIf
+            If *this\type = #__type_ScrollBar
+               If *this\parent
+                  If *this\bar\vertical
+                     *this\parent\scroll\v = *this
+                     If *this\parent\type <> #__type_string
+                        Resize( *this, *this\parent\container_width( ) - width, y, width, *this\parent\container_height( ) - width + Bool(*this\Round) * (width / 4) )
+                     EndIf
+                  Else
+                     *this\parent\scroll\h = *this
+                     If *this\parent\type <> #__type_string
+                        Resize( *this, x, *this\parent\container_height( ) - height, *this\parent\container_width( ) - height + Bool(*this\Round) * (height / 4), height )
+                     EndIf
+                  EndIf
                EndIf
-             EndIf
-           EndIf
+            EndIf
          Else
            Resize( *this, x, y, width, height )
          EndIf
@@ -16376,10 +16368,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
             ElseIf *this\type = #__type_MDI Or
-                   *this\type = #__type_Image Or
                    *this\type = #__type_ScrollArea
                
                bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ) )
+            ElseIf *this\type = #__type_Image
+               bar_area_create_( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ) )
             EndIf
          EndIf
          
@@ -19604,6 +19597,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\drop 
                   If *this\state\enter = 2
+;                      Debug ""+*this\drop\format +" = "+ mouse( )\drag\format +" "+
+;                            *this\drop\actions +" = "+ mouse( )\drag\actions +" "+
+;                            *this\drop\private +" = "+ mouse( )\drag\private
+                     
                      If *this\drop\format = mouse( )\drag\format And
                         *this\drop\actions & mouse( )\drag\actions And
                         ( *this\drop\private = mouse( )\drag\private Or
@@ -22009,7 +22006,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8092
-; FirstLine = 7397
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+v--v--Xf----------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y----f----------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16332
+; FirstLine = 14893
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+v--v--Xf----------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----------------------------------------------------
 ; EnableXP

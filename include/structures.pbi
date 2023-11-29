@@ -116,12 +116,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_DROP
          format.l
          actions.b
+         private.i
          
-         StructureUnion
-           *private
-           *imageID
-         EndStructureUnion
-      
+         *imageID
+         
          StructureUnion
             string.s
             files.s
@@ -751,7 +749,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 450
-; FirstLine = 330
+; CursorPosition = 124
+; FirstLine = 105
 ; Folding = ---PP7D+--
 ; EnableXP

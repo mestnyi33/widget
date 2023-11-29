@@ -62,8 +62,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0( )
-    If OpenWindow(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-      Open(0)
+    If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+      *Image = Image(10, 10, 230,  225, 10)
+      
       *Button = Button( 5,   245, 240,  25, "change image", #PB_Button_Toggle)
       *ComboBox = ComboBox( 5,   245+30, 240,  30)
       AddItem(*ComboBox, -1, "Default")
@@ -73,10 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*ComboBox, -1, "Proportionally")
       SetState(*ComboBox, 0)
       
-      *Image = Image(10, 10, 230,  225, 10)
-      
-      Bind( *Button, @Window_0_widget_events( ), #PB_EventType_LeftClick )
-      Bind( *ComboBox, @Window_0_widget_events( ), #PB_EventType_Change )
+      Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
+      Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
       
       SetAlignment(*Image, 0, 1,1,1,1 )
       SetAlignment(*Button, 0, 1,0,1,1 )
@@ -97,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 56
+; CursorPosition = 65
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
