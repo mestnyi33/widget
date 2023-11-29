@@ -7548,26 +7548,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             
-            ;\\
-            If *this\type = #__type_Spin
-              If *bar\PageChange( ) Or
-                 *bar\ThumbChange( )
-                
-                If *this\StringBox( )
-                  Debug " update spin-change " + *bar\PageChange( ) +" "+ Str( *bar\thumb\pos - *bar\area\pos )
-                  Protected i
-                  For i = 0 To 3
-                    If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                      SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
-                      ;SetText( *this\StringBox( ), StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
-                      Break
-                    EndIf
-                  Next
-                EndIf
-              EndIf
-            EndIf
-            
-            ;\\
+             ;\\
             If *bar\PageChange( ) <> 0
                ;\\
                If *this\type = #__type_ScrollBar
@@ -7639,12 +7620,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\text\string = "%" + Str( *bar\page\pos )
                EndIf
                
+               ;\\
+               If *this\type = #__type_Spin
+                  If *this\StringBox( )
+                     Debug " update spin-change " + *bar\PageChange( ) +" "+ Str( *bar\thumb\pos - *bar\area\pos )
+                     Protected i
+                     For i = 0 To 3
+                        If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+                           SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
+                           ;SetText( *this\StringBox( ), StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
+                           Break
+                        EndIf
+                     Next
+                  EndIf
+               EndIf
+               
                *bar\PageChange( ) = 0
             EndIf
             
             ;
             If *bar\ThumbChange( ) <> 0
                 *bar\ThumbChange( ) = 0
+                *this\repaint = #True
             EndIf
             
          EndIf
@@ -8000,25 +7997,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ( *BB1\state\press And Not *bar\invert )
                      
                     If *this\type = #__type_spin
-                      If bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
-                        *this\repaint = #True
-                      EndIf
+                      bar_SetState( *this, *bar\page\pos - *this\scroll\increment )
                     Else
-                      If bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) 
-                        *this\repaint = #True
-                      EndIf
+                      bar_SetThumbPos( *this, *bar\thumb\pos - *this\scroll\increment) 
                     EndIf
                  ElseIf ( *BB1\state\press And *bar\invert ) Or
                          ( *BB2\state\press And Not *bar\invert )
                      
                     If *this\type = #__type_spin
-                      If bar_SetState( *this, *bar\page\pos + *this\scroll\increment )
-                        *this\repaint = #True
-                      EndIf
+                      bar_SetState( *this, *bar\page\pos + *this\scroll\increment )
                     Else
-                      If bar_SetThumbPos( *this, *bar\thumb\pos + *this\scroll\increment) 
-                        *this\repaint = #True
-                      EndIf
+                      bar_SetThumbPos( *this, *bar\thumb\pos + *this\scroll\increment) 
                     EndIf
                  EndIf
                   
@@ -8101,9 +8090,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_MouseMove
             If *this\state\press And *SB\state\press
                If *bar\vertical
-                  Repaint | bar_SetThumbPos( *this, ( mouse( )\y - mouse( )\delta\y ))
+                  bar_SetThumbPos( *this, ( mouse( )\y - mouse( )\delta\y ))
                Else
-                  Repaint | bar_SetThumbPos( *this, ( mouse( )\x - mouse( )\delta\x ))
+                  bar_SetThumbPos( *this, ( mouse( )\x - mouse( )\delta\x ))
                EndIf
                
                ;If Repaint
@@ -22019,6 +22008,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+-8----------------------------------------f--8f+0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------e6----v----------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 8092
+; FirstLine = 7397
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+v--v--Xf----------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0y----f----------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
