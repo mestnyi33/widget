@@ -1220,17 +1220,17 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
    ; ; ; ;   CloseGadgetList( )
    
-   ;; WaitClose( )
-   ;     Bind( Root(), #PB_Default )
-   Repeat 
-      event = WaitWindowEvent( ) 
-      
-      ;     Select EventWindow( )
-      ;       Case window_ide 
-      ;         ide_window_events( event )
-      ;     EndSelect
-      
-   Until event = #PB_Event_CloseWindow
+   WaitClose( )
+;    ;     Bind( Root(), #PB_Default )
+;    Repeat 
+;       event = WaitWindowEvent( ) 
+;       
+;       ;     Select EventWindow( )
+;       ;       Case window_ide 
+;       ;         ide_window_events( event )
+;       ;     EndSelect
+;       
+;    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
 
@@ -1254,7 +1254,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 516
-; FirstLine = 505
+; CursorPosition = 1232
+; FirstLine = 1189
 ; Folding = ---------vf----------
 ; EnableXP

@@ -299,8 +299,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WindowEvent( )
          events::WaitEvent( PB(WindowEvent)( ) )
       EndMacro
-      Macro WaitWindowEvent( waittime = )
-         events::WaitEvent( PB(WaitWindowEvent)( waittime ) )
+      Macro WaitWindowEvent( _waittime_ = )
+         events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
+      EndMacro
+      Macro WaitEvent( _eventtype_, _callback_ )
+         widget::Bind( #PB_All, _callback_, _eventtype_ )
+         widget::WaitClose( )
       EndMacro
       
       ;-
@@ -1072,7 +1076,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global resize_one
       Declare   Button_Draw( *this )
       Declare   GetBar( *this, type.b, index.b = 0 )
-      Declare   GetAtPoint( *root._S_ROOT, mouse_x, mouse_y )
+      Declare   GetAtPoint( *root, mouse_x, mouse_y )
+      Declare   GetEventType( eventtype )
       
       Declare.w ChangeValue( *this )
       Declare.i TypeFromClass( class.s )
@@ -13396,6 +13401,86 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\fs[mode]
       EndProcedure
       
+      Procedure   GetEventType( eventtype )
+         If eventtype = #__event_Enter
+            ProcedureReturn #PB_EventType_MouseEnter
+         EndIf
+         If eventtype = #__event_Leave
+            ProcedureReturn #PB_EventType_MouseLeave
+         EndIf
+         If eventtype = #__event_MouseMove
+            ProcedureReturn #PB_EventType_MouseMove
+         EndIf
+         If eventtype = #__event_Focus
+            ProcedureReturn #PB_EventType_Focus
+         EndIf
+         If eventtype = #__event_LostFocus
+            ProcedureReturn #PB_EventType_LostFocus
+         EndIf
+         
+         If eventtype = #__event_Resize
+            ProcedureReturn #PB_EventType_Resize
+         EndIf
+         If eventtype = #__event_Change
+            ProcedureReturn #PB_EventType_Change
+         EndIf
+         If eventtype = #__event_StatusChange
+            ProcedureReturn #PB_EventType_StatusChange
+         EndIf
+         If eventtype = #__event_Down
+            ProcedureReturn #PB_EventType_Down
+         EndIf
+         If eventtype = #__event_Up
+            ProcedureReturn #PB_EventType_Up
+         EndIf
+         
+         If eventtype = #__event_DragStart
+            ProcedureReturn #PB_EventType_DragStart
+         EndIf
+         If eventtype = #__event_Input
+            ProcedureReturn #PB_EventType_Input
+         EndIf
+         If eventtype = #__event_KeyDown
+            ProcedureReturn #PB_EventType_KeyDown
+         EndIf
+         If eventtype = #__event_KeyUp
+            ProcedureReturn #PB_EventType_KeyUp
+         EndIf
+         
+         If eventtype = #__event_LeftButtonDown
+            ProcedureReturn #PB_EventType_LeftButtonDown
+         EndIf
+         If eventtype = #__event_LeftButtonUp
+            ProcedureReturn #PB_EventType_LeftButtonUp
+         EndIf
+         If eventtype = #__event_LeftClick
+            ProcedureReturn #PB_EventType_LeftClick
+         EndIf
+         If eventtype = #__event_Left2Click
+            ProcedureReturn #PB_EventType_LeftDoubleClick
+         EndIf
+         
+         If eventtype = #__event_RightButtonDown
+            ProcedureReturn #PB_EventType_RightButtonDown
+         EndIf
+         If eventtype = #__event_RightButtonUp
+            ProcedureReturn #PB_EventType_RightButtonUp
+         EndIf
+         If eventtype = #__event_RightClick
+            ProcedureReturn #PB_EventType_RightClick
+         EndIf
+         If eventtype = #__event_Right2Click
+            ProcedureReturn #PB_EventType_RightDoubleClick
+         EndIf
+         
+         ;       If eventtype = #__event_PopupWindow
+         ;          ProcedureReturn #PB_EventType_PopupWindow
+         ;       EndIf
+         ;       If eventtype = #__event_PopupMenu
+         ;          ProcedureReturn #PB_EventType_PopupMenu
+         ;       EndIf
+      EndProcedure
+      
       ;-
       Procedure.i  ChangeCursor( *this._s_WIDGET, *cursor )
          Protected result.i = *this\cursor
@@ -20822,10 +20907,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i
          
          If *this
-            If *this\parent
+            If Not Send( *this, #__event_free )
+               If *this = Root( )
+                  DeleteMapElement( Root( ) )
+                  ResetMap( Root( ) )
+                  NextMapElement( Root( ) )
+               EndIf
+               
+               Debug "  free... "+*this\class
                ; еще не проверял
                If ListSize( *this\events( ) )
-                  Debug "free-events " + *this\events( )
+                  ; Debug "free-events " + *this\events( )
                   ClearList( *this\events( ) )
                EndIf
                
@@ -20833,7 +20925,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PopupWindow( ) = #Null
                EndIf
                
-               ;
+               ;\\
+               If Not *this\parent
+                  *this\parent = *this
+               EndIf
+               
+               ;\\
                If OpenListWidget( ) = *this
                   OpenList( *this\parent )
                EndIf
@@ -20944,19 +21041,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Break
                      EndIf
                   ForEver
-               Else ; if it's root
                EndIf
+               
+               If EnteredWidget( ) = *this
+                  EnteredWidget( ) = *this\parent
+               EndIf
+               If FocusedWidget( ) = *this
+                  FocusedWidget( ) = *this\parent
+               EndIf
+               
+               ;\\
+               PostEventCanvasRepaint( *this\parent\root, #__event_free )
+               ;ClearStructure( *this, _S_WIDGET )
             EndIf
-            
-            If EnteredWidget( ) = *this
-               EnteredWidget( ) = *this\parent
-            EndIf
-            If FocusedWidget( ) = *this
-               FocusedWidget( ) = *this\parent
-            EndIf
-            
-            PostEventCanvasRepaint( *this\parent, #__event_free )
-            ;ClearStructure( *this, _S_WIDGET )
          EndIf
          
          ProcedureReturn result
@@ -21234,7 +21331,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result
          Protected *ew._S_WIDGET
          Protected *window._S_WIDGET
-         Protected PBWindow = PB(EventWindow)( )
          
          If Root( )
             If *this = #PB_Any
@@ -21252,58 +21348,65 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Repeat
                Select WaitWindowEvent( waittime )
-                     ;             Case #PB_Event_Message
-                     ;             Case #PB_Event_Gadget
                   Case #PB_Event_CloseWindow
-                     If *window = #PB_Any
-                        *ew = EventWidget( )
-                        If *ew
-                           Debug " - close - " + *ew ; +" "+ GetWindow( *window )
-                           If *ew\type = #__type_window
-                              ;Else
-                              
-                              ForEach Root( )
-                                 Debug "" + #PB_Compiler_Procedure + " " + Root( )
-                                 free( Root( ))
-                                 ;               ForEach Root( )\_widgets( )
-                                 ;                 Debug ""+ Root( )\_widgets( )\root +" "+ is_root_( Root( )\_widgets( ))
-                                 ;               Next
-                              Next
-                              Break
-                           EndIf
-                        Else
-                           Debug " - close0 - " + PBWindow ; +" "+ GetWindow( *window )
-                           Break
+                     ChangeCurrentRoot( PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) ) )
+                     Debug "close.... " + Root( ) +" "+ GetWindowTitle( Root( )\canvas\window ) 
+                     
+                     ;\\
+                     If Send( Root( ), #__event_Close )
+                        If Not PB(IsWindow)( PB(EventWindow)( ) )
+                           Free( Root( ) ) 
                         EndIf
-                        
-                     ElseIf PB(EventGadget)( ) = *window
-                        Debug " - close1 - " + PBWindow ; +" "+ GetWindow( *window )
-                        Free( *window )
-                        ReDraw( Root( ) )
-                        Break
-                        
-                     ElseIf PBWindow = *window
-                        If DoEvents( *window, #__event_Free )
-                           Debug " - close2 - " + PBWindow ; +" "+ GetWindow( *window )
-                           Break
+                     Else
+                        If PB(IsWindow)( PB(EventWindow)( ) )
+                           PB(CloseWindow)( PB(EventWindow)( ) )
                         EndIf
-                        ;               Else
-                        ;                Debug 555
-                        ;                Free( *window )
-                        ;
-                        ;                 Break
+                        Free( Root( ) ) 
+                     EndIf
+                     
+                  Case #PB_Event_RestoreWindow
+                     Debug "restore.... "
+                     Send( Root( ), #__event_Restore )
+                     
+                  Case #PB_Event_MaximizeWindow
+                     Debug "maximize.... "
+                     If Send( Root( ), #__event_Maximize )
+                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
+                     EndIf
+                     
+                  Case #PB_Event_MinimizeWindow
+                     Debug "minimize.... "
+                     If Send( Root( ), #__event_Minimize )
+                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
                      EndIf
                      
                EndSelect
+               
+               ;\\  
+               If Not MapSize( Root( ) ) 
+                  Debug "---------break1--------"
+                  Break
+               EndIf
+               
             ForEver
             
-            ;         ; ReDraw( Root( ))
-            ;
-            ;         If IsWindow( PBWindow)
-            ;           Debug " - end - "
-            ;           PB(CloseWindow)( PBWindow)
-            ;           End
-            ;         EndIf
+;             ;
+;             ; PushMapPosition(Root( ))
+;             ForEach Root( )
+;                If Root( )\canvas\window = PB(EventWindow)( )
+;                   Free( Root( ) )
+;                EndIf
+;             Next
+;             ; PopMapPosition(Root( ))
+            
+            If IsWindow( PB(EventWindow)( ))
+               Debug "  - end cicle - yes event window"
+               PB(CloseWindow)( PB(EventWindow)( ))
+            Else
+               Debug "  - end cicle - no event window"
+            EndIf
+            
+            End
          EndIf
          
       EndProcedure
@@ -22006,7 +22109,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16332
-; FirstLine = 14893
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------t0Nu-----------------------4-+-+v--v--Xf----------------------------------+-4-980--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----------------------------------------------------
+; CursorPosition = 21352
+; FirstLine = 19467
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++---------------------------------0-v-648------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv---------------------------------------8------9-------
 ; EnableXP

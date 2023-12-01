@@ -17,22 +17,22 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected eventtype = WidgetEventType( )
     
     Select eventtype
-        ;       Case #PB_EventType_Draw          : Debug "draw"         
-      Case #PB_EventType_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-      Case #PB_EventType_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
-      Case #PB_EventType_Input           : Debug  " - "+ *this +" - input"
-      Case #PB_EventType_KeyDown         : Debug  " - "+ *this +" - key-down"
-      Case #PB_EventType_KeyUp           : Debug  " - "+ *this +" - key-up"
-      Case #PB_EventType_Focus           : Debug  " - "+ *this +" - focus"
-      Case #PB_EventType_LostFocus       : Debug  " - "+ *this +" - lfocus"
-      Case #PB_EventType_MouseEnter      : Debug  " - "+ *this +" - enter"
-      Case #PB_EventType_MouseLeave      : Debug  " - "+ *this +" - leave"
-      Case #PB_EventType_LeftButtonDown  : Debug  " - "+ *this +" - down"
-      Case #PB_EventType_DragStart       : Debug  " - "+ *this +" - drag"
-      Case #PB_EventType_Drop            : Debug  " - "+ *this +" - drop"
-      Case #PB_EventType_LeftButtonUp    : Debug  " - "+ *this +" - up"
-      Case #PB_EventType_LeftClick       : Debug  " - "+ *this +" - click"
-      Case #PB_EventType_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
+        ;       Case #__event_Draw          : Debug "draw"         
+      Case #__event_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
+      Case #__event_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
+      Case #__event_Input           : Debug  " - "+ *this +" - input"
+      Case #__event_KeyDown         : Debug  " - "+ *this +" - key-down"
+      Case #__event_KeyUp           : Debug  " - "+ *this +" - key-up"
+      Case #__event_Focus           : Debug  " - "+ *this +" - focus"
+      Case #__event_LostFocus       : Debug  " - "+ *this +" - lfocus"
+      Case #__event_MouseEnter      : Debug  " - "+ *this +" - enter"
+      Case #__event_MouseLeave      : Debug  " - "+ *this +" - leave"
+      Case #__event_LeftButtonDown  : Debug  " - "+ *this +" - down"
+      Case #__event_DragStart       : Debug  " - "+ *this +" - drag"
+      Case #__event_Drop            : Debug  " - "+ *this +" - drop"
+      Case #__event_LeftButtonUp    : Debug  " - "+ *this +" - up"
+      Case #__event_LeftClick       : Debug  " - "+ *this +" - click"
+      Case #__event_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
     EndSelect
   EndProcedure
   
@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, a, "Line "+Str(a))
   Next 
   
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #__string_password|#__string_right)
+  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__flag_textright)
   
   
   Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")
@@ -204,7 +204,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseList( )
   
   OpenList( *root3 )
-  *w = Tree( 10,20, 150,200, #__tree_multiselect)
+  *w = Tree( 10,20, 150,200, #__flag_multiselect)
   For i=1 To 100;0000
     AddItem(*w, i, "text-"+Str(i))
   Next
@@ -241,5 +241,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 206
+; FirstLine = 202
 ; Folding = -
 ; EnableXP
