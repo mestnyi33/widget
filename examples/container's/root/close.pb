@@ -14,26 +14,25 @@ CompilerIf #PB_Compiler_IsMainFile
             ;\\
             ; CloseWindow( EventWindow( ) )
             
-; ;             ;\\ demo main window
-; ;             If EventWindow( ) = 0 
-;                If #PB_MessageRequester_Yes = MessageRequester( "Сообщение", "Закрыть окно?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;             ;\\ demo main window
+;             If EventWindow( ) = 0 
+               If #PB_MessageRequester_Yes = MessageRequester( "Сообщение", "Закрыть окно?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  ProcedureReturn 0
+               Else
+                  ProcedureReturn 1
+               EndIf
+;             Else
+;                ; demo close window
+;                If EventWindow( ) = 1 
 ;                   CloseWindow( EventWindow( ) )
-;                   ProcedureReturn 0
-;                Else
 ;                   ProcedureReturn 1
-;                EndIf
-; ;             Else
-; ;                ; demo close window
-; ;                If EventWindow( ) = 1 
-; ;                   CloseWindow( EventWindow( ) )
-; ;                   ProcedureReturn 1
-; ;                EndIf   
-; ;                
-; ;                ; demo no closed window
-; ;                If EventWindow( ) = 2 
-; ;                   ProcedureReturn 1
-; ;                EndIf   
-; ;             EndIf
+;                EndIf   
+;                
+;                ; demo no closed window
+;                If EventWindow( ) = 2 
+;                   ProcedureReturn 1
+;                EndIf   
+;             EndIf
             
          Case #__event_free
             Debug "free - event " + EventWidget( )\class 
@@ -77,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 35
-; FirstLine = 7
+; CursorPosition = 14
+; FirstLine = 5
 ; Folding = -
 ; EnableXP
