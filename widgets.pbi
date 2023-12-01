@@ -19796,6 +19796,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      
+      ;-
       Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Protected Repaint, mouse_x , mouse_y
          
@@ -20411,10 +20413,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure EventResize( )
-         Protected canvas = GetWindowData( EventWindow( ))
+         Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
          ; Debug "- resize - os - window -"
-         ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas ) * 2, WindowHeight( EventWindow( )) - GadgetY( canvas ) * 2 ) ; bug
-                                                                                                                                                                     ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+         ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+         PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
+      EndProcedure
+      
+      Procedure EventActive( )
+         Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+         ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+         SetActive( Root( ) )
+      EndProcedure
+      
+      Procedure EventDeActive( )
+         Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+         ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+         If GetActive( )
+            SetDeActive( GetActive( ) )
+         EndIf
       EndProcedure
       
       
@@ -20632,7 +20648,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window );, Canvas )
             EndIf
             
-            ; z - order
+            ;\\
+            BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window );, Canvas )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeActive( ), Window );, Canvas )
+            
+            ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
                SetWindowPos_( g, #GW_HWNDFIRST, 0, 0, 0, 0, #SWP_NOMOVE | #SWP_NOSIZE )
@@ -22145,7 +22165,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21380
-; FirstLine = 19441
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++---------------------------------0-v-648------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv------------------------------------PAt0-------z-------
+; CursorPosition = 20430
+; FirstLine = 17976
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++---------------------------------0-v-648------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Bot-------f+------
 ; EnableXP

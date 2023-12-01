@@ -777,8 +777,9 @@ Procedure ide_events( )
    
    Select e_type
       Case #__event_Close
-         If #PB_MessageRequester_Yes = MessageRequester( "Message", "Are you sure you want to go out?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-            ;CloseWindow( EventWindow( ) )
+         If #PB_MessageRequester_Yes = MessageRequester( "Message", 
+                                                         "Are you sure you want to go out?",
+                                                         #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn 0
          Else
             ProcedureReturn 1
@@ -1265,7 +1266,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 783
+; CursorPosition = 782
 ; FirstLine = 754
 ; Folding = ---------vf----------
 ; EnableXP
