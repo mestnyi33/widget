@@ -776,6 +776,14 @@ Procedure ide_events( )
    Protected *ew._s_widget = WidgetEvent( )\widget
    
    Select e_type
+      Case #__event_Close
+         If #PB_MessageRequester_Yes = MessageRequester( "Message", "Are you sure you want to go out?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            ;CloseWindow( EventWindow( ) )
+            ProcedureReturn 0
+         Else
+            ProcedureReturn 1
+         EndIf
+         
       Case #__event_DragStart
          If *ew = id_elements_tree
             a_transform( )\type = 0
@@ -1122,6 +1130,9 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    
    Bind( id_elements_tree, @ide_events( ), #__event_MouseEnter )
    Bind( id_elements_tree, @ide_events( ), #__event_MouseLeave )
+   
+   
+   Bind( root, @ide_events( ), #__event_Close )
    ProcedureReturn window_ide
 EndProcedure
 
@@ -1254,7 +1265,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1232
-; FirstLine = 1189
+; CursorPosition = 783
+; FirstLine = 754
 ; Folding = ---------vf----------
 ; EnableXP

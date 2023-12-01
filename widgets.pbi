@@ -10353,8 +10353,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure tt_tree_callBack( )
-         ;     ;SetActiveWindow( EventWidget( )\root\canvas\window )
-         ;     ;SetActiveGadget( EventWidget( )\root\canvas\gadget )
+         ;     ;SetActiveWindow( EventWidget( )\canvas\window )
+         ;     ;SetActiveGadget( EventWidget( )\\canvas\gadget )
          ;
          ;     If FocusedRow( EventWidget( ) )
          ;       FocusedRow( EventWidget( ) )\color\state = 0
@@ -17475,7 +17475,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i Send( *this._S_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
+      Procedure.i Send( *this._S_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
          Protected result
          
          If *this > 0
@@ -20904,8 +20904,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i Free( *this._S_WIDGET )
-         Protected result.i
-         
          If *this
             If Not Send( *this, #__event_free )
                If *this = Root( )
@@ -20914,7 +20912,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   NextMapElement( Root( ) )
                EndIf
                
-               Debug "  free... "+*this\class
+               Debug " free - "+*this\class
                ; еще не проверял
                If ListSize( *this\events( ) )
                   ; Debug "free-events " + *this\events( )
@@ -21051,12 +21049,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               PostEventCanvasRepaint( *this\parent\root, #__event_free )
+               ;PostEventCanvasRepaint( *this\parent\root, #__event_free )
                ;ClearStructure( *this, _S_WIDGET )
+               
+               ProcedureReturn 1
             EndIf
          EndIf
-         
-         ProcedureReturn result
       EndProcedure
       
       ;-
@@ -21349,19 +21347,72 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Repeat
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_CloseWindow
-                     ChangeCurrentRoot( PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) ) )
-                     Debug "close.... " + Root( ) +" "+ GetWindowTitle( Root( )\canvas\window ) 
+                     Protected free_state
+                     Protected canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
+                     
+                     ChangeCurrentRoot( canvasID )
+                     Debug "close.... " + Root( )\canvas\window +" "+ PB(EventWindow)( ) 
                      
                      ;\\
                      If Send( Root( ), #__event_Close )
                         If Not PB(IsWindow)( PB(EventWindow)( ) )
-                           Free( Root( ) ) 
+                           free_state = 1
                         EndIf
                      Else
-                        If PB(IsWindow)( PB(EventWindow)( ) )
-                           PB(CloseWindow)( PB(EventWindow)( ) )
+                        If Root( )\canvas\window <> PB(EventWindow)( ) 
+                           Debug "change event window - " + Root( )\canvas\window +" to window - "+ PB(EventWindow)( )
+                           ChangeCurrentRoot( canvasID )
                         EndIf
-                        Free( Root( ) ) 
+                        free_state = 1
+                     EndIf
+                     
+                     If free_state = 1
+                        ForEach Root( )
+                           If Root( )\canvas\window = PB(EventWindow)( ) 
+                              Debug " freeee "+Root( )\class
+                              If Free( Root( ) ) 
+                                 free_state = - 1
+                              EndIf
+                           EndIf
+                        Next
+                        
+                        If MapSize( Root( ) ) 
+                           If MapKey( Root( ) ) = ""
+                              ResetMap( Root( ) )
+                              NextMapElement( Root( ) )
+                           EndIf
+                        EndIf
+                        
+                        If free_state = - 1
+                           If PB(IsWindow)( PB(EventWindow)( ) )
+                              PB(CloseWindow)( PB(EventWindow)( ) )
+                           EndIf
+                           free_state = 0
+                        EndIf
+                     EndIf
+                     
+                        
+                        
+;                         Static count
+;                         count = 0
+;                         ForEach Root( )
+;                            If PB(EventWindow)( ) = Root( )\canvas\window 
+;                               Free( Root( ) ) 
+;                               count + 1
+;                            EndIf
+;                         Next
+;                        
+;                         ;\\
+;                         If count > 1
+;                            ResetMap( Root( ) )
+;                            NextMapElement( Root( ) )
+;                         EndIf
+                        
+                        
+                     ;\\  
+                     If Not MapSize( Root( ) ) 
+                        Debug "---------break1--------"
+                        Break
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -21381,24 +21432,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                EndSelect
-               
-               ;\\  
-               If Not MapSize( Root( ) ) 
-                  Debug "---------break1--------"
-                  Break
-               EndIf
-               
             ForEver
             
-;             ;
-;             ; PushMapPosition(Root( ))
-;             ForEach Root( )
-;                If Root( )\canvas\window = PB(EventWindow)( )
-;                   Free( Root( ) )
-;                EndIf
-;             Next
-;             ; PopMapPosition(Root( ))
-            
+            ;\\
             If IsWindow( PB(EventWindow)( ))
                Debug "  - end cicle - yes event window"
                PB(CloseWindow)( PB(EventWindow)( ))
@@ -22109,7 +22145,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21352
-; FirstLine = 19467
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++---------------------------------0-v-648------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv---------------------------------------8------9-------
+; CursorPosition = 21380
+; FirstLine = 19441
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++---------------------------------0-v-648------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv------------------------------------PAt0-------z-------
 ; EnableXP

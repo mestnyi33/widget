@@ -558,7 +558,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     EVENT
       Structure _s_EVENTDATA
-         *widget._s_WIDGET ; eventWidget( )
+         *widget._s_ROOT   ; eventWidget( )
          *type             ; eventType( )
          *item             ; eventItem( )
          *data             ; eventData( )
@@ -749,7 +749,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 124
-; FirstLine = 105
+; CursorPosition = 560
+; FirstLine = 436
 ; Folding = ---PP7D+--
 ; EnableXP
