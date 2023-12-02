@@ -19,9 +19,13 @@ CompilerIf #PB_Compiler_IsMainFile
             If EventWindow( ) = 2
                If #PB_MessageRequester_Yes = MessageRequester( "Сообщение", "Закрыть окно?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ;PB(CloseWindow)( PB(EventWindow)( ) )  
-                  ;CocoaMessage(0, WindowID(2), "close")
-                  ; Debug IsWindow(2)
-                  CloseWindow( 2 ) ; ??????
+                  
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     CocoaMessage(0, WindowID(EventWindow( )), "close")
+                  CompilerElse 
+                     CloseWindow( EventWindow( ) )
+                  CompilerEndIf
+                  
                   ;ProcedureReturn 0
                Else
                   ProcedureReturn 1
@@ -83,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
+; CursorPosition = 25
 ; FirstLine = 9
-; Folding = -
+; Folding = --
 ; EnableXP

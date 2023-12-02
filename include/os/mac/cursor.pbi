@@ -489,7 +489,7 @@ Module Cursor
           If *cursor\hcursor = - 1
             CocoaMessage(0, 0, "NSCursor hide")
           Else
-            CocoaMessage(0, *cursor\hcursor, "set") 
+             CocoaMessage(0, *cursor\hcursor, "set") 
           EndIf
         EndIf
         
@@ -627,7 +627,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 430
-; FirstLine = 401
+; CursorPosition = 462
+; FirstLine = 466
 ; Folding = -------------
 ; EnableXP

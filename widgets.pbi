@@ -1085,7 +1085,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.s ClassFromEvent( event.i )
       
       
-      Declare EventHandler ( canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
+      Declare EventHandler( event = - 1, canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
       Declare WaitClose( *this = #PB_Any, waittime.l = 0 )
       Declare Message( Title.s, Text.s, flag.q = #Null )
       
@@ -14071,7 +14071,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this And Not *this\state\disable
             If *this\root And
                GetActiveGadget( ) <> *this\root\canvas\gadget
-               SetActiveGadget( *this\root\canvas\gadget )
+               ; SetActiveGadget( *this\root\canvas\gadget )
             EndIf
             
             If a_transformer( *this )
@@ -14082,9 +14082,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If is_root_( *this )
-               ProcedureReturn 0
-            EndIf
+;             If is_root_( *this )
+;                ProcedureReturn 0
+;             EndIf
             
             If Popup( ) And *this = Popup( )\widget
                ; Debug " Popup( setActive() ) "
@@ -14132,7 +14132,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; 					EndIf
                
                ; get active window
-               If is_window_( *this ) Or is_root_( *this )
+               If is_window_( *this ) Or 
+                  is_root_( *this )
                   GetActive( ) = *this
                Else
                   If *this\child
@@ -14147,7 +14148,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; when we activate the gadget
                ; first we activate its parent window
-               If GetActive( ) And Not is_root_( GetActive( ) ) And
+               If GetActive( ) And ; Not is_root_( GetActive( ) ) And
                   GetActive( )\state\focus = #False
                   GetActive( )\state\focus = #True
                   DoEvents( GetActive( ), #__event_Focus )
@@ -19798,618 +19799,668 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
+      Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Protected Repaint, mouse_x , mouse_y
          
-         ;\\
-         If eventtype = #PB_EventType_MouseEnter
-            If Not mouse( )\interact
-               If IsGadget( eventgadget ) And
-                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+         If event = #PB_Event_ActivateWindow
+            eventgadget = PB(GetWindowData)( PB(EventWindow)( ))
+            ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+            
+            If Not EnteredWidget( )
+               SetActive( Root( ) )
+            EndIf
+            
+;             Debug "EventActive "+Root( )\class
+            
+;             If FocusedWidget( ) And
+;                   FocusedWidget( )\root\canvas\gadget = eventgadget
+;                   
+;                   If Not EnteredWidget( ) Or
+;                      ( EnteredWidget( ) And
+;                        ( FocusedWidget( ) = EnteredWidget( ) Or
+;                          FocusedWidget( ) = EnteredWidget( )\parent ) )
+;                      ; Debug "Canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+;                      
+;                      If FocusedWidget( )\state\focus = 0
+;                         FocusedWidget( )\state\focus = 1
+;                         DoEvents( FocusedWidget( ), #__event_Focus )
+;                      EndIf
+;                   EndIf
+;                EndIf
+               
+         EndIf
+         
+         If event = #PB_Event_DeactivateWindow
+            eventgadget = PB(GetWindowData)( PB(EventWindow)( ))
+            ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+;             If GetActive( )
+;                SetDeActive( GetActive( ) )
+;                Debug "EventDeActive "+GetActive( )\class
+;             EndIf
+;             
+            If FocusedWidget( ) And
+                  FocusedWidget( )\root\canvas\gadget = eventgadget
+                  ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+                  
+                  If FocusedWidget( )\state\focus = 1
+                     FocusedWidget( )\state\focus = 0
+                     DoEvents( FocusedWidget( ), #__event_LostFocus )
+                  EndIf
+               EndIf
+         EndIf
+         
+         If event = #PB_Event_Gadget
+            ;\\
+            If eventtype = #PB_EventType_MouseEnter
+               If Not mouse( )\interact
+                  If IsGadget( eventgadget ) And
+                     GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+                     ChangeCurrentRoot( GadgetID( eventgadget ) )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If eventtype = #PB_EventType_MouseLeave
+               If PressedWidget( ) And
+                  Root( ) <> PressedWidget( )\root
+                  eventgadget = PressedWidget( )\root\canvas\gadget
                   ChangeCurrentRoot( GadgetID( eventgadget ) )
                EndIf
             EndIf
-         EndIf
-         
-         ;\\
-         If eventtype = #PB_EventType_MouseLeave
-            If PressedWidget( ) And
-               Root( ) <> PressedWidget( )\root
-               eventgadget = PressedWidget( )\root\canvas\gadget
-               ChangeCurrentRoot( GadgetID( eventgadget ) )
-            EndIf
-         EndIf
-         
-         ;\\
-         If eventtype = #pb_eventtype_Repaint ; = 262150
-            If IsGadget( eventgadget ) And
-               GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-               
-               PushMapPosition( Root( ) )
-               If ChangeCurrentRoot( GadgetID( eventgadget ) )
-                  If Root( )\canvas\repaint = 1
-                     ReDraw( Root( ) )
-                     Root( )\canvas\repaint = 0
-                  EndIf
-               EndIf
-               PopMapPosition( Root( ) )
-               
-               ;\\
-               If Not mouse( )\interact
-                  If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
-                     If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
-                        If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
-                           ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-                        EndIf
-                     EndIf
-                  Else
-                     If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
-                        ChangeCurrentRoot( GadgetID( eventgadget ) )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
-         EndIf
-         
-         ;\\
-         If eventtype = #PB_EventType_KeyDown Or
-            eventtype = #PB_EventType_Input Or
-            eventtype = #PB_EventType_KeyUp
             
             ;\\
-            If FocusedWidget( )
-               Keyboard( )\key[1] = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Modifiers )
-               
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If Keyboard( )\key[1] & #PB_Canvas_Command
-                     Keyboard( )\key[1] & ~ #PB_Canvas_Command
-                     Keyboard( )\key[1] | #PB_Canvas_Control
+            If eventtype = #pb_eventtype_Repaint ; = 262150
+               If IsGadget( eventgadget ) And
+                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+                  
+                  PushMapPosition( Root( ) )
+                  If ChangeCurrentRoot( GadgetID( eventgadget ) )
+                     If Root( )\canvas\repaint = 1
+                        ReDraw( Root( ) )
+                        Root( )\canvas\repaint = 0
+                     EndIf
                   EndIf
-               CompilerEndIf
+                  PopMapPosition( Root( ) )
+                  
+                  ;\\
+                  If Not mouse( )\interact
+                     If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
+                        If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
+                           If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
+                              ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
+                           EndIf
+                        EndIf
+                     Else
+                        If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
+                           ChangeCurrentRoot( GadgetID( eventgadget ) )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
+            EndIf
+            
+            ;\\
+            If eventtype = #PB_EventType_KeyDown Or
+               eventtype = #PB_EventType_Input Or
+               eventtype = #PB_EventType_KeyUp
                
                ;\\
-               If eventtype = #PB_EventType_Input
-                  Keyboard( )\input = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Input )
-               Else
-                  Keyboard( )\Key = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Key )
-               EndIf
-               
-               ;\\ keyboard events
-               If eventtype = #PB_EventType_KeyDown
-                  DoEvents( FocusedWidget( ), #__event_keydown )
-               EndIf
-               If eventtype = #PB_EventType_Input
-                  DoEvents( FocusedWidget( ), #__event_input )
-               EndIf
-               If eventtype = #PB_EventType_KeyUp
-                  DoEvents( FocusedWidget( ), #__event_keyup )
-               EndIf
-               
-               ;\\ change keyboard focus-widget
-               If eventtype = #PB_EventType_KeyDown
-                  ; If Not FocusedWidget( )\anchors
+               If FocusedWidget( )
+                  Keyboard( )\key[1] = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Modifiers )
                   
-                  ;\\ tab focus
-                  Select Keyboard( )\Key
-                     Case #PB_Shortcut_Tab
-                        If FocusedWidget( )\container And
-                           FocusedWidget( )\FirstWidget( )
-                           SetActive( FocusedWidget( )\FirstWidget( ) )
-                        Else
-                           If FocusedWidget( )\AfterWidget( )
-                              SetActive( FocusedWidget( )\AfterWidget( ) )
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     If Keyboard( )\key[1] & #PB_Canvas_Command
+                        Keyboard( )\key[1] & ~ #PB_Canvas_Command
+                        Keyboard( )\key[1] | #PB_Canvas_Control
+                     EndIf
+                  CompilerEndIf
+                  
+                  ;\\
+                  If eventtype = #PB_EventType_Input
+                     Keyboard( )\input = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Input )
+                  Else
+                     Keyboard( )\Key = GetGadgetAttribute( FocusedWidget( )\root\canvas\gadget, #PB_Canvas_Key )
+                  EndIf
+                  
+                  ;\\ keyboard events
+                  If eventtype = #PB_EventType_KeyDown
+                     DoEvents( FocusedWidget( ), #__event_keydown )
+                  EndIf
+                  If eventtype = #PB_EventType_Input
+                     DoEvents( FocusedWidget( ), #__event_input )
+                  EndIf
+                  If eventtype = #PB_EventType_KeyUp
+                     DoEvents( FocusedWidget( ), #__event_keyup )
+                  EndIf
+                  
+                  ;\\ change keyboard focus-widget
+                  If eventtype = #PB_EventType_KeyDown
+                     ; If Not FocusedWidget( )\anchors
+                     
+                     ;\\ tab focus
+                     Select Keyboard( )\Key
+                        Case #PB_Shortcut_Tab
+                           If FocusedWidget( )\container And
+                              FocusedWidget( )\FirstWidget( )
+                              SetActive( FocusedWidget( )\FirstWidget( ) )
                            Else
-                              If FocusedWidget( )\parent
-                                 If FocusedWidget( )\parent\AfterWidget( )
-                                    SetActive( FocusedWidget( )\parent\AfterWidget( ) )
-                                 Else
-                                    
-                                    ;                                     If FocusedWidget( )\anchors
-                                    ;                                        If a_main( )\FirstWidget( )
-                                    ;                                           SetActive( a_main( )\FirstWidget( ) )
-                                    ;                                        EndIf
-                                    ;                                     Else
-                                    ;                                        If FocusedWidget( )\root\FirstWidget( )
-                                    ;                                           SetActive( FocusedWidget( )\root\FirstWidget( ) )
-                                    ;                                        EndIf
-                                    ;                                     EndIf
-                                    
-                                    ;                                     If FocusedWidget( )\parent
-                                    ;                                        If FocusedWidget( )\parent\FirstWidget( )
-                                    ;                                           Debug "777 "+FocusedWidget( )\parent\FirstWidget( )\class
-                                    ;                                           SetActive( FocusedWidget( )\parent\FirstWidget( ) )
-                                    ;                                        EndIf
-                                    ;                                     Else
-                                    
-                                    Protected *main._s_WIDGET = GetMainParent( FocusedWidget( ) )
-                                    If *main ;And *main\FirstWidget( )
-                                       If *main\AfterWidget( )
-                                          Debug "after " + *main\AfterWidget( )\class
-                                          SetActive( *main\AfterWidget( ) )
-                                       Else
-                                          SetActive( *main )
-                                       EndIf
+                              If FocusedWidget( )\AfterWidget( )
+                                 SetActive( FocusedWidget( )\AfterWidget( ) )
+                              Else
+                                 If FocusedWidget( )\parent
+                                    If FocusedWidget( )\parent\AfterWidget( )
+                                       SetActive( FocusedWidget( )\parent\AfterWidget( ) )
                                     Else
-                                       If FocusedWidget( )\root\FirstWidget( )
-                                          SetActive( FocusedWidget( )\root\FirstWidget( ) )
+                                       
+                                       ;                                     If FocusedWidget( )\anchors
+                                       ;                                        If a_main( )\FirstWidget( )
+                                       ;                                           SetActive( a_main( )\FirstWidget( ) )
+                                       ;                                        EndIf
+                                       ;                                     Else
+                                       ;                                        If FocusedWidget( )\root\FirstWidget( )
+                                       ;                                           SetActive( FocusedWidget( )\root\FirstWidget( ) )
+                                       ;                                        EndIf
+                                       ;                                     EndIf
+                                       
+                                       ;                                     If FocusedWidget( )\parent
+                                       ;                                        If FocusedWidget( )\parent\FirstWidget( )
+                                       ;                                           Debug "777 "+FocusedWidget( )\parent\FirstWidget( )\class
+                                       ;                                           SetActive( FocusedWidget( )\parent\FirstWidget( ) )
+                                       ;                                        EndIf
+                                       ;                                     Else
+                                       
+                                       Protected *main._s_WIDGET = GetMainParent( FocusedWidget( ) )
+                                       If *main ;And *main\FirstWidget( )
+                                          If *main\AfterWidget( )
+                                             Debug "after " + *main\AfterWidget( )\class
+                                             SetActive( *main\AfterWidget( ) )
+                                          Else
+                                             SetActive( *main )
+                                          EndIf
+                                       Else
+                                          If FocusedWidget( )\root\FirstWidget( )
+                                             SetActive( FocusedWidget( )\root\FirstWidget( ) )
+                                          EndIf
                                        EndIf
+                                       ;                                     EndIf
                                     EndIf
-                                    ;                                     EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                     EndSelect
+                     ; EndIf
+                  EndIf
+                  
+                  ;\\
+                  If eventtype = #PB_EventType_KeyUp
+                     Keyboard( )\key[1] = 0
+                     Keyboard( )\Key    = 0
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               PushMapPosition( Root( ) )
+               If ChangeCurrentRoot( GadgetID( eventgadget ) )
+                  Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+                  ReDraw( Root( ) )
+               EndIf
+               PopMapPosition( Root( ) )
+            EndIf
+            
+            ;\\
+            If Root( ) And Root( )\canvas\gadget = eventgadget
+               ;\\
+               Select eventtype
+                  Case #PB_EventType_MouseEnter,
+                       #PB_EventType_MouseLeave,
+                       #PB_EventType_MouseMove
+                     
+                     mouse_x = CanvasMouseX( Root( )\canvas\gadget )
+                     mouse_y = CanvasMouseY( Root( )\canvas\gadget )
+                     
+                     ;\\
+                     If eventtype = #PB_EventType_MouseEnter
+                        mouse( )\change = 1 << 0
+                        mouse( )\x      = mouse_x
+                        mouse( )\y      = mouse_y
+                     EndIf
+                     If eventtype = #PB_EventType_MouseLeave
+                        mouse( )\change = - 1
+                        mouse( )\x      = - 1
+                        mouse( )\y      = - 1
+                     EndIf
+                     If eventtype = #PB_EventType_MouseMove
+                        If mouse( )\x <> mouse_x
+                           If mouse( )\x < mouse_x
+                              mouse( )\change | 1 << 3
+                           Else
+                              mouse( )\change | 1 << 1
+                           EndIf
+                           mouse( )\x = mouse_x
+                        EndIf
+                        If mouse( )\y <> mouse_y
+                           If mouse( )\y < mouse_y
+                              mouse( )\change | 1 << 4
+                           Else
+                              mouse( )\change | 1 << 2
+                           EndIf
+                           mouse( )\y = mouse_y
+                        EndIf
+                        
+                        ;\\ mouse-drag-start send drag event
+                        If PressedWidget( ) And
+                           PressedWidget( )\state\press And
+                           PressedWidget( )\state\enter = 2 And
+                           PressedWidget( )\dragstart = #PB_Drag_None
+                           PressedWidget( )\dragstart = #PB_Drag_Update
+                           
+                           PressedWidget( )\resize = 0 ; temp
+                           
+                           ;                         If mouse( )\press
+                           ;                            If PressedWidget( )
+                           ;                               If PressedWidget( )\split_1( )
+                           ;                                  Hide( PressedWidget( )\split_1( ), 1 )
+                           ;                               EndIf
+                           ;                               If PressedWidget( )\split_2( )
+                           ;                                  Hide( PressedWidget( )\split_2( ), 1 )
+                           ;                               EndIf
+                           ;                            EndIf
+                           ;                         EndIf
+                           
+                           DoEvents( PressedWidget( ), #__event_DragStart )
+                        EndIf
+                     EndIf
+                     
+                     
+                  Case #PB_EventType_LeftButtonDown,
+                       #PB_EventType_RightButtonDown,
+                       #PB_EventType_MiddleButtonDown
+                     
+                     ;                   ;\\
+                     ;                   If EnteredWidget( )
+                     ;                      If StartDrawing( Output( EnteredWidget( )\root ))
+                     ;                         Draw( EnteredWidget( ) )
+                     ;                         EnteredWidget( )\drawimg = GrabDrawingImage( #PB_Any, EnteredWidget( )\frame_x( ), EnteredWidget( )\frame_y( ), EnteredWidget( )\frame_width( ), EnteredWidget( )\frame_height( ) )
+                     ;                         StopDrawing( )
+                     ;                      EndIf
+                     ;                   EndIf
+                     
+                     ;\\
+                     mouse( )\press  = 1
+                     mouse( )\change = 1 << 5
+                     If eventtype = #PB_EventType_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
+                     If eventtype = #PB_EventType_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
+                     If eventtype = #PB_EventType_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
+                     
+                  Case #PB_EventType_LeftButtonUp,
+                       #PB_EventType_RightButtonUp,
+                       #PB_EventType_MiddleButtonUp
+                     
+                     If mouse( )\interact = 1
+                        mouse( )\interact = - 1
+                     EndIf
+                     
+                     ;\\
+                     If mouse( )\press
+                        mouse( )\press  = 0
+                        
+                        If PressedWidget( )
+                           If PressedWidget( )\resize & #__resize_change
+                              Debug "stop-resize "+PressedWidget( )\class
+                              PressedWidget( )\resize &~ #__resize_change
+                           EndIf
+                        EndIf
+                        
+                        
+                        ;                      If PressedWidget( )
+                        ;                         If PressedWidget( )\split_1( )
+                        ;                            If PressedWidget( )\split_1( )\hide
+                        ;                               Hide( PressedWidget( )\split_1( ), 0 )
+                        ;                               Resize( PressedWidget( )\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                        ;                            EndIf
+                        ;                         EndIf
+                        ;                         If PressedWidget( )\split_2( )
+                        ;                            If PressedWidget( )\split_2( )\hide
+                        ;                               Hide( PressedWidget( )\split_2( ), 0 )
+                        ;                               Resize( PressedWidget( )\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                        ;                            EndIf
+                        ;                         EndIf
+                        ;                         
+                        ;                         If PressedWidget( )\drawimg
+                        ;                            FreeImage( PressedWidget( )\drawimg )
+                        ;                            PressedWidget( )\drawimg = #Null
+                        ;                         EndIf
+                        ;                      EndIf
+                     EndIf
+                     
+                     ;\\
+                     mouse( )\change = 1 << 6
+                     mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
+                     mouse( )\y      = CanvasMouseY( Root( )\canvas\gadget )
+               EndSelect
+               
+               ;\\ get enter&leave widget address
+               If mouse( )\change
+                  If mouse( )\interact <> 1
+                     ;\\ enter&leave mouse events
+                     GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ do all events
+            If eventtype = #PB_EventType_Focus
+               If FocusedWidget( ) And
+                  FocusedWidget( )\root\canvas\gadget = eventgadget
+                  
+                  If Not EnteredWidget( ) Or
+                     ( EnteredWidget( ) And
+                       ( FocusedWidget( ) = EnteredWidget( ) Or
+                         FocusedWidget( ) = EnteredWidget( )\parent ) )
+                     ; Debug "Canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+                     
+                     If FocusedWidget( )\state\focus = 0
+                        FocusedWidget( )\state\focus = 1
+                        DoEvents( FocusedWidget( ), #__event_Focus )
+                     EndIf
+                  EndIf
+               EndIf
+               
+            ElseIf eventtype = #PB_EventType_LostFocus
+               If FocusedWidget( ) And
+                  FocusedWidget( )\root\canvas\gadget = eventgadget
+                  ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+                  
+                  If FocusedWidget( )\state\focus = 1
+                     FocusedWidget( )\state\focus = 0
+                     DoEvents( FocusedWidget( ), #__event_LostFocus )
+                  EndIf
+               EndIf
+               
+            ElseIf eventtype = #PB_EventType_MouseMove
+               If mouse( )\change > 1
+                  ;\\ mouse-pressed-widget move event
+                  If PressedWidget( ) And
+                     PressedWidget( )\dragstart And
+                     PressedWidget( ) <> EnteredWidget( )
+                     If PressedWidget( )\root <> Root( )
+                        mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
+                        mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
+                     EndIf
+                     DoEvents( PressedWidget( ), #__event_MouseMove )
+                  EndIf
+                  
+                  ;\\ mouse-entered-widget move event
+                  If EnteredWidget( ) And
+                     EnteredWidget( )\state\enter
+                     If PressedWidget( ) And
+                        PressedWidget( )\root <> Root( )
+                        mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
+                        mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
+                     EndIf
+                     DoEvents( EnteredWidget( ), #__event_MouseMove )
+                  EndIf
+               EndIf
+               
+            ElseIf eventtype = #PB_EventType_LeftButtonDown Or
+                   eventtype = #PB_EventType_MiddleButtonDown Or
+                   eventtype = #PB_EventType_RightButtonDown
+               
+               ;\\
+               If EnteredWidget( )
+                  PressedWidget( )             = EnteredWidget( )
+                  PressedWidget( )\state\press = #True
+                  
+                  ; Debug "canvas - press "+eventgadget +" "+ Root( ) +" "+ PressedWidget( )\class
+                  
+                  If eventtype = #PB_EventType_LeftButtonDown Or
+                     eventtype = #PB_EventType_RightButtonDown
+                     
+                     ;\\ bar mouse delta pos
+                     mouse( )\delta\x = mouse( )\x
+                     mouse( )\delta\y = mouse( )\y
+                     
+                     If Not ( a_transform( ) And a_index( ))
+                        If EnteredWidget( )\bar And EnteredButton( ) > 0
+                           mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                           mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
+                        Else
+                           If Not a_transform( )
+                              mouse( )\delta\x - EnteredWidget( )\container_x( )
+                              mouse( )\delta\y - EnteredWidget( )\container_y( )
+                              
+                              If Not EnteredWidget( )\child
+                                 If EnteredWidget( )\parent
+                                    mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
+                                    mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
                                  EndIf
                               EndIf
                            EndIf
                         EndIf
-                  EndSelect
-                  ; EndIf
+                     EndIf
+                  EndIf
+                  
+                  ;\\ set active widget
+                  If eventtype = #PB_EventType_LeftButtonDown
+                     If PressedWidget( )\anchors
+                        If GetActiveGadget( ) <> eventgadget
+                           SetActiveGadget( eventgadget )
+                        EndIf
+                     Else
+                        If FocusedWidget( ) <> PressedWidget( )
+                           SetActive( PressedWidget( ))
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  ;\\
+                  Static ClickTime.q
+                  Protected ElapsedMilliseconds.q = ElapsedMilliseconds( )
+                  If DoubleClickTime( ) > ( ElapsedMilliseconds - ClickTime ) + Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 492
+                     mouse( )\click + 1
+                  Else
+                     mouse( )\click = 1
+                  EndIf
+                  ClickTime = ElapsedMilliseconds
+                  
+                  ;\\
+                  DoEvents( EnteredWidget( ), #__event_Down )
+                  If mouse( )\click = 1
+                     If eventtype = #PB_EventType_LeftButtonDown
+                        DoEvents( PressedWidget( ), #__event_leftdown )
+                     EndIf
+                     If eventtype = #PB_EventType_MiddleButtonDown
+                        DoEvents( PressedWidget( ), #__event_middledown )
+                     EndIf
+                     If eventtype = #PB_EventType_RightButtonDown
+                        DoEvents( PressedWidget( ), #__event_rightdown )
+                     EndIf
+                  EndIf
                EndIf
+               
+            ElseIf eventtype = #PB_EventType_LeftButtonUp Or
+                   eventtype = #PB_EventType_MiddleButtonUp Or
+                   eventtype = #PB_EventType_RightButtonUp
                
                ;\\
-               If eventtype = #PB_EventType_KeyUp
-                  Keyboard( )\key[1] = 0
-                  Keyboard( )\Key    = 0
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
-         If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            PushMapPosition( Root( ) )
-            If ChangeCurrentRoot( GadgetID( eventgadget ) )
-               Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-               ReDraw( Root( ) )
-            EndIf
-            PopMapPosition( Root( ) )
-         EndIf
-         
-         ;\\
-         If Root( ) And Root( )\canvas\gadget = eventgadget
-            ;\\
-            Select eventtype
-               Case #PB_EventType_MouseEnter,
-                    #PB_EventType_MouseLeave,
-                    #PB_EventType_MouseMove
-                  
-                  mouse_x = CanvasMouseX( Root( )\canvas\gadget )
-                  mouse_y = CanvasMouseY( Root( )\canvas\gadget )
-                  
-                  ;\\
-                  If eventtype = #PB_EventType_MouseEnter
-                     mouse( )\change = 1 << 0
-                     mouse( )\x      = mouse_x
-                     mouse( )\y      = mouse_y
-                  EndIf
-                  If eventtype = #PB_EventType_MouseLeave
-                     mouse( )\change = - 1
-                     mouse( )\x      = - 1
-                     mouse( )\y      = - 1
-                  EndIf
-                  If eventtype = #PB_EventType_MouseMove
-                     If mouse( )\x <> mouse_x
-                        If mouse( )\x < mouse_x
-                           mouse( )\change | 1 << 3
-                        Else
-                           mouse( )\change | 1 << 1
+               If PressedWidget( )
+                  ;\\ drag & drop stop
+                  If PressedWidget( )\dragstart
+                     PressedWidget( )\dragstart = #PB_Drag_Finish
+                     
+                     
+                     ;\\ do drop events
+                     If mouse( )\drag
+                        If mouse( )\drag\state = #PB_Drag_Enter
+                           mouse( )\drag\state = #PB_Drag_Finish
                         EndIf
-                        mouse( )\x = mouse_x
-                     EndIf
-                     If mouse( )\y <> mouse_y
-                        If mouse( )\y < mouse_y
-                           mouse( )\change | 1 << 4
-                        Else
-                           mouse( )\change | 1 << 2
+                        
+                        If mouse( )\drag\actions & #PB_Drag_Drop
+                           If PressedWidget( )\drop
+                              DoEvents( PressedWidget( ), #__event_Drop )
+                           EndIf
+                        ElseIf mouse( )\drag\state = #PB_Drag_Finish
+                           If EnteredWidget( )\drop
+                              DoEvents( EnteredWidget( ), #__event_Drop )
+                           EndIf
                         EndIf
-                        mouse( )\y = mouse_y
+                        
+                        ;\\ reset dragged cursor
+                        If PressedWidget( )\cursor <> PressedWidget( )\cursor[1]
+                           Debug "free drop CURSOR " +mouse( )\cursor +" "+ PressedWidget( )\cursor +" "+ PressedWidget( )\cursor[1]
+                           ChangeCursor( PressedWidget( ), PressedWidget( )\cursor[1] )
+                        EndIf
+                        
+                        ;\\ reset
+                        FreeStructure( mouse( )\drag)
+                        mouse( )\drag = #Null
                      EndIf
                      
-                     ;\\ mouse-drag-start send drag event
-                     If PressedWidget( ) And
-                        PressedWidget( )\state\press And
-                        PressedWidget( )\state\enter = 2 And
+                     ;\\
+                     If PressedWidget( )\resize <> 0
+                        PressedWidget( )\resize = 0
+                     EndIf
+                     
+                     ;\\ do enter&leave events
+                     If EnteredWidget( ) <> PressedWidget( )
                         PressedWidget( )\dragstart = #PB_Drag_None
-                        PressedWidget( )\dragstart = #PB_Drag_Update
+                        GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
                         
-                        PressedWidget( )\resize = 0 ; temp
-                        
-                        ;                         If mouse( )\press
-                        ;                            If PressedWidget( )
-                        ;                               If PressedWidget( )\split_1( )
-                        ;                                  Hide( PressedWidget( )\split_1( ), 1 )
-                        ;                               EndIf
-                        ;                               If PressedWidget( )\split_2( )
-                        ;                                  Hide( PressedWidget( )\split_2( ), 1 )
-                        ;                               EndIf
-                        ;                            EndIf
-                        ;                         EndIf
-                        
-                        DoEvents( PressedWidget( ), #__event_DragStart )
-                     EndIf
-                  EndIf
-                  
-                  
-               Case #PB_EventType_LeftButtonDown,
-                    #PB_EventType_RightButtonDown,
-                    #PB_EventType_MiddleButtonDown
-                  
-                  ;                   ;\\
-                  ;                   If EnteredWidget( )
-                  ;                      If StartDrawing( Output( EnteredWidget( )\root ))
-                  ;                         Draw( EnteredWidget( ) )
-                  ;                         EnteredWidget( )\drawimg = GrabDrawingImage( #PB_Any, EnteredWidget( )\frame_x( ), EnteredWidget( )\frame_y( ), EnteredWidget( )\frame_width( ), EnteredWidget( )\frame_height( ) )
-                  ;                         StopDrawing( )
-                  ;                      EndIf
-                  ;                   EndIf
-                  
-                  ;\\
-                  mouse( )\press  = 1
-                  mouse( )\change = 1 << 5
-                  If eventtype = #PB_EventType_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
-                  If eventtype = #PB_EventType_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
-                  If eventtype = #PB_EventType_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
-                  
-               Case #PB_EventType_LeftButtonUp,
-                    #PB_EventType_RightButtonUp,
-                    #PB_EventType_MiddleButtonUp
-                  
-                  If mouse( )\interact = 1
-                     mouse( )\interact = - 1
-                  EndIf
-                  
-                  ;\\
-                  If mouse( )\press
-                     mouse( )\press  = 0
-                     
-                     If PressedWidget( )
-                        If PressedWidget( )\resize & #__resize_change
-                           Debug "stop-resize "+PressedWidget( )\class
-                           PressedWidget( )\resize &~ #__resize_change
+                        ;If Not a_index( )
+                        If LeavedWidget( ) <> PressedWidget( )
+                           LeavedWidget( ) = PressedWidget( )
+                           GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y )
                         EndIf
+                        PressedWidget( )\dragstart = #PB_Drag_Finish
+                        ;EndIf
                      EndIf
+                  EndIf
+                  
+                  ;\\ do up&click events
+                  If PressedWidget( )\state\press
+                     PressedWidget( )\state\press = #False
                      
+                     ;\\
+                     DoEvents( PressedWidget( ), #__event_Up )
                      
-                     ;                      If PressedWidget( )
-                     ;                         If PressedWidget( )\split_1( )
-                     ;                            If PressedWidget( )\split_1( )\hide
-                     ;                               Hide( PressedWidget( )\split_1( ), 0 )
-                     ;                               Resize( PressedWidget( )\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                     ;                            EndIf
-                     ;                         EndIf
-                     ;                         If PressedWidget( )\split_2( )
-                     ;                            If PressedWidget( )\split_2( )\hide
-                     ;                               Hide( PressedWidget( )\split_2( ), 0 )
-                     ;                               Resize( PressedWidget( )\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                     ;                            EndIf
-                     ;                         EndIf
-                     ;                         
-                     ;                         If PressedWidget( )\drawimg
-                     ;                            FreeImage( PressedWidget( )\drawimg )
-                     ;                            PressedWidget( )\drawimg = #Null
-                     ;                         EndIf
-                     ;                      EndIf
-                  EndIf
-                  
-                  ;\\
-                  mouse( )\change = 1 << 6
-                  mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
-                  mouse( )\y      = CanvasMouseY( Root( )\canvas\gadget )
-            EndSelect
-            
-            ;\\ get enter&leave widget address
-            If mouse( )\change
-               If mouse( )\interact <> 1
-                  ;\\ enter&leave mouse events
-                  GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\ do all events
-         If eventtype = #PB_EventType_Focus
-            If FocusedWidget( ) And
-               FocusedWidget( )\root\canvas\gadget = eventgadget
-               
-               If Not EnteredWidget( ) Or
-                  ( EnteredWidget( ) And
-                    ( FocusedWidget( ) = EnteredWidget( ) Or
-                      FocusedWidget( ) = EnteredWidget( )\parent ) )
-                  ; Debug "Canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
-                  
-                  If FocusedWidget( )\state\focus = 0
-                     FocusedWidget( )\state\focus = 1
-                     DoEvents( FocusedWidget( ), #__event_Focus )
-                  EndIf
-               EndIf
-            EndIf
-            
-         ElseIf eventtype = #PB_EventType_LostFocus
-            If FocusedWidget( ) And
-               FocusedWidget( )\root\canvas\gadget = eventgadget
-               ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
-               
-               If FocusedWidget( )\state\focus = 1
-                  FocusedWidget( )\state\focus = 0
-                  DoEvents( FocusedWidget( ), #__event_LostFocus )
-               EndIf
-            EndIf
-            
-         ElseIf eventtype = #PB_EventType_MouseMove
-            If mouse( )\change > 1
-               ;\\ mouse-pressed-widget move event
-               If PressedWidget( ) And
-                  PressedWidget( )\dragstart And
-                  PressedWidget( ) <> EnteredWidget( )
-                  If PressedWidget( )\root <> Root( )
-                     mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
-                     mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
-                  EndIf
-                  DoEvents( PressedWidget( ), #__event_MouseMove )
-               EndIf
-               
-               ;\\ mouse-entered-widget move event
-               If EnteredWidget( ) And
-                  EnteredWidget( )\state\enter
-                  If PressedWidget( ) And
-                     PressedWidget( )\root <> Root( )
-                     mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
-                     mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
-                  EndIf
-                  DoEvents( EnteredWidget( ), #__event_MouseMove )
-               EndIf
-            EndIf
-            
-         ElseIf eventtype = #PB_EventType_LeftButtonDown Or
-                eventtype = #PB_EventType_MiddleButtonDown Or
-                eventtype = #PB_EventType_RightButtonDown
-            
-            ;\\
-            If EnteredWidget( )
-               PressedWidget( )             = EnteredWidget( )
-               PressedWidget( )\state\press = #True
-               
-               ; Debug "canvas - press "+eventgadget +" "+ Root( ) +" "+ PressedWidget( )\class
-               
-               If eventtype = #PB_EventType_LeftButtonDown Or
-                  eventtype = #PB_EventType_RightButtonDown
-                  
-                  ;\\ bar mouse delta pos
-                  mouse( )\delta\x = mouse( )\x
-                  mouse( )\delta\y = mouse( )\y
-                  
-                  If Not ( a_transform( ) And a_index( ))
-                     If EnteredWidget( )\bar And EnteredButton( ) > 0
-                        mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
-                        mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
-                     Else
-                        If Not a_transform( )
-                           mouse( )\delta\x - EnteredWidget( )\container_x( )
-                           mouse( )\delta\y - EnteredWidget( )\container_y( )
-                           
-                           If Not EnteredWidget( )\child
-                              If EnteredWidget( )\parent
-                                 mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
-                                 mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
+                     If mouse( )\click
+                        ;\\ do up events
+                        If mouse( )\click = 1
+                           If eventtype = #PB_EventType_LeftButtonUp
+                              DoEvents( PressedWidget( ), #__event_leftup )
+                           EndIf
+                           If eventtype = #PB_EventType_MiddleButtonUp
+                              DoEvents( PressedWidget( ), #__event_middleup )
+                           EndIf
+                           If eventtype = #PB_EventType_RightButtonUp
+                              DoEvents( PressedWidget( ), #__event_rightup )
+                           EndIf
+                        EndIf
+                        
+                        ;\\ reset state
+                        If PressedWidget( )\dragstart
+                           PressedWidget( )\dragstart = #PB_Drag_None
+                        Else
+                           ;\\ do 1click events
+                           If PressedWidget( ) = EnteredWidget( )
+                              If eventtype = #PB_EventType_LeftButtonUp
+                                 DoEvents( PressedWidget( ), #__event_LeftClick )
+                              EndIf
+                              If eventtype = #PB_EventType_RightButtonUp
+                                 DoEvents( PressedWidget( ), #__event_RightClick )
                               EndIf
                            EndIf
                         EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ set active widget
-               If eventtype = #PB_EventType_LeftButtonDown
-                  If PressedWidget( )\anchors
-                     If GetActiveGadget( ) <> eventgadget
-                        SetActiveGadget( eventgadget )
-                     EndIf
-                  Else
-                     If FocusedWidget( ) <> PressedWidget( )
-                        SetActive( PressedWidget( ))
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\
-               Static ClickTime.q
-               Protected ElapsedMilliseconds.q = ElapsedMilliseconds( )
-               If DoubleClickTime( ) > ( ElapsedMilliseconds - ClickTime ) + Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 492
-                  mouse( )\click + 1
-               Else
-                  mouse( )\click = 1
-               EndIf
-               ClickTime = ElapsedMilliseconds
-               
-               ;\\
-               DoEvents( EnteredWidget( ), #__event_Down )
-               If mouse( )\click = 1
-                  If eventtype = #PB_EventType_LeftButtonDown
-                     DoEvents( PressedWidget( ), #__event_leftdown )
-                  EndIf
-                  If eventtype = #PB_EventType_MiddleButtonDown
-                     DoEvents( PressedWidget( ), #__event_middledown )
-                  EndIf
-                  If eventtype = #PB_EventType_RightButtonDown
-                     DoEvents( PressedWidget( ), #__event_rightdown )
-                  EndIf
-               EndIf
-            EndIf
-            
-         ElseIf eventtype = #PB_EventType_LeftButtonUp Or
-                eventtype = #PB_EventType_MiddleButtonUp Or
-                eventtype = #PB_EventType_RightButtonUp
-            
-            ;\\
-            If PressedWidget( )
-               ;\\ drag & drop stop
-               If PressedWidget( )\dragstart
-                  PressedWidget( )\dragstart = #PB_Drag_Finish
-                  
-                  
-                  ;\\ do drop events
-                  If mouse( )\drag
-                     If mouse( )\drag\state = #PB_Drag_Enter
-                        mouse( )\drag\state = #PB_Drag_Finish
-                     EndIf
-                     
-                     If mouse( )\drag\actions & #PB_Drag_Drop
-                        If PressedWidget( )\drop
-                           DoEvents( PressedWidget( ), #__event_Drop )
-                        EndIf
-                     ElseIf mouse( )\drag\state = #PB_Drag_Finish
-                        If EnteredWidget( )\drop
-                           DoEvents( EnteredWidget( ), #__event_Drop )
-                        EndIf
-                     EndIf
-                     
-                     ;\\ reset dragged cursor
-                     If PressedWidget( )\cursor <> PressedWidget( )\cursor[1]
-                        Debug "free drop CURSOR " +mouse( )\cursor +" "+ PressedWidget( )\cursor +" "+ PressedWidget( )\cursor[1]
-                        ChangeCursor( PressedWidget( ), PressedWidget( )\cursor[1] )
-                     EndIf
-                     
-                     ;\\ reset
-                     FreeStructure( mouse( )\drag)
-                     mouse( )\drag = #Null
-                  EndIf
-                  
-                  ;\\
-                  If PressedWidget( )\resize <> 0
-                     PressedWidget( )\resize = 0
-                  EndIf
-                  
-                  ;\\ do enter&leave events
-                  If EnteredWidget( ) <> PressedWidget( )
-                     PressedWidget( )\dragstart = #PB_Drag_None
-                     GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
-                     
-                     ;If Not a_index( )
-                     If LeavedWidget( ) <> PressedWidget( )
-                        LeavedWidget( ) = PressedWidget( )
-                        GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y )
-                     EndIf
-                     PressedWidget( )\dragstart = #PB_Drag_Finish
-                     ;EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ do up&click events
-               If PressedWidget( )\state\press
-                  PressedWidget( )\state\press = #False
-                  
-                  ;\\
-                  DoEvents( PressedWidget( ), #__event_Up )
-                  
-                  If mouse( )\click
-                     ;\\ do up events
-                     If mouse( )\click = 1
-                        If eventtype = #PB_EventType_LeftButtonUp
-                           DoEvents( PressedWidget( ), #__event_leftup )
-                        EndIf
-                        If eventtype = #PB_EventType_MiddleButtonUp
-                           DoEvents( PressedWidget( ), #__event_middleup )
-                        EndIf
-                        If eventtype = #PB_EventType_RightButtonUp
-                           DoEvents( PressedWidget( ), #__event_rightup )
-                        EndIf
-                     EndIf
-                     
-                     ;\\ reset state
-                     If PressedWidget( )\dragstart
-                        PressedWidget( )\dragstart = #PB_Drag_None
-                     Else
-                        ;\\ do 1click events
-                        If PressedWidget( ) = EnteredWidget( )
+                        
+                        ;\\ do 2click events
+                        If mouse( )\click = 2
                            If eventtype = #PB_EventType_LeftButtonUp
-                              DoEvents( PressedWidget( ), #__event_LeftClick )
+                              DoEvents( PressedWidget( ), #__event_Left2Click )
                            EndIf
                            If eventtype = #PB_EventType_RightButtonUp
-                              DoEvents( PressedWidget( ), #__event_RightClick )
+                              DoEvents( PressedWidget( ), #__event_Right2Click )
                            EndIf
+                           
+                           ;\\ do 3click events
+                        ElseIf mouse( )\click = 3
+                           If eventtype = #PB_EventType_LeftButtonUp
+                              DoEvents( PressedWidget( ), #__event_Left3Click )
+                           EndIf
+                           If eventtype = #PB_EventType_RightButtonUp
+                              DoEvents( PressedWidget( ), #__event_Right3Click )
+                           EndIf
+                           
                         EndIf
                      EndIf
-                     
-                     ;\\ do 2click events
-                     If mouse( )\click = 2
-                        If eventtype = #PB_EventType_LeftButtonUp
-                           DoEvents( PressedWidget( ), #__event_Left2Click )
-                        EndIf
-                        If eventtype = #PB_EventType_RightButtonUp
-                           DoEvents( PressedWidget( ), #__event_Right2Click )
-                        EndIf
-                        
-                        ;\\ do 3click events
-                     ElseIf mouse( )\click = 3
-                        If eventtype = #PB_EventType_LeftButtonUp
-                           DoEvents( PressedWidget( ), #__event_Left3Click )
-                        EndIf
-                        If eventtype = #PB_EventType_RightButtonUp
-                           DoEvents( PressedWidget( ), #__event_Right3Click )
-                        EndIf
-                        
-                     EndIf
+                  EndIf
+                  
+                  ;           ;\\
+                  If mouse( )\interact
+                     ;             If eventgadget <> EnteredGadget( )
+                     ;               eventgadget = EnteredGadget( )
+                     ;               If IsGadget( eventgadget ) And
+                     ;                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+                     ;                 ChangeCurrentRoot( GadgetID( eventgadget ) )
+                     ;                 ; Debug "canvas - enter "+eventgadget +" "+ Root( )
+                     ;               EndIf
+                     ;             EndIf
+                     ;
+                     ;             Debug "canvas - up " + eventgadget + " " + Root( )
+                     ;             mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
+                     ;             mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
+                     ;             GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+                     mouse( )\interact = #False
                   EndIf
                EndIf
                
-               ;           ;\\
-               If mouse( )\interact
-                  ;             If eventgadget <> EnteredGadget( )
-                  ;               eventgadget = EnteredGadget( )
-                  ;               If IsGadget( eventgadget ) And
-                  ;                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                  ;                 ChangeCurrentRoot( GadgetID( eventgadget ) )
-                  ;                 ; Debug "canvas - enter "+eventgadget +" "+ Root( )
-                  ;               EndIf
-                  ;             EndIf
-                  ;
-                  ;             Debug "canvas - up " + eventgadget + " " + Root( )
-                  ;             mouse( )\x = CanvasMouseX( Root( )\canvas\gadget )
-                  ;             mouse( )\y = CanvasMouseY( Root( )\canvas\gadget )
-                  ;             GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
-                  mouse( )\interact = #False
+               ;\\ reset mouse buttons
+               If mouse( )\buttons
+                  mouse( )\buttons = 0
+                  ;                If eventtype = #PB_EventType_LeftButtonUp
+                  ;                   mouse( )\buttons & ~ #PB_Canvas_LeftButton
+                  ;                ElseIf eventtype = #PB_EventType_RightButtonUp
+                  ;                   mouse( )\buttons & ~ #PB_Canvas_RightButton
+                  ;                ElseIf eventtype = #PB_EventType_MiddleButtonUp
+                  ;                   mouse( )\buttons & ~ #PB_Canvas_MiddleButton
+                  ;                EndIf
+                  
+                  mouse( )\delta\x = 0
+                  mouse( )\delta\y = 0
                EndIf
-            EndIf
-            
-            ;\\ reset mouse buttons
-            If mouse( )\buttons
-               mouse( )\buttons = 0
-               ;                If eventtype = #PB_EventType_LeftButtonUp
-               ;                   mouse( )\buttons & ~ #PB_Canvas_LeftButton
-               ;                ElseIf eventtype = #PB_EventType_RightButtonUp
-               ;                   mouse( )\buttons & ~ #PB_Canvas_RightButton
-               ;                ElseIf eventtype = #PB_EventType_MiddleButtonUp
-               ;                   mouse( )\buttons & ~ #PB_Canvas_MiddleButton
-               ;                EndIf
                
-               mouse( )\delta\x = 0
-               mouse( )\delta\y = 0
-            EndIf
-            
-         ElseIf eventtype = #pb_eventtype_MouseWheelX
-            If EnteredWidget( )
-               mouse()\wheel\x = eventdata
-               If is_integral_( EnteredWidget( ) )
-                  DoEvents( EnteredWidget( )\parent, #__event_wheelx, eventdata )
-               Else
-                  DoEvents( EnteredWidget( ), #__event_wheelx, eventdata )
+            ElseIf eventtype = #pb_eventtype_MouseWheelX
+               If EnteredWidget( )
+                  mouse()\wheel\x = eventdata
+                  If is_integral_( EnteredWidget( ) )
+                     DoEvents( EnteredWidget( )\parent, #__event_wheelx, eventdata )
+                  Else
+                     DoEvents( EnteredWidget( ), #__event_wheelx, eventdata )
+                  EndIf
                EndIf
-            EndIf
-            
-         ElseIf eventtype = #pb_eventtype_MouseWheelY
-            If EnteredWidget( )
-               mouse()\wheel\y = eventdata
-               If is_integral_( EnteredWidget( ) )
-                  DoEvents( EnteredWidget( )\parent, #__event_wheely, eventdata )
-               Else
-                  DoEvents( EnteredWidget( ), #__event_wheely, eventdata )
+               
+            ElseIf eventtype = #pb_eventtype_MouseWheelY
+               If EnteredWidget( )
+                  mouse()\wheel\y = eventdata
+                  If is_integral_( EnteredWidget( ) )
+                     DoEvents( EnteredWidget( )\parent, #__event_wheely, eventdata )
+                  Else
+                     DoEvents( EnteredWidget( ), #__event_wheely, eventdata )
+                  EndIf
                EndIf
+               
             EndIf
             
+            ; reset
+            If mouse( )\change <> #False
+               mouse( )\change = #False
+            EndIf
          EndIf
          
-         ; reset
-         If mouse( )\change <> #False
-            mouse( )\change = #False
-         EndIf
       EndProcedure
       
       Procedure EventResize( )
@@ -20419,19 +20470,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
       EndProcedure
       
-      Procedure EventActive( )
-         Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
-         SetActive( Root( ) )
-      EndProcedure
-      
-      Procedure EventDeActive( )
-         Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
-         If GetActive( )
-            SetDeActive( GetActive( ) )
-         EndIf
-      EndProcedure
+;       Procedure EventActive( )
+;          Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+;          ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+;          SetActive( Root( ) )
+;          Debug "EventActive "+Root( )\class
+;       EndProcedure
+;       
+;       Procedure EventDeActive( )
+;          Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+;          ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+;          If GetActive( )
+;             SetDeActive( GetActive( ) )
+;             Debug "EventDeActive "+GetActive( )\class
+;          EndIf
+;       EndProcedure
       
       
       ;-
@@ -20648,9 +20701,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window );, Canvas )
             EndIf
             
-            ;\\
-            BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window );, Canvas )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeActive( ), Window );, Canvas )
+;             ;\\
+;             BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window );, Canvas )
+;             BindEvent( #PB_Event_DeactivateWindow, @EventDeActive( ), Window );, Canvas )
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -21197,7 +21250,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure MessageCanvasEvents( )
-        EventHandler( EventGadget( ), EventType( ))
+         EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ))
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
@@ -21385,8 +21438,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          Sticky( *message, #True )
          
-         ;ReDraw(*message\root)
-         ;EventHandler( *message\root\canvas\gadget, #__event_Repaint)
          BindGadgetEvent( *message\root\canvas\gadget, @MessageCanvasEvents( ) ) ;, #__event_Repaint )
                                                                          ;PostEvent( #PB_Event_Gadget, *message\root\canvas\window, *message\root\canvas\gadget, #__event_Repaint)
          ; PostEventCanvasRepaint( *message\root )
@@ -22201,6 +22252,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot----r7--fm8t----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 14137
+; FirstLine = 14061
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t+4--X---------------------------------------------
 ; EnableXP

@@ -48,9 +48,9 @@ Module events
                Case #PB_EventType_LeftClick
                Case #PB_EventType_MouseEnter
                   EnteredGadget( ) = EventGadget()
-                  CallFunctionFast(*setcallback, EventGadget(), EventType(), EventData())
+                  CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget(), EventType(), EventData())
                Default
-                  CallFunctionFast(*setcallback, EventGadget(), EventType(), EventData())
+                  CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget(), EventType(), EventData())
             EndSelect
          EndIf
       EndIf
@@ -780,6 +780,8 @@ CompilerIf #PB_Compiler_IsMainFile
       event = events::WaitEvent(WaitWindowEvent())
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 50
+; FirstLine = 32
 ; Folding = -------------
 ; EnableXP

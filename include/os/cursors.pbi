@@ -454,8 +454,7 @@ CompilerIf #PB_Compiler_IsMainFile
                        #PB_MessageRequester_Error)
       End
    EndIf
-   ;If cursor::Set((0), ImageID(0))
-   If cursor::Set((0), cursor::#__cursor_drop)
+   If cursor::set((0), cursor::Create(ImageID(0)))
       Debug "setCursorImage"           
    EndIf       
    
@@ -868,6 +867,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 457
+; FirstLine = 439
 ; Folding = -------------
 ; EnableXP
