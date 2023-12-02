@@ -498,7 +498,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
    EndProcedure
    
-   Procedure EventHandler( eventobject, eventtype, eventdata )
+   Procedure EventHandler( event, eventobject, eventtype, eventdata )
       Protected window = EventWindow()
       Protected dropx, dropy
       Static deltax, deltay
@@ -654,7 +654,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 365
-; FirstLine = 352
+; CursorPosition = 500
+; FirstLine = 500
 ; Folding = ------------------
 ; EnableXP
