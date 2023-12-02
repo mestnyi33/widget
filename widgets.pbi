@@ -20928,13 +20928,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not Send( *this, #__event_free )
                If *this = Root( )
                   DeleteMapElement( Root( ), MapKey( Root( ) ) )
-                  
-;                   DeleteMapElement( Root( ) )
-;                   ResetMap( Root( ) )
-;                   NextMapElement( Root( ) )
+                  ResetMap( Root( ) )
                EndIf
                
                Debug " free - "+*this\class
+               
                ; еще не проверял
                If ListSize( *this\events( ) )
                   ; Debug "free-events " + *this\events( )
@@ -21081,19 +21079,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-         ProcedureC WindowCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
+         ProcedureC winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
+            Debug "winCloseHandler"
             gtk_main_quit_( )
+         EndProcedure
+         
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+         ProcedureC winCloseHandler(obj.i, sel.i, win.i) 
+            Debug "winShouldClose"
+            CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", win)
+            ProcedureReturn #YES
          EndProcedure
       CompilerEndIf
       
       Procedure WaitEvents( *this._S_WIDGET )
+         Protected win = WindowID( *this\root\canvas\window )
+         
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            ;\\
+            Protected NSObjectClass = objc_getClass_("NSObject")
+            Protected myWindowDelegateClass = objc_allocateClassPair_(NSObjectClass, "myWindowDelegate", 0)
+            class_addProtocol_(myWindowDelegateClass, objc_getProtocol_("NSWindowDelegate"))
+            class_addMethod_(myWindowDelegateClass, sel_registerName_("windowShouldClose:"), @winCloseHandler(), "c@:@")
+            Protected myWindowDelegate = class_createInstance_(myWindowDelegateClass, 0)
+            CocoaMessage(0, win, "setDelegate:", myWindowDelegate)
+            
+            ;\\
             CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "run")
+            
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            ; https://www.purebasic.fr/english/viewtopic.php?p=570200&hilit=move+items#p570200
-            g_signal_connect_(*this\root\canvas\window, "delete-event", @WindowCloseHandler( ), 0)
-            g_signal_connect_(*this\root\canvas\window, "destroy", @WindowCloseHandler( ), 0)
+            ;\\ https://www.purebasic.fr/english/viewtopic.php?p=570200&hilit=move+items#p570200
+            g_signal_connect_(win, "delete-event", @winCloseHandler( ), 0)
+            g_signal_connect_(win, "destroy", @winCloseHandler( ), 0)
+            
+            ;\\
             gtk_main_( )
+            
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
             Protected msg.MSG
             ;         If PeekMessage_(@msg,0,0,0,1)
@@ -21112,6 +21133,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;     Debug "#WM_QUIT "
                ;   EndIf
             Wend
+            
          CompilerEndIf
       EndProcedure
       
@@ -21301,7 +21323,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndDataSection
          EndIf
          
-         
+         ;\\
          Container( f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
          Image( f2, f2, iw, iw, img, #PB_Image_Border | #__flag_center )
          Text( f2 + iw + f2, f2, width - iw, iw, Text, #__flag_textcenter | #__flag_textleft )
@@ -21310,38 +21332,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected._S_WIDGET *ok, *no, *cancel
          
          *ok = Button( width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_Default )
-         SetAlignment( *ok, 0, 0, 0, 1, 1 )
-         
          If Flag & #PB_MessageRequester_YesNo Or
             Flag & #PB_MessageRequester_YesNoCancel
             SetText( *ok, "Yes" )
             *no = Button( width - ( bw + f2 ) * 2 - f2, height - bh - f2, bw, bh, "No" )
-            SetAlignment( *no, 0, 0, 0, 1, 1 )
          EndIf
          
          If Flag & #PB_MessageRequester_YesNoCancel
             *cancel = Button( width - ( bw + f2 ) * 3 - f2 * 2, height - bh - f2, bw, bh, "Cancel" )
-            SetAlignment( *cancel, 0, 0, 0, 1, 1 )
          EndIf
          
-         ;
-         Bind( *message, @MessageEvents( ))
+         ;\\
+         If *ok     : SetAlignment( *ok, 0, 0, 0, 1, 1 )     : EndIf
+         If *no     : SetAlignment( *no, 0, 0, 0, 1, 1 )     : EndIf
+         If *cancel : SetAlignment( *cancel, 0, 0, 0, 1, 1 ) : EndIf
          
-         ;
+         ;\\
+         Bind( *message, @MessageEvents( ), #__event_MouseEnter )
+         Bind( *message, @MessageEvents( ), #__event_LeftButtonDown )
+         Bind( *message, @MessageEvents( ), #__event_LeftClick )
+         
+         ;\\
          Sticky( *message, #True )
+         
          ;ReDraw(*message\root)
          EventHandler( *message\root\canvas\gadget, #__event_Repaint)
          BindGadgetEvent( *message\root\canvas\gadget, @MessageEvents( ));, #__event_Repaint )
                                                                          ;PostEvent( #PB_Event_Gadget, *message\root\canvas\window, *message\root\canvas\gadget, #__event_Repaint)
-         PostEventCanvasRepaint( *message\root )
+         ; PostEventCanvasRepaint( *message\root )
          
-         ;
+         ;\\
          WaitEvents( *message )
          
          Sticky( *message, #False )
          ReDraw(*message\root)
          result = GetData( *message )
-         ; close
+         
+         ;\\ close
          Free( *message )
          
          ProcedureReturn result
@@ -21391,7 +21418,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If free_state = 1
                         ForEach Root( )
                            If Root( )\canvas\window = PB(EventWindow)( ) 
-                              Debug " freeee "+Root( )\class
+                              Debug " ---- freeee "+Root( )\class
                               If Free( Root( ) ) 
                                  If PB(IsWindow)( PB(EventWindow)( ) )
                                     PB(CloseWindow)( PB(EventWindow)( ) )
@@ -21408,7 +21435,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ;\\  
+                     
+                     Debug MapSize( Root( ) )  ;\\  
                      If Not MapSize( Root( ) ) 
                         Debug "---------break1--------"
                         Break
@@ -22144,7 +22172,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21396
-; FirstLine = 17748
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot-------P-------
+; CursorPosition = 21082
+; FirstLine = 17448
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot----V---zcv0----
 ; EnableXP
