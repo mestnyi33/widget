@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  If Open( #PB_Any, 150, 150, 600, 300, "demo message", #__Window_SizeGadget | #__Window_SystemMenu )
+  If Open( 0, 150, 150, 600, 300, "demo message", #__Window_SizeGadget | #__Window_SystemMenu )
     Define *showButton = Button( 600-100, 300-40, 90,30,"show")
     Bind( *showButton, @EventClick() )
     
@@ -44,8 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 41
-; FirstLine = 10
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

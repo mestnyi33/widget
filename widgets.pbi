@@ -21078,7 +21078,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        Procedure winCloseHandler(WindowID,message,wParam,lParam)
+          Protected Text$
+          Protected Result = #PB_ProcessPureBasicEvents
+          
+          Select message
+            Case #WM_CLOSE : Text$ = "Close"
+            Case #WM_DESTROY : Text$ = "Destroy"
+            Case #WM_QUIT : Text$ = "Quit"
+          EndSelect
+          Debug ""+message +" "+ Text$+" "+Str(wParam)+" "+Str(lParam)
+          
+          ProcedureReturn Result
+        EndProcedure
+
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
          ProcedureC winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
             Debug "winCloseHandler"
             gtk_main_quit_( )
@@ -21090,7 +21105,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", win)
             ProcedureReturn #YES
          EndProcedure
-      CompilerEndIf
+         
+       CompilerEndIf
       
       Procedure WaitEvents( *this._S_WIDGET )
          Protected win = WindowID( *this\root\canvas\window )
@@ -21123,12 +21139,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;         Else
             ;           Sleep_(1)
             ;         EndIf
+            SetWindowCallback( @winCloseHandler( ), *this\root\canvas\window )
             
             While GetMessage_(@msg, #Null, 0, 0 )
                TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
                DispatchMessage_(msg)  ; посылает сообщение в функцию WindowProc.
                
-               Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
+               If msg\message = #WM_NCMOUSEMOVE
+                 Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
+               EndIf
+               
                ;   If msg\wParam = #WM_QUIT
                ;     Debug "#WM_QUIT "
                ;   EndIf
@@ -21138,36 +21158,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure MessageEvents( )
-         ;If EventType( ) = #__event_Repaint
-         Debug "" + EventGadget( ) + " " + EventType( )
-         ProcedureReturn EventHandler( EventGadget( ), EventType( ))
-         ;EndIf
-         
-         If EventWidget( )
-            Protected *ew._S_WIDGET = EventWidget( )
-            Protected *message = *ew\window
-            
-            Select WidgetEventType( )
-               Case #__event_MouseEnter
-                  ReDraw(Root( ))
-               Case #__event_LeftButtonDown
-                  ReDraw(Root( ))
-               Case #__event_LeftClick
-                  Select GetText( *ew )
-                     Case "No" : SetData( *message, #PB_MessageRequester_No )     ; no
-                     Case "Yes" : SetData( *message, #PB_MessageRequester_Yes )   ; yes
-                     Case "Cancel" : SetData( *message, #PB_MessageRequester_Cancel ) ; cancel
-                  EndSelect
-                  
-                  ; exit main loop
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", *ew)
-                  CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-                     gtk_main_quit_( )
-                  CompilerEndIf
-            EndSelect
-         EndIf
-         ProcedureReturn #PB_Ignore
+        If EventWidget( )
+          Protected *ew._S_WIDGET = EventWidget( )
+          Protected *message = *ew\window
+          
+          Select WidgetEventType( )
+            Case #__event_MouseEnter
+              ;ReDraw(Root( ))
+              
+            Case #__event_LeftButtonDown
+              ;ReDraw(Root( ))
+              
+            Case #__event_LeftClick
+              Select GetText( *ew )
+                Case "No"     : SetData( *message, #PB_MessageRequester_No )     ; no
+                Case "Yes"    : SetData( *message, #PB_MessageRequester_Yes )    ; yes
+                Case "Cancel" : SetData( *message, #PB_MessageRequester_Cancel ) ; cancel
+              EndSelect
+              
+              ;Send( *message, #__event_Close )
+              
+;               ; exit main loop
+;               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                 ;\\ winCloseHandler(obj.i, sel.i, win.i) 
+;                 winCloseHandler(0,0,0) 
+;               CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+;                 ;\\ winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
+;                 winCloseHandler(0,0,0)
+;               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;                 ;\\ winCloseHandler(WindowID,message,wParam,lParam)
+;                 winCloseHandler(0, #WM_DESTROY,0,0)
+;               CompilerEndIf
+              
+          EndSelect
+        EndIf
+        
+        ProcedureReturn #PB_Ignore
+      EndProcedure
+      
+      Procedure MessageCanvasEvents( )
+        EventHandler( EventGadget( ), EventType( ))
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
@@ -21356,8 +21386,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Sticky( *message, #True )
          
          ;ReDraw(*message\root)
-         EventHandler( *message\root\canvas\gadget, #__event_Repaint)
-         BindGadgetEvent( *message\root\canvas\gadget, @MessageEvents( ));, #__event_Repaint )
+         ;EventHandler( *message\root\canvas\gadget, #__event_Repaint)
+         BindGadgetEvent( *message\root\canvas\gadget, @MessageCanvasEvents( ) ) ;, #__event_Repaint )
                                                                          ;PostEvent( #PB_Event_Gadget, *message\root\canvas\window, *message\root\canvas\gadget, #__event_Repaint)
          ; PostEventCanvasRepaint( *message\root )
          
@@ -22171,8 +22201,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21082
-; FirstLine = 17448
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot----V---zcv0----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot----r7--fm8t----
 ; EnableXP
