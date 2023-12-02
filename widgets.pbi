@@ -21393,7 +21393,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If Root( )\canvas\window = PB(EventWindow)( ) 
                               Debug " freeee "+Root( )\class
                               If Free( Root( ) ) 
-                                 free_state = - 1
+                                 If PB(IsWindow)( PB(EventWindow)( ) )
+                                    PB(CloseWindow)( PB(EventWindow)( ) )
+                                 EndIf
                               EndIf
                            EndIf
                         Next
@@ -21404,33 +21406,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               NextMapElement( Root( ) )
                            EndIf
                         EndIf
-                        
-                        If free_state = - 1
-                           If PB(IsWindow)( PB(EventWindow)( ) )
-                              PB(CloseWindow)( PB(EventWindow)( ) )
-                           EndIf
-                           free_state = 0
-                        EndIf
                      EndIf
                      
-                        
-                        
-;                         Static count
-;                         count = 0
-;                         ForEach Root( )
-;                            If PB(EventWindow)( ) = Root( )\canvas\window 
-;                               Free( Root( ) ) 
-;                               count + 1
-;                            EndIf
-;                         Next
-;                        
-;                         ;\\
-;                         If count > 1
-;                            ResetMap( Root( ) )
-;                            NextMapElement( Root( ) )
-;                         EndIf
-                        
-                        
                      ;\\  
                      If Not MapSize( Root( ) ) 
                         Debug "---------break1--------"
@@ -22167,7 +22144,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20930
-; FirstLine = 17399
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot-------f+------
+; CursorPosition = 21396
+; FirstLine = 17748
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------b8bc-----------------------v-0-0f--f--v++--------------------------vv7+f--6fv-648-0-------f--------8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-ff-+0yve4------------------------------------------------------------------------------------00+----0vrefv-----0------------------0------------Dot-------P-------
 ; EnableXP
