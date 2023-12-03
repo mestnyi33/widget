@@ -19628,7 +19628,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                         Post( *this, eventtype, *button, *data )
                      ;                      EndIf
                   Else
-                     Send( *this, eventtype, *button, *data )
+                    Send( *this, eventtype, *button, *data )
                   EndIf
                   ;                EndIf
                EndIf
@@ -20013,30 +20013,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         mouse( )\y      = - 1
                      EndIf
                      If eventtype = #PB_EventType_MouseMove
-                        If mouse( )\x <> mouse_x
-                           If mouse( )\x < mouse_x
-                              mouse( )\change | 1 << 3
-                           Else
-                              mouse( )\change | 1 << 1
-                           EndIf
-                           mouse( )\x = mouse_x
-                        EndIf
-                        If mouse( )\y <> mouse_y
-                           If mouse( )\y < mouse_y
-                              mouse( )\change | 1 << 4
-                           Else
-                              mouse( )\change | 1 << 2
-                           EndIf
-                           mouse( )\y = mouse_y
-                        EndIf
-                        
-                        ;\\ mouse-drag-start send drag event
-                        If PressedWidget( ) And
-                           PressedWidget( )\state\press And
-                           PressedWidget( )\state\enter = 2 And
-                           PressedWidget( )\dragstart = #PB_Drag_None
+                       ;\\
+                       If mouse( )\x <> mouse_x
+                         If mouse( )\x < mouse_x
+                           mouse( )\change | 1 << 3
+                         Else
+                           mouse( )\change | 1 << 1
+                         EndIf
+                         mouse( )\x = mouse_x
+                       EndIf
+                       If mouse( )\y <> mouse_y
+                         If mouse( )\y < mouse_y
+                           mouse( )\change | 1 << 4
+                         Else
+                           mouse( )\change | 1 << 2
+                         EndIf
+                         mouse( )\y = mouse_y
+                       EndIf
+                       
+                       ;\\ mouse-drag-start send drag event
+                       If PressedWidget( ) And
+                          PressedWidget( )\state\press And 
+                          PressedWidget( )\state\enter = 2 And
+                          PressedWidget( )\dragstart = #PB_Drag_None
+                         
+                         If mouse( )\change
                            PressedWidget( )\dragstart = #PB_Drag_Update
-                           
+                          
                            PressedWidget( )\resize = 0 ; temp
                            
                            ;                         If mouse( )\press
@@ -20049,13 +20052,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;                               EndIf
                            ;                            EndIf
                            ;                         EndIf
+                           ; Debug PressedWidget( )\dragstart
                            
                            DoEvents( PressedWidget( ), #__event_DragStart )
-                        EndIf
+                         EndIf
+                       EndIf
                      EndIf
                      
-                     
-                  Case #PB_EventType_LeftButtonDown,
+                    Case #PB_EventType_LeftButtonDown,
                        #PB_EventType_RightButtonDown,
                        #PB_EventType_MiddleButtonDown
                      
@@ -20188,8 +20192,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #PB_EventType_LeftButtonDown Or
                    eventtype = #PB_EventType_MiddleButtonDown Or
                    eventtype = #PB_EventType_RightButtonDown
-               
-               ;\\
+              
+              ;\\
                If EnteredWidget( )
                   PressedWidget( )             = EnteredWidget( )
                   PressedWidget( )\state\press = #True
@@ -20537,11 +20541,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure   Close( window )
-         Protected win
-         
+        Protected win, canvas
+        
          ForEach Root( )
             win = Root( )\canvas\window
-            
+            canvas = Root( )\canvas\gadget
+                  
             If #PB_All <> window
                If win <> window 
                   Continue
@@ -20550,6 +20555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If Free( Root( ) )
                If PB(IsWindow)( win )
+                  FreeGadget( canvas )
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      CocoaMessage(0, PB(WindowID)( win ), "close")
                   CompilerElse 
@@ -21088,7 +21094,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\_widgets( )\bounds\attach = #Null
                            EndIf
                            
+                           If EnteredWidget( ) = *this\_widgets( )
+                             EnteredWidget( ) = 0
+                           EndIf
+                           If PressedWidget( ) = *this\_widgets( )
+                             PressedWidget( ) = 0
+                           EndIf
+                           If FocusedWidget( ) = *this\_widgets( )
+                             FocusedWidget( ) = 0
+                           EndIf
                            *this\_widgets( )\address = 0
+                           
                            Debug " free - " + *this\_widgets( )\class
                            DeleteElement( *this\_widgets( ), 1 )
                         EndIf
@@ -21103,10 +21119,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If EnteredWidget( ) = *this
-                  EnteredWidget( ) = *this\parent
+                  EnteredWidget( ) = 0
+               EndIf
+               If PressedWidget( ) = *this
+                  PressedWidget( ) = 0
                EndIf
                If FocusedWidget( ) = *this
-                  FocusedWidget( ) = *this\parent
+                  FocusedWidget( ) = 0
                EndIf
                
                ;\\
@@ -21189,7 +21208,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
                      EndIf
                      
-               EndSelect
+                 EndSelect
+                 
+                 If Not MapSize( Root( ) ) 
+                   Debug "---------break2--------"
+                   Break
+                 EndIf     
             ForEver
             
             ;\\
@@ -22227,8 +22251,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20971
-; FirstLine = 19654
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2--v---------4---f6VG60--80-------8tj7--------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------Vr-0--dq--W---4----v----yrMy8--48--------8tj7--------
 ; EnableXP

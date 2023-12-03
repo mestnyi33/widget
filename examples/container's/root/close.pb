@@ -9,6 +9,25 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure CallBack( )
     Select WidgetEventType( )
+      Case #__event_leftclick
+        Select GetText( EventWidget())
+          Case "window_0_root_butt_1"
+            If #PB_MessageRequester_Yes = MessageRequester( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+              Close( EventWindow( ) )
+            EndIf
+            
+          Case "window_1_root_butt_1"
+            ; Close( EventWindow( ) )
+            PostEvent( #PB_Event_CloseWindow, Root( )\canvas\window, #PB_Default )
+            ; Post( Root( ), #__event_Close )
+            
+          Case "window_2_root_butt_1"
+            If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+              Close( #PB_All )
+            EndIf
+            
+        EndSelect
+        
       Case #__event_close
         Debug "close - event " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
         
@@ -70,8 +89,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 7
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

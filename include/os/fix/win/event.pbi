@@ -84,7 +84,6 @@ Module events
    EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 85
-; Folding = +--
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---
 ; EnableXP
