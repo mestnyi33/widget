@@ -1,14 +1,14 @@
-﻿XIncludeFile "fix/events.pbi"
+﻿XIncludeFile "os/fix/events.pbi"
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-   ;XIncludeFile "fix/mac/events.pbi"
-   XIncludeFile "fix/mac/draw.pbi"
+   ;XIncludeFile "os/fix/mac/events.pbi"
+   XIncludeFile "os/fix/mac/draw.pbi"
    
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-   ;XIncludeFile "fix/lin/events.pbi"
+   ;XIncludeFile "os/fix/lin/events.pbi"
    
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-   ;XIncludeFile "fix/win/events.pbi"
+   ;XIncludeFile "os/fix/win/events.pbi"
    
 CompilerEndIf
 
@@ -79,6 +79,6 @@ EndModule
 
 UseModule fix
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 58
+; CursorPosition = 10
 ; Folding = ---
 ; EnableXP

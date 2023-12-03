@@ -65,7 +65,7 @@ EndDeclareModule
 
 
 ;\\
-XIncludeFile "../os/modules.pbi"
+XIncludeFile "../../os/modules.pbi"
 CompilerSelect #PB_Compiler_OS 
    CompilerCase #PB_OS_MacOS   : IncludePath "mac"
    CompilerCase #PB_OS_Windows : IncludePath "win"
@@ -276,7 +276,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 196
-; FirstLine = 41
+; CursorPosition = 67
+; FirstLine = 13
 ; Folding = 4f050-
 ; EnableXP
