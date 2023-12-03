@@ -800,9 +800,11 @@
       ; ;   #PB_canvas_DrawFocus
       ; ;
       
-      
       CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
          #PB_ToolBar_Small = 1 << 0
+      CompilerEndIf
+      CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
+         #PB_Canvas_Container = 1 << 5
       CompilerEndIf
       CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
          #PB_MessageRequester_Info = 1 << 2
@@ -813,9 +815,17 @@
       CompilerIf Not Defined(PB_messageRequester_warning, #PB_Constant)
          #PB_MessageRequester_Warning = 1 << 4
       CompilerEndIf
-      CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
-         #PB_Canvas_Container = 1 << 5
-      CompilerEndIf
+      
+      #PB_Message_Cancel = #PB_MessageRequester_Cancel
+      #PB_Message_Error = #PB_MessageRequester_Error
+      #PB_Message_Info = #PB_MessageRequester_Info
+      #PB_Message_No = #PB_MessageRequester_No
+      #PB_Message_Ok = #PB_MessageRequester_Ok
+      #PB_Message_Warning = #PB_MessageRequester_Warning
+      #PB_Message_Yes = #PB_MessageRequester_Yes
+      #PB_Message_YesNo = #PB_MessageRequester_YesNo
+      #PB_Message_YesNoCancel = #PB_MessageRequester_YesNoCancel
+      
    EndDeclareModule
    
    
@@ -826,7 +836,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 53
+; CursorPosition = 804
+; FirstLine = 795
 ; Folding = ---
 ; EnableXP

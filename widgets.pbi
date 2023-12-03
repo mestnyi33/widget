@@ -642,6 +642,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
+      Macro GetTitle( window ): widget::GetText( window ): EndMacro
       Macro Title( ): text: EndMacro
       Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
       Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
@@ -1074,7 +1075,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
-      Declare   Close( window )
+      Declare   Close( *window )
+      Declare   CloseRoot( window )
       Declare   Button_Draw( *this )
       Declare   GetBar( *this, type.b, index.b = 0 )
       Declare   GetAtPoint( *root, mouse_x, mouse_y )
@@ -11914,39 +11916,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure Window_SetState( *this._S_WIDGET, state.l )
+      Procedure Window_SetState( *window._S_WIDGET, state.l )
          Protected.b result
          
          ; close state
          If state = #__Window_Close
-            If Not Post( *this, #__event_close )
-               Free( *this )
-               
-               If is_root_(*this )
-                  PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
-               EndIf
-               
-               result = #True
+            If Not Post( *window, #__event_close )
+              ;If Free( *window )
+                  
+                  If is_root_(*window )
+                     PostEvent( #PB_Event_CloseWindow, *window\root\canvas\window, *window )
+                  EndIf
+                  
+                  result = #True
+               ;EndIf
             EndIf
+            
+;             ;\\
+;             Select Send( *window, #__event_Close )
+;                Case 1
+; ;                   If Not PB(IsWindow)( PB(EventWindow)( ) )
+; ;                      Close( PB(EventWindow)( ) )
+; ;                   EndIf
+;                   
+;                Case 0
+;                   Close( *window )
+;                   
+;                   ;\\ close all windows
+;                Case #PB_All 
+;                   Close( #PB_All )
+;                   
+;             EndSelect
          EndIf
          
          ; restore state
          If state = #__Window_Normal
-            If Not Post( *this, #__event_restore )
-               If *this\resize & #__resize_minimize
-                  *this\resize & ~ #__resize_minimize
-                  *this\CloseButton( )\state\hide    = 0
-                  *this\MinimizeButton( )\state\hide = 0
+            If Not Send( *window, #__event_restore )
+               If *window\resize & #__resize_minimize
+                  *window\resize & ~ #__resize_minimize
+                  *window\CloseButton( )\state\hide    = 0
+                  *window\MinimizeButton( )\state\hide = 0
                EndIf
-               *this\resize & ~ #__resize_maximize
-               *this\resize | #__resize_restore
+               *window\resize & ~ #__resize_maximize
+               *window\resize | #__resize_restore
                
-               SetAlignment( *this, 0, 0, 0, 0, 0 )
-               Resize( *this, *this\root\x[#__c_restore], *this\root\y[#__c_restore],
-                       *this\root\width[#__c_restore], *this\root\height[#__c_restore] )
+               SetAlignment( *window, 0, 0, 0, 0, 0 )
+               Resize( *window, *window\root\x[#__c_restore], *window\root\y[#__c_restore],
+                       *window\root\width[#__c_restore], *window\root\height[#__c_restore] )
                
-               If is_root_(*this )
-                  PostEvent( #PB_Event_RestoreWindow, *this\root\canvas\window, *this )
+               If is_root_(*window )
+                  PostEvent( #PB_Event_RestoreWindow, *window\root\canvas\window, *window )
                EndIf
                
                result = #True
@@ -11955,19 +11974,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; maximize state
          If state = #__Window_Maximize
-            If Not Post( *this, #__event_maximize )
-               If Not *this\resize & #__resize_minimize
-                  *this\root\x[#__c_restore]      = *this\container_x( )
-                  *this\root\y[#__c_restore]      = *this\container_y( )
-                  *this\root\width[#__c_restore]  = *this\frame_width( )
-                  *this\root\height[#__c_restore] = *this\frame_height( )
+            If Not Send( *window, #__event_maximize )
+               If Not *window\resize & #__resize_minimize
+                  *window\root\x[#__c_restore]      = *window\container_x( )
+                  *window\root\y[#__c_restore]      = *window\container_y( )
+                  *window\root\width[#__c_restore]  = *window\frame_width( )
+                  *window\root\height[#__c_restore] = *window\frame_height( )
                EndIf
                
-               *this\resize | #__resize_maximize
-               Resize( *this, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+               *window\resize | #__resize_maximize
+               Resize( *window, 0, 0, *window\parent\container_width( ), *window\parent\container_height( ) )
                
-               If is_root_(*this )
-                  PostEvent( #PB_Event_MaximizeWindow, *this\root\canvas\window, *this )
+               If is_root_(*window )
+                  PostEvent( #PB_Event_MaximizeWindow, *window\root\canvas\window, *window )
                EndIf
                
                result = #True
@@ -11976,25 +11995,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; minimize state
          If state = #__Window_Minimize
-            If Not Post( *this, #__event_Minimize )
-               If Not *this\resize & #__resize_maximize
-                  *this\root\x[#__c_restore]      = *this\container_x( )
-                  *this\root\y[#__c_restore]      = *this\container_y( )
-                  *this\root\width[#__c_restore]  = *this\frame_width( )
-                  *this\root\height[#__c_restore] = *this\frame_height( )
+            If Not Send( *window, #__event_Minimize )
+               If Not *window\resize & #__resize_maximize
+                  *window\root\x[#__c_restore]      = *window\container_x( )
+                  *window\root\y[#__c_restore]      = *window\container_y( )
+                  *window\root\width[#__c_restore]  = *window\frame_width( )
+                  *window\root\height[#__c_restore] = *window\frame_height( )
                EndIf
                
-               *this\CloseButton( )\state\hide = 1
-               If *this\MaximizeButton( )\state\hide = 0
-                  *this\MinimizeButton( )\state\hide = 1
+               *window\CloseButton( )\state\hide = 1
+               If *window\MaximizeButton( )\state\hide = 0
+                  *window\MinimizeButton( )\state\hide = 1
                EndIf
-               *this\resize | #__resize_minimize
+               *window\resize | #__resize_minimize
                
-               Resize( *this, *this\root\x[#__c_restore], *this\parent\container_height( ) - *this\fs[2], *this\root\width[#__c_restore], *this\fs[2] )
-               SetAlignment( *this, 0, 0, 0, 0, 1 )
+               Resize( *window, *window\root\x[#__c_restore], *window\parent\container_height( ) - *window\fs[2], *window\root\width[#__c_restore], *window\fs[2] )
+               SetAlignment( *window, 0, 0, 0, 0, 1 )
                
-               If is_root_(*this )
-                  PostEvent( #PB_Event_MinimizeWindow, *this\root\canvas\window, *this )
+               If is_root_(*window )
+                  PostEvent( #PB_Event_MinimizeWindow, *window\root\canvas\window, *window )
                EndIf
                
                result = #True
@@ -12048,7 +12067,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
          EndIf
          
          ProcedureReturn Repaint
@@ -17225,8 +17243,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *canvas\events( )\widget\bar
                   *canvas\events( )\widget\bar\page\change = *canvas\events( )\data
                EndIf
-               ;\\
-               Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
+               ;\\ 
+               If *canvas\events( )\type = #__event_Close
+                  ;\\
+                  Select Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
+                     Case 0
+                        Close( *canvas\events( )\widget )
+                        
+                        ;\\ close all windows
+                     Case #PB_All 
+                        Close( #PB_All )
+                        
+                  EndSelect
+               Else
+                  Send( *canvas\events( )\widget, *canvas\events( )\type, *canvas\events( )\item, *canvas\events( )\data )
+               EndIf
                ;\\ scrollbar
                If *canvas\events( )\widget\bar
                   If *canvas\events( )\widget\bar\page\change <> 0
@@ -19627,8 +19658,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      Else
                      ;                         Post( *this, eventtype, *button, *data )
                      ;                      EndIf
+;                   ElseIf eventtype = #__event_Close
+;                      ;\\
+;                      Select Send( *this, eventtype )
+;                         Case 0
+;                            Close( *this )
+;                            
+;                            ;\\ close all windows
+;                         Case #PB_All 
+;                            Close( #PB_All )
+;                            
+;                      EndSelect
+                     
                   Else
-                    Send( *this, eventtype, *button, *data )
+                     Send( *this, eventtype, *button, *data )
                   EndIf
                   ;                EndIf
                EndIf
@@ -20540,7 +20583,76 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   Close( window )
+      Procedure   Close( *window._s_WIDGET )
+         Protected window, canvas
+         
+         If IsWindow( *window ) Or *window = #PB_All
+            ForEach Root( )
+               window = Root( )\canvas\window
+               canvas = Root( )\canvas\gadget
+               
+               ;\\
+               If #PB_All <> *window
+                  If window <> *window 
+                     Continue
+                  EndIf
+               EndIf
+               
+               If Root( )\haschildren
+                  LastElement(Root( )\_widgets( ))
+                  Repeat
+                     If Root( )\children( )\type = #__type_window
+                        Debug " free --------- " + Root( )\_widgets( )\class
+                        
+                        Free( Root( )\_widgets( ) )
+                        
+                        If Root( )\haschildren = 0
+                           Break 2
+                        EndIf
+                        window = #PB_All
+                        
+                     ElseIf PreviousElement( Root( )\_widgets( )) = 0
+                        Break
+                     EndIf
+                  ForEver
+                  
+                  If window = #PB_All
+                     Break
+                  EndIf
+               EndIf
+               
+               ;\\
+               If Free( Root( ) )
+                  If PB(IsWindow)( window )
+                     DraggedGadget() =- 1 
+                     EnteredGadget() =- 1 
+                     PressedGadget() =- 1 
+                     FocusedGadget() =- 1 
+                     FreeGadget( canvas )
+                     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                        CocoaMessage(0, PB(WindowID)( window ), "close")
+                     CompilerElse 
+                        CloseWindow( window )
+                     CompilerEndIf
+                  EndIf
+               EndIf
+            Next  
+            
+            ;\\
+            If MapKey( Root( ) ) = ""
+               ResetMap( Root( ) )
+               NextMapElement( Root( ) )
+            EndIf
+         Else
+            If *window > 0
+               Free( *window )
+            EndIf
+         EndIf
+         
+         ProcedureReturn window
+      EndProcedure
+      
+      Procedure   CloseRoot( window )
         Protected win, canvas
         
          ForEach Root( )
@@ -20555,6 +20667,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If Free( Root( ) )
                If PB(IsWindow)( win )
+                  DraggedGadget() =- 1 
+                  EnteredGadget() =- 1 
+                  PressedGadget() =- 1 
+                  FocusedGadget() =- 1 
                   FreeGadget( canvas )
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      CocoaMessage(0, PB(WindowID)( win ), "close")
@@ -22252,7 +22368,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21544
-; FirstLine = 20284
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------Vr-0--dq--W---4----v----yrMy8--48--------8tr7--------
+; CursorPosition = 11929
+; FirstLine = 11915
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8u--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------u7-------va-v--vT0-47---+----0----4v9Kj9+--0u--f-----e8q+-------
 ; EnableXP
