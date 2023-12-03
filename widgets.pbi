@@ -21226,7 +21226,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          If Flag & #PB_MessageRequester_Info
-            img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
+            img = -1;CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
             
             DataSection
                img_info:
@@ -21272,7 +21272,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Flag & #PB_MessageRequester_Error
-            img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
+            img = -1;CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
             
             DataSection
                img_error:
@@ -21326,7 +21326,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Flag & #PB_MessageRequester_Warning
-            img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
+            img = -1;CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
             
             DataSection
                img_warning:
@@ -21433,50 +21433,65 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Repeat
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_CloseWindow
-                     Protected free_state
-                     Protected canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
+                     Protected window, canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
                      
                      ChangeCurrentRoot( canvasID )
                      Debug "close.... " + Root( )\canvas\window +" "+ PB(EventWindow)( ) 
                      
                      ;\\
-                     If Send( Root( ), #__event_Close )
-                        If Not PB(IsWindow)( PB(EventWindow)( ) )
-                           free_state = 1
-                        EndIf
-                     Else
-                        If Root( )\canvas\window <> PB(EventWindow)( ) 
-                           Debug "change event window - " + Root( )\canvas\window +" to window - "+ PB(EventWindow)( )
-                           ChangeCurrentRoot( canvasID )
-                        EndIf
-                        free_state = 1
-                     EndIf
-                     
-                     If free_state = 1
-                        ForEach Root( )
-                           If Root( )\canvas\window = PB(EventWindow)( ) 
-                              Debug " ---- freeee "+Root( )\class
-                              If Free( Root( ) ) 
+                     Select Send( Root( ), #__event_Close )
+                       Case 1
+                         ;\\ if the window was already closed
+                         If Not PB(IsWindow)( PB(EventWindow)( ) )
+                           ForEach Root( )
+                             If Root( )\canvas\window = PB(EventWindow)( ) 
+                               ;\\ release and root
+                               Free( Root( ) ) 
+                             EndIf
+                           Next
+                         EndIf
+                         
+                       Case 0
+                         If MapSize( Root( ) ) 
+                           If Root( )\canvas\window <> PB(EventWindow)( ) 
+                             Debug "change event window - " + Root( )\canvas\window +" to window - "+ PB(EventWindow)( )
+                             ChangeCurrentRoot( canvasID )
+                           EndIf
+                           
+                           ForEach Root( )
+                             If Root( )\canvas\window = PB(EventWindow)( ) 
+                               If Free( Root( ) ) 
                                  If PB(IsWindow)( PB(EventWindow)( ) )
-                                    PB(CloseWindow)( PB(EventWindow)( ) )
+                                   PB(CloseWindow)( PB(EventWindow)( ) )
                                  EndIf
-                              EndIf
+                               EndIf
+                             EndIf
+                           Next
+                         EndIf
+                         
+                       Case #PB_All
+                         ;\\ close all windows
+                         ForEach Root( )
+                           window = Root( )\canvas\window
+                           If Free( Root( ) ) 
+                             If PB(IsWindow)( window )
+                               PB(CloseWindow)( window )
+                             EndIf
                            EndIf
-                        Next
-                        
-                        If MapSize( Root( ) ) 
-                           If MapKey( Root( ) ) = ""
-                              ResetMap( Root( ) )
-                              NextMapElement( Root( ) )
-                           EndIf
-                        EndIf
-                     EndIf
+                         Next
+                         
+                     EndSelect
                      
-                     
-                     Debug MapSize( Root( ) )  ;\\  
+                     ;\\
+                     Debug "MapSize "+MapSize( Root( ) )  ;\\  
                      If Not MapSize( Root( ) ) 
-                        Debug "---------break1--------"
-                        Break
+                       Debug "---------break1--------"
+                       Break
+                     Else
+                       If MapKey( Root( ) ) = ""
+                         ResetMap( Root( ) )
+                         NextMapElement( Root( ) )
+                       EndIf
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -22209,5 +22224,5 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2--v---------4---9Kj9------------v7----------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2--v---------4---9Kj9------------v7-8---------
 ; EnableXP
