@@ -17374,7 +17374,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ draw current focus frame
+            ;\\
             If FocusedWidget( )
                If *this\root = FocusedWidget( )\root
                   ; If Not FocusedWidget( )\autosize
@@ -19605,21 +19605,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                      Post( *this, eventtype, *button, *data )
                   ;                   EndIf
                   ;                Else
-                  If eventtype = #__event_Focus
-                     ;                      If *this\show
-                     ;                         Send( *this, eventtype, *button, *data )
-                     ;                      Else
+                  If eventtype = #__event_Change
                      Post( *this, eventtype, *button, *data )
-                     ;                      EndIf
+                  ElseIf eventtype = #__event_Focus
+                     Post( *this, eventtype, *button, *data )
                   ElseIf eventtype = #__event_LostFocus
-                     ;                      If *this\show
-                     ;                         Send( *this, eventtype, *button, *data )
-                     ;                      Else
                      Post( *this, eventtype, *button, *data )
-                     ;                      EndIf
-                  ElseIf eventtype = #__event_Change
-                     Post( *this, eventtype, *button, *data )
-                     
                      ;                   ElseIf eventtype = #__event_resize
                      ;                      If *this\show
                      ;                         Send( *this, eventtype, *button, *data )
@@ -19812,18 +19803,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected Repaint, mouse_x , mouse_y
          
          If event = #PB_Event_ActivateWindow
+            eventgadget = PB(GetWindowData)( PB(EventWindow)( ))
+            ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+            
             If Not EnteredWidget( )
-               ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
                SetActive( Root( ) )
             EndIf
+            
+;             Debug "EventActive "+Root( )\class
+            
+;             If FocusedWidget( ) And
+;                   FocusedWidget( )\root\canvas\gadget = eventgadget
+;                   
+;                   If Not EnteredWidget( ) Or
+;                      ( EnteredWidget( ) And
+;                        ( FocusedWidget( ) = EnteredWidget( ) Or
+;                          FocusedWidget( ) = EnteredWidget( )\parent ) )
+;                      ; Debug "Canvas - Focus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+;                      
+;                      If FocusedWidget( )\state\focus = 0
+;                         FocusedWidget( )\state\focus = 1
+;                         DoEvents( FocusedWidget( ), #__event_Focus )
+;                      EndIf
+;                   EndIf
+;                EndIf
+               
          EndIf
          
          If event = #PB_Event_DeactivateWindow
-            ;                If GetActive( )
-            ;                   ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-            ;                   SetDeactive( GetActive( ) )
-            ;                   Debug "EventDeActive "+GetActive( )\class
-            ;                EndIf
+            eventgadget = PB(GetWindowData)( PB(EventWindow)( ))
+            ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+;             If GetActive( )
+;                SetDeActive( GetActive( ) )
+;                Debug "EventDeActive "+GetActive( )\class
+;             EndIf
+;             
+            If FocusedWidget( ) And
+                  FocusedWidget( )\root\canvas\gadget = eventgadget
+                  ; Debug "canvas - LostFocus " + FocusedWidget( )\root\canvas\gadget + " " + eventgadget
+                  
+                  If FocusedWidget( )\state\focus = 1
+                     FocusedWidget( )\state\focus = 0
+                     DoEvents( FocusedWidget( ), #__event_LostFocus )
+                  EndIf
+               EndIf
          EndIf
          
          If event = #PB_Event_Gadget
@@ -20447,6 +20470,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
       EndProcedure
       
+;       Procedure EventActive( )
+; ;          Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+; ;          ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+; ;          SetActive( Root( ) )
+; ;          Debug "EventActive "+Root( )\class
+;            EventHandler( #PB_Event_ActivateWindow, EventGadget( ), EventType( ), EventData( ) )
+;       EndProcedure
+;       
+;       Procedure EventDeActive( )
+; ;          Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
+; ;          ChangeCurrentRoot( PB(GadgetID)( canvas ) )   
+; ;          If GetActive( )
+; ;             SetDeActive( GetActive( ) )
+; ;             Debug "EventDeActive "+GetActive( )\class
+; ;          EndIf
+;          EventHandler( #PB_Event_DeactivateWindow, EventGadget( ), EventType( ), EventData( ) )
+;       EndProcedure
+      
+      
       ;-
       Procedure.i CloseList( )
          Protected *open._S_WIDGET
@@ -20660,7 +20702,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; BindEvent( #PB_Event_MoveWindow, @EventResize( ), Window );, Canvas )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window );, Canvas )
             EndIf
-           
+            
+;             ;\\
+;             BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window );, Canvas )
+;             BindEvent( #PB_Event_DeactivateWindow, @EventDeActive( ), Window );, Canvas )
+            
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
@@ -22209,7 +22255,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17385
-; FirstLine = 17362
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2----------------9Kj9------------------------
+; CursorPosition = 22255
+; FirstLine = 22220
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

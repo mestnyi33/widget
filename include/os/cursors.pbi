@@ -11,16 +11,6 @@
    EndModule
 CompilerEndIf
 
-CompilerSelect #PB_Compiler_OS 
-   CompilerCase #PB_OS_MacOS   : IncludePath "mac"
-   CompilerCase #PB_OS_Windows : IncludePath "win"
-   CompilerCase #PB_OS_Linux   : IncludePath "lin"
-CompilerEndSelect
-
-XIncludeFile "id.pbi"
-XIncludeFile "mouse.pbi"
-; XIncludeFile "parent.pbi"
-
 ;-\\ DECLARE
 DeclareModule Cursor
    EnableExplicit
@@ -273,6 +263,16 @@ DeclareModule Cursor
    
    
 EndDeclareModule
+
+;\\
+CompilerSelect #PB_Compiler_OS 
+   CompilerCase #PB_OS_MacOS   : IncludePath "mac"
+   CompilerCase #PB_OS_Windows : IncludePath "win"
+   CompilerCase #PB_OS_Linux   : IncludePath "lin"
+CompilerEndSelect
+XIncludeFile "id.pbi"
+XIncludeFile "mouse.pbi"
+; XIncludeFile "parent.pbi"
 
 ;-\\ MODULE
 XIncludeFile "cursor.pbi"
@@ -868,7 +868,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 457
-; FirstLine = 439
-; Folding = -------------
+; CursorPosition = 13
+; Folding = 4---0--------
 ; EnableXP
