@@ -1074,6 +1074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
+      Declare   Close( window )
       Declare   Button_Draw( *this )
       Declare   GetBar( *this, type.b, index.b = 0 )
       Declare   GetAtPoint( *root, mouse_x, mouse_y )
@@ -20535,7 +20536,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
+      Procedure   Close( window )
+         Protected win
+         
+         ForEach Root( )
+            win = Root( )\canvas\window
+            
+            If #PB_All <> window
+               If win <> window 
+                  Continue
+               EndIf
+            EndIf
+            
+            If Free( Root( ) )
+               If PB(IsWindow)( win )
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     CocoaMessage(0, PB(WindowID)( win ), "close")
+                  CompilerElse 
+                     CloseWindow( win )
+                  CompilerEndIf
+               EndIf
+            EndIf
+         Next  
+         
+         If MapKey( Root( ) ) = ""
+            ResetMap( Root( ) )
+            NextMapElement( Root( ) )
+         EndIf
+         
+         ProcedureReturn window
+      EndProcedure
+      
+      Procedure   Open( window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
          Protected w, g, UseGadgetList, result
          
          ; init
@@ -21085,7 +21117,94 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndProcedure
-      
+     
+      Procedure   WaitClose( *this._S_WIDGET = #PB_Any, waitTime.l = 0 )
+         Protected result
+         Protected *ew._S_WIDGET
+         Protected *window._S_WIDGET
+         
+         If Root( )
+            If *this = #PB_Any
+               *window = Root( )\window
+            Else
+               *window = *this\window
+            EndIf
+            
+            ;
+            PushMapPosition(Root( ))
+            ForEach Root( )
+               PostEventCanvasRepaint( Root( ), #__event_create )
+            Next
+            PopMapPosition(Root( ))
+            
+            Repeat
+               Select WaitWindowEvent( waittime )
+                  Case #PB_Event_CloseWindow
+                     Protected window, canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
+                     
+                     ChangeCurrentRoot( canvasID )
+                     Debug "close.... " + Root( )\canvas\window +" "+ PB(EventWindow)( ) 
+                     
+                     ;\\
+                     Select Send( Root( ), #__event_Close )
+                        Case 1
+                           If Not PB(IsWindow)( PB(EventWindow)( ) )
+                              Close( PB(EventWindow)( ) )
+                           EndIf
+                           
+                        Case 0
+                           Close( PB(EventWindow)( ) )
+                           
+                           ;\\ close all windows
+                        Case #PB_All 
+                           Close( #PB_All )
+                           
+                     EndSelect
+                     
+                     ;\\
+                     Debug "MapSize "+MapSize( Root( ) )  ;\\  
+                     If Not MapSize( Root( ) ) 
+                       Debug "---------break1--------"
+                       Break
+                     Else
+                       If MapKey( Root( ) ) = ""
+                         ResetMap( Root( ) )
+                         NextMapElement( Root( ) )
+                       EndIf
+                     EndIf
+                     
+                  Case #PB_Event_RestoreWindow
+                     Debug "restore.... "
+                     Send( Root( ), #__event_Restore )
+                     
+                  Case #PB_Event_MaximizeWindow
+                     Debug "maximize.... "
+                     If Send( Root( ), #__event_Maximize )
+                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
+                     EndIf
+                     
+                  Case #PB_Event_MinimizeWindow
+                     Debug "minimize.... "
+                     If Send( Root( ), #__event_Minimize )
+                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
+                     EndIf
+                     
+               EndSelect
+            ForEver
+            
+            ;\\
+            If IsWindow( PB(EventWindow)( ))
+               Debug "  - end cicle - yes event window"
+               PB(CloseWindow)( PB(EventWindow)( ))
+            Else
+               Debug "  - end cicle - no event window"
+            EndIf
+            
+            End
+         EndIf
+         
+      EndProcedure
+       
       ;-
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
         Procedure winCloseHandler(WindowID,message,wParam,lParam)
@@ -21409,121 +21528,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Free( *message )
          
          ProcedureReturn result
-      EndProcedure
-      
-      Procedure WaitClose( *this._S_WIDGET = #PB_Any, waitTime.l = 0 )
-         Protected result
-         Protected *ew._S_WIDGET
-         Protected *window._S_WIDGET
-         
-         If Root( )
-            If *this = #PB_Any
-               *window = Root( )\window
-            Else
-               *window = *this\window
-            EndIf
-            
-            ;
-            PushMapPosition(Root( ))
-            ForEach Root( )
-               PostEventCanvasRepaint( Root( ), #__event_create )
-            Next
-            PopMapPosition(Root( ))
-            
-            Repeat
-               Select WaitWindowEvent( waittime )
-                  Case #PB_Event_CloseWindow
-                     Protected window, canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
-                     
-                     ChangeCurrentRoot( canvasID )
-                     Debug "close.... " + Root( )\canvas\window +" "+ PB(EventWindow)( ) 
-                     
-                     ;\\
-                     Select Send( Root( ), #__event_Close )
-                       Case 1
-                         ;\\ if the window was already closed
-                         If Not PB(IsWindow)( PB(EventWindow)( ) )
-                           ForEach Root( )
-                             If Root( )\canvas\window = PB(EventWindow)( ) 
-                               ;\\ release and root
-                               Free( Root( ) ) 
-                             EndIf
-                           Next
-                         EndIf
-                         
-                       Case 0
-                         If MapSize( Root( ) ) 
-                           If Root( )\canvas\window <> PB(EventWindow)( ) 
-                             Debug "change event window - " + Root( )\canvas\window +" to window - "+ PB(EventWindow)( )
-                             ChangeCurrentRoot( canvasID )
-                           EndIf
-                           
-                           ForEach Root( )
-                             If Root( )\canvas\window = PB(EventWindow)( ) 
-                               If Free( Root( ) ) 
-                                 If PB(IsWindow)( PB(EventWindow)( ) )
-                                   PB(CloseWindow)( PB(EventWindow)( ) )
-                                 EndIf
-                               EndIf
-                             EndIf
-                           Next
-                         EndIf
-                         
-                       Case #PB_All
-                         ;\\ close all windows
-                         ForEach Root( )
-                           window = Root( )\canvas\window
-                           If Free( Root( ) ) 
-                             If PB(IsWindow)( window )
-                               PB(CloseWindow)( window )
-                             EndIf
-                           EndIf
-                         Next
-                         
-                     EndSelect
-                     
-                     ;\\
-                     Debug "MapSize "+MapSize( Root( ) )  ;\\  
-                     If Not MapSize( Root( ) ) 
-                       Debug "---------break1--------"
-                       Break
-                     Else
-                       If MapKey( Root( ) ) = ""
-                         ResetMap( Root( ) )
-                         NextMapElement( Root( ) )
-                       EndIf
-                     EndIf
-                     
-                  Case #PB_Event_RestoreWindow
-                     Debug "restore.... "
-                     Send( Root( ), #__event_Restore )
-                     
-                  Case #PB_Event_MaximizeWindow
-                     Debug "maximize.... "
-                     If Send( Root( ), #__event_Maximize )
-                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
-                     EndIf
-                     
-                  Case #PB_Event_MinimizeWindow
-                     Debug "minimize.... "
-                     If Send( Root( ), #__event_Minimize )
-                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
-                     EndIf
-                     
-               EndSelect
-            ForEver
-            
-            ;\\
-            If IsWindow( PB(EventWindow)( ))
-               Debug "  - end cicle - yes event window"
-               PB(CloseWindow)( PB(EventWindow)( ))
-            Else
-               Debug "  - end cicle - no event window"
-            EndIf
-            
-            End
-         EndIf
-         
       EndProcedure
    EndModule
    ;- <<<
@@ -22223,6 +22227,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2--v---------4---9Kj9------------v7-8---------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21154
+; FirstLine = 19675
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------4V--------fr-0--2--v---------4---f6VG60--8d-------8tj7--------
 ; EnableXP
