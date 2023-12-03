@@ -34,7 +34,6 @@ CompilerIf #PB_Compiler_IsMainFile
         ;\\ demo main window
         If EventWindow( ) = 2
            If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              ; Close( #PB_All )
               ProcedureReturn #PB_All
            Else
               ProcedureReturn 1
@@ -42,7 +41,6 @@ CompilerIf #PB_Compiler_IsMainFile
            
         ElseIf EventWindow( ) = 0
            If #PB_MessageRequester_Yes = MessageRequester( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              ; Close( EventWindow( ) )
               ProcedureReturn 0
            Else
               ProcedureReturn 1
@@ -90,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 87
-; FirstLine = 49
+; CursorPosition = 16
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
