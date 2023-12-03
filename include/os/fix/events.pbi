@@ -203,6 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    events::SetCallback(@EventHandler())
+   
    ;/// first
    OpenWindow(1, 200, 100, 320, 320, "window_1", #PB_Window_SystemMenu)
    CanvasGadget(0, 240, 10, 60, 60, #PB_Canvas_Keyboard);|#PB_Canvas_DrawFocus)
@@ -243,7 +244,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf       
    
    If cursor::set((1),cursor::#__cursor_Hand)
-      Debug "setCursorHand - " +CocoaMessage(0, 0, "NSCursor currentCursor")
+      ;Debug "setCursorHand - " +CocoaMessage(0, 0, "NSCursor currentCursor")
    EndIf       
    
    If cursor::set((11),cursor::#__cursor_Cross)
@@ -275,8 +276,6 @@ CompilerIf #PB_Compiler_IsMainFile
       event = WaitWindowEvent()
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 13
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = 4f050-
 ; EnableXP

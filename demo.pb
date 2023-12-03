@@ -1,5 +1,6 @@
 ﻿XIncludeFile "widgets.pbi"
 ;https://github.com/Hoeppner1867?tab=followers
+
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -100,8 +101,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 59
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
