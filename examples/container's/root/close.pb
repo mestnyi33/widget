@@ -11,17 +11,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( )
       Case #__event_leftclick
         Select GetText( EventWidget())
-          Case "window_0_root_butt_1"
+          Case "window_0_close"
             If #PB_MessageRequester_Yes = MessageRequester( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWindow( ) )
             EndIf
             
-          Case "window_1_root_butt_1"
+          Case "window_1_close"
             ; Close( EventWindow( ) )
             PostEvent( #PB_Event_CloseWindow, Root( )\canvas\window, #PB_Default )
             ; Post( Root( ), #__event_Close )
             
-          Case "window_2_root_butt_1"
+          Case "window_2_close"
             If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( #PB_All )
             EndIf
@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   SetClass(Root( ), "window_0_root" )
-  Button(10,10,200,50,"window_0_root_butt_1")
-  SetClass(widget( ), "window_0_root_butt_1" )
+  Button(10,10,200,50,"window_0_close")
+  SetClass(widget( ), "window_0_close" )
   
   ;\\
   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -75,8 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MaximizeGadget )
   
   SetClass(Root( ), "window_1_root" )
-  Button(10,10,200,50,"window_1_root_butt_1")
-  SetClass(widget( ), "window_1_root_butt_1" )
+  Button(10,10,200,50,"window_1_close")
+  SetClass(widget( ), "window_1_close" )
   
   ;\\
   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -84,11 +84,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   SetClass(Root( ), "window_2_root" )
-  Button(10,10,200,50,"window_2_root_butt_1")
-  SetClass(widget( ), "window_2_root_butt_1" )
+  Button(10,10,200,50,"window_2_close")
+  SetClass(widget( ), "window_2_close" )
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 87
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
