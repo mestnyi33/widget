@@ -735,7 +735,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
          List *events._s_EVENTDATA( )  ; post events list
          
-         Map *roots._s_ROOT( )         ;
+         Map *roots._s_ROOT( )   
+         
+         quit.b ; quit from main loop
       EndStructure
       
       ;Global *event._s_events = Allocatestructure(_s_events)
@@ -749,7 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 560
-; FirstLine = 446
+; CursorPosition = 739
+; FirstLine = 597
 ; Folding = ---PP7D+--
 ; EnableXP

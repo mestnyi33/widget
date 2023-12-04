@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlignment(*Button, 0, 1,0,1,1 )
       SetAlignment(*ComboBox, 0, 1,0,1,1 )
       
-      Resize( root(), 0, 0, 450, 610)
+     ; Resize( root(), 0, 0, 450, 610)
     EndIf
   EndProcedure
   
@@ -98,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 64
-; FirstLine = 47
+; CursorPosition = 83
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

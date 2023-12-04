@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure EventClick( )
-    If WidgetEventType( ) = #PB_EventType_LeftClick
+    If WidgetEventType( ) = #__event_LeftClick
       ShowMessage( )
     EndIf
   EndProcedure
@@ -40,10 +40,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( *showButton, @EventClick() )
     
     ShowMessage( )
-    
+    Debug 88888
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 42
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

@@ -428,8 +428,8 @@ Module events
       BindEvent( #PB_Event_SizeWindow, @Events( ) )
    EndProcedure
 EndModule
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = +------v---0
+; CursorPosition = 423
+; FirstLine = 362
+; Folding = -------v----
 ; EnableXP
