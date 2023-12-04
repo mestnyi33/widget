@@ -40,12 +40,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( *showButton, @EventClick() )
     
     ShowMessage( )
-    Debug 88888
+    
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 9
+; CursorPosition = 43
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
