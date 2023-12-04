@@ -39,8 +39,8 @@ Define width=500, height=400
 ;   ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
 ;   ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   
-;   Bind(#PB_All, @active(), #PB_EventType_Focus)
-;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
+;   Bind(#PB_All, @active(), #__event_Focus)
+;   Bind(#PB_All, @deactive(), #__event_LostFocus)
 
   Open(0, 10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ;Open(Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
@@ -68,24 +68,11 @@ Define width=500, height=400
   
   
     
-  Bind( #PB_All, @active_0(), #PB_EventType_Focus)
-  Bind( #PB_All, @deactive_0(), #PB_EventType_LostFocus)
+  Bind( #PB_All, @active_0(), #__event_Focus)
+  Bind( #PB_All, @deactive_0(), #__event_LostFocus)
   
   WaitClose()
-
-; ;   Repeat
-; ;     Event = WaitWindowEvent()
-; ;     
-; ;     If Event = #PB_Event_CloseWindow 
-; ;       Quit = 1
-; ;     EndIf
-; ;     
-; ;   Until Quit = 1
-  
-; EndIf
-
 End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 45
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
