@@ -21292,50 +21292,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     
     Procedure MessageEvents( )
-       Select WidgetEventType( )
-             ;             Case #__event_MouseEnter
-             ;               ;ReDraw(Root( ))
-             ;               
-             ;             Case #__event_LeftButtonDown
-             ;               ;ReDraw(Root( ))
-             ;               
-             ;              Case #__event_Close
-             ;                 Debug "close message"
-             ;                 ProcedureReturn - 1
-             
-          Case #__event_LeftClick
-             Protected *ew._S_WIDGET = EventWidget( )
-             Protected *message._S_WIDGET = *ew\window
-             
-             Select GetText( *ew )
-                Case "No"     : SetData( *message, #PB_MessageRequester_No )     ; no
-                Case "Yes"    : SetData( *message, #PB_MessageRequester_Yes )    ; yes
-                Case "Cancel" : SetData( *message, #PB_MessageRequester_Cancel ) ; cancel
-             EndSelect
-             
-             ; Post( *message, #__event_Close )
-             ; Close( *message )
-             
-             ;               Unbind( *message, @MessageEvents( ), #__event_MouseEnter )
-             ;               Unbind( *message, @MessageEvents( ), #__event_LeftButtonDown )
-             ;               Unbind( *message, @MessageEvents( ), #__event_LeftClick )
-             ;               Close( *message)
-             
-             __gui\quit = 1
-             
-             ;\ exit main loop
-             CompilerSelect #PB_Compiler_OS 
-                CompilerCase #PB_OS_Windows
-                   PostQuitMessage_( 0 )
-                CompilerCase #PB_OS_Linux
-                   gtk_main_quit_( )
-                CompilerCase #PB_OS_MacOS
-                   CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", WindowID( *message\root\canvas\window ))
-             CompilerEndSelect
-             
-       EndSelect
-       
-       ProcedureReturn #PB_Ignore
+      Select WidgetEventType( )
+          ;             Case #__event_MouseEnter
+          ;               ;ReDraw(Root( ))
+          ;               
+          ;             Case #__event_LeftButtonDown
+          ;               ;ReDraw(Root( ))
+          ;               
+          ;              Case #__event_Close
+          ;                 Debug "close message"
+          ;                 ProcedureReturn - 1
+          
+        Case #__event_LeftClick
+          Protected *ew._S_WIDGET = EventWidget( )
+          Protected *message._S_WIDGET = *ew\window
+          
+          Select GetText( *ew )
+            Case "No"     : SetData( *message, #__message_No )     ; no
+            Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
+            Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
+          EndSelect
+          
+          ; Post( *message, #__event_Close )
+          ; Close( *message )
+          
+          ;               Unbind( *message, @MessageEvents( ), #__event_MouseEnter )
+          ;               Unbind( *message, @MessageEvents( ), #__event_LeftButtonDown )
+          ;               Unbind( *message, @MessageEvents( ), #__event_LeftClick )
+          ;               Close( *message)
+          
+          __gui\quit = 1
+          
+          ;\ exit main loop
+          CompilerSelect #PB_Compiler_OS 
+            CompilerCase #PB_OS_Linux
+              gtk_main_quit_( )
+              
+            CompilerCase #PB_OS_Windows
+              PostQuitMessage_( 0 )
+              
+            CompilerCase #PB_OS_MacOS
+              CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", WindowID( *message\root\canvas\window ))
+          CompilerEndSelect
+          
+      EndSelect
+      
+      ProcedureReturn #PB_Ignore
     EndProcedure
     
     Procedure CanvasEvents( )
@@ -21348,6 +21350,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Redraw( *window\root )
       
       CompilerSelect #PB_Compiler_OS 
+        CompilerCase #PB_OS_Linux
+          gtk_main_( )
+          
         CompilerCase #PB_OS_Windows
           Protected msg.MSG
           While GetMessage_( @msg, #Null, 0, 0 )
@@ -21357,9 +21362,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
         CompilerCase #PB_OS_MacOS
           CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "run")
-          
-        CompilerCase #PB_OS_Linux
-          gtk_main_( )
           
       CompilerEndSelect
     EndProcedure
@@ -21376,11 +21378,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected *parent;._S_WIDGET = EventWidget( )\window ; Opened( )
       Protected._S_WIDGET *ok, *no, *cancel, *message
       
-      *message._S_WIDGET = Window( x, y, width, height, Title, #__window_titlebar, *parent)
+      *message._S_WIDGET = Window( x, y, width, height, Title, #PB_Window_TitleBar, *parent)
       SetClass( *message, #PB_Compiler_Procedure )
       
-      
-      If Flag & #PB_MessageRequester_Info
+      ;\\
+      If Flag & #__message_Info
         img = -1;CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
         
         DataSection
@@ -21425,8 +21427,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           end_img_info:
         EndDataSection
       EndIf
-      
-      If Flag & #PB_MessageRequester_Error
+      If Flag & #__message_Error
         img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
         
         DataSection
@@ -21479,8 +21480,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           end_img_error:
         EndDataSection
       EndIf
-      
-      If Flag & #PB_MessageRequester_Warning
+      If Flag & #__message_Warning
         img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
         
         DataSection
@@ -21525,12 +21525,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       *ok = Button( width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_Default )
-      If Flag & #PB_MessageRequester_YesNo Or
-         Flag & #PB_MessageRequester_YesNoCancel
+      If Flag & #__message_YesNo Or
+         Flag & #__message_YesNoCancel
         SetText( *ok, "Yes" )
         *no = Button( width - ( bw + f2 ) * 2 - f2, height - bh - f2, bw, bh, "No" )
       EndIf
-      If Flag & #PB_MessageRequester_YesNoCancel
+      If Flag & #__message_YesNoCancel
         *cancel = Button( width - ( bw + f2 ) * 3 - f2 * 2, height - bh - f2, bw, bh, "Cancel" )
       EndIf
       
@@ -21551,6 +21551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       WaitEvents( *message )
       
+      FreeImage( img )
       ;          Sticky( *message, #False )
       ;          ReDraw(*message\root)
       result = GetData( *message )
@@ -22260,8 +22261,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21483
-; FirstLine = 21377
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P0-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xl-------
 ; EnableXP

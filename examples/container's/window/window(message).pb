@@ -7,19 +7,19 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure ShowMessage(  )
     Debug "open - Title"
-    Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
+    Define Result = Message("Title", "Please make your input:", #__message_YesNoCancel|#__message_Info) 
     Debug " close - Title " + Result
     
     Define flag, a$ = "Result of the previously requester was: "
     
-    If Result = #PB_MessageRequester_Yes       ; pressed Yes button
-      flag = #PB_MessageRequester_Ok|#PB_MessageRequester_Info
+    If Result = #__message_Yes       ; pressed Yes button
+      flag = #__message_Ok|#__message_Info
       a$ +#LF$+ "Yes"
-    ElseIf Result = #PB_MessageRequester_No    ; pressed No button
-      flag = #PB_MessageRequester_YesNo|#PB_MessageRequester_Error
+    ElseIf Result = #__message_No    ; pressed No button
+      flag = #__message_YesNo|#__message_Error
       a$ +#LF$+ "No"
     Else                                       ; pressed Cancel button or Esc
-      flag = #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Warning
+      flag = #__message_YesNoCancel|#__message_Warning
       a$ +#LF$+ "Cancel"
     EndIf
     
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  If Open( 0, 150, 150, 600, 300, "demo message", #__Window_SizeGadget | #__Window_SystemMenu )
+  If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
     Define *showButton = Button( 600-100, 300-40, 90,30,"show")
     Bind( *showButton, @EventClick() )
     
@@ -44,8 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 4
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

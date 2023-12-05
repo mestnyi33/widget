@@ -816,15 +816,15 @@
          #PB_MessageRequester_Warning = 1 << 4
       CompilerEndIf
       
-      #PB_Message_Cancel = #PB_MessageRequester_Cancel
-      #PB_Message_Error = #PB_MessageRequester_Error
-      #PB_Message_Info = #PB_MessageRequester_Info
-      #PB_Message_No = #PB_MessageRequester_No
-      #PB_Message_Ok = #PB_MessageRequester_Ok
-      #PB_Message_Warning = #PB_MessageRequester_Warning
-      #PB_Message_Yes = #PB_MessageRequester_Yes
-      #PB_Message_YesNo = #PB_MessageRequester_YesNo
-      #PB_Message_YesNoCancel = #PB_MessageRequester_YesNoCancel
+      #__message_Cancel = #PB_MessageRequester_Cancel
+      #__message_Error = #PB_MessageRequester_Error
+      #__message_Info = #PB_MessageRequester_Info
+      #__message_No = #PB_MessageRequester_No
+      #__message_Ok = #PB_MessageRequester_Ok
+      #__message_Warning = 32;#PB_MessageRequester_Warning
+      #__message_Yes = #PB_MessageRequester_Yes
+      #__message_YesNo = #PB_MessageRequester_YesNo
+      #__message_YesNoCancel = #PB_MessageRequester_YesNoCancel
       
    EndDeclareModule
    
@@ -835,8 +835,6 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 804
-; FirstLine = 795
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP
