@@ -57,8 +57,8 @@ Procedure WaitEvents( window )
       
       SetWindowCallback( @winCloseHandler( ), window )
       
-      While PeekMessage_(@msg,0,0,0,1)
-      ; While GetMessage_(@msg, #Null, 0, 0 )
+      ; While PeekMessage_(@msg,0,0,0,1)
+      While GetMessage_(@msg, #Null, 0, 0 )
          TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
          DispatchMessage_(msg)  ; посылает сообщение в функцию WindowProc.
          
@@ -69,7 +69,26 @@ Procedure WaitEvents( window )
          ;   If msg\wParam = #WM_QUIT
          ;     Debug "#WM_QUIT "
          ;   EndIf
-      Wend
+       Wend
+       
+       
+;        ; While GetMessage_(@msg, win, 0, 0 )
+;             ; While PeekMessage_(@msg,0,0,0,1) ; функция PeekMessage не ждет, когда предыдущее помещенное в очередь сообщение возвратит значение.
+;             While GetMessage_(@msg, #Null, 0, 0 ) ; Функция GetMessage извлекает сообщение из очереди сообщений вызывающего потока и помещает его в заданную структуру.
+;                TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
+;                DispatchMessage_(msg)  ; посылает сообщение в функцию WindowProc.
+;                
+; ;                ;If msg\message <> #WM_NCMOUSEMOVE
+; ;                Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
+; ;                ; EndIf
+; ;                
+; ;                If msg\wParam = #WM_QUIT
+; ;                  Debug "#WM_QUIT1 "
+; ;                EndIf
+; ;                If msg\message = #WM_QUIT
+; ;                  Debug "#WM_QUIT2 "
+; ;                EndIf
+;             Wend
       
    CompilerEndIf
 EndProcedure
@@ -119,7 +138,15 @@ EndProcedure
 ;       Procedure MessageCanvasEvents( )
 ;          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
 ;       EndProcedure
-;       
+;    
+
+ UseJPEGImageDecoder() 
+UseJPEG2000ImageDecoder() 
+UsePNGImageDecoder() 
+UseTIFFImageDecoder() 
+UseTGAImageDecoder() 
+UseGIFImageDecoder()
+   
 Procedure Message( Title.s, Text.s, flag.q, *parent )
    Protected result
    Protected img = - 1, f1 = - 1, f2 = 8, width = 400, height = 120
@@ -129,11 +156,16 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    Protected y = 100
    
    Protected *message = OpenWindow(#PB_Any, x, y, width, height, Title, #PB_Window_TitleBar|#PB_Window_WindowCentered, *parent)
-   
-   
+  
    If Flag & #PB_MessageRequester_Info
-      img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
-      
+     img = - 1;ImageID(CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info ))
+     
+    
+;      DataSection
+;        img_info: 
+;        IncludeBinary #PB_Compiler_Home + "examples/sources/Data/Background.bmp"
+;      EndDataSection
+
       DataSection
          img_info:
          ; size : 1404 bytes
@@ -178,7 +210,7 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    EndIf
    
    If Flag & #PB_MessageRequester_Error
-      img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
+      img = - 1;ImageID(CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error ))
       
       DataSection
          img_error:
@@ -232,7 +264,7 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    EndIf
    
    If Flag & #PB_MessageRequester_Warning
-      img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
+      img = - 1;ImageID(CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning ))
       
       DataSection
          img_warning:
@@ -270,7 +302,7 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    
    ;\\
    ContainerGadget(#PB_Any, f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
-   ImageGadget(#PB_Any, f2, f2, iw, iw, ImageID(img), #PB_Image_Border ); | #__flag_center )
+   ImageGadget(#PB_Any, f2, f2, iw, iw, img, #PB_Image_Border ); | #__flag_center )
    TextGadget(#PB_Any, f2 + iw + f2, f2, width - iw, iw, Text)          ;, #__flag_textcenter | #__flag_textleft )
    CloseGadgetList( )
    
@@ -355,5 +387,5 @@ If OpenWindow( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #P
    Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow 
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----
+; Folding = --q--
 ; EnableXP
