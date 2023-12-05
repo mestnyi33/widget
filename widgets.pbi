@@ -12020,7 +12020,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\caption\interact = is_atpoint_( *this\caption, mouse_x, mouse_y, [2] )
                ;*this\color\state = 2
                
-               Debug "" + #PB_Compiler_Procedure + " " + mouse_x + " " + *this\CloseButton( )\x
+              ; Debug "" + #PB_Compiler_Procedure + " " + mouse_x + " " + *this\CloseButton( )\x
                ; close button
                If is_atpoint_( *this\CloseButton( ), mouse_x, mouse_y )
                   ProcedureReturn Window_SetState( *this, #__Window_Close )
@@ -20003,8 +20003,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                PushMapPosition( Root( ) )
                If ChangeCurrentRoot( GadgetID( eventgadget ) )
-                  Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-                  ReDraw( Root( ) )
+                 If Root( )\type = #__type_window
+                   Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
+                 Else
+                   Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+                 EndIf
+                 ReDraw( Root( ) )
                EndIf
                PopMapPosition( Root( ) )
             EndIf
@@ -21355,6 +21359,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure WaitEvents( *this._S_WIDGET )
          Protected win = WindowID( *this\root\canvas\window )
+         Protected gad = GadgetID( *this\root\canvas\gadget )
          
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             ;\\
@@ -21377,28 +21382,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             gtk_main_( )
             
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            Protected msg.MSG
-            ;         If PeekMessage_(@msg,0,0,0,1)
-            ;           TranslateMessage_(@msg)
-            ;           DispatchMessage_(@msg)
-            ;         Else
-            ;           Sleep_(1)
-            ;         EndIf
-            SetWindowCallback( @winCloseHandler( ), *this\root\canvas\window )
-            
-            While GetMessage_(@msg, #Null, 0, 0 )
+           Protected msg.MSG
+            ; While GetMessage_(@msg, win, 0, 0 )
+            ; While PeekMessage_(@msg,0,0,0,1) ; функция PeekMessage не ждет, когда предыдущее помещенное в очередь сообщение возвратит значение.
+            While GetMessage_(@msg, #Null, 0, 0 ) ; Функция GetMessage извлекает сообщение из очереди сообщений вызывающего потока и помещает его в заданную структуру.
                TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
                DispatchMessage_(msg)  ; посылает сообщение в функцию WindowProc.
                
-               If msg\message = #WM_NCMOUSEMOVE
-                 Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
-               EndIf
-               
-               ;   If msg\wParam = #WM_QUIT
-               ;     Debug "#WM_QUIT "
-               ;   EndIf
+;                ;If msg\message <> #WM_NCMOUSEMOVE
+;                Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
+;                ; EndIf
+;                
+;                If msg\wParam = #WM_QUIT
+;                  Debug "#WM_QUIT1 "
+;                EndIf
+;                If msg\message = #WM_QUIT
+;                  Debug "#WM_QUIT2 "
+;                EndIf
             Wend
-            
+           
          CompilerEndIf
       EndProcedure
       
@@ -21434,17 +21436,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;               Unbind( *message, @MessageEvents( ), #__event_LeftClick )
 ;               Close( *message)
             
-;               ; exit main loop
-;               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;                 ;\\ winCloseHandler(obj.i, sel.i, win.i) 
-;                 winCloseHandler(0,0,0) 
-;               CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-;                 ;\\ winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
-;                 winCloseHandler(0,0,0)
-;               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-;                 ;\\ winCloseHandler(WindowID,message,wParam,lParam)
-;                 winCloseHandler(0, #WM_DESTROY,0,0)
-;               CompilerEndIf
+              ;\\ exit main loop
+              CompilerSelect #PB_Compiler_OS 
+                CompilerCase #PB_OS_Windows
+                  PostQuitMessage_( 0 )
+                CompilerCase #PB_OS_Linux
+                  gtk_main_quit_( )
+                CompilerCase #PB_OS_MacOS
+                  CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", win)
+              CompilerEndSelect
               
           EndSelect
         EndIf
@@ -21452,9 +21452,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ProcedureReturn #PB_Ignore
       EndProcedure
       
-;       Procedure MessageCanvasEvents( )
-;          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
-;       EndProcedure
+      Procedure MessageCanvasEvents( )
+         EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
+      EndProcedure
 ;       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
          Protected result
@@ -21473,7 +21473,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          If Flag & #PB_MessageRequester_Info
-            img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
+            img = -1;CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
             
             DataSection
                img_info:
@@ -21519,7 +21519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Flag & #PB_MessageRequester_Error
-            img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
+            img = -1;CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
             
             DataSection
                img_error:
@@ -21573,7 +21573,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Flag & #PB_MessageRequester_Warning
-            img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
+            img = -1;CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
             
             DataSection
                img_warning:
@@ -21642,7 +21642,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          Sticky( *message, #True )
          
-         ; BindGadgetEvent( *message\root\canvas\gadget, @MessageCanvasEvents( ) ) ;, #__event_Repaint )
+          BindGadgetEvent( *message\root\canvas\gadget, @MessageCanvasEvents( ) ) ;, #__event_Repaint )
                                                                          ;PostEvent( #PB_Event_Gadget, *message\root\canvas\window, *message\root\canvas\gadget, #__event_Repaint)
          ; PostEventCanvasRepaint( *message\root )
          
@@ -22360,5 +22360,5 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4d--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------d2-------f2+f--fn7-v2---0----8----f-zrsz----8---+----4-fF--------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4d--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv-------d2-------f27f---P2-fr---8----4-----+nXZn----4---0--4----K+-------
 ; EnableXP

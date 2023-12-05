@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Windows
          Case #WM_DESTROY : Text$ = "Destroy"
          Case #WM_QUIT : Text$ = "Quit"
       EndSelect
-      Debug ""+message +" "+ Text$+" "+Str(wParam)+" "+Str(lParam)
+      Debug "winCloseHandler "+message +" "+ Text$+" "+Str(wParam)+" "+Str(lParam)
       
       ProcedureReturn Result
    EndProcedure
@@ -54,15 +54,11 @@ Procedure WaitEvents( window )
       
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
       Protected msg.MSG
-      ;         If PeekMessage_(@msg,0,0,0,1)
-      ;           TranslateMessage_(@msg)
-      ;           DispatchMessage_(@msg)
-      ;         Else
-      ;           Sleep_(1)
-      ;         EndIf
-      SetWindowCallback( @winCloseHandler( ), *this\root\canvas\window )
       
-      While GetMessage_(@msg, #Null, 0, 0 )
+      SetWindowCallback( @winCloseHandler( ), window )
+      
+      While PeekMessage_(@msg,0,0,0,1)
+      ; While GetMessage_(@msg, #Null, 0, 0 )
          TranslateMessage_(msg) ; - генерирует дополнительное сообщение если произошёл ввод с клавиатуры (клавиша с символом была нажата или отпущена)
          DispatchMessage_(msg)  ; посылает сообщение в функцию WindowProc.
          
@@ -93,18 +89,28 @@ Procedure MessageEvents( )
          
          UnbindGadgetEvent( *ew, @MessageEvents( ), #PB_EventType_LeftClick )
          
-         ; exit main loop
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ;\\ winCloseHandler(obj.i, sel.i, win.i) 
-            winCloseHandler(0,0,0) 
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            ;\\ winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
-            winCloseHandler(0,0,0)
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            ;\\ winCloseHandler(WindowID,message,wParam,lParam)
-            winCloseHandler(0, #WM_DESTROY,0,0)
-         CompilerEndIf
+;          ;\\ exit main loop
+;          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;             ;\\ winCloseHandler(obj.i, sel.i, win.i) 
+;             winCloseHandler(0,0,0) 
+;          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+;             ;\\ winCloseHandler(*Widget.GtkWidget, *Event.GdkEventAny, UserData.I)
+;             winCloseHandler(0,0,0)
+;          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;             ;\\ winCloseHandler(WindowID,message,wParam,lParam)
+;             winCloseHandler(0, #WM_DESTROY,0,0)
+;          CompilerEndIf
          
+         ;\\ exit main loop
+              CompilerSelect #PB_Compiler_OS 
+                CompilerCase #PB_OS_Windows
+                  PostQuitMessage_( 0 )
+                CompilerCase #PB_OS_Linux
+                  gtk_main_quit_( )
+                CompilerCase #PB_OS_MacOS
+                  CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "stop:", win)
+              CompilerEndSelect
+              
    EndSelect
    
    ProcedureReturn #PB_Ignore
@@ -348,8 +354,6 @@ If OpenWindow( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #P
    
    Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow 
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 341
-; FirstLine = 313
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -----
 ; EnableXP
