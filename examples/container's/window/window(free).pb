@@ -59,8 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Open(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   *buttonTest = ButtonGadget(#PB_Any, 500-100, 400-120, 90,30,"test")
-  *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"open")
-  *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"close")
+  *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"close")
+  *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
   
   *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
   Button(10, 10, 90,30,"button")
@@ -74,8 +74,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 37
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

@@ -62,8 +62,8 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
   ;SetActive(*string_5)
   
     
-  Bind( #PB_All, @active_0(), #PB_EventType_Focus)
-  Bind( #PB_All, @deactive_0(), #PB_EventType_LostFocus)
+  Bind( #PB_All, @active_0(), #__event_Focus)
+  Bind( #PB_All, @deactive_0(), #__event_LostFocus)
   
   WaitClose()
 
@@ -79,6 +79,6 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

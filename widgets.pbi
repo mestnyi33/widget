@@ -437,6 +437,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_root_(_this_ ) : Bool( _this_ > 0 And _this_ = _this_\root ): EndMacro
       Macro is_item_( _this_, _item_ ) : Bool( _item_ >= 0 And _item_ < _this_\count\items ) : EndMacro
       Macro is_widget_( _this_ ) : Bool( _this_ > 0 And _this_\address ) : EndMacro
+      Macro is_gadget_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type > 0 ) : EndMacro
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
       
       Macro is_child_( _this_, _parent_ )
@@ -11783,14 +11784,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\fs
                   drawing_mode_alpha_( #PB_2DDrawing_Default )
                   ; inner top
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2], *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2]-1, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\color\state] )
+                  ; inner left
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2]-1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2+1, *this\color\frame[\color\state] )
+                  ; inner right
+                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2]-1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2+1, *this\color\frame[\color\state] )
                   ; inner bottom
                   Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - *this\fs, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\color\state] )
-                  ; inner left
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2], 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2, *this\color\frame[\color\state] )
-                  ; inner right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2], 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2, *this\color\frame[\color\state] )
-               EndIf
+                EndIf
             Else
                If *this\round
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -22358,8 +22359,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21648
-; FirstLine = 20583
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8u--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------u7-------va-v--vT0-47---+----0----v-6V36----0--f---0-8-vi-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4d--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------d2-------f2+f--fn7-v2---0----8----f-zrsz----8---+----4-fF--------
 ; EnableXP

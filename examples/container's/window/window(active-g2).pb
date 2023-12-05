@@ -1,8 +1,9 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
+
 Procedure active()
   Protected *ew._s_widget = EventWidget( )
-  If *ew\container =- 1
+  If is_window_( *ew )
     Debug ""+*ew\index +" "+ #PB_Compiler_Procedure + " window"
   Else
     Debug "  "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget"
@@ -11,7 +12,7 @@ EndProcedure
 
 Procedure deactive()
   Protected *ew._s_widget = EventWidget( )
-  If *ew\container =- 1
+  If is_window_( *ew )
     Debug ""+*ew\index +" "+ #PB_Compiler_Procedure + " window"
   Else
     Debug "  "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget"
@@ -20,7 +21,7 @@ EndProcedure
 
 Procedure active_0()
   Protected *ew._s_widget = EventWidget( )
-  If *ew\container =- 1
+  If is_window_( *ew )
     Debug " - "+*ew\index +" "+ #PB_Compiler_Procedure + " window"
   Else
     Debug " -   "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget"
@@ -29,12 +30,13 @@ EndProcedure
 
 Procedure deactive_0()
   Protected *ew._s_widget = EventWidget( )
-  If *ew\container =- 1
+  If is_window_( *ew )
     Debug " - "+*ew\index +" "+ #PB_Compiler_Procedure + " window"
   Else
     Debug " -   "+*ew\index +" "+ #PB_Compiler_Procedure + " gadget"
   EndIf
 EndProcedure
+
 
 Define width=500, height=400
 
@@ -96,6 +98,6 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

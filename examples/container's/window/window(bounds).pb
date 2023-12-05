@@ -18,12 +18,12 @@ CompilerIf #PB_Compiler_IsMainFile
   SizeBounds(object, 200, 200, 401, 401)
   MoveBounds(object, 100, 100, 501, 501)
   
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  Bind( widget( ), @CustomEvents(), #__event_Draw )
   WaitClose( )
   
   Procedure CustomEvents( )
     Select WidgetEventType( )
-      Case #PB_EventType_Draw
+      Case #__event_Draw
         
         ; Demo draw on element
         UnclipOutput()
@@ -49,6 +49,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

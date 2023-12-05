@@ -19,8 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
      
      ;\\
-    ;   Bind(#PB_All, @active(), #PB_EventType_Focus)
-    ;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
+    ;   Bind(#PB_All, @active(), #__event_Focus)
+    ;   Bind(#PB_All, @deactive(), #__event_LostFocus)
     
     Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
     string(10,10,170,30,"string_1")
@@ -44,15 +44,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetActive(widget())
     
     
-    Bind( #PB_All, @active(), #PB_EventType_Focus)
-    Bind( #PB_All, @deactive(), #PB_EventType_LostFocus)
+    Bind( #PB_All, @active(), #__event_Focus)
+    Bind( #PB_All, @deactive(), #__event_LostFocus)
     
     WaitClose()
  EndIf
   
   End 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

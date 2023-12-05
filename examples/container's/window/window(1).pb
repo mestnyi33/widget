@@ -1,18 +1,12 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
   Uselib(widget)
   
-  Procedure Events_windows( )
-    Debug "gw "+Event( ) +" "+ EventType( ) +" "+ EventWindow( )
-  EndProcedure
-  
   Procedure Events_widgets( )
-    Debug "ww "+ WidgetEventType( ) +" "+ EventWidget( )\index
+    Debug "event "+ WidgetEventType( ) +" "+ EventWidget( )\index
   EndProcedure
   
   ;
@@ -20,9 +14,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
   
-  Bind(Root( ), @Events_widgets( ))
-  WaitClose( )
+  WaitEvent( #PB_All, @Events_widgets( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

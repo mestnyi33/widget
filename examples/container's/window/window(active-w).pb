@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
+
 Procedure active()
   If EventWidget( )\type =- 2
     Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
@@ -23,6 +24,7 @@ Procedure deactive_0()
     Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
   EndIf
 EndProcedure
+
 
 Define width=500, height=400
 
@@ -54,6 +56,6 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = q+
 ; EnableXP
