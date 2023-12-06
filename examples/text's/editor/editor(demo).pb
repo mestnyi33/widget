@@ -1,5 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi"
-
+;   WordWrap ! 1
+;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
+      
 CompilerIf #PB_Compiler_IsMainFile
  EnableExplicit
   UseLib(widget)
@@ -54,6 +56,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP

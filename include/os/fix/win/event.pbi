@@ -10,27 +10,27 @@ Module events
          Select Event( ) 
             Case #PB_Event_Gadget
                If EventType( ) = #PB_EventType_Resize
-                  CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ))
+                  CallFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ))
                EndIf
                
                ;             Case #PB_Event_ActivateWindow   
                ;                Debug " Events - ActivateWindow"
                ;                eventgadget = GetWindowData( EventWindow( ) )
                ;                If IsGadget( eventgadget )
-               ;                CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
+               ;                CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
                ;                EndIf
                ;                
                ;             Case #PB_Event_DeactivateWindow
                ;                Debug " Events - DeactivateWindow"
                ;                eventgadget = GetWindowData( EventWindow( ) )
                ;                If IsGadget( eventgadget )
-               ;                   CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
+               ;                   CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
                ;                EndIf
                
             Case #PB_Event_SizeWindow
                eventgadget = GetWindowData( EventWindow( ) )
                If IsGadget( eventgadget )
-                  CallCFunctionFast(*setcallback, #PB_Event_SizeWindow, eventgadget, #PB_EventType_Resize, #Null )
+                  CallFunctionFast(*setcallback, #PB_Event_SizeWindow, eventgadget, #PB_EventType_Resize, #Null )
                EndIf
          EndSelect
       EndIf
@@ -44,7 +44,7 @@ Module events
             ; Debug " WaitEvent - ActivateWindow"
             eventgadget = GetWindowData( EventWindow( ) )
             If IsGadget( eventgadget )
-               CallCFunctionFast( *setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
+               CallFunctionFast( *setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
             EndIf
          EndIf
          
@@ -52,7 +52,7 @@ Module events
             ;             ; Debug " WaitEvent - DeactivateWindow"
             ;             eventgadget = GetWindowData( EventWindow( ) )
             ;             If IsGadget( eventgadget )
-            ;                CallCFunctionFast( *setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
+            ;                CallFunctionFast( *setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
             ;             EndIf
          EndIf
          
@@ -84,6 +84,8 @@ Module events
    EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 54
+; FirstLine = 17
 ; Folding = ---
 ; EnableXP

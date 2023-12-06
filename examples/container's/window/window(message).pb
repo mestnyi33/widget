@@ -3,11 +3,11 @@
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   USELIB( WIDGET )
-  UsePNGImageDecoder()
   
   Procedure ShowMessage(  )
+     
     Debug "open - Title"
-    Define Result = Message("Title", "Please make your input:", #__message_YesNoCancel|#__message_Info) 
+    Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
     Debug " close - Title " + Result
     
     Define flag, a$ = "Result of the previously requester was: "
@@ -36,14 +36,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
-    Define *showButton = Button( 600-100, 300-40, 90,30,"show")
-    Bind( *showButton, @EventClick() )
+    Define *showButton = Button( 600-100, 300-40, 90,30, "show" )
+    Bind( *showButton, @EventClick( ) )
     
     ShowMessage( )
     
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 6
+; FirstLine = 7
 ; Folding = --
 ; EnableXP

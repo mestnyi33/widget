@@ -61,9 +61,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                          #PB_Window_ScreenCentered )
      ;\\
      Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                         #PB_Window_SizeGadget |
-                                         #PB_Window_MinimizeGadget |
-                                         #PB_Window_MaximizeGadget )
+                                           #PB_Window_SizeGadget |
+                                           #PB_Window_MinimizeGadget |
+                                           #PB_Window_MaximizeGadget )
+     
      SetClass(widget( ), "window_0_root" )
      Button(10,10,200,50,"window_0_close")
      SetClass(widget( ), "window_0_close" )
@@ -83,6 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                              #PB_Window_SizeGadget |
                                              #PB_Window_MinimizeGadget |
                                              #PB_Window_MaximizeGadget )
+     
      SetClass(widget( ), "window_2_root" )
      Button(10,10,200,50,"window_2_close")
      SetClass(widget( ), "window_2_close" )
@@ -90,6 +92,8 @@ CompilerIf #PB_Compiler_IsMainFile
      WaitEvent( #PB_All, @CallBack( ) )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 42
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
