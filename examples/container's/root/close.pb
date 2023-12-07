@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case "window_2_close"
             If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              Close( #PB_All )
+               Close( #PB_All )
             EndIf
             
         EndSelect
@@ -87,6 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 42
+; FirstLine = 8
 ; Folding = --
 ; EnableXP

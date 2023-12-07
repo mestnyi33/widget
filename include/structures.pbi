@@ -700,7 +700,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     CANVAS
       Structure _s_CANVAS
          repaint.b
-         container.i              ; ???
+         ; container.i              ; ???
          *fontID                  ; current drawing fontID
          *GadgetID                ; canvas handle
          window.i                 ; canvas window
@@ -732,10 +732,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
          
-         event._s_EVENTDATA            ; widgetevent( )\ ; \widget ; \type ; \item ; \data
-         List *events._s_EVENTDATA( )  ; post events list
+         event._s_EVENTDATA            ; widgetEvent( )\ ; \widget ; \type ; \item ; \data
+         ; List *events._s_EVENTDATA( )  ; post events list
          
-         Map *roots._s_ROOT( )   
+         ; Map *roots._s_ROOT( )   
          
          quit.b ; quit from main loop
       EndStructure
@@ -751,7 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 739
-; FirstLine = 597
+; CursorPosition = 735
+; FirstLine = 599
 ; Folding = ---PP7D+--
 ; EnableXP
