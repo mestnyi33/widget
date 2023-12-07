@@ -9,8 +9,10 @@ Module Cursor
     Protected oldproc = GetProp_(hWnd, "#__oldproc")
     
     Select uMsg
-      Case #WM_NCDESTROY
+      Case #WM_DESTROY
         Debug "event( DESTROY ) "+hwnd
+;       Case #WM_NCDESTROY
+;         Debug "event( NC_DESTROY ) "+hwnd
         RemoveProp_(hwnd, "#__cursor")
         RemoveProp_(hwnd, "#__oldproc")
         
@@ -417,8 +419,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 231
-; FirstLine = 213
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---------
 ; EnableXP

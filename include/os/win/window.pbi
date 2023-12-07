@@ -4,16 +4,42 @@ EnableExplicit
 XIncludeFile "id.pbi"
 XIncludeFile "clipgadgets.pbi"
 
-Macro CloseWindow_( hWnd )
-  DestroyWindow_( hWnd )
+Macro ClassName( windowID )
+   ID::ClassName( windowID )
 EndMacro
 
-Procedure SetWindowColor_(hWnd, Color)
+Macro __CloseWindow( windowID )
+  DestroyWindow_( windowID )
+EndMacro
+
+Procedure __SetActiveWindow( win )
+EndProcedure
+
+
+Procedure __HideWindow( win, state )
+   If ClassName( win ) = "PBWindow"
+   Else
+   EndIf
+EndProcedure
+
+Procedure __IsHideWindow( win )
+   If ClassName( win ) = "PBWindow"
+   Else
+   EndIf
+EndProcedure
+
+Procedure __IsActiveWindow( win )
+EndProcedure
+
+Procedure __IsMainWindow( win )
+EndProcedure
+
+Procedure SetWindowColor_(windowID, Color)
   Protected brush
   brush = CreateSolidBrush_(Color)
   ; brush = CreatePatternBrush_(ImageID)
   
-  SetClassLongPtr_(hWnd, #GCL_HBRBACKGROUND, brush)
+  SetClassLongPtr_(windowID, #GCL_HBRBACKGROUND, brush)
   DeleteObject_(brush)
 EndProcedure
 
@@ -158,48 +184,48 @@ EndProcedure
 
 Global ETCallback
 
-Procedure EventTypeCallback(hWnd, uMsg, wParam, lParam)
+Procedure EventTypeCallback(windowID, uMsg, wParam, lParam)
 ;   Protected xPos = GET_X_LPARAM_(lParam); 
 ;   Protected yPos = GET_Y_LPARAM_(lParam);
-  ; Protected ETCallback = GetProp_(hWnd, "oldproc") 
+  ; Protected ETCallback = GetProp_(windowID, "oldproc") 
   
   If uMsg = #WM_LBUTTONDOWN
-    Debug "#WM_LBUTTONDOWN "+id::gadget(hWnd)
+    Debug "#WM_LBUTTONDOWN "+id::gadget(windowID)
   ElseIf uMsg = #WM_LBUTTONUP 
-    Debug "#WM_LBUTTONUP "+id::gadget(hWnd)
+    Debug "#WM_LBUTTONUP "+id::gadget(windowID)
   ElseIf uMsg = #WM_RBUTTONDOWN
-    Debug "#WM_RBUTTONDOWN "+id::gadget(hWnd)
+    Debug "#WM_RBUTTONDOWN "+id::gadget(windowID)
   ElseIf uMsg = #WM_RBUTTONUP
-    Debug "#WM_RBUTTONUP "+id::gadget(hWnd)
+    Debug "#WM_RBUTTONUP "+id::gadget(windowID)
   ElseIf uMsg = #WM_MBUTTONDOWN
-    Debug "#WM_MBUTTONDOWN "+id::gadget(hWnd)
+    Debug "#WM_MBUTTONDOWN "+id::gadget(windowID)
   ElseIf uMsg = #WM_MBUTTONUP
-    Debug "#WM_MBUTTONUP "+id::gadget(hWnd)
+    Debug "#WM_MBUTTONUP "+id::gadget(windowID)
   ElseIf uMsg = #WM_MOUSEHOVER
-    Debug "#WM_MOUSEHOVER "+id::gadget(hWnd)
+    Debug "#WM_MOUSEHOVER "+id::gadget(windowID)
   ElseIf uMsg = #WM_MOUSEMOVE
-    ;  Debug "#WM_MOUSEMOVE "+id::gadget(hWnd)
+    ;  Debug "#WM_MOUSEMOVE "+id::gadget(windowID)
     
     
       Protected TRACK.TRACKMOUSEEVENT
           TRACK\cbSize = SizeOf(TRACK)
           TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
-          TRACK\hwndTrack = hWnd
+          TRACK\hwndTrack = windowID
           TRACK\dwHoverTime = 10
           TrackMouseEvent_(@TRACK)
       
   ElseIf uMsg = #WM_MOUSELEAVE
-    Debug "#WM_MOUSELEAVE "+id::gadget(hWnd)
+    Debug "#WM_MOUSELEAVE "+id::gadget(windowID)
   ElseIf uMsg = #WM_CREATE
-    Debug "#WM_CREATE "+id::gadget(hWnd)
+    Debug "#WM_CREATE "+id::gadget(windowID)
   EndIf
   
-  ProcedureReturn CallWindowProc_(ETCallback, hWnd, uMsg, wParam, lParam)
+  ProcedureReturn CallWindowProc_(ETCallback, windowID, uMsg, wParam, lParam)
 EndProcedure
 
-Procedure OpenWindowCallback_(hWnd, uMsg, wParam, lParam) 
+Procedure OpenWindowCallback_(windowID, uMsg, wParam, lParam) 
   Protected result
-  ;Callback(hWnd, uMsg, wParam, lParam)
+  ;Callback(windowID, uMsg, wParam, lParam)
   
   If uMsg = #WM_LBUTTONDOWN
     Debug "#WM_LBUTTONDOWN "
@@ -220,14 +246,14 @@ Procedure OpenWindowCallback_(hWnd, uMsg, wParam, lParam)
 ;     Protected mouseleave.TRACKMOUSEEVENT
 ;       mouseleave\cbSize = SizeOf(mouseleave)
 ;       mouseleave\dwFlags = #TME_LEAVE|#TME_HOVER
-;       mouseleave\hwndTrack = hWnd
+;       mouseleave\hwndTrack = windowID
 ;       ;mouseleave\dwHoverTime = 1
 ;       TrackMouseEvent_(@mouseleave)
       
       Protected TRACK.TRACKMOUSEEVENT
           TRACK\cbSize = SizeOf(TRACK)
           TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
-          TRACK\hwndTrack = hWnd
+          TRACK\hwndTrack = windowID
           TRACK\dwHoverTime = 10
           TrackMouseEvent_(@TRACK)
             
@@ -240,23 +266,23 @@ Procedure OpenWindowCallback_(hWnd, uMsg, wParam, lParam)
   
   Select uMsg 
 ;     Case #WM_ERASEBKGND
-;       GetClientRect_(hWnd, cRect.RECT)
+;       GetClientRect_(windowID, cRect.RECT)
 ;       FillRect_(wParam, cRect, brush)
 ;       ProcedureReturn 1
       
 ;     Case #WM_NCDESTROY
-;       SetWindowLongPtr_(hWnd, #GWL_WNDPROC, @oldProc)
-;       ProcedureReturn DefWindowProc_(hWnd, Msg, wParam, lParam)
+;       SetWindowLongPtr_(windowID, #GWL_WNDPROC, @oldProc)
+;       ProcedureReturn DefWindowProc_(windowID, Msg, wParam, lParam)
        
     Case #WM_CLOSE 
-      DestroyWindow_(hWnd) 
+      DestroyWindow_(windowID) 
       
     Case #WM_DESTROY 
       PostQuitMessage_(0) 
       Result  = 0 
       
     Default 
-      Result  = DefWindowProc_(hWnd, uMsg, wParam, lParam) 
+      Result  = DefWindowProc_(windowID, uMsg, wParam, lParam) 
   EndSelect 
   
   ProcedureReturn Result 
@@ -291,7 +317,7 @@ Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID 
   ;win  = CreateWindowEx_( #WS_EX_TOPMOST, WindowClass, "Test Window", #WS_VISIBLE | #WS_CAPTION | #WS_SYSMENU , x, y, width, height, 0, 0, 0, 0) 
   win  = CreateWindowEx_( #WS_EX_TOPMOST | #WS_EX_NOACTIVATE, WindowClass, "Test Window", uFlags, x, y, width, height, 0, 0, 0, 0) 
   
-  ; SetWindowPos_( win, #HWND_TOPMOST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE);|#SWP_NOACTIVATE);|#SWP_SHOWWINDOW )
+  ; SetWindowPos_( win, #windowID_TOPMOST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE);|#SWP_NOACTIVATE);|#SWP_SHOWWINDOW )
   If ParentID
     SetProp_(win, "ParentID", ParentID) 
     ;SetProp_(ParentID, "ChildID", win) 
@@ -353,7 +379,7 @@ Procedure OpenPopup(ParentID=0)
     ;SetProp_(ParentID, "ChildID", win) 
     ;\\ Всплывающее окно чтобы не забирала фокус у Вызваного окна
     ;SetWindowPos_( ParentID, 0,0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE|#SWP_NOZORDER )
-    ;;;SendMessage_(#HWND_BROADCAST, #WM_SYSCOMMAND, #SC_HOTKEY, ParentID)
+    ;;;SendMessage_(#windowID_BROADCAST, #WM_SYSCOMMAND, #SC_HOTKEY, ParentID)
   EndIf
   
   ClipGadgets(win)
@@ -475,6 +501,6 @@ Repeat
     Debug " pb_window_leftclick"
   EndIf
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------
 ; EnableXP

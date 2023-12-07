@@ -371,7 +371,7 @@ Procedure ListIconWidget( x,y,width,height, title.s, titleWidth )
    ProcedureReturn Tree(x,y+20,width,height-20)
 EndProcedure
 
-If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
+If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
   ;Bind(, #PB_Default )
   ; Create and fill the Gadget_Source s
   ;
@@ -466,8 +466,6 @@ If Open( #PB_Any, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 332
-; FirstLine = 315
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----
 ; EnableXP

@@ -19,16 +19,63 @@ EnableExplicit
 Declare CanvasEvents( )
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-   Procedure winCloseHandler(WindowID,message,wParam,lParam)
+Procedure.s GetTitle(Handle)
+      Protected Name.s
+      Name.s = Space(1024)
+      GetWindowText_(Handle, @Name, Len(Name))
+      ProcedureReturn Left(Name, Len(Name))
+  EndProcedure
+    
+ Procedure.s ClassName( handle.i )
+    Protected Class$ = Space( 16 )
+    GetClassName_( handle, @Class$, Len( Class$ ) )
+    ProcedureReturn Class$
+  EndProcedure
+   
+   Procedure   Proc(hWnd, uMsg, wParam, lParam)
+    Protected result
+    Protected oldproc = GetProp_(hWnd, "#__oldproc")
+    
+    Select uMsg
+      Case #PB_EventType_FirstCustomValue
+        Debug "event( FirstCustomValue ) "+hwnd
+        
+      Case #WM_LBUTTONDOWN
+        Debug "event( LBUTTONDOWN ) "+hwnd
+        
+      Case #WM_DESTROY
+        Debug "event( DESTROY ) "+hwnd
+;       Case #WM_NCDESTROY
+;         Debug "event( NC_DESTROY ) "+hwnd
+        RemoveProp_(hwnd, "#__oldproc")
+        
+      Default
+        result = CallWindowProc_(oldproc, hWnd, uMsg, wParam, lParam)
+        
+    EndSelect
+    
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure CallBack(WindowID, message, wParam, lParam)
       Protected Text$
       Protected Result = #PB_ProcessPureBasicEvents
       
       Select message
-         Case #WM_CLOSE : Text$ = "Close"
-         Case #WM_DESTROY : Text$ = "Destroy"
+        Case #WM_CLOSE 
+          Debug "close "
+           ; DestroyWindow_( WindowID )
+           ; PostQuitMessage_( 0 )
+            
+         Case #WM_DESTROY 
+           Debug "DESTROY " + ClassName(WindowID) +" "+ GetTitle(WindowID)
+           
+         Case #WM_NCDESTROY
+           Debug "NC DESTROY " + ClassName(WindowID) +" "+ GetTitle(WindowID)
+           
          Case #WM_QUIT : Text$ = "Quit"
       EndSelect
-      Debug "winCloseHandler "+message +" "+ Text$+" "+Str(wParam)+" "+Str(lParam)
+      ; Debug "CallBack "+message +" "+ Text$+" "+Str(wParam)+" "+Str(lParam)
       
       ProcedureReturn Result
    EndProcedure
@@ -75,21 +122,20 @@ Procedure WaitEvents( window )
       
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
       Protected msg.MSG
+      Protected canvas = GetWindowData( window )
       
-      ; SetWindowCallback( @winCloseHandler( ), window )
+      SetProp_( GadgetID(canvas), "#__oldproc", SetWindowLongPtr_(GadgetID(canvas), #GWL_WNDPROC, @Proc( )))
+      ; SetProp_( WindowID(window), "#__oldproc", SetWindowLongPtr_(WindowID(window), #GWL_WNDPROC, @Proc( )))
+      SetWindowCallback( @CallBack( ) )
       
+      PostMessage_(GadgetID(canvas), #WM_LBUTTONDOWN, 0,0)
+      ; SendMessage_(GadgetID(canvas), #WM_LBUTTONDOWN, 0,0)
+     
+      ;\\
       ; While PeekMessage_(@msg,0,0,0,1)
       While GetMessage_(@msg, #Null, 0, 0 )
          TranslateMessage_(msg) 
          DispatchMessage_(msg)
-         
-         ;          If msg\message = #WM_NCMOUSEMOVE
-         ;             Debug "" + #PB_Compiler_Procedure + " " + msg\message + " " + msg\hwnd + " " + msg\lParam + " " + msg\wParam
-         ;          EndIf
-         ;          
-         ;          ;   If msg\wParam = #WM_QUIT
-         ;          ;     Debug "#WM_QUIT "
-         ;          ;   EndIf
       Wend
       
    CompilerEndIf
@@ -126,23 +172,13 @@ Procedure MessageEvents( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-
-; UseJPEGImageDecoder() 
-; UseJPEG2000ImageDecoder() 
-UsePNGImageDecoder() 
-; UseTIFFImageDecoder() 
-; UseTGAImageDecoder() 
-; UseGIFImageDecoder()
-
 Procedure Message( Title.s, Text.s, flag.q, *parent )
-   Protected result
-   Protected img = 0, f1 = - 1, f2 = 8, width = 400, height = 120
+   Protected result, img = 0, f1 = - 1, f2 = 8, width = 400, height = 120
    Protected bw = 85, bh = 25, iw = height - bh - f1 - f2 * 4 - 2 - 1
    
-   Protected x = 100
-   Protected y = 100
-   
-   Protected *message = OpenWindow(#PB_Any, x, y, width, height, Title, #PB_Window_TitleBar|#PB_Window_WindowCentered, *parent)
+   ;\\
+   Protected *ok, *no, *cancel
+   Protected *message = OpenWindow(#PB_Any, 0, 0, width, height, Title, #PB_Window_TitleBar|#PB_Window_WindowCentered, WindowID(*parent))
    
    If Flag & #PB_MessageRequester_Info
    EndIf
@@ -159,8 +195,7 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    TextGadget(#PB_Any, f2 + iw + f2, f2, width - iw, iw, Text) ;, #__flag_textcenter | #__flag_textleft )
    CloseGadgetList( )
    
-   Protected *ok, *no, *cancel
-   
+   ;\\
    *ok = ButtonGadget(#PB_Any, width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_Default )
    BindGadgetEvent( *ok, @MessageEvents( ), #PB_EventType_LeftClick )
    If Flag & #PB_MessageRequester_YesNo Or
@@ -169,22 +204,24 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
       *no = ButtonGadget(#PB_Any, width - ( bw + f2 ) * 2 - f2, height - bh - f2, bw, bh, "No" )
       BindGadgetEvent( *no, @MessageEvents( ), #PB_EventType_LeftClick )
    EndIf
-   
    If Flag & #PB_MessageRequester_YesNoCancel
       *cancel = ButtonGadget(#PB_Any, width - ( bw + f2 ) * 3 - f2 * 2, height - bh - f2, bw, bh, "Cancel" )
       BindGadgetEvent( *cancel, @MessageEvents( ), #PB_EventType_LeftClick )
    EndIf
    
-   ;\\
-   StickyWindow( *message, #True )
-   
     ; macos bug no post event
    PostEvent( #PB_Event_Gadget, 0,0, #PB_EventType_FirstCustomValue )
    
    ;\\
-   WaitEvents( *message )
+   StickyWindow( *message, #True )
    
+   ;\\
+   WaitEvents( *parent )
+   
+   ;\\
    StickyWindow( *message, #False )
+   
+   ;\\
    result = GetWindowData( *message )
    
    ;\\ close
@@ -227,11 +264,11 @@ Procedure CanvasEvents( )
    
    
    If EventType() = #PB_EventType_LeftButtonDown Or 
-      (EventType() = #PB_EventType_MouseMove And GetGadgetAttribute(0, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton)
+      (EventType() = #PB_EventType_MouseMove And GetGadgetAttribute(1, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton)
       
-      If StartDrawing(CanvasOutput(0))
-         x = GetGadgetAttribute(0, #PB_Canvas_MouseX)
-         y = GetGadgetAttribute(0, #PB_Canvas_MouseY)
+      If StartDrawing(CanvasOutput(1))
+         x = GetGadgetAttribute(1, #PB_Canvas_MouseX)
+         y = GetGadgetAttribute(1, #PB_Canvas_MouseY)
          Circle(x, y, 10, RGB(Random(255), Random(255), Random(255)))
          StopDrawing()
       EndIf
@@ -239,7 +276,7 @@ Procedure CanvasEvents( )
    EndIf
    
    If EventType() = #PB_EventType_RightButtonDown
-      If StartDrawing(CanvasOutput(0))
+      If StartDrawing(CanvasOutput(1))
          Box(0, 0, 200, 200, #White)
          StopDrawing()
       EndIf
@@ -248,25 +285,26 @@ EndProcedure
 
 Procedure EventClick( )
    If EventType( ) = #PB_EventType_LeftClick
-      ShowMessage( WindowID(0) )
+      ShowMessage( (0) )
    EndIf
 EndProcedure
 
 If OpenWindow( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
-   CanvasGadget(0,10,10,490, 250 )
-   BindGadgetEvent( 0, @canvasevents() )
+   CanvasGadget(1,10,10,490, 250 )
+   BindGadgetEvent( 1, @canvasevents() )
+   SetWindowData( 0, 1 )
    
    Define *showButton = ButtonGadget(#PB_Any, 600-100, 300-40, 90,30,"show")
    BindGadgetEvent( *showButton, @EventClick() )
    
-   ShowMessage( WindowID(0) )
+   ShowMessage( (0) )
    
    Define Event
    Repeat
       Event = WaitWindowEvent( )
       If Event = #PB_Event_Gadget
          If EventType( ) = #PB_EventType_LeftClick
-            If EventGadget( ) = 0
+            If EventGadget( ) = 1
                Debug "main loop canvas click event"
             EndIf
          EndIf
@@ -274,7 +312,6 @@ If OpenWindow( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #P
    Until Event = #PB_Event_CloseWindow
    
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
-; Folding = --v---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = f--8--
 ; EnableXP

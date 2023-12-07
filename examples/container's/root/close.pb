@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_leftclick
         Select GetText( EventWidget())
           Case "window_0_close"
-            If #PB_MessageRequester_Yes = MessageRequester( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWindow( ) )
             EndIf
             
@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;\\ demo main window
         If EventWindow( ) = 2
-           If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+           If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               ProcedureReturn #PB_All
            Else
               ProcedureReturn 1
@@ -87,8 +87,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 7
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
