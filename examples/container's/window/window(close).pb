@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_0_root" )
+     SetClass(widget( ), "window_0" )
      Button(10,10,200,50,"window_0_close")
      SetClass(widget( ), "window_0_close" )
      
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                              #PB_Window_MinimizeGadget |
                                              #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_1_root" )
+     SetClass(widget( ), "window_1" )
      Button(10,10,200,50,"window_1_close")
      SetClass(widget( ), "window_1_close" )
      
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                              #PB_Window_MinimizeGadget |
                                              #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_2_root" )
+     SetClass(widget( ), "window_2" )
      Button(10,10,200,50,"window_2_close")
      SetClass(widget( ), "window_2_close" )
      
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 5
+; CursorPosition = 87
+; FirstLine = 51
 ; Folding = -8
 ; EnableXP
