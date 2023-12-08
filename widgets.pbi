@@ -17227,6 +17227,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\ bind all events
       If ListSize( __events( ) )
+        Debug " -1- " + ListSize( __events( ) )
         ForEach __events( )
           PushListPosition( __events( ) )
           If __events( )\type <> #__event_MouseMove And
@@ -17240,16 +17241,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           ;\\ 
           If __events( )\type = #__event_Close
-            ;\\
-            Select Send( __events( )\widget, __events( )\type, __events( )\item, __events( )\data )
-              Case 0
-                Close( __events( )\widget )
-                
-                ;\\ close all windows
-              Case #PB_All 
-                Close( #PB_All )
-                
-            EndSelect
+             ;\\
+             Select Send( __events( )\widget, __events( )\type, __events( )\item, __events( )\data )
+                Case 0
+                   Close( __events( )\widget )
+                   
+                   ;\\ close all windows
+                Case #PB_All 
+                   Close( #PB_All )
+                   
+             EndSelect
+             
           Else
             Send( __events( )\widget, __events( )\type, __events( )\item, __events( )\data )
           EndIf
@@ -17566,7 +17568,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If ( *this\root\events( )\type = #PB_All Or *this\root\events( )\type = eventtype ) And
                  ( *this\root\events( )\item = #PB_All Or *this\root\events( )\item = *button )
                 
-                result = *this\root\events( )\function( )
+                 result = *this\root\events( )\function( )
                 
                 If result
                   Break
@@ -21447,7 +21449,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_Window_TitleBar | #PB_Window_WindowCentered, *parent)
       ;          
       ;\\ 3)
-      Redraw( root( ) ) 
       Define newflag = #PB_Window_TitleBar|#PB_Window_WindowCentered|#PB_Window_Invisible
       *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\root\canvas\window ))
       HideWindow( *message\root\canvas\window, 0 )
@@ -21625,7 +21626,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       SetClass( *message, #PB_Compiler_Procedure )
       Sticky( *message, #True )
-      Redraw( *message\root )
+      
+      ; Redraw( *parent\root ) 
+      ; Redraw( *message\root )
       
       ;\\
       WaitQuit( *message )
@@ -22346,6 +22349,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ry-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17229
+; FirstLine = 17219
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------+ry-------
 ; EnableXP
