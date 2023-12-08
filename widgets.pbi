@@ -21439,8 +21439,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_Window_TitleBar | #PB_Window_WindowCentered, *parent)
          ;          
          ;\\ 3)
-         Disable( *parent\root, 1 )
-         Redraw( *parent\root ) 
          Define newflag = #PB_Window_TitleBar|#PB_Window_WindowCentered|#PB_Window_Invisible
          *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\root\canvas\window ))
          HideWindow( *message\root\canvas\window, 0 )
@@ -21621,7 +21619,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Redraw( *message\root )
          
          ;\\
+         Disable( *parent\root, 1 )
+         Redraw( *parent\root ) 
+         
+         ;\\
          WaitQuit( *message )
+         
+         ;\\
+         Disable( *parent\root, 0 )
+         Redraw( *parent\root ) 
          
          ;\\
          FreeImage( img )
@@ -22335,6 +22341,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 21628
-; FirstLine = 21350
+; FirstLine = 21352
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--0-------------------------------------------------------------------------------------------------------------------vq9-------
 ; EnableXP
