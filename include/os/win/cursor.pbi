@@ -6,7 +6,7 @@ Module Cursor
   
   Procedure   Proc(hWnd, uMsg, wParam, lParam)
     Protected result
-    Protected oldproc = GetProp_(hWnd, "#__oldproc")
+    Protected oldproc = GetProp_(hWnd, "#__oldproc_cursor")
     
     Select uMsg
       Case #WM_DESTROY
@@ -14,7 +14,7 @@ Module Cursor
 ;       Case #WM_NCDESTROY
 ;         Debug "event( NC_DESTROY ) "+hwnd
         RemoveProp_(hwnd, "#__cursor")
-        RemoveProp_(hwnd, "#__oldproc")
+        RemoveProp_(hwnd, "#__oldproc_cursor")
         
       Case #WM_SETCURSOR
         ; Debug " -  #WM_SETCURSOR "+wParam +" "+ lParam +" "+ Mouse::Gadget(Mouse::Window( ))
@@ -311,7 +311,7 @@ Module Cursor
           *memory = AllocateStructure( _s_cursor )
           \windowID = ID::GetWindowID( GadgetID )
           SetProp_( GadgetID, "#__cursor", *memory ) 
-          SetProp_( GadgetID, "#__oldproc", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+          SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
         EndIf
         
         If \type <> *cursor
