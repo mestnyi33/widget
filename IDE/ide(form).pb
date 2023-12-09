@@ -69,7 +69,8 @@ EndEnumeration
 
 ;- GLOBALs
 Global window_ide, 
-       canvas_ide
+       canvas_ide,
+       root_ide
 
 Global Splitter_ide, 
        Splitter_design, 
@@ -504,6 +505,13 @@ Procedure widget_events( )
 ;    Static *beforeWidget
    
    Select eventtype 
+      Case #__event_Close
+        ProcedureReturn 1
+      Case #__event_Minimize
+        ProcedureReturn 1
+      Case #__event_Maximize
+        ProcedureReturn 1
+        
       Case #__event_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
@@ -777,15 +785,17 @@ Procedure ide_events( )
    
    Select e_type
       Case #__event_Close
-         ; bug при отмене выбора закрыть
-         If #PB_MessageRequester_Yes = Message( "Message", 
-                                                         "Are you sure you want to go out?",
-                                                         #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+        If *ew = root_ide
+          ; bug при отмене выбора закрыть
+          If #PB_MessageRequester_Yes = Message( "Message", 
+                                                 "Are you sure you want to go out?",
+                                                 #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn 0
-         Else
+          Else
             ProcedureReturn 1
-         EndIf
-         
+          EndIf
+        EndIf
+       
       Case #__event_DragStart
          If *ew = id_elements_tree
             a_transform( )\type = 0
@@ -988,9 +998,9 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   Define root = widget::Open( 1, x,y,width,height, "ide", flag ) 
-   window_ide = widget::GetWindow( root )
-   canvas_ide = widget::GetGadget( root )
+   root_ide = widget::Open( 1, x,y,width,height, "ide", flag ) 
+   window_ide = widget::GetWindow( root_ide )
+   canvas_ide = widget::GetGadget( root_ide )
    
 ;    Debug "create window - "+WindowID(window_ide)
 ;    Debug "create canvas - "+GadgetID(canvas_ide)
@@ -1134,7 +1144,7 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    Bind( id_elements_tree, @ide_events( ), #__event_MouseLeave )
    
    
-   Bind( root, @ide_events( ), #__event_Close )
+   Bind( root_ide, @ide_events( ), #__event_Close )
    ProcedureReturn window_ide
 EndProcedure
 
@@ -1266,8 +1276,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 779
-; FirstLine = 751
-; Folding = ---------vf----------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------vf-----------
 ; EnableXP

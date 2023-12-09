@@ -11940,7 +11940,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; close state
          If state = #__Window_Close
-            If is_root_(*window )
+            If is_root_( *window )
                PostEvent( #PB_Event_CloseWindow, *window\root\canvas\window, *window )
             Else 
                If Not Post( *window, #__event_close )
@@ -11952,6 +11952,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; restore state
          If state = #__Window_Normal
             If Not Send( *window, #__event_restore )
+               *window\resize | #__resize_restore
                If *window\resize & #__resize_minimize
                   *window\resize & ~ #__resize_minimize
 ;                   *window\CloseButton( )\state\hide    = 0
@@ -11962,7 +11963,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   *window\MaximizeButton( )\state\hide = 0
                EndIf
                
-               *window\resize | #__resize_restore
                Resize( *window, 
                        *window\x[#__c_restore],
                        *window\y[#__c_restore],
@@ -17217,7 +17217,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Case #PB_All 
                         Close( #PB_All )
                         
-                  EndSelect
+                    EndSelect
                Else
                   Send( __widget, __type, __item, __data )
                EndIf
@@ -17490,9 +17490,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         result = *this\events( )\function( )
                         
                         If result
-                           Break
+                          If result <> #PB_Ignore And eventtype = #__event_Close
+                            ProcedureReturn result
+                          Else
+                            Break
+                          EndIf
                         EndIf
-                     EndIf
+                      EndIf
                   Next
                EndIf
                
@@ -17508,10 +17512,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            result = *this\window\events( )\function( )
                            
                            If result
-                              Break
+                             If result <> #PB_Ignore And eventtype = #__event_Close
+                               ProcedureReturn result
+                             Else
+                               Break
+                             EndIf
                            EndIf
-                        EndIf
-                     Next
+                         EndIf
+                       Next
                   EndIf
                EndIf
             EndIf
@@ -17524,9 +17532,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ( *this\root\events( )\item = #PB_All Or *this\root\events( )\item = *button )
                         
                         result = *this\root\events( )\function( )
-                        
+                  
                         If result
-                           Break
+                          If result <> #PB_Ignore And eventtype = #__event_Close
+                            ProcedureReturn result
+                          Else
+                            Break
+                          EndIf
                         EndIf
                      EndIf
                   Next
@@ -17545,7 +17557,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             WidgetEvent( )\type   = #PB_All
             WidgetEvent( )\item   = #PB_All
             WidgetEvent( )\data   = #Null
-            
          EndIf
          
          ProcedureReturn result
@@ -22367,8 +22378,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17727
-; FirstLine = 17548
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---+-v-b+0------------------------------------------------+--------------------------------------------------------------vq9-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d8------------------------------------------------------------------------------------------------------------------------------------------------------------4--0fzv------------------------------------------------44-----------------f27f--f8--fr4--8---fq------------------------Vl-------
 ; EnableXP
