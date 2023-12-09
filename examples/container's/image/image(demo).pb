@@ -26,79 +26,79 @@ UseLib(widget)
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  
-  Global.i gEvent, gQuit
-  Global *Image, *Button, *ComboBox
-  
-  UsePNGImageDecoder()
-  
-  If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")  ;  "/Users/as/Desktop/Снимок экрана 2018-12-29 в 21.35.28.png") ; 
-    End
-  EndIf
-  
-  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-    End
-  EndIf
-  
-  Procedure Window_0_widget_events( )
-    Select EventWidget( )
-      Case *Button
-        SetState( *Image, GetState( *Button ) )
-        
-      Case *ComboBox
-        SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
-        
-    EndSelect
-  EndProcedure
-  
-  Procedure Window_0_Resize( )
-    Protected width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
-    Protected height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
-    
-    Resize(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
-    Resize(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
-    Resize(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
-  EndProcedure
-  
-  Procedure Window_0( )
-    If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-      *Image = Image(10, 10, 230,  225, 10)
+   EnableExplicit
+   
+   Global.i gEvent, gQuit
+   Global *Image, *Button, *ComboBox
+   
+   UsePNGImageDecoder()
+   
+   If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")  ;  "/Users/as/Desktop/Снимок экрана 2018-12-29 в 21.35.28.png") ; 
+      End
+   EndIf
+   
+   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+      End
+   EndIf
+   
+   Procedure Window_0_widget_events( )
+      Select EventWidget( )
+         Case *Button
+            SetState( *Image, GetState( *Button ) )
+            
+         Case *ComboBox
+            SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
+            
+      EndSelect
+   EndProcedure
+   
+   Procedure Window_0_Resize( )
+      Protected width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
+      Protected height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
       
-      *Button = Button( 5,   245, 240,  25, "change image", #PB_Button_Toggle)
-      *ComboBox = ComboBox( 5,   245+30, 240,  30)
-      AddItem(*ComboBox, -1, "Default")
-      AddItem(*ComboBox, -1, "Center")
-      AddItem(*ComboBox, -1, "Mosaic")
-      AddItem(*ComboBox, -1, "Stretch")
-      AddItem(*ComboBox, -1, "Proportionally")
-      SetState(*ComboBox, 0)
+      Resize(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
+      Resize(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
+      Resize(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
+   EndProcedure
+   
+   Procedure Window_0( )
+      If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+         *Image = Image(10, 10, 230,  225, 10)
+         
+         *Button = Button( 5,   245, 240,  25, "change image", #PB_Button_Toggle)
+         *ComboBox = ComboBox( 5,   245+30, 240,  30)
+         AddItem(*ComboBox, -1, "Default")
+         AddItem(*ComboBox, -1, "Center")
+         AddItem(*ComboBox, -1, "Mosaic")
+         AddItem(*ComboBox, -1, "Stretch")
+         AddItem(*ComboBox, -1, "Proportionally")
+         SetState(*ComboBox, 0)
+         
+         Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
+         Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
+         
+         SetAlignment(*Image, 0, 1,1,1,1 )
+         SetAlignment(*Button, 0, 1,0,1,1 )
+         SetAlignment(*ComboBox, 0, 1,0,1,1 )
+         
+         ; Resize( root(), 0, 0, 450, 610)
+      EndIf
+   EndProcedure
+   
+   Window_0()
+   
+   Repeat
+      gEvent= WaitWindowEvent()
       
-      Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
-      Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
+      Select gEvent
+         Case #PB_Event_CloseWindow
+            gQuit= #True
+      EndSelect
       
-      SetAlignment(*Image, 0, 1,1,1,1 )
-      SetAlignment(*Button, 0, 1,0,1,1 )
-      SetAlignment(*ComboBox, 0, 1,0,1,1 )
-      
-     ; Resize( root(), 0, 0, 450, 610)
-    EndIf
-  EndProcedure
-  
-  Window_0()
-  
-  Repeat
-    gEvent= WaitWindowEvent()
-    
-    Select gEvent
-      Case #PB_Event_CloseWindow
-        gQuit= #True
-    EndSelect
-    
-  Until gQuit
+   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
+; CursorPosition = 65
 ; FirstLine = 60
 ; Folding = --
 ; EnableXP

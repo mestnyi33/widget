@@ -505,13 +505,12 @@ Procedure widget_events( )
 ;    Static *beforeWidget
    
    Select eventtype 
-      Case #__event_Close
-        ProcedureReturn 1
-      Case #__event_Minimize
-        ProcedureReturn 1
-      Case #__event_Maximize
-        ProcedureReturn 1
-        
+         ; disable window-toolbar-buttons events
+      Case #__event_Close, 
+           #__event_Minimize,
+           #__event_Maximize
+         ProcedureReturn 1
+         
       Case #__event_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
@@ -1276,6 +1275,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 510
+; FirstLine = 500
 ; Folding = ---------vf-----------
 ; EnableXP

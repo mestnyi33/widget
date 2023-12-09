@@ -695,6 +695,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *window._s_WIDGET
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
+         main.b                   ; is root
       EndStructure
       
       ;--     CANVAS
@@ -727,6 +728,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          repaint.b
          *drawing                      ;
          *opened._s_WIDGET             ; last-list opened element
+         *widget._s_WIDGET             ; start enumerate widget
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -751,7 +753,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 735
-; FirstLine = 599
+; CursorPosition = 697
+; FirstLine = 559
 ; Folding = ---PP7D+--
 ; EnableXP
