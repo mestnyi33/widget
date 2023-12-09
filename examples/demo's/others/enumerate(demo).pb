@@ -31,26 +31,26 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    
    Debug "--- enumerate all widgets ---"
    If StartEnumerate( root( ) )
-      If is_window_( widget() )
-         Debug "     window "+ Widget()\index
+      If is_window_( enumWidget() )
+         Debug "     window "+ enumWidget()\index
       Else
-         Debug "       gadget - "+ Widget()\index
+         Debug "       gadget - "+ enumWidget()\index
       EndIf
       StopEnumerate( )
    EndIf
    
    Debug "--- enumerate all gadgets ---"
    If StartEnumerate( root( ) )
-      If Not is_window_( widget( ) )
-         Debug "     gadget - "+widget( )\index
+      If Not is_window_( enumWidget( ) )
+         Debug "     gadget - "+enumWidget( )\index
       EndIf
       StopEnumerate( )
    EndIf
    
    Debug "--- enumerate all windows ---"
    If StartEnumerate( root( ) )
-      If is_window_( widget( ) )
-         Debug "     window " + widget( )\index
+      If is_window_( enumWidget( ) )
+         Debug "     window " + enumWidget( )\index
       EndIf
       StopEnumerate( )
    EndIf
@@ -60,7 +60,7 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    
    Debug "--- enumerate all (window="+ Str(index) +") gadgets ---"
    If StartEnumerate( *parent )
-      Debug "     gadget - "+ widget( )\index
+      Debug "     gadget - "+ enumWidget( )\index
       StopEnumerate( )
    EndIf
    
@@ -70,7 +70,7 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    
    Debug "--- enumerate all (gadget="+ Str(index) +") (item="+Str(item)+") gadgets ---"
    If StartEnumerate( *parent, item )
-      Debug "     gadget - "+ widget( )\index
+      Debug "     gadget - "+ enumWidget( )\index
       StopEnumerate( )
    EndIf
    
@@ -78,6 +78,7 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
+; CursorPosition = 67
+; FirstLine = 40
 ; Folding = --
 ; EnableXP
