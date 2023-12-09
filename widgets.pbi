@@ -271,8 +271,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro VisibleFirstRow( ): row\visible\first: EndMacro
       Macro VisibleLastRow( ): row\visible\last: EndMacro
       
+      ;-
       Macro EnteredButton( ): mouse( )\entered\button: EndMacro
       Macro PressedButton( ): mouse( )\pressed\button: EndMacro
+      Macro Leaved( _address_ )
+         Bool( _address_\state\enter = #True )
+         If _address_\state\enter = #True
+            _address_\state\enter = #False
+            
+            If _address_\color\state = #__S_1
+               _address_\color\state = #__S_0
+            EndIf
+         EndIf
+      EndMacro
       
       ;-
       Macro FirstWidget( ): first\widget: EndMacro
@@ -12000,9 +12011,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                If *window\MinimizeButton( )\state\hide = 0
                ;                   *window\MaximizeButton( )\state\hide = 1
                ;                EndIf
-               Resize( *window, 0, 0, 
-                       *window\parent\container_width( ) - *window\fs * 2, 
-                       *window\parent\container_height( ) - *window\fs * 2 - *window\fs[2] )
+               Resize( *window, *window\bs-*window\fs, *window\bs-*window\fs, 
+                       *window\parent\container_width( ) - *window\bs * 2, 
+                       *window\parent\container_height( ) - *window\bs * 2 - *window\fs[2] )
                
                ;                If is_root_( *window )
                ;                   PostEvent( #PB_Event_MaximizeWindow, *window\root\canvas\window, *window )
@@ -12032,9 +12043,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Resize( *window,
                        *window\x[#__c_restore],
-                       *window\parent\container_height( ) - *window\fs * 2 - *window\fs[2],
+                       *window\parent\container_height( ) - *window\bs * 2 - *window\fs[2] + (*window\bs-*window\fs),
                        *window\width[#__c_restore],
-                       *window\fs * 2 - *window\fs[2] )
+                       *window\bs * 2 - *window\fs[2] )
                
 ;                If is_root_( *window )
 ;                   PostEvent( #PB_Event_MinimizeWindow, *window\root\canvas\window, *window )
@@ -17319,11 +17330,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          DrawingStart( *root\canvas\gadget )
          If Drawing( )
-            If test_startdrawing = - 1
-               ;   Debug "  DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) +" "+ *this\class
-            EndIf
-            
-            ;\\
             If Not ( a_transform( ) And a_transform( )\grab )
                   ;\\
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -17340,8 +17346,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   CompilerEndIf
                   ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
                   
-                  Draw( *root)
+                  ;\\
+                  Draw( *root )
                   
+                  ;\\
                   If Not ( *root\autosize And
                            *root\haschildren = 0 )
                      ;\\
@@ -17821,25 +17829,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
             If *widget\type = #__type_Window
                If Not mouse( )\press
-                  EnteredButton( ) = #Null
-                  
-                  If is_atpoint_( *widget\caption, mouse_x, mouse_y, [2] )
-                     *widget\caption\interact = 1
+                  If EnteredButton( )
+                     If Leaved( EnteredButton( ) )
+                        *widget\repaint = #True
+                     EndIf
+                     EnteredButton( ) = #Null
                   EndIf
                   
-                  ; close button
+                  ;\\ close button
                   If is_atpoint_( *widget\CloseButton( ), mouse_x, mouse_y )
                      EnteredButton( ) = *widget\CloseButton( )
                   EndIf
                   
-                  ; maximize button
+                  ;\\ maximize button
                   If is_atpoint_( *widget\MaximizeButton( ), mouse_x, mouse_y )
                      EnteredButton( ) = *widget\MaximizeButton( )
                   EndIf
                   
-                  ; minimize button
+                  ;\\ minimize button
                   If is_atpoint_( *widget\MinimizeButton( ), mouse_x, mouse_y )
                      EnteredButton( ) = *widget\MinimizeButton( )
+                  EndIf
+                  
+                  ;\\
+                  If Not EnteredButton( )
+                     If is_atpoint_( *widget\caption, mouse_x, mouse_y, [2] )
+                        *widget\caption\interact = 1
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -18014,13 +18030,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If EnteredButton( )
                   ; If Not mouse( )\press
-                  If EnteredButton( )\state\enter = #True
-                     EnteredButton( )\state\enter = #False
-                     
-                     If EnteredButton( )\color\state = #__S_1
-                        EnteredButton( )\color\state = #__S_0
-                     EndIf
-                     
+                  If Leaved( EnteredButton( ) )
                      *widget\repaint = #True
                   EndIf
                   EnteredButton( ) = #Null
@@ -18266,13 +18276,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If EnteredButton( ) <> *EnteredButton
             If Not ( a_transform( ) And a_index( ))
                If EnteredButton( )
-                  If EnteredButton( )\state\enter = #True
-                     EnteredButton( )\state\enter = #False
-                     
-                     If EnteredButton( )\color\state = #__S_1
-                        EnteredButton( )\color\state = #__S_0
-                     EndIf
-                     
+                  If Leaved( EnteredButton( ) )
                      *this\repaint = #True
                   EndIf
                EndIf
@@ -19467,7 +19471,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If eventtype = #__event_LeftClick
+                  If eventtype = #__event_Left2Click ;And Not *this\anchors
+                     If *this\caption\interact
+                        If Not *this\resize & #__resize_maximize
+                           ProcedureReturn Window_SetState( *this, #__window_maximize )
+                        Else
+                           ProcedureReturn Window_SetState( *this, #__window_normal )
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  If eventtype = #__event_LeftClick ;And Not *this\anchors
                      Select EnteredButton( ) 
                            ; close button
                         Case *this\CloseButton( )
@@ -22477,7 +22491,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21375
-; FirstLine = 21146
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----m--------------------------------------------------v------------------q----------v-------U---vX8-------------------q9-------
+; CursorPosition = 17349
+; FirstLine = 17318
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------v----m-------------------------------------------------ff------------------v7----------8------P2---82+------------------vK-------
 ; EnableXP

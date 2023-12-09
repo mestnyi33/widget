@@ -506,9 +506,7 @@ Procedure widget_events( )
    
    Select eventtype 
          ; disable window-toolbar-buttons events
-      Case #__event_Close, 
-           #__event_Minimize,
-           #__event_Maximize
+      Case #__event_Close ;, #__event_Minimize, #__event_Maximize
          ProcedureReturn 1
          
       Case #__event_DragStart
@@ -1276,7 +1274,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 510
+; CursorPosition = 508
 ; FirstLine = 500
 ; Folding = ---------vf-----------
 ; EnableXP
