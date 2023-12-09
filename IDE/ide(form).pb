@@ -777,7 +777,8 @@ Procedure ide_events( )
    
    Select e_type
       Case #__event_Close
-         If #PB_MessageRequester_Yes = MessageRequester( "Message", 
+         ; bug при отмене выбора закрыть
+         If #PB_MessageRequester_Yes = Message( "Message", 
                                                          "Are you sure you want to go out?",
                                                          #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn 0
