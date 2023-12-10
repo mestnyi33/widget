@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 3
+; CursorPosition = 61
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

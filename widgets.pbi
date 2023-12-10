@@ -21149,10 +21149,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                is_window = #True
             Else
                If is_root_( *window )
-                  ;If *window\parent Or *window\main > 0
-                     *window = *window\root\canvas\window
-                     is_window = #True
-                  ;EndIf
+                  *window = *window\root\canvas\window
+                  is_window = #True
                EndIf
             EndIf
          EndIf
@@ -21217,7 +21215,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next  
          Else
             If is_widget_( *window )
-               Free( *window )
+               If Free( *window )
+                  __gui\quit = 1 
+               EndIf
             EndIf
          EndIf
          
@@ -21399,6 +21399,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
                   ResetMap( enumRoot( ) )
                   Debug " FREE - "+*this\class
+               EndIf
+               
+               If Not MapSize( EnumRoot( ) )
+                  __gui\quit = 1 
                EndIf
                
                ProcedureReturn 1
@@ -22513,7 +22517,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21175
-; FirstLine = 21144
+; CursorPosition = 21405
+; FirstLine = 21379
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
