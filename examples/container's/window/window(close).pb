@@ -19,7 +19,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "Button_1_close"
             ; Close( EventWindow( )\window )
             ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-            Post( EventWidget( )\window, #__event_Close )
+             
+             ;Close( EventWidget( )\window )
+             Post( EventWidget( )\window, #__event_Close )
             
           Case "Button_2_close"
             If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -93,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 49
+; CursorPosition = 22
+; FirstLine = 5
 ; Folding = --
 ; EnableXP

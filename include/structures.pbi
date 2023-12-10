@@ -728,7 +728,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          repaint.b
          *drawing                      ;
          *opened._s_WIDGET             ; last-list opened element
-         *widget._s_WIDGET             ; start enumerate widget
+         
+         *__widget._s_WIDGET             ; start enumerate widget
+         *__root._s_ROOT
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -753,7 +755,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 697
-; FirstLine = 559
+; CursorPosition = 733
+; FirstLine = 601
 ; Folding = ---PP7D+--
 ; EnableXP

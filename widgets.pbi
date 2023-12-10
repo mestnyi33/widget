@@ -211,7 +211,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;Macro Root( ): widget::__gui\roots( ): EndMacro
-      Macro Root( ): widget::*roots( ): EndMacro
+      Macro EnumRoot( ): widget::*roots( ): EndMacro
+      Macro Root( ): widget::__gui\__root: EndMacro
+      ;Macro Root( ): widget::*roots( ): EndMacro
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro Mouse( ): widget::__gui\mouse: EndMacro
@@ -322,8 +324,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro CurrentRoot( )
+         If MapKey( enumRoot( ) ) = ""
+            ResetMap( enumRoot( ) )
+            NextMapElement( enumRoot( ) )
+            Root( ) = enumRoot( )
+         EndIf
+      EndMacro
       Macro ChangeCurrentRoot( _canvas_gadget_address_ )
-         FindMapElement( widget::Root( ), Str( _canvas_gadget_address_ ) )
+         FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
+         widget::Root( ) = widget::enumRoot( )
       EndMacro
       
       Macro PostEventCanvasRepaint( _root_, _data_ = #Null )
@@ -396,7 +406,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro caption_inner_width( ): caption\width[#__c_inner]: EndMacro
       
       ;-
-      Macro EnumWidget( ): Root( )\children( ): EndMacro       ; temp
+      ;Macro EnumWidget( ): Root( )\children( ): EndMacro       ; temp
+      Macro EnumWidget( ): __gui\__widget: EndMacro       ; temp
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
          Bool( _parent_\haschildren )
          
@@ -17680,11 +17691,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Bind( *this._S_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
          ;
          If *this = #PB_All
-            PushMapPosition(Root( ))
-            ForEach Root( )
-               Bind( Root( ), *callback, eventtype, item )
+            PushMapPosition(enumRoot( ))
+            ForEach enumRoot( )
+               Bind( enumRoot( ), *callback, eventtype, item )
             Next
-            PopMapPosition(Root( ))
+            PopMapPosition(enumRoot( ))
             ProcedureReturn #PB_All
          EndIf
          
@@ -17716,11 +17727,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Unbind( *this._S_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
          
          If *this = #PB_All
-            PushMapPosition(Root( ))
-            ForEach Root( )
-               UnBind( Root( ), *callback, eventtype, item )
+            PushMapPosition(enumRoot( ))
+            ForEach enumRoot( )
+               UnBind( enumRoot( ), *callback, eventtype, item )
             Next
-            PopMapPosition(Root( ))
+            PopMapPosition(enumRoot( ))
             ProcedureReturn #PB_All
          EndIf
          
@@ -20029,14 +20040,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If IsGadget( eventgadget ) And
                   GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                   
-                  PushMapPosition( Root( ) )
+                  ;PushMapPosition( enumRoot( ) )
                   If ChangeCurrentRoot( GadgetID( eventgadget ) )
                      If Root( )\canvas\repaint = 1
                         ReDraw( Root( ) )
                         Root( )\canvas\repaint = 0
                      EndIf
                   EndIf
-                  PopMapPosition( Root( ) )
+                  ;PopMapPosition( enumRoot( ) )
                   
                   ;\\
                   If Not mouse( )\interact
@@ -20159,7 +20170,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PushMapPosition( Root( ) )
+               ;PushMapPosition( enumRoot( ) )
                If ChangeCurrentRoot( GadgetID( eventgadget ) )
                   If Root( )\type = #__type_window
                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
@@ -20168,7 +20179,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ReDraw( Root( ) )
                EndIf
-               PopMapPosition( Root( ) )
+               ;PopMapPosition( enumRoot( ) )
             EndIf
             
             ;\\
@@ -20729,7 +20740,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected w, g, UseGadgetList, result
          
          ; init
-         If Not MapSize(Root( ))
+         If Not MapSize( enumRoot( ) )
             events::SetCallback( @EventHandler( ) )
          EndIf
          
@@ -20792,9 +20803,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         If Not ChangeCurrentRoot(g)
-            result            = AddMapElement( Root( ), Str( g ) )
-            Root( )           = AllocateStructure( _S_root )
+         If Not FindMapElement( enumRoot( ), Str( g ) ) ; ChangeCurrentRoot(g)
+            result            = AddMapElement( enumRoot( ), Str( g ) )
+            enumRoot( )       = AllocateStructure( _S_root )
+            Root( )           = enumRoot( )
             Root( )\type      = #__type_Container
             Root( )\container = #True
             
@@ -20895,7 +20907,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Opened( )
             Protected *root._s_root = Opened( )\root
          EndIf
-         Protected MapSize = MapSize( root( ) )
+         Protected MapSize = MapSize( enumRoot( ) )
          
          With *this
             Static pos_x.l, pos_y.l
@@ -21081,7 +21093,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
          
-         If MapSize(Root( ))
+         If MapSize( enumRoot( ) )
             Protected canvas = Root( )\canvas\gadget
          EndIf
          
@@ -21129,17 +21141,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                is_window = #True
             Else
                If is_root_( *window )
-                  If *window\parent
+                  ;If *window\parent Or *window\main > 0
                      *window = *window\root\canvas\window
                      is_window = #True
-                  EndIf
+                  ;EndIf
                EndIf
             EndIf
          EndIf
          
          ;\\
          If is_window 
-            ForEach Root( )
+            ForEach enumRoot( )
+               Root( ) = enumRoot( )
                window = Root( )\canvas\window
                canvas = Root( )\canvas\gadget
                
@@ -21200,11 +21213,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If MapKey( Root( ) ) = ""
-            ResetMap( Root( ) )
-            NextMapElement( Root( ) )
-         EndIf
-         
+         CurrentRoot( )
+            
          ProcedureReturn window
       EndProcedure
       
@@ -21374,8 +21384,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;ClearStructure( *this, _S_WIDGET )
                
                If *this = Root( )
-                  DeleteMapElement( Root( ), MapKey( Root( ) ) )
-                  ResetMap( Root( ) )
+                  DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
+                  ResetMap( enumRoot( ) )
                   Debug " free - "+*this\class
                EndIf
                
@@ -21390,11 +21400,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          ;\\
-         If MapSize( Root( ) )
-            If MapKey( Root( ) ) = ""
-               ResetMap( Root( ) )
-               NextMapElement( Root( ) )
-            EndIf
+         If MapSize( enumRoot( ) )
+            ;\\
+            CurrentRoot( )
             
             Repeat
                Select WaitWindowEvent( waittime )
@@ -21421,15 +21429,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndSelect
                      
                      ;\\
-                     Debug "MapSize "+MapSize( Root( ) )  ;\\  
-                     If Not MapSize( Root( ) ) 
+                     Debug "MapSize "+MapSize( enumRoot( ) )  ;\\  
+                     If Not MapSize( enumRoot( ) ) 
                         Debug "---------break1--------"
                         Break
                      Else
-                        If MapKey( Root( ) ) = ""
-                           ResetMap( Root( ) )
-                           NextMapElement( Root( ) )
-                        EndIf
+                        ;\\
+                        CurrentRoot( )
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -21450,7 +21456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                EndSelect
                
-               If Not MapSize( Root( ) ) 
+               If Not MapSize( enumRoot( ) ) 
                   Debug "---------break2--------"
                   Break
                EndIf  
@@ -21588,7 +21594,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\root\canvas\window ))
          HideWindow( *message\root\canvas\window, 0 )
          SetClass( *message, #PB_Compiler_Procedure )
-         *message\parent = *message
+         ;*message\parent = *message
          
          ;\\
          If Flag & #__message_Info
@@ -21784,11 +21790,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          EventWidget( ) = *widget
          
-         If MapKey( Root( ) ) = ""
-            ResetMap( Root( ) )
-            NextMapElement( Root( ) )
-         EndIf
-         
+         ;\\
+         CurrentRoot( )
+            
          ProcedureReturn result
       EndProcedure
    EndModule
@@ -22491,7 +22495,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17349
-; FirstLine = 17318
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------v----m-------------------------------------------------ff------------------v7----------8------P2---82+------------------vK-------
+; CursorPosition = 326
+; FirstLine = 323
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------
 ; EnableXP
