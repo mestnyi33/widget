@@ -201,6 +201,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro Root( ): widget::__gui\__root: EndMacro
+      ;Macro Root( ): widget::*roots( ): EndMacro
+      ;Macro EnumRoot( ): widget::__gui\roots( ): EndMacro
+      Macro EnumRoot( ): widget::*roots( ): EndMacro
+      Macro CurrentRoot( )
+         If MapKey( enumRoot( ) ) = ""
+            ResetMap( enumRoot( ) )
+            NextMapElement( enumRoot( ) )
+            Root( ) = enumRoot( )
+         EndIf
+      EndMacro
+      Macro ChangeCurrentRoot( _canvas_gadget_address_ )
+         FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
+         widget::Root( ) = widget::enumRoot( )
+      EndMacro
+      Macro PostEventCanvasRepaint( _root_, _data_ = #Null )
+         If _root_ And
+            _root_\canvas\repaint = 0
+            _root_\canvas\repaint = 1
+            
+            If _data_ = #Null
+               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_ )
+            Else
+               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _data_ )
+            EndIf
+         EndIf
+      EndMacro
+      
+      ;-
       Macro _tabs( ): bar\_s( ): EndMacro
       ;Macro _rows( ): row\_s( ): EndMacro
       Macro _rows( ): columns( )\items( ): EndMacro
@@ -210,10 +239,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro __events( ): widget::*events( ): EndMacro
       
       ;-
-      ;Macro Root( ): widget::__gui\roots( ): EndMacro
-      Macro EnumRoot( ): widget::*roots( ): EndMacro
-      Macro Root( ): widget::__gui\__root: EndMacro
-      ;Macro Root( ): widget::*roots( ): EndMacro
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro Mouse( ): widget::__gui\mouse: EndMacro
@@ -303,6 +328,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Closed( ): last\root : EndMacro           ; 
       
       ;-
+      Macro GetActive( ): Keyboard( )\window: EndMacro   ; Returns activeed window
+      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
+      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
+      Macro CanvasMouseX( _canvas_ )
+         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+         DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
+         ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+      EndMacro
+      Macro CanvasMouseY( _canvas_ )
+         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+         DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
+         ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+      EndMacro
+      
+      ;-
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
       Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       Macro WidgetEvent( ): widget::__gui\event: EndMacro
@@ -323,46 +363,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::WaitClose( )
       EndMacro
       
-      ;-
-      Macro CurrentRoot( )
-         If MapKey( enumRoot( ) ) = ""
-            ResetMap( enumRoot( ) )
-            NextMapElement( enumRoot( ) )
-            Root( ) = enumRoot( )
-         EndIf
-      EndMacro
-      Macro ChangeCurrentRoot( _canvas_gadget_address_ )
-         FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
-         widget::Root( ) = widget::enumRoot( )
-      EndMacro
-      
-      Macro PostEventCanvasRepaint( _root_, _data_ = #Null )
-         If _root_ And
-            _root_\canvas\repaint = 0
-            _root_\canvas\repaint = 1
-            
-            If _data_ = #Null
-               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_ )
-            Else
-               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _data_ )
-            EndIf
-         EndIf
-      EndMacro
-      
-      ;-
-      Macro GetActive( ): Keyboard( )\window: EndMacro   ; Returns activeed window
-      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
-      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
-      Macro CanvasMouseX( _canvas_ )
-         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
-         DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
-         ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
-      EndMacro
-      Macro CanvasMouseY( _canvas_ )
-         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
-         DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
-         ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
-      EndMacro
       
       ;-
       Macro draw_x( ): x[#__c_draw]: EndMacro
@@ -17332,12 +17332,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Close( #PB_All )
                         
                     EndSelect
+                    ProcedureReturn 
                Else
                   Send( __widget, __type, __item, __data )
                EndIf
             Next
          EndIf
          
+          Debug GadgetID(Root( )\canvas\gadget ) 
+         
+       
          ;\\
          DrawingStart( *root\canvas\gadget )
          If Drawing( )
@@ -17560,7 +17564,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             DrawingStop( )
          EndIf
-      EndProcedure
+         
+       EndProcedure
       
       ;-
       Procedure.i Send( *this._S_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
@@ -20049,21 +20054,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;PopMapPosition( enumRoot( ) )
                   
-                  ;\\
-                  If Not mouse( )\interact
-                     If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
+                  If IsGadget( eventgadget ) And
+                     GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+                    ;\\
+                    If Not mouse( )\interact
+                      If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
                         If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
-                           If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
-                              ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-                           EndIf
+                          If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
+                            ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
+                          EndIf
                         EndIf
-                     Else
+                      Else
                         If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
-                           ChangeCurrentRoot( GadgetID( eventgadget ) )
+                          ChangeCurrentRoot( GadgetID( eventgadget ) )
                         EndIf
-                     EndIf
+                      EndIf
+                    EndIf
                   EndIf
-               EndIf
+                EndIf
                
                ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
             EndIf
@@ -21165,19 +21173,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *window = #PB_All
                   If Root( )\haschildren
-                     LastElement(Root( )\root\children( ))
+                     LastElement(Root( )\children( ))
                      Repeat
-                        If Root( )\children( )\type = #__type_window
+                        If is_window_( Root( )\children( ) )
                            window = #PB_All
                            ; Debug " free --------- " + Root( )\root\children( )\class
                            
-                           Free( Root( )\root\children( ) )
+                           Free( Root( )\children( ) )
                            
                            If Root( )\haschildren = 0
                               Break 2
                            EndIf
                            
-                        ElseIf PreviousElement( Root( )\root\children( )) = 0
+                        ElseIf PreviousElement( Root( )\children( )) = 0
                            Break
                         EndIf
                      ForEver
@@ -21200,6 +21208,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                         CocoaMessage( 0, PB(WindowID)( window ), "close" )
+                     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                        DestroyWindow_( PB(WindowID)( window ) )
                      CompilerElse 
                         CloseWindow( window )
                      CompilerEndIf
@@ -21207,34 +21217,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Next  
          Else
-            If *window > 0
+            If is_widget_( *window )
                Free( *window )
             EndIf
          EndIf
          
          ;\\
          CurrentRoot( )
-            
+         
          ProcedureReturn window
       EndProcedure
       
       ;-
       Procedure.i Free( *this._S_WIDGET )
-         If *this
-            If Not Send( *this, #__event_free )
+        If *this
+          If Not Send( *this, #__event_free )
                ; еще не проверял
                If ListSize( *this\events( ) )
                   ; Debug "free-events " + *this\events( )
                   ClearList( *this\events( ) )
                EndIf
                
-               If PopupWindow( ) = *this
-                  PopupWindow( ) = #Null
-               EndIf
-               
                ;\\
                If Not *this\parent
                   *this\parent = *this
+               EndIf
+               
+               If PopupWindow( ) = *this
+                  PopupWindow( ) = #Null
                EndIf
                
                ;\\
@@ -21283,90 +21293,92 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                If *this\parent\haschildren
-                  LastElement(*this\root\children( ))
-                  Repeat
-                     If *this\root\children( ) = *this Or IsChild( *this\root\children( ), *this )
-                        If *this\root\children( )\root\haschildren > 0
-                           *this\root\children( )\root\haschildren - 1
-                           
-                           If *this\root\children( )\parent <> *this\root\children( )\root
-                              *this\root\children( )\parent\haschildren - 1
+                 With *this\root
+                   LastElement(\children( ))
+                   Repeat
+                     If \children( ) = *this Or IsChild( \children( ), *this )
+                       If \children( )\root\haschildren > 0
+                         \children( )\root\haschildren - 1
+                         
+                         If \children( )\parent <> \children( )\root
+                           \children( )\parent\haschildren - 1
+                         EndIf
+                         
+                         If \children( )\TabBox( )
+                           If \children( )\TabBox( ) = \children( )
+                             Debug "   free - tab " + \children( )\TabBox( )\class
+                             FreeStructure( \children( )\TabBox( ) )
+                             \children( )\TabBox( ) = 0
                            EndIf
-                           
-                           If *this\root\children( )\TabBox( )
-                              If *this\root\children( )\TabBox( ) = *this\root\children( )
-                                 Debug "   free - tab " + *this\root\children( )\TabBox( )\class
-                                 FreeStructure( *this\root\children( )\TabBox( ) )
-                                 *this\root\children( )\TabBox( ) = 0
-                              EndIf
-                              *this\root\children( )\TabBox( ) = #Null
+                           \children( )\TabBox( ) = #Null
+                         EndIf
+                         
+                         If \children( )\scroll
+                           If \children( )\scroll\v
+                             Debug "   free - scroll-v " + \children( )\scroll\v\class
+                             FreeStructure( \children( )\scroll\v )
+                             \children( )\scroll\v = 0
                            EndIf
-                           
-                           If *this\root\children( )\scroll
-                              If *this\root\children( )\scroll\v
-                                 Debug "   free - scroll-v " + *this\root\children( )\scroll\v\class
-                                 FreeStructure( *this\root\children( )\scroll\v )
-                                 *this\root\children( )\scroll\v = 0
-                              EndIf
-                              If *this\root\children( )\scroll\h
-                                 Debug "   free scroll-h - " + *this\root\children( )\scroll\h\class
-                                 FreeStructure( *this\root\children( )\scroll\h )
-                                 *this\root\children( )\scroll\h = 0
-                              EndIf
-                              ; *this\root\children( )\scroll = #Null
+                           If \children( )\scroll\h
+                             Debug "   free scroll-h - " + \children( )\scroll\h\class
+                             FreeStructure( \children( )\scroll\h )
+                             \children( )\scroll\h = 0
                            EndIf
-                           
-                           If *this\root\children( )\type = #__type_Splitter
-                              If *this\root\children( )\split_1( )
-                                 Debug "   free - splitter - first " + *this\root\children( )\split_1( )\class
-                                 FreeStructure( *this\root\children( )\split_1( ) )
-                                 *this\root\children( )\split_1( ) = 0
-                              EndIf
-                              If *this\root\children( )\split_2( )
-                                 Debug "   free - splitter - second " + *this\root\children( )\split_2( )\class
-                                 FreeStructure( *this\root\children( )\split_2( ) )
-                                 *this\root\children( )\split_2( ) = 0
-                              EndIf
+                           ; \children( )\scroll = #Null
+                         EndIf
+                         
+                         If \children( )\type = #__type_Splitter
+                           If \children( )\split_1( )
+                             Debug "   free - splitter - first " + \children( )\split_1( )\class
+                             FreeStructure( \children( )\split_1( ) )
+                             \children( )\split_1( ) = 0
                            EndIf
-                           
-                           If *this\root\children( )\bounds\attach
-                              ;Debug " free - attach " +*this\root\children( )\bounds\attach\parent\class
-                              *this\root\children( )\bounds\attach\parent = 0
-                              FreeStructure( *this\root\children( )\bounds\attach )
-                              *this\root\children( )\bounds\attach = #Null
+                           If \children( )\split_2( )
+                             Debug "   free - splitter - second " + \children( )\split_2( )\class
+                             FreeStructure( \children( )\split_2( ) )
+                             \children( )\split_2( ) = 0
                            EndIf
-                           
-                           If EnteredWidget( ) = *this\root\children( )
-                              EnteredWidget( ) = 0
-                           EndIf
-                           If PressedWidget( ) = *this\root\children( )
-                              PressedWidget( ) = 0
-                           EndIf
-                           If FocusedWidget( ) = *this\root\children( )
-                              FocusedWidget( ) = 0
-                           EndIf
-                           
-                           Debug " free - " + *this\root\children( )\class
-                           If *this\root\children( )\BeforeWidget( )
-                              *this\root\children( )\BeforeWidget( )\AfterWidget( ) = *this\root\children( )\AfterWidget( )
-                           EndIf
-                           If *this\root\children( )\AfterWidget( )
-                              *this\root\children( )\AfterWidget( )\BeforeWidget( ) = *this\root\children( )\BeforeWidget( )
-                           EndIf
-                           
-                           *this\root\children( )\parent = #Null
-                           *this\root\children( )\address = #Null
-                           
-                           DeleteElement( *this\root\children( ), 1 )
-                        EndIf
-                        
-                        If *this\root\haschildren = 0
-                           Break
-                        EndIf
-                     ElseIf PreviousElement( *this\root\children( )) = 0
-                        Break
+                         EndIf
+                         
+                         If \children( )\bounds\attach
+                           ;Debug " free - attach " +\children( )\bounds\attach\parent\class
+                           \children( )\bounds\attach\parent = 0
+                           FreeStructure( \children( )\bounds\attach )
+                           \children( )\bounds\attach = #Null
+                         EndIf
+                         
+                         If EnteredWidget( ) = \children( )
+                           EnteredWidget( ) = 0
+                         EndIf
+                         If PressedWidget( ) = \children( )
+                           PressedWidget( ) = 0
+                         EndIf
+                         If FocusedWidget( ) = \children( )
+                           FocusedWidget( ) = 0
+                         EndIf
+                         
+                         Debug " free - " + \children( )\class
+                         If \children( )\BeforeWidget( )
+                           \children( )\BeforeWidget( )\AfterWidget( ) = \children( )\AfterWidget( )
+                         EndIf
+                         If \children( )\AfterWidget( )
+                           \children( )\AfterWidget( )\BeforeWidget( ) = \children( )\BeforeWidget( )
+                         EndIf
+                         
+                         \children( )\parent = #Null
+                         \children( )\address = #Null
+                         
+                         DeleteElement( \children( ), 1 )
+                       EndIf
+                       
+                       If \haschildren = 0
+                         Break
+                       EndIf
+                     ElseIf PreviousElement( \children( )) = 0
+                       Break
                      EndIf
-                  ForEver
+                   ForEver
+                 EndWith
                EndIf
                
                If EnteredWidget( ) = *this
@@ -21383,7 +21395,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;PostEventCanvasRepaint( *this\parent\root, #__event_free )
                ;ClearStructure( *this, _S_WIDGET )
                
-               If *this = Root( )
+               If *this = enumRoot( )
                   DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
                   ResetMap( enumRoot( ) )
                   Debug " free - "+*this\class
@@ -22494,8 +22506,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 326
-; FirstLine = 323
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------v------------------------------------------------
 ; EnableXP

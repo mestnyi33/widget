@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
            EndIf
         EndIf
         
-        
+         
       Case #__event_free
         Debug "free - event " + EventWidget( )\class 
         
@@ -92,8 +92,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 5
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
