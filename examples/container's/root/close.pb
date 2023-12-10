@@ -18,12 +18,11 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case "Button_1_close"
             ; Close( EventWindow( ) )
-            ; PostEvent( #PB_Event_CloseWindow, Root( )\canvas\window, #PB_Default )
-             
-            ; Close( EventWidget( )\window )
-             Post( EventWidget( )\window, #__event_Close )
-            ; Post( Root( ), #__event_Close )
-             
+            Close( EventWidget( )\window )
+            
+            ; Post( EventWidget( )\window, #__event_Close )
+             ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+              
           Case "Button_2_close"
             If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                Close( #PB_All )
@@ -92,6 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 23
+; FirstLine = 3
 ; Folding = --
 ; EnableXP

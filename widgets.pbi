@@ -206,10 +206,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;Macro EnumRoot( ): widget::__gui\roots( ): EndMacro
       Macro EnumRoot( ): widget::*roots( ): EndMacro
       Macro CurrentRoot( )
-         If MapKey( enumRoot( ) ) = ""
-            ResetMap( enumRoot( ) )
-            NextMapElement( enumRoot( ) )
-            Root( ) = enumRoot( )
+         If MapSize( enumRoot( ) ) 
+            If MapKey( enumRoot( ) ) = ""
+               ResetMap( enumRoot( ) )
+               NextMapElement( enumRoot( ) )
+               Root( ) = enumRoot( )
+            EndIf
          EndIf
       EndMacro
       Macro ChangeCurrentRoot( _canvas_gadget_address_ )
@@ -17339,9 +17341,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
          EndIf
          
-          Debug GadgetID(Root( )\canvas\gadget ) 
-         
-       
          ;\\
          DrawingStart( *root\canvas\gadget )
          If Drawing( )
@@ -18081,7 +18080,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;    DoEvents( LeavedWidget( ), #__event_StatusChange, - 1 )
                      ; EndIf
                      
-                     If LeavedWidget( )\address
+                     If Not is_root_( LeavedWidget( ) ) And LeavedWidget( )\address
                         ChangeCurrentElement( LeavedWidget( )\root\children( ), LeavedWidget( )\address )
                         Repeat
                            If LeavedWidget( )\root\children( )\haschildren And LeavedWidget( )\root\children( )\state\enter <> 0
@@ -20054,8 +20053,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;PopMapPosition( enumRoot( ) )
                   
-                  If IsGadget( eventgadget ) And
-                     GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+;                   If IsGadget( eventgadget ) And
+;                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                     ;\\
                     If Not mouse( )\interact
                       If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
@@ -20070,7 +20069,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                       EndIf
                     EndIf
-                  EndIf
+                  ;EndIf
                 EndIf
                
                ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
@@ -20825,11 +20824,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                Opened( )\root\canvas\gadget = Canvas
             ;               Root( )\root       = Opened( )\root
             ;             Else
-             Root( )\root       = Root( )
+             Root( )\root      = Root( )
             ;             EndIf
-            ;Root( )\parent     = Opened( ) 
-            Root( )\main = 1
-             
+            ;Root( )\parent    = Opened( ) 
+            Root( )\address    = result
+            Root( )\main       = 1
+            
             ; Debug "root window "+Opened( )
             Root( )\color       = _get_colors_( )
             Root( )\text\fontID = PB_( GetGadgetFont )( #PB_Default )
@@ -21173,7 +21173,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *window = #PB_All
                   If Root( )\haschildren
-                     LastElement(Root( )\children( ))
+                     LastElement( Root( )\children( ) )
                      Repeat
                         If is_window_( Root( )\children( ) )
                            window = #PB_All
@@ -21181,11 +21181,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            Free( Root( )\children( ) )
                            
-                           If Root( )\haschildren = 0
+                           If Not Root( )\haschildren
                               Break 2
                            EndIf
                            
-                        ElseIf PreviousElement( Root( )\children( )) = 0
+                        ElseIf Not PreviousElement( Root( )\children( ) )
                            Break
                         EndIf
                      ForEver
@@ -21194,6 +21194,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Break
                      EndIf
                   EndIf
+                  
+                  __gui\quit =- 1 
                EndIf
                
                ;\\
@@ -21204,15 +21206,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PressedGadget( ) =- 1 
                      FocusedGadget( ) =- 1 
                      
-                     FreeGadget( canvas )
-                     
-                     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                        CocoaMessage( 0, PB(WindowID)( window ), "close" )
-                     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                        DestroyWindow_( PB(WindowID)( window ) )
-                     CompilerElse 
+                     If __gui\quit =- 1 
+                        FreeGadget( canvas )
                         CloseWindow( window )
-                     CompilerEndIf
+                     Else
+                        PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
+                     EndIf
                   EndIf
                EndIf
             Next  
@@ -21396,9 +21395,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;ClearStructure( *this, _S_WIDGET )
                
                If *this = enumRoot( )
+                  enumRoot( )\address = #Null
                   DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
                   ResetMap( enumRoot( ) )
-                  Debug " free - "+*this\class
+                  Debug " FREE - "+*this\class
                EndIf
                
                ProcedureReturn 1
@@ -21418,36 +21418,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Repeat
                Select WaitWindowEvent( waittime )
-                  Case #PB_Event_CloseWindow
-                     Protected window, canvasID = PB(GadgetID)( PB(GetWindowData)( PB(EventWindow)( ) ) )
+                  Case #PB_Event_CloseWindow : __gui\quit =- 1
+                     Protected window = PB(EventWindow)( )
+                     Protected canvas =  PB(GetWindowData)( window ) 
                      
-                     ChangeCurrentRoot( canvasID )
-                     Debug "close.... " + Root( )\canvas\window +" "+ PB(EventWindow)( ) 
+                     If ChangeCurrentRoot( PB(GadgetID)(canvas))
+                        Debug "close.... " + Root( )\address +" "+ Root( )\canvas\window +" "+ window
+                        
+                        ;\\
+                        Select Send( Root( ), #__event_Close )
+                           Case 1
+                              If Not PB(IsWindow)( window )
+                                 Close( Root( ) )
+                              EndIf
+                              
+                           Case 0
+                              Close( window )
+                              
+                              ;\\ close all windows
+                           Case #PB_All 
+                              Close( #PB_All )
+                              
+                        EndSelect
+                     Else
+                        FreeGadget( canvas )
+                        CloseWindow( window )
+                     EndIf
                      
+                        
                      ;\\
-                     Select Send( Root( ), #__event_Close )
-                        Case 1
-                           If Not PB(IsWindow)( PB(EventWindow)( ) )
-                              Close( Root( ) )
-                           EndIf
-                           
-                        Case 0
-                           Close( PB(EventWindow)( ) )
-                           
-                           ;\\ close all windows
-                        Case #PB_All 
-                           Close( #PB_All )
-                           
-                     EndSelect
-                     
-                     ;\\
-                     Debug "MapSize "+MapSize( enumRoot( ) )  ;\\  
+                     ; Debug "MapSize "+MapSize( enumRoot( ) )  ;\\  
                      If Not MapSize( enumRoot( ) ) 
-                        Debug "---------break1--------"
-                        Break
+                        __gui\quit = 1
                      Else
                         ;\\
                         CurrentRoot( )
+                        __gui\quit = 0
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -21457,26 +21463,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #PB_Event_MaximizeWindow
                      Debug "maximize.... "
                      If Send( Root( ), #__event_Maximize )
-                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
+                        SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
                   Case #PB_Event_MinimizeWindow
                      Debug "minimize.... "
                      If Send( Root( ), #__event_Minimize )
-                        SetWindowState( PB(EventWindow)( ), #PB_Window_Normal )
+                        SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
                EndSelect
                
-               If Not MapSize( enumRoot( ) ) 
-                  Debug "---------break2--------"
-                  Break
-               EndIf  
-               
                If __gui\quit
-                  Debug "---------break3-------- " +IsWindow(Root( )\canvas\window)
+                  __gui\quit = 0
+                  Debug "---------break-QUIT-------- " +IsWindow(Root( )\canvas\window)
                   Break
                EndIf
+               If Not MapSize( enumRoot( ) ) 
+                  Debug "---------break-MAP---------"
+                  Break
+               EndIf  
             ForEver
             
             ;\\
@@ -22506,6 +22512,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------v------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21175
+; FirstLine = 21144
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
