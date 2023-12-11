@@ -16436,7 +16436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;-  DRAWINGs
-      Procedure Window_Draw( *this._S_WIDGET )
+      Procedure   Window_Draw( *this._S_WIDGET )
          Protected caption_height = *this\caption\height - *this\fs
          Protected mouse_interact_state = 1
          
@@ -16687,7 +16687,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure ListIcon_Draw( *this._S_WIDGET )
+      Procedure   ListIcon_Draw( *this._S_WIDGET )
          Protected state.b, x.l, y.l, scroll_x, scroll_y
          
          If Not *this\hide
@@ -16791,7 +16791,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure Button_Draw( *this._S_WIDGET )
+      Procedure   Button_Draw( *this._S_WIDGET )
          Protected x, y
          
          With *this
@@ -16939,7 +16939,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure Combobox_Draw( *this._S_WIDGET )
+      Procedure   Combobox_Draw( *this._S_WIDGET )
          Protected state
          Protected arrow_right
          
@@ -16990,7 +16990,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure Container_Draw( *this._S_WIDGET )
+      Procedure   Container_Draw( *this._S_WIDGET )
          Protected i
          
          With *this
@@ -17296,7 +17296,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure ReDraw( *root._S_ROOT )
+      Procedure   ReDraw( *root._S_ROOT )
          Protected __widget, __type, __item, __data
          
          ;\\ send posted events
@@ -22511,7 +22511,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16437
-; FirstLine = 15861
-; Folding = -----P+----------------n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-88X---48-------8-----v--+---++--------------------------------------------------------------------------------------0---------------------------------------------------------
+; CursorPosition = 17298
+; FirstLine = 15876
+; Folding = -----P+----------------n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-88X---48-------8-----v--+---++v----f--------------------------------------------------------------------------------0---------------------------------------------------------
 ; EnableXP
