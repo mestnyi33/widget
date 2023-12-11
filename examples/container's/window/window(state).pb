@@ -20,6 +20,25 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Restore
             Debug "restore - event " + EventWidget( )\class 
             
+            
+         Case #__event_LeftClick
+            Select GetText( EventWidget( ))
+               Case "window_0_minimize", "window_1_minimize", "window_2_minimize"
+                  If GetState( EventWidget( )\window ) = #PB_Window_Minimize
+                     SetState( EventWidget( )\window, #PB_Window_Normal )
+                  Else
+                     SetState( EventWidget( )\window, #PB_Window_Minimize )
+                  EndIf
+                  
+               Case "window_0_maximize", "window_1_maximize", "window_2_maximize"
+                  If GetState( EventWidget( )\window ) = #PB_Window_Maximize
+                     SetState( EventWidget( )\window, #PB_Window_Normal )
+                  Else
+                     SetState( EventWidget( )\window, #PB_Window_Maximize )
+                  EndIf
+               
+         EndSelect
+            
       EndSelect
    EndProcedure
    
@@ -32,10 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget )
       
       SetClass(widget( ), "window_0" )
-      Button(10,10,200,50,"window_0_minimize")
-      SetClass(widget( ), "window_0_minimize" )
-      Button(10,65,200,50,"window_0_maximize")
+      Button(10,10,200,50,"window_0_maximize")
       SetClass(widget( ), "window_0_maximize" )
+      Button(10,65,200,50,"window_0_minimize")
+      SetClass(widget( ), "window_0_minimize" )
       
       ;\\
       Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -43,10 +62,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MaximizeGadget )
       
       SetClass(widget( ), "window_1" )
-      Button(10,10,200,50,"window_1_minimize")
-      SetClass(widget( ), "window_1_minimize" )
-      Button(10,65,200,50,"window_1_maximize")
+      Button(10,10,200,50,"window_1_maximize")
       SetClass(widget( ), "window_1_maximize" )
+      Button(10,65,200,50,"window_1_minimize")
+      SetClass(widget( ), "window_1_minimize" )
       
       ;\\
       Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -54,14 +73,15 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MaximizeGadget )
       
       SetClass(widget( ), "window_2" )
-      Button(10,10,200,50,"window_2_minimize")
-      SetClass(widget( ), "window_2_minimize" )
-      Button(10,65,200,50,"window_2_maximize")
+      Button(10,10,200,50,"window_2_maximize")
       SetClass(widget( ), "window_2_maximize" )
+      Button(10,65,200,50,"window_2_minimize")
+      SetClass(widget( ), "window_2_minimize" )
       
       WaitEvent( #PB_All, @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 30
+; Folding = --
 ; EnableXP

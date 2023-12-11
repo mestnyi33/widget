@@ -279,10 +279,13 @@
       ;     #__window_sizegadget = #__flag_sizegadget
       ;     #__window_screencentered = #__align_center
       
+;       #__window_normal         = #PB_Window_Normal
+;       #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+;       #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+      
       #__window_child          = #__flag_child
-      #__window_normal         = #PB_Window_Normal
       #__window_systemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-      #__window_close          = #__window_systemMenu
+      
       #__window_minimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_systemMenu is automatically added.
       #__window_maximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_systemMenu is automatically added.
                                                            ; (MacOS only ; #PB_window_sizeGadget will be also automatically added).
@@ -293,8 +296,6 @@
       #__window_borderLess     = #PB_Window_BorderLess     ; Creates a window without any borders.
       #__window_screenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
       #__window_windowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-      #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
-      #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
       #__window_noGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
       #__window_noActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
                                                            ;     #__window_closeGadget    = #PB_window_noActivate<<2
@@ -835,6 +836,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 283
+; FirstLine = 268
 ; Folding = ---
 ; EnableXP

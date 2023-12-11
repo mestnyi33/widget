@@ -41,6 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *eventWidget = *button2 And Not *eventWidget\dragstart
           widget::Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
+          widget::Bind(widget( ), @events_widgets(), #__event_LeftButtonDown)
           widget::Bind(widget( ), @events_widgets(), #__event_MouseEnter)
           widget::Bind(widget( ), @events_widgets(), #__event_MouseLeave)
         EndIf
@@ -109,6 +110,7 @@ CompilerEndIf
 ; enter <<drag>>
 ; leave <<drag>>
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 106
+; CursorPosition = 43
+; FirstLine = 25
 ; Folding = --
 ; EnableXP

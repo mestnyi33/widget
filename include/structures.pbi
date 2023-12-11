@@ -735,8 +735,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
+         event._s_EVENTDATA            ; widgetEvent( )\ 
          
-         event._s_EVENTDATA            ; widgetEvent( )\ ; \widget ; \type ; \item ; \data
          ; List *events._s_EVENTDATA( )  ; post events list
          
          ;Map *roots._s_ROOT( )   
@@ -755,7 +755,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 744
+; CursorPosition = 737
 ; FirstLine = 603
 ; Folding = ---PP7D+--
 ; EnableXP
