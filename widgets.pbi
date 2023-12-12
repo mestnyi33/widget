@@ -13962,19 +13962,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;           *this = *this\StringBox( )
             ;         EndIf
             
+            ;\\ deactive
+            If GetActive( )
+               If is_window_( *this )
+                  SetDeactive( *this )
+               Else
+                  SetDeactive( *this\window )
+               EndIf
+            EndIf
+            
             FocusedWidget( ) = *this
             
+            ;\\
             If *this\state\focus = #False
                *this\state\focus = #True
-               
-               ; deactive
-               If GetActive( )
-                  If is_window_( *this )
-                     SetDeactive( *this )
-                  Else
-                     SetDeactive( *this\window )
-                  EndIf
-               EndIf
                
                ;// set active all parents
                If *this\address
@@ -14037,10 +14038,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; set window foreground position
                   SetForeground( GetActive( ))
-               EndIf
-            Else
-               If GetActive( )
-                  SetDeactive( *this )
                EndIf
             EndIf
             
@@ -22576,7 +22573,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13916
-; FirstLine = 13850
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvH--0q---------------------------------------------------------------------------------------------------------------------------------------------------------448------8fX0--------27f--f8----------------------------------------------
+; CursorPosition = 13975
+; FirstLine = 13912
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvH--0q---------------------------------------------------------------------------------------------------------------------------------------------------------880------0vr+--------a0v--v0----------------------------------------------
 ; EnableXP
