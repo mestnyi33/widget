@@ -37,8 +37,8 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
   ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   
-;   Bind(#PB_All, @active(), #PB_EventType_Focus)
-;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
+;   Bind(#PB_All, @active(), #__event_Focus)
+;   Bind(#PB_All, @deactive(), #__event_LostFocus)
 
   Window(10, 10, 190, 150, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   Define *string_0 = String(10,10,170,60,"string_0")
@@ -79,6 +79,7 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 40
 ; Folding = --
 ; EnableXP

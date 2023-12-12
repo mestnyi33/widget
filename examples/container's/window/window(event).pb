@@ -1,9 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
-
-
-
-
-IncludePath "../../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -15,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
          Case #__event_Create
             Debug "create - event " + EventWidget( )\class
-            
+           
          Case #__event_Focus
             Debug "focus - event " + EventWidget( )\class
             
@@ -41,6 +36,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "free - event " + EventWidget( )\class 
             
       EndSelect
+      
+     ; ProcedureReturn 1
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
@@ -85,9 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( #PB_All, @CallBack( ) )
    EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 49
+; CursorPosition = 18
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

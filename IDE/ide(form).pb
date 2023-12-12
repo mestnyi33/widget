@@ -388,7 +388,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       ; create elements
       Select class
          Case "window"    
-            If Type( *parent ) = #__Type_MDI
+            If GetType( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
                Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
             Else
@@ -1274,7 +1274,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 508
-; FirstLine = 500
+; CursorPosition = 390
+; FirstLine = 377
 ; Folding = ---------vf-----------
 ; EnableXP
