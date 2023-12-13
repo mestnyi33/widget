@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
       EndSelect
       
-     ; ProcedureReturn 1
+      ProcedureReturn 1
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 3
+; CursorPosition = 39
+; FirstLine = 21
 ; Folding = -
 ; EnableXP

@@ -13946,11 +13946,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            ; если нужно отключить событие интегрированного гаджета
+            ;\\ если нужно отключить событие интегрированного гаджета
             If Not is_window_( *this )
                If is_integral_( *this )
                   *this = *this\parent
-                  ; если он тоже встроеный
+                  
+                  ;\\ если он тоже встроеный
                   If *this\child
                      *this = *this\parent
                   EndIf
@@ -13971,6 +13972,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;\\
             FocusedWidget( ) = *this
             
             ;\\
@@ -16482,7 +16484,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-  DRAWINGs
       Procedure   Window_Draw( *this._S_WIDGET )
          Protected caption_height = *this\caption\height - *this\fs
-         Protected mouse_interact_state = 1
+         Protected mouse_interact_state = 0
          
          With *this
             ; чтобы закруглять только у окна с титлебаром
@@ -17364,26 +17366,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                   EndSelect
                   ProcedureReturn 
-               Else
                   
-                  If __type = #__event_Focus
-                     If Not *__widget\state\disable
-                        If Not Send( *__widget, __type, __item, __data )
-                           *__widget\color\state = #__s_2
-                           *__widget\repaint     = #True
-                        EndIf
-                     EndIf
-                  ElseIf __type = #__event_LostFocus
-                     If Not Send( *__widget, __type, __item, __data )
-                        If *__widget\color\state = #__s_2
-                           *__widget\color\state = #__s_3
-                           *__widget\repaint     = #True
-                        EndIf
-                     EndIf
-                  Else
-                     Send( *__widget, __type, __item, __data )
+               ElseIf #__event_Focus = __type
+                  ;                      If Not *__widget\state\disable
+                  If Not Send( *__widget, __type, __item, __data )
+                     ;                            *__widget\color\state = #__s_2
+                     ;                            *__widget\repaint     = #True
+                     DoEvents( *__widget, __type )
                   EndIf
-                  
+                  ;                      EndIf
+               ElseIf #__event_LostFocus = __type
+                  If Not Send( *__widget, __type, __item, __data )
+                     ;                         If *__widget\color\state = #__s_2
+                     ;                            *__widget\color\state = #__s_3
+                     ;                            *__widget\repaint     = #True
+                     ;                         EndIf
+                     DoEvents( *__widget, __type )
+                  EndIf
+               Else
+                  Send( *__widget, __type, __item, __data )
                EndIf
             Next
          EndIf
@@ -19405,7 +19406,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             If Not *this\state\disable
                *this\color\state = #__s_2
-               *this\repaint     = #True
+               ;*this\repaint     = #True
             EndIf
          EndIf
          
@@ -19413,7 +19414,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_LostFocus
             If *this\color\state = #__s_2
                *this\color\state = #__s_3
-               *this\repaint     = #True
+               ;*this\repaint     = #True
             EndIf
          EndIf
          
@@ -19836,17 +19837,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   EndIf
                   ;                Else
                   If eventtype = #__event_Focus
-                     ;                      If *this\show
-                     ;                         Send( *this, eventtype, *button, *data )
-                     ;                      Else
-                     Post( *this, eventtype, *button, *data )
-                     ;                      EndIf
+;                      ;                      If *this\show
+;                      ;                         Send( *this, eventtype, *button, *data )
+;                      ;                      Else
+;                      Post( *this, eventtype, *button, *data )
+;                      ;                      EndIf
                   ElseIf eventtype = #__event_LostFocus
-                     ;                      If *this\show
-                     ;                         Send( *this, eventtype, *button, *data )
-                     ;                      Else
-                     Post( *this, eventtype, *button, *data )
-                     ;                      EndIf
+;                      ;                      If *this\show
+;                      ;                         Send( *this, eventtype, *button, *data )
+;                      ;                      Else
+;                      Post( *this, eventtype, *button, *data )
+;                      ;                      EndIf
                   ElseIf eventtype = #__event_Change
                      Post( *this, eventtype, *button, *data )
                      
@@ -20913,8 +20914,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If flag & #PB_Window_NoActivate = #False
-               ; Root( )\state\focus = #True
-               ; FocusedWidget( ) = Root( )
                SetActive( Root( ) )
             EndIf
             
@@ -22566,14 +22565,14 @@ CompilerIf #PB_Compiler_IsMainFile
       y + 130
    Next
    
-   SetActive(*tree)
+   ;SetActive(*tree)
    
    ; redraw(root( ))
    ;
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13975
-; FirstLine = 13912
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvH--0q---------------------------------------------------------------------------------------------------------------------------------------------------------880------0vr+--------a0v--v0----------------------------------------------
+; CursorPosition = 16486
+; FirstLine = 16397
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvH--0q--------------------------------------------------------------------------------------------------------------------------------------------------------ffv--------d2--------Xr----t----------------------------------------------
 ; EnableXP
