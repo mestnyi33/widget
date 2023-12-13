@@ -13822,23 +13822,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ; Debug "---   "+*this\text\string
          
           Post( *this, eventtype )
-         
+          
          ; DoEvents( *this, eventtype )
       EndProcedure
       
       Procedure.i SetDeactive( *this._S_WIDGET )
-         If is_window_( *this ) Or 
-            is_root_( *this )
-            If GetActive( ) <> *this
-               If Not IsChild( *this, GetActive( ) )
-                  If GetActive( )\state\focus = #True
-                     GetActive( )\state\focus = #False
-                     DoFocusEvents( GetActive( ), #__event_LostFocus )
-                  EndIf
-               EndIf
+        If FocusedWidget( ) = *this
+          ;Debug *this\class
+          
+          If *this And
+             *this\root = Root( ) And
+             *this\state\focus = 1  
+             *this\state\focus = 0
+            
+            If Not Send( *this, #__event_LostFocus )
+              DoEvents( *this, #__event_LostFocus )
             EndIf
+          EndIf
+          
+        Else
+          If GetActive( ) <> *this
+            If is_window_( *this ) Or is_root_( *this )
+            If Not IsChild( *this, GetActive( ) )
+              If GetActive( )\state\focus = #True
+                GetActive( )\state\focus = #False
+                DoFocusEvents( GetActive( ), #__event_LostFocus )
+              EndIf
+            EndIf
+          EndIf
          EndIf
-         
+        
          ;\\ when we deactivate the window
          ;\\ we will deactivate his last active gadget
          If GetActive( )\gadget And
@@ -13920,137 +13933,162 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PopListPosition( *active\root\children( ) )
             EndIf
          EndIf
-         
-         ;\\
-         If *this\root <> GetActive( )\root
-           PostEventCanvasRepaint( GetActive( )\root )  
-         EndIf
+        EndIf
+          
+;          ;\\
+;          If *this\root <> GetActive( )\root
+;            PostEventCanvasRepaint( GetActive( )\root )  
+;          EndIf
       EndProcedure
       
       Procedure.i SetActive( *this._S_WIDGET )
          Protected result.i, *active._S_WIDGET
          
-         If *this And Not *this\state\disable
-            If *this\root And
-               GetActiveGadget( ) <> *this\root\canvas\gadget
+;          If FocusedWidget( ) = *this
+; ;             If *this And
+;               ; *this = Root( )
+; ;            
+;             
+;              If Not EnteredWidget( ) Or
+;                 ( EnteredWidget( ) And
+;                   ( *this = EnteredWidget( ) Or
+;                     *this = EnteredWidget( )\parent ) )
+;                Debug 555
+;                If *this\state\focus = 0
+;                  *this\state\focus = 1
+;                  
+;                  If Not Send( *this, #__event_Focus )
+;                    DoEvents( *this, #__event_Focus )
+;                  EndIf
+;                EndIf
+;              EndIf
+;            ;EndIf
+;            
+;          Else
+           If *this And Not *this\state\disable
+             If *this\root And
+                GetActiveGadget( ) <> *this\root\canvas\gadget
                ; SetActiveGadget( *this\root\canvas\gadget )
-            EndIf
-            
-            If a_transformer( *this )
+             EndIf
+             
+             If a_transformer( *this )
                If *this\anchors
-                  ProcedureReturn a_set( *this )
+                 ProcedureReturn a_set( *this )
                Else
-                  ProcedureReturn 0
+                 ProcedureReturn 0
                EndIf
-            EndIf
-            
-            If Popup( ) And *this = Popup( )\widget
+             EndIf
+             
+             If Popup( ) And *this = Popup( )\widget
                ; Debug " Popup( setActive ) "
                ; *this = *this\PopupBox( )
                ProcedureReturn 0
-            EndIf
-            
-            ;\\ если нужно отключить событие интегрированного гаджета
-            If Not is_window_( *this )
+             EndIf
+             
+             ;\\ если нужно отключить событие интегрированного гаджета
+             If Not is_window_( *this )
                If is_integral_( *this )
-                  *this = *this\parent
-                  
-                  ;\\ если он тоже встроеный
-                  If *this\child
-                     *this = *this\parent
-                  EndIf
+                 *this = *this\parent
+                 
+                 ;\\ если он тоже встроеный
+                 If *this\child
+                   *this = *this\parent
+                 EndIf
                EndIf
-            EndIf
-            
-            ;\\ deactive
-            If GetActive( )
-               If is_window_( *this ) Or 
-                  is_root_( *this )
-                  SetDeactive( *this )
-               Else
-                  SetDeactive( *this\window )
+             EndIf
+             
+             ;\\ deactive
+             If FocusedWidget( )
+               If FocusedWidget( ) <> *this
+                 If is_window_( *this ) Or 
+                    is_root_( *this )
+                   SetDeactive( *this )
+                 Else
+                   SetDeactive( *this\window )
+                 EndIf
                EndIf
-            EndIf
-            
-            ;\\
-            FocusedWidget( ) = *this
-            
-            ;\\
-            If *this\state\focus = #False
+             EndIf
+             
+             ;\\
+             FocusedWidget( ) = *this
+             
+             ;\\
+             If *this\state\focus = #False
                *this\state\focus = #True
                
                ;\\ set active all parents
                If *this\address
-                  If Not is_root_( *this )
-                     PushListPosition( *this\root\children( ) )
-                     ChangeCurrentElement( *this\root\children( ), *this\address )
-                     While PreviousElement( *this\root\children( ) )
-                        enumWidget( ) = *this\root\children( )
-                        
-                        If is_window_( enumWidget( ) )
-                           If IsChild( *this, enumWidget( ) ) 
-                              If enumWidget( )\state\focus = #False
-                                 enumWidget( )\state\focus = #True
-;                                  If enumWidget( )\color\state = #__s_3
-;                                     enumWidget( )\color\state = #__s_2 
-;                                     enumWidget( )\repaint = 1
-;                                  EndIf
-                                 DoFocusEvents( enumWidget( ), #__event_Focus )
-                              EndIf
-                           EndIf
-                        EndIf
-                     Wend
-                     PopListPosition( *this\root\children( ) )
-                  EndIf
+                 If Not is_root_( *this )
+                   PushListPosition( *this\root\children( ) )
+                   ChangeCurrentElement( *this\root\children( ), *this\address )
+                   While PreviousElement( *this\root\children( ) )
+                     enumWidget( ) = *this\root\children( )
+                     
+                     If is_window_( enumWidget( ) )
+                       If IsChild( *this, enumWidget( ) ) 
+                         If enumWidget( )\state\focus = #False
+                           enumWidget( )\state\focus = #True
+                           ;                                  If enumWidget( )\color\state = #__s_3
+                           ;                                     enumWidget( )\color\state = #__s_2 
+                           ;                                     enumWidget( )\repaint = 1
+                           ;                                  EndIf
+                           DoFocusEvents( enumWidget( ), #__event_Focus )
+                         EndIf
+                       EndIf
+                     EndIf
+                   Wend
+                   PopListPosition( *this\root\children( ) )
+                 EndIf
                EndIf
                
                ;\\ get active window
                If is_window_( *this ) Or 
                   is_root_( *this )
-                  GetActive( ) = *this
+                 GetActive( ) = *this
                Else
-                  If *this\child 
-                     GetActive( )        = *this\parent\window
-                     GetActive( )\gadget = *this\parent
-                  Else
-                     GetActive( )        = *this\window
-                     GetActive( )\gadget = *this
-                  EndIf
+                 If *this\child 
+                   GetActive( )        = *this\parent\window
+                   GetActive( )\gadget = *this\parent
+                 Else
+                   GetActive( )        = *this\window
+                   GetActive( )\gadget = *this
+                 EndIf
                EndIf
                
                ;\\ when we activate the gadget
                ;\\ first we activate its parent window
                If *this <> GetActive( )
-                  If GetActive( ) And ; Not is_root_( GetActive( ) ) And
-                     GetActive( )\state\focus = #False
-                     GetActive( )\state\focus = #True
-                     DoFocusEvents( GetActive( ), #__event_Focus )
-                  EndIf
+                 If GetActive( ) And ; Not is_root_( GetActive( ) ) And
+                    GetActive( )\state\focus = #False
+                   GetActive( )\state\focus = #True
+                   DoFocusEvents( GetActive( ), #__event_Focus )
+                 EndIf
                EndIf
                
                ;\\
                DoFocusEvents( *this, #__event_Focus )
                
                If GetActive( )
-                  ; when we activate the window
-                  ; we will activate his last gadget that lost focus
-                  If GetActive( )\gadget And
-                     GetActive( )\gadget\state\focus = #False
-                     GetActive( )\gadget\state\focus = #True
-                     DoFocusEvents( GetActive( )\gadget, #__event_Focus )
-                  EndIf
-                  
-                  ; set window foreground position
-                  SetForeground( GetActive( ))
+                 ; when we activate the window
+                 ; we will activate his last gadget that lost focus
+                 If GetActive( )\gadget And
+                    GetActive( )\gadget\state\focus = #False
+                   GetActive( )\gadget\state\focus = #True
+                   DoFocusEvents( GetActive( )\gadget, #__event_Focus )
+                 EndIf
+                 
+                 ; set window foreground position
+                 SetForeground( GetActive( ))
                EndIf
-            EndIf
-            
-         Else
-            If GetActive( )
+             EndIf
+             
+           Else
+             If GetActive( )
                SetDeactive( *this )
                GetActive( ) = 0
-            EndIf
-         EndIf
+             EndIf
+           EndIf
+;          EndIf
          
          ProcedureReturn #True
       EndProcedure
@@ -19406,7 +19444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             If Not *this\state\disable
                *this\color\state = #__s_2
-               ;*this\repaint     = #True
+               *this\repaint     = #True
             EndIf
          EndIf
          
@@ -19414,7 +19452,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_LostFocus
             If *this\color\state = #__s_2
                *this\color\state = #__s_3
-               ;*this\repaint     = #True
+               *this\repaint     = #True
             EndIf
          EndIf
          
@@ -20063,19 +20101,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Protected Repaint, mouse_x , mouse_y
          
-         If event = #PB_Event_ActivateWindow
-            If Not EnteredWidget( )
-               ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-               ; SetActive( FocusedWidget( ) )
-            EndIf
+         If event = #PB_Event_DeactivateWindow
+           ; Debug "#PB_Event_DeactivateWindow"
+           If FocusedWidget( )
+             ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+             SetDeactive( FocusedWidget( ) )
+           EndIf
          EndIf
          
-         If event = #PB_Event_DeactivateWindow
-            ;                If GetActive( )
-            ;                   ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-            ;                   SetDeactive( GetActive( ) )
-            ;                   Debug "EventDeActive "+GetActive( )\class
-            ;                EndIf
+         If event = #PB_Event_ActivateWindow
+           If Not EnteredWidget( )
+             ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
+             If Root( )\show ; mouse( )\press
+               SetActive( Root( ) )
+               PostEventCanvasRepaint( Root( ) )
+             EndIf
+           EndIf
          EndIf
          
          If event = #PB_Event_Gadget
@@ -22571,8 +22612,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15609
-; FirstLine = 15543
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvn---f---------------------------------------------------------------------------------------------------------------------------------------------------------+e--------8q--------vW----b--------------------0---e--4------8-n----------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-6l9------------------------------------------------------------------------------------------------------------------------------------------------------------448-------fX0--------fr-0--t--------------------+--fv--8------------------
 ; EnableXP

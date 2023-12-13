@@ -50,10 +50,10 @@ Module events
          
          If event = #PB_Event_DeactivateWindow
             ;             ; Debug " WaitEvent - DeactivateWindow"
-            ;             eventgadget = GetWindowData( EventWindow( ) )
-            ;             If IsGadget( eventgadget )
-            ;                CallFunctionFast( *setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
-            ;             EndIf
+           eventgadget = GetWindowData( EventWindow( ) )
+           If IsGadget( eventgadget )
+             CallFunctionFast( *setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
+           EndIf
          EndIf
          
          If event = #PB_Event_Gadget
@@ -84,8 +84,6 @@ Module events
    EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 54
-; FirstLine = 17
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

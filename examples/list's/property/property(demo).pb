@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    Define *Tree = widget::Tree_Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree = widget::Tree_Properties(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)

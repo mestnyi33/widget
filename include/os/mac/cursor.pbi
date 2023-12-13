@@ -514,11 +514,13 @@ Module Cursor
         CompilerEndIf
         
         *memory = objc_getAssociatedObject_( GadgetID, "__cursor" )
+        ; object_getInstanceVariable_(GadgetID, "__cursor", @*memory)
         
         If Not *memory
           *memory = AllocateStructure( _s_cursor )
           \windowID = ID::GetWindowID( GadgetID )
           objc_setAssociatedObject_( GadgetID, "__cursor", *memory, 0 ) 
+          ; object_setInstanceVariable_(GadgetID, "__cursor", *memory)
         EndIf
         
         If \type <> *cursor
@@ -626,8 +628,6 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 462
-; FirstLine = 466
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -------------
 ; EnableXP
