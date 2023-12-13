@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
-      Protected result = 1
+      Protected result = 0
       If result
          Protected text$ = "disable"
       EndIf
@@ -89,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 5
+; CursorPosition = 9
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
