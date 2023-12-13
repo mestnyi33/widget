@@ -13823,18 +13823,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetDeactive( *this._S_WIDGET )
+         Protected *active._S_WIDGET
+         
          If *this
             If GetActive( ) 
-               ;If GetActive( ) <> *this
-                  ;If is_window_( *this ) Or is_root_( *this )
-                     If Not IsChild( *this, GetActive( ) )
-                        If GetActive( )\state\focus = #True
-                           GetActive( )\state\focus = #False
-                           DoFocusEvents( GetActive( ), #__event_LostFocus )
-                        EndIf
-                     EndIf
-                  ;EndIf
-               ;EndIf
+               If Not IsChild( *this, GetActive( ) )
+                  If GetActive( )\state\focus = #True
+                     GetActive( )\state\focus = #False
+                     DoFocusEvents( GetActive( ), #__event_LostFocus )
+                  EndIf
+               EndIf
                
                ;\\ when we deactivate the window
                ;\\ we will deactivate his last active gadget
@@ -13877,14 +13875,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;\\ set deactive all parents
-               Protected *active._S_WIDGET
-               If GetActive( )\gadget And
-                  GetActive( )\gadget\address
+               ;\\
+               If GetActive( )\gadget 
                   *active = GetActive( )\gadget
-               ElseIf GetActive( )\address
+               ElseIf GetActive( )
                   *active = GetActive( )
                EndIf
+               
+               ;\\ set deactive all parents
                If *active And
                   *active\address And
                   Not is_root_( *active )
@@ -22579,7 +22577,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13835
-; FirstLine = 13814
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+zfy-----------------------------------------------------------------------------------------------------------------------------------------------------------00+-------4V---------fr-0--t--------------------+--fv--8------------------
+; CursorPosition = 13880
+; FirstLine = 13817
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy-----------------------------------------------------------------------------------------------------------------------------------------------------------00+-------4V---------fr-0--t--------------------+--fv--8------------------
 ; EnableXP
