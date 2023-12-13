@@ -13827,7 +13827,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetDeactive( *this._S_WIDGET )
-         If is_window_( *this )
+         If is_window_( *this ) Or 
+            is_root_( *this )
             If GetActive( ) <> *this
                If Not IsChild( *this, GetActive( ) )
                   If GetActive( )\state\focus = #True
@@ -13838,14 +13839,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ; when we deactivate the window
-         ; we will deactivate his last active gadget
+         ;\\ when we deactivate the window
+         ;\\ we will deactivate his last active gadget
          If GetActive( )\gadget And
             GetActive( )\gadget\state\focus = #True
             GetActive( )\gadget\state\focus = #False
             DoFocusEvents( GetActive( )\gadget, #__event_LostFocus )
             
-            ; is integral scroll bars
+            ;\\ is integral scroll bars
             If GetActive( )\gadget\scroll
                If GetActive( )\gadget\scroll\v And
                   Not GetActive( )\gadget\scroll\v\hide And
@@ -13867,7 +13868,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ; is integral tab bar
+            ;\\ is integral tab bar
             If GetActive( )\gadget\TabBox( ) And
                Not GetActive( )\gadget\TabBox( )\hide And
                GetActive( )\gadget\TabBox( )\type
@@ -13879,7 +13880,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;// set deactive all parents
+         ;\\ set deactive all parents
          Protected *active._S_WIDGET
          If GetActive( )\gadget And
             GetActive( )\gadget\address
@@ -13907,15 +13908,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;If Not IsChild( *this, enumWidget( ) )
                      If enumWidget( )\state\focus = #True
                         enumWidget( )\state\focus = #False
-                        ; If enumWidget( )\color\state = #__s_2
+;                         If enumWidget( )\color\state = #__s_2
+;                            enumWidget( )\color\state = #__s_3 
+;                            enumWidget( )\repaint = 1
+;                         EndIf
                         DoFocusEvents( enumWidget( ), #__event_LostFocus )
-                        ; EndIf
                      EndIf
                      ;EndIf
                   EndIf
                Wend
                PopListPosition( *active\root\children( ) )
             EndIf
+         EndIf
+         
+         ;\\
+         If *this\root <> GetActive( )\root
+           PostEventCanvasRepaint( GetActive( )\root )  
          EndIf
       EndProcedure
       
@@ -13936,12 +13944,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;             If is_root_( *this )
-            ;                ProcedureReturn 0
-            ;             EndIf
-            
             If Popup( ) And *this = Popup( )\widget
-               ; Debug " Popup( setActive() ) "
+               ; Debug " Popup( setActive ) "
                ; *this = *this\PopupBox( )
                ProcedureReturn 0
             EndIf
@@ -13958,14 +13962,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;         ; is integral string bar
-            ;         If *this\type = #__type_spin
-            ;           *this = *this\StringBox( )
-            ;         EndIf
-            
             ;\\ deactive
             If GetActive( )
-               If is_window_( *this )
+               If is_window_( *this ) Or 
+                  is_root_( *this )
                   SetDeactive( *this )
                Else
                   SetDeactive( *this\window )
@@ -13979,7 +13979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\state\focus = #False
                *this\state\focus = #True
                
-               ;// set active all parents
+               ;\\ set active all parents
                If *this\address
                   If Not is_root_( *this )
                      PushListPosition( *this\root\children( ) )
@@ -13991,9 +13991,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If IsChild( *this, enumWidget( ) ) 
                               If enumWidget( )\state\focus = #False
                                  enumWidget( )\state\focus = #True
-;                                If enumWidget( )\color\state = #__s_3
-                                    DoFocusEvents( enumWidget( ), #__event_Focus )
-;                                EndIf
+;                                  If enumWidget( )\color\state = #__s_3
+;                                     enumWidget( )\color\state = #__s_2 
+;                                     enumWidget( )\repaint = 1
+;                                  EndIf
+                                 DoFocusEvents( enumWidget( ), #__event_Focus )
                               EndIf
                            EndIf
                         EndIf
@@ -14002,7 +14004,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; get active window
+               ;\\ get active window
                If is_window_( *this ) Or 
                   is_root_( *this )
                   GetActive( ) = *this
@@ -14016,8 +14018,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; when we activate the gadget
-               ; first we activate its parent window
+               ;\\ when we activate the gadget
+               ;\\ first we activate its parent window
                If *this <> GetActive( )
                   If GetActive( ) And ; Not is_root_( GetActive( ) ) And
                      GetActive( )\state\focus = #False
@@ -15601,7 +15603,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\frame_width( )  = #PB_Ignore
          *this\frame_height( ) = #PB_Ignore
          
-         ; set activate state
+         ;\\
+         Post( *this, #__event_create )
+         PostEventCanvasRepaint( *this\root, #__event_Create)
+         
+         ;\\ set activate state
          If *this\type = #__type_String
             *this\color\state = #__s_2
          EndIf
@@ -16352,12 +16358,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             set_text_flag_( *this, text, *this\flag )
          EndIf
          
-         
-         
-         ;
-         DoEvents( *this, #__event_create )
-         ;; Debug ""+*this\class+" "+*this\root
-         PostEventCanvasRepaint( *this\root, #__event_Create)
          ProcedureReturn *this
       EndProcedure
       
@@ -20898,11 +20898,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Root( )\canvas\gadget   = Canvas
             Root( )\canvas\GadgetID = g
             
-            ;
-            DoEvents( Root( ), #__event_create )
-            ;; AddWidget( Root( ), Root( ) )
-            ; SetParent( Root( ), Root( ), #PB_Default )
+            ;\\
+            Post( Root( ), #__event_create )
+            ; post repaint canvas event
+            PostEventCanvasRepaint( Root( ), #__event_Create )
+         
+            ;\\
+            If width Or height
+               Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )
+            EndIf
             
+            ;\\
             If flag & #PB_Window_NoGadgets = #False
                If Opened( )
                   Opened( )\after\root = Root( )
@@ -20913,16 +20919,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; OpenList( Root( ))
             EndIf
             
+            ;\\
             If flag & #PB_Window_NoActivate = #False
                SetActive( Root( ) )
             EndIf
-            
-            If width Or height
-               Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )
-            EndIf
-            
-            ; post repaint canvas event
-            PostEventCanvasRepaint( Root( ), #__event_Create )
          EndIf
          
          If g
@@ -21005,6 +21005,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;EndIf
             EndIf
             
+            If flag & #__flag_child = #__flag_child
+               If *parent And *parent\type = #__type_MDI
+                  *this\child = - 1
+               Else
+                  *this\child = 1
+               EndIf
+            EndIf
+            
+            If *parent
+               If *root = *parent
+                  *root\parent = *this
+               EndIf
+               
+            Else
+               *parent = *root
+            EndIf
+            
             *this\type            = #__type_window
             *this\frame_x( )      = #PB_Ignore
             *this\frame_y( )      = #PB_Ignore
@@ -21019,14 +21036,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\create = #True
             *this\class  = #PB_Compiler_Procedure
             *this\container = #True
-            
-            If flag & #__flag_child = #__flag_child
-               If *parent And *parent\type = #__type_MDI
-                  *this\child = - 1
-               Else
-                  *this\child = 1
-               EndIf
-            EndIf
             
             ;
             ;       *this\round = round
@@ -21102,17 +21111,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             *this\bs = *this\fs
             
-            
-            ;
-            If *parent
-               If *root = *parent
-                  *root\parent = *this
-               EndIf
-               
-            Else
-               *parent = *root
-            EndIf
-            
+            ;\\   
+            Post( *this, #__event_create )
+            PostEventCanvasRepaint( *this\root, #__event_Create)
+         
+            ;\\
             If *parent
                If *this\flag & #__Window_WindowCentered
                   x = *parent\x + ( *parent\width - width - *this\fs * 2 ) / 2
@@ -21145,9 +21148,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   SetActive( *this )
                EndIf
             EndIf
-            
-            DoEvents( *this, #__event_create )
-            PostEventCanvasRepaint( *this\root, #__event_Create)
          EndWith
          
          ProcedureReturn *this
@@ -22572,7 +22572,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16486
-; FirstLine = 16397
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvH--0q--------------------------------------------------------------------------------------------------------------------------------------------------------ffv--------d2--------Xr----t----------------------------------------------
+; CursorPosition = 15609
+; FirstLine = 15543
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fvn---f---------------------------------------------------------------------------------------------------------------------------------------------------------+e--------8q--------vW----b--------------------0---e--4------8-n----------
 ; EnableXP

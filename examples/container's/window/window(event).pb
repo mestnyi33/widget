@@ -7,37 +7,43 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
+      Protected result = 1
+      If result
+         Protected text$ = "disable"
+      EndIf
+            
       Select WidgetEventType( )
          Case #__event_Create
-            Debug "create - event " + EventWidget( )\class
-           
+            Debug ""
+            Debug text$ + " create - event " + EventWidget( )\class
+            
          Case #__event_Focus
-            Debug "focus - event " + EventWidget( )\class
+            Debug text$ + " focus - event " + EventWidget( )\class
             
          Case #__event_LostFocus
-            Debug "lostfocus - event " + EventWidget( )\class
+            Debug text$ + " lostfocus - event " + EventWidget( )\class
             
          Case #__event_Maximize
-            Debug "maximize - event " + EventWidget( )\class
+            Debug text$ + " maximize - event " + EventWidget( )\class
             
          Case #__event_Minimize
-            Debug "minimize - event " + EventWidget( )\class
+            Debug text$ + " minimize - event " + EventWidget( )\class
             
          Case #__event_Restore
-            Debug "restore - event " + EventWidget( )\class 
+            Debug text$ + " restore - event " + EventWidget( )\class 
             
          Case #__event_Close
-            Debug "close - event " + EventWidget( )\class 
+            Debug text$ + " close - event " + EventWidget( )\class 
             
          Case #__event_Resize
-            Debug "resize - event " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
+            Debug text$ + " resize - event " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
             
          Case #__event_Free
-            Debug "free - event " + EventWidget( )\class 
+            Debug text$ + " free - event " + EventWidget( )\class 
             
       EndSelect
       
-      ProcedureReturn 1
+      ProcedureReturn result
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
@@ -83,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 21
+; CursorPosition = 17
+; FirstLine = 5
 ; Folding = -
 ; EnableXP
