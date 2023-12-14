@@ -37,6 +37,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "free - event " + EventWidget( )\class 
             
       EndSelect
+      
+      ; ProcedureReturn 1
    EndProcedure
    
    ;\\
@@ -78,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 5
+; CursorPosition = 40
+; FirstLine = 9
 ; Folding = -
 ; EnableXP

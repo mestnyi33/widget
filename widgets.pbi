@@ -223,11 +223,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _root_\canvas\repaint = 0
             _root_\canvas\repaint = 1
             
-            If _data_ = #Null
-               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_ )
-            Else
-               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _data_ )
-            EndIf
+;             ChangeCurrentRoot( _root_\canvas\gadgetID )
+;             ReDraw( _root_ )
+            
+;             If _data_ = #Null
+                 PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_\canvas\gadgetID )
+;                 PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_ )
+;             Else
+;                PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _data_ )
+;             EndIf
          EndIf
       EndMacro
       
@@ -10948,7 +10952,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;With *this
          If *this
-            
             ;         If IsImage(Image) Or *this\mode\check
             ;               If *this\row\sublevelcolumn = 0
             ;                 *this\row\sublevelcolumn = 1
@@ -13957,12 +13960,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              ;\\ deactive
              If FocusedWidget( )
                If FocusedWidget( ) <> *this
-;                  If is_window_( *this ) Or 
-;                     is_root_( *this )
-                   SetDeactive( *this )
-;                  Else
-;                    SetDeactive( *this\window )
-;                  EndIf
+                  SetDeactive( *this )
                EndIf
              EndIf
              
@@ -17630,6 +17628,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             WidgetEvent( )\item   = *button
             WidgetEvent( )\data   = *data
             
+            
             ; Debug "send - "+*this +" "+ eventtype +" "+ *button +" "+ *data
             ;
             ; call event function
@@ -20062,7 +20061,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If FocusedWidget( )
                ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
                If GetActive( ) = Root( )
-                  Debug "Deactivate - "+Root( )\class
+                  ;Debug "Deactivate - "+Root( )\class
                   SetDeactive( Root( ) )
                   GetActive( ) = 0
                EndIf
@@ -20072,11 +20071,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #PB_Event_ActivateWindow
             If Not EnteredWidget( )
                ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-               Debug 555
-               If GetActive( ) <> Root( )
-                  Debug 666
-                  If Root( )\show 
-                     Debug "Activate - "+Root( )\class
+               If Root( )\show 
+                  If GetActive( ) <> Root( )
+                     ;Debug "Activate - "+Root( )\class
                      SetActive( Root( ) )
                   EndIf
                EndIf
@@ -20105,36 +20102,44 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #pb_eventtype_Repaint ; = 262150
-               If IsGadget( eventgadget ) And
-                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                  
-                  ;PushMapPosition( enumRoot( ) )
-                  If ChangeCurrentRoot( GadgetID( eventgadget ) )
-                     If Root( )\canvas\repaint = 1
-                        ReDraw( Root( ) )
-                        Root( )\canvas\repaint = 0
-                     EndIf
+               If eventdata And 
+                  ChangeCurrentRoot( eventdata )
+                  If Root( )\canvas\repaint = 1
+                     ReDraw( Root( ) )
+                     Root( )\canvas\repaint = 0
                   EndIf
-                  ;PopMapPosition( enumRoot( ) )
-                  
-;                   If IsGadget( eventgadget ) And
-;                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                    ;\\
-                    If Not mouse( )\interact
-                      If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
-                        If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
-                          If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
-                            ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-                          EndIf
-                        EndIf
-                      Else
-                        If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
-                          ChangeCurrentRoot( GadgetID( eventgadget ) )
-                        EndIf
-                      EndIf
-                    EndIf
-                  ;EndIf
-                EndIf
+               EndIf
+               
+;                If IsGadget( eventgadget ) And
+;                   GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+;                   
+;                   ;PushMapPosition( enumRoot( ) )
+;                   If ChangeCurrentRoot( GadgetID( eventgadget ) )
+;                      If Root( )\canvas\repaint = 1
+;                         ReDraw( Root( ) )
+;                         Root( )\canvas\repaint = 0
+;                      EndIf
+;                   EndIf
+;                   ;PopMapPosition( enumRoot( ) )
+;                   
+; ;                   If IsGadget( eventgadget ) And
+; ;                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
+;                     ;\\
+;                     If Not mouse( )\interact
+;                       If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
+;                         If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
+;                           If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
+;                             ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
+;                           EndIf
+;                         EndIf
+;                       Else
+;                         If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
+;                           ChangeCurrentRoot( GadgetID( eventgadget ) )
+;                         EndIf
+;                       EndIf
+;                     EndIf
+;                   ;EndIf
+;                 EndIf
                
                ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
             EndIf
@@ -21852,14 +21857,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Redraw( *message\root )
          
          ;\\
-         Disable( *parent\root, 1 )
+         ;Disable( *parent\root, 1 )
          Redraw( *parent\root ) 
          
          ;\\
          WaitQuit( *message )
          
          ;\\
-         Disable( *parent\root, 0 )
+         ;Disable( *parent\root, 0 )
          Redraw( *parent\root ) 
          
          ;\\
@@ -22577,7 +22582,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13880
-; FirstLine = 13817
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy-----------------------------------------------------------------------------------------------------------------------------------------------------------00+-------4V---------fr-0--t--------------------+--fv--8------------------
+; CursorPosition = 20105
+; FirstLine = 19690
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy-----------------------------------------------------------------------------------------------------------------------------------------------------------00+-------4V---------f80--t--------------------+--fv--8---------f2-------
 ; EnableXP
