@@ -218,7 +218,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
          widget::Root( ) = widget::enumRoot( )
       EndMacro
-      Macro PostEventCanvasRepaint( _root_, _data_ = #Null )
+      Macro PostEventRepaint( _root_ )
          If _root_ And
             _root_\canvas\repaint = 0
             _root_\canvas\repaint = 1
@@ -226,12 +226,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;             ChangeCurrentRoot( _root_\canvas\gadgetID )
 ;             ReDraw( _root_ )
             
-;             If _data_ = #Null
-                 PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_\canvas\gadgetID )
-;                 PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _root_ )
-;             Else
-;                PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #pb_eventtype_Repaint, _data_ )
-;             EndIf
+            PostEvent( #PB_Event_Repaint, _root_\canvas\window, _root_\canvas\gadget, #PB_All, _root_\canvas\gadgetID )
          EndIf
       EndMacro
       
@@ -4757,7 +4752,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          ProcedureReturn *this\repaint
       EndProcedure
       
@@ -4928,7 +4923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DisableChildrens( *this._S_WIDGET )
             EndIf
             
-            PostEventCanvasRepaint( *this\root )
+            PostEventRepaint( *this\root )
          EndIf
          
          ProcedureReturn result
@@ -5100,7 +5095,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          set_image_( *this, *this\_tabs( )\Image, Image )
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          
          ProcedureReturn Item
       EndProcedure
@@ -7985,7 +7980,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            bar_Update( *this )
-                           PostEventCanvasRepaint( *this\root )
+                           PostEventRepaint( *this\root )
                            ProcedureReturn #True
                         EndIf
                      EndIf
@@ -9109,7 +9104,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\EnteredLineIndex( ) = 0
          EndIf
          
-         PostEventCanvasRepaint( *this\root ) ;?
+         PostEventRepaint( *this\root ) ;?
          ProcedureReturn 1
       EndProcedure
       
@@ -11130,7 +11125,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\scroll\state = - 1
                   EndIf
                   
-                  PostEventCanvasRepaint( *this\root )
+                  PostEventRepaint( *this\root )
                EndIf
             EndIf
          EndIf
@@ -11974,7 +11969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Popup( )\widget = *this
                Popup( )\parent = *display
                ChangeParent( *this, Popup( ) )
-               PostEventCanvasRepaint( Popup( ) )
+               PostEventRepaint( Popup( ) )
                
                ;\\
                If *display\round
@@ -12651,7 +12646,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\WidgetChange( ) = 1
             *this\count\items - 1
             DeleteElement( *this\_rows( ))
-            PostEventCanvasRepaint( *this\root )
+            PostEventRepaint( *this\root )
             result = #True
          EndIf
          
@@ -12693,7 +12688,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ClearList( *this\_rows( ))
-               PostEventCanvasRepaint( *this\root )
+               PostEventRepaint( *this\root )
             EndIf
          EndIf
          
@@ -13280,7 +13275,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If result
-            PostEventCanvasRepaint( *this\root )
+            PostEventRepaint( *this\root )
          EndIf
          
          ProcedureReturn result
@@ -13348,7 +13343,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   DoEvents( *this, #__event_Change )
-                  PostEventCanvasRepaint( *this\root )
+                  PostEventRepaint( *this\root )
                   ProcedureReturn #True
                EndIf
             EndIf
@@ -13370,7 +13365,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\checkstate = State
                
                DoEvents( *this, #__event_Change )
-               PostEventCanvasRepaint( *this\root )
+               PostEventRepaint( *this\root )
                ProcedureReturn #True
             EndIf
          EndIf
@@ -13591,7 +13586,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        PostEventCanvasRepaint( *this\root )
+                        PostEventRepaint( *this\root )
                         ProcedureReturn #True
                      EndIf
                   EndIf
@@ -13616,7 +13611,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result = bar_SetState( *this, state )
          EndSelect
          
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -13734,7 +13729,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *This\text\string.s = Text.s
                   *This\TextChange( ) = #True
                   result              = #True
-                  PostEventCanvasRepaint( *this\root )
+                  PostEventRepaint( *this\root )
                EndIf
             EndIf
          EndIf
@@ -13762,7 +13757,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *This\text\string.s = Text.s
                *This\TextChange( ) = #True
                result              = #True
-               PostEventCanvasRepaint( *This\root )
+               PostEventRepaint( *This\root )
             EndIf
          EndIf
          
@@ -14476,8 +14471,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               PostEventCanvasRepaint( *parent\root )
-               PostEventCanvasRepaint( *lastParent\root )
+               PostEventRepaint( *parent\root )
+               PostEventRepaint( *lastParent\root )
                
                ;           ChangeCurrentRoot(*parent\root\canvas\GadgetID)
                ;           ReDraw(Root( ))
@@ -14929,7 +14924,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; update parent children's coordinate
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PostEventCanvasRepaint( *this\root )
+               PostEventRepaint( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -15339,7 +15334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15358,7 +15353,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15497,7 +15492,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; result = bar_SetState( *this, state )
          EndIf
          
-         PostEventCanvasRepaint( *this\root )
+         PostEventRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15597,7 +15592,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          Post( *this, #__event_create )
-         PostEventCanvasRepaint( *this\root, #__event_Create)
+         PostEventRepaint( *this\root )
          
          ;\\ set activate state
          If *this\type = #__type_String
@@ -20044,19 +20039,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If *this\repaint And
             *this\state\disable = 0
-            PostEventCanvasRepaint( *this\root )
+            PostEventRepaint( *this\root )
          EndIf
       EndProcedure
       
       
       ;-
       Procedure CanvasEvents( )
-         EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
+         ; EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
+         EventHandler( Event( ), EventGadget( ), EventType( ), EventData( ) )
       EndProcedure
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Protected Repaint, mouse_x , mouse_y
          
+         ;\\
+         If event = #PB_Event_Repaint 
+            If eventdata And 
+               ChangeCurrentRoot( eventdata )
+               If Root( )\canvas\repaint = 1
+                  ReDraw( Root( ) )
+                  Root( )\canvas\repaint = 0
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
          If event = #PB_Event_DeactivateWindow
             If FocusedWidget( )
                ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
@@ -20068,6 +20076,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
+         ;\\
          If event = #PB_Event_ActivateWindow
             If Not EnteredWidget( )
                ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
@@ -20080,7 +20089,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
+         ;\\
          If event = #PB_Event_Gadget
+            ;\\
+            If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               ;PushMapPosition( enumRoot( ) )
+               If ChangeCurrentRoot( GadgetID( eventgadget ) )
+                  If Root( )\type = #__type_window
+                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
+                  Else
+                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+                  EndIf
+                  ; PostEventRepaint( Root( ) ) 
+                  ReDraw( Root( ) )
+               EndIf
+               ;PopMapPosition( enumRoot( ) )
+            EndIf
+            
             ;\\
             If eventtype = #PB_EventType_MouseEnter
                If Not mouse( )\interact
@@ -20098,50 +20123,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   eventgadget = PressedWidget( )\root\canvas\gadget
                   ChangeCurrentRoot( GadgetID( eventgadget ) )
                EndIf
-            EndIf
-            
-            ;\\
-            If eventtype = #pb_eventtype_Repaint ; = 262150
-               If eventdata And 
-                  ChangeCurrentRoot( eventdata )
-                  If Root( )\canvas\repaint = 1
-                     ReDraw( Root( ) )
-                     Root( )\canvas\repaint = 0
-                  EndIf
-               EndIf
-               
-;                If IsGadget( eventgadget ) And
-;                   GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-;                   
-;                   ;PushMapPosition( enumRoot( ) )
-;                   If ChangeCurrentRoot( GadgetID( eventgadget ) )
-;                      If Root( )\canvas\repaint = 1
-;                         ReDraw( Root( ) )
-;                         Root( )\canvas\repaint = 0
-;                      EndIf
-;                   EndIf
-;                   ;PopMapPosition( enumRoot( ) )
-;                   
-; ;                   If IsGadget( eventgadget ) And
-; ;                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-;                     ;\\
-;                     If Not mouse( )\interact
-;                       If IsGadget( EnteredGadget( ) ) And eventgadget <> EnteredGadget( )
-;                         If Not ( Root( ) And Root( )\canvas\gadget = EnteredGadget( ) )
-;                           If GadgetType( EnteredGadget( ) ) = #PB_GadgetType_Canvas
-;                             ChangeCurrentRoot( GadgetID( EnteredGadget( ) ) )
-;                           EndIf
-;                         EndIf
-;                       Else
-;                         If Not ( Root( ) And Root( )\canvas\gadget = eventgadget)
-;                           ChangeCurrentRoot( GadgetID( eventgadget ) )
-;                         EndIf
-;                       EndIf
-;                     EndIf
-;                   ;EndIf
-;                 EndIf
-               
-               ;Debug "  event - "+eventtype +" "+ Root( )\canvas\gadget +" "+ eventgadget +" "+ EnteredGadget( ) +" "+ EventData( )
             EndIf
             
             ;\\
@@ -20245,21 +20226,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               ;PushMapPosition( enumRoot( ) )
-               If ChangeCurrentRoot( GadgetID( eventgadget ) )
-                  If Root( )\type = #__type_window
-                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
-                  Else
-                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-                  EndIf
-                  ReDraw( Root( ) )
-               EndIf
-               ;PopMapPosition( enumRoot( ) )
-            EndIf
-            
-            ;\\
-            If Root( ) And Root( )\canvas\gadget = eventgadget
+            If Root( ) And 
+               Root( )\canvas\gadget = eventgadget
                ;\\
                Select eventtype
                   Case #PB_EventType_MouseEnter,
@@ -20722,6 +20690,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
       EndProcedure
       
+      Procedure EventRepaint( )
+        EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
+      EndProcedure
+      
       ;-
       Procedure.i CloseList( )
          Protected *open._S_WIDGET
@@ -20910,8 +20882,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             Post( Root( ), #__event_create )
-            ; post repaint canvas event
-            PostEventCanvasRepaint( Root( ), #__event_Create )
+            ;\\ post repaint canvas event
+            PostEventRepaint( Root( ) )
          
             ;\\
             If width Or height
@@ -20933,6 +20905,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If flag & #PB_Window_NoActivate = #False
                SetActive( Root( ) )
             EndIf
+            
+         ;   BindEvent( #PB_Event_Repaint, @CanvasEvents( ), Window);, Canvas, #PB_All )
+            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window);, Canvas, #PB_All )
          EndIf
          
          If g
@@ -21123,7 +21098,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\   
             Post( *this, #__event_create )
-            PostEventCanvasRepaint( *this\root, #__event_Create)
+            PostEventRepaint( *this\root )
          
             ;\\
             If *parent
@@ -21456,7 +21431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               ;PostEventCanvasRepaint( *this\parent\root, #__event_free )
+               ;PostEventRepaint( *this\parent\root )
                ;ClearStructure( *this, _S_WIDGET )
                
                If *this = enumRoot( )
@@ -22582,7 +22557,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20105
-; FirstLine = 19690
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy-----------------------------------------------------------------------------------------------------------------------------------------------------------00+-------4V---------f80--t--------------------+--fv--8---------f2-------
+; CursorPosition = 20102
+; FirstLine = 19750
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy------------------------------------------------------------------------------------------------------------------------------------------------------------0+-------4V----------fr--v-------------4----------e-------------q--------
 ; EnableXP

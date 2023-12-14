@@ -40,6 +40,16 @@ Module events
       Protected EventGadget, EventType, EventData
       
       If *setcallback 
+;          If event = #PB_Event_Repaint
+;             ; Debug " WaitEvent - Repaint"
+;             If IsWindow( EventWindow( ) )
+;                eventgadget = GetWindowData( EventWindow( ) )
+;                If IsGadget( eventgadget )
+;                   CallCFunctionFast(*setcallback, #PB_Event_Repaint, eventgadget, #PB_All, EventData( ) )
+;                EndIf
+;             EndIf
+;          EndIf
+         
          If event = #PB_Event_ActivateWindow
             ; Debug " WaitEvent - ActivateWindow"
             eventgadget = GetWindowData( EventWindow( ) )
@@ -77,7 +87,8 @@ Module events
       *setcallback = *callback
    EndProcedure
 EndModule
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 50
+; FirstLine = 38
 ; Folding = ---
 ; EnableXP
