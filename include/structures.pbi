@@ -588,7 +588,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          hidden.b               ; hide state
          dragstart.b
          checkstate.b
-         repaint.b
          autosize.b
          
          change.l
@@ -710,6 +709,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
+         repaint.b
          *widget._s_WIDGET
          canvas._s_canvas
          List *children._s_WIDGET( ) ; widget( )\
@@ -755,7 +755,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 737
-; FirstLine = 603
+; CursorPosition = 712
+; FirstLine = 585
 ; Folding = ---PP7D+--
 ; EnableXP
