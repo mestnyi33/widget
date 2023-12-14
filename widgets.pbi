@@ -214,7 +214,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
-      Macro ChangeCurrentRoot( _canvas_gadget_address_ )
+      Macro ChangeCurrentCanvas( _canvas_gadget_address_ )
          FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
          widget::Root( ) = widget::enumRoot( )
       EndMacro
@@ -223,10 +223,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _root_\canvas\repaint = 0
             _root_\canvas\repaint = 1
             
-;             ChangeCurrentRoot( _root_\canvas\gadgetID )
+;             ChangeCurrentCanvas( _root_\canvas\gadgetID )
 ;             ReDraw( _root_ )
             
-            PostEvent( #PB_Event_Repaint, _root_\canvas\window, _root_\canvas\gadget, #PB_All, _root_\canvas\gadgetID )
+            ;If Not _root_\resize
+               PostEvent( #PB_Event_Repaint, _root_\canvas\window, _root_\canvas\gadget, #PB_All, _root_\canvas\gadgetID )
+            ;EndIf
          EndIf
       EndMacro
       
@@ -14474,9 +14476,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PostEventRepaint( *parent\root )
                PostEventRepaint( *lastParent\root )
                
-               ;           ChangeCurrentRoot(*parent\root\canvas\GadgetID)
+               ;           ChangeCurrentCanvas(*parent\root\canvas\GadgetID)
                ;           ReDraw(Root( ))
-               ;           ChangeCurrentRoot(*lastParent\root\canvas\GadgetID)
+               ;           ChangeCurrentCanvas(*lastParent\root\canvas\GadgetID)
                ;           ReDraw(Root( ))
                
             EndIf
@@ -20055,11 +20057,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If event = #PB_Event_Repaint 
-            If eventdata And 
-               ChangeCurrentRoot( eventdata )
-               If Root( )\canvas\repaint = 1
-                  ReDraw( Root( ) )
-                  Root( )\canvas\repaint = 0
+            If eventdata 
+               If ChangeCurrentCanvas( eventdata )
+                  If Root( )\canvas\repaint = 1
+                     Debug "   Repaint"
+                     ReDraw( Root( ) )
+                     Root( )\canvas\repaint = 0
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -20067,25 +20071,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If event = #PB_Event_DeactivateWindow
             If FocusedWidget( )
-               ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-               If GetActive( ) = Root( )
-                  ;Debug "Deactivate - "+Root( )\class
-                  SetDeactive( Root( ) )
-                  GetActive( ) = 0
-               EndIf
+               ForEach EnumRoot( )
+                  If EnumRoot( )\canvas\window = EventWindow( )
+                     Root( ) = EnumRoot( )
+                     
+                     If GetActive( ) = Root( )
+                        ;Debug "Deactivate - "+Root( )\class
+                        SetDeactive( Root( ) )
+                        GetActive( ) = 0
+                        ;ReDraw( Root( ) )
+                        Break
+                     EndIf
+                  EndIf
+               Next
             EndIf
          EndIf
          
          ;\\
          If event = #PB_Event_ActivateWindow
             If Not EnteredWidget( )
-               ChangeCurrentRoot( PB(GadgetID)( eventgadget ) )   
-               If Root( )\show 
-                  If GetActive( ) <> Root( )
-                     ;Debug "Activate - "+Root( )\class
-                     SetActive( Root( ) )
+               ForEach EnumRoot( )
+                  If EnumRoot( )\canvas\window = EventWindow( )
+                     Root( ) = EnumRoot( )
+                     
+                     If Root( )\show 
+                        If GetActive( ) <> Root( )
+                           ;Debug "Activate - "+Root( )\class
+                           SetActive( Root( ) )
+                           ;ReDraw( Root( ) )
+                           Break
+                        EndIf
+                     EndIf
                   EndIf
-               EndIf
+               Next
             EndIf
          EndIf
          
@@ -20094,7 +20112,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If EventType = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                ;PushMapPosition( enumRoot( ) )
-               If ChangeCurrentRoot( GadgetID( eventgadget ) )
+               If ChangeCurrentCanvas( GadgetID( eventgadget ) )
                   If Root( )\type = #__type_window
                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
                   Else
@@ -20111,7 +20129,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not mouse( )\interact
                   If IsGadget( eventgadget ) And
                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                     ChangeCurrentRoot( GadgetID( eventgadget ) )
+                     ChangeCurrentCanvas( GadgetID( eventgadget ) )
                   EndIf
                EndIf
             EndIf
@@ -20121,7 +20139,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If PressedWidget( ) And
                   Root( ) <> PressedWidget( )\root
                   eventgadget = PressedWidget( )\root\canvas\gadget
-                  ChangeCurrentRoot( GadgetID( eventgadget ) )
+                  ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
             EndIf
             
@@ -20625,7 +20643,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;               eventgadget = EnteredGadget( )
                      ;               If IsGadget( eventgadget ) And
                      ;                  GadgetType( eventgadget ) = #PB_GadgetType_Canvas
-                     ;                 ChangeCurrentRoot( GadgetID( eventgadget ) )
+                     ;                 ChangeCurrentCanvas( GadgetID( eventgadget ) )
                      ;                 ; Debug "canvas - enter "+eventgadget +" "+ Root( )
                      ;               EndIf
                      ;             EndIf
@@ -20691,7 +20709,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure EventRepaint( )
-        EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
+         Protected canvas
+         ;Debug "EventRepaint "+EventData( )
+         If EventData( )
+            EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
+;          Else
+;             ForEach EnumRoot( )
+;                If EventWindow( ) = EnumRoot( )\canvas\window
+;                   ; GetAtPoint( EnumRoot( ), mouse()\x, mouse()\y )
+;                   mouse( )\x = CanvasMouseX( EnumRoot( )\canvas\gadget )
+;                   mouse( )\y = CanvasMouseY( EnumRoot( )\canvas\gadget )
+;                   
+;                   If is_atpoint_( EnumRoot( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
+;                      is_atpoint_( EnumRoot( ), mouse( )\x, mouse( )\y, [#__c_draw] )
+;                      
+; ;                      ;If EnteredWidget( ) And EnteredWidget( )\root
+; ;                      Root( ) = EnumRoot( )
+; ;                      
+; ;                      If Root( )\canvas\repaint = 1
+; ;                         Debug "   Repaint"
+; ;                         ReDraw( Root( ) )
+; ;                         Root( )\canvas\repaint = 0
+; ;                      EndIf
+;                     ; Break
+;                   Else
+;                      
+;                      Root( ) = EnumRoot( )
+;                      
+;                      ;EventHandler( #PB_Event_Repaint, Root( )\canvas\gadget, #PB_All, Root( )\canvas\gadgetID )
+;                      If Root( )\canvas\repaint = 1
+;                         Debug "   Repaint"
+;                         ReDraw( Root( ) )
+;                         Root( )\canvas\repaint = 0
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             Next
+         EndIf
       EndProcedure
       
       ;-
@@ -20767,7 +20821,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\root\before\root = Opened( )\root
                   
                   If is_root_( *this )
-                     ChangeCurrentRoot(*this\root\canvas\GadgetID )
+                     ChangeCurrentCanvas(*this\root\canvas\GadgetID )
                   EndIf
                EndIf
             EndIf
@@ -20851,7 +20905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         If Not FindMapElement( enumRoot( ), Str( g ) ) ; ChangeCurrentRoot(g)
+         If Not FindMapElement( enumRoot( ), Str( g ) ) ; ChangeCurrentCanvas(g)
             result            = AddMapElement( enumRoot( ), Str( g ) )
             enumRoot( )       = AllocateStructure( _S_root )
             Root( )           = enumRoot( )
@@ -21174,7 +21228,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If IsGadget(canvas)
             ; CloseList( )
             ;Debug ""+Gadget+" "+canvas
-            ChangeCurrentRoot( GadgetID(canvas) )
+            ChangeCurrentCanvas( GadgetID(canvas) )
             OpenList( Root( ) )
          EndIf
          
@@ -21466,7 +21520,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Protected window = PB(EventWindow)( )
                      Protected canvas =  PB(GetWindowData)( window ) 
                      
-                     If ChangeCurrentRoot( PB(GadgetID)(canvas))
+                     If ChangeCurrentCanvas( PB(GadgetID)(canvas))
                         Debug "close.... " + Root( )\address +" "+ Root( )\canvas\window +" "+ window
                         
                         ;\\
@@ -22557,7 +22611,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20102
-; FirstLine = 19750
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy------------------------------------------------------------------------------------------------------------------------------------------------------------0+-------4V----------fr--v-------------4----------e-------------q--------
+; CursorPosition = 20121
+; FirstLine = 19755
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy------------------------------------------------------------------------------------------------------------------------------------------------------------0+-------4V------------0--0-------------0----------4------------v7-------
 ; EnableXP

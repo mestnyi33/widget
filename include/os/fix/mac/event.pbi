@@ -320,30 +320,14 @@ Module events
       Protected EventGadget, EventType, EventData
       
       If *setcallback 
-;          If event = #PB_Event_Repaint
-;             ; Debug " WaitEvent - Repaint"
-;             If IsWindow( EventWindow( ) )
-;                eventgadget = GetWindowData( EventWindow( ) )
-;                If IsGadget( eventgadget )
-;                   CallCFunctionFast(*setcallback, #PB_Event_Repaint, eventgadget, #PB_All, EventData( ) )
-;                EndIf
-;             EndIf
-;          EndIf
-         
          If event = #PB_Event_ActivateWindow
             ; Debug " WaitEvent - ActivateWindow"
-            eventgadget = GetWindowData( EventWindow( ) )
-            If IsGadget( eventgadget )
-               CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
-            EndIf
+            CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
          EndIf
          
          If event = #PB_Event_DeactivateWindow
-;             ; Debug " WaitEvent - DeactivateWindow"
-            eventgadget = GetWindowData( EventWindow( ) )
-            If IsGadget( eventgadget )
-               CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
-            EndIf
+            ; Debug " WaitEvent - DeactivateWindow"
+            CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
          EndIf
          
          If event = #PB_Event_Gadget
@@ -440,6 +424,6 @@ Module events
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 322
-; FirstLine = 308
-; Folding = -------------
+; FirstLine = 319
+; Folding = ------------
 ; EnableXP
