@@ -205,7 +205,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;Macro Root( ): widget::*roots( ): EndMacro
       ;Macro EnumRoot( ): widget::__gui\roots( ): EndMacro
       Macro EnumRoot( ): widget::*roots( ): EndMacro
-      Macro CurrentRoot( )
+      Macro ChangeCurrentRoot( )
          If MapSize( enumRoot( ) ) 
             If MapKey( enumRoot( ) ) = ""
                ResetMap( enumRoot( ) )
@@ -214,17 +214,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
-      Macro ChangeCurrentCanvas( _canvas_gadget_address_ )
-         FindMapElement( widget::enumRoot( ), Str( _canvas_gadget_address_ ) )
+      Macro ChangeCurrentCanvas( _canvas_ )
+         FindMapElement( widget::enumRoot( ), Str( _canvas_ ) )
          widget::Root( ) = widget::enumRoot( )
       EndMacro
       Macro PostEventRepaint( _root_ )
          If _root_ And
             _root_\canvas\repaint = 0
             _root_\canvas\repaint = 1
-            
-;             ChangeCurrentCanvas( _root_\canvas\gadgetID )
-;             ReDraw( _root_ )
             
             PostEvent( #PB_Event_Repaint, _root_\canvas\window, _root_\canvas\gadget, #PB_All, _root_\canvas\gadgetID )
          EndIf
@@ -1096,9 +1093,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.s ClassFromEvent( event.i )
       
       
-      Declare EventHandler( event = - 1, canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
-      Declare WaitClose( *this = #PB_Any, waittime.l = 0 )
-      Declare Message( Title.s, Text.s, flag.q = #Null )
+      Declare   EventHandler( event = - 1, canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
+      Declare   PostQuit( *window = #PB_Any )
+      Declare   WaitQuit( *window = #PB_Any )
+      Declare   WaitClose( *this = #PB_Any, waittime.l = 0 )
+      Declare   Message( Title.s, Text.s, flag.q = #Null )
       
       Declare.i Tree_properties( x.l, y.l, width.l, height.l, flag.q = 0 )
       
@@ -17329,52 +17328,63 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure   ReDraw( *root._S_ROOT )
+      Procedure   SendPostEvents( root = #PB_All )
          Protected *__widget._s_WIDGET, __type, __item, __data
          
          ;\\ send posted events
          If ListSize( __events( ) )
             ForEach __events( )
-               *__widget = __events( )\widget
-               __type   = __events( )\type
-               __item   = __events( )\item
-               __data   = __events( )\data
-               DeleteElement( __events( ) )
-               
-               ;\\ 
-               If #__event_Close = __type
-                  Select Send( *__widget, __type, __item, __data )
-                     Case 0
-                        Close( *__widget )
-                        
-                        ;\\ close all windows
-                     Case #PB_All 
-                        Close( #PB_All )
-                        
-                  EndSelect
-                  ProcedureReturn 
+               ;If __events( )\widget\root = root Or root = #PB_All 
+                  *__widget = __events( )\widget
+                  __type   = __events( )\type
+                  __item   = __events( )\item
+                  __data   = __events( )\data
+                  DeleteElement( __events( ) )
                   
-               ElseIf #__event_Focus = __type
-                  ;                      If Not *__widget\state\disable
-                  If Not Send( *__widget, __type, __item, __data )
-                     ;                            *__widget\color\state = #__s_2
-                     ;                            *__widget\root\repaint     = #True
-                     DoEvents( *__widget, __type )
+                  ;\\ 
+                  If #__event_Close = __type
+                     Select Send( *__widget, __type, __item, __data )
+                        Case 0
+                           Close( *__widget )
+                           
+                           ;\\ close all windows
+                        Case #PB_All 
+                           Close( #PB_All )
+                           
+                     EndSelect
+                     ProcedureReturn 
+                     
+                  ElseIf #__event_Focus = __type
+                     ;                      If Not *__widget\state\disable
+                     If Not Send( *__widget, __type, __item, __data )
+                        ;                            *__widget\color\state = #__s_2
+                        ;                            *__widget\root\repaint     = #True
+                        DoEvents( *__widget, __type )
+                     EndIf
+                     ;                      EndIf
+                  ElseIf #__event_LostFocus = __type
+                     If Not Send( *__widget, __type, __item, __data )
+                        ;                         If *__widget\color\state = #__s_2
+                        ;                            *__widget\color\state = #__s_3
+                        ;                            *__widget\root\repaint     = #True
+                        ;                         EndIf
+                        DoEvents( *__widget, __type )
+                     EndIf
+                  Else
+                     Send( *__widget, __type, __item, __data )
                   EndIf
-                  ;                      EndIf
-               ElseIf #__event_LostFocus = __type
-                  If Not Send( *__widget, __type, __item, __data )
-                     ;                         If *__widget\color\state = #__s_2
-                     ;                            *__widget\color\state = #__s_3
-                     ;                            *__widget\root\repaint     = #True
-                     ;                         EndIf
-                     DoEvents( *__widget, __type )
-                  EndIf
-               Else
-                  Send( *__widget, __type, __item, __data )
-               EndIf
+               ;EndIf
             Next
          EndIf
+         
+         
+      EndProcedure
+      
+      Procedure   ReDraw( *root._S_ROOT )
+         Protected *__widget._s_WIDGET, __type, __item, __data
+         
+         ;\\ send posted events
+         SendPostEvents( *root )
          
          ;\\
          DrawingStart( *root\canvas\gadget )
@@ -17604,7 +17614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure.i Send( *this._S_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
-         Protected result
+         Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
             If *this And *this\child
@@ -17617,6 +17627,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bar
                *this\bar\page\change = *data
             EndIf
+            
+            __widget = WidgetEvent( )\widget
+            __type   = WidgetEvent( )\type
+            __item   = WidgetEvent( )\item
+            __data   = WidgetEvent( )\data
             
             WidgetEvent( )\widget = *this
             WidgetEvent( )\type   = eventtype
@@ -17701,10 +17716,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-            WidgetEvent( )\widget = #Null
-            WidgetEvent( )\type   = #PB_All
-            WidgetEvent( )\item   = #PB_All
-            WidgetEvent( )\data   = #Null
+            WidgetEvent( )\widget = __widget
+            WidgetEvent( )\type   = __type
+            WidgetEvent( )\item   = __item
+            WidgetEvent( )\data   = __data
          EndIf
          
          ProcedureReturn result
@@ -20048,8 +20063,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure CanvasEvents( )
-         ; EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
-         EventHandler( Event( ), EventGadget( ), EventType( ), EventData( ) )
+;          If  Event( ) = #PB_Event_Repaint
+;             If EventData( )
+;                EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
+;             EndIf
+;          Else
+             EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
+;             EventHandler( Event( ), EventGadget( ), EventType( ), EventData( ) )
+;          EndIf
       EndProcedure
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
@@ -20709,42 +20730,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure EventRepaint( )
-         Protected canvas
-         ;Debug "EventRepaint "+EventData( )
          If EventData( )
             EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
-;          Else
-;             ForEach EnumRoot( )
-;                If EventWindow( ) = EnumRoot( )\canvas\window
-;                   ; GetAtPoint( EnumRoot( ), mouse()\x, mouse()\y )
-;                   mouse( )\x = CanvasMouseX( EnumRoot( )\canvas\gadget )
-;                   mouse( )\y = CanvasMouseY( EnumRoot( )\canvas\gadget )
-;                   
-;                   If is_atpoint_( EnumRoot( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-;                      is_atpoint_( EnumRoot( ), mouse( )\x, mouse( )\y, [#__c_draw] )
-;                      
-; ;                      ;If EnteredWidget( ) And EnteredWidget( )\root
-; ;                      Root( ) = EnumRoot( )
-; ;                      
-; ;                      If Root( )\canvas\repaint = 1
-; ;                         Debug "   Repaint"
-; ;                         ReDraw( Root( ) )
-; ;                         Root( )\canvas\repaint = 0
-; ;                      EndIf
-;                     ; Break
-;                   Else
-;                      
-;                      Root( ) = EnumRoot( )
-;                      
-;                      ;EventHandler( #PB_Event_Repaint, Root( )\canvas\gadget, #PB_All, Root( )\canvas\gadgetID )
-;                      If Root( )\canvas\repaint = 1
-;                         Debug "   Repaint"
-;                         ReDraw( Root( ) )
-;                         Root( )\canvas\repaint = 0
-;                      EndIf
-;                   EndIf
-;                EndIf
-;             Next
+         Else
          EndIf
       EndProcedure
       
@@ -21316,7 +21304,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         CurrentRoot( )
+         ChangeCurrentRoot( )
          
          ProcedureReturn window
       EndProcedure
@@ -21512,7 +21500,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If MapSize( enumRoot( ) )
             ;\\
-            CurrentRoot( )
+            ChangeCurrentRoot( )
             
             Repeat
                Select WaitWindowEvent( waittime )
@@ -21550,7 +21538,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         __gui\quit = 1
                      Else
                         ;\\
-                        CurrentRoot( )
+                        ChangeCurrentRoot( )
                         __gui\quit = 0
                      EndIf
                      
@@ -21598,9 +21586,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure   WaitQuit( *window._s_WIDGET )
+      Procedure   WaitQuit( *window._s_WIDGET = #PB_Any )
          ;\\
-         BindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+         SendPostEvents( )
+         
+         ;\\
+         If is_widget_( *window )
+            BindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+         Else
+            ForEach enumRoot( )
+               BindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
+            Next
+         EndIf
          
          ;\\ start main loop
          CompilerSelect #PB_Compiler_OS 
@@ -21623,10 +21620,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "  event( QUIT )"
       EndProcedure
       
-      Procedure   PostQuit( *window._s_WIDGET )
-         ;\\
-         UnbindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+      Procedure   PostQuit( *window._s_WIDGET = #PB_Any )
+;          ;\\
+;          SendPostEvents( )
          
+         ;\\
+         If is_widget_( *window )
+            UnbindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+         EndIf
+      
          ;\\ stop main loop
          CompilerSelect #PB_Compiler_OS 
             CompilerCase #PB_OS_Linux
@@ -21647,15 +21649,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure MessageEvents( )
          Select WidgetEventType( )
+            Case #__event_LostFocus 
+               Debug " lostfocus " + WidgetEventType( ) +" "+  EventWidget( )\root\class
+               ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
+               ; EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
+               
+            Case #__event_Focus
+               ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
+               
+               Debug " focus " + WidgetEventType( ) +" "+  EventWidget( )\root\class
+               If EventWidget( )\root\canvas\repaint = 0
+                  EventWidget( )\root\canvas\repaint = 1
+               EndIf
+               If EventWidget( )\before\root
+                  EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\before\root\canvas\gadgetID )
+               EndIf
+               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
+               
             Case #__event_Down, 
                  #__event_Up, 
                  #__event_MouseEnter, 
                  #__event_MouseLeave
                
-               If EventWidget( )\root\repaint
+               If EventWidget( )\root\repaint = 1
                   EventWidget( )\root\repaint = 0
-                  ; EventHandler( #PB_Event_Gadget, EventWidget( )\root\canvas\gadget, #pb_eventtype_Repaint, 0 )
-                  ReDraw( EventWidget( )\root )
+                  
+                  If EventWidget( )\root\canvas\repaint = 0
+                     EventWidget( )\root\canvas\repaint = 1
+                  EndIf
+                  
+                  EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
+                     ;ReDraw( EventWidget( )\root )
                EndIf
                
             Case #__event_LeftClick
@@ -21696,6 +21720,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             *parent = Root( )
          EndIf
+         
+         Bind( *parent, @MessageEvents( ), #__event_LostFocus )
          
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
@@ -21880,21 +21906,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bind( *message, @MessageEvents( ), #__event_MouseLeave )
          Bind( *message, @MessageEvents( ), #__event_Down )
          Bind( *message, @MessageEvents( ), #__event_Up )
+         Bind( *message, @MessageEvents( ), #__event_Focus )
          
          ;\\
          Sticky( *message, #True )
-         Redraw( *message\root )
+         ;Redraw( *message\root )
          
          ;\\
          ;Disable( *parent\root, 1 )
-         Redraw( *parent\root ) 
+         ;Redraw( *parent\root ) 
          
          ;\\
          WaitQuit( *message )
          
          ;\\
          ;Disable( *parent\root, 0 )
-         Redraw( *parent\root ) 
+         ;Redraw( *parent\root ) 
          
          ;\\
          FreeImage( img )
@@ -21904,11 +21931,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ close
          Close( *message )
          
+         ;\\
+         ChangeCurrentRoot( )
+            
+         ;\\
          EventWidget( ) = *widget
          
-         ;\\
-         CurrentRoot( )
-            
          ProcedureReturn result
       EndProcedure
    EndModule
@@ -22611,7 +22639,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20123
-; FirstLine = 19777
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy------------------------------------------------------------------------------------------------------------------------------------------------------------0--------4f---+-+------8--8-------------8----------v------------f2-------
+; CursorPosition = 21622
+; FirstLine = 20635
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-fy-------------------------------------------------------------------------------------------n----------------------------------------------------------------8--------v-+--0-0------4--4--f----------4----------------------4-fV+------
 ; EnableXP
