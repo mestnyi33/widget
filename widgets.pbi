@@ -21665,37 +21665,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__event_LostFocus 
                Debug " -------lostfocus " + WidgetEventType( ) +" "+  EventWidget( )\root\class +" "+ EventWidget( )\root\repaint 
                ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
-               ReDraw( EventWidget( )\root )
+;                ReDraw( EventWidget( )\root )
                
             Case #__event_Focus
                Debug " -------focus " + WidgetEventType( ) +" "+  EventWidget( )\root\class +" "+ EventWidget( )\root\repaint
                ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
                ;                
-               ;                If EventWidget( )\root\canvas\repaint = 0
-               ;                   EventWidget( )\root\canvas\repaint = 1
-               ;                EndIf
-               ;                If EventWidget( )\before\root
-               ;                   EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\before\root\canvas\gadgetID )
-               ;                EndIf
-               ;                 EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-               ReDraw( EventWidget( )\root )
+                              If EventWidget( )\root\canvas\repaint = 0
+                                 EventWidget( )\root\canvas\repaint = 1
+                              EndIf
+                              If EventWidget( )\before\root
+                                 EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\before\root\canvas\gadgetID )
+                              EndIf
+                               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
+;                ReDraw( EventWidget( )\root )
                
             Case #__event_Down, 
                  #__event_Up, 
                  #__event_MouseEnter, 
                  #__event_MouseLeave
                
-               ;                If EventWidget( )\root\repaint = 1
-               ;                   EventWidget( )\root\repaint = 0
-               ;                   
-               ;                   If EventWidget( )\root\canvas\repaint = 0
-               ;                      EventWidget( )\root\canvas\repaint = 1
-               ;                   EndIf
-               ;                   
-               ;                   EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-               ;                EndIf
+                              If EventWidget( )\root\repaint = 1
+                                 EventWidget( )\root\repaint = 0
+                                 
+                                 If EventWidget( )\root\canvas\repaint = 0
+                                    EventWidget( )\root\canvas\repaint = 1
+                                 EndIf
+                                 
+                                 EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
+                              EndIf
                
-               ReDraw( EventWidget( )\root )
+;                ReDraw( EventWidget( )\root )
                
             Case #__event_LeftClick
                Protected *ew._S_WIDGET = EventWidget( )
@@ -22653,8 +22653,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22654
-; FirstLine = 22618
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
