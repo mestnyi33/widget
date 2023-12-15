@@ -8,7 +8,20 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
-      Select WidgetEventType( )
+       ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
+       
+       Select WidgetEventType( )
+         Case #__event_Repaint
+             Debug "repaint " + EventWidget( )\class 
+             ;ReDraw( EventWidget( ) )
+             
+         Case #__event_LeftClick
+            Select GetText( EventWidget( ) )
+               Case "window_2_root_butt_1"
+                  Message( "message", "Quit the program?", #__message_ScreenCentered )
+                  
+            EndSelect
+            
          Case #__event_Create
             Debug "create - event " + EventWidget( )\class
             
@@ -80,7 +93,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 9
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP

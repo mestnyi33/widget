@@ -219,17 +219,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::Root( ) = widget::enumRoot( )
       EndMacro
       Macro PostEventRepaint( _root_ )
-         If Not Send( _root_, #__event_Repaint )
-            If _root_ And
-               _root_\canvas\repaint = 0
-               _root_\canvas\repaint = 1
-               
-               PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
+         If _root_
+            If __gui\loop
+               If Root( ) = _root_
+                ;  Debug "6666 "+ ClassFromEvent( WidgetEvent( )\type ) ;  ReDraw( _root_ ) 
+               EndIf
+            EndIf  
+              
+             If Not Send( _root_, #__event_Repaint )
+               If _root_\canvas\repaint = 0
+                  _root_\canvas\repaint = 1
+                  
+                  If Not __gui\loop
+                     PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
+                  EndIf
+               EndIf
             EndIf
          EndIf
       EndMacro
       Macro PostRepaint( _root_ )
-         ; PostEventRepaint( _root_ )
+         ;Debug #PB_Compiler_Procedure
+         PostEventRepaint( _root_ )
       EndMacro
       
       ;-
@@ -16505,6 +16515,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DoEvents( __widget, __type )
                   EndIf
                   
+                  ;\\
+                  If EnteredWidget( )
+                     If EnteredWidget( )\root <> FocusedWidget( )\root
+                        ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+                       ; Debug EnteredWidget( )\class
+                     EndIf
+                  EndIf
+      
                ElseIf #__event_LostFocus = __type
                   If Not Send( __widget, __type, __item, __data )
                      DoEvents( __widget, __type )
@@ -16516,7 +16534,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;EndIf
             Next
          EndIf
-         
+      
       EndProcedure
       
       
@@ -17292,7 +17310,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  ; Send( *this, #__event_Draw )
+                  Send( *this, #__event_Draw )
                EndIf
                
                ;\\ reset values
@@ -17698,6 +17716,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         result = *this\root\events( )\function( )
                         
+                        ;\\
+                        ;If Not result
+                           If __gui\loop
+                              If eventtype = #__event_Repaint
+                                 ReDraw( *this\root )
+                              EndIf
+                           EndIf
+                        ;EndIf
+                        
+                        ;\\
                         If result
                            If result <> #PB_Ignore And eventtype = #__event_Close
                               ProcedureReturn result
@@ -19374,18 +19402,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;                  If eventtype = #__event_LeftUp
          ;                    Debug " u "+*this\class
          ;                  EndIf
-         
-         
-          ;\\
-         If eventtype = #__event_Focus
-            Debug " f "+*this\class
-         EndIf
-         
-         ;\\
-         If eventtype = #__event_LostFocus
-            Debug " l-f "+*this\class
-         EndIf
-         
+;          
+;          
+;           ;\\
+;          If eventtype = #__event_Focus
+;             Debug " f "+*this\class
+;          EndIf
+;          
+;          ;\\
+;          If eventtype = #__event_LostFocus
+;             Debug " l-f "+*this\class
+;          EndIf
+;          
          If Not *this
             ProcedureReturn 0
          EndIf
@@ -20100,7 +20128,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventdata 
                If ChangeCurrentCanvas( eventdata )
                   If Root( )\canvas\repaint = 1
-                     Debug "   Repaint " + Root( )\class
+                     ; Debug "   Repaint " + Root( )\class
                      
                      ;\\ send posted events
                      PostEventCallback( )
@@ -20158,7 +20186,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                   EndIf
                   ; PostRepaint( Root( ) ) 
-                  ReDraw( Root( ) )
+                  ; ReDraw( Root( ) )
                EndIf
                ; PopMapPosition( enumRoot( ) )
             EndIf
@@ -20490,8 +20518,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If EnteredWidget( )
-                  ;;ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-                  
                   PressedWidget( )             = EnteredWidget( )
                   PressedWidget( )\state\press = #True
                   
@@ -20570,8 +20596,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If PressedWidget( )
-                  ;;ChangeCurrentCanvas( PressedWidget( )\root\canvas\gadgetID )
-                  
                   ;\\ drag & drop stop
                   If PressedWidget( )\dragstart
                      PressedWidget( )\dragstart = #PB_Drag_Finish
@@ -21617,6 +21641,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   WaitQuit( *window._s_WIDGET = #PB_Any )
+         __gui\loop + 1
          ;\\
          PostEventCallback( )
          
@@ -21651,6 +21676,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   PostQuit( *window._s_WIDGET = #PB_Any )
+         __gui\loop = 0
          ;          ;\\
          ;          PostEventCallback( )
          
@@ -21735,6 +21761,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
+         If __gui\loop > 3
+            ProcedureReturn 0
+         EndIf
+         __gui\loop = 1
+         
          Protected result, x, y, width = 400, height = 120
          Protected img = - 1, f1 = - 1, f2 = 8
          Protected bw = 85, bh = 25, iw = height - bh - f1 - f2 * 4 - 2 - 1
@@ -21764,7 +21795,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_Window_TitleBar | #PB_Window_WindowCentered, *parent)
          ;          
          ;\\ 3)
-         Define newflag = #PB_Window_TitleBar|#PB_Window_WindowCentered|#PB_Window_Invisible
+         Define newflag = #PB_Window_TitleBar|#PB_Window_Invisible
+         If flag & #__message_ScreenCentered
+            newflag | #PB_Window_ScreenCentered
+         Else
+            newflag | #PB_Window_WindowCentered
+         EndIf
          *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\root\canvas\window ))
          HideWindow( *message\root\canvas\window, 0 )
          SetClass( *message, #PB_Compiler_Procedure )
@@ -22671,7 +22707,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20139
-; FirstLine = 20109
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+--i--478860f--8-----------------------------------
+; CursorPosition = 17725
+; FirstLine = 17622
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v+--------f----------------------------------------------------------------------------------8--L+-frvvn4-0-v---------------------------r+-------
 ; EnableXP

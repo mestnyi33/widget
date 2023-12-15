@@ -26,14 +26,15 @@ EndImport
 DeclareC eventTapFunction(proxy, type, event, refcon)
 
 Global psn.q, mask, eventTap, key.s
- CFRunLoopAddCommonMode(CFRunLoopGetCurrent(), CocoaMessage(0, 0, "NSString stringWithString:$", @"NSEventTrackingRunLoopMode"))
-GetCurrentProcess(@psn.q)
+
+; CFRunLoopAddCommonMode(CFRunLoopGetCurrent(), CocoaMessage(0, 0, "NSString stringWithString:$", @"NSEventTrackingRunLoopMode"))
 
 mask = #LeftMouseDownMask | #LeftMouseUpMask
 mask | #RightMouseDownMask | #RightMouseUpMask
 mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
 mask | #KeyDownMask
 
+GetCurrentProcess(@psn.q)
 eventTap = CGEventTapCreateForPSN(@psn, 0, 1, mask, @eventTapFunction(), 0)
 If eventTap
   CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopCommonModes")
@@ -192,5 +193,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; ; CompilerEndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+; CursorPosition = 34
+; FirstLine = 15
+; Folding = 0-
 ; EnableXP

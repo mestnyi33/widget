@@ -9,12 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure CallBack( )
       Select WidgetEventType( )
-         Case #__event_Repaint
-            Debug "repaint " + EventWidget( )\class 
-            ProcedureReturn ReDraw( EventWidget( ) )
+         Case #__event_LeftClick
+            Select GetText( EventWidget( ) )
+               Case "window_2_root_butt_1"
+                  Message( "message", "Quit the program?", #__message_ScreenCentered )
+                  
+            EndSelect
             
+         Case #__event_Repaint
+             Debug "repaint " + EventWidget( )\class 
+             ;ReDraw( EventWidget( ) )
+             ;ProcedureReturn 1
+             
          Default
-            Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
+           ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
             
       EndSelect
    EndProcedure
@@ -62,6 +70,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; CursorPosition = 21
 ; Folding = -
 ; EnableXP

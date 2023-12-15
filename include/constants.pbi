@@ -817,15 +817,20 @@
          #PB_MessageRequester_Warning = 1 << 4
       CompilerEndIf
       
-      #__message_Cancel = #PB_MessageRequester_Cancel
-      #__message_Error = #PB_MessageRequester_Error
-      #__message_Info = #PB_MessageRequester_Info
-      #__message_No = #PB_MessageRequester_No
-      #__message_Ok = #PB_MessageRequester_Ok
+      ;- \\ message
+      #__message_Cancel = #PB_MessageRequester_Cancel           ; 2
+      #__message_Error = #PB_MessageRequester_Error             ; 8
+      #__message_Info = #PB_MessageRequester_Info               ; 4
       #__message_Warning = 32;#PB_MessageRequester_Warning
-      #__message_Yes = #PB_MessageRequester_Yes
-      #__message_YesNo = #PB_MessageRequester_YesNo
-      #__message_YesNoCancel = #PB_MessageRequester_YesNoCancel
+      
+      #__message_Ok = #PB_MessageRequester_Ok                   ; 0
+      #__message_YesNo = #PB_MessageRequester_YesNo             ; 1
+      #__message_YesNoCancel = #PB_MessageRequester_YesNoCancel ; 2
+      #__message_Yes = #PB_MessageRequester_Yes                 ; 6
+      #__message_No = #PB_MessageRequester_No                   ; 7
+      
+      #__message_ScreenCentered = 256;#PB_Window_ScreenCentered ; 64
+      ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
       
    EndDeclareModule
    
@@ -837,7 +842,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 283
-; FirstLine = 268
+; CursorPosition = 831
+; FirstLine = 802
 ; Folding = ---
 ; EnableXP

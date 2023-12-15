@@ -729,8 +729,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drawing                      ;
          *opened._s_WIDGET             ; last-list opened element
          
-         *__widget._s_WIDGET             ; start enumerate widget
-         *__root._s_ROOT
+         *__widget._s_WIDGET           ; enumerate widget
+         *__root._s_ROOT               ; enumerate root
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -742,6 +742,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;Map *roots._s_ROOT( )   
          
          quit.b ; quit from main loop
+         loop.b
       EndStructure
       
       ;Global *event._s_events = Allocatestructure(_s_events)
@@ -755,7 +756,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 712
-; FirstLine = 585
+; CursorPosition = 744
+; FirstLine = 605
 ; Folding = ---PP7D+--
 ; EnableXP
