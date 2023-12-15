@@ -7,66 +7,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(widget)
    
-   Procedure MessageEvents( )
-      Select WidgetEventType( )
-         Case #__event_LostFocus 
-            If is_widget_( EventWidget( ) )
-               Debug " " + WidgetEventType( ) +" "+  EventWidget( )\root\class
-               ;                If EventWidget( )\root\canvas\repaint = 0
-               ;                 ;  EventWidget( )\root\canvas\repaint = 1
-               ;                EndIf
-               ;                
-               ;                PushMapPosition( EnumRoot( ) )
-               ;                EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-               ;                PopMapPosition( EnumRoot( ) )
-            EndIf
-            
-         Case #__event_Focus
-            ;Debug " " + WidgetEventType( ) +" "+  EventWidget( )\root\class
-            If EventWidget( )\root\canvas\repaint = 0
-               EventWidget( )\root\canvas\repaint = 1
-            EndIf
-            If EventWidget( )\before\root
-               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\before\root\canvas\gadgetID )
-            EndIf
-            EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-            
-         Case #__event_Down, 
-              #__event_Up, 
-              #__event_MouseEnter, 
-              #__event_MouseLeave
-            
-            If EventWidget( )\root\repaint = 1
-               EventWidget( )\root\repaint = 0
-               
-               If EventWidget( )\root\canvas\repaint = 0
-                  EventWidget( )\root\canvas\repaint = 1
-               EndIf
-               
-               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-               ;ReDraw( EventWidget( )\root )
-            EndIf
-            
-         Case #__event_LeftClick
-            Protected *ew._S_WIDGET = EventWidget( )
-            Protected *message._S_WIDGET = *ew\window
-            
-            Select GetText( *ew )
-               Case "No"     : SetData( *message, #__message_No )     ; no
-               Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
-               Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
-            EndSelect
-            
-            Unbind( *message, @MessageEvents( ), #__event_LeftClick )
-            
-            ;\\
-            PostQuit( *message )
-            
-      EndSelect
-      
-      ProcedureReturn #PB_Ignore
-   EndProcedure
-   
    Procedure CallBack( )
       Select WidgetEventType( )
          Case #__event_Create
@@ -74,11 +14,9 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Focus
             Debug "focus - event " + EventWidget( )\class
-            EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
             
          Case #__event_LostFocus
             Debug "lostfocus - event " + EventWidget( )\class
-            EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
             
          Case #__event_Maximize
             Debug "maximize - event " + EventWidget( )\class
@@ -103,21 +41,10 @@ CompilerIf #PB_Compiler_IsMainFile
               #__event_MouseEnter, 
               #__event_MouseLeave
             
-            If EventWidget( )\root\repaint = 1
-               EventWidget( )\root\repaint = 0
-               
-               If EventWidget( )\root\canvas\repaint = 0
-                  EventWidget( )\root\canvas\repaint = 1
-               EndIf
-               
-               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-               ;ReDraw( EventWidget( )\root )
-            EndIf
-            
+         Case #__event_Repaint
+            ProcedureReturn ReDraw( EventWidget( ) )
             
       EndSelect
-      
-      ; ProcedureReturn 1
    EndProcedure
    
    ;\\
@@ -156,14 +83,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
-   Bind( #PB_All, @CallBack( ) )
    
+   Bind( #PB_All, @CallBack( ) )
    
    WaitQuit( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 163
-; FirstLine = 127
-; Folding = ---
+; CursorPosition = 46
+; FirstLine = 8
+; Folding = -
 ; EnableXP

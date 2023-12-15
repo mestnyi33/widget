@@ -40,15 +40,15 @@ Module events
       Protected EventGadget, EventType, EventData
       
       If *setcallback 
-         If event = #PB_Event_ActivateWindow
-            ; Debug " WaitEvent - ActivateWindow"
-            CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
-         EndIf
-         
-         If event = #PB_Event_DeactivateWindow
-            ; Debug " WaitEvent - DeactivateWindow"
-            CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
-         EndIf
+;          If event = #PB_Event_ActivateWindow
+;             ; Debug " WaitEvent - ActivateWindow"
+;             CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
+;          EndIf
+;          
+;          If event = #PB_Event_DeactivateWindow
+;             ; Debug " WaitEvent - DeactivateWindow"
+;             CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
+;          EndIf
          
          If event = #PB_Event_Gadget
             eventgadget = EventGadget( )
@@ -78,7 +78,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 51
+; CursorPosition = 50
 ; FirstLine = 33
 ; Folding = ---
 ; EnableXP
