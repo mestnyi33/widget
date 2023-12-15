@@ -228,6 +228,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
+      Macro PostRepaint( _root_ )
+         ; PostEventRepaint( _root_ )
+      EndMacro
       
       ;-
       Macro _tabs( ): bar\_s( ): EndMacro
@@ -4597,7 +4600,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn *this\root\repaint
       EndProcedure
       
@@ -4768,7 +4771,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DisableChildrens( *this._S_WIDGET )
             EndIf
             
-            PostEventRepaint( *this\root )
+            PostRepaint( *this\root )
          EndIf
          
          ProcedureReturn result
@@ -4940,7 +4943,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          set_image_( *this, *this\_tabs( )\Image, Image )
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          
          ProcedureReturn Item
       EndProcedure
@@ -7825,7 +7828,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            bar_Update( *this )
-                           PostEventRepaint( *this\root )
+                           PostRepaint( *this\root )
                            ProcedureReturn #True
                         EndIf
                      EndIf
@@ -8949,7 +8952,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\EnteredLineIndex( ) = 0
          EndIf
          
-         PostEventRepaint( *this\root ) ;?
+         PostRepaint( *this\root ) ;?
          ProcedureReturn 1
       EndProcedure
       
@@ -10970,7 +10973,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\scroll\state = - 1
                   EndIf
                   
-                  PostEventRepaint( *this\root )
+                  PostRepaint( *this\root )
                EndIf
             EndIf
          EndIf
@@ -11814,7 +11817,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Popup( )\widget = *this
                Popup( )\parent = *display
                ChangeParent( *this, Popup( ) )
-               PostEventRepaint( Popup( ) )
+               PostRepaint( Popup( ) )
                
                ;\\
                If *display\round
@@ -12647,7 +12650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\WidgetChange( ) = 1
             *this\count\items - 1
             DeleteElement( *this\_rows( ))
-            PostEventRepaint( *this\root )
+            PostRepaint( *this\root )
             result = #True
          EndIf
          
@@ -12689,7 +12692,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ClearList( *this\_rows( ))
-               PostEventRepaint( *this\root )
+               PostRepaint( *this\root )
             EndIf
          EndIf
          
@@ -13276,7 +13279,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If result
-            PostEventRepaint( *this\root )
+            PostRepaint( *this\root )
          EndIf
          
          ProcedureReturn result
@@ -13344,7 +13347,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   DoEvents( *this, #__event_Change )
-                  PostEventRepaint( *this\root )
+                  PostRepaint( *this\root )
                   ProcedureReturn #True
                EndIf
             EndIf
@@ -13366,7 +13369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\checkstate = State
                
                DoEvents( *this, #__event_Change )
-               PostEventRepaint( *this\root )
+               PostRepaint( *this\root )
                ProcedureReturn #True
             EndIf
          EndIf
@@ -13587,7 +13590,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        PostEventRepaint( *this\root )
+                        PostRepaint( *this\root )
                         ProcedureReturn #True
                      EndIf
                   EndIf
@@ -13612,7 +13615,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result = bar_SetState( *this, state )
          EndSelect
          
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -13730,7 +13733,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *This\text\string.s = Text.s
                   *This\TextChange( ) = #True
                   result              = #True
-                  PostEventRepaint( *this\root )
+                  PostRepaint( *this\root )
                EndIf
             EndIf
          EndIf
@@ -13758,7 +13761,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *This\text\string.s = Text.s
                *This\TextChange( ) = #True
                result              = #True
-               PostEventRepaint( *This\root )
+               PostRepaint( *This\root )
             EndIf
          EndIf
          
@@ -14474,8 +14477,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               PostEventRepaint( *parent\root )
-               PostEventRepaint( *lastParent\root )
+               PostRepaint( *parent\root )
+               PostRepaint( *lastParent\root )
                
                ;           ChangeCurrentCanvas(*parent\root\canvas\GadgetID)
                ;           ReDraw(Root( ))
@@ -14927,7 +14930,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; update parent children's coordinate
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PostEventRepaint( *this\root )
+               PostRepaint( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -15337,7 +15340,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15356,7 +15359,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15495,7 +15498,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; result = bar_SetState( *this, state )
          EndIf
          
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15595,7 +15598,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          Post( *this, #__event_create )
-         PostEventRepaint( *this\root )
+         PostRepaint( *this\root )
          
          ;\\ set activate state
          If *this\type = #__type_String
@@ -17289,7 +17292,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  Send( *this, #__event_Draw )
+                  ; Send( *this, #__event_Draw )
                EndIf
                
                ;\\ reset values
@@ -17739,6 +17742,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                __events( )\item   = *button
                __events( )\data   = *data
                ProcedureReturn __events( )
+            EndIf
+            
+            ;\\ post repaint canvas event
+            If eventtype = #__event_Create
+              ; PostEventRepaint( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -19366,6 +19374,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;                  If eventtype = #__event_LeftUp
          ;                    Debug " u "+*this\class
          ;                  EndIf
+         
+         
+          ;\\
+         If eventtype = #__event_Focus
+            Debug " f "+*this\class
+         EndIf
+         
+         ;\\
+         If eventtype = #__event_LostFocus
+            Debug " l-f "+*this\class
+         EndIf
+         
          If Not *this
             ProcedureReturn 0
          EndIf
@@ -20098,13 +20118,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If FocusedWidget( )
                ForEach EnumRoot( )
                   If EnumRoot( )\canvas\window = EventWindow( )
-                     Root( ) = EnumRoot( )
-                     
-                     If GetActive( ) = Root( )
+                     If GetActive( ) = EnumRoot( )
+                        Root( ) = EnumRoot( )
                         ; Debug "Deactivate - "+Root( )\class
                         SetDeactive( Root( ) )
                         GetActive( ) = 0
-                        ; ReDraw( Root( ) )
                         Break
                      EndIf
                   EndIf
@@ -20117,15 +20135,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not EnteredWidget( )
                ForEach EnumRoot( )
                   If EnumRoot( )\canvas\window = EventWindow( )
-                     Root( ) = EnumRoot( )
-                     
-                     If Root( )\show 
-                        If GetActive( ) <> Root( )
-                           ; Debug "Activate - "+Root( )\class
-                           SetActive( Root( ) )
-                           ; ReDraw( Root( ) )
-                           Break
-                        EndIf
+                     If EnumRoot( )\show 
+                        Root( ) = EnumRoot( )
+                        ; Debug "Activate - "+Root( )\class
+                        SetActive( Root( ) )
+                        Break
                      EndIf
                   EndIf
                Next
@@ -20143,7 +20157,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                   EndIf
-                  ; PostEventRepaint( Root( ) ) 
+                  ; PostRepaint( Root( ) ) 
                   ReDraw( Root( ) )
                EndIf
                ; PopMapPosition( enumRoot( ) )
@@ -20267,6 +20281,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
+            
+           ; Debug ""+ Root( )\class +" "+ eventgadget +" "+ Bool( Root( )\canvas\gadget = eventgadget )
             
             ;\\
             If Root( ) And 
@@ -20474,6 +20490,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If EnteredWidget( )
+                  ;;ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+                  
                   PressedWidget( )             = EnteredWidget( )
                   PressedWidget( )\state\press = #True
                   
@@ -20552,6 +20570,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If PressedWidget( )
+                  ;;ChangeCurrentCanvas( PressedWidget( )\root\canvas\gadgetID )
+                  
                   ;\\ drag & drop stop
                   If PressedWidget( )\dragstart
                      PressedWidget( )\dragstart = #PB_Drag_Finish
@@ -20935,8 +20955,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             Post( Root( ), #__event_create )
-            ;\\ post repaint canvas event
-            PostEventRepaint( Root( ) )
             
             ;\\
             If width Or height
@@ -21153,7 +21171,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\   
             Post( *this, #__event_create )
-            PostEventRepaint( *this\root )
             
             ;\\
             If *parent
@@ -21486,7 +21503,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               ;PostEventRepaint( *this\parent\root )
+               ;;PostRepaint( *this\parent\root )
                ;ClearStructure( *this, _S_WIDGET )
                
                If *this = enumRoot( )
@@ -22653,6 +22670,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20139
+; FirstLine = 20109
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+--i--478860f--8-----------------------------------
 ; EnableXP

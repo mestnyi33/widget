@@ -9,40 +9,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure CallBack( )
       Select WidgetEventType( )
-         Case #__event_Create
-            Debug "create - event " + EventWidget( )\class
-            
-         Case #__event_Focus
-            Debug "focus - event " + EventWidget( )\class
-            
-         Case #__event_LostFocus
-            Debug "lostfocus - event " + EventWidget( )\class
-            
-         Case #__event_Maximize
-            Debug "maximize - event " + EventWidget( )\class
-            
-         Case #__event_Minimize
-            Debug "minimize - event " + EventWidget( )\class
-            
-         Case #__event_Restore
-            Debug "restore - event " + EventWidget( )\class 
-            
-         Case #__event_Close
-            Debug "close - event " + EventWidget( )\class 
-            
-         Case #__event_Resize
-            Debug "resize - event " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
-            
-         Case #__event_Free
-            Debug "free - event " + EventWidget( )\class 
-            
-         Case #__event_Down, 
-              #__event_Up, 
-              #__event_MouseEnter, 
-              #__event_MouseLeave
-            
          Case #__event_Repaint
+            Debug "repaint " + EventWidget( )\class 
             ProcedureReturn ReDraw( EventWidget( ) )
+            
+         Default
+            Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
             
       EndSelect
    EndProcedure
@@ -90,7 +62,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 8
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
