@@ -94,10 +94,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
+   ;\\
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 64
+; CursorPosition = 96
 ; FirstLine = 61
 ; Folding = -
 ; EnableXP

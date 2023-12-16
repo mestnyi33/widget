@@ -240,10 +240,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;Debug #PB_Compiler_Procedure
          PostEventRepaint( _root_ )
       EndMacro
-      Macro Repaint( )
-         ;Debug #PB_Compiler_Procedure
-         PostEventRepaint( Root( ) )
-      EndMacro
       
       ;-
       Macro _tabs( ): bar\_s( ): EndMacro
@@ -685,50 +681,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
       
       ;-
-      Macro Drawing( ): widget::__gui\drawing: EndMacro
-      Macro ReDrawing( _this_, _item_ = 0 )
-         If Not Drawing( )
-            If _this_\root
-               Drawing( ) = Bool( StartDrawing( Output( _this_\root )))
-            EndIf
+      ;Macro Drawing( ): widget::__gui\drawing: EndMacro
+      Macro ReDrawing( _root_ )
+         Bool( Not _root_\canvas\drawing )
+         ;Debug "---ReDrawing---"
+         If _root_\BeforeRoot( ) And 
+            _root_\BeforeRoot( )\canvas\gadget <> _root_\canvas\gadget
+            ;Debug "stop "+_root_ +" "+ _root_\BeforeRoot( ) +" "+ _root_\BeforeRoot( )\canvas\drawing
             
-            If _item_ > 0
-               draw_font_item_( _this_, _item_, 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
-               
-               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  If _item_\text\fontID
-                     DrawingFont( _item_\text\fontID )
-                  EndIf
-               CompilerEndIf
-            ElseIf _item_ = - 1
-               draw_font_( _this_ )
-            EndIf
-            
-            If test_startdrawing
-               Debug "  ReDrawing( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) + " " + _this_\class
-            EndIf
-         EndIf
-      EndMacro
-      Macro DrawingStart( _canvas_ )
-         If Drawing( )
+            _root_\BeforeRoot( )\canvas\drawing = 0
             StopDrawing( )
-            
-            If _canvas_ = #PB_Default
-               Drawing( ) = 0
-               If test_startdrawing
-                  Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-               EndIf
-            EndIf
          EndIf
-         If _canvas_ >= 0
-            Drawing( ) = Bool( StartDrawing( CanvasOutput( _canvas_ )))
-            If test_startdrawing
-               Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-            EndIf
+         If Not _root_\canvas\drawing
+           ; Debug "start "+ _root_
+            _root_\canvas\drawing = StartDrawing( Output( _root_ ))
+         Else
+           ; Debug "  stop "+_root_ 
+           ; DrawingStop( _root_ )
          EndIf
-      EndMacro
-      Macro DrawingStop( )
-         DrawingStart( #PB_Default )
       EndMacro
       Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
       
@@ -2495,8 +2465,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
          
          ;\\
-         DrawingStop( )
-         
+         ;DrawingStop( Root( ) )
+         If Root( )\canvas\drawing
+            Root( )\canvas\drawing = 0
+            StopDrawing( )
+         EndIf
          Macro a_grid_change( _this_ )
             If a_transform( )\grid_widget <> _this_
                If a_transform( )\grid_size > 1 And a_transform( )\grid_widget
@@ -2548,6 +2521,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                StopDrawing( )
             EndIf
+            
+            ReDrawing( Root( ) )
          EndIf
          
          ProcedureReturn ID
@@ -8071,7 +8046,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\EnteredLine( )
             ;\\
-            ReDrawing( *this, *this\EnteredLine( ) )
+            If ReDrawing( *this\root )
+               If *this\EnteredLine( ) > 0
+                  draw_font_item_( *this, *this\EnteredLine( ), 1 ) ;*this\EnteredLine( )\TextChange( ) )EndIf
+                  
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                     If *this\EnteredLine( )\text\fontID
+                        DrawingFont( *this\EnteredLine( )\text\fontID )
+                     EndIf
+                  CompilerEndIf
+               EndIf
+            EndIf
             
             mouse_x = mouse( )\x - row_x_( *this, *this\EnteredLine( ) ) - *this\EnteredLine( )\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
@@ -8098,7 +8083,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\index + " " + mode
          
          ;\\
-         ReDrawing( *this, *rowLine )
+         If ReDrawing( *this\root )
+            If *rowLine > 0
+               draw_font_item_( *this, *rowLine, 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                  If *rowLine\text\fontID
+                     DrawingFont( *rowLine\text\fontID )
+                  EndIf
+               CompilerEndIf
+            EndIf
+         EndIf
          
          *this\root\repaint = #True
          ;\\ *rowLine\color\state = #__s_2
@@ -8501,7 +8496,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Chr.s
             *rowLine = *this\FocusedLine( )
             ;\\
-            ReDrawing( *this, *rowLine )
+            If ReDrawing( *this\root )
+               If *rowLine > 0
+                  draw_font_item_( *this, *rowLine, 1 ) ;_this_\EnteredLine( )\TextChange( ) )EndIf
+                  
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                     If *rowLine\text\fontID
+                        DrawingFont( *rowLine\text\fontID )
+                     EndIf
+                  CompilerEndIf
+               EndIf
+            EndIf
             
             If *rowLine
                Count = CountString( Chr.s, #LF$)
@@ -8885,7 +8890,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         ReDrawing( *this, *this\_rows( ) )
+         If ReDrawing( *this\root )
+            If *this\_rows( ) > 0
+               draw_font_item_( *this, *this\_rows( ), 1 ) ;*this\EnteredLine( )\TextChange( ) )EndIf
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                  If *this\_rows( )\text\fontID
+                     DrawingFont( *this\_rows( )\text\fontID )
+                  EndIf
+               CompilerEndIf
+            EndIf
+         EndIf
          
          *this\_rows( )\index       = position
          *this\_rows( )\text\len    = string_len
@@ -10337,8 +10352,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
                   
                   ;\\
-                  ReDrawing( *this, *this\EnteredLine( )  )
-                  
+                  If ReDrawing( *this\root )
+                     If *this\EnteredLine( ) > 0
+                        draw_font_item_( *this, *this\EnteredLine( ), 1 ) ;*this\EnteredLine( )\TextChange( ) )EndIf
+                        
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           If *this\EnteredLine( )\text\fontID
+                              DrawingFont( *this\EnteredLine( )\text\fontID )
+                           EndIf
+                        CompilerEndIf
+                     EndIf
+                  EndIf
                   
                   ;\\ if the item list has changed
                   *this\scroll_width( ) = 0
@@ -17340,14 +17364,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   ReDraw( *root._S_ROOT )
+         ; Repost( *root )
          
-         ;          ;\\ send posted events
-         ;          Repost( *root )
+         ReDrawing( *root )
+         *root\canvas\drawing = StartDrawing( Output( *root ) )
          
-         ;\\
-         DrawingStart( *root\canvas\gadget )
-         If Drawing( )
-            If Not ( a_transform( ) And a_transform( )\grab )
+         If Not ( a_transform( ) And a_transform( )\grab )
                ;\\
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ; good transparent canvas
@@ -17565,9 +17587,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            DrawingStop( )
-         EndIf
-         
+            StopDrawing( )
+            *root\canvas\drawing = 0
+            
          ProcedureReturn *root
       EndProcedure
       
@@ -21043,7 +21065,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         DrawingStart( Canvas )
+         Debug "create "+Root( )
+         ReDrawing( Root( ) )
          draw_font_( Root( ) )
          
          ProcedureReturn Root( )
@@ -22669,7 +22692,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 244
-; FirstLine = 234
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22692
+; FirstLine = 22656
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

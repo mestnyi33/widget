@@ -17,8 +17,9 @@ CompilerIf #PB_Compiler_IsMainFile
            
         Case #__Event_Down           : result = 1 : AddItem(w_flag, -1, "down")
            
-        Case #__Event_LeftButtonDown : result = 1 : AddItem(w_flag, -1, " leftdown")
+        Case #__Event_LeftButtonDown : 
            Debug "leftdown"
+           result = 1 : AddItem(w_flag, -1, " leftdown")
            Message( "message", "demo click", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
            
         Case #__Event_LeftButtonUp   : result = 1 : AddItem(w_flag, -1, "  leftup")
@@ -57,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 19
+; CursorPosition = 21
+; FirstLine = 5
 ; Folding = -
 ; EnableXP

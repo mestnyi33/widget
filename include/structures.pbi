@@ -699,6 +699,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
+         drawing.q                 ;
          repaint.b
          ; container.i              ; ???
          *fontID                  ; current drawing fontID
@@ -726,7 +727,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     STRUCT
       Structure _s_STRUCT
          repaint.b
-         *drawing                      ;
+         drawing.b                      ;
          *opened._s_WIDGET             ; last-list opened element
          
          *__widget._s_WIDGET           ; enumerate widget
@@ -756,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 744
-; FirstLine = 605
+; CursorPosition = 729
+; FirstLine = 596
 ; Folding = ---PP7D+--
 ; EnableXP

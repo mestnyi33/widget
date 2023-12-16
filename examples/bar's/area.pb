@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -64,8 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Bind( _parent_, _callback_)
       If _callback_
-         Bind( _parent_\scroll\v, _callback_ )
-         Bind( _parent_\scroll\h, _callback_ )
+         Bind( _parent_\scroll\v, _callback_);, #__event_Change )
+         Bind( _parent_\scroll\h, _callback_);, #__event_Change )
       EndIf
    EndMacro                                                  
    
@@ -89,8 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             PopListPosition( Images( ) )
             
-            Canvas_Draw( MyCanvas, Images( ) ) 
-            ;PostEvent( #PB_Event_Repaint, EventWindow( ), EventGadget( ), #PB_EventType_Repaint ); , EventWidget( )\bar\page\change )
+            ;Canvas_Draw( MyCanvas, Images( ) ) 
       EndSelect
       
    EndProcedure
@@ -241,9 +240,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     Height = widget::Root( )\height - y*2
       
       Select Event
-         Case #PB_EventType_Repaint
-            Repaint = #True
-            
+;          Case #PB_EventType_Repaint
+;             Repaint = #True
+;             
          Case #PB_EventType_LeftButtonUp : Drag = #False
             ; Canvas_SetCursor( Mousex, Mousey )
             
@@ -281,6 +280,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Repaint
          Canvas_Draw( MyCanvas, Images( ) ) 
+         ; Repaint( )
       EndIf
    EndProcedure
    
@@ -363,11 +363,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent( )
       
       If event = #PB_Event_Repaint
-         Select EventType( )
-            Case #PB_EventType_Repaint
-               Canvas_Draw( MyCanvas, Images( ) ) 
-               
-         EndSelect
+;          Select EventType( )
+;             Case #PB_EventType_Repaint
+         If EventData( )
+            Canvas_Draw( MyCanvas, Images( ) ) 
+         EndIf
+         
+;          EndSelect
       EndIf
       
       Select Event
@@ -390,8 +392,9 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  Canvas_Draw(MyCanvas, Images( ))
-                  
+                   ; Canvas_Draw(MyCanvas, Images( ))
+                  Repaint( )
+                
                Case 4
                   If GetGadgetState(2)
                      SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -400,10 +403,12 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  Canvas_Draw(MyCanvas, Images( ))
-                  
+                   ; Canvas_Draw(MyCanvas, Images( ))
+                  Repaint( )
+                
                Case 5
-                  Canvas_Draw(MyCanvas, Images( ))
+                 ; Canvas_Draw(MyCanvas, Images( ))
+                  Repaint( )
                   
             EndSelect
       EndSelect
@@ -411,7 +416,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 32
-; Folding = L-vf0----
+; CursorPosition = 67
+; FirstLine = 60
+; Folding = ---------
 ; EnableXP
