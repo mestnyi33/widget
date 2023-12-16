@@ -220,13 +220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       Macro PostEventRepaint( _root_ )
          If _root_
-            If __gui\loop
-               If Root( ) = _root_
-                ;  Debug "6666 "+ ClassFromEvent( WidgetEvent( )\type ) ;  ReDraw( _root_ ) 
-               EndIf
-            EndIf  
-              
-             If Not Send( _root_, #__event_Repaint )
+            If Not Send( _root_, #__event_Repaint )
                If _root_\canvas\repaint = 0
                   _root_\canvas\repaint = 1
                   
@@ -2494,7 +2488,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          DrawingStop( )
          
-         Macro a_grid_change( _this_, _redraw_ = #False )
+         Macro a_grid_change( _this_ )
             If a_transform( )\grid_widget <> _this_
                If a_transform( )\grid_size > 1 And a_transform( )\grid_widget
                   SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
@@ -2503,10 +2497,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If a_transform( )\grid_size > 1
                   SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
-               EndIf
-               
-               If _redraw_
-                  ReDraw( _this_\root )
                EndIf
             EndIf
          EndMacro
@@ -3105,7 +3095,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          a_transform( )\grid_image = a_grid_image( a_transform( )\grid_size - 1, a_transform( )\grid_type, $FF000000, *this\fs, *this\fs )
          
-         ;;a_grid_change( *this )
          
          
          For i = 0 To #__a_count
@@ -3386,7 +3375,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\state\enter = 2 
                   
                   If Not a_index( )
-                     a_grid_change( *this, #True )
+                     a_grid_change( *this )
+                     
+                     ReDraw( *this\root )
                      
                      If *this\root
                         If StartDrawing( Output( *this\root ))
@@ -14489,12 +14480,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                PostRepaint( *parent\root )
                PostRepaint( *lastParent\root )
-               
-               ;           ChangeCurrentCanvas(*parent\root\canvas\GadgetID)
-               ;           ReDraw(Root( ))
-               ;           ChangeCurrentCanvas(*lastParent\root\canvas\GadgetID)
-               ;           ReDraw(Root( ))
-               
             EndIf
          EndIf
          
@@ -16515,14 +16500,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DoEvents( __widget, __type )
                   EndIf
                   
-                  ;\\
-                  If EnteredWidget( )
-                     If EnteredWidget( )\root <> FocusedWidget( )\root
-                        ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-                       ; Debug EnteredWidget( )\class
+                  ;\\ call message
+                  If __gui\loop
+                     If EnteredWidget( )
+                        If EnteredWidget( )\root <> FocusedWidget( )\root
+                           If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+                              Send( EnteredWidget( )\root, #__event_Repaint ) 
+                           EndIf
+                        EndIf
                      EndIf
                   EndIf
-      
+                  
                ElseIf #__event_LostFocus = __type
                   If Not Send( __widget, __type, __item, __data )
                      DoEvents( __widget, __type )
@@ -16534,7 +16522,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;EndIf
             Next
          EndIf
-      
+         
       EndProcedure
       
       
@@ -17662,6 +17650,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\bar\page\change = *data
             EndIf
             
+            ;             If is_root_( *this )
+            ;                If eventtype = #__event_Repaint
+            ;                   Debug 444
+            ;                   If __gui\loop
+            ;                      If Not result
+            ;                         ReDraw( *this\root )
+            ;                      EndIf
+            ;                   EndIf
+            ;                EndIf
+            ;             EndIf
+            
             ;\\
             If Not is_root_( *this )
                ;\\ first call (current-widget) bind event function
@@ -17717,13 +17716,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         result = *this\root\events( )\function( )
                         
                         ;\\
-                        ;If Not result
+                        If eventtype = #__event_Repaint
                            If __gui\loop
-                              If eventtype = #__event_Repaint
+                              If Not result
                                  ReDraw( *this\root )
                               EndIf
                            EndIf
-                        ;EndIf
+                        EndIf
                         
                         ;\\
                         If result
@@ -17774,7 +17773,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ post repaint canvas event
             If eventtype = #__event_Create
-              ; PostEventRepaint( *this\root )
+               ; PostEventRepaint( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -19402,18 +19401,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;                  If eventtype = #__event_LeftUp
          ;                    Debug " u "+*this\class
          ;                  EndIf
-;          
-;          
-;           ;\\
-;          If eventtype = #__event_Focus
-;             Debug " f "+*this\class
-;          EndIf
-;          
-;          ;\\
-;          If eventtype = #__event_LostFocus
-;             Debug " l-f "+*this\class
-;          EndIf
-;          
+         ;          
+         ;          
+         ;           ;\\
+         ;          If eventtype = #__event_Focus
+         ;             Debug " f "+*this\class
+         ;          EndIf
+         ;          
+         ;          ;\\
+         ;          If eventtype = #__event_LostFocus
+         ;             Debug " l-f "+*this\class
+         ;          EndIf
+         ;          
          If Not *this
             ProcedureReturn 0
          EndIf
@@ -19492,7 +19491,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                 *row\color\back[*row\color\state] = $FF2C70F5 ; TEMP
                      ;               EndIf
                      *this\root\repaint = #True
-                     ;ReDraw( *this\root )
                   EndIf
                   
                Case #__event_MouseMove
@@ -19964,9 +19962,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   widget( )\resize & ~ #__reclip
                   Reclip( widget( ) )
                EndIf
-               
-               ; ReDraw(Root( ))
-               ; mouse( )\interact = #True
             EndIf
          EndIf
          
@@ -20131,10 +20126,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Debug "   Repaint " + Root( )\class
                      
                      ;\\ send posted events
-                     PostEventCallback( )
+                     PostEventCallback( Root( ) )
                      
                      ;\\
-                     ReDraw( Root( ) )
+                     If Not Send( Root( ), #__event_Repaint )
+                        ReDraw( Root( ) )
+                     EndIf
                      Root( )\canvas\repaint = 0
                   EndIf
                EndIf
@@ -20185,8 +20182,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                   EndIf
-                  ; PostRepaint( Root( ) ) 
-                  ; ReDraw( Root( ) )
                EndIf
                ; PopMapPosition( enumRoot( ) )
             EndIf
@@ -20310,7 +20305,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-           ; Debug ""+ Root( )\class +" "+ eventgadget +" "+ Bool( Root( )\canvas\gadget = eventgadget )
+            ; Debug ""+ Root( )\class +" "+ eventgadget +" "+ Bool( Root( )\canvas\gadget = eventgadget )
             
             ;\\
             If Root( ) And 
@@ -21265,7 +21260,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          SetGadgetData( Gadget, *this )
-         ;ReDraw( Root( ) )
          
          If IsGadget(canvas)
             ; CloseList( )
@@ -21677,8 +21671,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   PostQuit( *window._s_WIDGET = #PB_Any )
          __gui\loop = 0
-         ;          ;\\
-         ;          PostEventCallback( )
          
          ;\\
          If is_widget_( *window )
@@ -21705,40 +21697,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure MessageEvents( )
          Select WidgetEventType( )
-            Case #__event_LostFocus 
-               Debug " -------lostfocus " + WidgetEventType( ) +" "+  EventWidget( )\root\class +" "+ EventWidget( )\root\repaint 
-               ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
-;                ReDraw( EventWidget( )\root )
-               
-            Case #__event_Focus
-               Debug " -------focus " + WidgetEventType( ) +" "+  EventWidget( )\root\class +" "+ EventWidget( )\root\repaint
-               ;Unbind( EventWidget( ), @MessageEvents( ), WidgetEventType( ) )
-               ;                
-                              If EventWidget( )\root\canvas\repaint = 0
-                                 EventWidget( )\root\canvas\repaint = 1
-                              EndIf
-                              If EventWidget( )\before\root
-                                 EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\before\root\canvas\gadgetID )
-                              EndIf
-                               EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-;                ReDraw( EventWidget( )\root )
-               
-            Case #__event_Down, 
-                 #__event_Up, 
-                 #__event_MouseEnter, 
-                 #__event_MouseLeave
-               
-                              If EventWidget( )\root\repaint = 1
-                                 EventWidget( )\root\repaint = 0
-                                 
-                                 If EventWidget( )\root\canvas\repaint = 0
-                                    EventWidget( )\root\canvas\repaint = 1
-                                 EndIf
-                                 
-                                 EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventWidget( )\root\canvas\gadgetID )
-                              EndIf
-               
-;                ReDraw( EventWidget( )\root )
+            Case #__event_Repaint
+               Debug "repaint - message "+EventWidget( )\class
+               ProcedureReturn 0
                
             Case #__event_LeftClick
                Protected *ew._S_WIDGET = EventWidget( )
@@ -21754,10 +21715,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                PostQuit( *message )
-               
+               ProcedureReturn #PB_Ignore
          EndSelect
          
-         ProcedureReturn #PB_Ignore
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
@@ -21784,7 +21744,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *parent = Root( )
          EndIf
          
-         Bind( *parent, @MessageEvents( ), #__event_LostFocus )
          
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
@@ -21970,26 +21929,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         Bind( *message, @MessageEvents( ), #__event_MouseEnter )
-         Bind( *message, @MessageEvents( ), #__event_MouseLeave )
-         Bind( *message, @MessageEvents( ), #__event_Down )
-         Bind( *message, @MessageEvents( ), #__event_Up )
-         Bind( *message, @MessageEvents( ), #__event_Focus )
+         Bind( *message, @MessageEvents( ), #__event_Repaint )
+         Bind( *parent, @MessageEvents( ), #__event_Repaint )
          
          ;\\
          Sticky( *message, #True )
-         ;Redraw( *message\root )
          
          ;\\
          ;Disable( *parent\root, 1 )
-         ;Redraw( *parent\root ) 
          
          ;\\
          WaitQuit( *message )
          
          ;\\
          ;Disable( *parent\root, 0 )
-         ;Redraw( *parent\root ) 
          
          ;\\
          FreeImage( img )
@@ -22702,12 +22655,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;SetActive(*tree)
    
-   ; redraw(root( ))
-   ;
+   
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17725
-; FirstLine = 17622
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v+--------f----------------------------------------------------------------------------------8--L+-frvvn4-0-v---------------------------r+-------
+; CursorPosition = 22659
+; FirstLine = 22623
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
