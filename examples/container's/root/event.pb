@@ -62,6 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MaximizeGadget )
    
    SetClass(Root( ), "window_0_root" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
    Button(10,10,200,50,"window_0_root_butt_1")
    SetClass(widget( ), "window_0_root_butt_1" )
    Button(10,65,200,50,"window_0_root_butt_2")
@@ -74,6 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(Root( ), "window_1_root" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
    Button(10,10,200,50,"window_1_root_butt_1")
    SetClass(widget( ), "window_1_root_butt_1" )
    Button(10,65,200,50,"window_1_root_butt_2")
@@ -86,6 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(Root( ), "window_2_root" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
    Button(10,10,200,50,"window_2_root_butt_1")
    SetClass(widget( ), "window_2_root_butt_1" )
    Button(10,65,200,50,"window_2_root_butt_2")
@@ -94,6 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitEvent( #PB_All, @CallBack( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; CursorPosition = 64
+; FirstLine = 61
 ; Folding = -
 ; EnableXP

@@ -200,7 +200,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          _S_#_struct_name_#_struct_type_ = AllocateStructure( _S_#_struct_name_ )
       EndMacro
       
-      ;-
+      ;- \\
+;       Macro FirstRoot( ): first\root: EndMacro
+;       Macro LastRoot( ): last\root: EndMacro
+      Macro AfterRoot( ): after\root: EndMacro
+      Macro BeforeRoot( ): before\root: EndMacro
+      ;\\
       Macro Root( ): widget::__gui\__root: EndMacro
       ;Macro Root( ): widget::*roots( ): EndMacro
       ;Macro EnumRoot( ): widget::__gui\roots( ): EndMacro
@@ -20812,7 +20817,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Opened( )\Closed( ) = #Null
                Else
                   If Opened( ) = Opened( )\root
-                     *open = Opened( )\root\before\root
+                     *open = Opened( )\root\BeforeRoot( )
                   Else
                      *open = Opened( )\parent
                   EndIf
@@ -20823,10 +20828,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *open = Opened( )
-            If *open\root\before\root
-               UseGadgetList( WindowID(*open\root\before\root\canvas\window))
-               ; Debug ""+*open\root\before\root\canvas\window +" "+Opened( )\root\canvas\window
-               *open = *open\root\before\root
+            If *open\root\BeforeRoot( )
+               UseGadgetList( WindowID(*open\root\BeforeRoot( )\canvas\window))
+               ; Debug ""+*open\root\BeforeRoot( )\canvas\window +" "+Opened( )\root\canvas\window
+               *open = *open\root\BeforeRoot( )
             EndIf
          EndIf
          
@@ -20854,9 +20859,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\root
                If *this\root <> Root( )
                   If Opened( )\root
-                     Opened( )\root\after\root = *this\root
+                     Opened( )\root\AfterRoot( ) = *this\root
                   EndIf
-                  *this\root\before\root = Opened( )\root
+                  *this\root\BeforeRoot( ) = Opened( )\root
                   
                   If is_root_( *this )
                      ChangeCurrentCanvas(*this\root\canvas\GadgetID )
@@ -20983,9 +20988,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If flag & #PB_Window_NoGadgets = #False
                If Opened( )
-                  Opened( )\after\root = Root( )
+                  Opened( )\AfterRoot( ) = Root( )
                EndIf
-               Root( )\before\root = Opened( )
+               Root( )\BeforeRoot( ) = Opened( )
                
                Opened( ) = Root( )
                ; OpenList( Root( ))
@@ -21703,18 +21708,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
             Case #__event_LeftClick
                Protected *ew._S_WIDGET = EventWidget( )
-               Protected *message._S_WIDGET = *ew\window
-               
-               Select GetText( *ew )
-                  Case "No"     : SetData( *message, #__message_No )     ; no
-                  Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
-                  Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
-               EndSelect
-               
-               Unbind( *message, @MessageEvents( ), #__event_LeftClick )
-               
-               ;\\
-               PostQuit( *message )
+               If #__type_Button = *ew\type 
+                  Protected *message._S_WIDGET = *ew\window
+                  Select GetText( *ew )
+                     Case "No"     : SetData( *message, #__message_No )     ; no
+                     Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
+                     Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
+                  EndSelect
+                  Unbind( *message, @MessageEvents( ), #__event_LeftClick )
+                  Unbind( *message, @MessageEvents( ), #__event_Repaint )
+                  PostQuit( *message )
+               EndIf
                ProcedureReturn #PB_Ignore
          EndSelect
          
@@ -21910,7 +21914,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          *ok = Button( width - bw - f2, height - bh - f2, bw, bh, "Ok", #PB_Button_Default )
          SetAlignment( *ok, 0, 0, 0, 1, 1 )     
-         Bind( *ok, @MessageEvents( ), #__event_LeftClick )
+         ; Bind( *ok, @MessageEvents( ), #__event_LeftClick )
          
          ;\\
          If Flag & #__message_YesNo Or
@@ -21918,16 +21922,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetText( *ok, "Yes" )
             *no = Button( width - ( bw + f2 ) * 2 - f2, height - bh - f2, bw, bh, "No" )
             SetAlignment( *no, 0, 0, 0, 1, 1 )     
-            Bind( *no, @MessageEvents( ), #__event_LeftClick )
+           ; Bind( *no, @MessageEvents( ), #__event_LeftClick )
          EndIf
          
          ;\\
          If Flag & #__message_YesNoCancel
             *cancel = Button( width - ( bw + f2 ) * 3 - f2 * 2, height - bh - f2, bw, bh, "Cancel" )
             SetAlignment( *cancel, 0, 0, 0, 1, 1 ) 
-            Bind( *cancel, @MessageEvents( ), #__event_LeftClick )
+           ;  Bind( *cancel, @MessageEvents( ), #__event_LeftClick )
          EndIf
          
+            Bind( *message, @MessageEvents( ), #__event_LeftClick )
+         
+         ; SetActive( *ok )
          ;\\
          Bind( *message, @MessageEvents( ), #__event_Repaint )
          Bind( *parent, @MessageEvents( ), #__event_Repaint )
@@ -22659,7 +22666,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22659
-; FirstLine = 22623
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 207
+; FirstLine = 198
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f2-------
 ; EnableXP
