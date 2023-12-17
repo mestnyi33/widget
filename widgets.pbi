@@ -20118,6 +20118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure CanvasEvents( )
+        Debug "CanvasEvents - "+EventGadget( )
          ;          If  Event( ) = #PB_Event_Repaint
          ;             If EventData( )
          ;                EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
@@ -21649,6 +21650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   WaitQuit( *window._s_WIDGET = #PB_Any )
          __gui\loop + 1
+         
          ;\\
          Repost( )
          
@@ -21708,7 +21710,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       
-      Procedure MessageEvents( )
+      Procedure   MessageEvents( )
          Select WidgetEventType( )
             Case #__event_Repaint
                Debug "repaint - message "+EventWidget( )\class
@@ -21732,7 +21734,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure Message( Title.s, Text.s, flag.q = #Null )
+      Procedure   Message( Title.s, Text.s, flag.q = #Null )
          If __gui\loop > 3
             ProcedureReturn 0
          EndIf
@@ -22673,8 +22675,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16481
-; FirstLine = 16469
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------ry-------
 ; EnableXP
