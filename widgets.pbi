@@ -21656,10 +21656,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If is_widget_( *window )
-            BindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+            ;BindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
          Else
             ForEach enumRoot( )
-               BindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
+              BindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
             Next
          EndIf
          
@@ -21689,7 +21689,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If is_widget_( *window )
-            UnbindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
+           ; UnbindGadgetEvent( *window\root\canvas\gadget, @CanvasEvents( ) )
          EndIf
          
          ;\\ stop main loop
@@ -22675,6 +22675,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21703
+; FirstLine = 21591
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------ry-------
 ; EnableXP

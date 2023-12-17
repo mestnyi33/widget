@@ -4,7 +4,6 @@ XIncludeFile "../events.pbi"
 Module events
    ;-
    Procedure Events( )
-      Protected eventgadget = - 1
       
       If *setcallback
          Select Event( ) 
@@ -13,25 +12,26 @@ Module events
                   CallFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ))
                EndIf
                
-               ;             Case #PB_Event_ActivateWindow   
-               ;                Debug " Events - ActivateWindow"
-               ;                eventgadget = GetWindowData( EventWindow( ) )
-               ;                If IsGadget( eventgadget )
-               ;                CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, eventgadget, #PB_EventType_Focus, #Null )
-               ;                EndIf
-               ;                
-               ;             Case #PB_Event_DeactivateWindow
-               ;                Debug " Events - DeactivateWindow"
-               ;                eventgadget = GetWindowData( EventWindow( ) )
-               ;                If IsGadget( eventgadget )
-               ;                   CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, eventgadget, #PB_EventType_LostFocus, #Null )
-               ;                EndIf
+               If EventType( ) <> #PB_EventType_LeftClick
+                  If EventType( ) = #PB_EventType_MouseEnter
+                     EnteredGadget( ) = EventGadget( )
+                  EndIf
+                  If EventType( ) = #PB_EventType_LeftButtonDown
+                     PressedGadget( ) = EnteredGadget( )
+                  EndIf
+                  If EventType( ) = #PB_EventType_Focus
+                     FocusedGadget( ) = EnteredGadget( )
+                  EndIf
+                  If EventType( ) = #PB_EventType_LostFocus
+                     FocusedGadget( ) = - 1
+                  EndIf
+                  
+                  CallFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
+               EndIf
                
             Case #PB_Event_SizeWindow
-               eventgadget = GetWindowData( EventWindow( ) )
-               If IsGadget( eventgadget )
-                  CallFunctionFast(*setcallback, #PB_Event_SizeWindow, eventgadget, #PB_EventType_Resize, #Null )
-               EndIf
+               CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, #Null )
+               
          EndSelect
       EndIf
    EndProcedure
@@ -50,18 +50,18 @@ Module events
 ;             CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
 ;          EndIf
          
-         If event = #PB_Event_Gadget
-            eventgadget = EventGadget( )
-            EventType = EventType( )
-            
-            If EventType <> #PB_EventType_LeftClick
-               If EventType = #PB_EventType_MouseEnter
-                  EnteredGadget( ) = eventgadget
-               EndIf
-               
-               CallFunctionFast( *setcallback, #PB_Event_Gadget, eventgadget, EventType, EventData( ) )
-            EndIf
-         EndIf
+;          If event = #PB_Event_Gadget
+;             eventgadget = EventGadget( )
+;             EventType = EventType( )
+;             
+;             If EventType <> #PB_EventType_LeftClick
+;                If EventType = #PB_EventType_MouseEnter
+;                   EnteredGadget( ) = eventgadget
+;                EndIf
+;                
+;                CallFunctionFast( *setcallback, #PB_Event_Gadget, eventgadget, EventType, EventData( ) )
+;             EndIf
+;          EndIf
       EndIf
       
       ProcedureReturn event
@@ -78,7 +78,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 33
+; CursorPosition = 33
+; FirstLine = 5
 ; Folding = ---
 ; EnableXP
