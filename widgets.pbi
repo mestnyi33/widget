@@ -12827,8 +12827,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i GetGadget( *this._S_WIDGET = #Null )
          If *this = #Null
             ProcedureReturn Root( )\canvas\gadget ; Returns current root canvas-gadget
-         ElseIf is_window_( *this )
-            ProcedureReturn *this\gadget ; Returns active gadget
          Else
             ProcedureReturn *this\root\canvas\gadget ; Returns canvas-gadget
          EndIf
@@ -16481,7 +16479,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure ToolTip( *this._S_WIDGET, Text.s, item = - 1 )
-         *this\_tt\text\string = Text
+         *this\tt\text\string = Text
       EndProcedure
       
       ;-
@@ -22676,7 +22674,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 10772
-; FirstLine = 10767
+; CursorPosition = 16481
+; FirstLine = 16469
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -600,7 +600,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
          bs.a    ; border size
          
-         *_tt._s_tt          ; notification = уведомление
+         tt._s_tt          ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
          
@@ -757,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 729
-; FirstLine = 596
-; Folding = ---PP7D+--
+; CursorPosition = 604
+; FirstLine = 493
+; Folding = ---PP7T+--
 ; EnableXP
