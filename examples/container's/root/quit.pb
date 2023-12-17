@@ -1,4 +1,4 @@
-﻿
+﻿; bug иногда когда вызывается мессадже пропадают событыя в нутри окна с котороговызвали мессадже пока не покинешь оено и не вернешся обратно
 IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
@@ -73,7 +73,5 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 34
 ; Folding = -
 ; EnableXP

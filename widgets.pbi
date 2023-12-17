@@ -10770,6 +10770,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                update_visible_items_( *this )
             EndIf
             
+            ;\\
+            If Not Drawing( )
+               If *this\FocusedRow( )
+                  ReDrawing( *this, *this\FocusedRow( ) )
+               EndIf
+            EndIf
+            
             ;\\ Draw background
             If *this\color\_alpha
                drawing_mode_alpha_( #PB_2DDrawing_Default )
@@ -22669,7 +22676,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 244
-; FirstLine = 234
+; CursorPosition = 10772
+; FirstLine = 10767
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
