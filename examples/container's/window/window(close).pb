@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Case #__event_close
-        Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetCount( EventWidget( )\window ) 
+        ;Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetCount( EventWidget( )\window ) 
         
         ;\\ demo main window
         If GetTitle( EventWidget( ) ) = "window_2"
@@ -94,8 +94,6 @@ CompilerIf #PB_Compiler_IsMainFile
      WaitEvent( #PB_All, @CallBack( ) )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 5
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

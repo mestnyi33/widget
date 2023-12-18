@@ -59,12 +59,12 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick
             Select GetText( EventWidget( ) )
                Case "window_2_root_butt_1"
-                  Message( "message", "Quit the program?", #__message_ScreenCentered )
+                  Message( "message", "test", #__message_ScreenCentered )
                   
             EndSelect
             
          Case #__event_Repaint
-             Debug "repaint " + EventWidget( )\class 
+            ; Debug "repaint " + EventWidget( )\class 
              ;ReDraw( EventWidget( ) )
              ;ProcedureReturn 1
              
@@ -76,7 +76,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

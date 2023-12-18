@@ -12,14 +12,14 @@ CompilerIf #PB_Compiler_IsMainFile
        
        Select WidgetEventType( )
          Case #__event_Repaint
-             Debug "repaint " + EventWidget( )\class 
+           ;  Debug "repaint " + EventWidget( )\class 
 ;               ReDraw( EventWidget( )\root )
 ;               ProcedureReturn 1
              
          Case #__event_LeftClick
             Select GetText( EventWidget( ) )
                Case "window_2_root_butt_1"
-                  Message( "message", "Quit the program?", #__message_ScreenCentered )
+                  Message( "message", "test WaitQuit( ) and PostQuit( )", #__message_ScreenCentered )
                   
             EndSelect
             
