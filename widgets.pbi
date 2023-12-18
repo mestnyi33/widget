@@ -359,7 +359,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
-      Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
+      Macro EventWidget( ): widget::WidgetEvent( )\widget: EndMacro
       Macro WidgetEvent( ): widget::__gui\event: EndMacro
       Macro WidgetEventWidget( ): WidgetEvent( )\widget: EndMacro
       Macro WidgetEventType( ): WidgetEvent( )\type: EndMacro
@@ -21655,13 +21655,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Repost( )
          
          ;\\
-         CompilerSelect #PB_Compiler_OS 
-            CompilerCase #PB_OS_Windows, #PB_OS_Linux
-               ForEach enumRoot( )
-                  BindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
-               Next
-               
-         CompilerEndSelect
+         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            ForEach enumRoot( )
+               BindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
+            Next
+         CompilerEndIf
          
          ;\\ start main loop
          CompilerSelect #PB_Compiler_OS 
@@ -21688,13 +21686,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          __gui\loop = 0
          
          ;\\
-         CompilerSelect #PB_Compiler_OS 
-            CompilerCase #PB_OS_Windows, #PB_OS_Linux
-               ForEach enumRoot( )
-                  UnbindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
-               Next
-               
-         CompilerEndSelect
+         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            ForEach enumRoot( )
+               UnbindGadgetEvent( enumRoot( )\canvas\gadget, @CanvasEvents( ) )
+            Next
+         CompilerEndIf
          
          ;\\ stop main loop
          CompilerSelect #PB_Compiler_OS 
@@ -22680,7 +22676,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21695
-; FirstLine = 21549
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------0-q9-------
+; CursorPosition = 361
+; FirstLine = 351
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------ry-------
 ; EnableXP

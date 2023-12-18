@@ -308,82 +308,82 @@ Module events
                If EventType = #PB_EventType_Focus 
                   ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
                   If FocusedGadget( ) = - 1
-                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                   EndIf
                ElseIf EventType = #PB_EventType_LostFocus
                   ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
                   If FocusedGadget( ) = - 1
-                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                   EndIf
                ElseIf (EventType = #PB_EventType_KeyDown Or
                        EventType = #PB_EventType_KeyUp Or
                        EventType = #PB_EventType_Input)
                   
-                  CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+                  CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                   ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
                   ;                     EventType = #PB_EventType_RightButtonUp)
                   ;                
-                  ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+                  ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                Else
                   
-                  ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+                  ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                   
                EndIf
                
             Case #PB_Event_SizeWindow
-               CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, #Null )
+               CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, EventData( ) )
              
          EndSelect
       EndIf
    EndProcedure
    
    Procedure.i WaitEvent( event.i, second.i = 0 )
-      Protected EventGadget, EventType, EventData
-      
-      If *setcallback 
-         ;          If event = #PB_Event_ActivateWindow
-         ;              Debug " WaitEvent - ActivateWindow"
-         ;             ;CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
-         ;          EndIf
-         ;          
-         ;          If event = #PB_Event_DeactivateWindow
-         ;              Debug " WaitEvent - DeactivateWindow"
-         ;             ;CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
-         ;          EndIf
-         
-         If event = #PB_Event_Gadget
-            EventGadget = EventGadget( )
-            EventType   = EventType( )
-            EventData   = EventData( )
-            
-            
-;             If EventType = #PB_EventType_Focus 
-;                ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-;                If FocusedGadget( ) = - 1
-;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-;                EndIf
-;             ElseIf EventType = #PB_EventType_LostFocus
-;                ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-;                If FocusedGadget( ) = - 1
-;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-;                EndIf
-;             ElseIf (EventType = #PB_EventType_KeyDown Or
-;                     EventType = #PB_EventType_KeyUp Or
-;                     EventType = #PB_EventType_Input)
-;                
-;                CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
-; ;                     EventType = #PB_EventType_RightButtonUp)
+;       Protected EventGadget, EventType, EventData
+;       
+;       If *setcallback 
+;          ;          If event = #PB_Event_ActivateWindow
+;          ;              Debug " WaitEvent - ActivateWindow"
+;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
+;          ;          EndIf
+;          ;          
+;          ;          If event = #PB_Event_DeactivateWindow
+;          ;              Debug " WaitEvent - DeactivateWindow"
+;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
+;          ;          EndIf
+;          
+;          If event = #PB_Event_Gadget
+;             EventGadget = EventGadget( )
+;             EventType   = EventType( )
+;             EventData   = EventData( )
+;             
+;             
+; ;             If EventType = #PB_EventType_Focus 
+; ;                ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+; ;                If FocusedGadget( ) = - 1
+; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+; ;                EndIf
+; ;             ElseIf EventType = #PB_EventType_LostFocus
+; ;                ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+; ;                If FocusedGadget( ) = - 1
+; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+; ;                EndIf
+; ;             ElseIf (EventType = #PB_EventType_KeyDown Or
+; ;                     EventType = #PB_EventType_KeyUp Or
+; ;                     EventType = #PB_EventType_Input)
 ; ;                
-; ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-;             Else
-;                
-;               ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-;                
-;             EndIf
-         EndIf
-      EndIf
-      
+; ;                CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+; ; ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
+; ; ;                     EventType = #PB_EventType_RightButtonUp)
+; ; ;                
+; ; ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+; ;             Else
+; ;                
+; ;               ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+; ;                
+; ;             EndIf
+;          EndIf
+;       EndIf
+;       
       ProcedureReturn event
    EndProcedure
    
@@ -430,7 +430,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 425
-; FirstLine = 328
-; Folding = fn-------0-
+; CursorPosition = 392
+; FirstLine = 304
+; Folding = fn-------0
 ; EnableXP

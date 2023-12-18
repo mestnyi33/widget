@@ -1268,8 +1268,8 @@ DeclareModule Gadget
           Text$ = GetGadgetItemText(EventGadget, GetGadgetState(EventGadget))
           DragText(Text$)
           
-        Case #PB_EventType_Drop
-          AddGadgetItem(EventGadget, -1, EventDropText())
+;         Case #PB_EventType_Drop
+;           AddGadgetItem(EventGadget, -1, EventDropText())
           
           
       EndSelect 
@@ -1344,7 +1344,7 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 737
-; FirstLine = 708
-; Folding = v-------04-f4343333+333333+----
+; CursorPosition = 1271
+; FirstLine = 914
+; Folding = v-------04-f4343333+333333+vA+-
 ; EnableXP
