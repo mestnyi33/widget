@@ -6,26 +6,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(widget)
-   
-   Procedure CallBack( )
-      Select WidgetEventType( )
-         Case #__event_LeftClick
-            Select GetText( EventWidget( ) )
-               Case "window_2_root_butt_1"
-                  Message( "message", "Quit the program?", #__message_ScreenCentered )
-                  
-            EndSelect
-            
-         Case #__event_Repaint
-             Debug "repaint " + EventWidget( )\class 
-             ;ReDraw( EventWidget( ) )
-             ;ProcedureReturn 1
-             
-         Default
-           ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
-            
-      EndSelect
-   EndProcedure
+   Declare CallBack( )
    
    ;\\
    Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
@@ -66,12 +47,36 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
-   
+   ;\\
    Bind( #PB_All, @CallBack( ) )
    
+   ;\\
    WaitQuit( )
    
+   ;\\
+   Procedure CallBack( )
+      Select WidgetEventType( )
+         Case #__event_LeftClick
+            Select GetText( EventWidget( ) )
+               Case "window_2_root_butt_1"
+                  Message( "message", "Quit the program?", #__message_ScreenCentered )
+                  
+            EndSelect
+            
+         Case #__event_Repaint
+             Debug "repaint " + EventWidget( )\class 
+             ;ReDraw( EventWidget( ) )
+             ;ProcedureReturn 1
+             
+         Default
+           ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
+            
+      EndSelect
+   EndProcedure
+   
+   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
