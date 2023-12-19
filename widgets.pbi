@@ -21623,11 +21623,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Wend
           
         CompilerCase #PB_OS_MacOS
+          Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
+          Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
+          Debug " - "+currentEvent
           CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
           
-      CompilerEndSelect
+    CompilerEndSelect
       
-      Debug "  event( QUIT ) "+*window\class
+      Debug "  event( QUIT ) ";+*window\class
     EndProcedure
     
     Procedure   PostQuit( *window._s_WIDGET = #PB_Any )
@@ -21731,7 +21734,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If Flag & #__message_Info
         img = -1;CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
-        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'APPL'")
+;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'caut'")
+;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'note'")
+;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'stop'")
+        CompilerEndIf
         DataSection
           img_info:
           ; size : 1404 bytes
@@ -22625,6 +22633,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8------------8-8-8-v---------v-----------------------++------v-d2-6t-v----v--------------------J+4-+---8--48--+---------fV+------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21738
+; FirstLine = 19106
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8------------8-8-8-v---------v-----------------------++------v-d2-6t-v----v--------------------J+4-+---8--48--+----------p9-------
 ; EnableXP

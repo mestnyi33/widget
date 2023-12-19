@@ -78,7 +78,10 @@ Procedure MouseState( )
               GetAsyncKeyState_(#VK_RBUTTON) >> 15 & 2 + 
               GetAsyncKeyState_(#VK_MBUTTON) >> 15 & 3 
     CompilerCase #PB_OS_MacOS
-      state = CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+       ;EnableDebugger
+       state = CocoaMessage(0, 0, "NSEvent pressedMouseButtons") ; class var pressedMouseButtons: Int { get }
+       ;Debug CocoaMessage(0, 0, "buttonNumber") ; var buttonNumber: Int { get }
+       ;Debug CocoaMessage(0, 0, "clickCount") ; var clickCount: Int { get }
   CompilerEndSelect
   
   If press <> state
@@ -168,8 +171,8 @@ Repeat
   MouseState( )
   
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 49
-; FirstLine = 18
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 83
+; FirstLine = 56
 ; Folding = ----
 ; EnableXP
