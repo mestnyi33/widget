@@ -8,51 +8,9 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
-       ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
-       
-       Select WidgetEventType( )
-         Case #__event_Repaint
-             Debug "repaint " + EventWidget( )\class 
-;               ReDraw( EventWidget( )\root )
-;               ProcedureReturn 1
-             
-         Case #__event_LeftClick
-            Select GetText( EventWidget( ) )
-               Case "window_2_root_butt_1"
-                  Message( "message", "test WaitQuit( ) and PostQuit( )", #__message_ScreenCentered )
-                  
-            EndSelect
-            
-         Case #__event_Create
-            Debug "create - event " + EventWidget( )\class
-            
-         Case #__event_Focus
-            Debug "focus - event " + EventWidget( )\class
-            
-         Case #__event_LostFocus
-            Debug "lostfocus - event " + EventWidget( )\class
-            
-         Case #__event_Maximize
-            Debug "maximize - event " + EventWidget( )\class
-            
-         Case #__event_Minimize
-            Debug "minimize - event " + EventWidget( )\class
-            
-         Case #__event_Restore
-            Debug "restore - event " + EventWidget( )\class 
-            
-         Case #__event_Close
-            Debug "close - event " + EventWidget( )\class 
-            
-         Case #__event_Resize
-            Debug "resize - event " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
-            
-         Case #__event_Free
-            Debug "free - event " + EventWidget( )\class 
-            
-      EndSelect
-      
-      ; ProcedureReturn 1
+     If WidgetEventType( ) <> #__event_draw
+       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" "+ Root( )\class +" "+ EventWidget( )\root\class ;+" "+ WidgetEventType( )
+     EndIf
    EndProcedure
    
    ;\\

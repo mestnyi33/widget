@@ -12401,6 +12401,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__event_free : result.s = "#__event_Free"
         Case #__event_drop : result.s = "#__event_Drop"
         Case #__event_create : result.s = "#__event_Create"
+        Case #__event_Draw : result.s = "#__event_Draw"
           ;Case #__event_SizeItem : result.s = "#__event_SizeItem"
           
         Case #__event_repaint : result.s = "#__event_Repaint"
@@ -17670,11 +17671,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ;\\
                 If eventtype = #__event_Repaint
-                  If __gui\loop
+                 ; If __gui\loop
                     If Not result
                       ReDraw( *this\root )
                     EndIf
-                  EndIf
+                 ; EndIf
                 EndIf
                 
                 ;\\
@@ -20109,8 +20110,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ;\\
               If Not Send( Root( ), #__event_Repaint )
-                ReDraw( Root( ) )
+               ; ReDraw( Root( ) )
               EndIf
+              
               Root( )\canvas\repaint = 0
             EndIf
           EndIf
@@ -22643,8 +22645,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19419
-; FirstLine = 17861
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8------------8-8-8-v---------v-----------------------00+-----f-8q-zb-f----f--4W--f-------------T9v-0---4--v4--0----------T6-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0------------0-0-0-4---------4-----------------------+e------v-d2-6t-v----v--br--v-------------J+4-+---8--48--+----------p9-------
 ; EnableXP
