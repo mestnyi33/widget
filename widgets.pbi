@@ -19407,10 +19407,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If eventtype = #__event_Focus
-        If Not *this\state\disable
-          *this\color\state = #__s_2
-          *this\root\repaint     = #True
-        EndIf
+         If Not *this\state\disable
+            *this\color\state = #__s_2
+            *this\root\repaint     = #True
+            
+            ;\\
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                If GetActiveGadget( ) <> *this\root\canvas\gadget
+;                   SetActiveGadget( *this\root\canvas\gadget )
+                  Debug "makeFirstResponder "+*this\root\canvas\gadget
+                  CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
+;                EndIf
+            CompilerEndIf
+         EndIf
       EndIf
       
       ;\\
@@ -19826,7 +19835,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ;                      ;                      Else
               ;                      Post( *this, eventtype, *button, *data )
               ;                      ;                      EndIf
-            ElseIf eventtype = #__event_LostFocus
+               
+        ElseIf eventtype = #__event_LostFocus
               ;                      ;                      If *this\show
               ;                      ;                         Send( *this, eventtype, *button, *data )
               ;                      ;                      Else
@@ -20438,8 +20448,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 DoFocusEvents( FocusedWidget( ), #__event_Focus )
               EndIf
             EndIf
-          EndIf
-          
+         EndIf
+         
         ElseIf eventtype = #PB_EventType_LostFocus
           If FocusedWidget( ) And
              FocusedWidget( )\root\canvas\gadget = eventgadget
@@ -22634,7 +22644,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21738
-; FirstLine = 19106
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8------------8-8-8-v---------v-----------------------++------v-d2-6t-v----v--------------------J+4-+---8--48--+----------p9-------
+; CursorPosition = 19419
+; FirstLine = 17861
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8------------8-8-8-v---------v-----------------------00+-----f-8q-zb-f----f--4W--f-------------T9v-0---4--v4--0----------T6-------
 ; EnableXP
