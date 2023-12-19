@@ -17604,17 +17604,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\bar\page\change = *data
         EndIf
         
-        ;             If is_root_( *this )
-        ;                If eventtype = #__event_Repaint
-        ;                   Debug 444
-        ;                   If __gui\loop
-        ;                      If Not result
-        ;                         ReDraw( *this\root )
-        ;                      EndIf
-        ;                   EndIf
-        ;                EndIf
-        ;             EndIf
-        
         ;\\
         If Not is_root_( *this )
           ;\\ first call (current-widget) bind event function
@@ -17669,22 +17658,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 result = *this\root\events( )\function( )
                 
-                ;\\
-                If eventtype = #__event_Repaint
-                 ; If __gui\loop
-                    If Not result
-                      ReDraw( *this\root )
-                    EndIf
-                 ; EndIf
-                EndIf
                 
                 ;\\
                 If result
-                  If result <> #PB_Ignore And eventtype = #__event_Close
-                    ProcedureReturn result
-                  Else
-                    Break
-                  EndIf
+                   If result <> #PB_Ignore And eventtype = #__event_Close
+                      ProcedureReturn result
+                   Else
+                      Break
+                   EndIf
+                Else
+                   If #__event_Repaint = eventtype
+                      ReDraw( *this\root )
+                      ProcedureReturn 1
+                   EndIf
                 EndIf
               EndIf
             Next
@@ -19414,11 +19400,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;                If GetActiveGadget( ) <> *this\root\canvas\gadget
-;                   SetActiveGadget( *this\root\canvas\gadget )
+               If GetActiveGadget( ) <> *this\root\canvas\gadget
+                  SetActiveGadget( *this\root\canvas\gadget )
                   Debug "makeFirstResponder "+*this\root\canvas\gadget
                   CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
-;                EndIf
+               EndIf
             CompilerEndIf
          EndIf
       EndIf
@@ -20110,7 +20096,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ;\\
               If Not Send( Root( ), #__event_Repaint )
-               ; ReDraw( Root( ) )
+                 ReDraw( Root( ) )
               EndIf
               
               Root( )\canvas\repaint = 0
@@ -22645,6 +22631,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0------------0-0-0-4---------4-----------------------+e------v-d2-6t-v----v--br--v-------------J+4-+---8--48--+----------p9-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20099
+; FirstLine = 18128
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--+--------------+-+-8---------8-----------------------+e------v-d2-6t-v----v--br--v-------------J+4-+---8--48--+----------p9-------
 ; EnableXP

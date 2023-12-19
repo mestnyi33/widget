@@ -7,16 +7,21 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
+      Static show
+      
       Protected result = 0
       If result
          Protected text$ = "disable"
       EndIf
             
       Select WidgetEventType( )
+         Case #__event_MouseLeave
+            show = 0
+            
          Case #__event_MouseEnter
          Case #__event_MouseMove
-            If Not EventWidget( )\tooltip_show
-               EventWidget( )\tooltip_show = 1
+            If show = 0
+               show = 1
                GadgetToolTip( GetGadget( EventWidget( ) ), EventWidget( )\class )
             EndIf
             
@@ -68,7 +73,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 6
+; CursorPosition = 22
 ; Folding = --
 ; EnableXP
