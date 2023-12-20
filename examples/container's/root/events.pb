@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure CallBack( )
      If WidgetEventType( ) <> #__event_draw
-       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" "+ Root( )\class +" "+ EventWidget( )\root\class ;+" "+ WidgetEventType( )
+       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEventType( )
      EndIf
    EndProcedure
    
