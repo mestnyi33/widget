@@ -13828,23 +13828,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure   DoFocusEvents( *this._S_WIDGET, eventtype )
+    Procedure   DoFocus( *this._S_WIDGET, eventtype )
       ; Debug "---   "+*this\text\string
       ;Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
       
       
       If *this\show
 
-        If eventtype = #__event_Focus
-          If is_root_( *this )
-            If *this\root <> Root( )
-              If ChangeCurrentCanvas(*this\root\canvas\gadgetID )
-                Debug "DoFocusEvents (ChangeCurrentCanvas) "
-              EndIf
+;          If eventtype = #__event_LostFocus
+;             Debug 888
+;          EndIf
+         
+         ;\\
+         If GetActiveGadget( ) <> *this\root\canvas\gadget
+            SetActiveGadget( *this\root\canvas\gadget )
+            
+            If is_root_( *this )
+               If *this\root <> Root( )
+                  If ChangeCurrentCanvas(*this\root\canvas\gadgetID )
+                     Debug "DoFocus (ChangeCurrentCanvas) "
+                  EndIf
+               EndIf
             EndIf
-          EndIf
-        EndIf
-        
+            
+            If eventtype = #__event_Focus
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  Debug "makeFirstResponder "+*this\root\canvas\gadget
+                  CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
+               CompilerEndIf
+            EndIf
+         EndIf
+         
         If Not Send( *this, eventtype )
           DoEvents( *this, eventtype )
         EndIf
@@ -13861,7 +13876,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If Not IsChild( *this, GetActive( ) )
             If GetActive( )\state\focus = #True
               GetActive( )\state\focus = #False
-              DoFocusEvents( GetActive( ), #__event_LostFocus )
+              DoFocus( GetActive( ), #__event_LostFocus )
             EndIf
           EndIf
           
@@ -13870,7 +13885,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If GetActive( )\gadget And
              GetActive( )\gadget\state\focus = #True
             GetActive( )\gadget\state\focus = #False
-            DoFocusEvents( GetActive( )\gadget, #__event_LostFocus )
+            DoFocus( GetActive( )\gadget, #__event_LostFocus )
             
             ;\\ is integral scroll bars
             If GetActive( )\gadget\scroll
@@ -13880,7 +13895,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If GetActive( )\gadget\scroll\v\state\focus = #True
                   GetActive( )\gadget\scroll\v\state\focus = #False
-                  DoFocusEvents( GetActive( )\gadget\scroll\v, #__event_LostFocus )
+                  DoFocus( GetActive( )\gadget\scroll\v, #__event_LostFocus )
                 EndIf
               EndIf
               If GetActive( )\gadget\scroll\h And
@@ -13889,7 +13904,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 If GetActive( )\gadget\scroll\h\state\focus = #True
                   GetActive( )\gadget\scroll\h\state\focus = #False
-                  DoFocusEvents( GetActive( )\gadget\scroll\h, #__event_LostFocus )
+                  DoFocus( GetActive( )\gadget\scroll\h, #__event_LostFocus )
                 EndIf
               EndIf
             EndIf
@@ -13901,7 +13916,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               If GetActive( )\gadget\TabBox( )\state\focus = #True
                 GetActive( )\gadget\TabBox( )\state\focus = #False
-                DoFocusEvents( GetActive( )\gadget\TabBox( ), #__event_LostFocus )
+                DoFocus( GetActive( )\gadget\TabBox( ), #__event_LostFocus )
               EndIf
             EndIf
           EndIf
@@ -13938,7 +13953,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ;                            enumWidget( )\color\state = #__s_3 
                     ;                            enumWidget( )\root\repaint = 1
                     ;                         EndIf
-                    DoFocusEvents( enumWidget( ), #__event_LostFocus )
+                    DoFocus( enumWidget( ), #__event_LostFocus )
                   EndIf
                   ;EndIf
                 EndIf
@@ -14015,7 +14030,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       ;                                     enumWidget( )\color\state = #__s_2 
                       ;                                     enumWidget( )\root\repaint = 1
                       ;                                  EndIf
-                      DoFocusEvents( enumWidget( ), #__event_Focus )
+                      DoFocus( enumWidget( ), #__event_Focus )
                     EndIf
                   EndIf
                 EndIf
@@ -14044,12 +14059,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If GetActive( ) And ; Not is_root_( GetActive( ) ) And
                GetActive( )\state\focus = #False
               GetActive( )\state\focus = #True
-              DoFocusEvents( GetActive( ), #__event_Focus )
+              DoFocus( GetActive( ), #__event_Focus )
             EndIf
           EndIf
           
           ;\\
-          DoFocusEvents( *this, #__event_Focus )
+          DoFocus( *this, #__event_Focus )
           
           If GetActive( )
             ; when we activate the window
@@ -14057,7 +14072,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If GetActive( )\gadget And
                GetActive( )\gadget\state\focus = #False
               GetActive( )\gadget\state\focus = #True
-              DoFocusEvents( GetActive( )\gadget, #__event_Focus )
+              DoFocus( GetActive( )\gadget, #__event_Focus )
             EndIf
             
             ; set window foreground position
@@ -19408,15 +19423,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not *this\state\disable
             *this\color\state = #__s_2
             *this\root\repaint     = #True
-            
-            ;\\
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               If GetActiveGadget( ) <> *this\root\canvas\gadget
-                  SetActiveGadget( *this\root\canvas\gadget )
-                  Debug "makeFirstResponder "+*this\root\canvas\gadget
-                  CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
-               EndIf
-            CompilerEndIf
          EndIf
       EndIf
       
@@ -20140,7 +20146,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If EnumRoot( )\canvas\window = EventWindow( )
               If EnumRoot( )\show 
                 Root( ) = EnumRoot( )
-                ;Debug "Activate - "+Root( )\class
+                ; Debug "Activate - "+Root( )\class
                 SetActive( Root( ) )
                 Break
               EndIf
@@ -20444,7 +20450,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               If FocusedWidget( )\state\focus = 0
                 FocusedWidget( )\state\focus = 1
-                DoFocusEvents( FocusedWidget( ), #__event_Focus )
+                DoFocus( FocusedWidget( ), #__event_Focus )
               EndIf
             EndIf
          EndIf
@@ -20456,7 +20462,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If FocusedWidget( )\state\focus = 1
               FocusedWidget( )\state\focus = 0
-              DoFocusEvents( FocusedWidget( ), #__event_LostFocus )
+              DoFocus( FocusedWidget( ), #__event_LostFocus )
             EndIf
           EndIf
           
@@ -22642,6 +22648,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------+-v--------------v-v--+---------+----------------------vv4------8fX0fe8-8----8--37--8------------fi-0v----+--0+-v----------fK-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 13839
+; FirstLine = 13830
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--+--------------+-+-8---------8----------------------vv4------8fX0fe8-8----8--37--8------------fi-0v----+--0+-v----------fK-------
 ; EnableXP
