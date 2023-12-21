@@ -13834,39 +13834,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       If *this\show
-
-;          If eventtype = #__event_LostFocus
-;             Debug 888
-;          EndIf
          
+         ;          If eventtype = #__event_LostFocus
+         ;             Debug 888
+         ;          EndIf
          ;\\
-         If GetActiveGadget( ) <> *this\root\canvas\gadget
-            SetActiveGadget( *this\root\canvas\gadget )
-            
-            If is_root_( *this )
-               If *this\root <> Root( )
-                  If ChangeCurrentCanvas(*this\root\canvas\gadgetID )
-                     Debug "DoFocus (ChangeCurrentCanvas) "
-                  EndIf
-               EndIf
-            EndIf
-            
-            If eventtype = #__event_Focus
+         If eventtype = #__event_Focus
+            If GetActiveGadget( ) <> *this\root\canvas\gadget
+               SetActiveGadget( *this\root\canvas\gadget )
                
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  Debug "makeFirstResponder "+*this\root\canvas\gadget
+                  ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
                   CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
                CompilerEndIf
             EndIf
          EndIf
          
-        If Not Send( *this, eventtype )
-          DoEvents( *this, eventtype )
-        EndIf
+         ;\\
+         ;If is_root_( *this )
+         If *this\root <> Root( )
+            If ChangeCurrentCanvas( *this\root\canvas\gadgetID )
+              ; Debug " - DoFocus (ChangeCurrentCanvas) "
+              ; Send( *this\root, #__event_Repaint ) 
+            EndIf
+         EndIf
+         ;EndIf
+         
+         ;\\
+         If Not Send( *this, eventtype )
+            DoEvents( *this, eventtype )
+         EndIf
+         
+         ;\\
+         If EnteredWidget( )
+            If EnteredWidget( )\root <> Root( )
+               If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+                ; Debug "   - DoFocus (ChangeCurrentCanvas) "
+                ;  Send( EnteredWidget( )\root, #__event_Repaint ) 
+               EndIf
+            EndIf
+         EndIf
+         
       Else
-        Post( *this, eventtype )
+         Post( *this, eventtype )
       EndIf
-    EndProcedure
+   EndProcedure
     
     Procedure.i SetDeactive( *this._S_WIDGET )
       Protected *active._S_WIDGET
@@ -20042,29 +20054,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           DeleteElement( __events( ) )
           
           ;\\ 
-          If #__event_Focus = __type
-            If Not Send( __widget, __type, __item, __data )
-              DoEvents( __widget, __type )
-            EndIf
-            
-            ;\\ call message
-            If __gui\loop
-              If EnteredWidget( )
-                If EnteredWidget( )\root <> FocusedWidget( )\root
-                  Debug " Change Current Canvas "
-                  If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-                    Send( EnteredWidget( )\root, #__event_Repaint ) 
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-          ElseIf #__event_LostFocus = __type
-            If Not Send( __widget, __type, __item, __data )
-              DoEvents( __widget, __type )
-            EndIf
-            
-          ElseIf #__event_Close = __type
+          If #__event_Close = __type
             Debug "Post close...."
             Select Send( __widget, __type, __item, __data )
               Case 0
@@ -20078,11 +20068,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Break 
             
           Else
-            Send( __widget, __type, __item, __data )
+             If #__event_Focus = __type Or 
+                #__event_LostFocus = __type
+                
+                If Not Send( __widget, __type, __item, __data )
+                   DoEvents( __widget, __type )
+                EndIf
+                
+                ;\\ call message
+                If #__event_Focus = __type
+                   If __gui\loop
+                      If EnteredWidget( )
+                         If EnteredWidget( )\root <> FocusedWidget( )\root
+                            Debug " Change Current Canvas "
+                            If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+                               Send( EnteredWidget( )\root, #__event_Repaint ) 
+                            EndIf
+                         EndIf
+                      EndIf
+                   EndIf
+                EndIf
+                
+             Else
+                Send( __widget, __type, __item, __data )
+             EndIf
           EndIf
           ;EndIf
-        Next
-      EndIf
+       Next
+    EndIf
       
     EndProcedure
     
@@ -21676,6 +21689,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Debug "repaint - message "+EventWidget( )\class
           ProcedureReturn 0
           
+        Case #__event_Focus
+           Debug 4444
+           HideWindow( EventWidget( )\root\canvas\window, 0 )
+      
         Case #__event_LeftClick
           Protected *ew._S_WIDGET = EventWidget( )
           
@@ -21715,15 +21732,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected._s_WIDGET *parent, *widget = EventWidget( )
       
       ;\\
-      If *widget
-        If *widget\window
-          *parent = *widget\window
-        Else
-          *parent = *widget\root
-        EndIf
-      Else
-        *parent = Root( )
-      EndIf
+;       If *widget
+;         If *widget\window
+;           *parent = *widget\window
+;         Else
+;           *parent = *widget\root
+;         EndIf
+;       Else
+        *parent = Opened( )\root
+;       EndIf
       
       
       ;          ;\\ 1)
@@ -21742,7 +21759,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         newflag | #PB_Window_WindowCentered
       EndIf
       *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\root\canvas\window ))
-      HideWindow( *message\root\canvas\window, 0 )
+      ;HideWindow( *message\root\canvas\window, 0 )
       SetClass( *message, #PB_Compiler_Procedure )
       ;*message\parent = *message
       
@@ -21915,6 +21932,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       Bind( *message, @MessageEvents( ), #__event_LeftClick )
+      Bind( *message, @MessageEvents( ), #__event_Focus )
       
       ; SetActive( *ok )
       ;\\
@@ -22649,7 +22667,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13839
-; FirstLine = 13830
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--+--------------+-+-8---------8----------------------vv4------8fX0fe8-8----8--37--8------------fi-0v----+--0+-v----------fK-------
+; CursorPosition = 21693
+; FirstLine = 18888
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8--------------8-8-v---------v-----------------------+e------v-d2-6t-v----f--4W--f-------------T9v-0---4--v4-------------U+------
 ; EnableXP

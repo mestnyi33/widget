@@ -59,6 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick
             Select GetText( EventWidget( ) )
                Case "window_2_root_butt_1"
+                  Debug 77777
+                  
                   Message( "message", "test", #__message_ScreenCentered )
                   
                  ; WaitQuit( )
@@ -78,6 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 63
+; FirstLine = 42
 ; Folding = -
 ; EnableXP
