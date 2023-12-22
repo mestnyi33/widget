@@ -6,58 +6,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib(widget)
-  
-  Procedure CallBack( )
-    Select WidgetEventType( )
-      Case #__event_leftclick
-        Select GetText( EventWidget())
-          Case "Button_0_close"
-            If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              Close( EventWindow( ) )
-            EndIf
-            
-          Case "Button_1_close"
-            ; Close( EventWindow( ) )
-            Close( EventWidget( )\window )
-            
-            ; Post( EventWidget( )\window, #__event_Close )
-            ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-              
-          Case "Button_2_close"
-            If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-               Close( #PB_All )
-            EndIf
-            
-        EndSelect
-        
-      Case #__event_close
-        ;Debug "close - event " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
-        
-        ;\\ demo main window
-        If EventWindow( ) = 2
-           If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              ProcedureReturn #PB_All
-           Else
-              ProcedureReturn 1
-           EndIf
-           
-        ElseIf EventWindow( ) = 0
-           If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              ProcedureReturn 0
-           Else
-              ProcedureReturn 1
-           EndIf
-        EndIf
-        
-         
-      Case #__event_free
-        Debug "free - event " + EventWidget( )\class 
-        
-        ;             ;\\ to send not free
-;                      ProcedureReturn 1
-        
-    EndSelect
-  EndProcedure
+  Declare CallBack( )
   
   ;\\
   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
@@ -89,9 +38,63 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,200,50,"Button_2_close")
   SetClass(widget( ), "Button_2_close" )
   
+  ;\\
   WaitEvent( #PB_All, @CallBack( ) )
+  
+  ;\\
+  Procedure CallBack( )
+    Select WidgetEventType( )
+      Case #__event_leftclick
+        Select GetText( EventWidget())
+          Case "Button_0_close"
+            If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+              Close( EventWindow( ) )
+            EndIf
+            
+          Case "Button_1_close"
+            ; Close( EventWindow( ) )
+            Close( EventWidget( )\window )
+            
+            ; Post( EventWidget( )\window, #__event_Close )
+            ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+            
+          Case "Button_2_close"
+            If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+              Close( #PB_All )
+            EndIf
+            
+        EndSelect
+        
+      Case #__event_close
+        ;Debug "close - event " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
+        
+        ;\\ demo main window
+        If EventWindow( ) = 2
+          If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            ProcedureReturn #PB_All
+          Else
+            ProcedureReturn 1
+          EndIf
+          
+        ElseIf EventWindow( ) = 0
+          If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            ProcedureReturn 0
+          Else
+            ProcedureReturn 1
+          EndIf
+        EndIf
+        
+        
+      Case #__event_free
+        Debug "free - event " + EventWidget( )\class 
+        
+        ;             ;\\ to send not free
+        ;                      ProcedureReturn 1
+        
+    EndSelect
+  EndProcedure
+  
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 26
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

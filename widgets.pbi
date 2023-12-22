@@ -226,11 +226,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro PostEventRepaint( _root_ )
       If _root_
         If Not Send( _root_, #__event_Repaint )
-          If _root_\canvas\repaint = 0
-            _root_\canvas\repaint = 1
-            
-            If Not __gui\loop
+          If Not __gui\loop
+            If _root_\canvas\repaint = 0
+              _root_\canvas\repaint = 1
               PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
+            EndIf
+          Else
+            If _root_\repaint
+              _root_\repaint = 0
+              ; Debug "PostEventRepaint - ReDraw"
+              Redraw( _root_ )
             EndIf
           EndIf
         EndIf
@@ -13852,15 +13857,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If Not Send( *this, eventtype )
-            DoEvents( *this, eventtype )
+           DoEvents( *this, eventtype )
          EndIf
          
          ;\\
          If EnteredWidget( ) And 
             EnteredWidget( )\root <> Root( )
-            If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-              ; Debug "   - DoFocus (ChangeCurrentCanvas) "
-            EndIf
+           If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+             ; Debug "   - DoFocus (ChangeCurrentCanvas) "
+           EndIf
          EndIf
          
       Else
@@ -17693,11 +17698,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    Else
                       Break
                    EndIf
-                Else
-                   If #__event_Repaint = eventtype
-                      ReDraw( *this\root )
-                      ProcedureReturn 1
-                   EndIf
+;                 Else
+;                    If #__event_Repaint = eventtype
+;                       ReDraw( *this\root )
+;                       ProcedureReturn 1
+;                    EndIf
                 EndIf
               EndIf
             Next
@@ -19423,7 +19428,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If eventtype = #__event_Focus
          If Not *this\state\disable
             *this\color\state = #__s_2
-            *this\root\repaint     = #True
+            *this\root\repaint = #True
          EndIf
       EndIf
       
@@ -19431,7 +19436,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If eventtype = #__event_LostFocus
         If *this\color\state = #__s_2
           *this\color\state = #__s_3
-          *this\root\repaint     = #True
+          *this\root\repaint = #True
+        Else
+          Debug " - l " + *this\class
         EndIf
       EndIf
       
@@ -20021,8 +20028,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\ post repaint canvas
       If Not *this\state\disable
         If *this\root\repaint = 1
-          *this\root\repaint = 0
           PostEventRepaint( *this\root )
+          *this\root\repaint = 0
         EndIf
       EndIf
     EndProcedure
@@ -21924,9 +21931,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Bind( *message, @MessageEvents( ), #__event_Focus )
       
       ; SetActive( *ok )
-      ;\\
-      Bind( *message, @MessageEvents( ), #__event_Repaint )
-      Bind( *parent, @MessageEvents( ), #__event_Repaint )
+;       ;\\
+;       Bind( *message, @MessageEvents( ), #__event_Repaint )
+;       Bind( *parent, @MessageEvents( ), #__event_Repaint )
       
       ;\\
       Sticky( *message, #True )
@@ -22655,8 +22662,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20762
-; FirstLine = 17954
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-f--------------f-f--0---------0-------------------f--448------0vr+Pv0-0--4-8-f37--8------------fv-------+---+------------ly-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------v-v--+---------+----------------------880------+4V-n4+-+----0-Pb0--0------------v4------f---f-------------S6-------
 ; EnableXP

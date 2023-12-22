@@ -6,12 +6,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(widget)
-   
-   Procedure CallBack( )
-     If WidgetEventType( ) <> #__event_draw
-       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEventType( )
-     EndIf
-   EndProcedure
+   Declare CallBack( )
    
    ;\\
    Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
@@ -52,9 +47,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
+   
+   Message( "message", "test", #__message_ScreenCentered )
+            
    ;\\
    WaitEvent( #PB_All, @CallBack( ) )
-CompilerEndIf
+   
+   ;\\
+   Procedure CallBack( )
+     If WidgetEventType( ) <> #__event_draw
+       If WidgetEventType( ) = #__event_repaint
+         ProcedureReturn 
+       EndIf
+       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEventType( )
+     EndIf
+   EndProcedure
+ CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
