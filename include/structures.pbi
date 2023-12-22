@@ -742,8 +742,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;Map *roots._s_ROOT( )   
          
+         ;\\ event\
          quit.b ; quit from main loop
          loop.b
+         repost.b
       EndStructure
       
       ;Global *event._s_events = Allocatestructure(_s_events)
@@ -757,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 602
-; FirstLine = 487
-; Folding = ---PP7T+--
+; CursorPosition = 744
+; FirstLine = 490
+; Folding = ---PP7T+0-
 ; EnableXP

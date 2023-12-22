@@ -42,8 +42,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   SetClass(Root( ), "window_2_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
-  Button(10,10,200,50,"window_2_root_butt_1")
-  SetClass(widget( ), "window_2_root_butt_1" )
+  Button(10,10,200,50,"button_message")
+  SetClass(widget( ), "button_message" )
   Button(10,65,200,50,"window_2_root_butt_2")
   SetClass(widget( ), "window_2_root_butt_2" )
   
@@ -52,7 +52,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Message( "message", "test", #__message_ScreenCentered )
   
   ;\\
-  WaitQuit( )
+  ;WaitQuit( )
+  WaitClose( )
   
   ;\\
   Procedure CallBack( )
@@ -63,19 +64,19 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LostFocus
         Debug "lostfocus "+EventWidget( )\class
         
+      Case #__event_Repaint
+        Debug "repaint " + EventWidget( )\class 
+        ;ReDraw( EventWidget( ) )
+        ;ProcedureReturn 1
+        
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
-          Case "window_2_root_butt_1"
+          Case "button_message"
             Message( "message", "test", #__message_ScreenCentered )
             
             ; WaitQuit( )
             
         EndSelect
-        
-      Case #__event_Repaint
-        Debug "repaint " + EventWidget( )\class 
-        ;ReDraw( EventWidget( ) )
-        ;ProcedureReturn 1
         
       Default
         ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
@@ -85,6 +86,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 54
+; FirstLine = 37
 ; Folding = -
 ; EnableXP
