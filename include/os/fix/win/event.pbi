@@ -3,11 +3,11 @@ XIncludeFile "../events.pbi"
 
 Module events
   ;-
-  Procedure  CallBack(eType, refcon) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
-    Protected *cursor.cursor::_s_cursor = #Null
+  Procedure  CallBack(eType) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
+    ; Protected *cursor.Cursor::_s_cursor = #Null
     ; Debug "eventTapFunction - "+ID::ClassName(event)
     
-    If refcon
+    If *setcallback
       Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
       Protected MouseMove, MouseX, MouseY, MoveStart, EnteredID, gadget =- 1
       
@@ -26,7 +26,7 @@ Module events
         ;             If EnteredGadget( ) >= 0 
         ;                If DraggedGadget( ) >= 0 And DraggedGadget( ) = PressedGadget( ) 
         ;                   CompilerIf Defined(constants::PB_EventType_Drop, #PB_Constant) 
-        ;                      CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_Drop)
+        ;                      CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_Drop)
         ;                   CompilerEndIf
         ;                EndIf
         ;             EndIf
@@ -79,20 +79,20 @@ Module events
            EnteredGadget( ) <> gadget
           If EnteredGadget( ) >= 0 ;And GadgetType(EnteredGadget( )) = #PB_GadgetType_Canvas
             If Not MouseDrag
-              Cursor::change(EnteredGadget( ), 0)
+              ; Cursor::change(EnteredGadget( ), 0)
             EndIf
             
-            CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ) , #PB_EventType_MouseLeave)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ) , #PB_EventType_MouseLeave)
           EndIf
           
           EnteredGadget( ) = gadget
           
           If EnteredGadget( ) >= 0 ;And GadgetType(EnteredGadget( )) = #PB_GadgetType_Canvas
             If Not MouseDrag
-              Cursor::change(EnteredGadget( ), 1)
+              ; Cursor::change(EnteredGadget( ), 1)
             EndIf
             
-            CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_MouseEnter)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_MouseEnter)
           EndIf
         Else
           ; mouse drag start
@@ -100,18 +100,18 @@ Module events
             If EnteredGadget( ) >= 0 And
                DraggedGadget( ) <> PressedGadget( )
               DraggedGadget( ) = PressedGadget( )
-              CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_DragStart)
+              CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_DragStart)
               DeltaX = GadgetX(PressedGadget( )) 
               DeltaY = GadgetY(PressedGadget( ))
             EndIf
           EndIf
           
           If MouseDrag And EnteredGadget( ) <> PressedGadget( )
-            CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_MouseMove)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_MouseMove)
           EndIf
           
           If EnteredGadget( ) >= 0
-            CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_MouseMove)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_MouseMove)
             
             ; if move gadget x&y position
             If MouseDrag > 0 And PressedGadget( ) = EnteredGadget( ) 
@@ -136,25 +136,25 @@ Module events
             If GetActiveGadget( )
               If FocusedGadget( ) <> GetActiveGadget( )
                 FocusedGadget( ) = GetActiveGadget( )
-                ; CallCFunctionFast(refcon, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
+                ; CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
               EndIf
             EndIf
           EndIf
           
           If FocusedGadget( ) <> PressedGadget( )
             If FocusedGadget( ) >= 0
-              CallCFunctionFast(refcon, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
+              CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
             EndIf
             
             FocusedGadget( ) = PressedGadget( )
-            CallCFunctionFast(refcon, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_Focus)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_Focus)
           EndIf
           
           If eType = #PB_EventType_LeftButtonDown
-            CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonDown)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonDown)
           EndIf
           If eType = #PB_EventType_RightButtonDown
-            CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_RightButtonDown)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_RightButtonDown)
           EndIf
         EndIf
       EndIf
@@ -165,21 +165,21 @@ Module events
         
         If PressedGadget( ) >= 0 And 
            PressedGadget( ) <> gadget  
-          Cursor::change(PressedGadget( ), 0)
+          ; Cursor::change(PressedGadget( ), 0)
         EndIf
         
         If gadget >= 0 And 
            gadget <> PressedGadget( )
           EnteredGadget( ) = gadget
-          Cursor::change(EnteredGadget( ), 1)
+          ; Cursor::change(EnteredGadget( ), 1)
         EndIf
         
         If PressedGadget( ) >= 0 
           If eType = #PB_EventType_LeftButtonUp
-            CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonUp)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonUp)
           EndIf
           If eType = #PB_EventType_RightButtonUp
-            CallCFunctionFast(refcon, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_RightButtonUp)
+            CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_RightButtonUp)
           EndIf
         EndIf
         
@@ -189,7 +189,7 @@ Module events
       
       ;         ;
       ;         If eType = #PB_EventType_LeftDoubleClick
-      ;           CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_LeftDoubleClick)
+      ;           CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), #PB_EventType_LeftDoubleClick)
       ;         EndIf
       ;          
       ;          If eType = #NSScrollWheel
@@ -203,7 +203,7 @@ Module events
       ;                   ; Debug "X - scroll"
       ;                   If EnteredGadget( ) >= 0
       ;                      CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-      ;                         CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_MouseWheelX, scrollX)
+      ;                         CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_MouseWheelX, scrollX)
       ;                      CompilerEndIf
       ;                   EndIf
       ;                EndIf
@@ -212,7 +212,7 @@ Module events
       ;                   ; Debug "Y - scroll"
       ;                   If EnteredGadget( ) >= 0
       ;                      CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-      ;                         CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_MouseWheelY, scrollY)
+      ;                         CallFunctionFast(*setcallback, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_MouseWheelY, scrollY)
       ;                      CompilerEndIf
       ;                   EndIf
       ;                EndIf
@@ -228,11 +228,11 @@ Module events
       ;          EndIf
       ;          
       ;          ;           If eType = #PB_EventType_Resize
-      ;          ;             ; CallCFunctionFast(refcon, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Resize)
+      ;          ;             ; CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Resize)
       ;          ;           EndIf
       ;          ;           CompilerIf Defined(PB_EventType_Repaint, #PB_Constant) And Defined(constants, #PB_Module)
       ;          ;             If eType = #PB_EventType_Repaint
-      ;          ;               CallCFunctionFast(refcon, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Repaint)
+      ;          ;               CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Repaint)
       ;          ;             EndIf
       ;          ;           CompilerEndIf
       ;           
@@ -258,25 +258,26 @@ Module events
           If EventType = #PB_EventType_Focus 
             ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
             If FocusedGadget( ) = - 1
-              CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+              CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
             EndIf
           ElseIf EventType = #PB_EventType_LostFocus
             ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
             If FocusedGadget( ) = - 1
-              CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+              CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
             EndIf
           ElseIf (EventType = #PB_EventType_KeyDown Or
                   EventType = #PB_EventType_KeyUp Or
                   EventType = #PB_EventType_Input)
             
-            CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            CallFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
             ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
             ;                     EventType = #PB_EventType_RightButtonUp)
             ;                
-            ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            ;                CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
           Else
             
-            CallBack( EventType, *setcallback ) ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            ;CallBack( EventType ) ;\\
+            CallFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
             
           EndIf
           
@@ -311,35 +312,35 @@ Module events
           ;                        If GetActiveGadget( )
           ;                          If FocusedGadget( ) <> GetActiveGadget( )
           ;                            FocusedGadget( ) = GetActiveGadget( )
-          ;                            ; CallCFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
+          ;                            ; CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
           ;                          EndIf
           ;                        EndIf
           ;                      EndIf
           ;                      
           ;                      If FocusedGadget( ) <> PressedGadget( )
           ;                        If FocusedGadget( ) >= 0
-          ;                          CallCFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
+          ;                          CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_LostFocus)
           ;                        EndIf
           ;                        
           ;                        FocusedGadget( ) = PressedGadget( )
-          ;                        CallCFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_Focus)
+          ;                        CallFunctionFast(*setcallback, #PB_Event_Gadget, FocusedGadget( ), #PB_EventType_Focus)
           ;                      EndIf
           ;                      
           ;                      If eventtype = #PB_EventType_LeftButtonDown
-          ;                        CallCFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonDown)
+          ;                        CallFunctionFast(*setcallback, #PB_Event_Gadget, PressedGadget( ), #PB_EventType_LeftButtonDown)
           ;                      EndIf
           ;                    EndIf
           ;                    
           ;                  ElseIf EventType = #PB_EventType_Focus 
           ;                    ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
           ;                    If FocusedGadget( ) = - 1
-          ;                      CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+          ;                      CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
           ;                    EndIf
           ;                    
           ;                  ElseIf EventType = #PB_EventType_LostFocus
           ;                    ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
           ;                    If FocusedGadget( ) = - 1
-          ;                      CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+          ;                      CallFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
           ;                    EndIf
           ;                    
           ;                  Else
@@ -369,6 +370,8 @@ Module events
     ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; CursorPosition = 278
+; FirstLine = 272
 ; Folding = --------
 ; EnableXP
