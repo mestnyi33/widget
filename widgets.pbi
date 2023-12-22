@@ -10772,9 +10772,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If Not Drawing( )
-          If *this\FocusedRow( )
-            ReDrawing( *this, *this\FocusedRow( ) )
-          EndIf
+          ;If *this\FocusedRow( )
+            ReDrawing( *this, *this\_rows( ) )
+          ;EndIf
         EndIf
         
         ;\\ Draw background
@@ -13829,16 +13829,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure   DoFocus( *this._S_WIDGET, eventtype )
-      ; Debug "---   "+*this\text\string
-      ;Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
-      
-      
-      If *this\show
-         
-         ;          If eventtype = #__event_LostFocus
-         ;             Debug 888
-         ;          EndIf
-         ;\\
+       ; Debug "---   "+*this\text\string
+       ;Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
+       
+       ;\\
+       If *this\root <> Root( )
+          ChangeCurrentCanvas( *this\root\canvas\gadgetID )
+       EndIf
+       
+       ;\\
+       If *this\show
          If eventtype = #__event_Focus
             If GetActiveGadget( ) <> *this\root\canvas\gadget
                SetActiveGadget( *this\root\canvas\gadget )
@@ -13851,33 +13851,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         ;If is_root_( *this )
-         If *this\root <> Root( )
-            If ChangeCurrentCanvas( *this\root\canvas\gadgetID )
-              ; Debug " - DoFocus (ChangeCurrentCanvas) "
-              ; Send( *this\root, #__event_Repaint ) 
-            EndIf
-         EndIf
-         ;EndIf
-         
-         ;\\
          If Not Send( *this, eventtype )
             DoEvents( *this, eventtype )
          EndIf
          
          ;\\
-         If EnteredWidget( )
-            If EnteredWidget( )\root <> Root( )
-               If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-                ; Debug "   - DoFocus (ChangeCurrentCanvas) "
-                ;  Send( EnteredWidget( )\root, #__event_Repaint ) 
-               EndIf
+         If EnteredWidget( ) And 
+            EnteredWidget( )\root <> Root( )
+            If ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+              ; Debug "   - DoFocus (ChangeCurrentCanvas) "
             EndIf
          EndIf
          
       Else
          Post( *this, eventtype )
       EndIf
+      
    EndProcedure
     
     Procedure.i SetDeactive( *this._S_WIDGET )
@@ -20771,16 +20760,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure   EventRepaint( )
       If EventData( )
-        EventHandler( #PB_Event_Repaint, #PB_All, #PB_All, EventData( ) )
+        EventHandler( #PB_Event_Repaint, EventGadget( ), #PB_Default, EventData( ) )
       EndIf
     EndProcedure
     
     Procedure   EventActivate( )
-      EventHandler( #PB_Event_ActivateWindow, #PB_All, #PB_All, EventData( ) )
+       EventHandler( #PB_Event_ActivateWindow, #PB_Default, #PB_Default, #Null )
     EndProcedure
     
     Procedure   EventDeactive( )
-      EventHandler( #PB_Event_DeactivateWindow, #PB_All, #PB_All, EventData( ) )
+       EventHandler( #PB_Event_DeactivateWindow, #PB_Default, #PB_Default, #Null )
     EndProcedure
     
     ;-
@@ -21690,7 +21679,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn 0
           
         Case #__event_Focus
-           Debug 4444
+           Debug " MessageEvents (FOCUS) "
            HideWindow( EventWidget( )\root\canvas\window, 0 )
       
         Case #__event_LeftClick
@@ -22667,7 +22656,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21693
-; FirstLine = 18888
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--8--------------8-8-v---------v-----------------------+e------v-d2-6t-v----f--4W--f-------------T9v-0---4--v4-------------U+------
+; CursorPosition = 20762
+; FirstLine = 17954
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-f--------------f-f--0---------0-------------------f--448------0vr+Pv0-0--4-8-f37--8------------fv-------+---+------------ly-------
 ; EnableXP

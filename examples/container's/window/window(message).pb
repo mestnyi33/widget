@@ -53,13 +53,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *showButton = Button( 600-100, 300-40, 90,30, "show" )
       Bind( *showButton, @ButtonEvents( ) )
       
-      ;ShowMessage( )
+      ShowMessage( )
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 23
+; CursorPosition = 55
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
