@@ -569,6 +569,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
+         repaint.b
          *drawimg
          *anchors._s_ANCHORS
          
@@ -710,7 +711,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-         repaint.b
+         ;repaint.b
          *widget._s_WIDGET
          canvas._s_canvas
          List *children._s_WIDGET( ) ; widget( )\
@@ -746,6 +747,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          quit.b ; quit from main loop
          loop.b
          repost.b
+         
+         ;;*main._s_ROOT 
       EndStructure
       
       ;Global *event._s_events = Allocatestructure(_s_events)
@@ -759,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 744
-; FirstLine = 490
-; Folding = ---PP7T+0-
+; CursorPosition = 750
+; FirstLine = 621
+; Folding = ---PP7T+--
 ; EnableXP

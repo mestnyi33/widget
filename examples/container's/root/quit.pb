@@ -52,8 +52,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Message( "message", "test", #__message_ScreenCentered )
   
   ;\\
-  ;WaitQuit( )
-  WaitClose( )
+  WaitQuit( )
+  ;WaitClose( )
   
   ;\\
   Procedure CallBack( )
@@ -86,6 +86,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 55
+; FirstLine = 32
 ; Folding = -
 ; EnableXP
