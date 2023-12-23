@@ -38,6 +38,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,200,50,"Button_2_close")
   SetClass(widget( ), "Button_2_close" )
   
+  
+  Procedure buttonEvent( )
+     If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+        Close( #PB_All )
+     EndIf
+  EndProcedure
+  ButtonGadget(1, 10,70,200,50, "Button_2_close")
+  BindGadgetEvent(1, @buttonEvent( ))
+  
   ;\\
   WaitEvent( #PB_All, @CallBack( ) )
   
@@ -59,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
             
           Case "Button_2_close"
-            If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
               Close( #PB_All )
             EndIf
             
@@ -95,6 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 70
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
