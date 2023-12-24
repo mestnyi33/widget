@@ -39,11 +39,18 @@ CompilerIf #PB_Compiler_IsMainFile
   SetClass(widget( ), "Button_2" )
   
   
+  ;\\
+  ForEach enumRoot( )
+     Debug enumRoot( )\class
+  Next
+  
+  ; Close( #PB_All )
   
   ;\\
   WaitClose( Root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
+; CursorPosition = 46
+; FirstLine = 10
 ; Folding = -
 ; EnableXP
