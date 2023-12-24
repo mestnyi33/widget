@@ -21172,6 +21172,109 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If Not is_window
             If *window = #PB_All
+               ForEach enumRoot( )
+                  window = enumRoot( )\canvas\window
+                  canvas = enumRoot( )\canvas\gadget
+                  
+                  If Free( enumRoot( ) )
+                     If PB(IsWindow)( window )
+                        DraggedGadget( ) =- 1 
+                        EnteredGadget( ) =- 1 
+                        PressedGadget( ) =- 1 
+                        FocusedGadget( ) =- 1 
+                        
+                        FreeGadget( canvas )
+                        CloseWindow( window )
+                     EndIf
+                  EndIf
+               Next 
+               ProcedureReturn *window
+            Else
+               If is_root_( *window )
+                  *window = *window\root\canvas\window
+                  is_window = #True
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If is_window 
+            ForEach enumRoot( )
+               Root( ) = enumRoot( )
+               window = Root( )\canvas\window
+               canvas = Root( )\canvas\gadget
+               
+               ;\\
+               If #PB_All <> *window
+                  If window <> *window 
+                     Continue
+                  EndIf
+               EndIf
+               
+               Debug ""+*window +" "+Root( )\class
+                
+               If *window = #PB_All
+                  If Root( )\haschildren
+                     LastElement( Root( )\children( ) )
+                     Repeat
+                        If is_window_( Root( )\children( ) )
+                           window = #PB_All
+                           ; Debug " free --------- " + Root( )\root\children( )\class
+                           
+                           Free( Root( )\children( ) )
+                           
+                           If Not Root( )\haschildren
+                              Break 2
+                           EndIf
+                           
+                        ElseIf Not PreviousElement( Root( )\children( ) )
+                           Break
+                        EndIf
+                     ForEver
+                     
+                     If window = #PB_All
+                        Break
+                     EndIf
+                  EndIf
+                  
+                  __gui\quit =- 1 
+               EndIf
+               
+               ;\\
+               If Free( Root( ) )
+                  If PB(IsWindow)( window )
+                     DraggedGadget( ) =- 1 
+                     EnteredGadget( ) =- 1 
+                     PressedGadget( ) =- 1 
+                     FocusedGadget( ) =- 1 
+                     
+                     If __gui\quit =- 1 
+                        FreeGadget( canvas )
+                        CloseWindow( window )
+                     Else
+                        PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
+                     EndIf
+                  EndIf
+               EndIf
+            Next  
+         Else
+            If is_widget_( *window )
+               Free( *window )
+            EndIf
+         EndIf
+         
+         ;\\
+         ChangeCurrentRoot( )
+         
+         ProcedureReturn window
+      EndProcedure
+      Procedure   __Close( *window._s_WIDGET )
+         Protected window, canvas
+         Protected is_window = IsWindow( *window )
+         
+         ;\\
+         If Not is_window
+            If *window = #PB_All
                is_window = #True
             Else
                If is_root_( *window )
@@ -21422,13 +21525,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this = enumRoot( )
                   enumRoot( )\address = #Null
-                  DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
-                  ResetMap( enumRoot( ) )
+                  DeleteMapElement( enumRoot( ) )
+                  ; DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
+                  ; ResetMap( enumRoot( ) )
                   Debug " FREE - "+*this\class
-               EndIf
-               
-               If Not MapSize( EnumRoot( ) )
-                  __gui\quit = 1 
+                  
+                  If Not MapSize( EnumRoot( ) )
+                     __gui\quit = 1 
+                  EndIf
                EndIf
                
                ProcedureReturn 1
@@ -22692,7 +22796,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21545
-; FirstLine = 20463
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------+-++2-------------------------------------------------------------------------------------------------48------0vr+Pv0-0------------------------------8-------------------v2-------
+; CursorPosition = 21530
+; FirstLine = 21446
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------+-++2-------------------------------------------------------------------------------------------------48------0vr+Pv0-0------------------------------8----------------------v2--------
 ; EnableXP
