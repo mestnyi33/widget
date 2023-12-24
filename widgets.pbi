@@ -21172,22 +21172,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If Not is_window
             If *window = #PB_All
-               ForEach enumRoot( )
-                  window = enumRoot( )\canvas\window
-                  canvas = enumRoot( )\canvas\gadget
-                  
-                  If Free( enumRoot( ) )
-                     If PB(IsWindow)( window )
-                        DraggedGadget( ) =- 1 
-                        EnteredGadget( ) =- 1 
-                        PressedGadget( ) =- 1 
-                        FocusedGadget( ) =- 1 
-                        
-                        FreeGadget( canvas )
-                        CloseWindow( window )
-                     EndIf
-                  EndIf
-               Next 
+              ForEach enumRoot( )
+                Debug enumRoot( )\class
+;                   If Free( enumRoot( ) )
+;                     If DraggedGadget( ) = canvas 
+;                       DraggedGadget( ) =- 1 
+;                     EndIf
+;                     If EnteredGadget( ) = canvas 
+;                       EnteredGadget( ) =- 1 
+;                     EndIf
+;                     If PressedGadget( ) = canvas 
+;                       PressedGadget( ) =- 1 
+;                     EndIf
+;                     If FocusedGadget( ) = canvas 
+;                       FocusedGadget( ) =- 1 
+;                     EndIf
+;                     
+;                     FreeGadget( enumRoot( )\canvas\gadget )
+;                     CloseWindow( enumRoot( )\canvas\window )
+;                     DeleteMapElement(enumRoot( ))
+;                     If Not MapSize( EnumRoot( ) )
+;                      __gui\quit = 1 
+;                   EndIf
+;                   EndIf
+                Next 
                ProcedureReturn *window
             Else
                If is_root_( *window )
@@ -21330,11 +21338,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If Free( Root( ) )
                   If PB(IsWindow)( window )
-                     DraggedGadget( ) =- 1 
-                     EnteredGadget( ) =- 1 
-                     PressedGadget( ) =- 1 
-                     FocusedGadget( ) =- 1 
-                     
+                    If DraggedGadget( ) = canvas 
+                      DraggedGadget( ) =- 1 
+                    EndIf
+                    If EnteredGadget( ) = canvas 
+                      EnteredGadget( ) =- 1 
+                    EndIf
+                    If PressedGadget( ) = canvas 
+                      PressedGadget( ) =- 1 
+                    EndIf
+                    If FocusedGadget( ) = canvas 
+                      FocusedGadget( ) =- 1 
+                    EndIf
+                    
                      If __gui\quit =- 1 
                         FreeGadget( canvas )
                         CloseWindow( window )
@@ -21525,7 +21541,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this = enumRoot( )
                   enumRoot( )\address = #Null
-                  DeleteMapElement( enumRoot( ) )
+                  ;DeleteMapElement( enumRoot( ) )
                   ; DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
                   ; ResetMap( enumRoot( ) )
                   Debug " FREE - "+*this\class
@@ -22795,8 +22811,6 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21530
-; FirstLine = 21446
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------+-++2-------------------------------------------------------------------------------------------------48------0vr+Pv0-0------------------------------8----------------------v2--------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------+-++2-------------------------------------------------------------------------------------------------48------0vr+Pv0-0------------------------------8-----------------------W--------
 ; EnableXP

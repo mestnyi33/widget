@@ -39,18 +39,33 @@ CompilerIf #PB_Compiler_IsMainFile
   SetClass(widget( ), "Button_2" )
   
   
+  
   ;\\
   ForEach enumRoot( )
-     Debug enumRoot( )\class
+    Debug enumRoot( )\class
   Next
+  
+  Debug ""
+  
+  ForEach enumRoot( )
+    Debug enumRoot( )\class
+    
+    FreeGadget( enumRoot( )\canvas\gadget )
+    CloseWindow( enumRoot( )\canvas\window )
+    DeleteMapElement(enumRoot( ))
+    
+  Next
+  
+  If Not MapSize(enumRoot( ))
+    Debug "0"
+    End
+  EndIf
   
   ; Close( #PB_All )
   
   ;\\
   WaitClose( Root( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 10
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
