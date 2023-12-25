@@ -210,15 +210,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;Macro Root( ): widget::*roots( ): EndMacro
       ;Macro EnumRoot( ): widget::__gui\roots( ): EndMacro
       Macro EnumRoot( ): widget::*roots( ): EndMacro
-      Macro ChangeCurrentRoot( )
-         If MapSize( enumRoot( ) ) 
-            If MapKey( enumRoot( ) ) = ""
-               ResetMap( enumRoot( ) )
-               NextMapElement( enumRoot( ) )
-               Root( ) = enumRoot( )
-            EndIf
-         EndIf
-      EndMacro
       Macro ChangeCurrentCanvas( _canvas_ )
          FindMapElement( widget::enumRoot( ), Str( _canvas_ ) )
          widget::Root( ) = widget::enumRoot( )
@@ -246,11 +237,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           PostEventRepaint( _root_ )
       EndMacro
       Macro Repaint( )
-         ;Debug #PB_Compiler_Procedure
-         PostEventRepaint( Root( ) )
-      EndMacro
-      Macro _repaint_( )
-         root\repaint 
+         repaint 
          ;Debug #PB_Compiler_Procedure
          ; PostEventRepaint( Root( ) )
       EndMacro
@@ -2816,7 +2803,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\ add anchors on the widget
                If Not a_index( )
-                  *this\_repaint_( ) = #True
+                  *this\Repaint( ) = #True
                   
                   ;\\ a_add
                   For anchor = 0 To #__a_count
@@ -2899,7 +2886,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If Not ( EnteredWidget( ) And is_integral_( EnteredWidget( ) ) And EnteredWidget( )\parent = *this )
                         a_remove( *this, i )
                         a_entered( )  = a_focused( )
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                Else
@@ -2908,14 +2895,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\parent\anchors And
                      *this\parent\state\enter = - 1
                      *this\parent\state\enter = 0
-                     *this\parent\_repaint_( )     = #True
+                     *this\parent\Repaint( )     = #True
                   EndIf
                   
                EndIf
             EndIf
          EndIf
          
-         ProcedureReturn *this\_repaint_( )
+         ProcedureReturn *this\Repaint( )
       EndProcedure
       
       Procedure.i a_set( *this._S_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
@@ -2931,7 +2918,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   If *this\state\press = 0
                      *this\state\press = - 1
-                     *this\_repaint_( )     = #True
+                     *this\Repaint( )     = #True
                   EndIf
                EndIf
                
@@ -2997,7 +2984,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                   If a_focused( ) <> *this
-                     *this\_repaint_( )    = #True
+                     *this\Repaint( )    = #True
                      a_entered( )     = a_focused( )
                      a_focused( )     = *this
                      FocusedWidget( ) = *this
@@ -3337,7 +3324,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If is_integral_( *this )
                      If *this\parent\state\press = - 1
                         *this\parent\state\press = 0
-                        *this\parent\_repaint_( )     = #True
+                        *this\parent\Repaint( )     = #True
                      EndIf
                      *this = *this\parent
                   EndIf
@@ -3351,7 +3338,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            a_focused( )\anchors\id[a_index( )]\color\state = #__S_0
                         EndIf
                         
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                      
                      If *this\anchors And Not *this\anchors\mode ; = a_main( )
@@ -3591,7 +3578,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If a_transform( )\grid_size > 0
                         a_selector( )\width + 1
                      EndIf
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                      move_x        = mouse_x
                   EndIf
                   
@@ -3610,7 +3597,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If a_transform( )\grid_size > 0
                         a_selector( )\height + 1
                      EndIf
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                      move_y        = mouse_y
                   EndIf
                   
@@ -3723,7 +3710,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ProcedureReturn *this\_repaint_( )
+         ProcedureReturn *this\Repaint( )
       EndProcedure
       
       ;-
@@ -4278,7 +4265,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             *this\resize | #__reclip
-            *this\_repaint_( ) = #True
+            *this\Repaint( ) = #True
             
             ;\\
             If *this\anchors And
@@ -4621,7 +4608,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          PostRepaint( *this\root )
-         ProcedureReturn *this\_repaint_( )
+         ProcedureReturn *this\Repaint( )
       EndProcedure
       
       ;-
@@ -7563,7 +7550,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If *bar\ThumbChange( ) <> 0
                *bar\ThumbChange( ) = 0
-               *this\_repaint_( ) = #True
+               *this\Repaint( ) = #True
             EndIf
             
          EndIf
@@ -7933,7 +7920,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *this\_repaint_( )
+                  If *this\Repaint( )
                      SetWindowTitle( EventWindow( ), Str( *bar\page\pos ) + " " + Str( *bar\thumb\pos - *bar\area\pos ))
                   EndIf
                   
@@ -7950,7 +7937,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\PressedTab( )\state\press = #True
                         
                         *this\PressedTab( )\color\state = #__S_2
-                        *this\_repaint_( )                   = #True
+                        *this\Repaint( )                   = #True
                      EndIf
                   EndIf
                EndIf
@@ -7980,7 +7967,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
                EndIf
                
@@ -8000,7 +7987,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Not *this\PressedTab( )\state\focus
                         
                         If bar_tab_SetState( *this, *this\PressedTab( )\index )
-                           *this\_repaint_( ) = #True
+                           *this\Repaint( ) = #True
                         EndIf
                      EndIf
                   EndIf
@@ -8110,7 +8097,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          ReDrawing( *this, *rowLine )
          
-         *this\_repaint_( ) = #True
+         *this\Repaint( ) = #True
          ;\\ *rowLine\color\state = #__s_2
          *rowLine\state\focus = #True
          
@@ -8565,7 +8552,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                result        = 1
-               *this\_repaint_( ) = 1
+               *this\Repaint( ) = 1
             EndIf
          Else
             *this\notify = 1
@@ -11053,7 +11040,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\_rows( )\color\state <> #__S_2
                      *this\_rows( )\color\state = #__S_2
-                     *this\_repaint_( )              = #True
+                     *this\Repaint( )              = #True
                   EndIf
                   
                Else
@@ -11061,7 +11048,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not *this\_rows( )\state\press
                      If *this\_rows( )\color\state <> #__S_0
                         *this\_rows( )\color\state = #__S_0
-                        *this\_repaint_( )              = #True
+                        *this\Repaint( )              = #True
                      EndIf
                   EndIf
                   
@@ -11453,7 +11440,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ; Post event item status change
                      If *this\anchors
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      Else
                         If *this\event = 0 : *this\event = - 1 : EndIf
                         ;DoEvents( *this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index )
@@ -13607,7 +13594,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\FocusedRow( )\state\focus = 1
                            *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
                            If *this\anchors
-                              *this\_repaint_( ) = #True
+                              *this\Repaint( ) = #True
                            Else
                               If *this\event = 0 : *this\event = - 1 : EndIf
                               ;DoEvents( *this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index )
@@ -17887,7 +17874,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not mouse( )\press
                   If EnteredButton( )
                      If Leaved( EnteredButton( ) )
-                        *widget\_repaint_( ) = #True
+                        *widget\Repaint( ) = #True
                      EndIf
                      EnteredButton( ) = #Null
                   EndIf
@@ -17932,7 +17919,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If a_focused( )\anchors\id[a_index]\color\state <> #__S_0
                         a_focused( )\anchors\id[a_index]\color\state = #__S_0
                         a_focused( )\state\enter                        = #False
-                        a_focused( )\_repaint_( )                            = #True
+                        a_focused( )\Repaint( )                            = #True
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
@@ -17956,7 +17943,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If a_entered( )\anchors\id[a_index]\color\state <> #__S_0
                         a_entered( )\anchors\id[a_index]\color\state = #__S_0
                         a_entered( )\state\enter                        = #False
-                        a_entered( )\_repaint_( )                            = #True
+                        a_entered( )\Repaint( )                            = #True
                         If *widget And is_innerside_( *widget )
                            If mouse( )\cursor <> *widget\cursor
                               mouse( )\cursor = *widget\cursor
@@ -18000,7 +17987,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               
                               a_focused( )\state\enter = - 1
-                              a_focused( )\_repaint_( )     = #True
+                              a_focused( )\Repaint( )     = #True
                               
                               If mouse( )\cursor <> a_transform( )\cursor[i]
                                  mouse( )\cursor = a_transform( )\cursor[i]
@@ -18040,7 +18027,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  EndIf
                                  
                                  a_entered( )\state\enter = - 1
-                                 a_entered( )\_repaint_( )     = #True
+                                 a_entered( )\Repaint( )     = #True
                                  
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
                                     mouse( )\cursor = a_transform( )\cursor[i]
@@ -18087,7 +18074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If EnteredButton( )
                   ; If Not mouse( )\press
                   If Leaved( EnteredButton( ) )
-                     *widget\_repaint_( ) = #True
+                     *widget\Repaint( ) = #True
                   EndIf
                   EnteredButton( ) = #Null
                   ; EndIf
@@ -18245,12 +18232,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                 ;*this\FocusedRow( ) = SelectElement( *this\_rows( ), *this\VisibleLastRow( )\index )
                      ;                 *this\FocusedRow( )\state\focus = 1
                      ;                 *this\FocusedRow( )\color\state = 1
-                     ;                 *this\FocusedRow( )\_repaint_( ) = 1
+                     ;                 *this\FocusedRow( )\Repaint( ) = 1
                      ;
                      ;                 Debug *this\FocusedRow( )\index
                      ;                 edit_set_sel_( *this, *this\FocusedRow( ), *this\PressedLine( ) )
                      ;
-                     ;                 *this\_repaint_( ) = 1
+                     ;                 *this\Repaint( ) = 1
                      ;               EndIf
                      
                      ;                 result = 1
@@ -18333,7 +18320,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not ( a_transform( ) And a_index( ))
                If EnteredButton( )
                   If Leaved( EnteredButton( ) )
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
                EndIf
                
@@ -18347,7 +18334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EnteredButton( )\color\state = #__S_1
                      EndIf
                      
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
                EndIf
             EndIf
@@ -18400,7 +18387,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\EnteredTab( )\color\state = #__S_0
                      EndIf
                      
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
                EndIf
                
@@ -18416,7 +18403,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\EnteredTab( )\color\state = #__S_1
                         EndIf
                         
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                EndIf
@@ -18444,7 +18431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\_rows( )\color\state = #__s_3
                         *this\_rows( )\color\state = #__s_2
                         
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                Next
@@ -18459,7 +18446,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\_rows( )\color\state = #__s_2
                         *this\_rows( )\color\state = #__s_3
                         
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                Next
@@ -18743,7 +18730,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            edit_sel_text_( *this, *this\EnteredLine( ) )
                            
                         Else
-                           *this\_repaint_( ) = #True
+                           *this\Repaint( ) = #True
                         EndIf
                      EndIf
                   EndIf
@@ -18877,7 +18864,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\EnteredRow( )\state\focus
                            If *this\EnteredRow( )\color\state <> #__S_2
                               *this\EnteredRow( )\color\state = #__S_3
-                              *this\_repaint_( )                   = #True
+                              *this\Repaint( )                   = #True
                            EndIf
                         EndIf
                      EndIf
@@ -18923,14 +18910,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; Debug " items status change enter"
                         
                         If *this\anchors
-                           *this\_repaint_( ) = #True
+                           *this\Repaint( ) = #True
                         Else
                            If *this\event = 0 : *this\event = - 1 : EndIf
                            DoEvents(*this, #__event_StatusChange, *this\EnteredRow( ), *this\EnteredRow( )\index)
                            If *this\event = - 1 : *this\event = 0 : EndIf
                         EndIf
                      Else
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                   
@@ -18939,7 +18926,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug " items status change leave"
                   
                   If *this\anchors
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   Else
                      If *this\event = 0 : *this\event = - 1 : EndIf
                      If *this\FocusedRow( )
@@ -18964,14 +18951,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\EnteredRow( )\state\enter = 1
                            ; mouse( )\enter =- 1
                            ; Debug "-1 (+1)"
-                           *this\_repaint_( ) = 1
+                           *this\Repaint( ) = 1
                         EndIf
                      Else
                         If *this\EnteredRow( )\state\enter <> - 1
                            *this\EnteredRow( )\state\enter = - 1
                            ; Debug "+1 (-1)"
                            ; mouse( )\enter = 1
-                           *this\_repaint_( ) = 1
+                           *this\Repaint( ) = 1
                         EndIf
                      EndIf
                   EndIf
@@ -19026,7 +19013,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\_rows( ) <> *this\FocusedRow( )
                         If *this\_rows( )\color\state = #__S_3
                            *this\_rows( )\color\state = #__S_2
-                           *this\_repaint_( )              = 1
+                           *this\Repaint( )              = 1
                         EndIf
                      EndIf
                   Next
@@ -19038,14 +19025,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\FocusedRow( )\state\focus And
                      *this\FocusedRow( )\color\state = #__S_3
                      *this\FocusedRow( )\color\state = #__S_2
-                     *this\_repaint_( )                   = 1
+                     *this\Repaint( )                   = 1
                      
                      ;\\
                      If *this\FocusedRow( )\state\focus = - 1
                         *this\FocusedRow( )\state\focus = 1
                      Else
                         If *this\anchors
-                           *this\_repaint_( ) = #True
+                           *this\Repaint( ) = #True
                         Else
                            If *this\event = 0 : *this\event = - 1 : EndIf
                            ; DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -19064,7 +19051,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\_rows( ) <> *this\FocusedRow( )
                         If *this\_rows( )\color\state = #__S_2
                            *this\_rows( )\color\state = #__S_3
-                           *this\_repaint_( )              = 1
+                           *this\Repaint( )              = 1
                         EndIf
                      EndIf
                   Next
@@ -19076,7 +19063,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug ""+*this\x+" "+*this\y ;????????????????????
                   If *this\FocusedRow( )\state\focus
                      *this\FocusedRow( )\color\state = #__S_3
-                     *this\_repaint_( )                   = 1
+                     *this\Repaint( )                   = 1
                   EndIf
                EndIf
             EndIf
@@ -19133,7 +19120,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\FocusedRow( )\color\state = #__S_2
                               *this\FocusedRow( )\color\state = #__S_3
                               If *this\anchors
-                                 *this\_repaint_( ) = #True
+                                 *this\Repaint( ) = #True
                               Else
                                  If *this\event = 0 : *this\event = - 1 : EndIf
                                  ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -19142,7 +19129,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If *this\anchors
-                              *this\_repaint_( ) = #True
+                              *this\Repaint( ) = #True
                            Else
                               If *this\event = 0 : *this\event = - 1 : EndIf
                               ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( ), *this\PressedRow( )\index)
@@ -19167,7 +19154,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                               ; ;                      Debug "change5"
                                               ; ;                     DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
                                               ; ;                     If *this\event = - 1 : *this\event = 0 : EndIf
-                                              ; ;                     ;*this\_repaint_( ) = #True
+                                              ; ;                     ;*this\Repaint( ) = #True
                                               ;                   EndIf 
                                               ;                 EndIf
                                               ;                 
@@ -19298,7 +19285,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Else
                               If Not *this\row\multiselect
                                  If *this\anchors
-                                    *this\_repaint_( ) = #True
+                                    *this\Repaint( ) = #True
                                  Else
                                     If *this\event = 0 : *this\event = - 1 : EndIf
                                     ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( ), *this\FocusedRow( )\index)
@@ -19392,18 +19379,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If is_innerside_( *this )
                If *this\state\enter = 1
                   *this\state\enter = 2
-                  *this\_repaint_( )     = 1
+                  *this\Repaint( )     = 1
                EndIf
             ElseIf *this\state\enter = 2
                *this\state\enter     = 1
-               *this\_repaint_( )         = 1
+               *this\Repaint( )         = 1
             EndIf
          EndIf
          
          ;\\ widget::_events_Anchors( )
          If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
             If a_events( *this, eventtype, *button, *data)
-               *this\_repaint_( ) = #True
+               *this\Repaint( ) = #True
             EndIf
          EndIf
          
@@ -19411,18 +19398,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             If Not *this\state\disable
                *this\color\state = #__s_2
-               *this\_repaint_( ) = #True
+             ;  *this\Repaint( ) = #True
             EndIf
          EndIf
          
          ;\\
          If eventtype = #__event_LostFocus
-           If *this\color\state = #__s_2
-             *this\color\state = #__s_3
-           EndIf
-           If *this = FocusedWidget( )
-             *this\_repaint_( ) = #True
-           EndIf  
+            If *this\color\state = #__s_2
+               *this\color\state = #__s_3
+              ; *this\Repaint( ) = #True
+               ;         Else
+               ;           Debug " - l " + *this\class
+            EndIf
          EndIf
          
          ;\\
@@ -19447,13 +19434,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                 ;Debug *button
                      ;                 *row\color\back[*row\color\state] = $FF2C70F5 ; TEMP
                      ;               EndIf
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
                   
                Case #__event_MouseMove
                   If *this\bar
                      If *this\dragstart
-                        *this\_repaint_( ) = #True
+                        *this\Repaint( ) = #True
                      EndIf
                   EndIf
                   
@@ -19482,7 +19469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                #__event_Resize,
                   
                   
-                  *this\_repaint_( ) = #True
+                  *this\Repaint( ) = #True
             EndSelect
             
             ;\\ items events
@@ -19675,7 +19662,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\color\state <> #__s_1
                            *this\color\state = #__s_1
                         EndIf
-                        *this\_repaint_( ) = 1
+                        *this\Repaint( ) = 1
                      Else
                         If *this\color\state <> #__s_0
                            *this\color\state = #__s_0
@@ -19706,7 +19693,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__type_ProgressBar
                   
                   If Bar_Events( *this, eventtype, *button, *data )
-                     *this\_repaint_( ) = #True
+                     *this\Repaint( ) = #True
                   EndIf
             EndSelect
             
@@ -19778,7 +19765,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug "wheelX " + *data
             If *this\scroll And *this\scroll\h And
                bar_SetState( *this\scroll\h, *this\scroll\h\bar\page\pos - mouse( )\wheel\x )
-               *this\_repaint_( ) = #True
+               *this\Repaint( ) = #True
             EndIf
          EndIf
          
@@ -19787,7 +19774,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug "wheelY " + *data
             If *this\scroll And *this\scroll\v And
                bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
-               *this\_repaint_( ) = #True
+               *this\Repaint( ) = #True
             EndIf
          EndIf
          
@@ -19995,9 +19982,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ post repaint canvas
          If Not *this\state\disable
-            If *this\_repaint_( ) = 1
+            If *this\Repaint( ) = 1
                PostEventRepaint( *this\root )
-               *this\_repaint_( ) = 0
+               *this\Repaint( ) = 0
             EndIf
          EndIf
       EndProcedure
@@ -21169,6 +21156,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn g
       EndProcedure
       
+      Procedure   ChangeCurrentRoot( )
+         If MapSize( enumRoot( ) ) 
+            If MapKey( enumRoot( ) ) = ""
+               ResetMap( enumRoot( ) )
+               NextMapElement( enumRoot( ) )
+               Root( ) = enumRoot( )
+            EndIf
+            ProcedureReturn 1
+         EndIf
+      EndProcedure
+      
       Procedure   Close( *window._s_WIDGET )
          Protected window, canvas
          Protected is_window = IsWindow( *window )
@@ -21199,8 +21197,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               Debug ""+*window +" "+Root( )\class
-                
                If *window = #PB_All
                   If Root( )\haschildren
                      LastElement( Root( )\children( ) )
@@ -21231,22 +21227,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If Free( Root( ) )
                   If PB(IsWindow)( window )
-                    If DraggedGadget( ) = canvas 
-                      DraggedGadget( ) =- 1 
-                    EndIf
-                    If EnteredGadget( ) = canvas 
-                      EnteredGadget( ) =- 1 
-                    EndIf
-                    If PressedGadget( ) = canvas 
-                      PressedGadget( ) =- 1 
-                    EndIf
-                    If FocusedGadget( ) = canvas 
-                      FocusedGadget( ) =- 1 
-                    EndIf
-                    
+                     If DraggedGadget( ) = canvas
+                        DraggedGadget( ) =- 1 
+                     EndIf
+                     If EnteredGadget( ) = canvas
+                        EnteredGadget( ) =- 1 
+                     EndIf
+                     If PressedGadget( ) = canvas
+                        PressedGadget( ) =- 1 
+                     EndIf
+                     If FocusedGadget( ) = canvas
+                        FocusedGadget( ) =- 1 
+                     EndIf
+                     
                      If __gui\quit =- 1 
                         FreeGadget( canvas )
                         CloseWindow( window )
+                        ResetMap( enumRoot( ) ) 
                      Else
                         PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
                      EndIf
@@ -21260,7 +21257,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         ChangeCurrentRoot( )
+         ;ChangeCurrentRoot( )
          
          ProcedureReturn window
       EndProcedure
@@ -21418,6 +21415,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndWith
                EndIf
                
+               ;\\
                If EnteredWidget( ) = *this
                   EnteredWidget( ) = 0
                EndIf
@@ -21429,14 +21427,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               ;;PostRepaint( *this\parent\root )
-               ;ClearStructure( *this, _S_WIDGET )
-               
-               If *this = enumRoot( )
+               If enumRoot( ) = *this
                   enumRoot( )\address = #Null
-                  DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
-                  ResetMap( enumRoot( ) )
-                  Debug " FREE - "+*this\class
+                  DeleteMapElement( enumRoot( ) )
+                  ; DeleteMapElement( enumRoot( ), MapKey( enumRoot( ) ) )
+                  ; ResetMap( enumRoot( ) )
+                  Debug " FREE - "+*this\class +" "+ *this\address
                   
                   If Not MapSize( EnumRoot( ) )
                      __gui\quit = 1 
@@ -21546,7 +21542,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If MapSize( enumRoot( ) )
             ;\\
-            ChangeCurrentRoot( )
+            ;ChangeCurrentRoot( )
             
             Repeat
                Select WaitWindowEvent( waittime )
@@ -21555,7 +21551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Protected canvas =  PB(GetWindowData)( window ) 
                      
                      If ChangeCurrentCanvas( PB(GadgetID)(canvas))
-                        Debug "Wait close.... " + Root( )\address +" "+ Root( )\canvas\window +" "+ window
+                        Debug "Wait close.... " + Root( )\address +" "+ Root( )\canvas\window +" "+ window +" - "+ EventGadget( ) +" "+ EventData( )
                         
                         ;\\
                         Select Send( Root( ), #__event_Close )
@@ -21583,13 +21579,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      
                      ;\\
-                     ; Debug "MapSize "+MapSize( enumRoot( ) )  ;\\  
-                     If Not MapSize( enumRoot( ) ) 
-                        __gui\quit = 1
-                     Else
-                        ;\\
-                        ChangeCurrentRoot( )
+                     If MapSize( enumRoot( ) ) 
+                        ; ChangeCurrentRoot( )
                         __gui\quit = 0
+                     Else
+                        __gui\quit = 1
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -21661,14 +21655,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                gtk_main_( )
                
             CompilerCase #PB_OS_Windows
-              Protected msg.MSG
-              
-              ; MessageBeep_(#MB_ICONASTERISK  )
-              ; MessageBeep_(#MB_ICONEXCLAMATION )
-              ; MessageBeep_(#MB_ICONQUESTION )
-              ; MessageBeep_(#MB_ICONHAND )
-              MessageBeep_(#MB_OK)
-              
+               Protected msg.MSG
+               
                While GetMessage_( @msg, #Null, 0, 0 )
                   TranslateMessage_( msg ) 
                   DispatchMessage_( msg ) 
@@ -21979,7 +21967,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "Close - Message "+IsWindow(*message\canvas\window)
          
          ;\\
-         ChangeCurrentRoot( )
+         ;ChangeCurrentRoot( )
          
          ;\\
          EventWidget( ) = *widget
@@ -22709,6 +22697,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------0-00r--------------------------------------0-----------------------------------------------------------v--------u--93-4------------------------------v--------------------Ph--------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21582
+; FirstLine = 21354
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------f-ff-7-------------------------------------------------------------------------------------------------80------+4V-n4c-9------------------------------0--------Do0---------v2--------
 ; EnableXP
