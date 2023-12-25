@@ -234,7 +234,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       Macro PostRepaint( _root_ )
          ;Debug #PB_Compiler_Procedure
-          PostEventRepaint( _root_ )
+         PostEventRepaint( _root_ )
       EndMacro
       Macro Repaint( )
          repaint 
@@ -3523,8 +3523,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
                                     ForEach a_group( )
                                        Resize( a_group( )\widget,
-                                                                    ( a_selector( )\x - a_focused( )\inner_x( ) ) + a_group( )\x,
-                                                                    #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
+                                               ( a_selector( )\x - a_focused( )\inner_x( ) ) + a_group( )\x,
+                                               #PB_Ignore, a_selector( )\width - a_group( )\width, #PB_Ignore )
                                     Next
                                     
                                  Case #__a_right, #__a_right_top, #__a_right_bottom ; right
@@ -3537,8 +3537,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
                                     ForEach a_group( )
                                        Resize( a_group( )\widget, #PB_Ignore,
-                                                                    ( a_selector( )\y - a_focused( )\inner_y( ) ) + a_group( )\y,
-                                                                    #PB_Ignore, a_selector( )\height - a_group( )\height )
+                                               ( a_selector( )\y - a_focused( )\inner_y( ) ) + a_group( )\y,
+                                               #PB_Ignore, a_selector( )\height - a_group( )\height )
                                     Next
                                     
                                  Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
@@ -13855,7 +13855,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If EnteredWidget( ) And 
                EnteredWidget( )\root <> Root( )
-              ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
             EndIf
             
          Else
@@ -13959,7 +13959,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i SetActive( *this._S_WIDGET )
          Protected result.i, *active._S_WIDGET
-            
+         
          If *this And Not *this\state\disable
             If *this\root And
                GetActiveGadget( ) <> *this\root\canvas\gadget
@@ -15588,7 +15588,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-  CREATEs
       Procedure.i Create( *parent._S_WIDGET, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
          Protected *root._s_root = *parent\root ; Root( )  
-         Protected color, image             ;, *this.allocate( Widget )
+         Protected color, image                 ;, *this.allocate( Widget )
          
          Protected *this._S_WIDGET
          If Flag & #__flag_autosize = #__flag_autosize And
@@ -17585,29 +17585,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *root
       EndProcedure
       
-      Procedure DoClose( result, window, mainWindow )
-         Select result 
-            Case - 1
-               Close( #PB_All )
-               
-            Case 1  
-               If Not IsWindow( window ) 
-                  Close( Root( ) )
-               EndIf
-               
-            Case 0 
-               If mainWindow = window
-                  Close( #PB_All )
-               Else
-                  Close( window )
-               EndIf
-               
-         EndSelect
-      EndProcedure
-      
       ;-
       Procedure.i Send( *this._S_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
-         Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
+         Protected result, function, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
             If *this And *this\child
@@ -17643,37 +17623,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ( *this\events( )\type = #PB_All Or *this\events( )\type = eventtype ) And
                         ( *this\events( )\item = #PB_All Or *this\events( )\item = *button )
                         
-                        result = *this\events( )\function( )
-                        
-                        If eventtype = #__event_Close
-                           DoClose( result, *button, *data )
+                        function = *this\events( )\function( )
+                        If function
+                           result = function
                         EndIf
-                        
-                        If result
-                           Break
-                        EndIf
+                        Break
                      EndIf
                   Next
                EndIf
                
                ;\\ second call (current-widget-window) bind event function
-               If result <> #PB_Ignore
-                  If *this\window And ListSize( *this\window\events( ) ) And
+               If function <> #PB_Ignore
+                  If *this\window And 
+                     ListSize( *this\window\events( ) ) And
                      Not is_window_( *this ) And Not is_root_(*this\window )
                      
                      ForEach *this\window\events( )
                         If ( *this\window\events( )\type = #PB_All Or *this\window\events( )\type = eventtype ) And
                            ( *this\window\events( )\item = #PB_All Or *this\window\events( )\item = *button )
                            
-                           result = *this\window\events( )\function( )
-                           
-                           If eventtype = #__event_Close
-                              DoClose( result, *button, *data )
+                           function = *this\window\events( )\function( )
+                           If Not result
+                              If function
+                                 result = function
+                              EndIf
                            EndIf
-                           
-                           If result
-                              Break
-                           EndIf
+                           Break
                         EndIf
                      Next
                   EndIf
@@ -17681,23 +17656,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ theard call (current-widget-root) bind event function
-            If result <> #PB_Ignore
-               If *this\root And ListSize( *this\root\events( ) )
+            If function <> #PB_Ignore
+               If *this\root And
+                  ListSize( *this\root\events( ) )
                   ForEach *this\root\events( )
                      If ( *this\root\events( )\type = #PB_All Or *this\root\events( )\type = eventtype ) And
                         ( *this\root\events( )\item = #PB_All Or *this\root\events( )\item = *button )
                         
-                        result = *this\root\events( )\function( )
-                        
-                        If eventtype = #__event_Close
-                           DoClose( result, *button, *data )
+                        function = *this\root\events( )\function( )
+                        If Not result
+                           If function
+                              result = function
+                           EndIf
                         EndIf
-                        
-                        If result
-                           Break
-                        EndIf
+                        Break
                      EndIf
                   Next
+               EndIf
+            EndIf
+            
+            ;\\
+            If eventtype = #__event_Close
+               If result <> #PB_Ignore
+                  Select result 
+                     Case - 1
+                        If is_root_( *this ) Or
+                           is_window_( *this )
+                           Close( #PB_All )
+                        EndIf
+                        
+                     Case 1  
+                        If *button >= 0 
+                           If Not IsWindow( *button ) 
+                              Close( Root( ) )
+                           EndIf
+                        EndIf
+                        
+                     Case 0 
+                        If *button >= 0 And 
+                           *button = *data
+                           Close( #PB_All )
+                        Else
+                           Close( *this )
+                        EndIf
+                        
+                  EndSelect
                EndIf
             EndIf
             
@@ -17726,12 +17729,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-             ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
+            ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
             If __gui\repost = 1
-              __gui\repost =- 1
+               __gui\repost =- 1
             EndIf
             
-             If AddElement( __events( ) )
+            If AddElement( __events( ) )
                __events( )        = AllocateStructure( _s_EVENTDATA )
                __events( )\widget = *this
                __events( )\type   = eventtype
@@ -19420,7 +19423,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             If Not *this\state\disable
                *this\color\state = #__s_2
-              *this\Repaint( ) = #True
+               *this\Repaint( ) = #True
             EndIf
          EndIf
          
@@ -19429,10 +19432,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\color\state = #__s_2
                *this\color\state = #__s_3
                *this\Repaint( ) = #True
-             EndIf
-             If *this <> FocusedWidget( )
-                *this\Repaint( ) = #True
-             EndIf
+            EndIf
+            If *this <> FocusedWidget( )
+               *this\Repaint( ) = #True
+            EndIf
          EndIf
          
          ;\\
@@ -20034,11 +20037,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventdata 
                If ChangeCurrentCanvas( eventdata )
                   If Root( )\canvas\repaint = 1
-                    
-                    If __gui\repost =- 1
-                      Repost()
-                    EndIf
-                    
+                     
+                     If __gui\repost =- 1
+                        Repost()
+                     EndIf
+                     
                      ; Debug "   REPAINT " + Root( )\class
                      ReDraw( Root( ) )
                      Root( )\canvas\repaint = 0
@@ -21500,13 +21503,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   If ChangeCurrentCanvas( *root\canvas\gadgetID )
                      *repaint = Root( )
-                    ; Debug "    change canvas "
+                     ; Debug "    change canvas "
                   EndIf
                EndIf
                
                ;\\ 
                If #__event_Repaint = __type
-                 Debug "#__event_Repaint"
+                  Debug "#__event_Repaint"
                   
                ElseIf #__event_Close = __type
                   Debug "Post close...."
@@ -21521,7 +21524,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DoEvents( __widget, __type )
                      EndIf
                      
-                 Else
+                  Else
                      Send( __widget, __type, __item, __data )
                   EndIf
                EndIf
@@ -21535,8 +21538,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PostEventRepaint( *repaint )
             *repaint = 0
          EndIf
-                            
-        ;\\ call message
+         
+         ;\\ call message
          If EnteredWidget( ) And 
             EnteredWidget( )\root <> Root( )
             ; Debug " Change Current Canvas "
@@ -21638,16 +21641,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Repost( )
          
          ;\\
-;          If *root > 0
-;             PushMapPosition( enumRoot( ) )
-;             ForEach enumRoot( )
-;                If enumRoot( ) <> *root
-;                   DisableWindow( enumRoot( )\canvas\window, #True )
-;                   GetAtPoint( enumRoot( ), - 1, - 1 )
-;                EndIf
-;             Next
-;             PopMapPosition( enumRoot( ) )
-;          EndIf
+         ;          If *root > 0
+         ;             PushMapPosition( enumRoot( ) )
+         ;             ForEach enumRoot( )
+         ;                If enumRoot( ) <> *root
+         ;                   DisableWindow( enumRoot( )\canvas\window, #True )
+         ;                   GetAtPoint( enumRoot( ), - 1, - 1 )
+         ;                EndIf
+         ;             Next
+         ;             PopMapPosition( enumRoot( ) )
+         ;          EndIf
          
          ;\\ start main loop
          CompilerSelect #PB_Compiler_OS 
@@ -21663,9 +21666,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Wend
                
             CompilerCase #PB_OS_MacOS
-;                Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
-;                Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
-;                Debug " WaitQuit - "+currentEvent
+               ;                Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
+               ;                Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
+               ;                Debug " WaitQuit - "+currentEvent
                CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
                
          CompilerEndSelect
@@ -21679,15 +21682,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          __gui\loop = 0
          
          ;\\
-;          If *root > 0
-;             PushMapPosition( enumRoot( ) )
-;             ForEach enumRoot( )
-;                If enumRoot( ) <> *root
-;                   DisableWindow( enumRoot( )\canvas\window, #False )
-;                EndIf
-;             Next
-;             PopMapPosition( enumRoot( ) )
-;          EndIf
+         ;          If *root > 0
+         ;             PushMapPosition( enumRoot( ) )
+         ;             ForEach enumRoot( )
+         ;                If enumRoot( ) <> *root
+         ;                   DisableWindow( enumRoot( )\canvas\window, #False )
+         ;                EndIf
+         ;             Next
+         ;             PopMapPosition( enumRoot( ) )
+         ;          EndIf
          
          ;\\ stop main loop
          CompilerSelect #PB_Compiler_OS 
@@ -22670,34 +22673,35 @@ CompilerIf #PB_Compiler_IsMainFile
    ;SetActive(*tree)
    
    
-;    Procedure CallBack( )
-; ;     Select WidgetEventType( )
-; ;       Case #__event_Focus
-; ;         Debug "focus "+EventWidget( )\class
-; ;         
-; ;       Case #__event_LostFocus
-; ;         Debug "lostfocus "+EventWidget( )\class
-; ;         
-; ;       Case #__event_Repaint
-; ;         Debug "repaint " + EventWidget( )\class 
-; ;         ;ReDraw( EventWidget( ) )
-; ;         ;ProcedureReturn 1
-; ;         
-; ;       Default
-; ;         ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
-; ;         
-; ;     EndSelect
-;   EndProcedure
-;    ;\\
-;   Bind( #PB_All, @CallBack( ) )
-;   ; Message( "message", "test", #__message_ScreenCentered )
-;   
-  ;\\
-  ;WaitQuit( )
-  WaitClose( )
-  
+   ;    Procedure CallBack( )
+   ; ;     Select WidgetEventType( )
+   ; ;       Case #__event_Focus
+   ; ;         Debug "focus "+EventWidget( )\class
+   ; ;         
+   ; ;       Case #__event_LostFocus
+   ; ;         Debug "lostfocus "+EventWidget( )\class
+   ; ;         
+   ; ;       Case #__event_Repaint
+   ; ;         Debug "repaint " + EventWidget( )\class 
+   ; ;         ;ReDraw( EventWidget( ) )
+   ; ;         ;ProcedureReturn 1
+   ; ;         
+   ; ;       Default
+   ; ;         ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
+   ; ;         
+   ; ;     EndSelect
+   ;   EndProcedure
+   ;    ;\\
+   ;   Bind( #PB_All, @CallBack( ) )
+   ;   ; Message( "message", "test", #__message_ScreenCentered )
+   ;   
+   ;\\
+   ;WaitQuit( )
+   WaitClose( )
+   
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17637
+; FirstLine = 17622
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

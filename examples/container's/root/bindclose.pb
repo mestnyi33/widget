@@ -4,88 +4,100 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseLib(widget)
-  Declare CallBack( )
-  
-  ;\\
-  Open(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                      #PB_Window_SizeGadget |
-                                      #PB_Window_MinimizeGadget |
-                                      #PB_Window_MaximizeGadget )
-  
-  SetClass(Root( ), "window_0_root" )
-  Button(10,10,200,50,"Button_0_close")
-  SetClass(widget( ), "Button_0_close" )
-  
-  Procedure buttonEvent( )
-     If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-        Close( #PB_All )
-     EndIf
-  EndProcedure
-  ButtonGadget(1, 10,70,200,50, "Button_2_close")
-  BindGadgetEvent(1, @buttonEvent( ))
-  
-  ;\\
-  WaitEvent( #PB_All, @CallBack( ) )
-  
-  ;\\
-  Procedure CallBack( )
-    Select WidgetEventType( )
-      Case #__event_leftclick
-        Select GetText( EventWidget())
-          Case "Button_0_close"
-            If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              Close( EventWindow( ) )
-            EndIf
+   EnableExplicit
+   UseLib(widget)
+   
+   ;\\
+   Procedure gadget_CallBack( )
+      Select WidgetEventType( )
+         Case #__event_close
+            Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
+           ; ProcedureReturn #PB_Ignore
+           ProcedureReturn 0
+           
+         Case #__event_Down
+            Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-          Case "Button_1_close"
-            ; Close( EventWindow( ) )
-            ;Close( EventWidget( )\window )
+            Send(EventWidget( ), #__event_close)
+   ;             ;\\ to send not down
+            ;                      ProcedureReturn 1
+            ProcedureReturn #PB_Ignore
+           
+      EndSelect
+   EndProcedure
+   
+   ;\\
+   Procedure window_CallBack( )
+      Select WidgetEventType( )
+         Case #__event_close
+            Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
+            ;ProcedureReturn 3
+           
+         Case #__event_Down
+            Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-            ;  Post( EventWidget( )\window, #__event_Close )
-            Send( EventWidget( )\window, #__event_Close )
-            ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+            ;             ;\\ to send not down
+            ;                      ProcedureReturn 1
+            ProcedureReturn #PB_Ignore
+           
+      EndSelect
+   EndProcedure
+   
+   ;\\
+   Procedure root_CallBack( )
+      Select WidgetEventType( )
+         Case #__event_close
+            Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
+            ;ProcedureReturn 4
+           
+         Case #__event_Down
+            Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-          Case "Button_2_close"
-            If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
-              Close( #PB_All )
-            EndIf
+            ;             ;\\ to send not down
+           ProcedureReturn #PB_Ignore
             
-        EndSelect
-        
-      Case #__event_close
-        Debug "close - event " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
-        
-        ;\\ demo main window
-        If EventWindow( ) = 2
-          If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-            ProcedureReturn #PB_All
-          Else
-            ProcedureReturn 1
-          EndIf
-          
-        ElseIf EventWindow( ) = 0
-          If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-            ProcedureReturn 0
-          Else
-            ProcedureReturn 1
-          EndIf
-        EndIf
-        
-        
-      Case #__event_free
-        Debug "free - event " + EventWidget( )\class 
-        
-        ;             ;\\ to send not free
-        ;                      ProcedureReturn 1
-        
-    EndSelect
-  EndProcedure
-  
+      EndSelect
+   EndProcedure
+   
+   ;\\
+   Open(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
+                                           #PB_Window_SizeGadget |
+                                           #PB_Window_MinimizeGadget |
+                                           #PB_Window_MaximizeGadget )
+   
+   SetClass(Root( ), "root_0" )
+   Define window = Window(10,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
+                                           #PB_Window_SizeGadget |
+                                           #PB_Window_MinimizeGadget |
+                                           #PB_Window_MaximizeGadget )
+   SetClass(widget( ), "window_0" )
+   
+   Define gadget = Button(10,10,200,50,"Button_0_close")
+   SetClass(widget( ), "Button_0_close" )
+   
+   Procedure buttonEvent( )
+      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+         Close( #PB_All )
+      EndIf
+   EndProcedure
+   ButtonGadget(1, 10,70,200,50, "Button_2_close")
+   BindGadgetEvent(1, @buttonEvent( ))
+   
+   
+   
+   Bind(#PB_All, @root_CallBack())
+   Bind(window, @window_CallBack())
+   Bind(gadget, @gadget_CallBack())
+   
+   ;post(gadget, #__event_close)
+   
+   ;\\
+   WaitClose( )
+   
+   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20
-; FirstLine = 12
+; CursorPosition = 50
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
