@@ -155,7 +155,7 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 141
-; FirstLine = 106
+; CursorPosition = 15
+; FirstLine = 15
 ; Folding = ----
 ; EnableXP

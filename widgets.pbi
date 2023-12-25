@@ -1151,7 +1151,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.l GetDeltaX( *this )
       Declare.l GetDeltaY( *this )
       Declare.l GetLevel( *this )
-      Declare.l GetType( *this )
+      Declare.l Type( *this )
       Declare.i GetRoot( *this )
       
       Declare.i GetWindow( *this = #Null )
@@ -1303,6 +1303,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       ;-\\ DECLARE PRIVATEs
       ;-
+      Declare   Repost( )
       Declare.b bar_tab_draw( *this )
       Declare.b bar_SetState( *this, state.l )
       
@@ -11505,6 +11506,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn ( Bool( Not *this\hide ) * *this\height[mode] )
       EndProcedure
       
+      Procedure.l Type( *this._S_WIDGET )
+         ProcedureReturn *this\type ; Returns create widget-type
+      EndProcedure
+      
       Procedure.b Update( *this._S_WIDGET )
          Protected result.b, _scroll_pos_.f
          
@@ -12807,10 +12812,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i GetData( *this._S_WIDGET )
          ProcedureReturn *this\data
-      EndProcedure
-      
-      Procedure.l GetType( *this._S_WIDGET )
-         ProcedureReturn *this\type ; Returns create widget-type
       EndProcedure
       
       Procedure.i GetRoot( *this._S_WIDGET ) ; Returns root widget
@@ -17584,6 +17585,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *root
       EndProcedure
       
+      Procedure DoClose( result, window, mainWindow )
+         Select result 
+            Case - 1
+               Close( #PB_All )
+               
+            Case 1  
+               If Not IsWindow( window ) 
+                  Close( Root( ) )
+               EndIf
+               
+            Case 0 
+               If mainWindow = window
+                  Close( #PB_All )
+               Else
+                  Close( window )
+               EndIf
+               
+         EndSelect
+      EndProcedure
+      
       ;-
       Procedure.i Send( *this._S_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
          Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
@@ -17624,12 +17645,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         result = *this\events( )\function( )
                         
+                        If eventtype = #__event_Close
+                           DoClose( result, *button, *data )
+                        EndIf
+                        
                         If result
-                           If result <> #PB_Ignore And eventtype = #__event_Close
-                              ProcedureReturn result
-                           Else
-                              Break
-                           EndIf
+                           Break
                         EndIf
                      EndIf
                   Next
@@ -17646,12 +17667,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            result = *this\window\events( )\function( )
                            
+                           If eventtype = #__event_Close
+                              DoClose( result, *button, *data )
+                           EndIf
+                           
                            If result
-                              If result <> #PB_Ignore And eventtype = #__event_Close
-                                 ProcedureReturn result
-                              Else
-                                 Break
-                              EndIf
+                              Break
                            EndIf
                         EndIf
                      Next
@@ -17668,14 +17689,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         result = *this\root\events( )\function( )
                         
+                        If eventtype = #__event_Close
+                           DoClose( result, *button, *data )
+                        EndIf
                         
-                        ;\\
                         If result
-                           If result <> #PB_Ignore And eventtype = #__event_Close
-                              ProcedureReturn result
-                           Else
-                              Break
-                           EndIf
+                           Break
                         EndIf
                      EndIf
                   Next
@@ -20011,6 +20030,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventdata 
                If ChangeCurrentCanvas( eventdata )
                   If Root( )\canvas\repaint = 1
+                     Repost()
                      ; Debug "   REPAINT " + Root( )\class
                      ReDraw( Root( ) )
                      Root( )\canvas\repaint = 0
@@ -21482,15 +21502,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                ElseIf #__event_Close = __type
                   Debug "Post close...."
-                  Select Send( __widget, __type, __item, __data )
-                     Case 0
-                        Close( __widget )
-                        
-                        ;\\ close all windows
-                     Case #PB_All 
-                        Close( #PB_All )
-                        
-                  EndSelect
+                  Send( __widget, __type, __item, __data )
                   Break 
                   
                Else
@@ -21553,30 +21565,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ChangeCurrentCanvas( PB(GadgetID)(canvas))
                         Debug "Wait close.... " + Root( )\address +" "+ Root( )\canvas\window +" "+ window +" - "+ EventGadget( ) +" "+ EventData( )
                         
-                        ;\\
-                        Select Send( Root( ), #__event_Close )
-                           Case 1
-                              If Not PB(IsWindow)( window )
-                                 Close( Root( ) )
-                              EndIf
-                              
-                           Case 0
-                              If mainWindow = window
-                                 Close( #PB_All )
-                              Else
-                                 Close( window )
-                              EndIf
-                              
-                              ;\\ close all windows
-                           Case #PB_All 
-                              Close( #PB_All )
-                              
-                        EndSelect
+                        Send( Root( ), #__event_Close, window, mainWindow )
+                        
                      Else
                         FreeGadget( canvas )
                         CloseWindow( window )
                      EndIf
-                     
                      
                      ;\\
                      If MapSize( enumRoot( ) ) 
@@ -21623,8 +21617,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   Debug "  - end cicle - no event window"
                EndIf
-               
-               End
             EndIf
          EndIf
          
@@ -22698,7 +22690,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21582
-; FirstLine = 21354
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------f-ff-7-------------------------------------------------------------------------------------------------80------+4V-n4c-9------------------------------0--------Do0---------v2--------
+; CursorPosition = 20093
+; FirstLine = 19908
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------f-ff-7--------------------------------------------------------------------------------------------------e------v-d2-6N4P------------------------------f---------Aa-------m-v2--------
 ; EnableXP

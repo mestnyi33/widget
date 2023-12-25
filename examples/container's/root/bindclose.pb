@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CallBack( )
   
   ;\\
-  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  Open(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
@@ -17,27 +17,6 @@ CompilerIf #PB_Compiler_IsMainFile
   SetClass(Root( ), "window_0_root" )
   Button(10,10,200,50,"Button_0_close")
   SetClass(widget( ), "Button_0_close" )
-  
-  ;\\
-  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
-                                          #PB_Window_SizeGadget |
-                                          #PB_Window_MinimizeGadget |
-                                          #PB_Window_MaximizeGadget )
-  
-  SetClass(Root( ), "window_1_root" )
-  Button(10,10,200,50,"Button_1_close")
-  SetClass(widget( ), "Button_1_close" )
-  
-  ;\\
-  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
-                                          #PB_Window_SizeGadget |
-                                          #PB_Window_MinimizeGadget |
-                                          #PB_Window_MaximizeGadget )
-  
-  SetClass(Root( ), "window_2_root" )
-  Button(10,10,200,50,"Button_2_close")
-  SetClass(widget( ), "Button_2_close" )
-  
   
   Procedure buttonEvent( )
      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -106,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 47
+; CursorPosition = 20
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
