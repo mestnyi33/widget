@@ -4438,7 +4438,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Post Event
             ;
             If *this\child <= 0
-               If __gui\repost
+               If __gui\repost > 0
                   Send( *this, #__event_resize )
                Else
                   Post( *this, #__event_resize )
@@ -13830,7 +13830,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
          
          ;\\
-         If __gui\repost
+         If __gui\repost > 0
             If eventtype = #__event_Focus
                If GetActiveGadget( ) <> *this\root\canvas\gadget
                   SetActiveGadget( *this\root\canvas\gadget )
@@ -17727,7 +17727,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
              ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
-             
+            If __gui\repost = 1
+              __gui\repost =- 1
+            EndIf
+            
              If AddElement( __events( ) )
                __events( )        = AllocateStructure( _s_EVENTDATA )
                __events( )\widget = *this
@@ -19417,7 +19420,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             If Not *this\state\disable
                *this\color\state = #__s_2
-             ;  *this\Repaint( ) = #True
+              *this\Repaint( ) = #True
             EndIf
          EndIf
          
@@ -19425,10 +19428,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_LostFocus
             If *this\color\state = #__s_2
                *this\color\state = #__s_3
-              ; *this\Repaint( ) = #True
-               ;         Else
-               ;           Debug " - l " + *this\class
-            EndIf
+               *this\Repaint( ) = #True
+             EndIf
+             If *this <> FocusedWidget( )
+                *this\Repaint( ) = #True
+             EndIf
          EndIf
          
          ;\\
@@ -20030,7 +20034,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventdata 
                If ChangeCurrentCanvas( eventdata )
                   If Root( )\canvas\repaint = 1
-                     Repost()
+                    
+                    If __gui\repost =- 1
+                      Repost()
+                    EndIf
+                    
                      ; Debug "   REPAINT " + Root( )\class
                      ReDraw( Root( ) )
                      Root( )\canvas\repaint = 0
@@ -20061,7 +20069,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not EnteredWidget( )
                ForEach EnumRoot( )
                   If EnumRoot( )\canvas\window = EventWindow( )
-                     If __gui\repost
+                     If __gui\repost > 0
                         Root( ) = EnumRoot( )
                         ; Debug "Activate - "+Root( )\class
                         SetActive( Root( ) )
@@ -22689,8 +22697,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20093
-; FirstLine = 19908
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------f-ff-7--------------------------------------------------------------------------------------------------e------v-d2-6N4P------------------------------f---------Aa-------m-v2--------
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
