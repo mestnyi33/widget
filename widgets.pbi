@@ -13962,19 +13962,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i, *active._S_WIDGET
          
          If *this And Not *this\state\disable
-            If *this\root And
-               GetActiveGadget( ) <> *this\root\canvas\gadget
-               ; SetActiveGadget( *this\root\canvas\gadget )
+           ;\\
+           If a_transformer( *this )
+              If *this\anchors
+                If GetActiveGadget( ) <> *this\root\canvas\gadget
+                  SetActiveGadget( *this\root\canvas\gadget )
+                EndIf
+                ProcedureReturn a_set( *this )
+              Else
+                ProcedureReturn 0
+              EndIf
             EndIf
             
-            If a_transformer( *this )
-               If *this\anchors
-                  ProcedureReturn a_set( *this )
-               Else
-                  ProcedureReturn 0
-               EndIf
-            EndIf
-            
+            ;\\
             If Popup( ) And *this = Popup( )\widget
                ; Debug " Popup( setActive ) "
                ; *this = *this\PopupBox( )
@@ -13992,7 +13992,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
             
             ;\\ deactive
             If FocusedWidget( )
@@ -20476,17 +20475,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\ set active widget
                   If eventtype = #PB_EventType_LeftButtonDown
-                     If PressedWidget( )\anchors
-                        If GetActiveGadget( ) <> eventgadget
-                           SetActiveGadget( eventgadget )
-                        EndIf
-                     Else
+;                      If PressedWidget( )\anchors
+;                         If GetActiveGadget( ) <> eventgadget
+;                            SetActiveGadget( eventgadget )
+;                         EndIf
+;                      Else
                         If Not EnteredButton( )
                            If FocusedWidget( ) <> PressedWidget( )
                               SetActive( PressedWidget( ))
                            EndIf
                         EndIf
-                     EndIf
+;                      EndIf
                   EndIf
                   
                   ;\\
@@ -20952,6 +20951,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
                SetWindowPos_( g, #GW_HWNDFIRST, 0, 0, 0, 0, #SWP_NOMOVE | #SWP_NOSIZE )
                
+               ; RedrawWindow_(WindowID(a), 0, 0, #RDW_ERASE | #RDW_FRAME | #RDW_INVALIDATE | #RDW_ALLCHILDREN)
+        
                RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
             CompilerEndIf
             
@@ -22717,8 +22718,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17393
-; FirstLine = 17307
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------f--f---b0---------------------------------------------
 ; EnableXP
