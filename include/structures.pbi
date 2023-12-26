@@ -187,6 +187,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_COORDINATE
+         index.a
          checkstate.b
          
          size.l
@@ -195,8 +196,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          state._s_state
          arrow._s_arrow
          color._s_color[4]
-         
-         interact.b ; temp
       EndStructure
       
       ;--     CARET
@@ -356,7 +355,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          childrens.w ; Row( )\ ; rows( )\ ; row\
          
          checkbox._s_buttons ; \box[1]\ -> \checkbox\
-         collapsebox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
+         buttonbox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
          
          
          *parent._s_rows
@@ -762,7 +761,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 750
-; FirstLine = 621
-; Folding = ---PP7T+--
+; CursorPosition = 190
+; FirstLine = 183
+; Folding = ---PP7X+--
 ; EnableXP

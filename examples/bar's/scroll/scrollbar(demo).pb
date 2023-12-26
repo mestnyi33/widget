@@ -17,13 +17,13 @@ Procedure events_widgets()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Change
+    Case #__event_Change
       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
       Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 305,0, 305,140)
+If OpenWindow(0, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ScrollBarGadget  (0,  10, 42, 250,  20, 30, 100, 30)
   SetGadgetState   (0,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
   
@@ -38,6 +38,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_Sy
     BindGadgetEvent(i, @events_gadgets())
   Next
   
+  Open(0, 305,0, 305,140)
   Scroll(10, 42, 250,  20, 30, 100, 30)
   SetState   (GetWidget(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
   
@@ -54,6 +55,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_Sy
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
+; CursorPosition = 41
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

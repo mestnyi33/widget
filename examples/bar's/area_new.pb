@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Bind( _parent_, _callback_)
       If _callback_
-         Bind( Root( ), _callback_, #__event_Draw )
+;          Bind( Root( ), _callback_, #__event_Draw )
          Bind( _parent_\scroll\v, _callback_, #__event_Change )
          Bind( _parent_\scroll\h, _callback_, #__event_Change )
       EndIf
@@ -74,14 +74,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected change
       
       Select WidgetEventType( )
-         Case #__event_Draw
-            If is_root_(EventWidget( ))
-               ;Debug 777
-               Canvas_Draw( MyCanvas, Images( ) ) 
-               ProcedureReturn 1
-;             Else
-;                Debug EventWidget( )\class
-            EndIf
+;          Case #__event_Draw
+;             If is_root_(EventWidget( ))
+;                ;Debug 777
+;                Canvas_Draw( MyCanvas, Images( ) ) 
+;                ProcedureReturn 1
+; ;             Else
+; ;                Debug EventWidget( )\class
+;             EndIf
             
          Case #__event_Change
             change = WidgetEventData( )
@@ -242,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Width = GadgetWidth( Canvas ) - x*2
       Height = GadgetHeight( Canvas ) - y*2
       
-      widget::EventHandler( Canvas, Event )
+      widget::EventHandler( #PB_Event_Gadget, Canvas, Event )
       
       MouseX = widget::Mouse( )\x
       MouseY = widget::Mouse( )\y
@@ -292,7 +292,7 @@ CompilerIf #PB_Compiler_IsMainFile
          StartDrawing( CanvasOutput( MyCanvas ) )
          Canvas_Draw( MyCanvas, Images( ) ) 
          StopDrawing()
-         ; Repaint( )
+         ; PostRepaint( Root( ) )
       EndIf
    EndProcedure
    
@@ -374,6 +374,16 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat
       Event = WaitWindowEvent( )
       
+      ;\\
+      If event = #PB_Event_Repaint
+         If EventData( )
+            StartDrawing( CanvasOutput( MyCanvas ) )
+            Canvas_Draw( MyCanvas, Images( ) ) 
+            StopDrawing()
+         EndIf
+      EndIf
+      
+      ;\\
       Select Event
          Case #PB_Event_Gadget
             Select EventGadget()
@@ -395,7 +405,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                    ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                 
                Case 4
                   If GetGadgetState(2)
@@ -406,11 +416,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                    ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                 
                Case 5
                  ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                   
             EndSelect
       EndSelect
@@ -418,7 +428,5 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 134
-; FirstLine = 114
-; Folding = --------
+; Folding = ---------
 ; EnableXP

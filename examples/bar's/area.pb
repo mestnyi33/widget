@@ -232,7 +232,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Width = GadgetWidth( Canvas ) - x*2
       Height = GadgetHeight( Canvas ) - y*2
       
-      widget::EventHandler( Canvas, Event )
+      widget::EventHandler( #PB_Event_Gadget, Canvas, Event )
       
       MouseX = widget::Mouse( )\x
       MouseY = widget::Mouse( )\y
@@ -280,7 +280,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Repaint
          Canvas_Draw( MyCanvas, Images( ) ) 
-         ; Repaint( )
+         ; PostRepaint( Root( ) )
       EndIf
    EndProcedure
    
@@ -393,7 +393,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                    ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                 
                Case 4
                   If GetGadgetState(2)
@@ -404,11 +404,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                    ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                 
                Case 5
                  ; Canvas_Draw(MyCanvas, Images( ))
-                  Repaint( )
+                  PostRepaint( Root( ) )
                   
             EndSelect
       EndSelect
@@ -416,7 +416,5 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 60
-; Folding = ---------
+; Folding = -----+---
 ; EnableXP

@@ -10420,8 +10420,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ collapse box size
                            If ( *this\mode\lines Or *this\mode\buttons ) And
                               Not ( *this\_rows( )\sublevel And *this\mode\check = #__m_optionselect )
-                              *this\_rows( )\collapsebox\width  = buttonsize
-                              *this\_rows( )\collapsebox\height = buttonsize
+                              *this\_rows( )\buttonbox\width  = buttonsize
+                              *this\_rows( )\buttonbox\height = buttonsize
                            EndIf
                            
                            ;\\ sublevel position
@@ -10443,12 +10443,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If ( *this\mode\lines Or *this\mode\buttons ) And Not ( *this\_rows( )\sublevel And *this\mode\check = #__m_optionselect )
                               
                               If *this\mode\check = #__m_optionselect
-                                 *this\_rows( )\collapsebox\x = *this\row\sublevelpos - 10
+                                 *this\_rows( )\buttonbox\x = *this\row\sublevelpos - 10
                               Else
-                                 *this\_rows( )\collapsebox\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
+                                 *this\_rows( )\buttonbox\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
                               EndIf
                               
-                              *this\_rows( )\collapsebox\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\collapsebox\height ) / 2
+                              *this\_rows( )\buttonbox\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\buttonbox\height ) / 2
                            EndIf
                            
                            ;\\ image position
@@ -10647,7 +10647,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\row\column = 0
             ;         SelectElement( *this\columns( ), 0 )
             ;         *rows( ) = *this\_rows( )
-            Protected._S_buttons *collapsebox
+            Protected._S_buttons *buttonbox
             
             ; Draw plots
             If *this\mode\lines
@@ -10656,27 +10656,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\state\hide
-                     *collapsebox = *rows( )\last\collapsebox
+                     *buttonbox = *rows( )\last\buttonbox
                      Xs           = row_x_( *this, *rows( ) ) - _scroll_x_
                      Ys           = row_y_( *this, *rows( ) ) - _scroll_y_
                      ; Debug " 9999 "+*rows( )\text\string
                      
                      ; for the tree vertical line
                      If *rows( )\last And Not *rows( )\last\state\hide And *rows( )\last\sublevel
-                        Line((xs + *collapsebox\x + *collapsebox\width / 2), (ys + *rows( )\height), 1, (*rows( )\last\y - *rows( )\y) - *rows( )\last\height / 2, *rows( )\color\line )
+                        Line((xs + *buttonbox\x + *buttonbox\width / 2), (ys + *rows( )\height), 1, (*rows( )\last\y - *rows( )\y) - *rows( )\last\height / 2, *rows( )\color\line )
                      EndIf
                      If *rows( )\ParentRow( ) And Not *rows( )\ParentRow( )\visible And *rows( )\ParentRow( )\last = *rows( ) And *rows( )\sublevel
-                        Line((xs + *rows( )\collapsebox\x + *rows( )\collapsebox\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
+                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
                      EndIf
                      
                      ; for the tree horizontal line
                      If Not (*this\mode\buttons And *rows( )\childrens)
-                        Line((xs + *rows( )\collapsebox\x + *rows( )\collapsebox\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
+                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
                      Else
-                        If Bool( Not *rows( )\collapsebox\checkstate)
-                           ;  LineXY((xs + *collapsebox\x+2), (ys + 9), (x + *collapsebox\x + *collapsebox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
-                           LineXY((xs + *collapsebox\x - 1), (ys + 10), (xs + *collapsebox\x + *collapsebox\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
-                           ;  LineXY((xs + *collapsebox\x-2), (ys + 12), (x + *collapsebox\x + *collapsebox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
+                        If Bool( Not *rows( )\buttonbox\checkstate)
+                           ;  LineXY((xs + *buttonbox\x+2), (ys + 9), (x + *buttonbox\x + *buttonbox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
+                           LineXY((xs + *buttonbox\x - 1), (ys + 10), (xs + *buttonbox\x + *buttonbox\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
+                           ;  LineXY((xs + *buttonbox\x-2), (ys + 12), (x + *buttonbox\x + *buttonbox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
                         EndIf
                      EndIf
                   EndIf
@@ -10684,7 +10684,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; for the tree item first vertical line
                If *this\FirstRow( ) And *this\LastRow( )
-                  Line((*this\inner_x( ) + *this\FirstRow( )\collapsebox\x + *this\FirstRow( )\collapsebox\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
+                  Line((*this\inner_x( ) + *this\FirstRow( )\buttonbox\x + *this\FirstRow( )\buttonbox\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
                EndIf
             EndIf
             
@@ -10712,8 +10712,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\state\hide
                      
-                     X = row_x_( *this, *rows( ) ) + *rows( )\collapsebox\x - _scroll_x_
-                     Y = row_y_( *this, *rows( ) ) + *rows( )\collapsebox\y - _scroll_y_
+                     X = row_x_( *this, *rows( ) ) + *rows( )\buttonbox\x - _scroll_x_
+                     Y = row_y_( *this, *rows( ) ) + *rows( )\buttonbox\y - _scroll_y_
                      
                      If *this\mode\buttons And *rows( )\childrens And
                         Not ( *rows( )\sublevel And *this\mode\check = #__m_optionselect )
@@ -10721,12 +10721,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;               If #PB_Compiler_OS = #PB_OS_Windows Or
                         ;                  (*rows( )\ParentRow( ) And *rows( )\ParentRow( )\last And *rows( )\ParentRow( )\sublevel = *rows( )\ParentRow( )\last\sublevel)
                         ;
-                        ;                 draw_button_( 0, x, y, *rows( )\collapsebox\width, *rows( )\collapsebox\height, 0,2)
-                        ;                 draw_box( *rows( )\collapsebox, color\frame )
+                        ;                 draw_button_( 0, x, y, *rows( )\buttonbox\width, *rows( )\buttonbox\height, 0,2)
+                        ;                 draw_box( *rows( )\buttonbox, color\frame )
                         ;
-                        ;                 Line(x + 2, y + *rows( )\collapsebox\height/2, *rows( )\collapsebox\width - 4, 1, $ff000000)
-                        ;                 If *rows( )\collapsebox\checkstate
-                        ;                   Line(x + *rows( )\collapsebox\width/2, y + 2, 1, *rows( )\collapsebox\height - 4, $ff000000)
+                        ;                 Line(x + 2, y + *rows( )\buttonbox\height/2, *rows( )\buttonbox\width - 4, 1, $ff000000)
+                        ;                 If *rows( )\buttonbox\checkstate
+                        ;                   Line(x + *rows( )\buttonbox\width/2, y + 2, 1, *rows( )\buttonbox\height - 4, $ff000000)
                         ;                 EndIf
                         ;
                         ;               Else
@@ -10736,9 +10736,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            (y - 7 >= 0 And y + 7 <= *this\root\height)
                            
                            If *rows( )\color\state
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\collapsebox\checkstate))
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\buttonbox\checkstate))
                            Else
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\collapsebox\checkstate), $ff000000)
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\buttonbox\checkstate), $ff000000)
                            EndIf
                         EndIf
                         
@@ -10952,7 +10952,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\mode\collapsed And *rows\ParentRow( ) And
                   *rows\sublevel > *rows\ParentRow( )\sublevel
-                  *rows\ParentRow( )\collapsebox\checkstate = 1
+                  *rows\ParentRow( )\buttonbox\checkstate = 1
                   *rows\state\hide                          = 1
                EndIf
                
@@ -11405,11 +11405,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; collapsed/expanded button
                   If *this\EnteredRow( )\childrens And
-                     is_atpoint_( *this\EnteredRow( )\collapsebox,
+                     is_atpoint_( *this\EnteredRow( )\buttonbox,
                                   mouse_x + *this\scroll\h\bar\page\pos - *this\EnteredRow( )\x,
                                   mouse_y - *this\EnteredRow( )\y )
                      
-                     If *this\EnteredRow( )\collapsebox\checkstate
+                     If *this\EnteredRow( )\buttonbox\checkstate
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Expanded )
                      Else
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Collapsed )
@@ -11469,7 +11469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\EnteredRow( )\childrens And
-                        is_atpoint_( *this\EnteredRow( )\collapsebox,
+                        is_atpoint_( *this\EnteredRow( )\buttonbox,
                                      mouse_x + *this\scroll\h\bar\page\pos - *this\EnteredRow( )\x,
                                      mouse_y - *this\EnteredRow( )\y )
                         
@@ -12259,7 +12259,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PushListPosition( *this\_rows( ))
                         ForEach *this\_rows( )
                            If *this\_rows( )\ParentRow( )
-                              *this\_rows( )\ParentRow( )\collapsebox\checkstate = state
+                              *this\_rows( )\ParentRow( )\buttonbox\checkstate = state
                               *this\_rows( )\state\hide                          = state
                            EndIf
                         Next
@@ -12671,7 +12671,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\FocusedRow( )
                   If *this\FocusedRow( )\ParentRow( ) And
-                     *this\FocusedRow( )\ParentRow( )\collapsebox\checkstate
+                     *this\FocusedRow( )\ParentRow( )\buttonbox\checkstate
                      *this\FocusedRow( ) = *this\FocusedRow( )\ParentRow( )
                   EndIf
                   
@@ -15249,7 +15249,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *this\_rows( )\childrens And
-                  *this\_rows( )\collapsebox\checkstate = 0
+                  *this\_rows( )\buttonbox\checkstate = 0
                   result | #PB_Tree_Expanded
                Else
                   result | #PB_Tree_Collapsed
@@ -15499,12 +15499,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      State & #PB_Tree_Collapsed = #PB_Tree_Collapsed
                      
                      *this\WidgetChange( )                 = #True
-                     *this\_rows( )\collapsebox\checkstate = Bool( State & #PB_Tree_Collapsed )
+                     *this\_rows( )\buttonbox\checkstate = Bool( State & #PB_Tree_Collapsed )
                      
                      PushListPosition( *this\_rows( ))
                      While NextElement( *this\_rows( ))
                         If *this\_rows( )\ParentRow( )
-                           *this\_rows( )\state\hide = Bool( *this\_rows( )\ParentRow( )\collapsebox\checkstate | *this\_rows( )\ParentRow( )\state\hide )
+                           *this\_rows( )\state\hide = Bool( *this\_rows( )\ParentRow( )\buttonbox\checkstate | *this\_rows( )\ParentRow( )\state\hide )
                         EndIf
                         
                         If *this\_rows( )\sublevel = *this_current_row\sublevel
@@ -15515,7 +15515,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               result = *this_current_row\collapsebox\checkstate
+               result = *this_current_row\buttonbox\checkstate
             EndIf
             
             ; - widget::panelset_item_state( )
@@ -16498,7 +16498,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure ToolTip( *this._S_WIDGET, Text.s, item = - 1 )
-         *this\_tt\text\string = Text
+         *this\tt\text\string = Text
       EndProcedure
       
       ;-
@@ -17366,7 +17366,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   ReDraw( *root._S_ROOT )
          ; Repost( *root )
          
-         ReDrawing( *root )
+         ;ReDrawing( *root )
+         StopDrawing()
          *root\canvas\drawing = StartDrawing( Output( *root ) )
          
          If Not ( a_transform( ) And a_transform( )\grab )
@@ -22692,7 +22693,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22692
-; FirstLine = 22656
+; CursorPosition = 17368
+; FirstLine = 17340
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
