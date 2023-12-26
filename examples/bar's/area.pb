@@ -75,7 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
          Case #__event_Change
             change = WidgetEventData( )
-            Debug "changing scroller values - " +change
+            Debug "changing scroller values - " +change +" "+ EventWidget( )\bar\PageChange( ) +" "+ EventWidget( )\bar\ThumbChange( ) 
+            ;change = EventWidget( )\bar\PageChange( )
             
             PushListPosition(  Images( )  )
             If EventWidget( )\bar\vertical
@@ -416,5 +417,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 78
+; FirstLine = 64
 ; Folding = -----+---
 ; EnableXP

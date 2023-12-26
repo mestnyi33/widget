@@ -19863,8 +19863,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If eventtype = #__event_Create
                   ElseIf eventtype = #__event_Focus
                   ElseIf eventtype = #__event_LostFocus
-                  ElseIf eventtype = #__event_Change
-                     Post( *this, eventtype, *button, *data )
+;                   ElseIf eventtype = #__event_Change
+;                      Post( *this, eventtype, *button, *data )
                   Else
                      Send( *this, eventtype, *button, *data )
                   EndIf
@@ -22723,7 +22723,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20071
-; FirstLine = 18815
+; CursorPosition = 19866
+; FirstLine = 18586
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v80------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------f6evf----------------------0---------4--0---8----fv---------v408-----0v-------------4------W---------------------------------------------
 ; EnableXP
