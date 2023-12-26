@@ -1,7 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS=#PB_OS_Linux
    ImportC "-gtk"
-      gtk_window_set_opacity( *Window.i, Opacity.d )
-      gtk_widget_is_composited( *Widget )
+      gtk_widget_is_composited( *widget )
+      gtk_window_set_opacity( *window, Opacity.d )
    EndImport
 CompilerEndIf
 
@@ -29,10 +29,15 @@ Procedure.i SetWindowTransparency( Window, Transparency.a = 255 )
          EndIf
          
       CompilerCase #PB_OS_Windows
-         Protected exStyle = GetWindowLongPtr_( windowID, #GWL_EXSTYLE )
          If Transparency >= 0 And Transparency <= 255
-            SetWindowLongPtr_( windowID, #GWL_EXSTYLE, exStyle | #WS_EX_LAYERED )
+            SetWindowLongPtr_( windowID, #GWL_EXSTYLE, GetWindowLongPtr_( windowID, #GWL_EXSTYLE ) | #WS_EX_LAYERED )
             SetLayeredWindowAttributes_( windowID, 0, Transparency, #LWA_ALPHA )
+            
+;             ;\\
+;             SetWindowColor(Window,#Blue)
+;             SetWindowLong_(windowID, #GWL_EXSTYLE, #WS_EX_LAYERED | #WS_EX_TOPMOST)
+;             SetLayeredWindowAttributes_(windowID,#Blue,0,#LWA_COLORKEY)
+
             ProcedureReturn #True
          EndIf
    CompilerEndSelect  
@@ -52,7 +57,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 15
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
