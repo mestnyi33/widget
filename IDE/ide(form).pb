@@ -390,7 +390,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       ; create elements
       Select class
          Case "window"    
-            If GetType( *parent ) = #__Type_MDI
+            If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
                Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
             Else
@@ -997,9 +997,9 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ;     g_ide_design_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   ide_root = widget::Open( 1, x,y,width,height, "ide", flag ) 
-   ide_window = widget::GetWindow( ide_root )
-   ide_canvas = widget::GetGadget( ide_root )
+   ide_root = Open( 1, x,y,width,height, "ide", flag ) 
+   ide_window = GetWindow( ide_root )
+   ide_canvas = GetGadget( ide_root )
    
 ;    Debug "create window - "+WindowID(ide_window)
 ;    Debug "create canvas - "+GadgetID(ide_canvas)
@@ -1103,29 +1103,29 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ;
    ;\\\ ide splitters
    ;
-   ide_design_splitter = widget::Splitter( 0,0,0,0, ide_toolbar,ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator )
-   ide_inspector_splitter = widget::Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed )
-   ide_debug_splitter = widget::Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed )
-   ide_help_splitter = widget::Splitter( 0,0,0,0, ide_inspector_splitter,ide_help_view, #PB_Splitter_SecondFixed )
-   ide_splitter = widget::Splitter( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
+   ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar,ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator )
+   ide_inspector_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed )
+   ide_debug_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed )
+   ide_help_splitter = Splitter( 0,0,0,0, ide_inspector_splitter,ide_help_view, #PB_Splitter_SecondFixed )
+   ide_splitter = Splitter( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
    
    ; set splitters default minimum size
-   widget::SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-   widget::SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
-   widget::SetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   widget::SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   widget::SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   widget::SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   widget::SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   widget::SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-   ; widget::SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
+   SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
+   SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
+   SetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
+   SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
+   SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
+   ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ; set splitters dafault positions
-   widget::SetState( ide_splitter, widget::width( ide_splitter )-220 )
-   widget::SetState( ide_help_splitter, widget::height( ide_help_splitter )-80 )
-   widget::SetState( ide_debug_splitter, widget::height( ide_debug_splitter )-200 )
-   widget::SetState( ide_inspector_splitter, 230 )
-   widget::SetState( ide_design_splitter, 42 )
+   SetState( ide_splitter, width( ide_splitter )-220 )
+   SetState( ide_help_splitter, height( ide_help_splitter )-80 )
+   SetState( ide_debug_splitter, height( ide_debug_splitter )-200 )
+   SetState( ide_inspector_splitter, 230 )
+   SetState( ide_design_splitter, 42 )
    
    ;
    ;\\\ ide events binds
@@ -1278,7 +1278,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 98
-; FirstLine = 85
+; CursorPosition = 1218
+; FirstLine = 1210
 ; Folding = ----------------------
 ; EnableXP

@@ -8,6 +8,28 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   Declare CallBack( )
   
+  Procedure CallBack( )
+    Select WidgetEventType( )
+      Case #__event_close
+        Debug "close - event " + EventWidget( )\class +" --- "+ EventWidget( )\index
+        
+        If EventWidget( )\root\canvas\window = 2
+           If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            ProcedureReturn #PB_All
+          Else
+            ProcedureReturn 1
+          EndIf
+       EndIf
+       
+      Case #__event_free
+        Debug "free - event " + EventWidget( )\class 
+        
+        ;             ;\\ to send not free
+        ;                      ProcedureReturn 1
+        
+    EndSelect
+  EndProcedure
+  
   ;\\
   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
@@ -66,11 +88,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   ; Close( #PB_All )
   
+  Bind( #PB_All, @CallBack( ) )
+  
   ;\\
   WaitClose( Root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 26
+; CursorPosition = 37
 ; Folding = -
 ; EnableXP

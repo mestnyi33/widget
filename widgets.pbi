@@ -3947,17 +3947,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          ;Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
          
-         
-         If *this\anchors And *this\anchors
+         ;\\
+         If *this\anchors
             If *this\bs < *this\fs + *this\anchors\pos
                *this\bs = *this\fs + *this\anchors\pos
             EndIf
          Else
             If *this\bs < *this\fs
-               *this\bs = *this\fs
+               *this\bs = *this\fs 
             EndIf
          EndIf
          
+         ;\\
          If *this\type = #__type_Window Or
             *this\type = #__type_Container
             If *this\barHeight
@@ -17402,6 +17403,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;                                          *root\children( )\frame_y( ) )
                            ;                            Else
                            Draw( *root\children( ))
+                           ;\\ draw current focus frame
+                           If FocusedWidget( ) And 
+                              FocusedWidget( ) = *root\children( ) And 
+                              FocusedWidget( )\state\focus
+                              If FocusedWidget( )\root = *root
+                                 ; If Not FocusedWidget( )\autosize
+                                 If Not ( FocusedWidget( )\anchors And
+                                          FocusedWidget( )\anchors\mode )
+                                    UnclipOutput( )
+                                    drawing_mode_(#PB_2DDrawing_Outlined)
+                                    draw_roundbox_( FocusedWidget( )\x - 1, FocusedWidget( )\y - 1, FocusedWidget( )\width + 2, FocusedWidget( )\height + 2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+                                    draw_roundbox_( FocusedWidget( )\x, FocusedWidget( )\y, FocusedWidget( )\width, FocusedWidget( )\height, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+                                 EndIf
+                                 ; EndIf
+                              EndIf
+                           EndIf
                            ;                            EndIf
                         EndIf
                         
@@ -17481,21 +17498,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ draw current focus frame
-            If FocusedWidget( ) And 
-               FocusedWidget( )\state\focus
-               If FocusedWidget( )\root = *root
-                  ; If Not FocusedWidget( )\autosize
-                  If Not ( FocusedWidget( )\anchors And
-                           FocusedWidget( )\anchors\mode )
-                     UnclipOutput( )
-                     drawing_mode_(#PB_2DDrawing_Outlined)
-                     draw_roundbox_( FocusedWidget( )\x - 1, FocusedWidget( )\y - 1, FocusedWidget( )\width + 2, FocusedWidget( )\height + 2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
-                     draw_roundbox_( FocusedWidget( )\x, FocusedWidget( )\y, FocusedWidget( )\width, FocusedWidget( )\height, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
-                  EndIf
-                  ; EndIf
-               EndIf
-            EndIf
+;             ;\\ draw current focus frame
+;             If FocusedWidget( ) And 
+;                FocusedWidget( )\state\focus
+;                If FocusedWidget( )\root = *root
+;                   ; If Not FocusedWidget( )\autosize
+;                   If Not ( FocusedWidget( )\anchors And
+;                            FocusedWidget( )\anchors\mode )
+;                      UnclipOutput( )
+;                      drawing_mode_(#PB_2DDrawing_Outlined)
+;                      draw_roundbox_( FocusedWidget( )\x - 1, FocusedWidget( )\y - 1, FocusedWidget( )\width + 2, FocusedWidget( )\height + 2, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+;                      draw_roundbox_( FocusedWidget( )\x, FocusedWidget( )\y, FocusedWidget( )\width, FocusedWidget( )\height, FocusedWidget( )\round, FocusedWidget( )\round, $ffff0000 )
+;                   EndIf
+;                   ; EndIf
+;                EndIf
+;             EndIf
             
             ;\\ draw anchors (movable & sizable)
             If a_transform( )
@@ -20935,7 +20952,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
                SetWindowPos_( g, #GW_HWNDFIRST, 0, 0, 0, 0, #SWP_NOMOVE | #SWP_NOSIZE )
                
-               RemoveKeyboardShortcut(Window, #PB_Shortcut_Tab)
+               RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
             CompilerEndIf
             
             ;\\
@@ -20951,16 +20968,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
                ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
                ; CocoaMessage(0, g,"setFocusRingType:",1)
-               
-               Protected Transparency = 254
-               Protected alpha.CGFloat = Transparency / 255.0
-               If Transparency >= 0 And Transparency <= 255
-                  CocoaMessage(0, g, "setOpaque:", #NO)
-                  If CocoaMessage(0, g, "isOpaque") = #NO
-                     CocoaMessage(0, g, "setAlphaValue:@", @alpha)
-                  EndIf
-               EndIf
-               
             CompilerEndIf
          EndIf
          
@@ -22711,7 +22718,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20954
-; FirstLine = 20944
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17393
+; FirstLine = 17307
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
