@@ -589,21 +589,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          autosize.b
          
          change.l
-         resize.i               ; state
+         resize.i                 ; state
          
-         ;*Draw.DrawFunc        ; Function to Draw
+         ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          
          
-         fs.a[5] ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-         bs.a    ; border size
+         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
+         bs.a                     ; border size
          
-         tt._s_tt          ; notification = уведомление
+         tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
          
          *bar._s_BAR
-         *row._s_ROW ; multi-text; buttons; lists; - gadgets
+         *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          
          tab._s_TAB
          
@@ -692,14 +692,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
          main.b                   ; is root
-         repaint.b
       EndStructure
       
       ;--     CANVAS
       Structure _s_CANVAS
          drawing.q                 ;
          repaint.b
-         ; container.i              ; ???
          *fontID                  ; current drawing fontID
          *gadgetID                ; canvas handle
          window.i                 ; canvas window
@@ -708,7 +706,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-         ;repaint.b
+         repaint.b
          *widget._s_WIDGET
          canvas._s_canvas
          List *children._s_WIDGET( ) ; widget( )\
@@ -759,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 593
-; FirstLine = 495
+; CursorPosition = 694
+; FirstLine = 578
 ; Folding = ---PP7X+--
 ; EnableXP
