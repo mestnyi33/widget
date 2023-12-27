@@ -46,12 +46,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;\\ demo change current cursor
          Case #__event_cursor
-            If a_transform( )
-               If GetCursor( )
-                  If a_index( )
-                     ProcedureReturn cursor::#__cursor_Hand
-                  Else
-                     ProcedureReturn cursor::#__cursor_Cross
+            If EventWidget( ) = object2
+               If a_transform( )
+                  If GetCursor( )
+                     If a_index( )
+                        ProcedureReturn cursor::#__cursor_Hand
+                     Else
+                        ProcedureReturn cursor::#__cursor_Cross
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -60,6 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 25
 ; Folding = --
 ; EnableXP

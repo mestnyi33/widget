@@ -76,16 +76,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Static DragWidget
     
     Select WidgetEventType( )
-;       Case #PB_EventType_MouseEnter
+;       Case #__event_MouseEnter
 ;         SetCursor( EventWidget( ), #PB_Cursor_Hand )
 ;         
-;       Case #PB_EventType_MouseLeave
+;       Case #__event_MouseLeave
 ;         SetCursor( EventWidget( ), #PB_Cursor_Default )
         
-      Case #PB_EventType_LeftButtonUp 
+      Case #__event_LeftButtonUp 
         DragWidget = #Null
         
-      Case #PB_EventType_LeftButtonDown
+      Case #__event_LeftButtonDown
 ;         ; get alpha
 ;         If EventWidget( )\image[#__img_background]\id And
 ;            EventWidget( )\image[#__img_background]\depth > 31 And 
@@ -102,12 +102,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         EndIf
         DragWidget = EventWidget( )
         
-      Case #PB_EventType_MouseMove
+      Case #__event_MouseMove
         If DragWidget = EventWidget( )
           Resize( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
         EndIf
         
-      Case #PB_EventType_Draw
+      Case #__event_Draw
         
         ; Demo draw on element
         UnclipOutput()
@@ -150,13 +150,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetCursor( *this, #PB_Cursor_Hand )
     Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
     
-    Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonUp )
-    Bind( *this, @CustomEvents(), #PB_EventType_LeftButtonDown )
-    Bind( *this, @CustomEvents(), #PB_EventType_MouseMove )
-    Bind( *this, @CustomEvents(), #PB_EventType_MouseEnter )
-    Bind( *this, @CustomEvents(), #PB_EventType_MouseLeave )
-    Bind( *this, @CustomEvents(), #PB_EventType_Draw )
-    Bind( #PB_All, @CustomEvents(), #PB_EventType_Repaint )
+    Bind( *this, @CustomEvents(), #__event_LeftButtonUp )
+    Bind( *this, @CustomEvents(), #__event_LeftButtonDown )
+    Bind( *this, @CustomEvents(), #__event_MouseMove )
+    Bind( *this, @CustomEvents(), #__event_MouseEnter )
+    Bind( *this, @CustomEvents(), #__event_MouseLeave )
+    Bind( *this, @CustomEvents(), #__event_Draw )
+    Bind( #PB_All, @CustomEvents(), #__event_Repaint )
   EndProcedure
   
   Procedure Canvas_resize( )
@@ -268,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 129
+; CursorPosition = 234
+; FirstLine = 154
 ; Folding = --v+
 ; EnableXP
