@@ -220,7 +220,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If __gui\loop
                If Not Send( _root_, #__event_Repaint )
                   ; Debug "PostEventRepaint - ReDraw"
-                  ;Post( _root_, #__event_Repaint ) 
                   Redraw( _root_ )
                EndIf
             Else
@@ -259,9 +258,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       
       ;-
-      Macro StringBox( ): StringWidget: EndMacro
-      Macro PopupBox( ): PopupWidget: EndMacro
-      Macro GroupBox( ): GroupWidget: EndMacro
+      Macro ComboButtonBox( ): buttonbox: EndMacro
+      Macro StateBox( ): statebox: EndMacro
+      Macro CheckedBox( ): checkbox: EndMacro
+      Macro ButtonBox( ): buttonbox: EndMacro
+      Macro StringBox( ): stringbox: EndMacro
+      Macro PopupBox( ): popupbox: EndMacro
+      Macro GroupBox( ): groupbox: EndMacro
       Macro TabBox( ): tab\widget: EndMacro
       ;-
       Macro TabIndex( ): tab\index: EndMacro
@@ -1358,15 +1361,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) )
          ElseIf Not _address_\align\top ; vertical center
             _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) ) / 2
-            ;           If _this_\_box_ And _this_\_box_\height And Not _address_\align\left And Not _address_\align\right
-            ;             If _rotate_ = 0
-            ;               _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) + _this_\_box_\height ) / 2
-            ;             Else
-            ;               _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) - _this_\_box_\height ) / 2
-            ;             EndIf
-            ;           Else
-            ;             _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) ) / 2
-            ;           EndIf
          Else
             If _this_\scroll\v
                _this_\scroll_y( ) = - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
@@ -1530,24 +1524,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                _this_\text\multiLine = 0
             EndIf
-            
-            ;         ; padding
-            ;       If _this_\type = #__type_Text
-            ;         _this_\text\padding\x = 1
-            ;       ElseIf _this_\type = #__type_Button
-            ;         _this_\text\padding\x = 4
-            ;         _this_\text\padding\y = 4
-            ;       ElseIf _this_\type = #__type_Editor
-            ;         _this_\text\padding\y = 6
-            ;         _this_\text\padding\x = 6
-            ;       ElseIf _this_\type = #__type_String
-            ;         _this_\text\padding\x = 3
-            ;         _this_\text\padding\y = 0
-            ;
-            ;       ElseIf _this_\type = #__type_Option Or
-            ;              _this_\type = #__type_CheckBox
-            ;         _this_\text\padding\x = _this_\_box_\width + 8
-            ;       EndIf
             
             ;\\
             text_rotate_( _this_\text )
@@ -4416,27 +4392,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\type = #__type_ComboBox
                If *this\StringBox( )
-                  *this\_box_\width = *this\fs[3]
-                  *this\_box_\x     = *this\x + *this\width - *this\_box_\width
+                  *this\ComboButtonBox( )\width = *this\fs[3]
+                  *this\ComboButtonBox( )\x     = ( *this\x + *this\width ) - *this\ComboButtonBox( )\width
                Else
-                  *this\_box_\width = *this\inner_width( )
-                  *this\_box_\x     = *this\inner_x( )
+                  *this\ComboButtonBox( )\width = *this\inner_width( )
+                  *this\ComboButtonBox( )\x     = *this\inner_x( )
                EndIf
                
-               *this\_box_\y      = *this\inner_y( )
-               *this\_box_\height = *this\inner_height( )
+               *this\ComboButtonBox( )\y        = *this\inner_y( )
+               *this\ComboButtonBox( )\height   = *this\inner_height( )
             EndIf
             
             ;\\
             If *this\bar
-               ;             If *this\type = #__type_Spin Or
-               ;                *this\type = #__type_TabBar Or
-               ;                *this\type = #__type_ToolBar Or
-               ;                *this\type = #__type_TrackBar Or
-               ;                *this\type = #__type_ScrollBar Or
-               ;                *this\type = #__type_ProgressBar Or
-               ;                *this\type = #__type_Splitter
-               
                ; ???
                If ( Change_width Or Change_height )
                   *this\TabChange( ) = - 1
@@ -4450,11 +4418,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Post Event
             ;
             If *this\child <= 0
-               If __gui\repost > 0
-                  Send( *this, #__event_resize )
-               Else
-                  Post( *this, #__event_resize )
-               EndIf
+              Send( *this, #__event_resize )
             EndIf
             
             ;-\\ children's resize
@@ -10398,15 +10362,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ check box size
                            If ( *this\mode\check = #__m_checkselect Or
                                 *this\mode\check = #__m_optionselect )
-                              *this\_rows( )\checkbox\width  = boxsize
-                              *this\_rows( )\checkbox\height = boxsize
+                              *this\_rows( )\CheckedBox( )\width  = boxsize
+                              *this\_rows( )\CheckedBox( )\height = boxsize
                            EndIf
                            
                            ;\\ collapse box size
                            If ( *this\mode\lines Or *this\mode\buttons ) And
                               Not ( *this\_rows( )\sublevel And *this\mode\check = #__m_optionselect )
-                              *this\_rows( )\buttonbox\width  = buttonsize
-                              *this\_rows( )\buttonbox\height = buttonsize
+                              *this\_rows( )\ButtonBox( )\width  = buttonsize
+                              *this\_rows( )\ButtonBox( )\height = buttonsize
                            EndIf
                            
                            ;\\ sublevel position
@@ -10417,23 +10381,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                 *this\mode\check = #__m_optionselect )
                               
                               If *this\_rows( )\ParentRow( ) And *this\mode\check = #__m_optionselect
-                                 *this\_rows( )\checkbox\x = *this\row\sublevelpos - *this\_rows( )\checkbox\width
+                                 *this\_rows( )\CheckedBox( )\x = *this\row\sublevelpos - *this\_rows( )\CheckedBox( )\width
                               Else
-                                 *this\_rows( )\checkbox\x = boxpos
+                                 *this\_rows( )\CheckedBox( )\x = boxpos
                               EndIf
-                              *this\_rows( )\checkbox\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\checkbox\height ) / 2
+                              *this\_rows( )\CheckedBox( )\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\CheckedBox( )\height ) / 2
                            EndIf
                            
                            ;\\ expanded & collapsed box position
                            If ( *this\mode\lines Or *this\mode\buttons ) And Not ( *this\_rows( )\sublevel And *this\mode\check = #__m_optionselect )
                               
                               If *this\mode\check = #__m_optionselect
-                                 *this\_rows( )\buttonbox\x = *this\row\sublevelpos - 10
+                                 *this\_rows( )\ButtonBox( )\x = *this\row\sublevelpos - 10
                               Else
-                                 *this\_rows( )\buttonbox\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
+                                 *this\_rows( )\ButtonBox( )\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
                               EndIf
                               
-                              *this\_rows( )\buttonbox\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\buttonbox\height ) / 2
+                              *this\_rows( )\ButtonBox( )\y = ( *this\_rows( )\height ) - ( *this\_rows( )\height + *this\_rows( )\ButtonBox( )\height ) / 2
                            EndIf
                            
                            ;\\ image position
@@ -10632,7 +10596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\row\column = 0
             ;         SelectElement( *this\columns( ), 0 )
             ;         *rows( ) = *this\_rows( )
-            Protected._S_buttons *buttonbox
+            Protected._S_buttons *ButtonBox( )
             
             ; Draw plots
             If *this\mode\lines
@@ -10641,27 +10605,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\state\hide
-                     *buttonbox = *rows( )\last\buttonbox
+                     *ButtonBox( ) = *rows( )\last\ButtonBox( )
                      Xs           = row_x_( *this, *rows( ) ) - _scroll_x_
                      Ys           = row_y_( *this, *rows( ) ) - _scroll_y_
                      ; Debug " 9999 "+*rows( )\text\string
                      
                      ; for the tree vertical line
                      If *rows( )\last And Not *rows( )\last\state\hide And *rows( )\last\sublevel
-                        Line((xs + *buttonbox\x + *buttonbox\width / 2), (ys + *rows( )\height), 1, (*rows( )\last\y - *rows( )\y) - *rows( )\last\height / 2, *rows( )\color\line )
+                        Line((xs + *ButtonBox( )\x + *ButtonBox( )\width / 2), (ys + *rows( )\height), 1, (*rows( )\last\y - *rows( )\y) - *rows( )\last\height / 2, *rows( )\color\line )
                      EndIf
                      If *rows( )\ParentRow( ) And Not *rows( )\ParentRow( )\visible And *rows( )\ParentRow( )\last = *rows( ) And *rows( )\sublevel
-                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
+                        Line((xs + *rows( )\ButtonBox( )\x + *rows( )\ButtonBox( )\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
                      EndIf
                      
                      ; for the tree horizontal line
                      If Not (*this\mode\buttons And *rows( )\childrens)
-                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
+                        Line((xs + *rows( )\ButtonBox( )\x + *rows( )\ButtonBox( )\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
                      Else
-                        If Bool( Not *rows( )\buttonbox\checkstate)
-                           ;  LineXY((xs + *buttonbox\x+2), (ys + 9), (x + *buttonbox\x + *buttonbox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
-                           LineXY((xs + *buttonbox\x - 1), (ys + 10), (xs + *buttonbox\x + *buttonbox\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
-                           ;  LineXY((xs + *buttonbox\x-2), (ys + 12), (x + *buttonbox\x + *buttonbox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
+                        If Bool( Not *rows( )\ButtonBox( )\checkstate)
+                           ;  LineXY((xs + *ButtonBox( )\x+2), (ys + 9), (x + *ButtonBox( )\x + *ButtonBox( )\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
+                           LineXY((xs + *ButtonBox( )\x - 1), (ys + 10), (xs + *ButtonBox( )\x + *ButtonBox( )\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
+                           ;  LineXY((xs + *ButtonBox( )\x-2), (ys + 12), (x + *ButtonBox( )\x + *ButtonBox( )\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
                         EndIf
                      EndIf
                   EndIf
@@ -10669,7 +10633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; for the tree item first vertical line
                If *this\FirstRow( ) And *this\LastRow( )
-                  Line((*this\inner_x( ) + *this\FirstRow( )\buttonbox\x + *this\FirstRow( )\buttonbox\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
+                  Line((*this\inner_x( ) + *this\FirstRow( )\ButtonBox( )\x + *this\FirstRow( )\ButtonBox( )\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
                EndIf
             EndIf
             
@@ -10685,10 +10649,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If *rows( )\ParentRow( ) And *this\mode\check = #__m_optionselect
                         ; option box
-                        draw_button_( 1, x + *rows( )\checkbox\x, y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checkstate , 4 )
+                        draw_button_( 1, x + *rows( )\CheckedBox( )\x, y + *rows( )\CheckedBox( )\y, *rows( )\CheckedBox( )\width, *rows( )\CheckedBox( )\height, *rows( )\CheckedBox( )\checkstate , 4 )
                      Else
                         ; check box
-                        draw_button_( 3, x + *rows( )\checkbox\x, y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checkstate , 2 )
+                        draw_button_( 3, x + *rows( )\CheckedBox( )\x, y + *rows( )\CheckedBox( )\y, *rows( )\CheckedBox( )\width, *rows( )\CheckedBox( )\height, *rows( )\CheckedBox( )\checkstate , 2 )
                      EndIf
                   EndIf
                Next
@@ -10697,8 +10661,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\state\hide
                      
-                     X = row_x_( *this, *rows( ) ) + *rows( )\buttonbox\x - _scroll_x_
-                     Y = row_y_( *this, *rows( ) ) + *rows( )\buttonbox\y - _scroll_y_
+                     X = row_x_( *this, *rows( ) ) + *rows( )\ButtonBox( )\x - _scroll_x_
+                     Y = row_y_( *this, *rows( ) ) + *rows( )\ButtonBox( )\y - _scroll_y_
                      
                      If *this\mode\buttons And *rows( )\childrens And
                         Not ( *rows( )\sublevel And *this\mode\check = #__m_optionselect )
@@ -10706,12 +10670,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;               If #PB_Compiler_OS = #PB_OS_Windows Or
                         ;                  (*rows( )\ParentRow( ) And *rows( )\ParentRow( )\last And *rows( )\ParentRow( )\sublevel = *rows( )\ParentRow( )\last\sublevel)
                         ;
-                        ;                 draw_button_( 0, x, y, *rows( )\buttonbox\width, *rows( )\buttonbox\height, 0,2)
-                        ;                 draw_box( *rows( )\buttonbox, color\frame )
+                        ;                 draw_button_( 0, x, y, *rows( )\ButtonBox( )\width, *rows( )\ButtonBox( )\height, 0,2)
+                        ;                 draw_box( *rows( )\ButtonBox( ), color\frame )
                         ;
-                        ;                 Line(x + 2, y + *rows( )\buttonbox\height/2, *rows( )\buttonbox\width - 4, 1, $ff000000)
-                        ;                 If *rows( )\buttonbox\checkstate
-                        ;                   Line(x + *rows( )\buttonbox\width/2, y + 2, 1, *rows( )\buttonbox\height - 4, $ff000000)
+                        ;                 Line(x + 2, y + *rows( )\ButtonBox( )\height/2, *rows( )\ButtonBox( )\width - 4, 1, $ff000000)
+                        ;                 If *rows( )\ButtonBox( )\checkstate
+                        ;                   Line(x + *rows( )\ButtonBox( )\width/2, y + 2, 1, *rows( )\ButtonBox( )\height - 4, $ff000000)
                         ;                 EndIf
                         ;
                         ;               Else
@@ -10721,9 +10685,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            (y - 7 >= 0 And y + 7 <= *this\root\height)
                            
                            If *rows( )\color\state
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\buttonbox\checkstate))
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBox( )\checkstate))
                            Else
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\buttonbox\checkstate), $ff000000)
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBox( )\checkstate), $ff000000)
                            EndIf
                         EndIf
                         
@@ -10944,7 +10908,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\mode\collapsed And *rows\ParentRow( ) And
                   *rows\sublevel > *rows\ParentRow( )\sublevel
-                  *rows\ParentRow( )\buttonbox\checkstate = 1
+                  *rows\ParentRow( )\ButtonBox( )\checkstate = 1
                   *rows\state\hide                          = 1
                EndIf
                
@@ -11396,29 +11360,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\EnteredRow( )\state\enter
                   
                   ; collapsed/expanded button
-                  If *this\EnteredRow( )\buttonbox\state\enter
-                     If *this\EnteredRow( )\buttonbox\checkstate
+                  If *this\EnteredRow( )\ButtonBox( )\state\enter
+                     If *this\EnteredRow( )\ButtonBox( )\checkstate
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Expanded )
                      Else
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Collapsed )
                      EndIf
                      
-                     Post( *this, #__event_Down, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     Send( *this, #__event_Down, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                   EndIf   
                   
                   ; change box ( option&check )
-                  If *this\EnteredRow( )\checkbox\state\enter
+                  If *this\EnteredRow( )\CheckedBox( )\state\enter
                      ; change box option
                      If *this\mode\check = #__m_optionselect
                         If *this\EnteredRow( )\ParentRow( ) And *this\EnteredRow( )\OptionGroupRow
                            If *this\EnteredRow( )\OptionGroupRow\ParentRow( ) And
-                              *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate
-                              *this\EnteredRow( )\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
+                              *this\EnteredRow( )\OptionGroupRow\CheckedBox( )\checkstate
+                              *this\EnteredRow( )\OptionGroupRow\CheckedBox( )\checkstate = #PB_Checkbox_Unchecked
                            EndIf
                            
                            If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow <> *this\EnteredRow( )
                               If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow
-                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\checkbox\checkstate = #PB_Checkbox_Unchecked
+                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\CheckedBox( )\checkstate = #PB_Checkbox_Unchecked
                               EndIf
                               *this\EnteredRow( )\OptionGroupRow\OptionGroupRow = *this\EnteredRow( )
                            EndIf
@@ -11426,7 +11390,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ; tree checkbox change check
-                     set_check_state_( *this\EnteredRow( )\checkbox, *this\mode\threestate )
+                     set_check_state_( *this\EnteredRow( )\CheckedBox( ), *this\mode\threestate )
                      
                      ;                         ;\\
                      ;                         If *this\EnteredRow( )\color\state = #__S_2
@@ -11456,10 +11420,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\event = - 1 : *this\event = 0 : EndIf
                      EndIf
                   Else
-                     If *this\EnteredRow( )\buttonbox\state\enter
-                        Post( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
-                     Else
-                        Post( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+                     If *this\EnteredRow( )\ButtonBox( )\state\enter
+                        Send( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
+;                      Else
+;                         Send( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                      EndIf
                   EndIf
                EndIf
@@ -11732,11 +11696,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ ComboBox
-               If *display\_box_
-                  If *this\hide = 0
-                     *display\_box_\arrow\direction = 3
+               If *display\ComboButtonBox( )
+                  If *this\hide
+                     *display\ComboButtonBox( )\arrow\direction = 2
                   Else
-                     *display\_box_\arrow\direction = 2
+                     *display\ComboButtonBox( )\arrow\direction = 3
                   EndIf
                EndIf
             EndIf
@@ -12230,7 +12194,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PushListPosition( *this\_rows( ))
                         ForEach *this\_rows( )
                            If *this\_rows( )\ParentRow( )
-                              *this\_rows( )\checkbox\checkstate = #PB_Checkbox_Unchecked
+                              *this\_rows( )\CheckedBox( )\checkstate = #PB_Checkbox_Unchecked
                               *this\_rows( )\OptionGroupRow      = Bool( state ) * GetItem( *this\_rows( ), 0 )
                            EndIf
                         Next
@@ -12247,7 +12211,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PushListPosition( *this\_rows( ))
                         ForEach *this\_rows( )
                            If *this\_rows( )\ParentRow( )
-                              *this\_rows( )\ParentRow( )\buttonbox\checkstate = state
+                              *this\_rows( )\ParentRow( )\ButtonBox( )\checkstate = state
                               *this\_rows( )\state\hide                          = state
                            EndIf
                         Next
@@ -12660,7 +12624,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\FocusedRow( )
                   If *this\FocusedRow( )\ParentRow( ) And
-                     *this\FocusedRow( )\ParentRow( )\buttonbox\checkstate
+                     *this\FocusedRow( )\ParentRow( )\ButtonBox( )\checkstate
                      *this\FocusedRow( ) = *this\FocusedRow( )\ParentRow( )
                   EndIf
                   
@@ -15237,9 +15201,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   result | #PB_Tree_Selected
                EndIf
                
-               If *this\_rows( )\checkbox\checkstate
+               If *this\_rows( )\CheckedBox( )\checkstate
                   If *this\mode\threestate And
-                     *this\_rows( )\checkbox\checkstate = #PB_Checkbox_Inbetween
+                     *this\_rows( )\CheckedBox( )\checkstate = #PB_Checkbox_Inbetween
                      result | #PB_Tree_Inbetween
                   Else
                      result | #PB_Tree_Checked
@@ -15247,7 +15211,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *this\_rows( )\childrens And
-                  *this\_rows( )\buttonbox\checkstate = 0
+                  *this\_rows( )\ButtonBox( )\checkstate = 0
                   result | #PB_Tree_Expanded
                Else
                   result | #PB_Tree_Collapsed
@@ -15451,9 +15415,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; ???????????????????????
             ;         If State & #pb_tree_inbetween = #pb_tree_inbetween
-            ;           *this\_tabs( )\checkbox\checkstate = #PB_Checkbox_Inbetween
+            ;           *this\_tabs( )\CheckedBox( )\checkstate = #PB_Checkbox_Inbetween
             ;         ElseIf State & #pb_tree_checked = #pb_tree_checked
-            ;           *this\_tabs( )\checkbox\checkstate = #PB_Checkbox_Checked
+            ;           *this\_tabs( )\CheckedBox( )\checkstate = #PB_Checkbox_Checked
             ;         EndIf
             
          EndIf
@@ -15485,11 +15449,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If State & #PB_Tree_Inbetween = #PB_Tree_Inbetween
-                  *this\_rows( )\checkbox\checkstate = #PB_Checkbox_Inbetween
+                  *this\_rows( )\CheckedBox( )\checkstate = #PB_Checkbox_Inbetween
                ElseIf State & #PB_Tree_Checked = #PB_Tree_Checked
-                  *this\_rows( )\checkbox\checkstate = #PB_Checkbox_Checked
+                  *this\_rows( )\CheckedBox( )\checkstate = #PB_Checkbox_Checked
                Else
-                  *this\_rows( )\checkbox\checkstate = #PB_Checkbox_Unchecked
+                  *this\_rows( )\CheckedBox( )\checkstate = #PB_Checkbox_Unchecked
                EndIf
                
                If *this\_rows( )\childrens
@@ -15497,12 +15461,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      State & #PB_Tree_Collapsed = #PB_Tree_Collapsed
                      
                      *this\WidgetChange( )                 = #True
-                     *this\_rows( )\buttonbox\checkstate = Bool( State & #PB_Tree_Collapsed )
+                     *this\_rows( )\ButtonBox( )\checkstate = Bool( State & #PB_Tree_Collapsed )
                      
                      PushListPosition( *this\_rows( ))
                      While NextElement( *this\_rows( ))
                         If *this\_rows( )\ParentRow( )
-                           *this\_rows( )\state\hide = Bool( *this\_rows( )\ParentRow( )\buttonbox\checkstate | *this\_rows( )\ParentRow( )\state\hide )
+                           *this\_rows( )\state\hide = Bool( *this\_rows( )\ParentRow( )\ButtonBox( )\checkstate | *this\_rows( )\ParentRow( )\state\hide )
                         EndIf
                         
                         If *this\_rows( )\sublevel = *this_current_row\sublevel
@@ -15513,7 +15477,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               result = *this_current_row\buttonbox\checkstate
+               result = *this_current_row\ButtonBox( )\checkstate
             EndIf
             
             ; - widget::panelset_item_state( )
@@ -15802,15 +15766,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\back  = _get_colors_( )\fore
                *this\color\front = _get_colors_( )\front
                
-               *this\_box_.allocate( BUTTONS )
-               *this\_box_\color      = _get_colors_( )
-               *this\_box_\color\back = $ffffffff
+               *this\StateBox( ).allocate( BUTTONS )
+               *this\StateBox( )\color      = _get_colors_( )
+               *this\StateBox( )\color\back = $ffffffff
                
-               *this\_box_\round    = 7
-               *this\_box_\width    = 15
-               *this\_box_\height   = *this\_box_\width
+               *this\StateBox( )\round    = 7
+               *this\StateBox( )\width    = 15
+               *this\StateBox( )\height   = *this\StateBox( )\width
                
-               *this\text\padding\x = *this\_box_\width + 8
+               *this\text\padding\x = *this\StateBox( )\width + 8
             EndIf
             
             If *this\type = #__type_CheckBox
@@ -15820,15 +15784,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\back  = _get_colors_( )\fore
                *this\color\front = _get_colors_( )\front
                
-               *this\_box_.allocate( BUTTONS )
-               *this\_box_\color      = _get_colors_( )
-               *this\_box_\color\back = $ffffffff
+               *this\StateBox( ).allocate( BUTTONS )
+               *this\StateBox( )\color      = _get_colors_( )
+               *this\StateBox( )\color\back = $ffffffff
                
-               *this\_box_\round    = 2
-               *this\_box_\height   = 15
-               *this\_box_\width    = *this\_box_\height
+               *this\StateBox( )\round    = 2
+               *this\StateBox( )\height   = 15
+               *this\StateBox( )\width    = *this\StateBox( )\height
                
-               *this\text\padding\x = *this\_box_\width + 8
+               *this\text\padding\x = *this\StateBox( )\width + 8
             EndIf
             
             If *this\type = #__type_HyperLink
@@ -15952,11 +15916,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ - Create ComboBox
          If *this\type = #__type_ComboBox
-            ;*this\round = 16
-            
-            *this\_box_.allocate( BUTTONS )
-            *this\_box_\color           = _get_colors_( )
-            *this\_box_\arrow\direction = 2
+            *this\ComboButtonBox( ).allocate( BUTTONS )
+            *this\ComboButtonBox( )\color           = _get_colors_( )
+            *this\ComboButtonBox( )\arrow\type      = #__arrow_type
+            *this\ComboButtonBox( )\arrow\size      = #__arrow_size
+            *this\ComboButtonBox( )\arrow\direction = 2
             
             ;\\
             If *this\flag & #PB_ComboBox_Editable
@@ -16905,22 +16869,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; update widget ( option&checkbox ) position
                If *this\WidgetChange( )
-                  *this\_box_\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\_box_\height ) / 2
+                  *this\StateBox( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\StateBox( )\height ) / 2
                   
                   If *this\text\align\right
-                     *this\_box_\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\_box_\height - 3 )
+                     *this\StateBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StateBox( )\height - 3 )
                   ElseIf Not *this\text\align\left
-                     *this\_box_\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\_box_\width ) / 2
+                     *this\StateBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StateBox( )\width ) / 2
                      
                      If Not *this\text\align\top
                         If *this\text\rotate = 0
-                           *this\_box_\y = *this\inner_y( ) + *this\scroll_y( ) - *this\_box_\height
+                           *this\StateBox( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\StateBox( )\height
                         Else
-                           *this\_box_\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                           *this\StateBox( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
                         EndIf
                      EndIf
                   Else
-                     *this\_box_\x = *this\inner_x( ) + 3
+                     *this\StateBox( )\x = *this\inner_x( ) + 3
                   EndIf
                EndIf
             EndIf
@@ -16965,10 +16929,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ draw box
             Protected _box_x_, _box_y_
             If #__type_Option = *this\type
-               draw_button_( 1, *this\_box_\x, *this\_box_\y, *this\_box_\width, *this\_box_\height, *this\checkstate , *this\_box_\round );, *this\color )
+               draw_button_( 1, *this\StateBox( )\x, *this\StateBox( )\y, *this\StateBox( )\width, *this\StateBox( )\height, *this\checkstate , *this\StateBox( )\round );, *this\color )
             EndIf
             If #__type_CheckBox = *this\type
-               draw_button_( 3, *this\_box_\x, *this\_box_\y, *this\_box_\width, *this\_box_\height, *this\checkstate , *this\_box_\round );, *this\color )
+               draw_button_( 3, *this\StateBox( )\x, *this\StateBox( )\y, *this\StateBox( )\width, *this\StateBox( )\height, *this\checkstate , *this\StateBox( )\round );, *this\color )
             EndIf
             
             ;\\ draw image
@@ -17006,22 +16970,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   Combobox_Draw( *this._S_WIDGET )
          Protected state
          Protected arrow_right
+         Protected *buttonbox._S_BUTTONS = *this\ComboButtonBox( )
          
          state = *this\color\state
          If state = #__s_3
             state = 0
          EndIf
          
-         *this\_box_\arrow\type = #__arrow_type
-         *this\_box_\arrow\size = #__arrow_size
-         
          *this\text\x = 5
-         *this\text\y = ( *this\_box_\height - *this\text\height ) / 2
+         *this\text\y = ( *buttonbox\height - *this\text\height ) / 2
          
          ;
          If *this\StringBox( )
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradient_( 0, *this\_box_, *this\color\fore[*this\color\state], *this\color\back[state] )
+            draw_gradient_( 0, *buttonbox, *this\color\fore[*this\color\state], *this\color\back[state] )
             ; Editor_Draw( *this\StringBox( ) )
          Else
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -17037,11 +16999,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          drawing_mode_alpha_( #PB_2DDrawing_Default )
          If *this\StringBox( )
-            draw_arrows_( *this\_box_, *this\_box_\arrow\direction )
+            draw_arrows_( *buttonbox, *buttonbox\arrow\direction )
          Else
-            Arrow( *this\_box_\x + ( *this\_box_\width - *this\_box_\arrow\size * 2 - 4 ),
-                   *this\_box_\y + ( *this\_box_\height - *this\_box_\arrow\size ) / 2, *this\_box_\arrow\size, *this\_box_\arrow\direction,
-                   *this\_box_\color\front[state] & $FFFFFF | *this\_box_\color\_alpha << 24, *this\_box_\arrow\type )
+            Arrow( *buttonbox\x + ( *buttonbox\width - *buttonbox\arrow\size * 2 - 4 ),
+                   *buttonbox\y + ( *buttonbox\height - *buttonbox\arrow\size ) / 2, *buttonbox\arrow\size, *buttonbox\arrow\direction,
+                   *buttonbox\color\front[state] & $FFFFFF | *buttonbox\color\_alpha << 24, *buttonbox\arrow\type )
          EndIf
          
          ; frame draw
@@ -17050,7 +17012,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
          EndIf
          
-         ;draw_box_( *this\_box_\x, *this\_box_\y, *this\_box_\width, *this\_box_\height, $ff000000 )
+         ;draw_box_( *buttonbox\x, *buttonbox\y, *buttonbox\width, *buttonbox\height, $ff000000 )
          
       EndProcedure
       
@@ -17129,7 +17091,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected arrow_right
          
          With *this
-            *this\show = 1
+            ;*this\show = 1
             
             ;\\ draw belowe drawing
             If Not *this\hide
@@ -18336,9 +18298,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If *this\row
                If *this\EnteredRow( )
-                  *BB1 = *this\EnteredRow( )\checkbox
+                  *BB1 = *this\EnteredRow( )\CheckedBox( )
                   If *this\EnteredRow( )\childrens
-                     *BB2 = *this\EnteredRow( )\buttonbox
+                     *BB2 = *this\EnteredRow( )\ButtonBox( )
                   EndIf
                   mouse_x = mouse( )\x - *this\inner_x( ) - *this\EnteredRow( )\x - *this\scroll_x( )
                   mouse_y = mouse( )\y - *this\inner_y( ) - *this\EnteredRow( )\y - *this\scroll_y( )
@@ -22723,7 +22685,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19866
-; FirstLine = 18586
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v80------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------f6evf----------------------0---------4--0---8----fv---------v408-----0v-------------4------W---------------------------------------------
+; CursorPosition = 17093
+; FirstLine = 16926
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------dv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------L4808---------------------v----------+-v---f-----80---------0uf-----v-0-------------+-----47---------------------------------------------
 ; EnableXP

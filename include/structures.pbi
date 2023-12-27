@@ -568,12 +568,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
-         repaint.b
-         *drawimg
          *anchors._s_ANCHORS
          
-         reclip.b
-         
+         ;
          type.b
          round.a                ; drawing round
          container.b            ; is container
@@ -582,7 +579,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          haschildren.l          ; if the has children
          child.b                ; is the widget composite?
          
-         show.b
+         ;
+         state._s_STATE
          create.b
          hide.b                 ;
          hidden.b               ; hide state
@@ -606,17 +604,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *bar._s_BAR
          *row._s_ROW ; multi-text; buttons; lists; - gadgets
-         *_box_._s_BUTTONS ; checkbox; optionbox
          
          tab._s_TAB
          
-         *GroupWidget._s_WIDGET      ; = Option( ) group widget
-                                     ; StructureUnion
-                                     ;*TabWidget._s_WIDGET        ; = Panel( ) tab bar widget
-         *PopupWidget._s_WIDGET      ; = ComboBox( ) list view box
-         *StringWidget._s_WIDGET     ; = SpinBar( ) string box
-                                     ; EndStructureUnion
          
+         *statebox._s_BUTTONS     ; checkbox; optionbox
+         *buttonbox._s_BUTTONS    ; combobox
+         
+         *popupbox._s_WIDGET      ; = ComboBox( ) list view box
+         *groupbox._s_WIDGET      ; = Option( ) group widget
+         *stringbox._s_WIDGET     ; = SpinBar( ) string box
+                                     
          
          BarWidth.w ; bar v size
          BarHeight.w; bar h size
@@ -633,12 +631,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ; placing layout
          first._s_OBJECTTYPE
-         last._s_OBJECTTYPE
          after._s_OBJECTTYPE
          before._s_OBJECTTYPE
+         last._s_OBJECTTYPE
          
          bounds._s_BOUNDS
-         state._s_STATE
          scroll._s_SCROLL            ; vertical & horizontal scrollbars
          
          
@@ -695,6 +692,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
          main.b                   ; is root
+         repaint.b
       EndStructure
       
       ;--     CANVAS
@@ -703,7 +701,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          repaint.b
          ; container.i              ; ???
          *fontID                  ; current drawing fontID
-         *GadgetID                ; canvas handle
+         *gadgetID                ; canvas handle
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
       EndStructure
@@ -761,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 190
-; FirstLine = 183
+; CursorPosition = 593
+; FirstLine = 495
 ; Folding = ---PP7X+--
 ; EnableXP
