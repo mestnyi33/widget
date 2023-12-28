@@ -693,7 +693,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Drawing( ): widget::__gui\drawing: EndMacro
       Macro ReDrawing( _this_, _item_ = 0 )
          If Not Drawing( )
-            If _this_\root And Not __gui\drawingIMG
+            If _this_\root
                Drawing( ) = Bool( StartDrawing( Output( _this_\root )))
             EndIf
             
@@ -725,7 +725,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         If _canvas_ >= 0 And Not __gui\drawingIMG
+         If _canvas_ >= 0
             Drawing( ) = Bool( StartDrawing( CanvasOutput( _canvas_ )))
             If test_startdrawing
                Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
@@ -1314,6 +1314,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   Repost( )
       Declare   DoEvent_Lines( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Items( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Declare   DoEvent_Button( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Declare   DoEvent_Tab( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       
       Declare.b bar_tab_draw( *this )
       Declare.b bar_SetState( *this, state.l )
@@ -13785,7 +13787,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected cursor, result
          
          If eventtype = #__event_cursor
-            *this\root\repaint = 1
             DrawingStop( )
             
             result = Send( *this, eventtype, #PB_All, *data )
@@ -13798,6 +13799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
             Cursor::Set( *this\root\canvas\gadget, cursor )
             ; ReDrawing( *this )
+            *this\root\repaint = #True
          EndIf
       EndProcedure
       
@@ -17316,15 +17318,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   ReDraw( *root._S_ROOT )
-         If __gui\drawingIMG
-            If StartDrawing( Output( *root ))
-               DrawImage( ImageID(__gui\drawingIMG), *root\frame_x( ), *root\frame_y( ) )
-               Draw( PressedWidget( ) )
-               StopDrawing( )
-            EndIf
-            
-            ProcedureReturn 0
-         EndIf
          
          ;\\
          DrawingStart( *root\canvas\gadget )
@@ -17355,16 +17348,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PushListPosition( *root\children( ))
                   ForEach *root\children( )
                      If *root\children( )\root = *root
-                        If ( mouse( )\press And (*root\children( ) = PressedWidget( ) Or IsChild(*root\children( ), PressedWidget( ))) )
-                           Continue
-                        EndIf
-                         
-                         ;\\ begin draw all widgets except pressed-move-widget
+                        ;\\ begin draw all widgets except pressed-move-widget
                         If Not ( *root\children( )\dragstart And
                                  *root\children( )\resize )
+                           ;                            If *root\children( )\drawimg
+                           ;                               drawing_mode_( #PB_2DDrawing_Default )
+                           ;                               ClipOutput( *root\children( )\parent\inner_x( ),
+                           ;                                           *root\children( )\parent\inner_y( ),
+                           ;                                           *root\children( )\parent\inner_width( ),
+                           ;                                           *root\children( )\parent\inner_height( ) )
+                           ;                               
+                           ;                               DrawImage( ImageID(*root\children( )\drawimg), 
+                           ;                                          *root\children( )\frame_x( ),
+                           ;                                          *root\children( )\frame_y( ) )
+                           ;                            Else
+                           Draw( *root\children( ))
                            
-                              Draw( *root\children( ))
-                          
                            ;\\ draw current focus frame
                            If FocusedWidget( ) And 
                               FocusedWidget( )\hide = 0 And 
@@ -17410,32 +17409,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *root\children( ) = *root\children( )\parent\LastWidget( ) And
                            *root\children( )\parent <> *root\children( )\parent\LastWidget( )
                            Protected *widget._s_widget = *root\children( )\parent
-                              
-                              ;\\
-                              If Not *widget\hide
-                                 If *widget\anchors And
-                                    *widget\anchors\mode
-                                    If *widget\state\enter
-                                       clip_output_( *widget, [#__c_draw] )
-                                       a_draw( *widget\anchors\id )
-                                    EndIf
-                                 EndIf
-                                 
-                                 ;\\ UnclipOutput( )
-                                 If *widget\scroll\v And *widget\scroll\h
+                           
+                           ;\\
+                           If Not *widget\hide
+                              If *widget\anchors And
+                                 *widget\anchors\mode
+                                 If *widget\state\enter
                                     clip_output_( *widget, [#__c_draw] )
-                                    drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                                    
-                                    ;\\ Scroll area coordinate
-                                    draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                    
-                                    ;\\
-                                    draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
-                                    
-                                    ;\\ page coordinate
-                                    draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
+                                    a_draw( *widget\anchors\id )
                                  EndIf
                               EndIf
+                              
+                              ;\\ UnclipOutput( )
+                              If *widget\scroll\v And *widget\scroll\h
+                                 clip_output_( *widget, [#__c_draw] )
+                                 drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                                 
+                                 ;\\ Scroll area coordinate
+                                 draw_box_( *widget\inner_x( ) + *widget\scroll_x( ), *widget\inner_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                 
+                                 ;\\
+                                 draw_box_( *widget\scroll\h\frame_x( ) + *widget\scroll_x( ), *widget\scroll\v\frame_y( ) + *widget\scroll_y( ), *widget\scroll_width( ), *widget\scroll_height( ), $FF0000FF )
+                                 
+                                 ;\\ page coordinate
+                                 draw_box_( *widget\scroll\h\frame_x( ), *widget\scroll\v\frame_y( ), *widget\scroll\h\bar\page\len, *widget\scroll\v\bar\page\len, $FF00FF00 )
+                              EndIf
+                           EndIf
                         EndIf
                         
                      EndIf
@@ -17457,18 +17456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   PopListPosition( *root\children( ))
                EndIf
-               
             EndIf
-            
-            If mouse( )\press
-               If Not __gui\drawingIMG
-                  __gui\drawingIMG = GrabDrawingImage( #PB_Any, *root\frame_x( ), *root\frame_y( ), *root\frame_width( ), *root\frame_height( ) )
-                  DrawingStop( )
-                  ReDraw( *root )
-                  ProcedureReturn 
-               EndIf
-            EndIf
-            
             
             ;\\ draw current pressed-move-widget
             If PressedWidget( ) And
@@ -17578,7 +17566,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
             
             ;\\
             DrawingStop( )
@@ -18084,20 +18071,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;          ;\\ reset
-         ;          If LeavedWidget( ) And
-         ;             LeavedWidget( ) <> *this
-         ;             ; Debug " leave "+LeavedWidget( )\class
-         ;             
-         ;             ;\\
-         ;             If LeavedWidget( )\tab
-         ;                If LeavedWidget( )\EnteredTab( ) And
-         ;                   Leaved( LeavedWidget( )\EnteredTab( ) )
-         ;                   LeavedWidget( )\EnteredTab( ) = 0
-         ;                   LeavedWidget( )\root\repaint  = 1
-         ;                EndIf
-         ;             EndIf
-         ;          EndIf
+         ;\\ reset
+         If LeavedWidget( ) And
+            LeavedWidget( ) <> *this
+            ; Debug " leave "+LeavedWidget( )\class
+            
+            ;             ;\\
+            ;             If LeavedWidget( )\tab
+            ;                If LeavedWidget( )\EnteredTab( ) And
+            ;                   Leaved( LeavedWidget( )\EnteredTab( ) )
+            ;                   LeavedWidget( )\EnteredTab( ) = 0
+            ;                   LeavedWidget( )\root\repaint  = 1
+            ;                EndIf
+            ;             EndIf
+            
+            If EnteredButton( )
+               If Leaved( EnteredButton( ) )
+                  LeavedWidget( )\root\repaint = #True
+               EndIf
+               EnteredButton( ) = #Null
+            EndIf
+            
+         EndIf
+         
+         If *this
+            If Not ( a_transform( ) And a_index( ) )
+               ;             If *this\row
+               ;                If *this\type = #__type_Editor Or
+               ;                   *this\type = #__type_string
+               ;                   
+               ;                   DoEvent_Lines( *this, #__event_MouseMove, mouse_x, mouse_y )
+               ;                Else
+               ;                   DoEvent_Items( *this, #__event_MouseMove, mouse_x, mouse_y )
+               ;                EndIf
+               ;             EndIf
+               
+               If Not mouse( )\press
+                  ;\\
+                  DoEvent_Button( *this, #__event_MouseMove, mouse_x, mouse_y )
+                  
+                  ;                   ;\\
+                  ;                   If *this\tab
+                  ;                      DoEvent_Tab( *this, #__event_MouseMove, mouse_x, mouse_y )
+                  ;                   EndIf
+               EndIf
+            EndIf
+         EndIf
          
          ;\\ do events entered & leaved
          If LeavedWidget( ) <> *this
@@ -19244,18 +19263,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *BB1 And *BB1\state\hide = 0 And
             is_atpoint_( *BB1, mouse_x, mouse_y )
             
-            *BB1\index = 1
+            If *this\type <> #__type_Spin 
+               *BB1\noFocus = 1
+            EndIf
             *EnteredButton = *BB1
          ElseIf *BB2 And *BB2\state\hide = 0 And
                 is_atpoint_( *BB2, mouse_x, mouse_y )
             
-            *BB2\index = 2
+            If *this\type <> #__type_Spin 
+               *BB2\noFocus = 2
+            EndIf
             *EnteredButton = *BB2
          ElseIf *BB0 And *BB0\state\hide = 0 And
                 is_atpoint_( *BB0, mouse_x, mouse_y )
             
             If *this\type <> #__type_Panel
-               *BB0\index = 3
+              *BB0\noFocus = 3
             EndIf
             
             *EnteredButton = *BB0
@@ -19519,8 +19542,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If Not mouse( )\press
-                  ;\\
-                  DoEvent_Button( *this, eventtype, mouse( )\x, mouse( )\y )
+                  ;                   ;\\
+                  ;                   DoEvent_Button( *this, eventtype, mouse( )\x, mouse( )\y )
                   
                   ;\\
                   If *this\tab
@@ -20265,6 +20288,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        #PB_EventType_RightButtonDown,
                        #PB_EventType_MiddleButtonDown
                      
+                     ;                   ;\\
+                     ;                   If EnteredWidget( )
+                     ;                      If StartDrawing( Output( EnteredWidget( )\root ))
+                     ;                         Draw( EnteredWidget( ) )
+                     ;                         EnteredWidget( )\drawimg = GrabDrawingImage( #PB_Any, EnteredWidget( )\frame_x( ), EnteredWidget( )\frame_y( ), EnteredWidget( )\frame_width( ), EnteredWidget( )\frame_height( ) )
+                     ;                         StopDrawing( )
+                     ;                      EndIf
+                     ;                   EndIf
+                     
                      ;\\
                      mouse( )\press  = 1
                      mouse( )\change = 1 << 5
@@ -20304,11 +20336,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        ;\\
-                        If __gui\drawingIMG
-                           FreeImage( __gui\drawingIMG )
-                           __gui\drawingIMG = #Null
-                        EndIf
+                        
+                        ;                      If PressedWidget( )
+                        ;                         If PressedWidget( )\split_1( )
+                        ;                            If PressedWidget( )\split_1( )\hide
+                        ;                               Hide( PressedWidget( )\split_1( ), 0 )
+                        ;                               Resize( PressedWidget( )\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                        ;                            EndIf
+                        ;                         EndIf
+                        ;                         If PressedWidget( )\split_2( )
+                        ;                            If PressedWidget( )\split_2( )\hide
+                        ;                               Hide( PressedWidget( )\split_2( ), 0 )
+                        ;                               Resize( PressedWidget( )\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                        ;                            EndIf
+                        ;                         EndIf
+                        ;                         
+                        ;                         If PressedWidget( )\drawimg
+                        ;                            FreeImage( PressedWidget( )\drawimg )
+                        ;                            PressedWidget( )\drawimg = #Null
+                        ;                         EndIf
+                        ;                      EndIf
                      EndIf
                      
                      ;\\
@@ -20395,7 +20442,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\ set active widget
                   If eventtype = #PB_EventType_LeftButtonDown
-                     If Not ( EnteredButton( ) And EnteredButton( )\index )
+                     If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
                         If FocusedWidget( ) <> EnteredWidget( )
                            If EnteredWidget( )\state\disable
                               ; 
@@ -22656,7 +22703,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13787
-; FirstLine = 13783
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------en-f-----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19279
+; FirstLine = 19254
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -187,7 +187,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_COORDINATE
-         index.a
+         noFocus.a
          checkstate.b
          
          size.l
@@ -760,7 +760,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 727
-; FirstLine = 628
+; CursorPosition = 189
+; FirstLine = 187
 ; Folding = ---PP7X+--
 ; EnableXP
