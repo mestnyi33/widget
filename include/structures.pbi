@@ -724,6 +724,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_STRUCT
          repaint.b
          drawing.b                      ;
+         
+         *drawingIMG
+         
          *opened._s_WIDGET             ; last-list opened element
          
          *__widget._s_WIDGET           ; enumerate widget
@@ -757,7 +760,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 694
-; FirstLine = 578
+; CursorPosition = 727
+; FirstLine = 628
 ; Folding = ---PP7X+--
 ; EnableXP

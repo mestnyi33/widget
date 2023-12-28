@@ -19,14 +19,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected eventtype = WidgetEventType( )
     
     Select eventtype
-      Case #PB_EventType_ResizeBegin
-        Debug ""+ GetClass(eventobject) + " #PB_EventType_ResizeBegin " 
+      Case #__event_ResizeBegin
+        Debug ""+ GetClass(eventobject) + " #__event_ResizeBegin " 
         
-      Case #PB_EventType_Resize
-        Debug ""+GetClass(eventobject) + " #PB_EventType_Resize " 
+      Case #__event_Resize
+        Debug ""+GetClass(eventobject) + " #__event_Resize " 
         
-      Case #PB_EventType_ResizeEnd
-        Debug ""+GetClass(eventobject) + " #PB_EventType_ResizeEnd " 
+      Case #__event_ResizeEnd
+        Debug ""+GetClass(eventobject) + " #__event_ResizeEnd " 
     EndSelect
   EndProcedure
   
@@ -56,6 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 28
+; FirstLine = 14
 ; Folding = -
 ; EnableXP

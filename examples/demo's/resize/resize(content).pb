@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "line_6" + #LF$ +
                   "line_7"
     
-  If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     
     ;*g4 = Splitter( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 5
+; CursorPosition = 17
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

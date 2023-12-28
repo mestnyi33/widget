@@ -1,8 +1,6 @@
 ﻿
-
-; ;XIncludeFile "../../../widgets.pbi" 
- XIncludeFile "../../../widget-events.pbi" 
-
+XIncludeFile "../../../widgets.pbi" 
+ 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib( WIDGET )
@@ -13,22 +11,22 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected eventobject = EventWidget( )
     
     Select WidgetEventType( )
-      Case #PB_EventType_DragStart
+      Case #__event_DragStart
         DraggedGadget = eventobject
         
-      Case #PB_EventType_LeftButtonUp
+      Case #__event_LeftButtonUp
         DraggedGadget = 0
         
-      Case #PB_EventType_ResizeBegin
-        Debug ""+GetClass(eventobject) + " #PB_EventType_ResizeBegin " 
+      Case #__event_ResizeBegin
+        Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
         
-      Case #PB_EventType_Resize
-        Debug ""+GetClass(eventobject) + " #PB_EventType_Resize " 
+      Case #__event_Resize
+        Debug ""+GetClass(eventobject) + " event( RESIZE )" 
         
-      Case #PB_EventType_ResizeEnd
-        Debug ""+GetClass(eventobject) + " #PB_EventType_ResizeEnd " 
+      Case #__event_ResizeEnd
+        Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
         
-      Case #PB_EventType_MouseMove
+      Case #__event_MouseMove
         If DraggedGadget 
           ;Debug Root()\canvas\resizebeginwidget ;GetClass(DraggedGadget)
            Resize(DraggedGadget, Mouse()\x-Mouse()\delta\x, Mouse()\y-Mouse()\delta\y, #PB_Ignore, #PB_Ignore)
@@ -52,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case  8: result = ComboBox(x,y,width,height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
       Case  9: result = Image(x,y,width,height,0,#PB_Image_Border|flags) 
       Case 10: result = HyperLink(x,y,width,height,"HyperLink",0, flags) 
-      Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button"): CloseList() ; Container
+      Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"): Button(10,50,80,y,"Button2"): CloseList() ; Container
       Case 12: result = ListIcon(x,y,width,height,"",88, flags) 
         ;Case 13: result = IPAddress(x,y,width,height) 
         ;Case 14: result = ProgressBar(x,y,width,height,0,5)
@@ -94,11 +92,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Resize(Root(), 80,50,50,50)
     ;     Resize(Root(), 90,50,50,50)
     
-    Bind( widget, @Events())
+    ;Bind( widget, @Events())
+    Bind( #PB_All, @Events())
     
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
