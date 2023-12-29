@@ -729,17 +729,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *opened._s_WIDGET             ; last-list opened element
          
-         *__widget._s_WIDGET           ; enumerate widget
-         *__root._s_ROOT               ; enumerate root
+         *widget._s_WIDGET             ; enumerate widget
+         *root._s_ROOT                 ; enumerate root
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
          event._s_EVENTDATA            ; widgetEvent( )\ 
          
-         ; List *events._s_EVENTDATA( )  ; post events list
-         
-         ;Map *roots._s_ROOT( )   
+         List *children._s_WIDGET( )  ; post events list
+         List *events._s_EVENTDATA( )  ; post events list
+         Map *roots._s_ROOT( )   
          
          ;\\ event\
          quit.b ; quit from main loop
@@ -760,7 +760,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 187
+; CursorPosition = 739
+; FirstLine = 623
 ; Folding = ---PP7X+--
 ; EnableXP
