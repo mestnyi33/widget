@@ -1117,14 +1117,16 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ide_splitter = Splitter( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
    
    ; set splitters default minimum size
-   SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-   SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
+   SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+   SetAttribute( ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
    SetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
    SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
    SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
    SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
    SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
+   SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
+   SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
    ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ; set splitters dafault positions
@@ -1285,7 +1287,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 523
-; FirstLine = 507
+; CursorPosition = 1121
+; FirstLine = 1097
 ; Folding = ----------------------
 ; EnableXP

@@ -17629,10 +17629,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Debug "send - "+*this\class +" "+ ClassFromEvent(eventtype) +" "+ *button +" "+ *data
                
                ;\\ scrollbar
-               If *this\bar
+               If *this\type = #__type_scrollBar
                   *this\bar\page\change = *data
                EndIf
-               
+;                
                ;\\
                If Not is_root_( *this )
                   ;\\ first call (current-widget) bind event function
@@ -17723,7 +17723,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ scrollbar
-               If *this\bar
+               If *this\type = #__type_scrollBar
                   If *this\bar\page\change <> 0
                      *this\bar\page\change = 0
                   EndIf
@@ -22807,7 +22807,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20076
-; FirstLine = 18435
-; Folding = --------------------------------------------------------------------------t3-e-----4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------f-8-----------0-0---------8--------------------+-v-----------------------------------------------------------------------------------
+; CursorPosition = 17631
+; FirstLine = 1163
+; Folding = AD+f-0f9--------9-nf9-----P+BEAAAwfEAAAgAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAA+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAMGAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAcOAA5cAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAMgAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsBAAAAAAAAAAAAAAAAAAAAAAAAAAA+H-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAnAAAYAAAAA9xAAAAAAAAAAAAAAAAAAAAAAAAAAAYFAAAGAAwGAwGA3AAAAEEAAAAAAAAAAAAA9AAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAIMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
 ; EnableXP
