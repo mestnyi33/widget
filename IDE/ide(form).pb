@@ -520,6 +520,7 @@ Procedure widget_events( )
             EndIf
             SetState( ide_inspector_view, GetData( *ew ) )
          EndIf
+         
          properties_updates( ide_inspector_properties, *ew )
          
          If GetActive( ) <> ide_inspector_view 
@@ -1284,7 +1285,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 522
-; FirstLine = 508
+; CursorPosition = 523
+; FirstLine = 507
 ; Folding = ----------------------
 ; EnableXP
