@@ -80,8 +80,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   
-  If Open( 1, 300, 200, 300, 380, "");, #PB_Window_BorderLess )
-    Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+  If Open( 1, 300, 200, 300, 380, "ToolBar example");, #PB_Window_BorderLess )
+     a_init(root( ))
+     Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
     *toolbar = _ToolBar( widget( ) )
     
     If *toolbar
@@ -132,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 66
+; CursorPosition = 83
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

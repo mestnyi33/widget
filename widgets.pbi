@@ -2645,31 +2645,63 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If _address_ <> a_selector( )
             If a_entered( )
-               If _address_[#__a_moved] ; moved
-                  _address_[#__a_moved]\x      = _x_
-                  _address_[#__a_moved]\y      = _y_
-                  _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
-                  _address_[#__a_moved]\height = a_entered( )\anchors\size * 2
+               If a_entered( )\type = #__type_window
+                  If _address_[#__a_moved] ; moved
+                     _address_[#__a_moved]\x      = _x_ + a_entered( )\bs
+                     _address_[#__a_moved]\y      = _y_ + a_entered( )\bs
+                     _address_[#__a_moved]\width  = _width_ - a_entered( )\bs * 2
+                     _address_[#__a_moved]\height = a_entered( )\fs[2]
+                  EndIf
+               Else
+                  If _address_[#__a_moved] ; moved
+                     _address_[#__a_moved]\x      = _x_
+                     _address_[#__a_moved]\y      = _y_
+                     _address_[#__a_moved]\width  = a_entered( )\anchors\size * 2
+                     _address_[#__a_moved]\height = a_entered( )\anchors\size * 2
+                  EndIf
                EndIf
             EndIf
             
-            If _address_[#__a_left] ; left
-               _address_[#__a_left]\x = _x_
-               _address_[#__a_left]\y = _y_ + ( _height_ - _address_[#__a_left]\height ) / 2
+            If a_entered( ) And a_entered( )\type = #__type_window
+               If _address_[#__a_left] ; left
+                  _address_[#__a_left]\x = _x_
+                  _address_[#__a_left]\y = _y_ + a_entered( )\bs
+                  _address_[#__a_left]\height = a_entered( )\height - a_entered( )\bs * 2
+               EndIf
+               If _address_[#__a_top] ; top
+                  _address_[#__a_top]\x = _x_ + a_entered( )\bs
+                  _address_[#__a_top]\y = _y_
+                  _address_[#__a_top]\width  = a_entered( )\width - a_entered( )\bs * 2
+               EndIf
+               If _address_[#__a_right] ; right
+                  _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
+                  _address_[#__a_right]\y = _y_ + a_entered( )\bs
+                  _address_[#__a_right]\height = a_entered( )\height - a_entered( )\bs * 2
+               EndIf
+               If _address_[#__a_bottom] ; bottom
+                  _address_[#__a_bottom]\x = _x_ + a_entered( )\bs
+                  _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
+                  _address_[#__a_bottom]\width  = a_entered( )\width - a_entered( )\bs * 2
+               EndIf
+            Else
+               If _address_[#__a_left] ; left
+                  _address_[#__a_left]\x = _x_
+                  _address_[#__a_left]\y = _y_ + ( _height_ - _address_[#__a_left]\height ) / 2
+               EndIf
+               If _address_[#__a_top] ; top
+                  _address_[#__a_top]\x = _x_ + ( _width_ - _address_[#__a_top]\width ) / 2
+                  _address_[#__a_top]\y = _y_
+               EndIf
+               If _address_[#__a_right] ; right
+                  _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
+                  _address_[#__a_right]\y = _y_ + ( _height_ - _address_[#__a_right]\height ) / 2
+               EndIf
+               If _address_[#__a_bottom] ; bottom
+                  _address_[#__a_bottom]\x = _x_ + ( _width_ - _address_[#__a_bottom]\width ) / 2
+                  _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
+               EndIf
             EndIf
-            If _address_[#__a_top] ; top
-               _address_[#__a_top]\x = _x_ + ( _width_ - _address_[#__a_top]\width ) / 2
-               _address_[#__a_top]\y = _y_
-            EndIf
-            If _address_[#__a_right] ; right
-               _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
-               _address_[#__a_right]\y = _y_ + ( _height_ - _address_[#__a_right]\height ) / 2
-            EndIf
-            If _address_[#__a_bottom] ; bottom
-               _address_[#__a_bottom]\x = _x_ + ( _width_ - _address_[#__a_bottom]\width ) / 2
-               _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
-            EndIf
-            
+         
             If _address_[#__a_left_top] ; left&top
                _address_[#__a_left_top]\x = _x_
                _address_[#__a_left_top]\y = _y_
@@ -17901,8 +17933,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If a_focused( )\anchors\id[a_index]\color\state <> #__S_0
                         a_focused( )\anchors\id[a_index]\color\state = #__S_0
-                        a_focused( )\status\enter                     = #False
-                        ; a_focused( )\root\repaint                    = #True
+                        a_focused( )\status\enter                    = #False
+                        a_focused( )\root\repaint                    = #True
                         
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
                            If mouse( )\cursor <> *this\cursor
@@ -17926,8 +17958,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If a_entered( )\anchors\id[a_index]\color\state <> #__S_0
                         a_entered( )\anchors\id[a_index]\color\state = #__S_0
-                        a_entered( )\status\enter                     = #False
-                        ; a_entered( )\root\repaint                    = #True
+                        a_entered( )\status\enter                    = #False
+                        a_entered( )\root\repaint                    = #True
                         
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
                            If mouse( )\cursor <> *this\cursor
@@ -17971,8 +18003,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  a_entered( ) = a_focused( )
                               EndIf
                               
-                              a_focused( )\status\enter  = - 1
-                              ; a_focused( )\root\repaint = #True
+                              a_focused( )\status\enter = - 1
+                              a_focused( )\root\repaint = #True
                               
                               If mouse( )\cursor <> a_transform( )\cursor[i]
                                  mouse( )\cursor = a_transform( )\cursor[i]
@@ -18011,8 +18043,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     DoEvents( a_entered( ), #__event_mouseleave )
                                  EndIf
                                  
-                                 a_entered( )\status\enter  = - 1
-                                 ; a_entered( )\root\repaint = #True
+                                 a_entered( )\status\enter = - 1
+                                 a_entered( )\root\repaint = #True
                                  
                                  If mouse( )\cursor <> a_transform( )\cursor[i]
                                     mouse( )\cursor = a_transform( )\cursor[i]
@@ -19406,25 +19438,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn 0
          EndIf
          
-         ;          If eventtype = #__event_MouseLeave
-         ;             ;\\
-         ;             If *this\tab
-         ;                If *this\EnteredTab( ) And
-         ;                   Leaved( *this\EnteredTab( ) )
-         ;                   *this\EnteredTab( ) = 0
-         ;                   *this\root\repaint  = 1
-         ;                EndIf
-         ;             EndIf
-         ;          EndIf
-         
-         ;\\
+         ;\\ activate send event
          If *this\root And
             *this\root\event
             If Not *this\event
                *this\event = - 1
             EndIf
          EndIf
-         
          If *this\window And
             *this\window\event
             If Not *this\event
@@ -19435,12 +19455,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ entered position state
          If *this\status\enter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
-               If *this\status\enter  = 1
-                  *this\status\enter  = 2
+               If *this\status\enter = 1
+                  *this\status\enter = 2
                   *this\root\repaint = 1
                EndIf
             ElseIf *this\mouse_enter( )
-               *this\status\enter     = 1
+               *this\status\enter    = 1
                *this\root\repaint    = 1
             EndIf
          EndIf
@@ -19453,37 +19473,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If eventtype = #__event_Focus
-            If Not *this\anchors
-               If Not *this\status\disable
-                  *this\color\state = #__s_2
-                  *this\root\repaint = #True
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
-         If eventtype = #__event_LostFocus
-            If Not *this\anchors
-               If *this\color\state = #__s_2
-                  *this\color\state = #__s_3
-                  *this\root\repaint = #True
-               EndIf
-               If *this <> FocusedWidget( )
-                  *this\root\repaint = #True
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
          If Not *this\status\disable
             ;\\ repaint state
             Select eventtype
-               Case #__event_Change
-                  If *this\row
-                     ; Debug "change " + *button
-                  EndIf
-                  
                Case #__event_StatusChange
                   If *this\row
                      ; Debug "status-change " + *button
@@ -19493,6 +19485,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                 *row\color\back[*row\color\state] = $FF2C70F5 ; TEMP
                      ;               EndIf
                      *this\root\repaint = #True
+                  EndIf
+                  
+               Case #__event_Focus
+                  If Not *this\anchors
+                     If Not *this\status\disable
+                        *this\color\state = #__s_2
+                        *this\root\repaint = #True
+                     EndIf
+                  EndIf
+                  
+               Case #__event_LostFocus
+                  If Not *this\anchors
+                     If *this\color\state = #__s_2
+                        *this\color\state = #__s_3
+                        *this\root\repaint = #True
+                     EndIf
+                     If *this <> FocusedWidget( )
+                        *this\root\repaint = #True
+                     EndIf
                   EndIf
                   
                Case #__event_MouseMove
@@ -19521,15 +19532,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_ScrollChange,
                     #__event_Drop,
                     #__event_DragStart
-                  ;                #__event_Focus,
-                  ;                #__event_LostFocus,
                   ;                #__event_Create,
                   ;                #__event_Resize,
                   
                   
                   *this\root\repaint = #True
             EndSelect
-            
             
             ;\\ items events
             If Not ( a_transform( ) And a_index( ) )
@@ -19553,7 +19561,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
             
             ;\\ widgets events
             Select *this\type
@@ -20067,7 +20074,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
             Cursor::Set( *this\root\canvas\gadget, cursor )
             ; ReDrawing( *this )
-            *this\root\repaint = #True
          EndIf
       EndProcedure
       
@@ -22801,7 +22807,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19468
-; FirstLine = 17483
-; Folding = --------------------------------------------------------------------------t3-e-----4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------v-------------0-0---------8--------------------+-v------------------------------------------------------------------------------------
+; CursorPosition = 20076
+; FirstLine = 18435
+; Folding = --------------------------------------------------------------------------t3-e-----4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------f-8-----------0-0---------8--------------------+-v-----------------------------------------------------------------------------------
 ; EnableXP
