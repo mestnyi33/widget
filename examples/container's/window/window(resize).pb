@@ -42,27 +42,27 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-;    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
-;                                                                                                  #PB_Window_SizeGadget |
-;                                                                                                  #PB_Window_MinimizeGadget |
-;                                                                                                  #PB_Window_MaximizeGadget | 
-;                                                                                                  #PB_Window_ScreenCentered )
+   If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
+                                                                                                 #PB_Window_SizeGadget |
+                                                                                                 #PB_Window_MinimizeGadget |
+                                                                                                 #PB_Window_MaximizeGadget | 
+                                                                                                 #PB_Window_ScreenCentered )
    
-;    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
-;                                                                                                  #PB_Window_SizeGadget |
-;                                                                                                  #PB_Window_ScreenCentered )
-;       
-     ; \\
-    If Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
+; ;    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
+; ;                                                                                                  #PB_Window_SizeGadget |
+; ;                                                                                                  #PB_Window_ScreenCentered )
+; ;       
+;      ; \\
+;     If Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
+;                                             #PB_Window_SizeGadget |
+;                                             #PB_Window_MinimizeGadget |
+;                                             #PB_Window_MaximizeGadget )
+      
+      Window( 0, 0, 0, 0, "window_0", #__flag_autosize |
+                                            #PB_Window_SystemMenu |
                                             #PB_Window_SizeGadget |
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget )
-;       
-; ;       Window( 30, 30, 300, 200, "window_0", #__flag_autosize |
-; ;                                             #PB_Window_SystemMenu |
-; ;                                             #PB_Window_SizeGadget |
-; ;                                             #PB_Window_MinimizeGadget |
-; ;                                             #PB_Window_MaximizeGadget )
       
       SetClass(widget( ), "window_0" )
       Button(10,-10,200,50,"window_0_maximize")
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
+; CursorPosition = 60
 ; FirstLine = 39
 ; Folding = --
 ; EnableXP

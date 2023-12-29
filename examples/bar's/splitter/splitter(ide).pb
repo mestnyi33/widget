@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   s_view = Text(0,0,0,0,"", #__Text_Border)
   s_list = Text(0,0,0,0,"", #__Text_Border)
   s_insp = Text(0,0,0,0,"", #__Text_Border)
-  s_help  = Text(0,0,0,0,"", #__Text_Border)
+  s_help = Text(0,0,0,0,"", #__Text_Border)
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -47,25 +47,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Splitter_ide = widget::Splitter(0,0,800,600, splitter_debug,splitter_help, #PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
   
   If minsize
-;         ; set splitter default minimum size
-;     widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
-;     widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-;     widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
-    
-;   ; set splitter default minimum size
+    ;\\ set splitter default minimum size
     widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
     widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
-    widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-   ; widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
-    widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
     widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
+    widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 100)
+    widget::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 200)
+    widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
+    widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
+    widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
     widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
     widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
     ;widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
@@ -176,6 +166,8 @@ CompilerEndIf
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 49
+; FirstLine = 44
 ; Folding = -
 ; EnableXP
 ; Executable = splitter(ide).exe

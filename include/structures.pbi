@@ -38,14 +38,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          y.l
          x.l
       EndStructure
-      ;--     STATE
-      Structure _s_STATE
-         transform.b
+      ;--     STATUS
+      Structure _s_STATUS
+         ;transform.b
          
          enter.b
          press.b
-         hide.b
          focus.b
+         hidden.b     ; hide state
          disable.b
          ;interact.b
          
@@ -187,13 +187,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_COORDINATE
-         noFocus.a
-         checkstate.b
-         
          size.l
          round.a
+         noFocus.a
          
-         state._s_state
+         status._s_STATUS
+         hide.b
+         state.b
+         
          arrow._s_arrow
          color._s_color[4]
       EndStructure
@@ -337,9 +338,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          round.a ; ?-
+         hide.b
          
-         ;hide.b
-         state._s_state
+         status._s_STATUS
          text._s_text
          image._s_image
          color._s_color
@@ -450,9 +451,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_SCROLL Extends _s_COORDINATE
          bars.b
          align._s_align
-         ;padding.b
          
-         state.b    ; set state status
+         state.b          ; set state status
          
          increment.f      ; scrollarea
          *v._s_WIDGET     ; vertical scrollbar
@@ -573,6 +573,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          type.b
          round.a                ; drawing round
+         autosize.b
          container.b            ; is container
          ; container = 1        ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
          ; container = - 1      ; if the not has children ( Splitter( ); Frame( ))
@@ -580,15 +581,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          child.b                ; is the widget composite?
          
          ;
-         state._s_STATE
+         status._s_STATUS
          create.b
-         hide.b                 ;
-         hidden.b               ; hide state
-         dragstart.b
-         checkstate.b
-         autosize.b
+         hide.b                   ;
+         dragstart.b              ;
+         state.b             ;
+         change.b
          
-         change.l
          resize.i                 ; state
          
          ;*Draw.DrawFunc          ; Function to Draw
@@ -760,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 739
-; FirstLine = 623
-; Folding = ---PP7X+--
+; CursorPosition = 195
+; FirstLine = 192
+; Folding = ---PP8X+--
 ; EnableXP

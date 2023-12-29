@@ -512,6 +512,20 @@ Procedure widget_events( )
       Case #__event_Close ;, #__event_Minimize, #__event_Maximize
          ProcedureReturn 1
          
+      Case #__event_Focus
+         ; Debug " widget status change "
+         If GetData( *ew ) >= 0
+            If IsGadget( g_ide_design_code )
+               SetGadgetState( g_ide_design_code, GetData( *ew ) )
+            EndIf
+            SetState( ide_inspector_view, GetData( *ew ) )
+         EndIf
+         properties_updates( ide_inspector_properties, *ew )
+         
+         If GetActive( ) <> ide_inspector_view 
+            SetActive( ide_inspector_view )
+         EndIf
+         
       Case #__event_DragStart
          If a_index( ) = #__a_moved
             If DragPrivate( #_DD_reParent )
@@ -589,16 +603,6 @@ Procedure widget_events( )
             EndIf
          EndIf
          
-      Case #__event_StatusChange
-         ;\\ Debug " widget status change "
-         If GetData( *ew ) >= 0
-            If IsGadget( g_ide_design_code )
-               SetGadgetState( g_ide_design_code, GetData( *ew ) )
-            EndIf
-            SetState( ide_inspector_view, GetData( *ew ) )
-         EndIf
-         properties_updates( ide_inspector_properties, *ew )
-         
       Case #__event_Resize
          properties_update_coordinate( ide_inspector_properties, *ew )
          SetWindowTitle( GetWindow(*ew\root), Str(width(*ew))+"x"+Str(height(*ew) ) )
@@ -615,7 +619,7 @@ Procedure widget_events( )
                         ChangeCursor( *ew, #PB_Cursor_Default )
                      EndIf
                   Else
-                     If *ew\state\enter = 2 
+                     If *ew\mouse_enter( ) 
                         If GetCursor( ) <> #PB_Cursor_Cross
                            ChangeCursor( *ew, #PB_Cursor_Cross )
                         EndIf
@@ -1280,7 +1284,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 659
-; FirstLine = 644
+; CursorPosition = 522
+; FirstLine = 508
 ; Folding = ----------------------
 ; EnableXP
