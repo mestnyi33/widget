@@ -195,7 +195,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.i DropEnable( *this, Format.l, Actions.b, PrivateType.i = 0 )
       
-     
+      
       ;-
       Macro allocate( _struct_name_, _struct_type_ = )
          _S_#_struct_name_#_struct_type_ = AllocateStructure( _S_#_struct_name_ )
@@ -480,55 +480,55 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       
-;       Macro a_focused_root_children( ): a_focused( )\root\children( ) : EndMacro
-;       Macro parent_root_children( ) : *parent\root\children( ) : EndMacro
-;       Macro this_root_children( ) : *this\root\children( ) : EndMacro
-;       Macro this_parent_root_children( ) : *this\parent\root\children( ) : EndMacro
-;       Macro root_children( ) : *root\children( ) : EndMacro
-;       Macro LeavedWidget_root_children( ) : LeavedWidget( )\root\children( ) : EndMacro
-;       Macro PressedWidget_root_children( ) : PressedWidget( )\root\children( ) : EndMacro
-;       Macro current_root_children( ) : Root( )\children( ) : EndMacro
-;       Macro active_root_children( ) : *active\root\children( ) : EndMacro
-;       Macro StartEnumerate( _parent_, _item_ = #PB_All )
-;          Bool( _parent_\haschildren )
-;          
-;          If _parent_\address
-;             ChangeCurrentElement( _parent_\root\children( ), _parent_\address )
-;          Else
-;             ResetList( _parent_\root\children( ) )
-;          EndIf
-;          
-;          ;\\
-;          If _item_ > 0
-;             While NextElement( _parent_\root\children( ) )
-;                If _item_ = _parent_\root\children( )\TabIndex( )
-;                   PreviousElement( _parent_\root\children( ) )
-;                   Break
-;                EndIf
-;             Wend
-;          EndIf
-;          
-;          ;\\
-;          While NextElement( _parent_\root\children( ))
-;             If IsChild( _parent_\root\children( ), _parent_ )
-;                widget( ) = _parent_\root\children( )
-;                If _item_ >= 0
-;                   If _item_ + 1 = _parent_\root\children( )\TabIndex( )
-;                      Break
-;                   EndIf
-;                EndIf
-;             EndMacro
-;             
-;             Macro AbortEnumerate( )
-;                Break
-;             EndMacro
-;             
-;             Macro StopEnumerate( )
-;             Else
-;                Break
-;             EndIf
-;          Wend
-;       EndMacro
+      ;       Macro a_focused_root_children( ): a_focused( )\root\children( ) : EndMacro
+      ;       Macro parent_root_children( ) : *parent\root\children( ) : EndMacro
+      ;       Macro this_root_children( ) : *this\root\children( ) : EndMacro
+      ;       Macro this_parent_root_children( ) : *this\parent\root\children( ) : EndMacro
+      ;       Macro root_children( ) : *root\children( ) : EndMacro
+      ;       Macro LeavedWidget_root_children( ) : LeavedWidget( )\root\children( ) : EndMacro
+      ;       Macro PressedWidget_root_children( ) : PressedWidget( )\root\children( ) : EndMacro
+      ;       Macro current_root_children( ) : Root( )\children( ) : EndMacro
+      ;       Macro active_root_children( ) : *active\root\children( ) : EndMacro
+      ;       Macro StartEnumerate( _parent_, _item_ = #PB_All )
+      ;          Bool( _parent_\haschildren )
+      ;          
+      ;          If _parent_\address
+      ;             ChangeCurrentElement( _parent_\root\children( ), _parent_\address )
+      ;          Else
+      ;             ResetList( _parent_\root\children( ) )
+      ;          EndIf
+      ;          
+      ;          ;\\
+      ;          If _item_ > 0
+      ;             While NextElement( _parent_\root\children( ) )
+      ;                If _item_ = _parent_\root\children( )\TabIndex( )
+      ;                   PreviousElement( _parent_\root\children( ) )
+      ;                   Break
+      ;                EndIf
+      ;             Wend
+      ;          EndIf
+      ;          
+      ;          ;\\
+      ;          While NextElement( _parent_\root\children( ))
+      ;             If IsChild( _parent_\root\children( ), _parent_ )
+      ;                widget( ) = _parent_\root\children( )
+      ;                If _item_ >= 0
+      ;                   If _item_ + 1 = _parent_\root\children( )\TabIndex( )
+      ;                      Break
+      ;                   EndIf
+      ;                EndIf
+      ;             EndMacro
+      ;             
+      ;             Macro AbortEnumerate( )
+      ;                Break
+      ;             EndMacro
+      ;             
+      ;             Macro StopEnumerate( )
+      ;             Else
+      ;                Break
+      ;             EndIf
+      ;          Wend
+      ;       EndMacro
       
       
       ;-
@@ -2701,7 +2701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
                EndIf
             EndIf
-         
+            
             If _address_[#__a_left_top] ; left&top
                _address_[#__a_left_top]\x = _x_
                _address_[#__a_left_top]\y = _y_
@@ -7640,7 +7640,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Not *bar\button\status\disable ; *bar\thumb\len <> *bar\thumb\end   ; TODO - good in editor scrollbars and other test
-                                          ; If ScrollPos < *bar\min : ScrollPos = *bar\min : EndIf
+                                           ; If ScrollPos < *bar\min : ScrollPos = *bar\min : EndIf
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
                   ScrollPos = *bar\min
@@ -17632,7 +17632,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type = #__type_scrollBar
                   *this\bar\page\change = *data
                EndIf
-;                
+               ;                
                ;\\
                If Not is_root_( *this )
                   ;\\ first call (current-widget) bind event function
@@ -18224,16 +18224,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               
                               If this_root_children( )\haschildren And this_root_children( )\status\enter = 0 
-                                    If Not is_interact_row_( this_root_children( ) ) 
-                                       If IsChild( EnteredWidget( ), this_root_children( ))
-                                          
-                                          this_root_children( )\status\enter = - 1
-                                          
-                                          If Not this_root_children( )\anchors
-                                             DoEvents( this_root_children( ), #__event_StatusChange, -1,  1 )
-                                          EndIf
+                                 If Not is_interact_row_( this_root_children( ) ) 
+                                    If IsChild( EnteredWidget( ), this_root_children( ))
+                                       
+                                       this_root_children( )\status\enter = - 1
+                                       
+                                       If Not this_root_children( )\anchors
+                                          DoEvents( this_root_children( ), #__event_StatusChange, -1,  1 )
                                        EndIf
                                     EndIf
+                                 EndIf
                               EndIf
                            Next
                         EndIf
@@ -18828,7 +18828,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\EnteredRow( )\status\enter = 1
                      
                      If ( *this\status\press And Not Mouse( )\drag ) And ( *this\row\clickselect = 0 Or
-                                                                          ( *this\row\clickselect And *this\row\multiselect ))
+                                                                           ( *this\row\clickselect And *this\row\multiselect ))
                         If *this\EnteredRow( )\color\state = #__S_0
                            *this\EnteredRow( )\color\state = #__S_2
                         EndIf
@@ -21466,92 +21466,92 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                If *this\parent\haschildren
-                 ; With *this\root
-                     LastElement(this_root_children( ))
-                     Repeat
-                        If this_root_children( ) = *this Or IsChild( this_root_children( ), *this )
-                           If this_root_children( )\root\haschildren > 0
-                              this_root_children( )\root\haschildren - 1
-                              
-                              If this_root_children( )\parent <> this_root_children( )\root
-                                 this_root_children( )\parent\haschildren - 1
-                              EndIf
-                              
-                              If this_root_children( )\TabBox( )
-                                 If this_root_children( )\TabBox( ) = this_root_children( )
-                                    Debug "   free - tab " + this_root_children( )\TabBox( )\class
-                                    FreeStructure( this_root_children( )\TabBox( ) )
-                                    this_root_children( )\TabBox( ) = 0
-                                 EndIf
-                                 this_root_children( )\TabBox( ) = #Null
-                              EndIf
-                              
-                              If this_root_children( )\scroll
-                                 If this_root_children( )\scroll\v
-                                    Debug "   free - scroll-v " + this_root_children( )\scroll\v\class
-                                    FreeStructure( this_root_children( )\scroll\v )
-                                    this_root_children( )\scroll\v = 0
-                                 EndIf
-                                 If this_root_children( )\scroll\h
-                                    Debug "   free scroll-h - " + this_root_children( )\scroll\h\class
-                                    FreeStructure( this_root_children( )\scroll\h )
-                                    this_root_children( )\scroll\h = 0
-                                 EndIf
-                                 ; this_root_children( )\scroll = #Null
-                              EndIf
-                              
-                              If this_root_children( )\type = #__type_Splitter
-                                 If this_root_children( )\split_1( )
-                                    Debug "   free - splitter - first " + this_root_children( )\split_1( )\class
-                                    FreeStructure( this_root_children( )\split_1( ) )
-                                    this_root_children( )\split_1( ) = 0
-                                 EndIf
-                                 If this_root_children( )\split_2( )
-                                    Debug "   free - splitter - second " + this_root_children( )\split_2( )\class
-                                    FreeStructure( this_root_children( )\split_2( ) )
-                                    this_root_children( )\split_2( ) = 0
-                                 EndIf
-                              EndIf
-                              
-                              If this_root_children( )\bounds\attach
-                                 ;Debug " free - attach " +this_root_children( )\bounds\attach\parent\class
-                                 this_root_children( )\bounds\attach\parent = 0
-                                 FreeStructure( this_root_children( )\bounds\attach )
-                                 this_root_children( )\bounds\attach = #Null
-                              EndIf
-                              
-                              If EnteredWidget( ) = this_root_children( )
-                                 EnteredWidget( ) = 0
-                              EndIf
-                              If PressedWidget( ) = this_root_children( )
-                                 PressedWidget( ) = 0
-                              EndIf
-                              If FocusedWidget( ) = this_root_children( )
-                                 FocusedWidget( ) = 0
-                              EndIf
-                              
-                              Debug " free - " + this_root_children( )\class
-                              If this_root_children( )\BeforeWidget( )
-                                 this_root_children( )\BeforeWidget( )\AfterWidget( ) = this_root_children( )\AfterWidget( )
-                              EndIf
-                              If this_root_children( )\AfterWidget( )
-                                 this_root_children( )\AfterWidget( )\BeforeWidget( ) = this_root_children( )\BeforeWidget( )
-                              EndIf
-                              
-                              this_root_children( )\parent = #Null
-                              this_root_children( )\address = #Null
-                              
-                              DeleteElement( this_root_children( ), 1 )
+                  ; With *this\root
+                  LastElement(this_root_children( ))
+                  Repeat
+                     If this_root_children( ) = *this Or IsChild( this_root_children( ), *this )
+                        If this_root_children( )\root\haschildren > 0
+                           this_root_children( )\root\haschildren - 1
+                           
+                           If this_root_children( )\parent <> this_root_children( )\root
+                              this_root_children( )\parent\haschildren - 1
                            EndIf
                            
-                           If *this\root\haschildren = 0
-                              Break
+                           If this_root_children( )\TabBox( )
+                              If this_root_children( )\TabBox( ) = this_root_children( )
+                                 Debug "   free - tab " + this_root_children( )\TabBox( )\class
+                                 FreeStructure( this_root_children( )\TabBox( ) )
+                                 this_root_children( )\TabBox( ) = 0
+                              EndIf
+                              this_root_children( )\TabBox( ) = #Null
                            EndIf
-                        ElseIf PreviousElement( this_root_children( )) = 0
+                           
+                           If this_root_children( )\scroll
+                              If this_root_children( )\scroll\v
+                                 Debug "   free - scroll-v " + this_root_children( )\scroll\v\class
+                                 FreeStructure( this_root_children( )\scroll\v )
+                                 this_root_children( )\scroll\v = 0
+                              EndIf
+                              If this_root_children( )\scroll\h
+                                 Debug "   free scroll-h - " + this_root_children( )\scroll\h\class
+                                 FreeStructure( this_root_children( )\scroll\h )
+                                 this_root_children( )\scroll\h = 0
+                              EndIf
+                              ; this_root_children( )\scroll = #Null
+                           EndIf
+                           
+                           If this_root_children( )\type = #__type_Splitter
+                              If this_root_children( )\split_1( )
+                                 Debug "   free - splitter - first " + this_root_children( )\split_1( )\class
+                                 FreeStructure( this_root_children( )\split_1( ) )
+                                 this_root_children( )\split_1( ) = 0
+                              EndIf
+                              If this_root_children( )\split_2( )
+                                 Debug "   free - splitter - second " + this_root_children( )\split_2( )\class
+                                 FreeStructure( this_root_children( )\split_2( ) )
+                                 this_root_children( )\split_2( ) = 0
+                              EndIf
+                           EndIf
+                           
+                           If this_root_children( )\bounds\attach
+                              ;Debug " free - attach " +this_root_children( )\bounds\attach\parent\class
+                              this_root_children( )\bounds\attach\parent = 0
+                              FreeStructure( this_root_children( )\bounds\attach )
+                              this_root_children( )\bounds\attach = #Null
+                           EndIf
+                           
+                           If EnteredWidget( ) = this_root_children( )
+                              EnteredWidget( ) = 0
+                           EndIf
+                           If PressedWidget( ) = this_root_children( )
+                              PressedWidget( ) = 0
+                           EndIf
+                           If FocusedWidget( ) = this_root_children( )
+                              FocusedWidget( ) = 0
+                           EndIf
+                           
+                           Debug " free - " + this_root_children( )\class
+                           If this_root_children( )\BeforeWidget( )
+                              this_root_children( )\BeforeWidget( )\AfterWidget( ) = this_root_children( )\AfterWidget( )
+                           EndIf
+                           If this_root_children( )\AfterWidget( )
+                              this_root_children( )\AfterWidget( )\BeforeWidget( ) = this_root_children( )\BeforeWidget( )
+                           EndIf
+                           
+                           this_root_children( )\parent = #Null
+                           this_root_children( )\address = #Null
+                           
+                           DeleteElement( this_root_children( ), 1 )
+                        EndIf
+                        
+                        If *this\root\haschildren = 0
                            Break
                         EndIf
-                     ForEver
-                 ; EndWith
+                     ElseIf PreviousElement( this_root_children( )) = 0
+                        Break
+                     EndIf
+                  ForEver
+                  ; EndWith
                EndIf
                
                ;\\
@@ -22285,6 +22285,116 @@ CompilerIf #PB_Compiler_IsMainFile
    EndEnumeration
    
    
+   ;-\\ ANCHORS
+   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
+   
+   Procedure anchor_events( )
+      Protected change
+      Protected *this._s_widget = EventWidget( )
+      
+      Select WidgetEventType( )
+         Case #__event_LeftClick
+            Select *this 
+               Case frame_color
+                  
+               Case back_color
+                  
+            EndSelect
+            
+         Case #__event_Focus
+            change = 1
+            
+         Case #__event_StatusChange
+            If size_value
+               SetState(size_value, *this\anchors\size )
+            EndIf
+            
+            If pos_value
+               SetState(pos_value, *this\anchors\pos )
+            EndIf
+            
+            If grid_value
+               SetState(grid_value, a_transform( )\grid_size )
+            EndIf
+            
+            change = 1
+            
+         Case #__event_Change
+            Select *this 
+               Case size_value
+                  a_set( a_focused( ), #__a_full, GetState(*this), GetState(pos_value))
+                  
+               Case pos_value
+                  a_set( a_focused( ), #__a_full, GetState(size_value), GetState(*this))
+                  
+               Case grid_value
+                  a_transform( )\grid_size = GetState(grid_value)
+                  
+            EndSelect
+            
+            change = 1
+            
+      EndSelect
+      
+      If change
+         If a_focused( )
+            SetState(grid_value, a_transform( )\grid_size )
+            SetState(size_value, a_focused( )\anchors\size )
+            SetState(pos_value, a_focused( )\anchors\pos )
+            
+            SetText(grid_text, Str(a_transform( )\grid_size) )
+            SetText(size_text, Str(a_focused( )\anchors\size) )
+            SetText(pos_text, Str(a_focused( )\anchors\pos) )
+         EndIf
+      EndIf
+      
+   EndProcedure
+   
+   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
+   
+   Define i
+   Define *w._S_WIDGET, *g._S_WIDGET, editable
+   Define *root._S_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
+   
+   ;BindWidgetEvent( *root, @BindEvents( ) )
+   view = Container(10, 10, 406, 238, #PB_Container_Flat)
+   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
+   a_init( view, 8 )
+   
+   Define *a0._S_WIDGET = Button( 10, 10, 60, 60, "Button" )
+   Define *a1._S_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
+   ;Define *a2._S_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
+   Define *a2._S_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
+   Define *a3._S_WIDGET = image( 150, 110, 60, 60, -1 )
+   
+   a_set( *a3, -1, 10)
+   
+   CloseList( )
+   size_value  = Track(56, 262, 240, 26, 0, 30)
+   pos_value   = Track(56, 292, 240, 26, 0, 30)
+   grid_value  = Track(56, 320, 240, 26, 0, 30)
+   back_color  = Button(304, 264, 112, 32, "BackColor")
+   frame_color = Button(304, 304, 112, 32, "FrameColor")
+   size_text   = Text(8, 256, 40, 24, "0")
+   pos_text    = Text(8, 288, 40, 24, "0")
+   grid_text   = Text(8, 320, 40, 24, "0")
+   
+   If a_focused( )
+      SetState(grid_value, a_transform( )\grid_size )
+      SetState(size_value, a_focused( )\anchors\size )
+      SetState(pos_value, a_focused( )\anchors\pos )
+      
+      SetText(grid_text, Str(a_transform( )\grid_size) )
+      SetText(size_text, Str(a_focused( )\anchors\size) )
+      SetText(pos_text, Str(a_focused( )\anchors\pos) )
+   EndIf
+   
+   
+   Bind( Root( ), @anchor_events( ) )
+   
+   ;\\Close( )
+   
+   
    ; Shows using of several panels...
    Procedure BindEvents( )
       Protected *this._S_WIDGET = EventWidget( )
@@ -22309,44 +22419,6 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Left2Click : Debug " - " + *this + " - 2_click"
       EndSelect
    EndProcedure
-   
-   ;\\
-   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-   
-   Define i
-   Define *w._S_WIDGET, *g._S_WIDGET, editable
-   Define *root._S_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
-   
-   ;BindWidgetEvent( *root, @BindEvents( ) )
-   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-   view = Container(10, 10, 406, 238, #PB_Container_Flat)
-   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-   a_init( view, 8 )
-   
-   Define *a0._S_WIDGET = Button( 10, 10, 60, 60, "Button" )
-   Define *a1._S_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
-   ;Define *a2._S_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
-   Define *a2._S_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-   Define *a3._S_WIDGET = image( 150, 110, 60, 60, -1 )
-   
-   a_set( *a3, -1, 10)
-   
-   CloseList( )
-   size_value  = Track(56, 262, 240, 26, 0, 30)
-   pos_value   = Track(56, 292, 240, 26, 0, 30)
-   grid_value  = Track(56, 320, 240, 26, 0, 30)
-   back_color  = Button(304, 264, 112, 32, "BackColor")
-   frame_color = Button(304, 304, 112, 32, "FrameColor")
-   size_text   = Text(8, 256, 40, 24, "0")
-   pos_text    = Text(8, 288, 40, 24, "0")
-   grid_text   = Text(8, 320, 40, 24, "0")
-   
-   SetState( size_value, 7 )
-   SetState( pos_value, 3 )
-   SetState( grid_value, 6 )
-   
-   ;\\Close( )
-   
    
    OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
@@ -22807,7 +22879,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17631
-; FirstLine = 1163
-; Folding = AD+f-0f9--------9-nf9-----P+BEAAAwfEAAAgAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAA+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAMGAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAcOAA5cAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAMgAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsBAAAAAAAAAAAAAAAAAAAAAAAAAAA+H-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAnAAAYAAAAA9xAAAAAAAAAAAAAAAAAAAAAAAAAAAYFAAAGAAwGAwGA3AAAAEEAAAAAAAAAAAAA9AAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAIMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
+; CursorPosition = 22381
+; FirstLine = 22297
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------80-------
 ; EnableXP
