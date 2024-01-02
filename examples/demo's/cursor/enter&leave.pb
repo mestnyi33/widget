@@ -25,16 +25,17 @@ CompilerIf #PB_Compiler_IsMainFile
                
             Case #__event_up : Debug "up "+eventwidget()\class ;+" "+ enteredwidget()\class+" "+pressedwidget()\class
                drag = 0
-               If eventwidget()\state\enter
+               If eventwidget()\status\enter
                   setcolor(eventwidget(), #__color_frame, $ff0000ff)
                Else
                   setcolor(eventwidget(), #__color_frame, $ff00ff00)
                EndIf
                
             Case #__event_mouseenter : Debug "enter "+eventwidget()\class 
-               If Not eventwidget()\state\press
+               If Not eventwidget()\status\press
                   setcolor(eventwidget(), #__color_frame, $ff0000ff)
                EndIf
+               
             Case #__event_mousemove
                If drag
                   ;Debug " "+eventwidget() +" "+ enteredwidget()+" "+pressedwidget()
@@ -43,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
             Case #__event_mouseleave : Debug "leave "+eventwidget()\class 
-               If Not eventwidget()\state\press
+               If Not eventwidget()\status\press
                   setcolor(eventwidget(), #__color_frame, $ff00ff00)
                EndIf
                
@@ -103,5 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 12
+; FirstLine = 3
 ; Folding = --
 ; EnableXP
