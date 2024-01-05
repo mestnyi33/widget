@@ -2,13 +2,15 @@
 
 ; StructureUnion
 ;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255]
-;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
 ;   c.c[0]    ; CAHR    : 2 Byte unsigned [0..65535]
-;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
 ;   u.u[0]    ; UNICODE : 2 Byte unsigned [0..65535]
+;
+;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
+;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
 ;   l.l[0]    ; LONG    : 4 Byte signed   [-2147483648..2147483647]
-;   f.f[0]    ; FLOAT   : 4 Byte
 ;   q.q[0]    ; QUAD    : 8 Byte signed   [-9223372036854775808..9223372036854775807]
+;
+;   f.f[0]    ; FLOAT   : 4 Byte
 ;   d.d[0]    ; DOUBLE  : 8 Byte float
 ;   i.i[0]    ; INTEGER : 4 or 8 Byte INT, depending on System
 ;   *p.TUPtr[0] ; Pointer for TUPtr (it's possible and it's done in PB-IDE Source) This can be used as a PointerPointer like the C **Pointer
@@ -567,85 +569,76 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET
-         *anchors._s_ANCHORS
-         
-         ;
          class.s
          type.b
-         level.w
-         tabindex.w
+         level.c
+         tabindex.c
          ;
-         round.a                ; drawing round
+         round.a                  ; drawing round
          autosize.b
-         container.b            ; is container
-         ; container = 1        ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
-         ; container = - 1      ; if the not has children ( Splitter( ); Frame( ))
+         container.b              ; is container
+         ; container = 1          ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
+         ; container = - 1        ; if the not has children ( Splitter( ); Frame( ))
          ;
-         child.b                ; is the widget composite?
-         haschildren.l          ; if the has children
-         
-         ;
+         child.b                  ; is the widget composite?
+         haschildren.l            ; if the has children
+                                  ;
          status._s_STATUS
          create.b
          hide.b                   ;
          dragstart.b              ;
-         state.b             ;
+         state.b                  ;
          change.b
-         
+         ;
          resize.i                 ; state
-         
-         ;*Draw.DrawFunc          ; Function to Draw
+                                  ;
+                                  ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
-         
-         
+         ;
          fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
          bs.a                     ; border size
-         
+                                  ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
-         
+         ;
+         *anchors._s_ANCHORS
+         ;
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
-         
+                                  ;
          tab._s_TAB
-         
-         
+         ;
          *statebox._s_BUTTONS     ; checkbox; optionbox
          *buttonbox._s_BUTTONS    ; combobox
-         
+                                  ;
          *popupbox._s_WIDGET      ; = ComboBox( ) list view box
          *groupbox._s_WIDGET      ; = Option( ) group widget
          *stringbox._s_WIDGET     ; = SpinBar( ) string box
-                                     
-         
-         BarWidth.w ; bar v size
-         BarHeight.w; bar h size
+                                  ;                           
+         BarWidth.w               ; bar v size
+         BarHeight.w              ; bar h size
          MenuBarHeight.w
          ToolBarHeight.w
          StatusBarHeight.w
-         
+         ;
          y.l[constants::#__c]
          x.l[constants::#__c]
          height.l[constants::#__c]
          width.l[constants::#__c]
          ; transporent.b
-         
-         
          ; placing layout
          first._s_OBJECTTYPE
          after._s_OBJECTTYPE
          before._s_OBJECTTYPE
          last._s_OBJECTTYPE
-         
+         ;
          bounds._s_BOUNDS
          scroll._s_SCROLL            ; vertical & horizontal scrollbars
-         
-         
+                                     ;
          text._s_TEXT
          count._s_COUNT
-         
-         
+         ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
          ; \gadget[0] - window active child gadget
@@ -758,6 +751,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 576
+; FirstLine = 495
 ; Folding = ---Pv8X+--
 ; EnableXP
