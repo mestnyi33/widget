@@ -13499,6 +13499,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                If *this\MinimizeButton( )\hide = 0
                   ;                   *this\MaximizeButton( )\hide = 1
                   ;                EndIf
+                  
                   Resize( *this, *this\bs-*this\fs, *this\bs-*this\fs, 
                           *this\parent\container_width( ) - *this\bs * 2, 
                           *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] )
@@ -22854,7 +22855,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19418
-; FirstLine = 17410
+; CursorPosition = 13501
+; FirstLine = 11534
 ; Folding = -----------------------------------------------------------8----8----86-f4-------------------------------f-------------------------------4------------------------------f-------X-8ff-v-8f-f--------fd28-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------v----------0---------vr+----------------------------------------------------------4780-------
 ; EnableXP
