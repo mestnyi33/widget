@@ -260,7 +260,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GroupBox( ): groupbox: EndMacro
       Macro TabBox( ): tab\widget: EndMacro
       ;-
-      Macro TabIndex( ): tab\index: EndMacro
       Macro EnteredTab( ): tab\entered: EndMacro         ; Returns mouse entered tab
       Macro PressedTab( ): tab\pressed: EndMacro         ; Returns mouse focused tab
       Macro FocusedTab( ): tab\focused: EndMacro         ; Returns mouse focused tab
@@ -450,7 +449,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If _item_ > 0
             While NextElement( __gui\children( ) )
-               If _item_ = __gui\children( )\TabIndex( )
+               If _item_ = __gui\children( )\tabindex
                   PreviousElement( __gui\children( ) )
                   Break
                EndIf
@@ -462,7 +461,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If IsChild( __gui\children( ), _parent_ )
                widget( ) = __gui\children( )
                If _item_ >= 0
-                  If _item_ + 1 = __gui\children( )\TabIndex( )
+                  If _item_ + 1 = __gui\children( )\tabindex
                      Break
                   EndIf
                EndIf
@@ -501,7 +500,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;          ;\\
       ;          If _item_ > 0
       ;             While NextElement( _parent_\root\children( ) )
-      ;                If _item_ = _parent_\root\children( )\TabIndex( )
+      ;                If _item_ = _parent_\root\children( )\tabindex
       ;                   PreviousElement( _parent_\root\children( ) )
       ;                   Break
       ;                EndIf
@@ -513,7 +512,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;             If IsChild( _parent_\root\children( ), _parent_ )
       ;                widget( ) = _parent_\root\children( )
       ;                If _item_ >= 0
-      ;                   If _item_ + 1 = _parent_\root\children( )\TabIndex( )
+      ;                   If _item_ + 1 = _parent_\root\children( )\tabindex
       ;                      Break
       ;                   EndIf
       ;                EndIf
@@ -543,10 +542,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
       
       Macro is_child_( _this_, _parent_ )
-         Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\FocusedTabIndex( ) ))
+         Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\tabindex <> _parent_\TabBox( )\FocusedTabIndex( ) ))
       EndMacro
       Macro is_level_( _address_1, _address_2 )
-         Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
+         Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\tabindex = _address_2\tabindex )
       EndMacro
       
       Macro is_scrollbars_( _this_ )
@@ -4684,7 +4683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool( _this_\status\hidden Or
                _this_\parent\hide Or
                ( _this_\parent\TabBox( ) And
-                 _this_\parent\TabBox( )\FocusedTabIndex( ) <> _this_\TabIndex( ) ))
+                 _this_\parent\TabBox( )\FocusedTabIndex( ) <> _this_\tabindex ))
          
          
          ; Чтобы обновить границы отоброжения (clip-coordinate)
@@ -4983,8 +4982,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PushListPosition( this_parent_root_children( ))
                   If StartEnumerate( *this\parent )
                      If widget( )\parent = *this\parent And
-                        widget( )\TabIndex( ) >= Item
-                        widget( )\TabIndex( ) + 1
+                        widget( )\tabindex >= Item
+                        widget( )\tabindex + 1
                      EndIf
                      StopEnumerate( )
                   EndIf
@@ -12810,7 +12809,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this
             If parent_sublevel = - 1
                *widget = *this
-               result  = *widget\TabIndex( )
+               result  = *widget\tabindex
                
             Else
                *rows = *this
@@ -12933,7 +12932,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ChangeCurrentElement( this_root_children( ), *this\address )
             While NextElement( this_root_children( ) )
                If this_root_children( ) = *this\LastWidget( ) Or
-                  this_root_children( )\TabIndex( ) = tabindex
+                  this_root_children( )\tabindex = tabindex
                   *result = this_root_children( )
                   Break
                EndIf
@@ -12985,7 +12984,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PushListPosition( root_children( ) )
                   ChangeCurrentElement( root_children( ), *after\address )
                   While PreviousElement( root_children( ) )
-                     If root_children( )\TabIndex( ) = tabindex ;Or root_children( ) = *this
+                     If root_children( )\tabindex = tabindex ;Or root_children( ) = *this
                         Break
                      EndIf
                   Wend
@@ -13023,7 +13022,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                   PushListPosition( this_root_children( ) )
                ;                   ChangeCurrentElement( this_root_children( ), *after\address )
                ;                   While PreviousElement( this_root_children( ) )
-               ;                      If this_root_children( )\TabIndex( ) = tabindex ;Or this_root_children( ) = *this
+               ;                      If this_root_children( )\tabindex = tabindex ;Or this_root_children( ) = *this
                ;                         Break
                ;                      EndIf
                ;                   Wend
@@ -13044,13 +13043,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Select position
             Case #PB_List_First
-               result = GetFirst( *this\parent, *this\TabIndex( ) )
+               result = GetFirst( *this\parent, *this\tabindex )
             Case #PB_List_Before
                result = *this\BeforeWidget( )
             Case #PB_List_After
                result = *this\AfterWidget( )
             Case #PB_List_Last
-               result = GetLast( *this\parent, *this\TabIndex( ) )
+               result = GetLast( *this\parent, *this\tabindex )
          EndSelect
          
          ProcedureReturn result
@@ -14106,7 +14105,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this <> *widget And
-            *this\TabIndex( ) = *widget\TabIndex( )
+            *this\tabindex = *widget\tabindex
             
             If Position = #PB_List_First Or
                Position = #PB_List_Before
@@ -14134,7 +14133,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Position = #PB_List_Last Or
                Position = #PB_List_After
                
-               Protected *last._S_WIDGET = GetLast( *widget, *widget\TabIndex( ))
+               Protected *last._S_WIDGET = GetLast( *widget, *widget\tabindex)
                
                PushListPosition( this_root_children( ))
                ChangeCurrentElement( this_root_children( ), *this\address )
@@ -14224,7 +14223,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\parent = *parent And
-               *this\TabIndex( ) = tabindex
+               *this\tabindex = tabindex
                ProcedureReturn #False
             EndIf
             
@@ -14255,7 +14254,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            *this\TabIndex( ) = tabindex
+            *this\tabindex = tabindex
             
             ; set hide state
             If *parent\hide
@@ -14424,12 +14423,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\parent
                   *this\BeforeWidget( ) = *last
                   ; for the panel element
-                  If *last\TabIndex( ) = *this\TabIndex( )
+                  If *last\tabindex = *this\tabindex
                      *this\AfterWidget( ) = *last\AfterWidget( )
                   EndIf
                Else
                   ; for the panel element
-                  If *parent\LastWidget( ) And *parent\LastWidget( )\TabIndex( ) = *this\TabIndex( )
+                  If *parent\LastWidget( ) And *parent\LastWidget( )\tabindex = *this\tabindex
                      *this\BeforeWidget( ) = *parent\LastWidget( )
                   EndIf
                   *parent\LastWidget( ) = *this
@@ -20771,16 +20770,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Opened( )\parent\type = #__type_MDI
                *open = Opened( )\parent\parent
             Else
-               ;                If Opened( )\LastRoot( )
-               ;                   *open               = Opened( )\LastRoot( )
-               ;                   Opened( )\LastRoot( ) = #Null
-               ;                Else
-               If Opened( ) = Opened( )\root
+              If Opened( )\LastRoot( )
+                *open                 = Opened( )\LastRoot( )
+                Opened( )\LastRoot( ) = #Null
+              Else
+                If Opened( ) = Opened( )\root
                   *open = Opened( )\root\BeforeRoot( )
-               Else
+                Else
                   *open = Opened( )\parent
-               EndIf
-               ;                EndIf
+                EndIf
+              EndIf
             EndIf
          Else
             *open = Root( )
@@ -20809,10 +20808,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this
-            ;             If *this\parent <> Opened( )
-            ;                *this\LastRoot( ) = Opened( )
-            ;             EndIf
-            
+           If *this\parent <> Opened( )
+             *this\LastRoot( ) = Opened( )
+           EndIf
+           
             If *this\root
                If *this\root <> Root( )
                   If Opened( )\root
@@ -22854,8 +22853,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13501
-; FirstLine = 11534
-; Folding = -----------------------------------------------------------8----8----86-f4-------------------------------f-------------------------------4------------------------------f-------X-8ff-v-8f-f--------fd28-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------v----------0---------vr+----------------------------------------------------------4780-------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------------------------------0----0----09-v8-------------------------------v-------------------------------8------------------------------v-------r-0vv-4-0v-v--------vu70-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------4----------+---------4V-----------------------------------------------------------v248-------
 ; EnableXP

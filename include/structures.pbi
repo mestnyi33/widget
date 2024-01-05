@@ -322,7 +322,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          *widget._s_WIDGET
-         index.i
          change.b
          
          ; tab
@@ -571,14 +570,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *anchors._s_ANCHORS
          
          ;
+         class.s
          type.b
+         level.w
+         tabindex.w
+         ;
          round.a                ; drawing round
          autosize.b
          container.b            ; is container
          ; container = 1        ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
          ; container = - 1      ; if the not has children ( Splitter( ); Frame( ))
-         haschildren.l          ; if the has children
+         ;
          child.b                ; is the widget composite?
+         haschildren.l          ; if the has children
          
          ;
          status._s_STATUS
@@ -671,10 +675,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *data
          *cursor[4]
          
-         level.l
-         class.s
-         
-         
          *errors
          notify.l ; оповестить об изменении
          
@@ -758,8 +758,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 195
-; FirstLine = 192
-; Folding = ---PP8X+--
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---Pv8X+--
 ; EnableXP
