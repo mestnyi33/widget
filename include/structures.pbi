@@ -582,7 +582,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
-                                  ;
+         ;                        ;
          status._s_STATUS
          create.b
          hide.b                   ;
@@ -591,13 +591,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.b
          ;
          resize.i                 ; state
-                                  ;
-                                  ;*Draw.DrawFunc          ; Function to Draw
+         ;                        ;
+         ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
          fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
          bs.a                     ; border size
-                                  ;
+         ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
@@ -752,7 +752,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 576
-; FirstLine = 495
+; CursorPosition = 608
+; FirstLine = 525
 ; Folding = ---Pv8X+--
 ; EnableXP
