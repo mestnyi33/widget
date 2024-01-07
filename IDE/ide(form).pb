@@ -5,8 +5,8 @@ XIncludeFile #IDE_path + "widgets.pbi"
 EnableExplicit
 
 Macro a_trans( )
-  anchors 
-  ;_a_\transform 
+   anchors 
+   ;_a_\transform 
 EndMacro
 
 Uselib( WIDGET )
@@ -65,6 +65,11 @@ Enumeration
    #_tb_widget_delete
    #_tb_widget_copy
    #_tb_widget_cut
+   
+   #_tb_file_open
+   #_tb_file_save
+   #_tb_file_save_as
+   
 EndEnumeration
 
 ;- GLOBALs
@@ -72,8 +77,9 @@ Global ide_window,
        ide_canvas,
        ide_root,
        ide_splitter,
-       ide_toolbar 
-       
+       ide_toolbar, 
+       ide_form
+
 Global ide_design_splitter, 
        ide_design_panel, 
        ide_design_form,
@@ -81,17 +87,17 @@ Global ide_design_splitter,
 
 Global ide_debug_splitter, 
        ide_debug_view 
-       
+
 Global ide_inspector_splitter, 
        ide_inspector_view, 
        ide_inspector_panel,
        ide_inspector_elements,
        ide_inspector_properties, 
        ide_inspector_events
-       
+
 Global ide_help_splitter,
        ide_help_view
-       
+
 Global g_ide_design_code
 Global group_select
 Global group_drag
@@ -412,7 +418,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          Case "scrollarea"  
             *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
             a_set(*new, #__a_full, 10)
-         
+            
          Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
          Case "image"       : *new = Image( x,y,width,height, img, flag )
          Case "buttonimage" : *new = ButtonImage( x,y,width,height, img, flag )
@@ -504,7 +510,7 @@ EndProcedure
 Procedure widget_events( )
    Protected eventtype = WidgetEvent( )\type 
    Protected *new, *ew._s_widget = WidgetEvent( )\widget
-;    Static *beforeWidget
+   ;    Static *beforeWidget
    
    Select eventtype 
          ; disable window-toolbar-buttons events
@@ -649,10 +655,16 @@ EndProcedure
 ;-
 Macro ToolBar( parent, flag = #PB_ToolBar_Small )
    Container( 0,0,0,0 ) 
+   Text( widget( )\x+widget( )\width, 5,3,30,"" )
 EndMacro
 
 Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-   ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+   If _image_
+      ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+   Else
+      Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
+   EndIf
+   
    ;widget( )\color = widget( )\parent\color
    widget( )\class = "ToolBar"
    widget( )\data = _button_
@@ -781,6 +793,99 @@ Procedure.i ide_add_image_list( *id, Directory$ )
    EndIf
 EndProcedure
 
+Procedure ide_menu_events( *ew._s_WIDGET, toolbarbutton )
+   Protected transform, move_x, move_y
+   Static NewList *copy._s_a_group( )
+   
+   
+   Select toolbarbutton
+      Case 1
+         If Getstate( *ew )  
+            ; group
+            group_select = *ew
+            ; SetAtributte( *ew, #PB_Button_PressedImage )
+         Else
+            ; un group
+            group_select = 0
+         EndIf
+         
+         ForEach a_group( )
+            Debug a_group( )\widget\x
+            
+         Next
+         
+         
+      Case #_tb_file_open
+         Debug 555
+         Close( ide_form )
+         ClearItems( ide_inspector_view )
+         
+      Case #_tb_file_save
+         Debug 888
+         
+      Case #_tb_widget_copy
+         widget_copy( )
+         
+      Case #_tb_widget_cut
+         widget_copy( )
+         widget_delete( )
+         
+      Case #_tb_widget_paste
+         widget_paste( )
+         
+      Case #_tb_widget_delete
+         widget_delete( )
+         
+         
+      Case #_tb_group_left,
+           #_tb_group_right, 
+           #_tb_group_top, 
+           #_tb_group_bottom, 
+           #_tb_group_width, 
+           #_tb_group_height
+         
+         ;\\ toolbar buttons events
+         move_x = a_selector( )\x - a_focused( )\x[#__c_inner]
+         move_y = a_selector( )\y - a_focused( )\y[#__c_inner]
+         
+         ForEach a_group( )
+            Select toolbarbutton
+               Case #_tb_group_left ; left
+                                    ;a_selector( )\x = 0
+                  a_selector( )\width = 0
+                  Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  
+               Case #_tb_group_right ; right
+                  a_selector( )\x = 0
+                  a_selector( )\width = 0
+                  Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  
+               Case #_tb_group_top ; top
+                                   ;a_selector( )\y = 0
+                  a_selector( )\height = 0
+                  Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
+                  
+               Case #_tb_group_bottom ; bottom
+                  a_selector( )\y = 0
+                  a_selector( )\height = 0
+                  Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
+                  
+               Case #_tb_group_width ; stretch horizontal
+                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width, #PB_Ignore )
+                  
+               Case #_tb_group_height ; stretch vertical
+                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height )
+                  
+            EndSelect
+         Next
+         
+         a_update( a_focused( ) )
+         
+         ;Redraw( Root() )
+   EndSelect
+   
+EndProcedure
+
 Procedure ide_events( )
    Protected *this._s_widget
    Protected e_type = WidgetEvent( )\type
@@ -789,17 +894,17 @@ Procedure ide_events( )
    
    Select e_type
       Case #__event_Close
-        If *ew = ide_root
-          ; bug при отмене выбора закрыть
-          If #PB_MessageRequester_Yes = Message( "Message", 
-                                                 "Are you sure you want to go out?",
-                                                 #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-            ProcedureReturn 0
-          Else
-            ProcedureReturn 1
-          EndIf
-        EndIf
-       
+         If *ew = ide_root
+            ; bug при отмене выбора закрыть
+            If #PB_MessageRequester_Yes = Message( "Message", 
+                                                   "Are you sure you want to go out?",
+                                                   #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+               ProcedureReturn 0
+            Else
+               ProcedureReturn 1
+            EndIf
+         EndIf
+         
       Case #__event_DragStart
          If *ew = ide_inspector_elements
             a_transform( )\type = 0
@@ -848,7 +953,7 @@ Procedure ide_events( )
             *this = GetItemData( *ew, GetState( *ew ) )
             If a_set( *this )
                
-             ;;SetActive( a_focused( ) )
+               ;;SetActive( a_focused( ) )
             EndIf
          EndIf
          
@@ -911,93 +1016,13 @@ Procedure ide_events( )
          
       Case #__event_LeftClick
          If getclass( *ew ) = "ToolBar"
-            Protected transform, move_x, move_y, toolbarbutton = GetData( *ew )
-            Static NewList *copy._s_a_group( )
-            
-            
-            Select toolbarbutton
-               Case 1
-                  If Getstate( *ew )  
-                     ; group
-                     group_select = *ew
-                     ; SetAtributte( *ew, #PB_Button_PressedImage )
-                  Else
-                     ; un group
-                     group_select = 0
-                  EndIf
-                  
-                  ForEach a_group( )
-                     Debug a_group( )\widget\x
-                     
-                  Next
-                  
-                  
-               Case #_tb_widget_copy
-                  widget_copy( )
-                  
-               Case #_tb_widget_cut
-                  widget_copy( )
-                  widget_delete( )
-                  
-               Case #_tb_widget_paste
-                  widget_paste( )
-                  
-               Case #_tb_widget_delete
-                  widget_delete( )
-                  
-                  
-               Case #_tb_group_left,
-                    #_tb_group_right, 
-                    #_tb_group_top, 
-                    #_tb_group_bottom, 
-                    #_tb_group_width, 
-                    #_tb_group_height
-                  
-                  ;\\ toolbar buttons events
-                  move_x = a_selector( )\x - a_focused( )\x[#__c_inner]
-                  move_y = a_selector( )\y - a_focused( )\y[#__c_inner]
-                  
-                  ForEach a_group( )
-                     Select toolbarbutton
-                        Case #_tb_group_left ; left
-                                             ;a_selector( )\x = 0
-                           a_selector( )\width = 0
-                           Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                           
-                        Case #_tb_group_right ; right
-                           a_selector( )\x = 0
-                           a_selector( )\width = 0
-                           Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                           
-                        Case #_tb_group_top ; top
-                                            ;a_selector( )\y = 0
-                           a_selector( )\height = 0
-                           Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
-                           
-                        Case #_tb_group_bottom ; bottom
-                           a_selector( )\y = 0
-                           a_selector( )\height = 0
-                           Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
-                           
-                        Case #_tb_group_width ; stretch horizontal
-                           Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width, #PB_Ignore )
-                           
-                        Case #_tb_group_height ; stretch vertical
-                           Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height )
-                           
-                     EndSelect
-                  Next
-                  
-                  a_update( a_focused( ) )
-                  
-                  ;Redraw( Root() )
-            EndSelect
+            ide_menu_events( *ew, GetData( *ew ) )
          EndIf
          
    EndSelect
 EndProcedure
 
-Procedure ide_open( x=100,y=100,width=800,height=600 )
+Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     g_ide_design_code = TreeGadget( -1,1,1,330,230 ) 
    
@@ -1006,10 +1031,13 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ide_window = GetWindow( ide_root )
    ide_canvas = GetGadget( ide_root )
    
-;    Debug "create window - "+WindowID(ide_window)
-;    Debug "create canvas - "+GadgetID(ide_canvas)
+   ;    Debug "create window - "+WindowID(ide_window)
+   ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
    ide_toolbar = ToolBar( ide_toolbar )
+   ToolBarButton( #_tb_file_open, 0, 0, "Open" )
+   ToolBarButton( #_tb_file_save, 0, 0, "Save" )
+   Separator( )
    ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle ) : group_select = widget( )
    SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
    SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
@@ -1128,7 +1156,7 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, width( ide_splitter )-220 )
+   SetState( ide_splitter, width( ide_splitter )-200 )
    SetState( ide_help_splitter, height( ide_help_splitter )-80 )
    SetState( ide_debug_splitter, height( ide_debug_splitter )-200 )
    SetState( ide_inspector_splitter, 230 )
@@ -1164,10 +1192,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;     ; example 1
    ;     ;   ;OpenList( ide_design_form )
-   ;     Define *window = widget_add( ide_design_form, "window", 10, 10, 350, 200 )
-   ;         Define *container = widget_add( *window, "container", 130, 20, 220, 140 )
+   ;     ide_form = widget_add( ide_design_form, "window", 10, 10, 350, 200 )
+   ;         Define *container = widget_add( ide_form, "container", 130, 20, 220, 140 )
    ;         widget_add( *container, "button", 10, 20, 30, 30 )
-   ;         widget_add( *window, "button", 10, 20, 100, 30 )
+   ;         widget_add( ide_form, "button", 10, 20, 100, 30 )
    ;         
    ;         Define item = 1
    ;         SetState( ide_inspector_view, item )
@@ -1178,32 +1206,32 @@ CompilerIf #PB_Compiler_IsMainFile
    ;         widget_add( *container2, "button", 10, 20, 30, 30 )
    ;         
    ;         SetState( ide_inspector_view, 0 )
-   ;         widget_add( *window, "button", 10, 130, 100, 30 )
+   ;         widget_add( ide_form, "button", 10, 130, 100, 30 )
    ;         
-   ; ; ;         ;   Define *window = widget_add( ide_design_form, "window", 10, 10 )
-   ; ; ;         ;   Define *container = widget_add( *window, "container", 80, 10 )
+   ; ; ;         ;   Define ide_form = widget_add( ide_design_form, "window", 10, 10 )
+   ; ; ;         ;   Define *container = widget_add( ide_form, "container", 80, 10 )
    ; ; ;         ;   widget_add( *container, "button", -10, 20 )
-   ; ; ;         ;   widget_add( *window, "button", 10, 20 )
+   ; ; ;         ;   widget_add( ide_form, "button", 10, 20 )
    ; ; ;         ;   ;CloseList( )
    ; ; ;         
    ;             ; example 2
    ;             ;   ;OpenList( ide_design_form )
    ;             SetState( group_select, 1 ) 
    ;             
-   ;             Define *window = widget_add( ide_design_form, "window", 30, 30, 400, 250 )
-   ;             widget_add( *window, "button", 15, 25, 50, 30 )
-   ;             widget_add( *window, "text", 25, 65, 50, 30 )
-   ;             widget_add( *window, "button", 35, 65+40, 50, 30 )
-   ;             widget_add( *window, "text", 45, 65+40*2, 50, 30 )
+   ;             Define ide_form = widget_add( ide_design_form, "window", 30, 30, 400, 250 )
+   ;             widget_add( ide_form, "button", 15, 25, 50, 30 )
+   ;             widget_add( ide_form, "text", 25, 65, 50, 30 )
+   ;             widget_add( ide_form, "button", 35, 65+40, 50, 30 )
+   ;             widget_add( ide_form, "text", 45, 65+40*2, 50, 30 )
    ;             
-   ;             ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
-   ;             Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
+   ;             ;Define *container = widget_add( ide_form, "container", 100, 25, 265, 170 )
+   ;             Define *container = widget_add( ide_form, "scrollarea", 100, 25, 265, 170 )
    ;             widget_add( *container, "progress", 15, 25, 30, 30 )
    ;             widget_add( *container, "text", 25, 65, 50, 30 )
    ;             widget_add( *container, "button", 35, 65+40, 80, 30 )
    ;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
    ;             
-   ;             Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
+   ;             Define *container2 = widget_add( ide_form, "container", 100+140, 25+45, 165, 140 )
    ;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
    ;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
    ;             widget_add( *container2, "string", 25, 65, 100, 30 )
@@ -1215,21 +1243,21 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   ;OpenList(ide_design_form)
    SetState(group_select, 1) 
    
-   Define *window = widget_add(ide_design_form, "window", 30, 30, 400, 250)
-   widget_add(*window, "button", 15, 25, 50, 30)
-   widget_add(*window, "text", 25, 65, 50, 30)
-   widget_add(*window, "button", 35, 65+40, 50, 30)
-   widget_add(*window, "text", 45, 65+40*2, 50, 30)
+  ide_form = widget_add(ide_design_form, "window", 30, 30, 400, 250)
+   widget_add(ide_form, "button", 15, 25, 50, 30)
+   widget_add(ide_form, "text", 25, 65, 50, 30)
+   widget_add(ide_form, "button", 35, 65+40, 50, 30)
+   widget_add(ide_form, "text", 45, 65+40*2, 50, 30)
    
-   ;Define *container = widget_add(*window, "container", 100, 25, 265, 170)
-   Define *container = widget_add(*window, "scrollarea", 100, 25, 265, 170)
-   ;Define *container = widget_add(*window, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
+   ;Define *container = widget_add(ide_form, "container", 100, 25, 265, 170)
+   Define *container = widget_add(ide_form, "scrollarea", 100, 25, 265, 170)
+   ;Define *container = widget_add(ide_form, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
    widget_add(*container, "button", 15, 25, 30, 30)
    widget_add(*container, "text", 25, 65, 50, 30)
    widget_add(*container, "button", 35, 65+40, 80, 30)
    widget_add(*container, "text", 45, 65+40*2, 50, 30)
    ;     
-   ;     Define *container2 = widget_add(*window, "container", 100+140, 25+45, 165, 140)
+   ;     Define *container2 = widget_add(ide_form, "container", 100+140, 25+45, 165, 140)
    ;     widget_add(*container2, "button", 75, 25, 30, 30)
    ;     widget_add(*container2, "text", 25, 65, 50, 30)
    ;     widget_add(*container2, "button", 15, 65+40, 80, 30)
@@ -1252,16 +1280,16 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ; ; ;   CloseGadgetList( )
    
    WaitClose( )
-;    ;     Bind( Root(), #PB_Default )
-;    Repeat 
-;       event = WaitWindowEvent( ) 
-;       
-;       ;     Select EventWindow( )
-;       ;       Case ide_window 
-;       ;         ide_window_events( event )
-;       ;     EndSelect
-;       
-;    Until event = #PB_Event_CloseWindow
+   ;    ;     Bind( Root(), #PB_Default )
+   ;    Repeat 
+   ;       event = WaitWindowEvent( ) 
+   ;       
+   ;       ;     Select EventWindow( )
+   ;       ;       Case ide_window 
+   ;       ;         ide_window_events( event )
+   ;       ;     EndSelect
+   ;       
+   ;    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
 
@@ -1269,6 +1297,9 @@ CompilerEndIf
 DataSection   
    ;IncludePath "include/images"
    IncludePath #IDE_path + "ide/include/images"
+   
+   file_open:        : IncludeBinary "delete1.png"
+   file_save:        : IncludeBinary "paste.png"
    
    widget_delete:    : IncludeBinary "delete1.png"
    widget_paste:     : IncludeBinary "paste.png"
@@ -1284,8 +1315,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1012
-; FirstLine = 1002
-; Folding = --------------------v-
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 820
+; FirstLine = 809
+; Folding = ----------------8-----
 ; EnableXP
