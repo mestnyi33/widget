@@ -265,6 +265,27 @@ EndDeclareModule
 
 Module colors
 EndModule
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CompilerSelect #PB_Compiler_OS
+;   CompilerCase #PB_OS_Windows
+;     CanvasEx()\Scrollbar\Color\Front  = GetSysColor_(#COLOR_SCROLLBAR)
+;     CanvasEx()\Scrollbar\Color\Button = GetSysColor_(#COLOR_BTNFACE)
+;     CanvasEx()\Scrollbar\Color\Focus  = GetSysColor_(#COLOR_MENUHILIGHT)
+;     CanvasEx()\Scrollbar\Color\Hover  = GetSysColor_(#COLOR_ACTIVEBORDER)
+;     CanvasEx()\Scrollbar\Color\Arrow  = GetSysColor_(#COLOR_GRAYTEXT)
+;     CanvasEx()\Scrollbar\Color\Back   = GetSysColor_(#COLOR_MENU)
+;     CanvasEx()\Color\Gadget           = GetSysColor_(#COLOR_MENU)
+;   CompilerCase #PB_OS_MacOS
+;     CanvasEx()\Scrollbar\Color\Front  = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor grayColor"))
+;     CanvasEx()\Scrollbar\Color\Button = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor windowBackgroundColor"))
+;     CanvasEx()\Scrollbar\Color\Focus  = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor selectedControlColor"))
+;     CanvasEx()\Scrollbar\Color\Hover  = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor grayColor"))
+;     CanvasEx()\Scrollbar\Color\Arrow  = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor grayColor"))
+;     CanvasEx()\Scrollbar\Color\Back   = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor windowBackgroundColor"))
+;     CanvasEx()\Color\Gadget           = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor windowBackgroundColor"))
+;   CompilerCase #PB_OS_Linux
+;     
+; CompilerEndSelect
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
