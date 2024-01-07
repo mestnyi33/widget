@@ -428,106 +428,106 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro widget( ): __gui\widget: EndMacro ; Returns current-root last added widget          
       
       ;-
-      Macro a_focused_root_children( ) : __gui\children( ) : EndMacro
-      Macro parent_root_children( ) : __gui\children( ) : EndMacro
-      Macro this_root_children( ) : __gui\children( ) : EndMacro
-      Macro this_parent_root_children( ) : __gui\children( ) : EndMacro
-      Macro root_children( ) : __gui\children( ) : EndMacro
-      Macro LeavedWidget_root_children( ) : __gui\children( ) : EndMacro
-      Macro PressedWidget_root_children( ) : __gui\children( ) : EndMacro
-      Macro current_root_children( ) : __gui\children( ) : EndMacro
-      Macro active_root_children( ) : __gui\children( ) : EndMacro
-      Macro StartEnumerate( _parent_, _item_ = #PB_All )
-         Bool( _parent_\haschildren )
-         
-         If _parent_\address
-            ChangeCurrentElement( __gui\children( ), _parent_\address )
-         Else
-            ResetList( __gui\children( ) )
-         EndIf
-         
-         ;\\
-         If _item_ > 0
-            While NextElement( __gui\children( ) )
-               If _item_ = __gui\children( )\tabindex
-                  PreviousElement( __gui\children( ) )
-                  Break
+;       Macro a_focused_root_children( ) : __gui\children( ) : EndMacro
+;       Macro parent_root_children( ) : __gui\children( ) : EndMacro
+;       Macro this_root_children( ) : __gui\children( ) : EndMacro
+;       Macro this_parent_root_children( ) : __gui\children( ) : EndMacro
+;       Macro root_children( ) : __gui\children( ) : EndMacro
+;       Macro LeavedWidget_root_children( ) : __gui\children( ) : EndMacro
+;       Macro PressedWidget_root_children( ) : __gui\children( ) : EndMacro
+;       Macro current_root_children( ) : __gui\children( ) : EndMacro
+;       Macro active_root_children( ) : __gui\children( ) : EndMacro
+;       Macro StartEnumerate( _parent_, _item_ = #PB_All )
+;          Bool( _parent_\haschildren )
+;          
+;          If _parent_\address
+;             ChangeCurrentElement( __gui\children( ), _parent_\address )
+;          Else
+;             ResetList( __gui\children( ) )
+;          EndIf
+;          
+;          ;\\
+;          If _item_ > 0
+;             While NextElement( __gui\children( ) )
+;                If _item_ = __gui\children( )\tabindex
+;                   PreviousElement( __gui\children( ) )
+;                   Break
+;                EndIf
+;             Wend
+;          EndIf
+;          
+;          ;\\
+;          While NextElement( __gui\children( ))
+;             If IsChild( __gui\children( ), _parent_ )
+;                widget( ) = __gui\children( )
+;                If _item_ >= 0
+;                   If _item_ + 1 = __gui\children( )\tabindex
+;                      Break
+;                   EndIf
+;                EndIf
+;             EndMacro
+;             
+;             Macro AbortEnumerate( )
+;                Break
+;             EndMacro
+;             
+;             Macro StopEnumerate( )
+;             Else
+;                Break
+;             EndIf
+;          Wend
+;       EndMacro
+;       
+      
+            Macro a_focused_root_children( ): a_focused( )\root\children( ) : EndMacro
+            Macro parent_root_children( ) : *parent\root\children( ) : EndMacro
+            Macro this_root_children( ) : *this\root\children( ) : EndMacro
+            Macro this_parent_root_children( ) : *this\parent\root\children( ) : EndMacro
+            Macro root_children( ) : *root\children( ) : EndMacro
+            Macro LeavedWidget_root_children( ) : LeavedWidget( )\root\children( ) : EndMacro
+            Macro PressedWidget_root_children( ) : PressedWidget( )\root\children( ) : EndMacro
+            Macro current_root_children( ) : Root( )\children( ) : EndMacro
+            Macro active_root_children( ) : *active\root\children( ) : EndMacro
+            Macro StartEnumerate( _parent_, _item_ = #PB_All )
+               Bool( _parent_\haschildren )
+               
+               If Not is_root_( _parent_ ) And _parent_\address
+                  ChangeCurrentElement( _parent_\root\children( ), _parent_\address )
+               Else
+                  ResetList( _parent_\root\children( ) )
                EndIf
-            Wend
-         EndIf
-         
-         ;\\
-         While NextElement( __gui\children( ))
-            If IsChild( __gui\children( ), _parent_ )
-               widget( ) = __gui\children( )
-               If _item_ >= 0
-                  If _item_ + 1 = __gui\children( )\tabindex
+               
+               ;\\
+               If _item_ > 0
+                  While NextElement( _parent_\root\children( ) )
+                     If _item_ = _parent_\root\children( )\tabindex
+                        PreviousElement( _parent_\root\children( ) )
+                        Break
+                     EndIf
+                  Wend
+               EndIf
+               
+               ;\\
+               While NextElement( _parent_\root\children( ))
+                  If IsChild( _parent_\root\children( ), _parent_ )
+                     widget( ) = _parent_\root\children( )
+                     If _item_ >= 0
+                        If _item_ + 1 = _parent_\root\children( )\tabindex
+                           Break
+                        EndIf
+                     EndIf
+                  EndMacro
+                  
+                  Macro AbortEnumerate( )
+                     Break
+                  EndMacro
+                  
+                  Macro StopEnumerate( )
+                  Else
                      Break
                   EndIf
-               EndIf
+               Wend
             EndMacro
-            
-            Macro AbortEnumerate( )
-               Break
-            EndMacro
-            
-            Macro StopEnumerate( )
-            Else
-               Break
-            EndIf
-         Wend
-      EndMacro
-      
-      
-      ;       Macro a_focused_root_children( ): a_focused( )\root\children( ) : EndMacro
-      ;       Macro parent_root_children( ) : *parent\root\children( ) : EndMacro
-      ;       Macro this_root_children( ) : *this\root\children( ) : EndMacro
-      ;       Macro this_parent_root_children( ) : *this\parent\root\children( ) : EndMacro
-      ;       Macro root_children( ) : *root\children( ) : EndMacro
-      ;       Macro LeavedWidget_root_children( ) : LeavedWidget( )\root\children( ) : EndMacro
-      ;       Macro PressedWidget_root_children( ) : PressedWidget( )\root\children( ) : EndMacro
-      ;       Macro current_root_children( ) : Root( )\children( ) : EndMacro
-      ;       Macro active_root_children( ) : *active\root\children( ) : EndMacro
-      ;       Macro StartEnumerate( _parent_, _item_ = #PB_All )
-      ;          Bool( _parent_\haschildren )
-      ;          
-      ;          If _parent_\address
-      ;             ChangeCurrentElement( _parent_\root\children( ), _parent_\address )
-      ;          Else
-      ;             ResetList( _parent_\root\children( ) )
-      ;          EndIf
-      ;          
-      ;          ;\\
-      ;          If _item_ > 0
-      ;             While NextElement( _parent_\root\children( ) )
-      ;                If _item_ = _parent_\root\children( )\tabindex
-      ;                   PreviousElement( _parent_\root\children( ) )
-      ;                   Break
-      ;                EndIf
-      ;             Wend
-      ;          EndIf
-      ;          
-      ;          ;\\
-      ;          While NextElement( _parent_\root\children( ))
-      ;             If IsChild( _parent_\root\children( ), _parent_ )
-      ;                widget( ) = _parent_\root\children( )
-      ;                If _item_ >= 0
-      ;                   If _item_ + 1 = _parent_\root\children( )\tabindex
-      ;                      Break
-      ;                   EndIf
-      ;                EndIf
-      ;             EndMacro
-      ;             
-      ;             Macro AbortEnumerate( )
-      ;                Break
-      ;             EndMacro
-      ;             
-      ;             Macro StopEnumerate( )
-      ;             Else
-      ;                Break
-      ;             EndIf
-      ;          Wend
-      ;       EndMacro
       
       
       ;-
@@ -1173,6 +1173,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i TypeFromClass( class.s )
       Declare.s ClassFromType( type.i )
       Declare.s ClassFromEvent( event.i )
+      Declare   SetBackgroundColor( *this, color.l )
       
       
       Declare   EventHandler( event = - 1, canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
@@ -4510,11 +4511,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                Send( *this, #__event_resize )
             EndIf
+         Else
+            If test_scrollbars_resize = - 1
+               Debug "------ " + *this\class + x + " " + y + " " + width + " " + height
+            EndIf
+         EndIf
+         
             
             
-            ;-\\ children's resize
-            ;\\ then move and size parent
-            ;\\ resize all children's
+         ;-\\ children's resize
+         ;\\ then move and size parent
+         ;\\ resize all children's
+         If *this\resize 
             If *this\haschildren 
                ; If Not mouse( )\press
                Protected pw, ph
@@ -4639,7 +4647,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            Resize( widget( ), x, y, width, height )
                         Else
-                           If (Change_x Or Change_y)
+                           If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
                               Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                            Else
                               If widget( )\autosize
@@ -4657,11 +4665,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PopListPosition( this_root_children( ))
                EndIf
                
-            EndIf
-            
-         Else
-            If test_scrollbars_resize = - 1
-               Debug "------ " + *this\class + x + " " + y + " " + width + " " + height
             EndIf
          EndIf
          
@@ -13284,7 +13287,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i  ChangeCursor( *this._s_WIDGET, *cursor )
+      Procedure.i ChangeCursor( *this._s_WIDGET, *cursor )
          Protected result.i = *this\cursor
          
          If *this\cursor <> *cursor
@@ -13307,7 +13310,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i  SetCursor( *this._S_WIDGET, *cursor )
+      Procedure.i SetCursor( *this._S_WIDGET, *cursor )
          If *this > 0 
             If *this\cursor[1] <> *cursor
                ; Debug "setCURSOR( " + *cursor +" )"
@@ -13352,9 +13355,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure SetClass( *this._S_WIDGET, class.s )
-         *this\class = class
-         ProcedureReturn *this
+      Procedure   SetBackgroundColor( *this._S_WIDGET, color.l )
+        ProcedureReturn SetColor( *this, #__color_back, color )
+      EndProcedure
+      
+      Procedure   SetClass( *this._S_WIDGET, class.s )
+         If *this\class <> class
+            *this\class = class
+            ProcedureReturn *this
+         EndIf
       EndProcedure
       
       Procedure.b SetState( *this._S_WIDGET, state.f )
@@ -13853,19 +13862,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure SetImage( *this._S_WIDGET, *image );, mode.a = 0 )
+      Procedure   SetImage( *this._S_WIDGET, *image );, mode.a = 0 )
          set_image_( *this, *this\Image, *image )
       EndProcedure
       
-      Procedure SetBackgroundImage( *this._S_WIDGET, *image )
+      Procedure   SetBackgroundImage( *this._S_WIDGET, *image )
          set_image_( *this, *this\Image[#__image_background], *image )
       EndProcedure
       
-      Procedure SetData( *this._S_WIDGET, *data )
+      Procedure   SetData( *this._S_WIDGET, *data )
          *this\data = *data
       EndProcedure
       
-      Procedure SetForeground( *this._S_WIDGET )
+      Procedure   SetForeground( *this._S_WIDGET )
          While is_window_( *this )
             ; SetPosition( *this, #PB_List_Last )
             *this = *this\window
@@ -14090,7 +14099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure SetPosition( *this._S_WIDGET, position.l, *widget._S_WIDGET = #Null ) ; Ok
+      Procedure   SetPosition( *this._S_WIDGET, position.l, *widget._S_WIDGET = #Null ) ; Ok
          If *widget = #Null
             Select Position
                Case #PB_List_First : *widget = *this\parent\FirstWidget( )
@@ -14209,7 +14218,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure SetParent( *this._S_WIDGET, *parent._S_WIDGET, tabindex.l = 0 )
+      Procedure   SetParent( *this._S_WIDGET, *parent._S_WIDGET, tabindex.l = 0 )
          Protected parent, ReParent.b, x, y, *last._S_WIDGET, *lastParent._S_WIDGET, NewList *D._S_WIDGET( ), NewList *C._S_WIDGET( )
          ;\\
          If *this = *parent
@@ -14552,7 +14561,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure SetAlignment( *this._S_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+      Procedure   SetAlignment( *this._S_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
          Protected flag.q
          ;\\
          If Not (( mode & #__align_full = #__align_full ) Or ( mode & #__align_auto = #__align_auto ))
@@ -14971,7 +14980,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure SetFrame( *this._S_WIDGET, size.a, mode.b = 0 )
+      Procedure   SetFrame( *this._S_WIDGET, size.a, mode.b = 0 )
          Protected result
          If *this\fs <> size
             result   = *this\fs
@@ -22856,8 +22865,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17360
-; FirstLine = 728
-; Folding = AB+f-0f9-------f+-zP+-----H-AAAAA5PCAAAQAAgAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAA-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAnDAAOHAAAAAAAAAAAAAgHAAAAAAAAAAAAAAAAAAAAADIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAQAAg-x-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAGAAwDBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAEGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 1175
+; FirstLine = 577
+; Folding = AD+f-0f9-------f+-zP+-------AAAAA5PCAAAYAAgAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgADAAAAAAAAA-DAAAAAA5----PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAOHAAcOAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA9P+HAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAwAAAeIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQARAAHAAAAAOAAAAAAAAAAAAAAAgwACAAAAAAAAAAAAAAAAAAAAAAAAABAABAA+
 ; EnableXP

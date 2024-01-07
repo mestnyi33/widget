@@ -1010,8 +1010,7 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
 ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
    ide_toolbar = ToolBar( ide_toolbar )
-   ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle )
-   group_select = widget( )
+   ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle ) : group_select = widget( )
    SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
    SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
    Separator( )
@@ -1285,6 +1284,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1012
+; FirstLine = 1002
 ; Folding = --------------------v-
 ; EnableXP

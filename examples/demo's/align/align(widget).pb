@@ -77,6 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *w._S_widget = Open( OpenWindow( #PB_Any, 30, 30, 190, 200, "proportional-alignment (alexample_1)", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
+    SetColor(*w, #__color_back, $FFACE3FF )
     
     Widgets(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
     Widgets(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
@@ -455,12 +456,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   example_1()
-  example_2()
-  example_3()
-  example_4()
-   example_5()
-  example_6()
-  example_7()
+;   example_2()
+;   example_3()
+;   example_4()
+;    example_5()
+;   example_6()
+;   example_7()
   
   
   Procedure example_demo()
@@ -499,8 +500,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     
   ;   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 463
-; FirstLine = 119
-; Folding = --C+
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 67
+; Folding = --B+
 ; EnableXP
