@@ -4,7 +4,8 @@ IncludePath "../"
 XIncludeFile "widgets.pbi"
 ;;XIncludeFile "widget-events.pbi"
 ; XIncludeFile "../examples/empty.pb"
-Uselib(widget)
+
+ Uselib(widget)
 
 
 ;- <<<
@@ -734,7 +735,7 @@ DeclareModule Gadget
     EndProcedure
     
     Procedure EventType_()
-      If widget::EventWidget( ) And widget::EventWidget( )\state\enter
+      If widget::EventWidget( ) And widget::EventWidget( )\status\enter
         ProcedureReturn widget::EventWidget( )\type
       Else
         ProcedureReturn PB(EventType)()
@@ -1343,8 +1344,7 @@ DeclareModule Gadget
     EndIf
   CompilerEndIf
   
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1271
-; FirstLine = 914
-; Folding = v-------04-f4343333+333333+vA+-
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 7
+; Folding = p-------04-f4343333+333333+vA+-
 ; EnableXP
