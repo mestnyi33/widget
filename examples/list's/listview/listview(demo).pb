@@ -25,6 +25,22 @@
 XIncludeFile "../../../widgets.pbi" 
 
 Uselib(widget)
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+  ImportC ""
+    RevealDataBrowserItem(ControlRef.L, ItemID.L, PropertyID.L, RevealOptions.L)
+  EndImport
+CompilerEndIf
+
+Procedure scroll_to_point(Gadget,Item)
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Linux
+      gtk_tree_view_scroll_to_point_(GadgetID(Gadget), -1, (Item - 1) * 22 - 20)
+    CompilerCase #PB_OS_MacOS
+      RevealDataBrowserItem(GadgetID(Gadget), Item, 0, 1)
+    CompilerCase #PB_OS_Windows
+      SendMessage_(GadgetID(Gadget), #LVM_ENSUREVISIBLE, (Item - 1), #True)
+  CompilerEndSelect
+EndProcedure
 
 Procedure events_gadgets()
   Select EventType()
@@ -175,6 +191,6 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
