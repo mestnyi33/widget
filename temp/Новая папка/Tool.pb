@@ -25,6 +25,7 @@ EndEnumeration
 
 Procedure Tool_Gadget_Event( )
   Static sSteps
+  
   Select EventGadget()
     Case #Tool_Align_To_Grid
       Select EventType()
@@ -182,3 +183,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 DisableExplicit
+
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 82
+; FirstLine = 76
+; Folding = ----
+; EnableXP

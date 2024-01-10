@@ -1,5 +1,6 @@
 ﻿XIncludeFile "widgets.pbi"
 ;https://github.com/Hoeppner1867?tab=followers
+;https://forum.ru-board.com/topic.cgi?forum=33&topic=6087&start=20#6
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -101,6 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP
