@@ -41,6 +41,37 @@
 ; https://regex101.com/r/D4Jxuh/24
 ; https://regex101.com/r/mBkJTA/29
 
+#RegEx_Pattern_Find = ""+
+; https://regex101.com/r/oIDfrI/2
+"(?P<Comments>;).* |"+
+; #Эта часть нужна для поиска переменных
+; #Например, "Window" в выражении "Window=OpenWindow(#PB_Any...)"
+"(?:(?P<Handle>[^:\n\s]+)\s*=\s*)?"+
+"(?P<FuncString>"+
+~"\".*\" |"+
+; #Эта часть для поиска функций
+"\b(?P<FuncName>\w+)\s*"+
+; #Эта часть для поиска аргументов функции
+"(?:\((?P<FuncArguments>(?>(?R)|[^()])*)\))"+
+") |"+
+; #Эта часть для поиска процедур
+"(?P<StartPracedure>\bProcedure[.A-Za-z]* \s*"+
+; #Эта часть для поиска имени процедуры
+"(?P<PracName>\w*) \s*"+
+; #Эта часть для поиска аргументов процедуры
+"(?:\((?P<ProcArguments>(?>(?R)|[^()])*)\))) |"+
+; #Эта часть для поиска конец процедуры
+"(?P<StopProcedure>\bEndProcedure\b)"
+; 
+; #После выполнения:
+; # - В группе (Comments) будет находиться комментария
+; # - В группе (Handle) будет находиться название переменной
+; # - В группе (FunctionName) - название Функции
+; # - В группе (FuncArguments) - перечень всех аргументов найденной Функции
+; # - В группе (ProcedureName) - название процедуры
+; # - В группе (ProcArguments) - перечень всех аргументов найденной процедуры
+
+
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
    #path = "";/Users/As/Documents/GitHub/widget/"
@@ -22866,7 +22897,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 1175
-; FirstLine = 577
-; Folding = AD+f-0f9-------f+-zP+-------AAAAA5PCAAAYAAgAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgADAAAAAAAAA-DAAAAAA5----PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAOHAAcOAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA9P+HAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAwAAAeIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQARAAHAAAAAOAAAAAAAAAAAAAAAgwACAAAAAAAAAAAAAAAAAAAAAAAAABAABAA+
+; CursorPosition = 73
+; FirstLine = 39
+; Folding = AD+f-0f9-------f+-zP+-------AAAAA5PCAAAYAAgAAAAAAAAAAAACAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgADAAAAAAAAA-DAAAAAA5----PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAOHAAc+AABAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAGQAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAA9P+HAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAwAAAeIAAAAAAAAAAAAABAAAAAAAAYfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQARAAHAAAAAOAAAAAAAAAAAAAAAgwACAAAAAAAAAAAAAAAAAAAAAAAAABAABAA+
 ; EnableXP
