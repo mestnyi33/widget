@@ -2,7 +2,6 @@
 IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(widget)
@@ -17,18 +16,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget | 
                                             #PB_Window_ScreenCentered )
       
-;       Button(0,0,0,0,"auto-resize-root-size" )
-;       
-; ;       SetAlignment( widget( ), #__align_full )
-; ;       ;SetAlignment( widget( ), #__align_auto|#__align_full )
-; ;       ; SetAlignment( widget( ), 0, 1,1,1,1 )
-;       
-;       Resize( root( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;        Button(0,0,0,0,"auto-resize-root-size" )
+;        SetAlignment( widget( ), #__align_full )
       
-      WaitEvent( #__event_resize, @resize_events( ) )
+      WaitEvent( @resize_events( ), #__event_resize )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP

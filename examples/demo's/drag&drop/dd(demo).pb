@@ -87,14 +87,14 @@ Procedure widget_events( )
             If DragPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
               
-              SelectElement(EventWidget( )\_rows( ), SourceItem)
-              img = CreateImage(#PB_Any, EventWidget( )\_rows( )\text\width, EventWidget( )\_rows( )\text\height, 32, #PB_Image_Transparent )
+              SelectElement(EventWidget( )\__rows( ), SourceItem)
+              img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
               StartDrawing(ImageOutput(img))
               DrawingMode( #PB_2DDrawing_AllChannels)
-              DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
+              DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
               StopDrawing()
               If IsImage(img)
-                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
+                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
               EndIf
             EndIf
           EndIf
@@ -311,8 +311,8 @@ Procedure widget_events( )
             Debug ""
             ;ClearDebugOutput()
             Define *this._s_widget = Gadget_TargetItem
-            ForEach *this\_rows( )
-              Debug ""+ *this\_rows( )\index +" "+ ListIndex(*this\_rows( )) +" "+ *this\_rows( )\text\string +""
+            ForEach *this\__rows( )
+              Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
             Next
           EndIf
           
@@ -466,6 +466,8 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 314
+; FirstLine = 282
 ; Folding = ----
 ; EnableXP
