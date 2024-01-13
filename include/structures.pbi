@@ -40,26 +40,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          y.l
          x.l
       EndStructure
-      ;--     STATUS
-      Structure _s_STATUS
-         ;transform.b
-         
-         
-         
-         ; check pressed - галочка нажата
-         ; check push - проверка нажатия
-         ; check create - проверить создание
-         ; check redraw - проверка перерисовки     ; redraw state - состояние перерисовки
-         ; check drag - проверить перетаскивание
-         ; check focus - проверить фокус           ; focus state - состояние фокуса
-         ; check state - проверить состояние
-         ; check change - проверить изменение
-         ; check hided - проверить скрыто
-         ; check hidden -  проверить скрытое        ; state hidden - состояние скрыто
-         ; check disabled - проверка отключена
-         ; check repaint - проверить перекраску
-         ; state enter - состояние входа
-      EndStructure
       ;--     MODE
       Structure _s_mode
          ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
@@ -133,23 +113,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
          *cursor                 ; current visible cursor
-         press.b                 ;
-         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+         press.b                 ; mouse buttons state
          change.b                ; mouse moved state
+         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
          click.a                 ; mouse clicked count
          buttons.a               ; mouse clicked button
          wheel._s_POINT          ;
          delta._s_POINT          ;
          *drag._s_DRAG           ;
          *transform._s_TRANSFORM ;
+         
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
+         
          leaved._s_OBJECTTYPE    ; mouse leaved element
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
-         *window._S_WIDGET  ; active window element ; GetActive( )\
-         *widget._S_WIDGET  ; keyboard focus element ; FocusedWidget( )\
+         *window._S_WIDGET  ; active window element ; FocusedWindow( )\
+         *widget._S_WIDGET  ; keyboard focus element ; GetActive( )\
          change.b
          input.c
          key.l[2]
@@ -165,7 +147,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          _alpha.a[2]
          *alpha._s_color
       EndStructure
-      
       ;--     ALIGN
       Structure _s_ALIGN Extends _s_COORDINATE
          left.b
@@ -174,28 +155,33 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bottom.b
          autodock._s_COORDINATE
       EndStructure
-      
       ;--     ARROW
       Structure _s_ARROW
          size.a
          type.b
          direction.b
       EndStructure
-      
-      ;--     BUTTONS
-      Structure _s_BUTTONS Extends _s_COORDINATE
-         size.l
+      ;--     STATE
+      Structure _s_STATE
          round.a
-         noFocus.a
-         
-         ; status._s_STATUS
          hide.b
          enter.b
          focus.b
          press.b
-         disable.b
          state.b
-         
+         disable.b
+      EndStructure
+      ;--     BOX
+      Structure _s_BOX Extends _s_STATE
+         y.l
+         x.l
+         width.l
+         height.l
+      EndStructure
+      ;--     BUTTONS
+      Structure _s_BUTTONS Extends _s_BOX
+         size.l
+         noFocus.a
          arrow._s_arrow
          color._s_color[4]
       EndStructure
@@ -322,7 +308,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          *widget._s_WIDGET
-         change.b
+         
+         change.b ; TEMP
          
          ; tab
          *entered._s_rows
@@ -331,17 +318,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     TABS
-      Structure _s_TABS Extends _s_coordinate
+      Structure _s_TABS Extends _s_BOX
          index.l  ; Index of new list element
-         round.a ; ?-
          
-         ; status._s_STATUS
-         hide.b
-         enter.b
-         focus.b
-         press.b
          visible.b
-         
          
          text._s_text
          image._s_image
@@ -350,7 +330,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMove.i
          OffsetMoveMin.i
          OffsetMoveMax.i
-         
       EndStructure
       
       ;--     ROWS
@@ -382,7 +361,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *last._s_rows            ; last draw-elemnt in the list
          List *_s._s_rows( )      ; all draw-elements
       EndStructure
-      
       ;--     ROW
       Structure _s_ROW
          index.i
@@ -414,7 +392,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;List _s._s_rows( )
          
       EndStructure
-      
       ;--     BAR
       Structure _s_PAGE
          pos.l
@@ -448,7 +425,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *_s._s_tabs( )
          List *draws._s_tabs( )
       EndStructure
-      
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
          bars.b
@@ -569,13 +545,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     WIDGET
-      Structure _s_WIDGET
-         class.s
-         type.b
-         level.c
-         tabindex.c
+      Structure _s_WIDGET Extends _s_STATE
+         y.l[constants::#__c]
+         x.l[constants::#__c]
+         height.l[constants::#__c]
+         width.l[constants::#__c]
          ;
-         round.a                  ; drawing round
+         type.b
+         class.s
+         ;
+         level.c
+         resize.i                 ; state
+         ;
+         create.b
+         change.b
+         hidden.b                 ; hide state
+         dragstart.b              ;
          autosize.b
          container.b              ; is container
          ; container = 1          ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
@@ -583,21 +568,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
-         ;                        ;
-         ; status._s_STATUS
-         hide.b                   ;
-         enter.b
-         focus.b
-         press.b
-         disable.b
-         state.b                  ;
-         hidden.b                 ; hide state
-         dragstart.b              ;
-         change.b
-         create.b
-         ;
-         resize.i                 ; state
-         ;                        ;
          ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
@@ -612,7 +582,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
-                                  ;
          tab._s_TAB               ; 
          ;
          *statusbox._s_BUTTONS    ; checkbox; optionbox
@@ -627,11 +596,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          MenuBarHeight.w
          ToolBarHeight.w
          StatusBarHeight.w
-         ;
-         y.l[constants::#__c]
-         x.l[constants::#__c]
-         height.l[constants::#__c]
-         width.l[constants::#__c]
+         
+         
          ; transporent.b
          ; placing layout
          first._s_OBJECTTYPE
@@ -655,7 +621,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \index[0] - widget index
          ;
          ; \index[1] - panel opened tab index     - OpenedTabIndex( )
-         ; \index[2] - panel selected item index  - FocusedTabIndex( )
+         ; \index[2] - panel selected tab index   - FocusedTabIndex( )
+         ; \index[3] - panel added tab index      - FocusedTabIndex( )
          ;
          ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
          ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
@@ -758,7 +725,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 337
-; FirstLine = 281
-; Folding = ---Pv8X+--
+; CursorPosition = 557
+; FirstLine = 356
+; Folding = -m4DGnv9--
 ; EnableXP
