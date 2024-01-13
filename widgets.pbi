@@ -8762,8 +8762,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If _this_\PressedLineIndex( ) > _index_
-            _this_\EnteredLineIndex( ) = _index_
             _this_\PressedLineIndex( ) = _index_
+            _this_\EnteredLineIndex( ) = _index_
          Else
             _this_\EnteredLineIndex( ) = _this_\PressedLineIndex( )
          EndIf
@@ -22882,7 +22882,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7040
-; FirstLine = 7014
+; CursorPosition = 9523
+; FirstLine = 9505
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
