@@ -2993,6 +2993,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           *this\screen_width( ),
                           *this\screen_height( ) )
                EndIf
+               
+                              
+               If Not a_index( )
+                  If a_entered( ) And
+                     a_entered( )\anchors And
+                     a_entered( )\root = *this\root
+                     
+                     For i = 1 To #__a_count
+                        If a_entered( )\anchors\id[i] And
+                           is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
+                           
+                           If a_index( ) <> i
+                              a_index( ) = i
+                              
+                              If a_entered( )\anchors\id[i]\color\state <> #__s_1
+                                 a_entered( )\anchors\id[i]\color\state = #__s_1
+                                 
+                                 If #__a_moved <> i And
+                                    a_entered( )\anchors\id[#__a_moved]\color\state <> #__s_0
+                                    a_entered( )\anchors\id[#__a_moved]\color\state = #__s_0
+                                 EndIf
+                                 
+                                 If a_entered( )\enter > 0
+                                    DoEvents( a_entered( ), #__event_mouseleave )
+                                 EndIf
+                                 
+                                 a_entered( )\enter        = - 1
+                                 a_entered( )\root\repaint = #True
+                                 
+                                 If mouse( )\cursor <> a_transform( )\cursor[i]
+                                    mouse( )\cursor = a_transform( )\cursor[i]
+                                    DoCursor( a_entered( ), #__event_cursor, 6 )
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+                           *this = a_entered( )
+                           Break
+                        EndIf
+                     Next
+                  EndIf
+               EndIf
+               
             EndIf
          Else
             If Not a_index( )
@@ -17948,7 +17991,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ reset a_index
                If a_index( ) > 0
                   a_index    = a_index( )
-                  a_index( ) = 0
                   
                   If a_focused( ) And
                      a_focused( )\anchors\id[a_index] And
@@ -17958,7 +18000,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_focused( )\anchors\id[a_index]\color\state = #__s_0
                         a_focused( )\enter                           = #False
                         a_focused( )\root\repaint                    = #True
-                        
+                        a_index( )                                   = 0
+                     
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
                            If mouse( )\cursor <> *this\cursor
                               mouse( )\cursor = *this\cursor
@@ -17974,7 +18017,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\
                   If a_entered( ) And
                      a_entered( )\anchors\id[a_index] And
                      Not is_atpoint_( a_entered( )\anchors\id[a_index], mouse( )\x, mouse( )\y )
@@ -17983,7 +18025,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_entered( )\anchors\id[a_index]\color\state = #__s_0
                         a_entered( )\enter                           = #False
                         a_entered( )\root\repaint                    = #True
-                        
+                        a_index( )                                   = 0
+                     
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
                            If mouse( )\cursor <> *this\cursor
                               mouse( )\cursor = *this\cursor
@@ -17999,6 +18042,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         LeavedWidget( ) = #Null
                      EndIf
                   EndIf
+                  
                EndIf
                
                ;\\ find first a_focused a_index
@@ -18043,14 +18087,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ find second a_entered a_index
-               If Not a_index( )
+               ;If Not ( a_index( ) And a_index( ) = #__a_moved )
                   If a_entered( ) And
                      a_entered( )\anchors And
                      a_entered( )\root = *root
                      
                      For i = 1 To #__a_count
                         If a_entered( )\anchors\id[i] And
-                           is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
+                          is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
                            If a_index( ) <> i
                               a_index( ) = i
                               
@@ -18081,7 +18125,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      Next
                   EndIf
-               EndIf
+               ;EndIf
             EndIf
             
             ;\\
@@ -19946,9 +19990,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                Else
                   If *this\mouse_enter( )
-                     If mouse( )\cursor <> *this\cursor
-                        mouse( )\cursor = *this\cursor
-                        DoCursor( *this, #__event_cursor, 1 )
+                     If Not ( a_transform( ) And a_index( ))
+                        If mouse( )\cursor <> *this\cursor
+                           mouse( )\cursor = *this\cursor
+                           DoCursor( *this, #__event_cursor, 1 )
+                        EndIf
                      EndIf
                      
                   Else
@@ -20068,6 +20114,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                cursor = mouse( )\cursor
             EndIf
+            
+            Debug ""+cursor +" "+ *data
             
             ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
             Cursor::Set( *this\root\canvas\gadget, cursor )
@@ -22882,7 +22930,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9523
-; FirstLine = 9505
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20000
+; FirstLine = 19767
+; Folding = ------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2--vf--------------------------------------------------------------+4--------------------------------------------------------------
 ; EnableXP
