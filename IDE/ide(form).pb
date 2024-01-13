@@ -817,7 +817,7 @@ Procedure ide_menu_events( *ew._s_WIDGET, toolbarbutton )
          
       Case #_tb_file_open
          Debug 555
-;          Close( ide_form )
+         Close( ide_form )
 ;          ClearItems( ide_inspector_view )
          
          
@@ -1317,7 +1317,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 821
+; CursorPosition = 819
 ; FirstLine = 805
 ; Folding = ----------------8-----
 ; EnableXP

@@ -46,7 +46,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          enter.b
          press.b
-         focus.b
+         ;focus.b
          hidden.b     ; hide state
          disable.b
          ;interact.b
@@ -195,6 +195,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          status._s_STATUS
          hide.b
+         focus.b
          state.b
          
          arrow._s_arrow
@@ -204,7 +205,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
          mode.i
-         ;direction.b
          
          pos.l[3]
          time.l
@@ -340,6 +340,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          visible.b
          round.a ; ?-
          hide.b
+         focus.b
          
          status._s_STATUS
          text._s_text
@@ -434,9 +435,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          invert.b
          vertical.b
+         direction.b
          
          percent.f
-         direction.l
          
          page._s_page
          area._s_page
@@ -586,6 +587,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          status._s_STATUS
          create.b
          hide.b                   ;
+         focus.b
          dragstart.b              ;
          state.b                  ;
          change.b
@@ -607,12 +609,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
                                   ;
-         tab._s_TAB
+         tab._s_TAB               ; 
          ;
-         *statebox._s_BUTTONS     ; checkbox; optionbox
-         *buttonbox._s_BUTTONS    ; combobox
+         *statusbox._s_BUTTONS    ; checkbox; optionbox
+         *combobox._s_BUTTONS     ; combobox
                                   ;
-         *popupbox._s_WIDGET      ; = ComboBox( ) list view box
+         *popup._s_WIDGET         ; = ComboBox( ) list view box
          *groupbox._s_WIDGET      ; = Option( ) group widget
          *stringbox._s_WIDGET     ; = SpinBar( ) string box
                                   ;                           
@@ -752,7 +754,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 608
-; FirstLine = 525
+; CursorPosition = 438
+; FirstLine = 376
 ; Folding = ---Pv8X+--
 ; EnableXP
