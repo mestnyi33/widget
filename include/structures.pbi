@@ -44,12 +44,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_STATUS
          ;transform.b
          
-         enter.b
-         press.b
-         ;focus.b
-         hidden.b     ; hide state
-         disable.b
-         ;interact.b
+         
          
          ; check pressed - галочка нажата
          ; check push - проверка нажатия
@@ -193,9 +188,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          round.a
          noFocus.a
          
-         status._s_STATUS
+         ; status._s_STATUS
          hide.b
+         enter.b
          focus.b
+         press.b
+         disable.b
          state.b
          
          arrow._s_arrow
@@ -335,14 +333,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TABS
       Structure _s_TABS Extends _s_coordinate
          index.l  ; Index of new list element
-         
-         
-         visible.b
          round.a ; ?-
-         hide.b
-         focus.b
          
-         status._s_STATUS
+         ; status._s_STATUS
+         hide.b
+         enter.b
+         focus.b
+         press.b
+         visible.b
+         
+         
          text._s_text
          image._s_image
          color._s_color
@@ -584,13 +584,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
          ;                        ;
-         status._s_STATUS
-         create.b
+         ; status._s_STATUS
          hide.b                   ;
+         enter.b
          focus.b
-         dragstart.b              ;
+         press.b
+         disable.b
          state.b                  ;
+         hidden.b                 ; hide state
+         dragstart.b              ;
          change.b
+         create.b
          ;
          resize.i                 ; state
          ;                        ;
@@ -754,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 438
-; FirstLine = 376
+; CursorPosition = 337
+; FirstLine = 281
 ; Folding = ---Pv8X+--
 ; EnableXP
