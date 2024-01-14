@@ -33,9 +33,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Bind( parent, @CustomEvents(), #__event_cursor )
-   Bind( object, @CustomEvents(), #__event_cursor )
-   Bind( object1, @CustomEvents(), #__event_cursor )
-   Bind( object2, @CustomEvents(), #__event_cursor )
+;    Bind( object, @CustomEvents(), #__event_cursor )
+;    Bind( object1, @CustomEvents(), #__event_cursor )
+;    Bind( object2, @CustomEvents(), #__event_cursor )
    
    ;\\
    WaitClose( )
@@ -46,6 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;\\ demo change current cursor
          Case #__event_cursor
+           ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
+            
             If EventWidget( ) = object2
                If a_transform( )
                   If GetCursor( )
@@ -63,6 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = +-
+; CursorPosition = 60
+; FirstLine = 27
+; Folding = --
 ; EnableXP
