@@ -19980,46 +19980,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ cursor update
          Select eventtype
             Case #__event_MouseEnter, #__event_MouseMove, #__event_MouseLeave, #__event_Down, #__event_Up
-               If PressedWidget( ) And PressedWidget( )\press
-                  If Not ( a_transform( ) And a_index( ))
+               If Not ( a_transform( ) And a_index( ))
+                  If PressedWidget( ) And PressedWidget( )\press
                      If mouse( )\cursor <> PressedWidget( )\cursor
                         mouse( )\cursor = PressedWidget( )\cursor
                         DoCursor( PressedWidget( ), #__event_cursor, 2 )
                      EndIf
-                  EndIf
-                  
-               Else
-                  If *this\mouse_enter( )
-                     If Not ( a_transform( ) And a_index( ))
+                     ;;; EndIf
+                     
+                  Else
+                     ;;;If Not ( a_transform( ) And a_index( ))
+                     If *this\mouse_enter( )
                         If mouse( )\cursor <> *this\cursor
                            mouse( )\cursor = *this\cursor
                            DoCursor( *this, #__event_cursor, 1 )
                         EndIf
-                     EndIf
-                     
-                  Else
-                     If EnteredWidget( ) And
-                        EnteredWidget( )\mouse_enter( )
-                        
-                        If PressedWidget( ) And
-                           PressedWidget( )\root <> EnteredWidget( )\root
-                           If mouse( )\cursor <> PressedWidget( )\root\cursor
-                              mouse( )\cursor = PressedWidget( )\root\cursor
-                              DoCursor( PressedWidget( )\root, #__event_cursor, - 1 )
-                           EndIf
-                        EndIf
-                        
-                        ;
-                        If mouse( )\cursor <> EnteredWidget( )\cursor
-                           mouse( )\cursor = EnteredWidget( )\cursor
-                           ; If Not ( a_transform( ) And a_index( ))
-                           DoCursor( EnteredWidget( ), #__event_cursor, 3 )
-                           ; EndIf
-                        EndIf
+                        ;;;EndIf
                         
                      Else
-                        ; если внутри виджета покинули область где надо менять курсор
-                        If Not ( a_transform( ) And a_index( ))
+                        If EnteredWidget( ) And
+                           EnteredWidget( )\mouse_enter( )
+                           
+                           If PressedWidget( ) And
+                              PressedWidget( )\root <> EnteredWidget( )\root
+                              If mouse( )\cursor <> PressedWidget( )\root\cursor
+                                 mouse( )\cursor = PressedWidget( )\root\cursor
+                                 DoCursor( PressedWidget( )\root, #__event_cursor, - 1 )
+                              EndIf
+                           EndIf
+                           
+                           ;
+                           If mouse( )\cursor <> EnteredWidget( )\cursor
+                              mouse( )\cursor = EnteredWidget( )\cursor
+                              ; If Not ( a_transform( ) And a_index( ))
+                              DoCursor( EnteredWidget( ), #__event_cursor, 3 )
+                              ; EndIf
+                           EndIf
+                           
+                        Else
+                           ; если внутри виджета покинули область где надо менять курсор
+                           ;;;If Not ( a_transform( ) And a_index( ))
                            If EnteredWidget( )
                               If EnteredWidget( )\enter > 0
                                  If mouse( )\cursor <> cursor::#__cursor_Default
@@ -22930,7 +22930,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20000
-; FirstLine = 19767
-; Folding = ------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2--vf--------------------------------------------------------------+4--------------------------------------------------------------
+; CursorPosition = 19995
+; FirstLine = 19794
+; Folding = ------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2--vf---------------------------------------------------------------0-------------------------------------------------------------
 ; EnableXP
