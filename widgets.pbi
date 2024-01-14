@@ -17997,15 +17997,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_index( )                                   = 0
                      
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
-                           ;Debug "88888 "+a_index
-;                            If mouse( )\cursor <> *this\cursor
+;                            Debug "88888 "+a_index
+;                            If *this And mouse( )\cursor <> *this\cursor
 ;                               mouse( )\cursor = *this\cursor
 ;                               DoCursor( a_focused( ), #__event_cursor, - 2 )
 ;                            EndIf
                         Else
-                           If mouse( )\cursor <> cursor::#__cursor_default
-                              mouse( )\cursor = cursor::#__cursor_default
-                              DoCursor( a_focused( ), #__event_cursor, - 3 )
+                           ;Debug ""+*this +" "+ a_entered( ) +" "+ a_focused( )
+                           
+                           If *this = a_focused( )
+                              If mouse( )\cursor <> cursor::#__cursor_default
+                                 mouse( )\cursor = cursor::#__cursor_default
+                                 DoCursor( a_focused( ), #__event_cursor, - 3 )
+                              EndIf
                            EndIf
                         EndIf
                         LeavedWidget( ) = #Null
@@ -18023,8 +18027,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_index( )                                   = 0
                      
                         If *this And is_innerside_( *this, mouse( )\x, mouse( )\y )
-                           ;Debug "9999 "+a_index
-;                            If mouse( )\cursor <> *this\cursor
+;                            Debug "9999 "+a_index
+;                            If *this And mouse( )\cursor <> *this\cursor
 ;                               mouse( )\cursor = *this\cursor
 ;                               DoCursor( a_entered( ), #__event_cursor, - 4 )
 ;                            EndIf
@@ -18049,7 +18053,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   For i = 1 To #__a_count
                      If a_focused( )\anchors\id[i] And
                         is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
-                        If a_index( ) <> i
+                        
+                        ;If a_index( ) <> i
                            a_index( ) = i
                            ;
                            If a_focused( )\anchors\id[i]\color\state <> #__s_1
@@ -18078,7 +18083,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  DoCursor( a_focused( ), #__event_cursor, 7 )
                               EndIf
                            EndIf
-                        EndIf
+                        ;EndIf
                         
                         *this = a_focused( )
                         Break
@@ -18095,7 +18100,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If a_entered( )\anchors\id[i] And
                         is_atpoint_( a_entered( )\anchors\id[i], mouse( )\x, mouse( )\y )
                         
-                        If a_index( ) <> i
+                        ;If a_index( ) <> i
                            a_index( ) = i
                            
                            If a_entered( )\anchors\id[i]\color\state <> #__s_1
@@ -18118,7 +18123,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  DoCursor( a_entered( ), #__event_cursor, 6 )
                               EndIf
                            EndIf
-                        EndIf
+                        ;EndIf
                         
                         *this = a_entered( )
                         Break
@@ -20108,7 +20113,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                cursor = mouse( )\cursor
             EndIf
             
-            ; Debug ""+cursor +" "+ *data
+             Debug " DO CURSOR "+cursor +" TYPE "+ *data
             
             ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
             Cursor::Set( *this\root\canvas\gadget, cursor )
@@ -22923,7 +22928,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2489
-; FirstLine = 2471
-; Folding = ----------------------------------------------------------42nq7--+----f+-44---v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-7-------------------------------------------------------------v-v--f--------------------------------------------------------------
+; CursorPosition = 18153
+; FirstLine = 17298
+; Folding = ----------------------------------------------------------42nq7--+----f+-44---v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-7-------------------------------------------------------------8-8--4--------------------------------------------------------------
 ; EnableXP

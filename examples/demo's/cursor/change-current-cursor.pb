@@ -1,5 +1,5 @@
 ﻿ XIncludeFile "../../../widgets.pbi"
-; ;bug когда с левого якорья переходит на сам сплиттер 
+; ;bug когда переходишь с якорья который находится под обЬектом не убираются якорья
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -63,7 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 24
-; Folding = --
+; CursorPosition = 1
+; Folding = +-
 ; EnableXP
