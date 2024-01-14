@@ -653,7 +653,7 @@
       #__a_left_bottom  = 8
       #__a_moved        = 9
       
-      ;
+      
       #__a_line_left   = 1;10
       #__a_line_top    = 2;12
       #__a_line_right  = 3;11
@@ -842,7 +842,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 831
-; FirstLine = 802
+; CursorPosition = 653
+; FirstLine = 641
 ; Folding = ---
 ; EnableXP
