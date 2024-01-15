@@ -31,10 +31,10 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-;    Procedure Canvas_DrawCallback(Gadget.i, DataValue.i)
-;       VectorSourceColor($FFF0F0F0)
-;       FillVectorOutput( )
-;    EndProcedure
+   ;    Procedure Canvas_DrawCallback(Gadget.i, DataValue.i)
+   ;       VectorSourceColor($FFF0F0F0)
+   ;       FillVectorOutput( )
+   ;    EndProcedure
    
    
    ;   Procedure a_mode( *this._s_widget, mode.i )
@@ -49,15 +49,23 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
       
+      Protected enter = Bool(*object\enter > 0)
+      Protected press = Bool(*object\press > 0 And enter)
+      
+      If a_index( )
+         enter = 0
+         press = 0
+      EndIf
+      
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
       VectorSourceLinearGradient(0.0, 0.0, 0.0, Height)
-      If *object\state\press And *object\state\enter
+      If press And Not *object\disable
          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 20, $F8), 0.45)
          VectorSourceGradientColor(HSVA(Hue, 30, $F0), 0.50)
          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 1.00)
-      ElseIf *object\state\enter
+      ElseIf enter And Not *object\disable
          VectorSourceGradientColor(HSVA(Hue, 5, $FF), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 10, $F8), 0.45)
          VectorSourceGradientColor(HSVA(Hue, 15, $F0), 0.50)
@@ -70,22 +78,23 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       FillPath( )
       
+      
       ; Box frame
-      If *object\state\disable
+      If *object\disable
          AddPathBox(0.5, 0.5, Width-1, Height-1)
          VectorSourceColor(HSVA(0, 0, $D0))
          StrokePath(1)
          AddPathBox(1.5, 1.5, Width-3, Height-3)
          VectorSourceColor(HSVA(0, 0, $F0))
          StrokePath(1)
-      ElseIf *object\state\press And *object\state\enter
+      ElseIf press
          AddPathBox(0.5, 0.5, Width-1, Height-1)
          VectorSourceColor(HSVA(Hue, 100, $80))
          StrokePath(1)
          AddPathBox(1.5, 1.5, Width-3, Height-3)
          VectorSourceColor(HSVA(Hue, 50, $FF))
          StrokePath(1)
-      ElseIf *object\state\enter
+      ElseIf enter
          AddPathBox(0.5, 0.5, Width-1, Height-1)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
@@ -105,13 +114,13 @@ CompilerIf #PB_Compiler_IsMainFile
       AddPathBox(0.0, 0.0, Width, Height)
       ClipPath( )
       VectorFont(FontID(#Font))
-      If *object\state\disable
+      If *object\disable
          VectorSourceColor($40000000)
       Else
          VectorSourceColor($FF000000)
       EndIf
       If Height - 6 > 0 And Width - 6 > 0
-         If *object\state\press
+         If press
             MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2)
          Else
             MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2-1)
@@ -126,7 +135,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEventType( ) 
          Case #__event_LeftClick
-            Debug "Button '" + GetText(*ew) + "' was clicked."
+            If Not a_index( )
+               Debug "Button '" + GetText(*ew) + "' was clicked."
+            EndIf
             
          Case #__event_Draw
             With *ew
@@ -163,6 +174,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Y.i = Int((Height-19)/2)
       Protected Hue = 205
       
+      Protected enter = Bool(*object\enter > 0)
+      Protected press = Bool(*object\press > 0 And enter)
+      
+      If a_index( )
+         enter = 0
+         press = 0
+      EndIf
+      
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
       VectorSourceColor($FFF0F0F0)
@@ -171,10 +190,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ; Box background
       AddPathBox(0, Y, 19, 19)
       VectorSourceLinearGradient(0.0, Y, 0.0, Y+19)
-      If *object\state\press And *object\state\enter
+      If press
          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-      ElseIf *object\state\enter
+      ElseIf enter
          VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
       Else
@@ -184,21 +203,21 @@ CompilerIf #PB_Compiler_IsMainFile
       FillPath( )
       
       ; Box frame
-      If *object\state\disable
+      If *object\disable
          AddPathBox(0.5, Y+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $D0))
          StrokePath(1)
          AddPathBox(1.5, Y+1.5, 16, 16)
          VectorSourceColor(HSVA(0, 0, $F0))
          StrokePath(1)
-      ElseIf *object\state\press And *object\state\enter
+      ElseIf press
          AddPathBox(0.5, Y+0.5, 18, 18)
          VectorSourceColor(HSVA(Hue, 100, $80))
          StrokePath(1)
          AddPathBox(1.5, Y+1.5, 16, 16)
          VectorSourceColor(HSVA(Hue, 50, $FF))
          StrokePath(1)
-      ElseIf *object\state\enter
+      ElseIf enter
          AddPathBox(0.5, Y+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
@@ -216,14 +235,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Check
       If State
-         MovePathCursor(9.5, Y+10.5+Bool(*object\state\press))
+         MovePathCursor(9.5, Y+10.5+Bool(*object\press))
          AddPathLine(10.5, -10.5, #PB_Path_Relative)
          AddPathLine(2.5, 2.5, #PB_Path_Relative)
          AddPathLine(-13, 13, #PB_Path_Relative)
          AddPathLine(-5, -5, #PB_Path_Relative)
          AddPathLine(2.5, -2.5, #PB_Path_Relative)
          ClosePath( )
-         If *object\state\disable
+         If *object\disable
             VectorSourceColor(HSVA(Hue, 0, $C0))
          Else
             VectorSourceColor(HSVA(Hue, 100, $C0))
@@ -235,13 +254,13 @@ CompilerIf #PB_Compiler_IsMainFile
       AddPathBox(25, 0, Width-25, Height)
       ClipPath( )
       VectorFont(FontID(#Font))
-      If *object\state\disable
+      If *object\disable
          VectorSourceColor($40000000)
       Else
          VectorSourceColor($FF000000)
       EndIf
       If Height > 0 And Width - 25 > 0
-         If *object\state\press And *object\state\enter
+         If press
             MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2)
          Else
             MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2-1)
@@ -255,8 +274,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *ew._s_widget = EventWidget( )
       
       Select WidgetEventType( ) 
-         Case #__event_LeftClick, #__event_Left2Click, #__event_Left3Click
-            SetState(*ew, 1-GetState(*ew))
+         Case #__event_LeftClick;, #__event_Left2Click, #__event_Left3Click
+            If Not a_index( )
+               SetState(*ew, 1 - GetState(*ew))
+               Debug "checkbox '" + GetText(*ew) + "' was changed."
+            EndIf
             
          Case #__event_Draw
             With *ew
@@ -357,6 +379,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; Folding = 4-+--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 143
+; FirstLine = 134
+; Folding = -----
 ; EnableXP

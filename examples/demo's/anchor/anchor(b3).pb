@@ -6,9 +6,9 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
 
   Procedure CustomEvents( )
     Select WidgetEventType( )
-      Case #PB_EventType_Draw
+      Case #__event_Draw
         
-        If Eventwidget()\state\focus
+        If Eventwidget()\focus
           ; Demo draw on element
           UnclipOutput()
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -47,12 +47,14 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
   SetColor(widget(), #__color_front, Color&$FFFFFF | 255<<24)
   widget()\round = 20
   SetFrame(widget(), frameSize);, -1), -2) ; bug
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  
+  a_set( widget(), #__a_full )
+  Bind( widget( ), @CustomEvents(), #__event_Draw )
   
   ProcedureReturn widget( )
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   ; Define handles to all objects
   a_init(root(), 10)
@@ -75,5 +77,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 782, 452, "Example 3: Object boundaries to pos
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 50
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

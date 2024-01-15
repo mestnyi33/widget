@@ -38,7 +38,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   a_set(*Object3, #__a_edge | #__a_position, 8);
   a_set(*Object4, #__a_corner | #__a_position, 8)
   a_set(*Object5, #__a_size | #__a_position, 8)
-  a_set( root( ))
+  ;a_set( root( ))
   
   ;\\ Define different cursors to the objects
   SetCursor(*Object2, #PB_Cursor_Hand)
@@ -60,7 +60,7 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 41
+; CursorPosition = 40
 ; FirstLine = 11
 ; Folding = -
 ; EnableXP

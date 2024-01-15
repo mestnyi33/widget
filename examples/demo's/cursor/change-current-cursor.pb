@@ -13,12 +13,13 @@ CompilerIf #PB_Compiler_IsMainFile
    a_init(root(), 4)
    
    ;\\
-   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
+   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
    SetColor(parent, #__color_back, $FFE9E9E9)
    SetFrame(parent, 20 )
    
    ;\\
-   object = Button(50, 50, 150, 150, "button")
+   object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 0)
+   ;object = Button(50, 50, 150, 150, "button")
    object1 = String(150, 150, 150, 150, "string")
    object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
    
@@ -29,7 +30,6 @@ CompilerIf #PB_Compiler_IsMainFile
    a_set(object, #__a_full, anchor_size)
    a_set(object1, #__a_full, anchor_size)
    a_set(object2, #__a_full, anchor_size)
-   
    
    ;\\
    Bind( parent, @CustomEvents(), #__event_cursor )
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 27
+; CursorPosition = 28
+; FirstLine = 7
 ; Folding = --
 ; EnableXP

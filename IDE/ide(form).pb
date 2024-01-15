@@ -589,6 +589,11 @@ Procedure widget_events( )
             ;             Next
             ;           EndIf
          EndIf
+         
+         If a_set( *ew, #__a_full )
+               
+               ;;SetActive( a_focused( ) )
+         EndIf
          ;; ProcedureReturn #PB_Ignore
          
       Case #__event_LeftButtonUp
@@ -952,7 +957,7 @@ Procedure ide_events( )
       Case #__event_Change
          If *ew = ide_inspector_view
             *this = GetItemData( *ew, GetState( *ew ) )
-            If a_set( *this )
+            If a_set( *this, #__a_full )
                
                ;;SetActive( a_focused( ) )
             EndIf
@@ -1316,8 +1321,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 819
-; FirstLine = 805
-; Folding = ----------------8-----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 959
+; FirstLine = 871
+; Folding = ----------f4----4-----
 ; EnableXP
