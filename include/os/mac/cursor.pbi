@@ -428,7 +428,10 @@ Module Cursor
             DeleteMapElement(images( ))
           EndIf
         Next
-      EndIf
+     EndIf
+     
+       ; CocoaMessage(0, *cursor, "autorelease")
+        
       ProcedureReturn CocoaMessage(0, *cursor, "release")
     EndIf
   EndProcedure
@@ -629,7 +632,7 @@ Module Cursor
   EndProcedure
 EndModule  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 242
-; FirstLine = 218
+; CursorPosition = 432
+; FirstLine = 416
 ; Folding = -------------
 ; EnableXP

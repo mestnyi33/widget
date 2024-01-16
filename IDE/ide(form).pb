@@ -1,6 +1,7 @@
 ﻿;- 
 #IDE_path = "../"
 XIncludeFile #IDE_path + "widgets.pbi"
+;XIncludeFile #IDE_path + "DoAnchors-widgets.pbi"
 
 EnableExplicit
 
@@ -360,7 +361,7 @@ EndMacro
 
 Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
-   Protected flag.i
+   Protected is_window.b, flag.i 
    
    If *parent 
       OpenList( *parent, GetState( *parent ) ) 
@@ -396,6 +397,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       ; create elements
       Select class
          Case "window"    
+            is_window = #True
             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
                Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
@@ -407,17 +409,14 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             SetColor( *new, #__color_back, $FFECECEC )
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
             Bind( *new, @widget_events( ) )
-            a_set(*new, #__a_full, 14)
             
          Case "container"   
             *new = Container( x,y,width,height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
-            a_set(*new, #__a_full, 10)
             
          Case "panel"       : *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
          Case "scrollarea"  
             *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
-            a_set(*new, #__a_full, 10)
             
          Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
          Case "image"       : *new = Image( x,y,width,height, img, flag )
@@ -431,19 +430,25 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       If *new
          Protected newClass.s
          newClass.s = GetClass( *new )+"_"+GetCount( *new , 0 )
-         ;newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
-         
-         If *new\container 
+         ; newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
+         ;
+         If IsContainer( *new )
             EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
+            If is_window
+               a_set(*new, #__a_full, 7)
+            Else
+               a_set(*new, #__a_full, 10)
+            EndIf  
+         Else
+            a_set(*new, #__a_full)
          EndIf
-         
          ;
          SetText( *new, newClass )
-         
+         ;
          ; get new add position & sublevel
          Protected i, countitems, sublevel, position = GetData( *parent ) 
          countitems = CountItems( ide_inspector_view )
@@ -528,9 +533,9 @@ Procedure widget_events( )
          
          properties_updates( ide_inspector_properties, *ew )
          
-         If GetActive( ) <> ide_inspector_view 
-            SetActive( ide_inspector_view )
-         EndIf
+;          If GetActive( ) <> ide_inspector_view 
+;             SetActive( ide_inspector_view )
+;          EndIf
          
       Case #__event_DragStart
          If a_index( ) = #__a_moved
@@ -590,12 +595,6 @@ Procedure widget_events( )
             ;           EndIf
          EndIf
          
-         If a_set( *ew, #__a_full )
-               
-               ;;SetActive( a_focused( ) )
-         EndIf
-         ;; ProcedureReturn #PB_Ignore
-         
       Case #__event_LeftButtonUp
          ; then group select
          If IsContainer( *ew )
@@ -630,7 +629,7 @@ Procedure widget_events( )
                         ChangeCursor( *ew, #PB_Cursor_Default )
                      EndIf
                   Else
-                     If *ew\mouse_enter( ) 
+                     If *ew\inner_enter( ) 
                         If GetCursor( ) <> #PB_Cursor_Cross
                            ChangeCursor( *ew, #PB_Cursor_Cross )
                         EndIf
@@ -1322,7 +1321,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 959
-; FirstLine = 871
-; Folding = ----------f4----4-----
+; CursorPosition = 441
+; FirstLine = 427
+; Folding = ----------v-----8-----
 ; EnableXP

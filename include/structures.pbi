@@ -563,8 +563,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dragstart.b              ;
          autosize.b
          container.b              ; is container
-         ; container = 1          ; if the has children ( Window( ); MDI( ); Panel( ); Container( ); ScrollArea( ) )
-         ; container = - 1        ; if the not has children ( Splitter( ); Frame( ))
+         ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
+         ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
          ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
@@ -725,7 +725,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 557
-; FirstLine = 356
+; CursorPosition = 565
+; FirstLine = 365
 ; Folding = -m4DGnv9--
 ; EnableXP

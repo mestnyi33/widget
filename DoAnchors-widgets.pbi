@@ -413,7 +413,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro inner_y( ): y[#__c_inner]: EndMacro
       Macro inner_width( ): width[#__c_inner]: EndMacro
       Macro inner_height( ): height[#__c_inner]: EndMacro
-      Macro mouse_enter( ): enter = 2: EndMacro
+      Macro inner_enter( ): enter = 2: EndMacro
       
       ;-
       Macro frame_x( ): x[#__c_frame]: EndMacro
@@ -2226,7 +2226,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ first draw backgraund color
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\drop
-               If *this\mouse_enter( )
+               If *this\inner_enter( )
                   If mouse( )\drag\state = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                      
@@ -2252,7 +2252,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                EndIf
             Else
-               If *this\mouse_enter( )
+               If *this\inner_enter( )
                   If *this\dragstart
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff00ff )
                   Else
@@ -2266,7 +2266,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ second draw frame color
             drawing_mode_( #PB_2DDrawing_Outlined )
             If *this\drop
-               If *this\mouse_enter( )
+               If *this\inner_enter( )
                   If mouse( )\drag\state = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                      
@@ -2292,7 +2292,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                EndIf
             Else
-               If *this\mouse_enter( )
+               If *this\inner_enter( )
                   If *this\dragstart
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff00ff )
                   Else
@@ -3534,7 +3534,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_DragStart
                ;\\
                If *this\container > 0 And
-                  *this\mouse_enter( )
+                  *this\inner_enter( )
                   
                   If Not a_index( )
                      a_grid_change( *this )
@@ -18814,7 +18814,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\row
             ;\\ search at point entered items
             If Not Mouse( )\drag Or *this\drop
-               If *this\mouse_enter( )
+               If *this\inner_enter( )
                   If ListSize( *this\VisibleRows( ) )
                      If *this\EnteredRow( ) And
                         *this\EnteredRow( )\visible And
@@ -19432,7 +19432,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
             
             ;\\ get at point items if enter inner coordinate                           ;
-            If *this\mouse_enter( )
+            If *this\inner_enter( )
                If ListSize( *this\__tabs( ) )
                   If *this\EnteredTab( ) And
                      *this\EnteredTab( )\visible And
@@ -19544,10 +19544,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\enter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
                If *this\enter = 1
-                  *this\mouse_enter( )
+                  *this\inner_enter( )
                   *this\root\repaint = 1
                EndIf
-            ElseIf *this\mouse_enter( )
+            ElseIf *this\inner_enter( )
                *this\enter        = 1
                *this\root\repaint = 1
             EndIf
@@ -19799,7 +19799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      eventtype = #__event_MouseEnter Or
                      eventtype = #__event_MouseLeave
                      
-                     If *this\mouse_enter( )
+                     If *this\inner_enter( )
                         If *this\color\state <> #__s_1
                            *this\color\state = #__s_1
                         EndIf
@@ -19994,7 +19994,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ( eventtype = #__event_MouseMove And *this\enter > 0 )
                
                If *this\drop
-                  If *this\mouse_enter( )
+                  If *this\inner_enter( )
                      ;                      Debug ""+*this\drop\format +" = "+ mouse( )\drag\format +" "+
                      ;                            *this\drop\actions +" = "+ mouse( )\drag\actions +" "+
                      ;                            *this\drop\private +" = "+ mouse( )\drag\private
@@ -20042,14 +20042,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DoCursor( PressedWidget( ), #__event_cursor, 2 )
                      EndIf
                   Else
-                     If *this\mouse_enter( )
+                     If *this\inner_enter( )
                         If mouse( )\cursor <> *this\cursor
                            mouse( )\cursor = *this\cursor
                            DoCursor( *this, #__event_cursor, 1 )
                         EndIf
                      Else
                         If EnteredWidget( ) And
-                           EnteredWidget( )\mouse_enter( )
+                           EnteredWidget( )\inner_enter( )
                            ;
                            If PressedWidget( ) And
                               PressedWidget( )\root <> EnteredWidget( )\root
@@ -20421,7 +20421,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;\\ mouse-drag-start send drag event
                         If PressedWidget( ) And
                            PressedWidget( )\press And
-                           PressedWidget( )\mouse_enter( ) And
+                           PressedWidget( )\inner_enter( ) And
                            PressedWidget( )\dragstart = #PB_Drag_None
                            
                            If mouse( )\change
@@ -22737,7 +22737,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      EventWidget( )\color\frame = colorframe1
                   EndIf
                   
-                  If EventWidget( )\mouse_enter( )
+                  If EventWidget( )\inner_enter( )
                      If EventWidget( )\color\back <> colorback1
                         repaint                   = 1
                         EventWidget( )\color\back = colorback1
@@ -22976,7 +22976,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22976
-; FirstLine = 22938
+; CursorPosition = 22739
+; FirstLine = 22703
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
