@@ -3142,7 +3142,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected i
             
             If *this
-               ;                If is_integral_( *this )
+               If a_focused( ) <> *this
+                  ;                If is_integral_( *this )
                ;                   If ( a_index( ) Or
                ;                        Not is_scrollbars_( *this ))
                ;                      *this = *this\parent
@@ -3221,6 +3222,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                a_delta( *this )
             EndIf
+         EndIf
             ProcedureReturn *this
          EndIf
       EndProcedure
@@ -3503,6 +3505,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_set( a_entered( ) )
                      EndIf
                      *pressed = a_entered( )
+                  Else
+                     ; a_remove( a_focused( ), i )
+                  
+                     a_focused( ) = #Null
                   EndIf
                EndIf
             EndIf
@@ -18087,7 +18093,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If a_focused( )\enter > 0
                               DoEvents( a_focused( ), #__event_Mouseleave )
                            Else
-                              If a_entered( ) <> a_focused( )
+                              If a_entered( ) And 
+                                 a_entered( ) <> a_focused( )
                                  Protected entered_i
                                  a_remove( a_entered( ), entered_i )
                                  a_entered( ) = a_focused( )
@@ -22384,6 +22391,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *this._s_widget = EventWidget( )
       
       Select WidgetEventType( )
+         Case #__event_Create
+            If Not *this\child
+               If *this\index > 0 And  *this\index < 5
+                  Debug "8476575788484 "+*this\class
+                  a_set( *this, #__a_full )
+               EndIf 
+            EndIf 
+            
          Case #__event_LeftClick
             Select *this
                Case frame_color
@@ -22970,7 +22985,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3512
-; FirstLine = 3295
-; Folding = -------------------------------------------------------------------n+e+-44-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2-----------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3508
+; FirstLine = 3268
+; Folding = -------------------------------------------------------------------P009-vv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0r-----------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

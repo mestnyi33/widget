@@ -47,7 +47,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ;\\ demo change current cursor
          Case #__event_cursor
            ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
-            Debug a_focused();\class
             
             If EventWidget( ) = object2
                If a_transform( )
@@ -67,6 +66,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 49
-; FirstLine = 28
+; FirstLine = 29
 ; Folding = --
 ; EnableXP
