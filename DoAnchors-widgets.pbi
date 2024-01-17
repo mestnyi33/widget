@@ -3443,7 +3443,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #__event_MouseEnter
-               ;Debug "e "+*this\class
+               Debug "    ----------- e ------- "+*this\class
                If Not Mouse( )\press
                   If a_focused( ) = *this
                      a_entered( ) = *this
@@ -3457,7 +3457,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #__event_MouseLeave
-               ;;Debug "l "+*this\class
+               Debug "    ------------ l ------ "+*this\class
                If Not Mouse( )\press
                    If Not *this\enter 
                      If EnteredWidget( ) And
@@ -18263,52 +18263,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If LeavedWidget( ) <> *this
             EnteredWidget( ) = *this
             
-            ;\\ если оставлять событие вход/выход нажатого виджета
-            ; If LeavedWidget( ) And Not LeavedWidget( )\dragstart And
-            If LeavedWidget( ) And Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) And
-               LeavedWidget( )\enter <> 0
+            If LeavedWidget( ) And LeavedWidget( )\enter <> 0 And 
+               Not ( *this And *this\child And *this\parent = LeavedWidget( ) And 
+                     is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
+                     is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_draw] )) And
+               ;\\ если оставлять событие вход/выход нажатого виджета
+               Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize )
+
+               ;
                LeavedWidget( )\enter = 0
-               
-               ;\\
-               If mouse( )\drag And
-                  is_scrollbars_( LeavedWidget( ) )
-                  LeavedWidget( )\parent\enter = 0
-               EndIf
-               
-               ;\\
                DoEvents( LeavedWidget( ), #__event_MouseLeave )
-               
-               ;\\
-               If Not is_interact_row_( LeavedWidget( ) )
-                  If Not a_transformer( LeavedWidget( ) )
-                     If Not IsChild( *this, LeavedWidget( ) )
-                        If Not is_root_( LeavedWidget( ) )
-                           If LeavedWidget( )\address
-                              ChangeCurrentElement( LeavedWidget_root_children( ), LeavedWidget( )\address )
-                              Repeat
-                                 If LeavedWidget_root_children( )\haschildren And LeavedWidget_root_children( )\enter <> 0
-                                    If is_atpoint_( LeavedWidget_root_children( ), mouse_x, mouse_y, [#__c_draw] )
-                                       If Not ( *this And *this\index > LeavedWidget_root_children( )\index )
-                                          Break
-                                       EndIf
-                                    EndIf
-                                    
-                                    ;
-                                    If Not is_interact_row_( LeavedWidget_root_children( ) ) And
-                                       IsChild( LeavedWidget( ), LeavedWidget_root_children( )) And
-                                       Not IsChild( *this, LeavedWidget_root_children( ))
-                                       
-                                       LeavedWidget_root_children( )\enter = 0
-                                       If Not LeavedWidget_root_children( )\anchors
-                                          DoEvents( LeavedWidget_root_children( ), #__event_StatusChange, -1, - 1 )
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              Until Not PreviousElement( LeavedWidget_root_children( ))
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
+               ;
+               If LeavedWidget( )\child And LeavedWidget( )\parent And LeavedWidget( )\parent\enter
+                  If Not Bool( is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_frame] ) And
+                               is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_draw] ))
+                     ;
+                     LeavedWidget( )\parent\enter = 0
+                     DoEvents( LeavedWidget( )\parent, #__event_MouseLeave )
+                  EndIf  
                EndIf
             EndIf
             
@@ -18316,43 +18288,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this And
                *this\enter = 0
                *this\enter = 1
-               
-               ;\\
+               ;
+               If *this\child 
+                  If *this\parent 
+                     If *this\parent\enter = 0 
+                        *this\parent\enter = - 1 
+                        DoEvents( *this\parent, #__event_MouseEnter )
+                     EndIf  
+                  EndIf  
+               EndIf
+               ;
                DoEvents( *this, #__event_MouseEnter )
-               
-               ;\\
-               If mouse( )\drag And
-                  is_scrollbars_( EnteredWidget( ) )
-                  EnteredWidget( )\parent\enter = 1
-               EndIf
-               
-               ;\\
-               If Not is_interact_row_( EnteredWidget( ) )
-                  If Not a_transformer( EnteredWidget( ) )
-                     If Not EnteredWidget( )\bounds\attach
-                        If EnteredWidget( )\address
-                           ForEach this_root_children( )
-                              If this_root_children( ) = EnteredWidget( )
-                                 Break
-                              EndIf
-                              
-                              If this_root_children( )\haschildren And this_root_children( )\enter = 0
-                                 If Not is_interact_row_( this_root_children( ) )
-                                    If IsChild( EnteredWidget( ), this_root_children( ))
-                                       
-                                       this_root_children( )\enter = - 1
-                                       
-                                       If Not this_root_children( )\anchors
-                                          DoEvents( this_root_children( ), #__event_StatusChange, -1, 1 )
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           Next
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
             EndIf
             
             LeavedWidget( ) = *this
@@ -22193,6 +22139,73 @@ EndMacro
 
 
 ;-
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   Uselib(widget)
+   
+   Global object, object1, object2, parent
+   Declare CustomEvents( )
+   
+   ;\\
+   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   a_init(root(), 4)
+   
+   ;\\
+   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+   SetColor(parent, #__color_back, $FFE9E9E9)
+   SetFrame(parent, 20 )
+   
+   ;\\
+   ;object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) 
+   ;object = ComboBox(50, 50, 150, 150, #PB_ComboBox_Editable) 
+   object = Spin(50, 50, 150, 150, 1,1) 
+   SetFrame( object, 0)
+   ;object = Button(50, 50, 150, 150, "button")
+   object1 = String(150, 150, 150, 150, "string")
+   object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
+   
+
+   ;\\
+   Define anchor_size = 30
+   a_set(parent, #__a_full, anchor_size/2)
+   a_set(object, #__a_full, anchor_size)
+   a_set(object1, #__a_full, anchor_size)
+   a_set(object2, #__a_full, anchor_size)
+   
+   ;\\
+   Bind( parent, @CustomEvents(), #__event_cursor )
+;    Bind( object, @CustomEvents(), #__event_cursor )
+;    Bind( object1, @CustomEvents(), #__event_cursor )
+;    Bind( object2, @CustomEvents(), #__event_cursor )
+   
+   ;\\
+   WaitClose( )
+   
+   ;\\
+   Procedure CustomEvents( )
+      Select WidgetEventType( )
+            
+            ;\\ demo change current cursor
+         Case #__event_cursor
+           ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
+            
+            If EventWidget( ) = object2
+               If a_transform( )
+                  If GetCursor( )
+                     If a_index( )
+                        ProcedureReturn cursor::#__cursor_Hand
+                     Else
+                        ProcedureReturn cursor::#__cursor_Cross
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+      EndSelect
+   EndProcedure
+   
+CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    Uselib(widget)
@@ -22371,7 +22384,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseLIB(widget)
@@ -22976,7 +22989,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22739
-; FirstLine = 22703
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22160
+; FirstLine = 21791
+; Folding = --------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0rv------3----------------------------------------------------------------------------------------------------------------ev-------
 ; EnableXP
