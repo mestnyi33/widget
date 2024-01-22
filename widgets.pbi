@@ -2902,16 +2902,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_remove( *this._s_WIDGET )
          Protected i
-         For i = 0 To #__a_count
-            If *this\anchors\id[i]
-               FreeStructure( *this\anchors\id[i] )
-               *this\anchors\id[i] = #Null
-            EndIf
-         Next i
+            For i = 0 To #__a_count
+               If *this\anchors\id[i]
+                  FreeStructure( *this\anchors\id[i] )
+                  *this\anchors\id[i] = #Null
+               EndIf
+            Next i
       EndProcedure
       
       Procedure a_enter( *this._s_WIDGET, *data )
          Protected i, result, a_index
+         ;
          ; atpoint
          For i = 1 To #__a_count
             If a_focused( )\anchors\id[i] And
@@ -2919,15 +2920,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If a_entered( ) <> a_focused( )
                   If a_entered( )\enter > 0
-                     ;Debug 7777777777777
+                     ;Debug "7777777777777 "+a_entered( )\enter
                      a_entered( )\enter = 0
                      DoEvents( a_entered( ), #__event_MouseLeave )
                   Else
                      ;Debug "8888888888888 "+a_entered( )\enter
                      a_entered( )\enter = 0
                   EndIf
-                  a_entered( ) = a_focused( )
-                  *this        = a_focused( )
+                  ;
+                  *this     = a_focused( )
                EndIf
                ;
                a_index = i
@@ -2943,76 +2944,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Next
          ;
          i = 0
-         If Not a_index
-            Debug ""+*this\class +" "+ a_index +" "+ a_entered( ) +" "+ a_focused( )
-         EndIf
-         ; reset 
+         ;
+         ; reset last entered anchors index state
          For i = 1 To #__a_count
             If i <> a_index
-               If a_entered( ) And ;a_entered( ) <> a_focused( ) And
+               If a_entered( ) And 
                   a_entered( )\anchors\id[i] And ;???
                   a_entered( )\anchors\id[i]\color\state <> #__s_0
                   a_entered( )\anchors\id[i]\color\state = #__s_0
-                  ;
-                  a_index( ) = 0
-                  ;
-                  If Not a_index
-                     If a_entered( )\frame_enter( )
-                        ;
-                        If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                             is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
-                           ;
-                           Debug  3333
-                           a_entered( )\enter = 1
-                           DoEvents( a_entered( ), #__event_MouseEnter )
-                        Else
-                           Debug  4444
-                           
-                           a_entered( )\enter = 0
-                           do_cursor_( *this, *this\cursor, - 4 )
-                        EndIf   
-                     EndIf
-                  EndIf
-                  ;
                   a_entered( )\root\repaint = #True
                EndIf
             EndIf
          Next 
          ;
-         i = a_index
-         ; state
-         If i
-            If a_index( ) <> i
-               a_index( ) = i
+         a_index( ) = 0
+         ;
+         ; set new entered anchors index state
+         If a_index
+            a_index( ) = a_index
+            a_entered( ) = *this
+            ;
+            If *this\anchors\id[a_index]\color\state <> #__s_1
+               *this\anchors\id[a_index]\color\state = #__s_1
                ;
-               If *this\anchors\id[i]\color\state <> #__s_1
-                  *this\anchors\id[i]\color\state = #__s_1
-                  ;
-                  do_cursor_( *this, a_transform( )\cursor[i], *data )
-                  ;
-                  If *this\enter > 0
-                     If *data
-                        DoEvents( *this, #__event_MouseLeave )
-                     EndIf
-                  EndIf
-                  ;
-                  If a_focused( ) = *this
-                     ; Debug "a_focus_index"
-                  EndIf
-                  ;
-                  If a_entered( ) = *this
-                     ; Debug "a_enter_index"
-                  EndIf
-                  ;                If *this\anchors\id[i] And
-                  ;                   is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
-                  Debug *this\enter
-                  *this\frame_enter( )
-                  ;                EndIf
-                  *this\root\repaint = #True
-               EndIf
+               *this\root\repaint = #True
                ;
-               result = *this
+               do_cursor_( *this, a_transform( )\cursor[a_index], *data )
             EndIf
+            ;
+            If *this\enter > 0
+               If *data
+                  DoEvents( *this, #__event_MouseLeave )
+               EndIf
+            EndIf
+            ;
+            *this\frame_enter( )
+            result = *this
          EndIf
          ;
          ProcedureReturn result
@@ -3100,6 +3067,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ add anchors on the widget
          If Not a_index( )
+            ;Debug 555555
             ;\\ a_add
             For anchor = 0 To #__a_count
                If *this\anchors\mode & #__a_height = 0 And
@@ -3219,9 +3187,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\anchors And *this\anchors\mode
                If a_entered( ) <> *this
-                 ; Debug "a_show "+*this\class
+                  ;Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
                   
-                  ; Debug "   a_show "+*this\class +" "+ state
                   If a_entered( ) And
                      a_entered( ) <> a_focused( )
                      a_remove( a_entered( ) )
@@ -3230,6 +3197,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   a_entered( ) = *this
                   a_add( *this )
+                  
+                  ;Debug "   a_show "+a_index() +" "+ *this\class +" "+ *this\enter
+                  
                   ProcedureReturn *this
                EndIf
             EndIf
@@ -18085,37 +18055,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this = a_entered( ) 
                   EndIf
                EndIf
-           EndIf
+               ;
+               If Not a_index( )
+                  If *this And
+                     a_entered( ) <> *this
+                     ;
+                     If a_show( *this, 1 )
+;                         If a_index( )
+;                            a_entered( )\enter  =- 1
+;                         EndIf
+                        Debug "SHOW "+a_index( ) +" "+ a_entered( )\class +" "+ a_entered( )\enter 
+                        
+                        ;a_entered( )\frame_enter( )
+                         ;  a_focused( )\root\repaint = #True
+            
+                     EndIf
+                  EndIf
+               EndIf  
+            EndIf
             
             ;\\
             If a_index( )
-;                If a_focused( ) And
-;                   a_focused( )\anchors\id[a_index( )] And
-;                   a_focused( )\anchors\id[a_index( )]\color\state
-;                   ;
-;                   If *this            <> a_focused( )
-;                      *this            = a_focused( )
-;                      EnteredWidget( ) = *this
-;                      LeavedWidget( )  = *this
-;                   EndIf
-;                Else
-                  If a_entered( ) And 
-                     a_entered( )\anchors\id[a_index( )] And
-                     a_entered( )\anchors\id[a_index( )]\color\state
-                     ;
-                     If *this            <> a_entered( ) 
-                        ;                         If ( *this And a_entered( )\index < *this\index )
-                        ;                            Debug 88
-                        ; ;                              DoEvents( a_entered( ), #__event_mouseleave )
-                        ; ;                              DoEvents( *this, #__event_mouseEnter )
-                        ;                                
-                        ;                         Else
-                        *this            = a_entered( )
-                        EnteredWidget( ) = *this
-                        LeavedWidget( )  = *this
-                        ;                         EndIf
-                     EndIf
-;                   EndIf
+               If a_entered( ) And 
+                  a_entered( )\anchors\id[a_index( )] And
+                  a_entered( )\anchors\id[a_index( )]\color\state
+                  ;
+                  If *this            <> a_entered( ) 
+                     ;                         If ( *this And a_entered( )\index < *this\index )
+                     ;                            Debug 88
+                     ; ;                              DoEvents( a_entered( ), #__event_mouseleave )
+                     ; ;                              DoEvents( *this, #__event_mouseEnter )
+                     ;                                
+                     ;                         Else
+                     *this            = a_entered( )
+                     EnteredWidget( ) = *this
+                     LeavedWidget( )  = *this
+                     ;                         EndIf
+                  EndIf
                EndIf
                
                ;\\
@@ -18128,6 +18104,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ; EndIf
             EndIf
+            
+               ;
+               If Not a_index( )
+                  If a_entered( ) And *this = a_entered( ) And 
+                     a_entered( )\frame_enter( )
+                     ;
+                     If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                          is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
+                        ;
+                        a_entered( )\enter = 1
+                        DoEvents( a_entered( ), #__event_MouseEnter )
+                     Else
+                        ;
+                        a_entered( )\enter = 0
+                        do_cursor_( a_entered( ), a_entered( )\cursor, - 4 )
+                     EndIf   
+                  EndIf
+               EndIf
+            
          EndIf
          
          ;\\ reset
@@ -18182,8 +18177,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EnteredWidget( ) = *this
             
             ;\\ если оставлять событие вход/выход нажатого виджета
-            ; If LeavedWidget( ) And Not LeavedWidget( )\dragstart And
-            If LeavedWidget( ) And LeavedWidget( )\enter > 0 And ;Not ( a_transform( ) And a_index( )) And 
+            If LeavedWidget( ) And LeavedWidget( )\enter > 0 And
                Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) And
                Not ( *this And *this\child And *this\parent = LeavedWidget( ) And 
                      is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
@@ -18194,7 +18188,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   LeavedWidget( )\parent\enter = 0
                EndIf
                ;
-               Debug 777
+               Debug "- leave -"
                LeavedWidget( )\enter = 0
                DoEvents( LeavedWidget( ), #__event_MouseLeave )
                ;
@@ -18245,30 +18239,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this And ;Not ( a_transform( ) And a_index( )) And 
-               *this\enter = 0
-               ;
-               If a_transform( )
-                  If Not Mouse( )\press
-                     If *this\child 
-                        If *this\parent 
-                           If Not *this\parent\enter 
-                              If *this\parent\anchors And 
-                                 *this\parent\anchors\mode
-                                 ;
-                                 a_show( *this\parent, 1 )
-                              EndIf
-                           EndIf
-                        EndIf  
-                     Else
-                        If *this\anchors And 
-                           *this\anchors\mode
-                           ;
-                           a_show( *this, 1 )
-                        EndIf
-                     EndIf
-                  EndIf  
-               EndIf
+            If *this And 
+               *this\enter = 0 And Not ( a_transform( ) And a_index( ))
                ;
                If *this\child 
                   If *this\parent 
@@ -22891,7 +22863,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18265
-; FirstLine = 17415
-; Folding = -----------------------------------------8------------------9--v-Hfl1----f+-44---4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0r--t-0----------------------------------------f-+--------87----v--0u-----------------------------------------------------------
+; CursorPosition = 2965
+; FirstLine = 2592
+; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
