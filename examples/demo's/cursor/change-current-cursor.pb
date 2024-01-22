@@ -20,7 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 0)
    ;object = Button(50, 50, 150, 150, "button")
-   object1 = Button(150, 150, 150, 150, "Button")
+   ;;object1 = Button(150, 150, 150, 150, "Button")
+   object1 = Button(125, 140, 150, 150, "Button")
    ;object1 = String(150, 150, 150, 150, "string")
    object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
    
@@ -67,6 +68,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 22
-; FirstLine = 5
+; FirstLine = 7
 ; Folding = --
 ; EnableXP

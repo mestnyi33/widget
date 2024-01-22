@@ -2935,6 +2935,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Break
             Else
                If *this\anchors\id[i] And
+                  is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
                   is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
                   ;
                   a_index = i
@@ -18178,31 +18179,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ если оставлять событие вход/выход нажатого виджета
             If LeavedWidget( ) And LeavedWidget( )\enter > 0 And
-               Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) And
-               Not ( *this And *this\child And *this\parent = LeavedWidget( ) And 
-                     is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
-                     is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_draw] ))
+               Not ( LeavedWidget( )\dragstart And LeavedWidget( )\resize ) ;And
+;                Not ( *this And *this\child And *this\parent = LeavedWidget( ) And 
+;                      is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_frame] ) And
+;                      is_atpoint_( LeavedWidget( ), mouse_x, mouse_y, [#__c_draw] ))
                ;
                If mouse( )\drag And
                   is_scrollbars_( LeavedWidget( ) )
                   LeavedWidget( )\parent\enter = 0
                EndIf
                ;
-               ;Debug "- leave -"
                LeavedWidget( )\enter = 0
                DoEvents( LeavedWidget( ), #__event_MouseLeave )
                ;
-               If LeavedWidget( )\child And LeavedWidget( )\parent ;And LeavedWidget( )\parent\frame_enter( )
-                  If Not Bool( is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_frame] ) And
-                               is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_draw] )) 
-                     ;
-                     LeavedWidget( )\parent\enter = 0
-                    ; DoEvents( LeavedWidget( )\parent, #__event_MouseLeave )
-                  EndIf  
+               If LeavedWidget( )\child And
+                  LeavedWidget( )\parent And 
+                  LeavedWidget( )\parent\frame_enter( ) And
+                  Not Bool( is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_frame] ) And
+                            is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_draw] )) 
                   ;
-                  If ( a_transform( ) And a_index( ))
-                    ; DoEvents( LeavedWidget( )\parent, #__event_MouseLeave )
-                  EndIf
+                  LeavedWidget( )\parent\enter = 0
                EndIf
                ;
                If Not is_interact_row_( LeavedWidget( ) )
@@ -18239,61 +18235,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this And 
-               *this\enter = 0 And Not ( a_transform( ) And a_index( ))
+            If *this And Not ( a_transform( ) And a_index( )) And 
+               *this\enter = 0
+               *this\enter = 1
                ;
-               If *this\child 
-                  If *this\parent 
-                     ;If Not *this\parent\enter 
-                        ;If Not ( a_transform( ) And a_index( )) 
-;                      If *this\parent\frame_enter( )
-;                         *this\parent\enter = 0
-;                            DoEvents( *this\parent, #__event_MouseLeave )
-;                          ;  DoEvents( *this\parent, #__event_MouseEnter )
-;                         EndIf
-                        ;EndIf  
-                     ;EndIf  
-                  EndIf  
+               DoEvents( *this, #__event_MouseEnter )
+               ;
+               If mouse( )\drag And
+                  is_scrollbars_( EnteredWidget( ) )
+                  EnteredWidget( )\parent\enter = 1
                EndIf
                ;
-              ; If Not ( a_transform( ) And a_index( )) 
-                  ;
-                  *this\enter = 1
-                  ;
-                  DoEvents( *this, #__event_MouseEnter )
-                  ;
-                  If mouse( )\drag And
-                     is_scrollbars_( EnteredWidget( ) )
-                     EnteredWidget( )\parent\enter = 1
-                  EndIf
-                  ;
-                  If Not is_interact_row_( EnteredWidget( ) )
-                     If Not a_transformer( EnteredWidget( ) )
-                        If Not EnteredWidget( )\bounds\attach
-                           If EnteredWidget( )\address
-                              ForEach this_root_children( )
-                                 If this_root_children( ) = EnteredWidget( )
-                                    Break
-                                 EndIf
-                                 ;
-                                 If this_root_children( )\haschildren And this_root_children( )\enter = 0
-                                    If Not is_interact_row_( this_root_children( ) )
-                                       If IsChild( EnteredWidget( ), this_root_children( ))
-                                          ;
-                                          this_root_children( )\frame_enter( )
-                                          ;
-                                          If Not this_root_children( )\anchors
-                                             DoEvents( this_root_children( ), #__event_StatusChange, -1, 1 )
-                                          EndIf
+               If Not is_interact_row_( EnteredWidget( ) )
+                  If Not a_transformer( EnteredWidget( ) )
+                     If Not EnteredWidget( )\bounds\attach
+                        If EnteredWidget( )\address
+                           ForEach this_root_children( )
+                              If this_root_children( ) = EnteredWidget( )
+                                 Break
+                              EndIf
+                              ;
+                              If this_root_children( )\haschildren And this_root_children( )\enter = 0
+                                 If Not is_interact_row_( this_root_children( ) )
+                                    If IsChild( EnteredWidget( ), this_root_children( ))
+                                       ;
+                                       this_root_children( )\frame_enter( )
+                                       ;
+                                       If Not this_root_children( )\anchors
+                                          DoEvents( this_root_children( ), #__event_StatusChange, -1, 1 )
                                        EndIf
                                     EndIf
                                  EndIf
-                              Next
-                           EndIf
+                              EndIf
+                           Next
                         EndIf
                      EndIf
                   EndIf
-              ; EndIf
+               EndIf
             EndIf
             
             LeavedWidget( ) = *this
@@ -22871,7 +22849,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18070
-; FirstLine = 17976
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2--8t-0-4---------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 18181
+; FirstLine = 18037
+; Folding = -------------------------------------------------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2--8tf-f----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
