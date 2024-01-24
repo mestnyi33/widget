@@ -2921,13 +2921,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
                ;
                If a_entered( ) <> a_focused( )
-                  If a_entered( )\enter > 0
-                     ;Debug "7777777777777 "+a_entered( )\enter
-                     a_entered( )\enter = 0
-                     DoEvents( a_entered( ), #__event_MouseLeave )
-                  Else
-                     ;Debug "8888888888888 "+a_entered( )\enter
-                     a_entered( )\enter = 0
+                  If a_entered( )
+                     If a_entered( )\enter > 0
+                        ;Debug "7777777777777 "+a_entered( )\enter
+                        a_entered( )\enter = 0
+                        DoEvents( a_entered( ), #__event_MouseLeave )
+                     Else
+                        ;Debug "8888888888888 "+a_entered( )\enter
+                        a_entered( )\enter = 0
+                     EndIf
                   EndIf
                   ;
                   *this     = a_focused( )
@@ -3280,8 +3282,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   DoFocus( *this, #__event_Focus, a_index( ), *this\data )
                EndIf
-               ;
-               a_delta( *this )
             EndIf
          EndIf
          ProcedureReturn result
@@ -3289,22 +3289,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i a_init( *this._s_WIDGET, grid_size.a = 7, grid_type.b = 0 )
          Protected i
-         
+         ;
          If Not *this\anchors
             *this\anchors.allocate( ANCHORS )
          EndIf
-         
+         ;
          If Not a_transform( )
             a_transform( ).allocate( TRANSFORM )
          EndIf
-         
+         ;
          a_main( ) = *this
-         
+         ;
          a_transform( )\grid_type = grid_type
          a_transform( )\grid_size = grid_size + 1
+         ;
          If IsImage( a_transform( )\grid_image )
             FreeImage( a_transform( )\grid_image )
          EndIf
+         ;
          a_transform( )\grid_image = a_grid_image( a_transform( )\grid_size - 1, a_transform( )\grid_type, $FF000000, *this\fs, *this\fs )
          ;
          ;\\
@@ -3320,7 +3322,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_selector([i])\color\back[2] = $ffFFFFFF
             EndIf
          Next i
-         
       EndProcedure
       
       Procedure a_free( *this._s_WIDGET )
@@ -3570,11 +3571,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ set current
                   ; transform widget
                   If a_entered( )
-                     If a_entered( )\anchors\mode & #__a_noAnchors
-                        a_delta( a_entered( ) )
-                     Else
+                     If Not a_entered( )\anchors\mode & #__a_noAnchors
                         a_set( a_entered( ) )
                      EndIf
+                     a_delta( a_entered( ) )
                      *pressed = a_entered( )
                   Else
                      a_focused( ) = #Null
@@ -14612,9 +14612,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If a_transform( )
                If Not *this\anchors
                   *this\anchors.allocate( ANCHORS )
-                  ;*this\anchors\mode = #__a_full
                   *this\anchors\size = #__a_anchors_size
                   *this\anchors\pos = *this\anchors\size / 2
+                  ;
+                  If a_main( ) And IsChild( *this, a_main( ))
+                     *this\anchors\mode = #__a_full
+                  EndIf
                EndIf
             EndIf
             
@@ -17651,7 +17654,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_focused( )\root = *root
                   
                   ; draw key-focused-widget anchors
-                  clip_output_( a_main( ), [#__c_draw2] )
+                  If a_main( ) 
+                     clip_output_( a_main( ), [#__c_draw2] )
+                  EndIf
+                  ;
                   a_draw( a_focused( ) )
                EndIf
                
@@ -20898,7 +20904,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Root( )    = __roots( )
             *root      = __roots( )
             
-            a_init( *root )
+            ;a_init( *root )
             *root\type      = #__type_Container
             *root\container = 1
             
@@ -22850,7 +22856,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3524
-; FirstLine = 2722
-; Folding = ----------------------------------------------------------f+o44--P8r+Thf+-44-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+-ftd-f----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3305
+; FirstLine = 2644
+; Folding = ----------------------------------------------------------f+ovv--f3X0nC-0-vv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------jP+--+-------------------------------------------------------------------------------------------+2--rt8-8----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
