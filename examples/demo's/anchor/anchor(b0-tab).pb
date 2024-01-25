@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If type = #PB_GadgetType_Container
       Container(x,y,width,height)
     ElseIf type = #__Type_Window
-      Window(x,y,width,height, "", parent)
+      Window(x,y,width,height, "", #PB_Window_SystemMenu, parent)
     ElseIf type = #PB_GadgetType_ScrollArea
       ScrollArea(x,y,width,height, 500,500,1)
     ElseIf type = #PB_GadgetType_Panel
@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       AddItem(widget(), -1, "2Layer = "+text.s)
       SetState(widget(),1)
     ElseIf type = #PB_GadgetType_MDI
-      AddItem(widget(), -1, "", -1, #PB_Window_BorderLess)
+      AddItem(widget(), -1, "", -1);, #PB_Window_BorderLess)
       Resize(widget(), x,y,width,height)
     EndIf
     
@@ -84,8 +84,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
      WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 21
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

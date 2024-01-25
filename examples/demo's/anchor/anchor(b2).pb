@@ -18,19 +18,19 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
   
   ;\\ Create five different objects
-  *Object1 = a_object(20, 20, 200, 100, " left & right", RGBA(64, 128, 192, alpha)) 
-  *Object2 = a_object(20, 140, 200, 100, " top & bottom" +#LF$+ " cursor = hand", RGBA(192, 64, 128, alpha))
-  *Object3 = a_object(20, 260, 200, 100, " left & right" +#LF$+ " top & bottom" +#LF$+ " cursor = cross", RGBA(128, 192, 64, alpha))
-  *Object4 = a_object(240, 20, 200, 100, " left-top &" +#LF$+ " left-bottom &" +#LF$+ " right-top &" +#LF$+ " right-bottom &", RGBA(192, 128, 64, alpha))
-  *Object5 = a_object(240, 140, 200, 100, " full", RGBA(128, 64, 192, alpha))
+  *Object1 = a_object(20, 20, 200, 100, " left & right", RGBA(64, 128, 192, alpha) );, 0, 1*5) 
+  *Object2 = a_object(20, 140, 200, 100, " top & bottom" +#LF$+ " cursor = hand", RGBA(192, 64, 128, alpha) );, 0, 2*5)
+  *Object3 = a_object(20, 260, 200, 100, " left & right" +#LF$+ " top & bottom" +#LF$+ " cursor = cross", RGBA(128, 192, 64, alpha) );, 0, 3*5)
+  *Object4 = a_object(240, 20, 200, 100, " left-top &" +#LF$+ " left-bottom &" +#LF$+ " right-top &" +#LF$+ " right-bottom &", RGBA(192, 128, 64, alpha) );, 0, 4*5)
+  *Object5 = a_object(240, 140, 200, 100, " full", RGBA(128, 64, 192, alpha) );, 0, 5*5)
   
-  ;\\
-  Define size = 1
-  SetFrame(*Object1, size)
-  SetFrame(*Object2, size)
-  SetFrame(*Object3, size)
-  SetFrame(*Object4, size)
-  SetFrame(*Object5, size)
+;   ;\\
+;   Define size = 1
+;   SetFrame(*Object1, size)
+;   SetFrame(*Object2, size)
+;   SetFrame(*Object3, size)
+;   SetFrame(*Object4, size)
+;   SetFrame(*Object5, size)
   
   ;\\ Define different handles to the objects
   a_set(*Object1, #__a_width | #__a_position, 8)
@@ -59,8 +59,6 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 11
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
