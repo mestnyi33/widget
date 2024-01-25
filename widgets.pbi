@@ -10680,14 +10680,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            ;\\ collapse box size
-                           If ( *this\mode\lines Or *this\mode\buttons ) And
+                           If ( *this\mode\Lines Or *this\mode\Buttons ) And
                               Not ( *this\__rows( )\sublevel And *this\mode\check = #__m_optionselect )
                               *this\__rows( )\ButtonBox( )\width  = buttonsize
                               *this\__rows( )\ButtonBox( )\height = buttonsize
                            EndIf
                            
                            ;\\ sublevel position
-                           *this\row\sublevelpos = *this\__rows( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\check ) * (boxpos + boxsize) + Bool( *this\mode\lines Or *this\mode\buttons ) * ( buttonpos + buttonsize )
+                           *this\row\sublevelpos = *this\__rows( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\check ) * (boxpos + boxsize) + Bool( *this\mode\Lines Or *this\mode\Buttons ) * ( buttonpos + buttonsize )
                            
                            ;\\ check & option box position
                            If ( *this\mode\check = #__m_checkselect Or
@@ -10702,7 +10702,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            ;\\ expanded & collapsed box position
-                           If ( *this\mode\lines Or *this\mode\buttons ) And Not ( *this\__rows( )\sublevel And *this\mode\check = #__m_optionselect )
+                           If ( *this\mode\Lines Or *this\mode\Buttons ) And Not ( *this\__rows( )\sublevel And *this\mode\check = #__m_optionselect )
                               
                               If *this\mode\check = #__m_optionselect
                                  *this\__rows( )\ButtonBox( )\x = *this\row\sublevelpos - 10
@@ -10912,7 +10912,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected *buttonBox._s_buttons
             
             ; Draw plots
-            If *this\mode\lines
+            If *this\mode\Lines
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                ; drawing_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
                
@@ -10932,7 +10932,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ; for the tree horizontal line
-                     If Not (*this\mode\buttons And *rows( )\childrens)
+                     If Not (*this\mode\Buttons And *rows( )\childrens)
                         Line((xs + *rows( )\ButtonBox( )\x + *rows( )\ButtonBox( )\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
                      Else
                         If Bool( Not *rows( )\ButtonBox( )\state)
@@ -10951,7 +10951,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ Draw buttons
-            If *this\mode\buttons Or
+            If *this\mode\Buttons Or
                ( *this\mode\check = #__m_checkselect Or *this\mode\check = #__m_optionselect )
                
                ;\\ Draw boxs ( check&option )
@@ -10977,7 +10977,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      X = row_x_( *this, *rows( ) ) + *rows( )\ButtonBox( )\x - _scroll_x_
                      Y = row_y_( *this, *rows( ) ) + *rows( )\ButtonBox( )\y - _scroll_y_
                      
-                     If *this\mode\buttons And *rows( )\childrens And
+                     If *this\mode\Buttons And *rows( )\childrens And
                         Not ( *rows( )\sublevel And *this\mode\check = #__m_optionselect )
                         
                         ;               If #PB_Compiler_OS = #PB_OS_Windows Or
@@ -11288,7 +11288,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro set_state_list_( _address_, _state_ )
          If _state_ > 0
-            If *this\row\clickselect
+            If *this\mode\clickSelect
                If _address_\enter = #False
                   _address_\enter = #True
                EndIf
@@ -11305,7 +11305,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
          ElseIf _address_
-            If Not *this\row\clickselect
+            If Not *this\mode\clickSelect
                If _address_\press = #True
                   _address_\press = #False
                EndIf
@@ -11489,7 +11489,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\focus
                
-               If *this\row\clickselect
+               If *this\mode\clickSelect
                   *current = *this\EnteredRow( )
                Else
                   *current = *this\FocusedRow( )
@@ -11497,7 +11497,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Select Keyboard( )\key
                   Case #PB_Shortcut_Space
-                     If *this\row\clickselect
+                     If *this\mode\clickSelect
                         If *current\press = #True
                            *current\press       = #False
                            *current\color\state = #__s_1
@@ -11553,7 +11553,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               set_state_list_( *this\__rows( ), #True )
                               
-                              If Not *this\row\clickselect
+                              If Not *this\mode\clickSelect
                                  *this\FocusedRow( ) = *this\__rows( )
                               EndIf
                               
@@ -11561,7 +11561,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\EnteredRow( ) = *this\FocusedRow( )
                               EndIf
                               
-                              If *this\row\multiselect
+                              If *this\mode\multiSelect
                                  _multi_select_items_( *this, *this\FocusedRow( ) )
                               EndIf
                               
@@ -11604,7 +11604,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               set_state_list_( *this\__rows( ), #True )
                               
-                              If Not *this\row\clickselect
+                              If Not *this\mode\clickSelect
                                  *this\FocusedRow( ) = *this\__rows( )
                               EndIf
                               
@@ -11612,7 +11612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\EnteredRow( ) = *this\FocusedRow( )
                               EndIf
                               
-                              If *this\row\multiselect
+                              If *this\mode\multiSelect
                                  _multi_select_items_( *this, *this\FocusedRow( ) )
                               EndIf
                               
@@ -11651,7 +11651,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                EndSelect
                
-               If *this\row\clickselect
+               If *this\mode\clickSelect
                   *this\EnteredRow( ) = *current
                Else
                   *this\FocusedRow( ) = *current
@@ -12105,7 +12105,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_Window_BorderLess
                   flags | #__flag_BorderLess
                EndIf
-               
+               ;
             Case #__type_MDI
                If PBFlag & #PB_MDI_AutoSize = #PB_MDI_AutoSize
                   flags & ~ #PB_MDI_AutoSize
@@ -12115,7 +12115,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_MDI_BorderLess
                   flags | #__flag_BorderLess
                EndIf
-               
+               ;
             Case #__type_CheckBox
                If PBFlag & #PB_CheckBox_Right = #PB_CheckBox_Right
                   flags & ~ #PB_CheckBox_Right
@@ -12125,7 +12125,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_CheckBox_Center
                   flags | #__text_center
                EndIf
-               
+               ;
             Case #__type_Text
                If PBFlag & #PB_Text_Center = #PB_Text_Center
                   flags & ~ #PB_Text_Center
@@ -12136,7 +12136,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_Text_Right
                   flags | #__text_right
                EndIf
-               
+               ;
             Case #__type_Button ; ok
                If PBFlag & #PB_Button_MultiLine = #PB_Button_MultiLine
                   flags & ~ #PB_Button_MultiLine
@@ -12150,7 +12150,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_Button_Right
                   flags | #__text_right
                EndIf
-               
+               ;
             Case #__type_String ; ok
                If PBFlag & #PB_String_Password = #PB_String_Password
                   flags & ~ #PB_String_Password
@@ -12176,7 +12176,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_String_ReadOnly
                   flags | #__text_readonly
                EndIf
-               
+               ;
             Case #__type_Editor
                If PBFlag & #PB_Editor_ReadOnly = #PB_Editor_ReadOnly
                   flags & ~ #PB_Editor_ReadOnly
@@ -12186,9 +12186,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_Editor_WordWrap
                   flags | #__text_wordwrap
                EndIf
-               
-               
-            Case #__type_Tree, #__type_listicon
+               ;
+            Case #__type_Tree
                If PBFlag & #PB_Tree_AlwaysShowSelection = #PB_Tree_AlwaysShowSelection
                   flags & ~ #PB_Tree_AlwaysShowSelection
                EndIf
@@ -12207,6 +12206,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If PBFlag & #PB_Tree_NoLines = #PB_Tree_NoLines
                   flags & ~ #PB_Tree_NoLines
                   flags | #__tree_nolines
+               EndIf
+               ;   
+            Case #__type_ListView ; Ok
+               If PBFlag & #PB_ListView_ClickSelect = #PB_ListView_ClickSelect
+                  flags & ~ #PB_ListView_ClickSelect
+                  flags | #__flag_clickselect
+               EndIf
+               If PBFlag & #PB_ListView_MultiSelect = #PB_ListView_MultiSelect
+                  flags & ~ #PB_ListView_MultiSelect
+                  flags | #__flag_multiselect
+               EndIf
+               ;  
+            Case #__type_listicon
+               If PBFlag & #PB_ListIcon_AlwaysShowSelection = #PB_ListIcon_AlwaysShowSelection
+                  flags & ~ #PB_ListIcon_AlwaysShowSelection
+               EndIf
+               If PBFlag & #PB_ListIcon_CheckBoxes = #PB_ListIcon_CheckBoxes
+                  flags & ~ #PB_ListIcon_CheckBoxes
+                  flags | #__tree_checkboxes
+               EndIf
+               If PBFlag & #PB_ListIcon_ThreeState = #PB_ListIcon_ThreeState
+                  flags & ~ #PB_ListIcon_ThreeState
+                  flags | #__tree_threestate
                EndIf
                
          EndSelect
@@ -12238,15 +12260,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.q Flag( *this._s_WIDGET, flag.q = #Null, state.b = #PB_Default )
          Protected result.q
-         Protected string = Bool( *this\type = #__type_Text Or
-                                  *this\type = #__type_Editor Or
-                                  *this\type = #__type_String Or
-                                  *this\type = #__type_Button Or
-                                  *this\type = #__type_Option Or
-                                  *this\type = #__type_Spin Or
-                                  *this\type = #__type_Hyperlink Or
-                                  *this\type = #__type_ComboBox Or
-                                  *this\type = #__type_CheckBox )
+         ;
+         Protected string_bar = Bool( *this\type = #__type_Text Or
+                                      *this\type = #__type_Editor Or
+                                      *this\type = #__type_String Or
+                                      *this\type = #__type_Button Or
+                                      *this\type = #__type_Option Or
+                                      *this\type = #__type_Spin Or
+                                      *this\type = #__type_Hyperlink Or
+                                      *this\type = #__type_ComboBox Or
+                                      *this\type = #__type_CheckBox )
+         ;
+         Protected list_bar = Bool( *this\type = #__type_Tree Or
+                                    *this\type = #__type_ListIcon Or
+                                    *this\type = #__type_ListView Or
+                                    *this\type = #__type_Property )
+         
          ;
          state = Bool( state )
          ;
@@ -12272,55 +12301,65 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ text align
-               If string
-                  If flag & #__text_multiline
-                     *this\text\multiline = state
-                  EndIf
-                  If flag & #__text_wordwrap
-                     *this\text\multiline = - state
+               If string_bar
+                  *this\TextChange( ) = #__text_update
+                  ; 
+                  If flag & #__text_invert
+                     *this\text\invert = state
                   EndIf
                   If flag & #__text_vertical
                      *this\text\vertical = state
                   EndIf
-                  If flag & #__text_invert
-                     *this\text\invert = state
+                  If flag & #__text_wordwrap
+                     *this\text\multiline = - state
                   EndIf
-                  
+                  If flag & #__text_multiline
+                     *this\text\multiline = state
+                  EndIf
+                  ;
                   If flag & #__text_left
                      *this\text\align\left = state
-                     If Not state And *this\flag & #__text_right
-                        *this\text\align\right = #True
+                     ;
+                     If Not *this\text\align\left 
+                        If *this\flag & #__text_right
+                           *this\text\align\right = #True
+                        EndIf
                      EndIf
                   EndIf
-                  
-                  If flag & #__text_right
-                     *this\text\align\right = state
-                     If Not state And *this\flag & #__text_left
-                        *this\text\align\left = #True
-                     EndIf
-                  EndIf
-                  
                   If flag & #__text_top
                      *this\text\align\top = state
-                     If Not state And *this\flag & #__text_bottom
-                        *this\text\align\bottom = #True
+                     ;
+                     If Not *this\text\align\top 
+                        If *this\flag & #__text_bottom
+                           *this\text\align\bottom = #True
+                        EndIf
                      EndIf
                   EndIf
-                  
+                  If flag & #__text_right
+                     *this\text\align\right = state
+                     ;
+                     If Not *this\text\align\right 
+                        If *this\flag & #__text_left
+                           *this\text\align\left = #True
+                        EndIf
+                     EndIf
+                  EndIf
                   If flag & #__text_bottom
                      *this\text\align\bottom = state
-                     If Not state And *this\flag & #__text_top
-                        *this\text\align\top = #True
+                     ;
+                     If Not *this\text\align\bottom 
+                        If *this\flag & #__text_top
+                           *this\text\align\top = #True
+                        EndIf
                      EndIf
                   EndIf
-                  
                   If flag & #__text_center
                      *this\text\align\left   = #False
                      *this\text\align\top    = #False
                      *this\text\align\right  = #False
                      *this\text\align\bottom = #False
                   EndIf
-                  
+                  ;
                   ;\\
                   If *this\type = #__type_Button
                      If flag & #PB_Button_Toggle
@@ -12333,49 +12372,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ;\\
+                     ;\\ ???
                      If *this\text\align\top = #True And
                         *this\text\align\bottom = #True
+                        ;
                         *this\text\align\top    = #False
                         *this\text\align\bottom = #False
                      EndIf
                      If *this\text\align\left = #True And
                         *this\text\align\right = #True
+                        ;
                         *this\text\align\left  = #False
                         *this\text\align\right = #False
                      EndIf
                   EndIf
-                  
-                  *this\TextChange( ) = #__text_update
                EndIf
                
-               
                ;\\
-               If *this\type = #__type_Tree Or
-                  *this\type = #__type_ListIcon Or
-                  *this\type = #__type_ListView Or
-                  *this\type = #__type_property
-                  
-                  If *this\type = #__type_ListView
-                     If flag & #PB_ListView_ClickSelect = #PB_ListView_ClickSelect
-                        *this\row\clickselect = 1
-                     EndIf
-                     If flag & #PB_ListView_MultiSelect = #PB_ListView_MultiSelect
-                        *this\row\multiselect = 1
-                     EndIf
-                  EndIf
+               If list_bar
                   If flag & #__flag_clickselect = #__flag_clickselect
-                     *this\row\clickselect = 1
+                     *this\mode\clickSelect = 1
                   EndIf
                   If flag & #__flag_multiselect = #__flag_multiselect
-                     *this\row\multiselect = 1
+                     *this\mode\multiSelect = 1
                   EndIf
                   
                   If flag & #__tree_nolines
-                     *this\mode\lines = Bool( state )
+                     *this\mode\Lines = Bool( state )
                   EndIf
                   If flag & #__tree_nobuttons
-                     *this\mode\buttons = state
+                     *this\mode\Buttons = state
                      
                      If *this\count\items
                         If *this\flag & #__tree_OptionBoxes
@@ -12445,7 +12471,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   
-                  If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
+                  If ( *this\mode\Lines Or *this\mode\Buttons Or *this\mode\check ) And Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
                      *this\row\sublevelsize = 6;18
                   Else
                      *this\row\sublevelsize = 0
@@ -13778,7 +13804,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\FocusedRow( ) = *this\__rows( )
                         
                         ; click select mode
-                        If *this\row\clickselect
+                        If *this\mode\clickSelect
                            If *this\FocusedRow( )\focus
                               *this\FocusedRow( )\focus       = 0
                               *this\FocusedRow( )\color\state = #__s_0
@@ -15970,7 +15996,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_HyperLink
                Color = *param_1
                
-               *this\mode\lines = constants::_check_( Flag, #PB_HyperLink_Underline )
+               *this\mode\Lines = constants::_check_( Flag, #PB_HyperLink_Underline )
                
                *this\color\fore[#__s_0]  = - 1
                *this\color\back[#__s_0]  = _get_colors_( )\fore
@@ -16497,7 +16523,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    *this\type = #__type_ExplorerList Or
                    *this\type = #__type_Property
                
-               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), Bool(( *this\mode\buttons = 0 And *this\mode\lines = 0 ) = 0 ))
+               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), Bool(( *this\mode\Buttons = 0 And *this\mode\Lines = 0 ) = 0 ))
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_ScrollArea
                
@@ -17090,7 +17116,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DrawRotatedText( x + *this\__rows( )\x + *this\__rows( )\text\x, y + *this\__rows( )\y + *this\__rows( )\text\y,
                                    *this\__rows( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__rows( )\color\font )
                   
-                  If *this\mode\lines
+                  If *this\mode\Lines
                      Protected i, count = Bool( func::GetFontSize( *this\__rows( )\text\fontID ) > 13 )
                      For i = 0 To count
                         Line( x + *this\__rows( )\x + *this\__rows( )\text\x, y + *this\__rows( )\y + *this\__rows( )\text\y + *this\__rows( )\text\height - count + i - 1, *this\__rows( )\text\width, 1, *this\color\front[state] )
@@ -18818,7 +18844,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ change enter/leave state  And *this\press = 0
-            If *this\EnteredRow( ) <> *item; ;And Not ( ( *this\press And Not Mouse( )\drag ) And Not *item );And Not *this\row\multiselect )
+            If *this\EnteredRow( ) <> *item; ;And Not ( ( *this\press And Not Mouse( )\drag ) And Not *item );And Not *this\mode\multiSelect )
                                            ; If *this\PressedRow( )
                                            ; Debug *this\PressedRow( )\index
                                            ; EndIf
@@ -18828,8 +18854,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\EnteredRow( )\enter = 0
                      
                      If ( *this\press And Not Mouse( )\drag ) And
-                        Not *this\row\multiselect And
-                        Not *this\row\clickselect
+                        Not *this\mode\multiSelect And
+                        Not *this\mode\clickSelect
                         
                         If *this\EnteredRow( )\color\state = #__s_2
                            *this\EnteredRow( )\color\state = #__s_0
@@ -18854,7 +18880,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\EnteredRow( ) = *item
                
                ;\\
-               If *this\row\multiselect
+               If *this\mode\multiSelect
                   If Mouse( )\press And *this\PressedRow( ) And *this\EnteredRow( )
                      _multi_select_items_( *this, *this\EnteredRow( ) )
                   EndIf
@@ -18865,8 +18891,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\EnteredRow( )\enter = 0
                      *this\EnteredRow( )\enter = 1
                      
-                     If ( *this\press And Not Mouse( )\drag ) And ( *this\row\clickselect = 0 Or
-                                                                    ( *this\row\clickselect And *this\row\multiselect ))
+                     If ( *this\press And Not Mouse( )\drag ) And ( *this\mode\clickSelect = 0 Or
+                                                                    ( *this\mode\clickSelect And *this\mode\multiSelect ))
                         If *this\EnteredRow( )\color\state = #__s_0
                            *this\EnteredRow( )\color\state = #__s_2
                         EndIf
@@ -18884,7 +18910,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ update non-focus status
                      If Not ( *this\LeavedRow( ) = #Null And *this\EnteredRow( ) = *this\FocusedRow( ) And
-                              Not ( *this\press And Not *this\row\clickselect And Not *this\row\multiselect ) )
+                              Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ) )
                         ; Debug " items status change enter"
                         
                         If *this\anchors
@@ -18898,7 +18924,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-               ElseIf *this\press = 0 And Not ( *this\LeavedRow( ) = *this\FocusedRow( ) And Not ( *this\press And Not *this\row\clickselect And Not *this\row\multiselect ) )
+               ElseIf *this\press = 0 And Not ( *this\LeavedRow( ) = *this\FocusedRow( ) And Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ) )
                   ; Debug " items status change leave"
                   
                   If *this\anchors
@@ -18979,7 +19005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\row\multiselect Or *this\row\clickselect
+               If *this\mode\multiSelect Or *this\mode\clickSelect
                   PushListPosition( *this\__rows( ) )
                   ForEach *this\__rows( )
                      If *this\__rows( ) <> *this\FocusedRow( )
@@ -19015,7 +19041,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ok
             If eventtype = #__event_LostFocus
-               If *this\row\multiselect Or *this\row\clickselect
+               If *this\mode\multiSelect Or *this\mode\clickSelect
                   PushListPosition( *this\__rows( ) )
                   ForEach *this\__rows( )
                      If *this\__rows( ) <> *this\FocusedRow( )
@@ -19045,7 +19071,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\FocusedRowIndex( ) = *this\EnteredRow( )\index
                      
                      ;\\
-                     If *this\row\multiselect And Not *this\row\clickselect
+                     If *this\mode\multiSelect And Not *this\mode\clickSelect
                         PushListPosition( *this\__rows( ) )
                         ForEach *this\__rows( )
                            If *this\__rows( )\color\state <> #__s_0
@@ -19068,7 +19094,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\PressedRow( ) = *this\EnteredRow( )
                      
                      ;\\
-                     If *this\row\clickselect
+                     If *this\mode\clickSelect
                         *this\PressedRow( )\press ! 1
                         If *this\PressedRow( )\press
                            *this\PressedRow( )\color\state = #__s_2
@@ -19168,8 +19194,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   
                   If *this\PressedRow( )
-                     If *this\row\clickselect
-                        If *this\row\multiselect
+                     If *this\mode\clickSelect
+                        If *this\mode\multiSelect
                            PushListPosition( *this\__rows( ) )
                            ForEach *this\__rows( )
                               If *this\__rows( )\color\state = #__s_2
@@ -19210,7 +19236,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\EnteredRow( ) And
                            *this\EnteredRow( )\enter
                            
-                           If Not *this\row\multiselect
+                           If Not *this\mode\multiSelect
                               If *this\FocusedRow( ) And
                                  *this\FocusedRow( ) <> *this\EnteredRow( )
                                  *this\FocusedRow( )\enter       = 0
@@ -19222,7 +19248,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\FocusedRow( ) = *this\EnteredRow( )
                         EndIf
                         
-                        If Not *this\row\multiselect
+                        If Not *this\mode\multiSelect
                            If *this\PressedRow( ) <> *this\EnteredRow( )
                               If Not *this\PressedRow( )\focus
                                  *this\PressedRow( )\enter       = 0
@@ -19241,7 +19267,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\FocusedRow( )\press
                               *this\FocusedRow( )\press = 0
                            Else
-                              If Not *this\row\multiselect
+                              If Not *this\mode\multiSelect
                                  If *this\anchors
                                     *this\root\repaint = #True
                                  Else
@@ -22857,7 +22883,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12238
-; FirstLine = 11440
-; Folding = ----------------------------------------------------------f+ovv--f3X0nC-0-vv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------jP+--+-------------------------------------------------------------------------------------------+2--rt8-8----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19269
+; FirstLine = 17934
+; Folding = ----------------------------------------------------------f+ovv--f3X0nC-0-vv--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------HAA5--fw+n--------------------------------------------------------jP+--+-------------------------------------------------------------------------------------------+2--rt8-8----------------------------------------------------------------------------------------------------------------------
 ; EnableXP

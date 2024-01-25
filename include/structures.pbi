@@ -63,10 +63,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          lines.b
          buttons.b
-         gridlines.b
-         fullselection.b
+         gridLines.b
+         fullSelection.b
+         clickSelect.b
+         multiSelect.b
          collapsed.b
-         threestate.b
+         threeState.b
       EndStructure
       ;--     COUNT
       Structure _s_COUNT
@@ -369,10 +371,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevelcolumn.a
          sublevelpos.a
          sublevelsize.a
-         
-         clickselect.b
-         multiselect.b
-         
+         ;
          *focused._s_rows         ; focused item
          *pressed._s_rows         ; pushed item
          *entered._s_rows         ; entered item
@@ -725,7 +724,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 172
-; FirstLine = 118
-; Folding = -m4DGnv9--
+; CursorPosition = 66
+; FirstLine = 45
+; Folding = -n4DG4v9--
 ; EnableXP
