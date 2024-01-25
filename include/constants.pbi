@@ -223,23 +223,27 @@
       #__bar_maximum    = 2
       #__bar_pagelength = 3
       #__bar_scrollstep = 5
-      
+      ;
       ;\\ binary
       #__bar_buttonsize = 8
       #__bar_direction  = 16
       #__bar_invert     = #__flag_invert
       #__bar_vertical   = #__flag_vertical
       #__bar_nobuttons  = #__flag_nogadgets
+      ;
+      #__bar_horizontal = 2
       
       
       ;-\\ Text
       #__text_invert    = #__flag_invert
       #__text_vertical  = #__flag_vertical
+      ;
       #__text_left      = #__flag_textleft
       #__text_top       = #__flag_texttop
       #__text_right     = #__flag_textright
       #__text_bottom    = #__flag_textbottom
       #__text_center    = #__flag_textcenter
+      ;
       #__text_multiline = #__flag_textmultiline
       #__text_wordwrap  = #__flag_textwordwrap
       #__text_numeric   = #__flag_textnumeric
@@ -842,7 +846,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 46
+; CursorPosition = 240
+; FirstLine = 228
 ; Folding = ---
 ; EnableXP

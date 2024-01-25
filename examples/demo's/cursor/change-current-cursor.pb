@@ -10,13 +10,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   ;a_init(root(), 4)
+   a_init(root(), 4)
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
    SetColor(parent, #__color_back, $FFE9E9E9)
    SetFrame(parent, 20 )
-   a_init(parent, 4)
+   ;a_init(parent, 4)
    
    ;\\
    object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 0)
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
+; CursorPosition = 12
 ; FirstLine = 3
 ; Folding = --
 ; EnableXP

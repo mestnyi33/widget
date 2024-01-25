@@ -1582,40 +1582,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\text\x        = _x_
             _this_\text\y        = _y_
             
-            _this_\text\editable = Bool( Not constants::_check_( _flag_, #__flag_textreadonly ))
-            _this_\text\lower    = constants::_check_( _flag_, #__flag_textlowercase )
-            _this_\text\upper    = constants::_check_( _flag_, #__flag_textuppercase )
-            _this_\text\pass     = constants::_check_( _flag_, #__flag_textpassword )
-            _this_\text\invert   = constants::_check_( _flag_, #__flag_invert )
-            _this_\text\vertical = constants::_check_( _flag_, #__flag_vertical )
+            _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ))
+            _this_\text\lower    = constants::_check_( _flag_, #__text_lowercase )
+            _this_\text\upper    = constants::_check_( _flag_, #__text_uppercase )
+            _this_\text\pass     = constants::_check_( _flag_, #__text_password )
+            _this_\text\invert   = constants::_check_( _flag_, #__text_invert )
+            _this_\text\vertical = constants::_check_( _flag_, #__text_vertical )
             
             ;
-            _this_\text\align\left  = constants::_check_( _flag_, #__flag_textleft )
-            _this_\text\align\right = constants::_check_( _flag_, #__flag_textright )
+            _this_\text\align\left  = constants::_check_( _flag_, #__text_left )
+            _this_\text\align\right = constants::_check_( _flag_, #__text_right )
             
-            _this_\text\align\top    = constants::_check_( _flag_, #__flag_texttop )
-            _this_\text\align\bottom = constants::_check_( _flag_, #__flag_textbottom )
+            _this_\text\align\top    = constants::_check_( _flag_, #__text_top )
+            _this_\text\align\bottom = constants::_check_( _flag_, #__text_bottom )
             
             If Not _this_\text\align\top And
                Not _this_\text\align\left And
                Not _this_\text\align\right And
                Not _this_\text\align\bottom And
-               Not constants::_check_( _flag_, #__flag_textcenter )
+               Not constants::_check_( _flag_, #__text_center )
                
                If Not _this_\text\align\right
-                  _this_\flag | #__flag_textleft
+                  _this_\flag | #__text_left
                   _this_\text\align\left = #True
                EndIf
                If Not _this_\text\align\bottom
-                  _this_\flag | #__flag_texttop
+                  _this_\flag | #__text_top
                   _this_\text\align\top = #True
                EndIf
             EndIf
             
             
-            If constants::_check_( _flag_, #__flag_textwordwrap )
+            If constants::_check_( _flag_, #__text_wordwrap )
                _this_\text\multiLine = - 1
-            ElseIf constants::_check_( _flag_, #__flag_textmultiline )
+            ElseIf constants::_check_( _flag_, #__text_multiline )
                _this_\text\multiLine = 1
             Else
                _this_\text\multiLine = 0
@@ -1643,7 +1643,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _this_\text\multiLine = 1
                   EndIf
                   ;           Else
-                  ;             _this_\text\multiline = constants::_check_( _this_\flag, #__flag_textmultiline )
+                  ;             _this_\text\multiline = constants::_check_( _this_\flag, #__text_multiline )
                EndIf
             EndIf
             
@@ -1662,7 +1662,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\text\numeric       = Bool( _flag_ & #__flag_textnumeric )
+                  _this_\text\numeric       = Bool( _flag_ & #__text_numeric )
                EndIf
             EndIf
             
@@ -12119,50 +12119,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_CheckBox
                If PBFlag & #PB_CheckBox_Right = #PB_CheckBox_Right
                   flags & ~ #PB_CheckBox_Right
-                  flags | #__flag_textright
+                  flags | #__text_right
                EndIf
                If PBFlag & #PB_CheckBox_Center = #PB_CheckBox_Center
                   flags & ~ #PB_CheckBox_Center
-                  flags | #__flag_textcenter
+                  flags | #__text_center
                EndIf
                
             Case #__type_Text
                If PBFlag & #PB_Text_Center = #PB_Text_Center
                   flags & ~ #PB_Text_Center
-                  flags | #__flag_textcenter
-                  ;flags & ~ #__flag_textleft
+                  flags | #__text_center
+                  ;flags & ~ #__text_left
                EndIf
                If PBFlag & #PB_Text_Right = #PB_Text_Right
                   flags & ~ #PB_Text_Right
-                  flags | #__flag_textright
+                  flags | #__text_right
                EndIf
                
             Case #__type_Button ; ok
                If PBFlag & #PB_Button_MultiLine = #PB_Button_MultiLine
                   flags & ~ #PB_Button_MultiLine
-                  flags | #__flag_textwordwrap
+                  flags | #__text_wordwrap
                EndIf
                If PBFlag & #PB_Button_Left = #PB_Button_Left
                   flags & ~ #PB_Button_Left
-                  flags | #__flag_textleft
+                  flags | #__text_left
                EndIf
                If PBFlag & #PB_Button_Right = #PB_Button_Right
                   flags & ~ #PB_Button_Right
-                  flags | #__flag_textright
+                  flags | #__text_right
                EndIf
                
             Case #__type_String ; ok
                If PBFlag & #PB_String_Password = #PB_String_Password
                   flags & ~ #PB_String_Password
-                  flags | #__flag_textpassword
+                  flags | #__text_password
                EndIf
                If PBFlag & #PB_String_LowerCase = #PB_String_LowerCase
                   flags & ~ #PB_String_LowerCase
-                  flags | #__flag_textlowercase
+                  flags | #__text_lowercase
                EndIf
                If PBFlag & #PB_String_UpperCase = #PB_String_UpperCase
                   flags & ~ #PB_String_UpperCase
-                  flags | #__flag_textuppercase
+                  flags | #__text_uppercase
                EndIf
                If PBFlag & #PB_String_BorderLess = #PB_String_BorderLess
                   flags & ~ #PB_String_BorderLess
@@ -12170,21 +12170,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                If PBFlag & #PB_String_Numeric = #PB_String_Numeric
                   flags & ~ #PB_String_Numeric
-                  flags | #__flag_textnumeric
+                  flags | #__text_numeric
                EndIf
                If PBFlag & #PB_String_ReadOnly = #PB_String_ReadOnly
                   flags & ~ #PB_String_ReadOnly
-                  flags | #__flag_textreadonly
+                  flags | #__text_readonly
                EndIf
                
             Case #__type_Editor
                If PBFlag & #PB_Editor_ReadOnly = #PB_Editor_ReadOnly
                   flags & ~ #PB_Editor_ReadOnly
-                  flags | #__flag_textReadOnly
+                  flags | #__text_readonly
                EndIf
                If PBFlag & #PB_Editor_WordWrap = #PB_Editor_WordWrap
                   flags & ~ #PB_Editor_WordWrap
-                  flags | #__flag_textWordWrap
+                  flags | #__text_wordwrap
                EndIf
                
                
@@ -12219,16 +12219,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Select Type
             Case #__type_Button
-               If Flag & #__flag_textwordwrap = #__flag_textwordwrap
-                  flags & ~ #__flag_textwordwrap
+               If Flag & #__text_wordwrap = #__text_wordwrap
+                  flags & ~ #__text_wordwrap
                   flag | #PB_Button_MultiLine
                EndIf
-               If Flag & #__flag_textleft = #__flag_textleft
-                  flags & ~ #__flag_textleft
+               If Flag & #__text_left = #__text_left
+                  flags & ~ #__text_left
                   flags | #PB_Button_Left
                EndIf
-               If Flag & #__flag_textright = #__flag_textright
-                  flags & ~ #__flag_textright
+               If Flag & #__text_right = #__text_right
+                  flags & ~ #__text_right
                   flags | #PB_Button_Right
                EndIf
          EndSelect
@@ -12236,9 +12236,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn flags
       EndProcedure
       
-      Procedure.q Flag( *this._s_WIDGET, flag.q = #Null, state.b = - 1 )
+      Procedure.q Flag( *this._s_WIDGET, flag.q = #Null, state.b = #PB_Default )
          Protected result.q
-         
+         Protected string = Bool( *this\type = #__type_Text Or
+                                  *this\type = #__type_Editor Or
+                                  *this\type = #__type_String Or
+                                  *this\type = #__type_Button Or
+                                  *this\type = #__type_Option Or
+                                  *this\type = #__type_Spin Or
+                                  *this\type = #__type_Hyperlink Or
+                                  *this\type = #__type_ComboBox Or
+                                  *this\type = #__type_CheckBox )
+         ;
+         state = Bool( state )
+         ;
          ;\\ get widget flags
          If Not flag
             ;result = *this\flag
@@ -12248,8 +12259,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             flag = FromPBFlag( *this\type, flag )
             
             ;\\ is flag on the widget
-            If state = - 1
-               result = Bool( *this\flag & flag )
+            If state = #PB_Default
+               result = Bool( *this\flag & flag = flag )
             Else
                *this\WidgetChange( ) = 1
                
@@ -12261,59 +12272,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ text align
-               If *this\type = #__type_Text Or
-                  *this\type = #__type_Editor Or
-                  *this\type = #__type_String Or
-                  *this\type = #__type_Button Or
-                  *this\type = #__type_Option Or
-                  *this\type = #__type_Hyperlink Or
-                  *this\type = #__type_CheckBox
-                  
-                  If flag & #__flag_textmultiline
+               If string
+                  If flag & #__text_multiline
                      *this\text\multiline = state
                   EndIf
-                  
-                  If flag & #__flag_textwordwrap
+                  If flag & #__text_wordwrap
                      *this\text\multiline = - state
                   EndIf
-                  
-                  If flag & #__flag_vertical
+                  If flag & #__text_vertical
                      *this\text\vertical = state
                   EndIf
-                  
-                  If flag & #__flag_invert
+                  If flag & #__text_invert
                      *this\text\invert = state
                   EndIf
                   
-                  If flag & #__flag_textleft
+                  If flag & #__text_left
                      *this\text\align\left = state
-                     If Not state And *this\flag & #__flag_textright
+                     If Not state And *this\flag & #__text_right
                         *this\text\align\right = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__flag_textright
+                  If flag & #__text_right
                      *this\text\align\right = state
-                     If Not state And *this\flag & #__flag_textleft
+                     If Not state And *this\flag & #__text_left
                         *this\text\align\left = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__flag_texttop
+                  If flag & #__text_top
                      *this\text\align\top = state
-                     If Not state And *this\flag & #__flag_textbottom
+                     If Not state And *this\flag & #__text_bottom
                         *this\text\align\bottom = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__flag_textbottom
+                  If flag & #__text_bottom
                      *this\text\align\bottom = state
-                     If Not state And *this\flag & #__flag_texttop
+                     If Not state And *this\flag & #__text_top
                         *this\text\align\top = #True
                      EndIf
                   EndIf
                   
-                  If flag & #__flag_textcenter
+                  If flag & #__text_center
                      *this\text\align\left   = #False
                      *this\text\align\top    = #False
                      *this\text\align\right  = #False
@@ -12455,14 +12456,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;           If flag & #__flag_textbottom
+               ;           If flag & #__text_bottom
                ;             *this\ImageChange( )              = #__text_update
                ;             *this\image\align\top    = 0
                ;             *this\image\align\bottom = state
                ;           EndIf
                
                
-               ; ;           If flag & #__flag_textright
+               ; ;           If flag & #__text_right
                ; ;             *this\image\align\left  = 0
                ; ;             *this\ImageChange( )             = #__text_update
                ; ;             *this\image\align\right = state
@@ -15762,7 +15763,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Button Or
             *this\type = #__type_ButtonImage Or
             *this\type = #__type_HyperLink
-            *this\flag | #__flag_textcenter
+            *this\flag | #__text_center
             
          ElseIf *this\type = #__type_ComboBox Or
                 *this\type = #__type_Spin Or
@@ -15770,13 +15771,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\type = #__type_Option Or
                 *this\type = #__type_CheckBox
             
-            If Not flag & #__flag_textcenter
-               *this\flag | #__flag_textcenter | #__flag_textleft
+            If Not flag & #__text_center
+               *this\flag | #__text_center | #__text_left
             EndIf
             
             If *this\type = #__type_CheckBox And Flag & #PB_CheckBox_Right
-               *this\flag & ~ #__flag_textleft
-               *this\flag | #__flag_textright
+               *this\flag & ~ #__text_left
+               *this\flag | #__text_right
             EndIf
          EndIf
          
@@ -15827,10 +15828,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If *this\type = #__type_Text
             *this\fs = Bool( Flag & #PB_Text_Border = #PB_Text_Border )
-            If *this\flag & #__flag_textleft
-               *this\flag & ~ #__flag_textCenter
+            If *this\flag & #__text_left
+               *this\flag & ~ #__text_center
             EndIf
-            *this\flag | #__flag_textwordwrap
+            *this\flag | #__text_wordwrap
          EndIf
          *this\bs = *this\fs
          
@@ -15905,7 +15906,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\mode\fullselection = constants::_check_( *this\flag, #__flag_fullselection, #False ) * 7
                *this\mode\gridlines     = constants::_check_( *this\flag, #__flag_gridlines ) * 10
                
-               *this\MarginLine( )\hide        = constants::_check_( *this\flag, #__flag_textnumeric, #False )
+               *this\MarginLine( )\hide        = constants::_check_( *this\flag, #__text_numeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
                *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
                
@@ -16186,7 +16187,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
                      *this\bar\vertical = #True
                   EndIf
-                  *this\flag = flag | #__flag_textcenter
+                  *this\flag = flag | #__text_center
                Else
                   If Not ( Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical Or Flag & #__bar_vertical = #__bar_vertical )
                      *this\bar\vertical = #True
@@ -16204,7 +16205,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\StringBox( ) = Create( *this,
                                             *this\class + "_string",
                                             #__type_String, 0, 0, 0, 0, #Null$,
-                                            #__flag_child | #__flag_textnumeric | #__flag_borderless | *this\flag )
+                                            #__flag_child | #__text_numeric | #__flag_borderless | *this\flag )
                
                
             EndIf
@@ -21999,7 +22000,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          Container( f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
          Image( f2, f2, iw, iw, img, #PB_Image_Border | #__flag_center )
-         Text( f2 + iw + f2, f2, width - iw - f2 * 3, iw, Text, #__flag_textcenter | #__flag_textleft )
+         Text( f2 + iw + f2, f2, width - iw - f2 * 3, iw, Text, #__text_center | #__text_left )
          CloseList( )
          
          ;\\
@@ -22459,7 +22460,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_textpassword | #__flag_textright)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__text_password | #__text_right)
    
    ;\\
    Procedure button_panel_events( )
@@ -22751,7 +22752,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 210, 250, 25, 25, 30, #__flag_textright )
+   Spin(10, 210, 250, 25, 25, 30, #__text_right )
    Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
    
    ;\\
@@ -22856,7 +22857,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3305
-; FirstLine = 2644
+; CursorPosition = 12238
+; FirstLine = 11440
 ; Folding = ----------------------------------------------------------f+ovv--f3X0nC-0-vv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------jP+--+-------------------------------------------------------------------------------------------+2--rt8-8----------------------------------------------------------------------------------------------------------------------
 ; EnableXP

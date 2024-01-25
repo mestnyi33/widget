@@ -9,17 +9,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Global object, parent, object1
   Declare CustomEvents( )
   
-  Procedure GetBar( *this._s_widget, type=1)
-     If *this\scroll
-        If type = 1
-           ProcedureReturn *this\scroll\v
-        EndIf
-        If type = 2
-           ProcedureReturn *this\scroll\h
-        EndIf
-     EndIf
-  EndProcedure
-  
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
@@ -40,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
 ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
   
-  object1 = ScrollArea(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, 1 ), 80 )
+  object1 = ScrollArea(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #__type_scrollbar, 1 ), 80 )
    ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) 
    Button( 50,50,100,100, GetClass(object1))
    ; Container( 50,50,100,100) : CloseList()
@@ -91,7 +80,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 36
-; Folding = --
+; CursorPosition = 11
+; Folding = -
 ; EnableXP
