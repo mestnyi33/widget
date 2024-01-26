@@ -716,26 +716,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     Macro a_anchors( ) 
-      Bool(1=1)
+      mouse( )\anchors
     EndMacro
     Macro a_transform( )
-      mouse( )\transform
-    EndMacro
-    Macro a_index( )
-      mouse( )\a_index
+      a_anchors( )\transform
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
     EndMacro
     Macro a_main( )
-      a_transform( )\widget[0]
-    EndMacro
-    Macro a_entered( )
-       ;EnteredWidget( ) ; 
-       mouse( )\a_entered ; a_transform( )\widget[1]
+      a_anchors( )\transform\main
     EndMacro
     Macro a_focused( )
-       mouse( )\a_focused ; a_transform( )\widget[2]
+      a_anchors( )\transform\focused
+    EndMacro
+    Macro a_index( )
+      a_anchors( )\index
+    EndMacro
+    Macro a_entered( )
+      a_anchors( )\widget  ;EnteredWidget( ) ; 
     EndMacro
     Macro a_group( )
       a_transform( )\group( )
@@ -2958,7 +2957,8 @@ EndProcedure
       ;
       i = 0
       ;
-      If a_focused( ) And 
+      If a_transform( ) And
+         a_focused( ) And 
          a_focused( ) <> a_entered( )
          ;
          For i = 1 To #__a_count  
@@ -3012,7 +3012,7 @@ EndProcedure
           ;
           *this\root\repaint = #True
           ;
-          do_cursor_( *this, mouse( )\a_cursor[a_index], *data )
+          do_cursor_( *this, a_anchors( )\cursor[a_index], *data )
         EndIf
         ;
         If *this\enter > 0
@@ -3148,7 +3148,7 @@ EndProcedure
          a_entered( )\anchors And
          a_entered( )\anchors\mode And
          a_entered( ) <> *this And
-         a_entered( ) <> a_focused( )
+         Not ( a_transform( ) And a_entered( ) = a_focused( ) )
         ;Debug "remove "+a_entered( )\class
         a_remove( a_entered( ) )
         a_entered( ) = 0
@@ -3206,7 +3206,7 @@ EndProcedure
                 *this\anchors\id.allocate( A_BUTTONS, [a_index] )
               EndIf
               
-              mouse( )\a_cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
+              a_anchors( )\cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
               
               *this\anchors\id[a_index]\color\frame[#__s_0] = $ff000000
               *this\anchors\id[a_index]\color\frame[#__s_1] = $ffFF0000
@@ -3326,7 +3326,7 @@ EndProcedure
       EndIf
       ;
       If Not a_transform( ) 
-        a_transform( ).allocate( TRANSFORM )
+        a_transform( ).allocate( TRANSFORMDATA )
       EndIf
       ;
       a_main( ) = *this
@@ -3342,7 +3342,8 @@ EndProcedure
       ;
       ;\\
       For i = 0 To #__a_count
-        mouse( )\a_cursor[i] = *Data_Transform_Cursor\cursor[i]
+        ; a_anchors( )\cursor[i] = *Data_Transform_Cursor\cursor[i]
+        ;
         If i <= 5
           a_selector([i])\color\frame[0] = $ff000000
           a_selector([i])\color\frame[1] = $ffFF0000
@@ -3548,7 +3549,7 @@ EndProcedure
           ;Debug "        l "+*this\class +" "+ *this\enter
           If Not Mouse( )\press
             If Not *this\enter 
-              If *this <> a_focused( )
+              If Not ( a_transform( ) And *this = a_focused( ) )
                 ;
                 If Not a_index( )
                   If *this\parent And
@@ -3612,12 +3613,14 @@ EndProcedure
               EndIf
               a_delta( a_entered( ) )
               *pressed = a_entered( )
-            Else
-              a_focused( ) = #Null
-            EndIf
-          EndIf
+           Else
+              If a_transform( ) 
+                 a_focused( ) = #Null
+              EndIf
+           EndIf
         EndIf
-        
+     EndIf
+     
         ;
         If eventtype = #__event_Up
           If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -22916,7 +22919,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 733
-; FirstLine = 732
-; Folding = -------------------------------------------------------------4---4v+q----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+--4-0------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3344
+; FirstLine = 3154
+; Folding = -------------------------------------------------------------4-8-4-+q----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf0--v-8------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

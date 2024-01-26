@@ -112,33 +112,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          state.b
          *cursor
       EndStructure
-      ;--     MOUSE
-      Structure _s_MOUSE Extends _s_POINT
-         *cursor                 ; current visible cursor
-         press.b                 ; mouse buttons state
-         change.b                ; mouse moved state
-         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
-         click.a                 ; mouse clicked count
-         buttons.a               ; mouse clicked button
-         
-         steps.a
-         a_index.a
-         *a_entered._s_WIDGET
-         *a_focused._s_WIDGET
-         a_cursor.i[constants::#__a_count + 1]
-         
-         ;
-         wheel._s_POINT          ;
-         delta._s_POINT          ;
-         ;
-         *drag._s_DRAG           ;
-         *transform._s_TRANSFORM ;
-         ;
-         entered._s_OBJECTTYPE   ; mouse entered element
-         pressed._s_OBJECTTYPE   ; mouse button's pushed element
-         ;
-         leaved._s_OBJECTTYPE    ; mouse leaved element
-      EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
          *window._S_WIDGET  ; active window element ; FocusedWindow( )\
@@ -272,19 +245,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       *released._s_image
          ;       *background._s_image
       EndStructure
-      
-      ;--     TRANSFORM
+      ;
       Structure _s_A_BUTTONS Extends _s_COORDINATE
          color._s_color[4]
       EndStructure
+      
+      ;
       Structure _s_A_GROUP Extends _s_COORDINATE
          *widget._s_WIDGET
       EndStructure
-      Structure _s_TRANSFORM
-         *widget._s_WIDGET[3] ; a_main[0] ; a_entered[1] ; a_focused[2]
-         
+      ;--     ANCHORS
+      Structure _s_ANCHORS
+         pos.w 
+         size.c
+         mode.i
+         *id._s_A_BUTTONS[constants::#__a_moved + 1]
+      EndStructure
+      ;--     TRANSFORM
+      Structure _s_TRANSFORMDATA
+         ;
          List *group._s_A_GROUP( )
-         
          *type
          *grab ; grab image handle
          
@@ -296,18 +276,40 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dot_line.l
          dot_space.l
          
-         cursor.i[constants::#__a_count + 1]
+         *main._s_WIDGET
+         *focused._s_WIDGET
          id._s_A_BUTTONS[constants::#__a_count + 1]
       EndStructure
-      ;--     ANCHORS
-      Structure _s_ANCHORS
-         index.b
-         pos.l
-         size.l
-         mode.i
-         *id._s_A_BUTTONS[constants::#__a_moved + 1]
+      Structure _s_TRANSFORM
+         index.a
+         *widget._s_WIDGET
+         cursor.i[constants::#__a_count + 1]
+         
+         *transform._s_TRANSFORMDATA
       EndStructure
-      
+      ;--     MOUSE
+      Structure _s_MOUSE Extends _s_POINT
+         *cursor                 ; current visible cursor
+         press.b                 ; mouse buttons state
+         change.b                ; mouse moved state
+         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+         click.a                 ; mouse clicked count
+         buttons.a               ; mouse clicked button
+         
+         steps.a
+         
+         ;
+         wheel._s_POINT          ;
+         delta._s_POINT          ;
+         ;
+         *drag._s_DRAG           ;
+         anchors._s_TRANSFORM ;
+         ;
+         entered._s_OBJECTTYPE   ; mouse entered element
+         pressed._s_OBJECTTYPE   ; mouse button's pushed element
+         ;
+         leaved._s_OBJECTTYPE    ; mouse leaved element
+      EndStructure
       ;;--     margin
       Structure _s_margin Extends _s_coordinate
          color._s_color
@@ -731,7 +733,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 97
-; Folding = -n4DO4v9--
+; CursorPosition = 305
+; FirstLine = 167
+; Folding = -HAB-uf6--
 ; EnableXP

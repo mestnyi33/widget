@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If *grid
-          SetState(*grid, a_transform( )\grid_size )
+          SetState(*grid, mouse( )\steps )
         EndIf
         
       Case #__event_Change
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
             a_set( a_focused( ), #__a_full, GetState(*size), GetState(*this))
             
           Case *grid
-            a_transform( )\grid_size = GetState(*grid)
+            mouse( )\steps = GetState(*grid)
             
         EndSelect
     EndSelect
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     If a_focused( )
-      SetState(*grid, a_transform( )\grid_size )
+      SetState(*grid, mouse( )\steps )
       SetState(*size, a_focused( )\anchors\size )
       SetState(*position, a_focused( )\anchors\pos )
     EndIf
@@ -98,6 +98,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 83
+; FirstLine = 52
 ; Folding = --
 ; EnableXP
