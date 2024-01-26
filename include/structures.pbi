@@ -120,14 +120,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
          click.a                 ; mouse clicked count
          buttons.a               ; mouse clicked button
+         
+         anchor.a
+         steps.a
+         ;
          wheel._s_POINT          ;
          delta._s_POINT          ;
+         ;
          *drag._s_DRAG           ;
          *transform._s_TRANSFORM ;
-         
+         ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
-         
+         ;
          leaved._s_OBJECTTYPE    ; mouse leaved element
       EndStructure
       ;--     KEYBOARD
@@ -272,7 +277,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-         index.b
+         ;index.b
          *widget._s_WIDGET[3] ; a_main[0] ; a_entered[1] ; a_focused[2]
          
          List *group._s_A_GROUP( )
@@ -281,7 +286,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *grab ; grab image handle
          
          *grid_image
-         grid_size.l
          grid_type.l
          *grid_widget
          
@@ -724,7 +728,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 45
-; Folding = -n4DG4v9--
+; CursorPosition = 279
+; FirstLine = 185
+; Folding = -n4DO4v9--
 ; EnableXP

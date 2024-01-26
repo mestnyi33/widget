@@ -46,8 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
+    ;a_init( root( ) )
     
     *f_0 = window(10, 10, 180,  90, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
     button(10, -10, 80, 40, "Butt_0")
@@ -101,5 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 50
+; FirstLine = 40
 ; Folding = -
 ; EnableXP

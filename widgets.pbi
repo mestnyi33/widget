@@ -719,8 +719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       mouse( )\transform
     EndMacro
     Macro a_index( )
-      ; mouse( )\anchors
-      a_transform( )\index
+      mouse( )\anchor
     EndMacro
     Macro a_selector( _index_ = )
       a_transform( )\id#_index_
@@ -2631,12 +2630,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro a_grid_change( _this_ )
         If a_transform( )\grid_widget <> _this_
-          If a_transform( )\grid_size > 1 And a_transform( )\grid_widget
+          If mouse( )\steps > 1 And a_transform( )\grid_widget
             SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
           EndIf
           a_transform( )\grid_widget = _this_
           
-          If a_transform( )\grid_size > 1 And a_transform( )\grid_widget
+          If mouse( )\steps > 1 And a_transform( )\grid_widget
             SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
           EndIf
         EndIf
@@ -2976,7 +2975,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; set new entered anchors index state
       If a_index
         a_index( ) = a_index
-        
         ;
         If *this\anchors\id[a_index]\color\state <> #__s_1
           *this\anchors\id[a_index]\color\state = #__s_1
@@ -3301,13 +3299,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       a_main( ) = *this
       ;
       a_transform( )\grid_type = grid_type
-      a_transform( )\grid_size = grid_size + 1
+      mouse( )\steps = grid_size + 1
       ;
       If IsImage( a_transform( )\grid_image )
         FreeImage( a_transform( )\grid_image )
       EndIf
       ;
-      a_transform( )\grid_image = a_grid_image( a_transform( )\grid_size - 1, a_transform( )\grid_type, $FF000000, *this\fs, *this\fs )
+      a_transform( )\grid_image = a_grid_image( mouse( )\steps - 1, a_transform( )\grid_type, $FF000000, *this\fs, *this\fs )
       ;
       ;\\
       For i = 0 To #__a_count
@@ -3480,7 +3478,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Static move_x, move_y, resize_x, resize_y, *after
         Protected i
         Protected.l mx, my, mw, mh
-        Protected.l Px, Py, IsGrid = Bool( a_transform( )\grid_size > 1 )
+        Protected.l Px, Py, IsGrid = Bool( mouse( )\steps > 1 )
         
         Protected text.s
         
@@ -3643,11 +3641,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 mouse_y - mouse( )\delta\y
                 
                 ;\\
-                If a_transform( )\grid_size > 0
-                  mouse_x + ( mouse_x % a_transform( )\grid_size )
-                  mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
-                  mouse_y + ( mouse_y % a_transform( )\grid_size )
-                  mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
+                If mouse( )\steps > 0
+                  mouse_x + ( mouse_x % mouse( )\steps )
+                  mouse_x = ( mouse_x / mouse( )\steps ) * mouse( )\steps
+                  mouse_y + ( mouse_y % mouse( )\steps )
+                  mouse_y = ( mouse_y / mouse( )\steps ) * mouse( )\steps
                 EndIf
                 
                 ;\\
@@ -3796,18 +3794,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ; change selector coordinate
           If a_transform( )\grab
             
-            If a_transform( )\grid_size > 0
-              ;mouse_x + ( mouse_x % a_transform( )\grid_size )
-              mouse_x = ( mouse_x / a_transform( )\grid_size ) * a_transform( )\grid_size
-              ;mouse_y + ( mouse_y % a_transform( )\grid_size )
-              mouse_y = ( mouse_y / a_transform( )\grid_size ) * a_transform( )\grid_size
+            If mouse( )\steps > 0
+              ;mouse_x + ( mouse_x % mouse( )\steps )
+              mouse_x = ( mouse_x / mouse( )\steps ) * mouse( )\steps
+              ;mouse_y + ( mouse_y % mouse( )\steps )
+              mouse_y = ( mouse_y / mouse( )\steps ) * mouse( )\steps
             EndIf
             
             ;\\
             If move_x <> mouse_x
               ; to left
               If mouse( )\delta\x > mouse_x
-                a_selector( )\x     = mouse_x + a_transform( )\grid_size
+                a_selector( )\x     = mouse_x + mouse( )\steps
                 a_selector( )\width = mouse( )\delta\x - mouse_x
               Else
                 a_selector( )\x     = mouse( )\delta\x
@@ -3815,7 +3813,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
               
               a_selector( )\x + a_main( )\container_x( )
-              If a_transform( )\grid_size > 0
+              If mouse( )\steps > 0
                 a_selector( )\width + 1
               EndIf
               *this\root\repaint = #True
@@ -3826,7 +3824,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If move_y <> mouse_y
               ; to top
               If mouse( )\delta\y > mouse_y
-                a_selector( )\y      = mouse_y + a_transform( )\grid_size
+                a_selector( )\y      = mouse_y + mouse( )\steps
                 a_selector( )\height = mouse( )\delta\y - mouse_y
               Else
                 a_selector( )\y      = mouse( )\delta\y
@@ -3834,7 +3832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
               
               a_selector( )\y + a_main( )\container_y( )
-              If a_transform( )\grid_size > 0
+              If mouse( )\steps > 0
                 a_selector( )\height + 1
               EndIf
               *this\root\repaint = #True
@@ -3862,22 +3860,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Select Keyboard( )\Key[1]
               Case (#PB_Canvas_Alt | #PB_Canvas_Control), #PB_Canvas_Shift
                 Select Keyboard( )\Key
-                  Case #PB_Shortcut_Left : mw - a_transform( )\grid_size : a_index( ) = #__a_right
-                  Case #PB_Shortcut_Right : mw + a_transform( )\grid_size : a_index( ) = #__a_right
+                  Case #PB_Shortcut_Left : mw - mouse( )\steps : a_index( ) = #__a_right
+                  Case #PB_Shortcut_Right : mw + mouse( )\steps : a_index( ) = #__a_right
                     
-                  Case #PB_Shortcut_Up : mh - a_transform( )\grid_size : a_index( ) = #__a_bottom
-                  Case #PB_Shortcut_Down : mh + a_transform( )\grid_size : a_index( ) = #__a_bottom
+                  Case #PB_Shortcut_Up : mh - mouse( )\steps : a_index( ) = #__a_bottom
+                  Case #PB_Shortcut_Down : mh + mouse( )\steps : a_index( ) = #__a_bottom
                 EndSelect
                 
                 Resize( a_focused( ), mx, my, mw, mh )
                 
               Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
                 Select Keyboard( )\Key
-                  Case #PB_Shortcut_Left : mx - a_transform( )\grid_size : a_index( ) = #__a_moved
-                  Case #PB_Shortcut_Right : mx + a_transform( )\grid_size : a_index( ) = #__a_moved
+                  Case #PB_Shortcut_Left : mx - mouse( )\steps : a_index( ) = #__a_moved
+                  Case #PB_Shortcut_Right : mx + mouse( )\steps : a_index( ) = #__a_moved
                     
-                  Case #PB_Shortcut_Up : my - a_transform( )\grid_size : a_index( ) = #__a_moved
-                  Case #PB_Shortcut_Down : my + a_transform( )\grid_size : a_index( ) = #__a_moved
+                  Case #PB_Shortcut_Up : my - mouse( )\steps : a_index( ) = #__a_moved
+                  Case #PB_Shortcut_Down : my + mouse( )\steps : a_index( ) = #__a_moved
                 EndSelect
                 
                 Resize( a_focused( ), mx, my, mw, mh )
@@ -4485,26 +4483,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       Else
         ;\\
-        If *this\anchors And *this\anchors\mode And 
-           a_transform( ) And a_transform( )\grid_size > 1
-          ;
-          If x <> #PB_Ignore
-            x + ( x % a_transform( )\grid_size )
-            x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
-          EndIf
-          If y <> #PB_Ignore
-            y + ( y % a_transform( )\grid_size )
-            y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
-          EndIf
-          If width <> #PB_Ignore
-            width + ( width % a_transform( )\grid_size )
-            width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-          EndIf
-          If height <> #PB_Ignore
-            height + ( height % a_transform( )\grid_size )
-            height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-          EndIf
-        EndIf
+         If mouse( )\steps > 1 And 
+            *this\anchors And
+            *this\anchors\mode
+            ;
+            If x <> #PB_Ignore
+               x + ( x % mouse( )\steps )
+               x = ( x / mouse( )\steps ) * mouse( )\steps
+            EndIf
+            If y <> #PB_Ignore
+               y + ( y % mouse( )\steps )
+               y = ( y / mouse( )\steps ) * mouse( )\steps
+            EndIf
+            If width <> #PB_Ignore
+               width + ( width % mouse( )\steps )
+               width = (( width / mouse( )\steps ) * mouse( )\steps ) + 1
+            EndIf
+            If height <> #PB_Ignore
+               height + ( height % mouse( )\steps )
+               height = (( height / mouse( )\steps ) * mouse( )\steps ) + 1
+            EndIf
+         EndIf
         
         ;\\ move boundaries
         If *this\bounds\move
@@ -14652,11 +14651,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             y = *this\frame_y( ) - *parent\inner_y( )
             
             If *this\anchors > 0
-              x + ( x % a_transform( )\grid_size )
-              x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+              x + ( x % mouse( )\steps )
+              x = ( x / mouse( )\steps ) * mouse( )\steps
               
-              y + ( y % a_transform( )\grid_size )
-              y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+              y + ( y % mouse( )\steps )
+              y = ( y / mouse( )\steps ) * mouse( )\steps
             EndIf
             
             *this\container_x( ) = x
@@ -21064,14 +21063,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If x = #PB_Ignore
           If a_transform( )
-            x = pos_x + a_transform( )\grid_size
+            x = pos_x + mouse( )\steps
           Else
             x = pos_x
           EndIf
         EndIf
         If y = #PB_Ignore
           If a_transform( )
-            y = pos_y + a_transform( )\grid_size
+            y = pos_y + mouse( )\steps
           Else
             y = pos_y
           EndIf
@@ -22310,7 +22309,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If grid_value
-          SetState(grid_value, a_transform( )\grid_size )
+          SetState(grid_value, mouse( )\steps )
         EndIf
         
         change = 1
@@ -22324,7 +22323,7 @@ CompilerIf #PB_Compiler_IsMainFile
             a_set( a_focused( ), #__a_full, GetState(size_value), GetState(*this))
             
           Case grid_value
-            a_transform( )\grid_size = GetState(grid_value)
+            mouse( )\steps = GetState(grid_value)
             
         EndSelect
         
@@ -22334,11 +22333,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If change
       If a_focused( )
-        SetState(grid_value, a_transform( )\grid_size )
+        SetState(grid_value, mouse( )\steps )
         SetState(size_value, a_focused( )\anchors\size )
         SetState(pos_value, a_focused( )\anchors\pos )
         
-        SetText(grid_text, Str(a_transform( )\grid_size) )
+        SetText(grid_text, Str(mouse( )\steps) )
         SetText(size_text, Str(a_focused( )\anchors\size) )
         SetText(pos_text, Str(a_focused( )\anchors\pos) )
       EndIf
@@ -22376,11 +22375,11 @@ CompilerIf #PB_Compiler_IsMainFile
   grid_text   = Text(8, 320, 40, 24, "0")
   
   If a_focused( )
-    SetState(grid_value, a_transform( )\grid_size )
+    SetState(grid_value, mouse( )\steps )
     SetState(size_value, a_focused( )\anchors\size )
     SetState(pos_value, a_focused( )\anchors\pos )
     
-    SetText(grid_text, Str(a_transform( )\grid_size) )
+    SetText(grid_text, Str(mouse( )\steps) )
     SetText(size_text, Str(a_focused( )\anchors\size) )
     SetText(pos_text, Str(a_focused( )\anchors\pos) )
   EndIf
@@ -22879,6 +22878,8 @@ CompilerEndIf
 ; FirstLine = 2592
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3115
+; FirstLine = 3141
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

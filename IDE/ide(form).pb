@@ -1,7 +1,6 @@
 ﻿;- 
 #IDE_path = "../"
 XIncludeFile #IDE_path + "widgets.pbi"
-;XIncludeFile #IDE_path + "DoAnchors-widgets.pbi"
 
 EnableExplicit
 
@@ -439,7 +438,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window
-               a_set(*new, #__a_full, 7)
+               a_set(*new, #__a_full, 14)
             Else
                a_set(*new, #__a_full, 10)
             EndIf  
@@ -1320,6 +1319,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 539
+; FirstLine = 522
 ; Folding = ----------v-----8-----
 ; EnableXP
