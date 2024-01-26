@@ -731,7 +731,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       a_transform( )\widget[0]
     EndMacro
     Macro a_entered( )
-      mouse( )\a_entered ; a_transform( )\widget[1]
+       EnteredWidget( ) ; 
+       ;mouse( )\a_entered ; a_transform( )\widget[1]
     EndMacro
     Macro a_focused( )
        mouse( )\a_focused ; a_transform( )\widget[2]
@@ -2551,7 +2552,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro a_draw( _this_ )
-      If a_anchors( )  And Not _this_\anchors\mode & #__a_novisible ; 
+      If a_anchors( ) And Not _this_\anchors\mode & #__a_novisible ; 
         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
         
         If _this_ = a_focused( )
@@ -2932,13 +2933,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure a_remove( *this._s_WIDGET )
       Protected i
-      For i = 0 To #__a_count
+         For i = 0 To #__a_count
         If *this\anchors\id[i]
           FreeStructure( *this\anchors\id[i] )
           *this\anchors\id[i] = #Null
         EndIf
       Next i
-    EndProcedure
+EndProcedure
     
     Procedure a_enter( *this._s_WIDGET, *data )
       Protected i, result, a_index
@@ -2985,16 +2986,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       i = 0
       ;
       ; reset last entered anchors index state
-      For i = 1 To #__a_count
-        If i <> a_index
-          If a_entered( ) And 
-             a_entered( )\anchors\id[i] And ;???
-             a_entered( )\anchors\id[i]\color\state <> #__s_0
-            a_entered( )\anchors\id[i]\color\state = #__s_0
-            a_entered( )\root\repaint = #True
-          EndIf
-        EndIf
-      Next 
+      If a_entered( ) And 
+         a_entered( )\anchors  
+         ;
+         For i = 1 To #__a_count
+            If i <> a_index
+               If a_entered( )\anchors\id[i] And ;???
+                  a_entered( )\anchors\id[i]\color\state <> #__s_0
+                  a_entered( )\anchors\id[i]\color\state = #__s_0
+                  a_entered( )\root\repaint = #True
+               EndIf
+            EndIf
+         Next 
+      EndIf
       ;
       a_index( ) = 0
       a_entered( ) = *this
@@ -3141,6 +3145,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       ;
       If a_entered( ) And
+         a_entered( )\anchors And
+         a_entered( )\anchors\mode And
          a_entered( ) <> *this And
          a_entered( ) <> a_focused( )
         ;Debug "remove "+a_entered( )\class
@@ -14677,7 +14683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\
         If ReParent
           ;
-          If a_anchors( )  And a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
+          If a_anchors( ) And a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
             *this\resize | #__resize_x | #__resize_y
             
             x = *this\frame_x( ) - *parent\inner_x( )
@@ -18105,7 +18111,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\ entered anchor index
-      If a_anchors( )  ; Ok
+      If a_anchors( ) ; Ok
         If Not mouse( )\press
           If a_entered( ) And 
              a_entered( )\anchors And
@@ -18147,10 +18153,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If mouse( )\press And Not a_entered( )\dragstart
               ;
-              If *this            <> a_entered( ) 
-                *this            = a_entered( )
-                EnteredWidget( ) = *this
-                LeavedWidget( )  = *this
+              If *this          <> a_entered( ) 
+                *this           = a_entered( )
+                LeavedWidget( ) = *this
               EndIf
             EndIf
           EndIf
@@ -18191,7 +18196,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If *this
-        If Not ( a_anchors( )  And a_index( ) )
+        If Not ( a_anchors( ) And a_index( ) )
           ;             If *this\row
           ;                If *this\type = #__type_Editor Or
           ;                   *this\type = #__type_string
@@ -18276,29 +18281,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If *this And Not ( a_anchors( )  And a_index( )) And 
+        If *this And Not ( a_anchors( ) And a_index( )) And 
            *this\enter = 0
           *this\enter = 1
           ;
           DoEvents( *this, #__event_MouseEnter )
           ;
           If mouse( )\drag And
-             is_scrollbars_( EnteredWidget( ) )
-            EnteredWidget( )\parent\enter = 1
+             is_scrollbars_( *this )
+            *this\parent\enter = 1
           EndIf
           ;
-          If Not is_interact_row_( EnteredWidget( ) )
-            If Not a_transformer( EnteredWidget( ) )
-              If Not EnteredWidget( )\bounds\attach
-                If EnteredWidget( )\address
+          If Not is_interact_row_( *this )
+            If Not a_transformer( *this )
+              If Not *this\bounds\attach
+                If *this\address
                   ForEach this_root_children( )
-                    If this_root_children( ) = EnteredWidget( )
+                    If this_root_children( ) = *this
                       Break
                     EndIf
                     ;
                     If this_root_children( )\haschildren And this_root_children( )\enter = 0
                       If Not is_interact_row_( this_root_children( ) )
-                        If IsChild( EnteredWidget( ), this_root_children( ))
+                        If IsChild( *this, this_root_children( ))
                           ;
                           this_root_children( )\frame_enter( )
                           ;
@@ -19609,7 +19614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndSelect
         
         ;\\ items events
-        If Not ( a_anchors( )  And a_index( ) )
+        If Not ( a_anchors( ) And a_index( ) )
           If *this\row
             If *this\type = #__type_Editor Or
                *this\type = #__type_string
@@ -20032,7 +20037,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
              #__event_Down,
              #__event_Up
           
-          If Not ( a_anchors( )  And a_index( ))
+          If Not ( a_anchors( ) And a_index( ))
             If PressedWidget( ) And PressedWidget( )\press
               do_cursor_( PressedWidget( ), PressedWidget( )\cursor, 2 )
             Else
@@ -20532,15 +20537,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype <> #PB_EventType_MiddleButtonDown
               mouse( )\delta\x = mouse( )\x
               mouse( )\delta\y = mouse( )\y
-              If Not ( a_anchors( )  And a_index( ))
+              ;
+              If Not ( a_anchors( ) And a_index( ))
                 If EnteredWidget( )\bar And EnteredButton( ) > 0
                   mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
                   mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
                 Else
-                  If Not a_anchors( ) 
+                  If Not a_transform( ) 
                     mouse( )\delta\x - EnteredWidget( )\container_x( )
                     mouse( )\delta\y - EnteredWidget( )\container_y( )
-                    
+                    ;
                     If Not EnteredWidget( )\child
                       If EnteredWidget( )\parent
                         mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
@@ -21542,13 +21548,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If EnteredWidget( ) = this_root_children( )
-                    EnteredWidget( ) = 0
+                    EnteredWidget( ) = #Null
                   EndIf
                   If PressedWidget( ) = this_root_children( )
-                    PressedWidget( ) = 0
+                    PressedWidget( ) = #Null
                   EndIf
                   If GetActive( ) = this_root_children( )
-                    GetActive( ) = 0
+                    GetActive( ) = #Null
                   EndIf
                   
                   Debug " free - " + this_root_children( )\class
@@ -22910,7 +22916,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3962
-; FirstLine = 3829
-; Folding = ------------------------------------------------------------------ffV8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8X---8-------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3006
+; FirstLine = 2971
+; Folding = -------------------------------------------------------------4---4v+q----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+--4-0------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
