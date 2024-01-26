@@ -121,7 +121,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          click.a                 ; mouse clicked count
          buttons.a               ; mouse clicked button
          
-         anchor.a
+         a_index.a
+         *a_entered._s_WIDGET
+         *a_focused._s_WIDGET
+         a_cursor.i[constants::#__a_count + 1]
+         
          steps.a
          ;
          wheel._s_POINT          ;
@@ -727,7 +731,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 279
-; FirstLine = 177
+; CursorPosition = 126
+; FirstLine = 98
 ; Folding = -n4DO4v9--
 ; EnableXP

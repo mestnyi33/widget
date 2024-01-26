@@ -670,7 +670,8 @@
          #__a_width    ; по ширине
          #__a_height   ; по высоте
          #__a_corner   ; по углам
-         #__a_noAnchors
+         #__a_zoom     ; по растянутый
+         #__a_novisible
       EndEnumeration
       #__a_edge = #__a_width | #__a_height ; по крайам
       #__a_size = #__a_corner | #__a_edge
@@ -846,7 +847,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 240
-; FirstLine = 228
+; CursorPosition = 673
+; FirstLine = 670
 ; Folding = ---
 ; EnableXP
