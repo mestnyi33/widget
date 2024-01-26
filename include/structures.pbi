@@ -277,7 +277,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
       EndStructure
       Structure _s_TRANSFORM
-         ;index.b
          *widget._s_WIDGET[3] ; a_main[0] ; a_entered[1] ; a_focused[2]
          
          List *group._s_A_GROUP( )
@@ -729,6 +728,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 279
-; FirstLine = 185
+; FirstLine = 177
 ; Folding = -n4DO4v9--
 ; EnableXP

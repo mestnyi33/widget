@@ -2922,7 +2922,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected i, result, a_index
       ;
       ; atpoint
-      For i = 1 To #__a_count
+      For i = 1 To #__a_count  
+         If *this\anchors\id[i] And
+            is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
+            is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
+            ;
+            a_index = i
+            Break
+         EndIf
+      Next
+      For i = 1 To #__a_count  
         If a_focused( ) And 
            a_focused( )\anchors\id[i] And
            is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
@@ -2930,28 +2939,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If a_entered( ) <> a_focused( )
             If a_entered( )
               If a_entered( )\enter > 0
-                ;Debug "7777777777777 "+a_entered( )\enter
+                ; Debug "7777777777777 "+a_entered( )\enter
                 a_entered( )\enter = 0
                 DoEvents( a_entered( ), #__event_MouseLeave )
               Else
-                ;Debug "8888888888888 "+a_entered( )\enter
+                ; Debug "8888888888888 "+a_entered( )\enter
                 a_entered( )\enter = 0
               EndIf
             EndIf
             ;
             *this     = a_focused( )
           EndIf
-          ;
+          
           a_index = i
           Break
-        Else
-          If *this\anchors\id[i] And
-             is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
-             is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
-            ;
-            a_index = i
-            Break
-          EndIf
         EndIf
       Next
       ;
@@ -3082,7 +3083,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure a_show( *this._s_WIDGET )
-      Protected anchor
+      Protected a_index
       
       ;\\
       If is_integral_( *this )
@@ -3129,68 +3130,68 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;\\ add anchors on the widget
           If Not a_index( )
             ;\\ a_add
-            For anchor = 0 To #__a_count
+            For a_index = 0 To #__a_count
               If *this\anchors\mode & #__a_height = 0 And
                  *this\anchors\mode & #__a_width = 0
-                If anchor = #__a_left Or
-                   anchor = #__a_top Or
-                   anchor = #__a_right Or
-                   anchor = #__a_bottom
+                If a_index = #__a_left Or
+                   a_index = #__a_top Or
+                   a_index = #__a_right Or
+                   a_index = #__a_bottom
                   Continue
                 EndIf
               Else
                 If *this\anchors\mode & #__a_height = 0
-                  If anchor = #__a_top Or
-                     anchor = #__a_bottom
+                  If a_index = #__a_top Or
+                     a_index = #__a_bottom
                     Continue
                   EndIf
                 EndIf
                 If *this\anchors\mode & #__a_width = 0
-                  If anchor = #__a_left Or
-                     anchor = #__a_right
+                  If a_index = #__a_left Or
+                     a_index = #__a_right
                     Continue
                   EndIf
                 EndIf
               EndIf
               ;
               If *this\anchors\mode & #__a_corner = 0
-                If anchor = #__a_left_top Or
-                   anchor = #__a_right_top Or
-                   anchor = #__a_right_bottom Or
-                   anchor = #__a_left_bottom
+                If a_index = #__a_left_top Or
+                   a_index = #__a_right_top Or
+                   a_index = #__a_right_bottom Or
+                   a_index = #__a_left_bottom
                   Continue
                 EndIf
               EndIf
               ;
               If *this\anchors\mode & #__a_position = 0
-                If anchor = #__a_moved
+                If a_index = #__a_moved
                   Continue
                 EndIf
               EndIf
               
               ;\\
-              If Not *this\anchors\id[anchor]
-                *this\anchors\id.allocate( A_BUTTONS, [anchor] )
+              If Not *this\anchors\id[a_index]
+                *this\anchors\id.allocate( A_BUTTONS, [a_index] )
               EndIf
               
-              a_transform( )\cursor[anchor] = *Data_Transform_Cursor\cursor[anchor]
+              a_transform( )\cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
               
-              *this\anchors\id[anchor]\color\frame[#__s_0] = $ff000000
-              *this\anchors\id[anchor]\color\frame[#__s_1] = $ffFF0000
-              *this\anchors\id[anchor]\color\frame[#__s_2] = $ff0000FF
+              *this\anchors\id[a_index]\color\frame[#__s_0] = $ff000000
+              *this\anchors\id[a_index]\color\frame[#__s_1] = $ffFF0000
+              *this\anchors\id[a_index]\color\frame[#__s_2] = $ff0000FF
               
-              If anchor = 0
-                *this\anchors\id[anchor]\color\back[#__s_0] = $ff000000
+              If a_index = 0
+                *this\anchors\id[a_index]\color\back[#__s_0] = $ff000000
               Else
-                *this\anchors\id[anchor]\color\back[#__s_0] = $ffFFFFFF
+                *this\anchors\id[a_index]\color\back[#__s_0] = $ffFFFFFF
               EndIf
-              *this\anchors\id[anchor]\color\back[#__s_1] = $80FF0000
-              *this\anchors\id[anchor]\color\back[#__s_2] = $800000FF
-            Next anchor
+              *this\anchors\id[a_index]\color\back[#__s_1] = $80FF0000
+              *this\anchors\id[a_index]\color\back[#__s_2] = $800000FF
+            Next a_index
           EndIf
           
           ;\\
-          If *this\anchors And *this\anchors\mode
+          ;If *this\anchors And *this\anchors\mode
             a_size( *this\anchors\id, *this\anchors\size )
             a_move( *this,
                     *this\anchors\id,
@@ -3200,7 +3201,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *this\screen_height( ) )
             
             a_enter( *this, - 1 )
-          EndIf
+          ;EndIf
           
           ProcedureReturn *this
         EndIf
@@ -3217,7 +3218,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; Debug "remove "+a_focused( )\class
               a_remove( a_focused( ) )
             EndIf
-            Debug "a_set " + *this\class +" "+ *this\enter
+            ;Debug "a_set " + *this\class +" "+ *this\enter
             
             ;\\
             If mode >= 0
@@ -3230,7 +3231,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\bs - *this\anchors\pos
                 *this\anchors\pos = size / 2
                 *this\bs + *this\anchors\pos  ; + *this\fs
-                a_entered( ) = 0
+                ;a_entered( ) = 0
               EndIf
             EndIf
             ;
@@ -3239,7 +3240,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 *this\bs - *this\anchors\pos
                 *this\anchors\pos = position
                 *this\bs + *this\anchors\pos  ; + *this\fs
-                a_entered( ) = 0
+                ;a_entered( ) = 0
               EndIf
             EndIf
             ;
@@ -3527,13 +3528,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If *this\anchors And *this\anchors\mode 
-                    Debug " a_hide "+ *this\class +" "+ *this\enter 
                     If a_entered( ) = *this
-                      If Not ( EnteredWidget( ) And is_integral_( EnteredWidget( ) ) And EnteredWidget( )\parent = *this )
-                        a_remove( *this )
+                      ;Debug " a_hide "+ *this\class +" "+ *this\enter 
+                      ;If Not ( EnteredWidget( ) And is_integral_( EnteredWidget( ) ) And EnteredWidget( )\parent = *this )
+                      a_remove( *this )
                         a_entered( )       = a_focused( )
                         *this\root\repaint = #True
-                      EndIf
+                     ; EndIf
                     EndIf
                   EndIf
                 EndIf
@@ -18079,11 +18080,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
              a_entered( )\root = *root
             ;
             If a_enter( a_entered( ), - 3 )
-              If ( *this And a_entered( )\index < *this\index )
-                If a_focused( ) <> a_entered( )
+              If ( *this And a_entered( )\index < *this\index ) And a_focused( ) <> a_entered( )
                   a_index( ) = 0
                   a_show( *this )
-                EndIf
               Else
                 *this = a_entered( ) 
               EndIf
@@ -22879,7 +22878,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3115
-; FirstLine = 3141
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 2945
+; FirstLine = 2921
+; Folding = ------------------------------------------------------------------4X0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+--4+-------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
