@@ -311,8 +311,8 @@ Macro widget_copy( )
       
    EndIf
    
-   a_selector( )\x = a_transform( )\grid_size
-   a_selector( )\y = a_transform( )\grid_size
+   a_selector( )\x = mouse( )\steps
+   a_selector( )\y = mouse( )\steps
 EndMacro
 
 Macro widget_delete( )
@@ -344,8 +344,8 @@ Macro widget_paste( )
                      *copy( )\widget\height[#__c_frame] )
       Next
       
-      a_selector( )\x + a_transform( )\grid_size
-      a_selector( )\y + a_transform( )\grid_size
+      a_selector( )\x + mouse( )\steps
+      a_selector( )\y + mouse( )\steps
       
       ClearList( a_group( ) )
       CopyList( *copy( ), a_group( ) )
@@ -1320,7 +1320,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 539
-; FirstLine = 522
+; CursorPosition = 347
+; FirstLine = 309
 ; Folding = ----------v-----8-----
 ; EnableXP
