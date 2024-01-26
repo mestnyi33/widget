@@ -3127,7 +3127,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If *this\anchors And *this\anchors\mode
                If a_entered( ) <> *this
-                  Debug "a_show_add "+*this\class
+                  ; Debug "a_show_add "+*this\class
                   ;\\ add anchors on the widget
                   If Not a_index( )
                      ;\\ a_add
@@ -4485,33 +4485,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          Else
             ;\\
-            If a_transform( ) And
-               *this = a_focused( ) And
-               *this\anchors\mode And ;  ; *this <> a_main( ) And
-               a_transform( )\grid_size > 1
-               
-               If *this\anchors > 0
-                  If x <> #PB_Ignore
-                     x + ( x % a_transform( )\grid_size )
-                     x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
-                  EndIf
-                  
-                  If y <> #PB_Ignore
-                     y + ( y % a_transform( )\grid_size )
-                     y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
-                  EndIf
-                  
-                  If width <> #PB_Ignore
-                     width + ( width % a_transform( )\grid_size )
-                     width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-                  EndIf
-                  
-                  If height <> #PB_Ignore
-                     height + ( height % a_transform( )\grid_size )
-                     height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
-                  EndIf
-               EndIf
-            EndIf
+           If *this\anchors And *this\anchors\mode And 
+              a_transform( ) And a_transform( )\grid_size > 1
+             ;
+             If x <> #PB_Ignore
+               x + ( x % a_transform( )\grid_size )
+               x = ( x / a_transform( )\grid_size ) * a_transform( )\grid_size
+             EndIf
+             If y <> #PB_Ignore
+               y + ( y % a_transform( )\grid_size )
+               y = ( y / a_transform( )\grid_size ) * a_transform( )\grid_size
+             EndIf
+             If width <> #PB_Ignore
+               width + ( width % a_transform( )\grid_size )
+               width = ( width / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+             EndIf
+             If height <> #PB_Ignore
+               height + ( height % a_transform( )\grid_size )
+               height = ( height / a_transform( )\grid_size ) * a_transform( )\grid_size + 1
+             EndIf
+           EndIf
             
             ;\\ move boundaries
             If *this\bounds\move
@@ -18088,7 +18081,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If a_enter( a_entered( ), - 3 )
                      If ( *this And a_entered( )\index < *this\index )
-                        If a_entered( ) <> a_focused( )
+                        If a_focused( ) <> a_entered( )
                            a_index( ) = 0
                            a_show( *this )
                         EndIf
@@ -22886,8 +22879,6 @@ CompilerEndIf
 ; FirstLine = 2592
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18090
-; FirstLine = 16922
-; Folding = ----------------------------------------------------------f+ovv--f3X0nC-0--v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------HAA5--fw+n--------------------------------------------------------jP+--+-------------------------------------------------------------------------------------------+2--ftf-f----------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ----------------------------------------------------------f+ovv--f4X0nC-0--v----------------------------t0----------VdB6mP7---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------DAA9--PY-z--------------------------------------------------------xH--f-------------------------------------------------------------------------------------------f-7--v3v-v----------------------------------------------------------------------------------------------------------------------
 ; EnableXP

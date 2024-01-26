@@ -1075,7 +1075,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ide_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_form = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) 
-   ;a_init( ide_design_form, 0 )
+   a_init( ide_design_form);, 0 )
    
    ;AddItem( ide_design_panel, -1, "Code" )
    ;ide_design_code = Editor( 0,0,0,0 ) ; bug then move anchors window
@@ -1320,8 +1320,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 441
-; FirstLine = 427
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----------v-----8-----
 ; EnableXP
