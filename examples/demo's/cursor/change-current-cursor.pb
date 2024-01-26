@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
    ;\\
    Define anchor_size = 30
-   ;a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
+   a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
    a_set(object, #__a_full, anchor_size)
    a_set(object1, #__a_full, anchor_size)
    a_set(object2, #__a_full, anchor_size)
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12
+; CursorPosition = 31
 ; FirstLine = 8
 ; Folding = --
 ; EnableXP
