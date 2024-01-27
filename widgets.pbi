@@ -2551,7 +2551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Not _this_\anchors\mode & #__a_novisible ; 
         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
         
-        If _this_\enter And _this_\anchors\id[0] 
+        If _this_\anchors\id[0] 
            draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_transform( )\framecolor[_this_\anchors\id[a_index( )]\state] ) 
         EndIf
         
@@ -3135,6 +3135,7 @@ EndProcedure
         EndIf
       EndIf
       ;
+      If *this\anchors And *this\anchors\mode
       If a_entered( ) And
          a_entered( )\anchors And
          a_entered( )\anchors\mode And
@@ -3147,7 +3148,6 @@ EndProcedure
       ;
       ; Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
       ;
-      If *this\anchors And *this\anchors\mode
         If a_entered( ) <> *this
           ; Debug "a_show_add "+*this\class
           ;\\ add anchors on the widget
@@ -3564,7 +3564,7 @@ EndProcedure
           If mouse( )\buttons & #PB_Canvas_LeftButton
              ;\\ set current
             ; transform widget
-            If a_entered( )
+             If a_entered( )
               If Not a_entered( )\anchors\mode & #__a_novisible
                 a_set( a_entered( ) )
               EndIf
@@ -18096,30 +18096,35 @@ EndProcedure
                   Not ( a_transform( ) And a_focused( ) = a_entered( ) )
                   ;
                   a_index( ) = 0
-                  a_show( *this )
-              Else
-                *this = a_entered( ) 
+;                   If *this\anchors And
+;                      *this\anchors\mode
+                     a_show( *this )
+;                   EndIf
+               Else
+                  *this = a_entered( ) 
               EndIf
             EndIf
           EndIf
           ;
           If Not a_index( )
-            If *this And
-               *this <> a_entered( )
-              ;
-              If *this\child And 
-                 *this\parent And 
-                 *this\parent\enter > 0
+             If *this And
+;                 *this\anchors And
+;                 *this\anchors\mode And
+                *this <> a_entered( )
                 ;
-                DoEvents( *this\parent, #__event_MouseLeave )
-              EndIf
-              ;
-              If a_show( *this )
-                ; Debug "SHOW "+a_index( ) +" "+ a_entered( )\class +" "+ a_entered( )\enter 
-              EndIf
-            EndIf
+                If *this\child And 
+                   *this\parent And 
+                   *this\parent\enter > 0
+                   ;
+                   DoEvents( *this\parent, #__event_MouseLeave )
+                EndIf
+                ;
+                If a_show( *this )
+                   ; Debug "SHOW "+a_index( ) +" "+ a_entered( )\class +" "+ a_entered( )\enter 
+                EndIf
+             EndIf
           EndIf  
-        EndIf
+       EndIf
         
         ;\\
         If a_index( )
@@ -22879,7 +22884,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2574
-; FirstLine = 2553
+; CursorPosition = 3568
+; FirstLine = 3374
 ; Folding = ------------------------------------------------------------08---8ff2------f+---------4-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-7--v-8-----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
