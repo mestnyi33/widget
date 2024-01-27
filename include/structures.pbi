@@ -248,8 +248,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ANCHORS
       Structure _s_A_BUTTONS Extends _s_COORDINATE
-       state.b
-           color._s_color[4] ; TEMP
+         state.b
       EndStructure
       Structure _s_A_GROUP Extends _s_COORDINATE
          *widget._s_WIDGET
@@ -285,7 +284,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          selectorbackcolor.l
          selectorframecolor.l
-         ;state.b
          
          id._s_A_BUTTONS[5];constants::#__a_moved + 1]
       EndStructure
@@ -742,7 +740,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 289
-; FirstLine = 152
+; CursorPosition = 286
+; FirstLine = 155
 ; Folding = -HCB-uf6--
 ; EnableXP

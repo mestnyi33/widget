@@ -2551,48 +2551,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Not _this_\anchors\mode & #__a_novisible ; 
         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
         
+        If _this_\enter And _this_\anchors\id[0] 
+           draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_transform( )\framecolor[_this_\anchors\id[a_index( )]\state] ) 
+        EndIf
+        
         If _this_ = a_focused( )
-          ;\\ left line
+           ;\\ left line
           If a_selector([#__a_line_left])
-            If _this_\anchors\id[#__a_moved] And a_selector([#__a_line_left])\y = _this_\frame_y( ) And a_selector([#__a_line_left])\height = _this_\frame_height( )
-              draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , a_transform( )\framecolor[_this_\anchors\id[#__a_moved]\state] )
-            Else
+            If Not ( _this_\anchors\id[#__a_moved] And a_selector([#__a_line_left])\y = _this_\frame_y( ) And a_selector([#__a_line_left])\height = _this_\frame_height( ))
               draw_box_( a_selector([#__a_line_left])\x, a_selector([#__a_line_left])\y, a_selector([#__a_line_left])\width, a_selector([#__a_line_left])\height , a_transform( )\framecolor[a_selector([#__a_line_left])\state] )
             EndIf
           EndIf
           
           ;\\ top line
           If a_selector([#__a_line_top])
-            If _this_\anchors\id[#__a_moved] And a_selector([#__a_line_top])\y = _this_\frame_y( ) And a_selector([#__a_line_top])\height = _this_\frame_height( )
-              draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , a_transform( )\framecolor[_this_\anchors\id[#__a_moved]\state] )
-            Else
+            If Not ( _this_\anchors\id[#__a_moved] And a_selector([#__a_line_top])\y = _this_\frame_y( ) And a_selector([#__a_line_top])\height = _this_\frame_height( ))
               draw_box_( a_selector([#__a_line_top])\x, a_selector([#__a_line_top])\y, a_selector([#__a_line_top])\width, a_selector([#__a_line_top])\height , a_transform( )\framecolor[a_selector([#__a_line_top])\state] )
             EndIf
           EndIf
           
           ;\\ right line
           If a_selector([#__a_line_right])
-            If _this_\anchors\id[#__a_moved] And a_selector([#__a_line_right])\x = _this_\frame_x( ) And a_selector([#__a_line_right])\width = _this_\frame_width( )
-              draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , a_transform( )\framecolor[_this_\anchors\id[#__a_moved]\state] )
-            Else
+            If Not ( _this_\anchors\id[#__a_moved] And a_selector([#__a_line_right])\x = _this_\frame_x( ) And a_selector([#__a_line_right])\width = _this_\frame_width( ))
               draw_box_( a_selector([#__a_line_right])\x, a_selector([#__a_line_right])\y, a_selector([#__a_line_right])\width, a_selector([#__a_line_right])\height , a_transform( )\framecolor[a_selector([#__a_line_right])\state] )
             EndIf
           EndIf
           
           ;\\ bottom line
           If a_selector([#__a_line_bottom])
-            If _this_\anchors\id[#__a_moved] And a_selector([#__a_line_bottom])\x = _this_\frame_x( ) And a_selector([#__a_line_bottom])\width = _this_\frame_width( )
-              draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , a_transform( )\framecolor[_this_\anchors\id[#__a_moved]\state] )
-            Else
+            If Not ( _this_\anchors\id[#__a_moved] And a_selector([#__a_line_bottom])\x = _this_\frame_x( ) And a_selector([#__a_line_bottom])\width = _this_\frame_width( ))
               draw_box_( a_selector([#__a_line_bottom])\x, a_selector([#__a_line_bottom])\y, a_selector([#__a_line_bottom])\width, a_selector([#__a_line_bottom])\height , a_transform( )\framecolor[a_selector([#__a_line_bottom])\state] )
             EndIf
           EndIf
-        Else
-          If _this_ = a_entered( )
-            If _this_\anchors\id[0] :draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_transform( )\framecolor[_this_\anchors\id[0]\state] ) : EndIf
-          EndIf
         EndIf
-        
+        ;
         If _this_\anchors\id[#__a_moved] And ( _this_\anchors\id[#__a_moved]\width <> _this_\anchors\id[0]\width And _this_\anchors\id[#__a_moved]\height <> _this_\anchors\id[0]\height )
           draw_box_( _this_\anchors\id[#__a_moved]\x, _this_\anchors\id[#__a_moved]\y, _this_\anchors\id[#__a_moved]\width, _this_\anchors\id[#__a_moved]\height, a_transform( )\framecolor[_this_\anchors\id[#__a_moved]\state] )
         EndIf
@@ -22887,7 +22879,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2770
-; FirstLine = 2675
+; CursorPosition = 2574
+; FirstLine = 2553
 ; Folding = ------------------------------------------------------------08---8ff2------f+---------4-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-7--v-8-----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
