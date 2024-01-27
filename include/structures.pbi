@@ -226,7 +226,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          padding._s_point
       EndStructure
       
-      ;--     image
+      ;--     IMAGE
       Structure _s_image Extends _s_COORDINATE
          *id  ; - ImageID( )
          *img ; - Image( )
@@ -245,23 +245,24 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       *released._s_image
          ;       *background._s_image
       EndStructure
-      ;
-      Structure _s_A_BUTTONS Extends _s_COORDINATE
-         color._s_color[4]
-      EndStructure
       
-      ;
+      ;--     ANCHORS
+      Structure _s_A_BUTTONS Extends _s_COORDINATE
+       state.b
+           color._s_color[4] ; TEMP
+      EndStructure
       Structure _s_A_GROUP Extends _s_COORDINATE
          *widget._s_WIDGET
       EndStructure
-      ;--     ANCHORS
+      ;
       Structure _s_ANCHORS
          pos.w 
          size.c
          mode.i
          *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
-      ;--     TRANSFORM
+      ;Debug SizeOf(_s_ANCHORS)
+      ;
       Structure _s_TRANSFORMDATA
          ;
          List *group._s_A_GROUP( )
@@ -278,12 +279,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *main._s_WIDGET
          *focused._s_WIDGET
-         id._s_A_BUTTONS[constants::#__a_count + 1]
+         
+         backcolor.l[3]
+         framecolor.l[3]
+         ;
+         selectorbackcolor.l
+         selectorframecolor.l
+         ;state.b
+         
+         id._s_A_BUTTONS[5];constants::#__a_moved + 1]
       EndStructure
+      ;
       Structure _s_TRANSFORM
          index.a
          *widget._s_WIDGET
-         cursor.i[constants::#__a_count + 1]
+         cursor.a[constants::#__a_moved + 1]
          
          *transform._s_TRANSFORMDATA
       EndStructure
@@ -298,12 +308,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          steps.a
          
+         *drag._s_DRAG           ;
          ;
          wheel._s_POINT          ;
          delta._s_POINT          ;
-         ;
-         *drag._s_DRAG           ;
-         anchors._s_TRANSFORM ;
+         anchors._s_TRANSFORM    ;
          ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
@@ -733,7 +742,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 305
-; FirstLine = 167
-; Folding = -HAB-uf6--
+; CursorPosition = 289
+; FirstLine = 152
+; Folding = -HCB-uf6--
 ; EnableXP
