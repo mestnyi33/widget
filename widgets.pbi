@@ -2923,7 +2923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure a_remove( *this._s_WIDGET )
       Protected i
-         For i = 0 To #__a_count
+      For i = 0 To #__a_count
         If *this\anchors\id[i]
           FreeStructure( *this\anchors\id[i] )
           *this\anchors\id[i] = #Null
@@ -3152,7 +3152,6 @@ EndProcedure
           ; Debug "a_show_add "+*this\class
           ;\\ add anchors on the widget
           If Not a_index( )
-            ;\\ a_add
             For a_index = 0 To #__a_count
               If *this\anchors\mode & #__a_height = 0 And
                  *this\anchors\mode & #__a_width = 0
@@ -3191,29 +3190,26 @@ EndProcedure
                   Continue
                 EndIf
               EndIf
-              
-              ;\\
+              ;
               If Not *this\anchors\id[a_index]
                 *this\anchors\id.allocate( A_BUTTONS, [a_index] )
               EndIf
-              
+              ;
               mouse( )\anchors\cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
             Next a_index
           EndIf
-          
+          ;
           ;\\
-          ;If *this\anchors And *this\anchors\mode
-            a_size( *this, *this\anchors\id, *this\anchors\size )
-            a_move( *this,
-                    *this\anchors\id,
-                    *this\screen_x( ),
-                    *this\screen_y( ),
-                    *this\screen_width( ),
-                    *this\screen_height( ) )
-            
-            a_enter( *this, - 1 )
-          ;EndIf
-          
+          a_size( *this, *this\anchors\id, *this\anchors\size )
+          a_move( *this,
+                  *this\anchors\id,
+                  *this\screen_x( ),
+                  *this\screen_y( ),
+                  *this\screen_width( ),
+                  *this\screen_height( ) )
+          ;
+          a_enter( *this, - 1 )
+          ;
           ProcedureReturn *this
         EndIf
       EndIf
@@ -18299,7 +18295,8 @@ EndProcedure
       EndIf
       
       ;\\
-        If Not a_index( )
+       If Not mouse( )\press
+         If Not a_index( )
           If a_entered( ) And *this = a_entered( ) And 
              a_entered( )\frame_enter( )
             ;
@@ -18315,6 +18312,7 @@ EndProcedure
             EndIf   
           EndIf
         EndIf
+       EndIf
       
     EndProcedure
     
