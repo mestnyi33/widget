@@ -43,7 +43,9 @@ CompilerIf #PB_Compiler_IsMainFile
             mouse( )\steps = GetState(*grid)
             
         EndSelect
-    EndSelect
+  EndSelect
+  
+  Debug a_focused( )
   EndProcedure
   
 
@@ -99,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 52
+; CursorPosition = 47
+; FirstLine = 18
 ; Folding = --
 ; EnableXP

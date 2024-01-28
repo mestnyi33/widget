@@ -264,6 +264,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;
       Structure _s_TRANSFORMDATA
          ;
+         mark.b
          List *group._s_A_GROUP( )
          *type
          *grab ; grab image handle
@@ -740,7 +741,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 286
-; FirstLine = 155
+; CursorPosition = 267
+; FirstLine = 149
 ; Folding = -HCB-uf6--
 ; EnableXP

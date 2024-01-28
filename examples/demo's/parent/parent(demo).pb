@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "_widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -30,10 +30,10 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = WidgetEventData()
     
    Select EventType
-   	Case #PB_EventType_LeftButtonDown
+   	Case #__event_LeftButtonDown
    		;ClearDebugOutput()
    		
-   	Case #PB_EventType_LeftClick, #PB_EventType_Change
+   	Case #__event_LeftClick, #__event_Change
           Select EventWidget
             Case  *DESKTOP:  SetParent(*CHILD, 0)
             Case  *_6:  SetParent(*CHILD, *window_10)
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
             Case *COMBO
               Select EventType
-                Case #PB_EventType_Change
+                Case #__event_Change
                   ParentID = GetParent(*CHILD)
                   Free( *CHILD )
                   
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  6: *CHILD = ListView(30,20,150,30) 
                     Case  7: *CHILD = Frame(30,20,150,30,"Frame") 
                     Case  8: *CHILD = ComboBox(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
-                       Debug ""+*CHILD\root\class +" "+ *CHILD\PopupBox( )\root\class
+                      ; Debug ""+*CHILD\root\class +" "+ *CHILD\PopupBox( )\root\class
                        
                     Case  9: *CHILD = Image(30,20,150,30,0,#PB_Image_Border) 
                     Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
@@ -150,7 +150,12 @@ CompilerIf #PB_Compiler_IsMainFile
   ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = Container(0,0, 425, 350)
   
-  *CHILD = Button(30,10,160,70,"Button") 
+  *CHILD = Container(30,10,160,70)
+  Button(5,5,70,30,"Button1") 
+  Button(15,15,70,30,"Button2") 
+  Button(25,25,70,30,"Button3") 
+  CloseList( )
+  ;*CHILD = Button(30,10,160,70,"Button") 
   *RETURN = Button(30,90,160,25,"Button <<(Return)") 
   
   *COMBO = ComboBox(30,120,160,25) 
@@ -191,7 +196,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem(*COMBO, -1, "Shortcut")  
   AddItem(*COMBO, -1, "Canvas")    
   
-  SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #PB_EventType_Change)
+  SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #__event_Change)
   
   *DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
   *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #__color_back, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 
@@ -214,7 +219,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 148
-; FirstLine = 139
-; Folding = --
+; CursorPosition = 1
+; Folding = -0
 ; EnableXP

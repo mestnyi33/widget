@@ -68,19 +68,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define line.s
     Debug "---->>"
-    ForEach widget( )
-      line = "  "+ widget( )\class +" "
+    ForEach __widgets( )
+      line = "  "+ __widgets( )\class +" "
       
-      If widget( )\before\widget
-        line + widget( )\before\widget\class+"_"+widget( )\before\widget\text\string +" <<  "
+      If __widgets( )\before\widget
+        line + __widgets( )\before\widget\class+"_"+__widgets( )\before\widget\text\string +" <<  "
       Else
         line + "-------- <<  " 
       EndIf
       
-      line + widget( )\text\string
+      line + __widgets( )\text\string
       
-      If widget( )\after\widget
-        line +"  >> "+ widget( )\after\widget\class+"_"+widget( )\after\widget\text\string
+      If __widgets( )\after\widget
+        line +"  >> "+ __widgets( )\after\widget\class+"_"+__widgets( )\after\widget\text\string
       Else
         line + "  >> --------" 
       EndIf
@@ -95,7 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat: Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 63
+; FirstLine = 58
 ; Folding = --
 ; EnableXP
