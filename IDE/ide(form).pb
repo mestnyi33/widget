@@ -1320,7 +1320,6 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 347
-; FirstLine = 309
+; CursorPosition = 2
 ; Folding = ----------v-----8-----
 ; EnableXP

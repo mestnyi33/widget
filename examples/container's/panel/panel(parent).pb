@@ -46,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Next 
       CloseList( )
       
-      ;     OpenList( *panel, 2 )
-      ;     Button( 20,25,80,35, "_0" ) 
-      ;     CloseList( )
+;           OpenList( *panel, 0 )
+;           Button( 20,25,80,35, "_0" ) : SetClass(widget( ), "btn"+Str(0) )  
+;           CloseList( )
       
        *butt0 = Button( 20,25,80,35, "_0" ) : SetClass(widget( ), "btn"+Str(0) ) 
        Debug " reparent "
@@ -103,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 95
-; FirstLine = 65
+; CursorPosition = 54
+; FirstLine = 28
 ; Folding = --
 ; EnableXP

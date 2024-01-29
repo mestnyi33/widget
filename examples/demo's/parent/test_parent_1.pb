@@ -27,16 +27,28 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 10,65,80,25, "*btn1_9" )  : SetClass(widget( ), "btn1_9" ) 
       ;
       CloseList()
-      
-      ;\\ test 1
-      OpenList( *panel1, 0 )
-      *but0 = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
-      CloseList( )
-      
-;       ;\\ test 2 ok
+      ;
+;       ;\\ test 1 ok
+;       OpenList( *panel1, 0 )
 ;       *but0 = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
-;       SetParent( *but0, *panel1, 0 )
+;       CloseList( )
       
+      
+      ;\\ test 2 ok
+      *but0 = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
+      SetParent( *but0, *panel1, 0 )
+      
+;       ;\\
+;       SetPosition( *but0, #PB_List_Before )
+;       SetPosition( *but0, #PB_List_Before )
+;       SetPosition( *but0, #PB_List_Before )
+;   
+      Debug "----panel all childrens-----"
+      If StartEnumerate( *panel1 )
+         Debug widget( )\text\string
+         
+         StopEnumerate( )
+      EndIf
       
       ;\\ 
       Define line.s
@@ -83,6 +95,6 @@ CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 33
-; FirstLine = 24
+; FirstLine = 25
 ; Folding = -
 ; EnableXP
