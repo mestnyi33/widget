@@ -45,13 +45,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Debug "---->>"
-  ForEach widget()
-    Debug "  "+ widget( )\parent\class +" <- "+ widget( )\class
+  ForEach __widgets( )
+    Debug "  "+ __widgets(  )\parent\class +" <- "+ __widgets(  )\class
   Next
   Debug "<<----"
   
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 28
+; FirstLine = 17
 ; Folding = -
 ; EnableXP

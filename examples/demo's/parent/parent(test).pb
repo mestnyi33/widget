@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = WidgetEventData()
     
    Select EventType
-        Case #PB_EventType_LeftClick, #PB_EventType_Change
+        Case #__Event_LeftClick, #__Event_Change
           Select EventWidget
             Case  *DESKTOP:  SetParent(*CHILD, 0)
             Case  *_6:  SetParent(*CHILD, *window_10)
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
             Case *COMBO
               Select EventType()
-                Case #PB_EventType_Change
+                Case #__Event_Change
                   ParentID = GetParent(*CHILD)
                   
                   Select GetState(*COMBO)
@@ -209,6 +209,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 32
+; FirstLine = 174
 ; Folding = --
 ; EnableXP

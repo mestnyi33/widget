@@ -28,14 +28,14 @@ CompilerIf #PB_Compiler_IsMainFile
               EventItem.i = WidgetEvent( )\item;, EventData.i = WidgetEvent( )\data
     
     Select EventType
-      Case #PB_EventType_MouseEnter
+      Case #__Event_MouseEnter
         ; bug in mac os
         If IsGadget(EventGadget()) And GetActiveGadget() <> EventGadget()
           SetActiveGadget(EventGadget())
           Debug 555
         EndIf
         
-      Case #PB_EventType_LeftClick, #PB_EventType_Change
+      Case #__Event_LeftClick, #__Event_Change
         
         Select EventWidget
           Case *WINDOW_0        : SetParent(*CHILD, *WINDOW)
@@ -100,5 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = B+
+; CursorPosition = 30
+; FirstLine = 18
+; Folding = Z+
 ; EnableXP

@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = WidgetEventData()
     
    Select EventType
-        Case #PB_EventType_LeftClick
+        Case #__Event_LeftClick
           ClearDebugOutput()
           
           Select EventWidget
@@ -90,5 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 31
+; FirstLine = 54
 ; Folding = --
 ; EnableXP

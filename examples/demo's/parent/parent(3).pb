@@ -6,7 +6,7 @@ Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 
 Procedure events_widgets()
   Select WidgetEventType()
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       If i 
         SetParent(*w, *p1)
       Else
@@ -20,17 +20,17 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
+  If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
     *p2 = Container(20, 180, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *p1 = Container(10, 10, 200, 200)
     Button(10,20, 200, 30, "butt", #__Button_Toggle)
     *w = Container(10, 10, 100, 100)
-    *ch = Button(-25, 10, 100, 20, "Button")
+    *ch = Button(-25, 10, 100, 40, "Button")
     CloseList()
     CloseList()
     
@@ -40,12 +40,12 @@ EndProcedure
     SetParent(*w, *p2)
     ;*w\root = *p2\root
     
-    ForEach widget()
-      If widget() = *w
-        ;widget()\root = *p2\root
+    ForEach __widgets( )
+      If __widgets( ) = *w
+        ;__widgets( )\root = *p2\root
       EndIf
       
-      Debug  ""+widget()\root +" "+ *p2\root +" - "+ widget()\text\string
+      Debug  ""+__widgets( )\root +" "+ *p2\root +" - "+ __widgets( )\text\string
     Next
             
     Bind(root(), @events_widgets())
@@ -53,5 +53,7 @@ EndProcedure
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 32
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

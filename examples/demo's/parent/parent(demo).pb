@@ -1,5 +1,5 @@
 ﻿IncludePath "../../../"
-XIncludeFile "_widgets.pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   

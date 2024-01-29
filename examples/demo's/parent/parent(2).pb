@@ -5,7 +5,7 @@ Global i, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
   Select WidgetEventType( )
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       If *b = EventWidget( )
         If i 
           SetParent(*w, *p1)
@@ -22,7 +22,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu))
+If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   *p1 = Container(10, 10, 200, 200)            ; 0
   *w = Container(10, 10, 100, 100)             ; 1
   ;Container(10, 10, 100, 100)                  ; 2
@@ -32,7 +32,7 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   CloseList()
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   *p2 = Container(20, 180, 200, 200)           ; 4
   Button(-25, 10, 100, 30, "Button_4_5")       ; 5
@@ -40,15 +40,15 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   
   *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
   
-;   ForEach widget()
-;     widget()\class = widget()\class +"-"+ widget()\index
+;   ForEach __widgets( )
+;     __widgets( )\class = __widgets( )\class +"-"+ __widgets( )\index
 ;   Next
   
   i = 1
   SetParent(*w, *p2)
   
-  ForEach widget()
-    Debug  ""+ListIndex(widget()) +" - "+ widget()\index +" - "+ widget()\class +" - "+ widget()\text\string +" - "+ widget()\root
+  ForEach __widgets( )
+    Debug  ""+ListIndex(__widgets( )) +" - "+ __widgets( )\index +" - "+ __widgets( )\class +" - "+ __widgets( )\text\string +" - "+ __widgets( )\root
   Next
   
   
@@ -57,5 +57,7 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 24
+; FirstLine = 19
 ; Folding = --
 ; EnableXP

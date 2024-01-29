@@ -6,7 +6,7 @@ Global i, *w, *p1,*p2, *ch, *b, *bb._s_widget
 
 Procedure events_widgets( )
   Select WidgetEventType( )
-    Case #PB_EventType_LeftClick
+    Case #__Event_LeftClick
       If *b = EventWidget( )
         If i 
           SetParent(*w, *p2)
@@ -22,7 +22,7 @@ Procedure events_widgets( )
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   SetData(Root( ), 1 )
   *p2 = Container(10, 10, 200, 200) : SetData(*p2, 2 )
@@ -55,38 +55,38 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   Debug "after " + *bb\after\widget
   
   Debug ""
-  ForEach Widget()
-    If Widget()\_parent( )
-      If Widget()\before\widget
-        before = Str( Widget()\before\widget\data )
+  ForEach __widgets( )
+    If __widgets( )\parent
+      If __widgets( )\before\widget
+        before = Str( __widgets( )\before\widget\data )
       EndIf
-      If Widget()\after\widget
-        after = Str( Widget()\after\widget\data )
+      If __widgets( )\after\widget
+        after = Str( __widgets( )\after\widget\data )
       Else
         after = "  "
       EndIf
       
-      If Widget()\last\widget
-        last = Str( Widget()\last\widget\data )
+      If __widgets( )\last\widget
+        last = Str( __widgets( )\last\widget\data )
       Else
         last = "  "
       EndIf
       
-      parent = Str( Widget()\_parent( )\data )
-      If Widget()\_parent( )\first\widget
-        parentfirst = Str( Widget()\_parent( )\first\widget\data )
+      parent = Str( __widgets( )\parent\data )
+      If __widgets( )\parent\first\widget
+        parentfirst = Str( __widgets( )\parent\first\widget\data )
       EndIf
-      If Widget()\_parent( )\last\widget
-        parentlast = Str( Widget()\_parent( )\last\widget\data )
+      If __widgets( )\parent\last\widget
+        parentlast = Str( __widgets( )\parent\last\widget\data )
       EndIf
     
-    If Widget()\first\widget
-      first = Str( Widget()\first\widget\data )
+    If __widgets( )\first\widget
+      first = Str( __widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ __widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
-      Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+      Debug " "+__widgets( )\data +" - "+ __widgets( )\x +" "+ __widgets( )\width
     EndIf
      
   Next
@@ -108,38 +108,38 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   Debug "after " + *bb\after\widget
   
   Debug ""
-  ForEach Widget()
-    If Widget()\_parent( )
-      If Widget()\before\widget
-        before = Str( Widget()\before\widget\data )
+  ForEach __widgets( )
+    If __widgets( )\parent
+      If __widgets( )\before\widget
+        before = Str( __widgets( )\before\widget\data )
       EndIf
-      If Widget()\after\widget
-        after = Str( Widget()\after\widget\data )
+      If __widgets( )\after\widget
+        after = Str( __widgets( )\after\widget\data )
       Else
         after = "  "
       EndIf
       
-      If Widget()\last\widget
-        last = Str( Widget()\last\widget\data )
+      If __widgets( )\last\widget
+        last = Str( __widgets( )\last\widget\data )
       Else
         last = "  "
       EndIf
       
-      parent = Str( Widget()\_parent( )\data )
-      If Widget()\_parent( )\first\widget
-      parentfirst = Str( Widget()\_parent( )\first\widget\data )
+      parent = Str( __widgets( )\parent\data )
+      If __widgets( )\parent\first\widget
+      parentfirst = Str( __widgets( )\parent\first\widget\data )
     EndIf
-    If Widget()\_parent( )\last\widget
-      parentlast = Str( Widget()\_parent( )\last\widget\data )
+    If __widgets( )\parent\last\widget
+      parentlast = Str( __widgets( )\parent\last\widget\data )
     EndIf 
     
-    If Widget()\first\widget
-      first = Str( Widget()\first\widget\data )
+    If __widgets( )\first\widget
+      first = Str( __widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ Widget()\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ __widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
-      Debug " "+Widget()\data +" - "+ Widget()\x +" "+ Widget()\width
+      Debug " "+__widgets( )\data +" - "+ __widgets( )\x +" "+ __widgets( )\width
     EndIf
      
   Next
