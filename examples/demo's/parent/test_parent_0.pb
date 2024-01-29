@@ -14,18 +14,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
       CloseList()
-      ;
-      Container( 220, 10, 200, 150) : SetClass(widget( ), "CONT2" ) 
-      Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
-      Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
-      Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
-      CloseList()
-      ;
-      Container( 430, 10, 200, 150) : SetClass(widget( ), "CONT3" ) 
-      Button( 10,5,80,25, "*btn3_1" )  : SetClass(widget( ), "btn3_1" ) 
-      Button( 10,35,80,25, "btn3_2" )  : SetClass(widget( ), "btn3_2" ) 
-      Button( 10,65,80,25, "*btn3_3" )  : SetClass(widget( ), "btn3_3" ) 
-      CloseList()
+;       ;
+;       Container( 220, 10, 200, 150) : SetClass(widget( ), "CONT2" ) 
+;       Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
+;       Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
+;       Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
+;       CloseList()
+;       ;
+;       Container( 430, 10, 200, 150) : SetClass(widget( ), "CONT3" ) 
+;       Button( 10,5,80,25, "*btn3_1" )  : SetClass(widget( ), "btn3_1" ) 
+;       Button( 10,35,80,25, "btn3_2" )  : SetClass(widget( ), "btn3_2" ) 
+;       Button( 10,65,80,25, "*btn3_3" )  : SetClass(widget( ), "btn3_3" ) 
+;       CloseList()
       
       
       *but = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
@@ -62,6 +62,6 @@ CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 31
-; FirstLine = 1
+; FirstLine = 13
 ; Folding = -
 ; EnableXP
