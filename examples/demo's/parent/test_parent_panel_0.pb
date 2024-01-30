@@ -17,32 +17,24 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
       ;
       AddItem(*panel1, -1, "item2" )
-      Button( 10,5,80,25, "*btn1_4" )  : SetClass(widget( ), "btn1_4" ) 
-      Button( 10,35,80,25, "*btn1_5" )  : SetClass(widget( ), "btn1_5" ) 
-      Button( 10,65,80,25, "*btn1_6" )  : SetClass(widget( ), "btn1_6" ) 
+      Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
+      Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
+      Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
       ;
       AddItem(*panel1, -1, "item3" )
-      Button( 10,5,80,25, "*btn1_7" )  : SetClass(widget( ), "btn1_7" ) 
-      Button( 10,35,80,25, "*btn1_8" )  : SetClass(widget( ), "btn1_8" ) 
-      Button( 10,65,80,25, "*btn1_9" )  : SetClass(widget( ), "btn1_9" ) 
+      Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
+      Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
+      Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
-      ;
-;       ;\\ test 1 ok
-;       OpenList( *panel1, 0 )
-;       *but0 = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
-;       CloseList( )
+      
+      ;\\ test
+      OpenList( *panel1, 0 )
+      *but0 = Button( 100,35,80,25, "*btn1_added" ) : SetClass(widget( ), "btn1_added" ) 
+      CloseList( )
       
       
-      ;\\ test 2 ok
-      *but0 = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
-      SetParent( *but0, *panel1, 0 )
-      
-;       ;\\
-;       SetPosition( *but0, #PB_List_Before )
-;       SetPosition( *but0, #PB_List_Before )
-;       SetPosition( *but0, #PB_List_Before )
-;   
+      ;\\
       Debug "----panel all childrens-----"
       If StartEnumerate( *panel1 )
          Debug widget( )\text\string
@@ -76,25 +68,37 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       ;       result
+      ;       ----panel all childrens-----
+      ;       *btn1_1
+      ;       *btn1_2
+      ;       *btn1_3
+      ;       *btn1_added
+      ;       *btn2_4
+      ;       *btn2_5
+      ;       *btn2_6
+      ;       *btn3_7
+      ;       *btn3_8
+      ;       *btn3_9
       ;       ---->>
       ;       -------- <<  CONT1  >> --------
       ;       -------- <<  btn1_1  >> btn1_2
       ;       btn1_1 <<  btn1_2  >> btn1_3
-      ;       btn1_2 <<  btn1_3  >> --------
-      ;       -------- <<  btn1_4  >> btn1_5
-      ;       btn1_4 <<  btn1_5  >> btn1_6
-      ;       btn1_5 <<  btn1_6  >> --------
-      ;       -------- <<  btn1_7  >> btn1_8
-      ;       btn1_7 <<  btn1_8  >> btn1_9
-      ;       btn1_8 <<  btn1_9  >> --------
+      ;       btn1_2 <<  btn1_3  >> btn1_added
+      ;       btn1_3 <<  btn1_added  >> --------
+      ;       -------- <<  btn2_4  >> btn2_5
+      ;       btn2_4 <<  btn2_5  >> btn2_6
+      ;       btn2_5 <<  btn2_6  >> --------
+      ;       -------- <<  btn3_7  >> btn3_8
+      ;       btn3_7 <<  btn3_8  >> btn3_9
+      ;       btn3_8 <<  btn3_9  >> --------
       ;       <<----
+
       
       WaitClose( )
    EndIf   
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 25
+; CursorPosition = 86
+; FirstLine = 60
 ; Folding = -
 ; EnableXP
