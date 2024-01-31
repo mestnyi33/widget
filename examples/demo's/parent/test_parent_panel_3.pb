@@ -112,40 +112,49 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(widget)
    
-   Global._s_WIDGET *panel1, *but0
+   Global._s_WIDGET *CONT, *but0
    
    If Open( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
-      *panel1 = Panel( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
-      AddItem(*panel1, -1, "item0" )
+      *CONT = Panel( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
+      AddItem(*CONT, -1, "item0" )
       ;
-      AddItem(*panel1, -1, "item1" )
+      AddItem(*CONT, -1, "item1" )
       Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
-      ;
-      AddItem(*panel1, -1, "item2" )
-      Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
-      Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
-      Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
-      ;
-      AddItem(*panel1, -1, "item3" )
-      Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
-      Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
-      Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
+;       Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
+;       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+; ;       ;
+;       AddItem(*CONT, -1, "item2" )
+;       Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
+;       Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
+;       Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
+;       ;
+;       AddItem(*CONT, -1, "item3" )
+;       Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
+;       Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
+;       Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
       
       ;\\ test 
       *but0 = Button( 100,35,80,25, "*btn0_added" ) : SetClass(widget( ), "btn0_added" ) 
-      SetParent( *but0, *panel1, 0 )
-
-      Debug "----panel all childrens-----"
-      If StartEnumerate( *panel1 )
+      Button( 100,35,80,25, "*btn77" ) : SetClass(widget( ), "btn77" ) 
+      
+      ;\\
+      Debug " reParent       "
+      SetParent( *but0, *CONT, 0 )
+      
+      Debug "----CONT all childrens-----"
+      If StartEnumerate( *CONT )
          Debug widget( )\text\string
          
          StopEnumerate( )
       EndIf
+      
+      Debug "----all childrens-----"
+      ForEach __widgets( )
+         Debug  ""+__widgets( )\class ;+" "+ __widgets( )\first\widget +" "+ __widgets( )\before\widget +" "+ __widgets( )\after\widget +" "+ __widgets( )\last\widget
+      Next
       
       ;\\ 
       Define line.s
@@ -171,6 +180,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       Debug "<<----"
       
+      Debug ""+root()\first\widget\class +" <<<< "+ root()\class +" >>>> "+ root()\last\widget\class
+      
       ;\\
       ;       result
       
@@ -178,7 +189,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 134
-; FirstLine = 107
+; CursorPosition = 143
+; FirstLine = 124
 ; Folding = -
 ; EnableXP

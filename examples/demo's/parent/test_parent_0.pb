@@ -11,24 +11,27 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       *CONT = Container( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
       Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+;       Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
+;       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
       CloseList()
 ;       ;
 ;       Container( 220, 10, 200, 150) : SetClass(widget( ), "CONT2" ) 
-;       Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
-;       Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
-;       Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
+; ;       Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
+; ;       Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
+; ;       Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
 ;       CloseList()
 ;       ;
 ;       Container( 430, 10, 200, 150) : SetClass(widget( ), "CONT3" ) 
-;       Button( 10,5,80,25, "*btn3_1" )  : SetClass(widget( ), "btn3_1" ) 
-;       Button( 10,35,80,25, "btn3_2" )  : SetClass(widget( ), "btn3_2" ) 
-;       Button( 10,65,80,25, "*btn3_3" )  : SetClass(widget( ), "btn3_3" ) 
+; ;       Button( 10,5,80,25, "*btn3_1" )  : SetClass(widget( ), "btn3_1" ) 
+; ;       Button( 10,35,80,25, "btn3_2" )  : SetClass(widget( ), "btn3_2" ) 
+; ;       Button( 10,65,80,25, "*btn3_3" )  : SetClass(widget( ), "btn3_3" ) 
 ;       CloseList()
       
       
-      *but = Button( 100,35,80,25, "*btn1_0" ) : SetClass(widget( ), "btn1_0" ) 
+      *but = Button( 100,35,80,25, "*btn1_added" ) : SetClass(widget( ), "btn1_added" ) 
+      Button( 100,35,80,25, "*btn77" ) : SetClass(widget( ), "btn77" ) 
+      
+      ;\\
       SetParent( *but, *CONT, 0 )
       
       ;       ;\\
@@ -36,7 +39,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       SetPosition( *but0, #PB_List_Before )
 ;       SetPosition( *but0, #PB_List_Before )
 ;   
-
+      
+      Debug "----CONT all childrens-----"
+      If StartEnumerate( *CONT )
+         Debug widget( )\text\string
+         
+         StopEnumerate( )
+      EndIf
+      
+      Debug "----all childrens-----"
+      ForEach __widgets( )
+         Debug  __widgets( )\class
+      Next
+      
       ;\\
       Define line.s
       Debug "---->>"
@@ -67,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 9
+; CursorPosition = 33
+; FirstLine = 16
 ; Folding = -
 ; EnableXP

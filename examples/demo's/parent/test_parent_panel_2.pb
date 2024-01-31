@@ -15,23 +15,24 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       AddItem(*panel1, -1, "item1" )
       Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+      ;Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
+      ;Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
       ;
       AddItem(*panel1, -1, "item2" )
       Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
-      Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
-      Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
+      ;Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
+      ;Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
       ;
       AddItem(*panel1, -1, "item3" )
       Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
-      Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
-      Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
+      ;Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
+      ;Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
       
       ;\\ test 
       OpenList( *panel1, 0 )
+      Debug " reParent "
       *but0 = Button( 100,35,80,25, "*btn0_added" ) : SetClass(widget( ), "btn0_added" ) 
       CloseList( )
       
@@ -58,6 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
          line + __widgets( )\class ; __widgets( )\text\string
          
          If __widgets( )\after\widget
+            Debug __widgets( )\after\widget
             line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
@@ -75,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; CursorPosition = 21
 ; FirstLine = 8
 ; Folding = -
 ; EnableXP

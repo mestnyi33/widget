@@ -26,6 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       SetParent( *CONT1, *CONT2 )
+      Debug "  reParent  "
       SetParent( *CONT1, root( ) )
       
       ;\\
@@ -61,7 +62,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 3
+; CursorPosition = 28
 ; Folding = -
 ; EnableXP
