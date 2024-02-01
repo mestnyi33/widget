@@ -14675,7 +14675,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                If *Last 
-                  Debug "-->>>---   "+*this\class +"   "+ *Last\class +"   "+ *after\class
+                 ; Debug "-->>>---   "+*this\class +"   "+ *Last\class +"   "+ *after\class
                   
                   If *this\AddedTabIndex( ) = *Last\AddedTabIndex( ) ; *after\AddedTabIndex( )
                      If *this\BeforeWidget( )
@@ -14689,9 +14689,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\BeforeWidget( ) = *Last
                         EndIf
                      Else
-                        If *last <> *after
+;                         If *last <> *after
                            *this\BeforeWidget( ) = *after
-                        EndIf
+;                         Else
+;                            *this\BeforeWidget( ) = *last
+;                         EndIf
                      EndIf
                   EndIf
                   
@@ -14715,7 +14717,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             ChangeParent( *this, *parent )
-            
+            ;
             ;\\ TODO
             If *this\window
                Static NewMap typeCount.l( )
@@ -14727,18 +14729,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\count\type = typeCount( ) - 1
                EndIf
             EndIf
-            
+            ;
             ;\\ a_new( )
-            If Not *this\anchors
-               *this\anchors.allocate( ANCHORS )
-               *this\anchors\size = #__a_anchors_size
-               *this\anchors\pos = *this\anchors\size / 2
-               
-               If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
-                  *this\anchors\mode = #__a_full
+            If *this\type = #__type_MDI And 
+               *this\flag & #__mdi_editable = #__mdi_editable 
+               a_init( *this )
+            Else
+               If Not *this\anchors
+                  *this\anchors.allocate( ANCHORS )
+                  *this\anchors\size = #__a_anchors_size
+                  *this\anchors\pos = *this\anchors\size / 2
+                  ;
+                  If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
+                     *this\anchors\mode = #__a_full
+                  EndIf
                EndIf
             EndIf
-            
+            ;
             ;\\
             If ReParent
                ;
@@ -22968,7 +22975,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14592
-; FirstLine = 14536
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-f---V0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 14469
+; FirstLine = 14449
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-f-8-V0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -36,6 +36,10 @@ CompilerIf #PB_Compiler_IsMainFile
       *but0 = Button( 100,35,80,25, "*btn0_added" ) : SetClass(widget( ), "btn0_added" ) 
       CloseList( )
       
+;       *butt0 = Button( 20,25,80,35, "*btn0_added" ) : SetClass(widget( ), "btn0_added" ) 
+;        Debug " reparent "
+;        SetParent( *butt0, *panel1, 0 )
+      
       ;\\
       Debug "----panel all childrens-----"
       If StartEnumerate( *panel1 )
@@ -77,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 8
+; CursorPosition = 38
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;a_init(parent, 4)
    
    ;\\
-   object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 0)
+   object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 30)
    ;object = Button(50, 50, 150, 150, "button")
    ;;object1 = Button(150, 150, 150, 150, "Button")
    object1 = Button(125, 140, 150, 150, "Button")
@@ -68,5 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

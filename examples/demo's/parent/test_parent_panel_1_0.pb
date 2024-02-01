@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *panel1, *but0
    
-   If Open( 0, 0, 0, 400, 170, "( setparent( ) ) add object in PANEL item", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If Open( 0, 0, 0, 400, 170, "( openlist( ) ) add object in PANEL item", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *panel1 = Panel( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
       ;
@@ -27,10 +27,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
-   
+      
       ;\\ test
+      *but0 = Button( 100,35,80,25, "*btn2_added" ) : SetClass(widget( ), "btn2_added" ) 
+      SetParent( *but0, *panel1, 1 )
+      
+      ;\\ test
+      OpenList( *panel1, 0 )
       *but0 = Button( 100,35,80,25, "*btn1_added" ) : SetClass(widget( ), "btn1_added" ) 
-      SetParent( *but0, *panel1, 0 )
+      CloseList( )
       
       ;\\
       Debug "----panel all childrens-----"
@@ -90,11 +95,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       btn3_7 <<  btn3_8  >> btn3_9
       ;       btn3_8 <<  btn3_9  >> --------
       ;       <<----
+
       
       WaitClose( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
+; CursorPosition = 101
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
