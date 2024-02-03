@@ -14458,63 +14458,71 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
-               *after = *parent\LastWidget( )
-               
-               *last = *after\LastWidget( )
-               ;
-               If *last\haschildren
-                  Debug 7777
-                  PushListPosition( __widgets( ) )
-                  ChangeCurrentElement( __widgets( ), *last\address )
-                  While NextElement( __widgets( ) )
-                     If __widgets( )\parent = *parent\parent
-                        Debug 8888
-                        Break
-                     EndIf
-                     *last = __widgets( )
-                  Wend
-                  PopListPosition( __widgets( ) )
-               EndIf
-               
-              ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-                    
-               If *this\AddedTabIndex( ) >= 0 
-                  PushListPosition( __widgets( ) )
-                  ChangeCurrentElement( __widgets( ), *last\address )
-                  If __widgets( )\AddedTabIndex( ) <> *this\AddedTabIndex( ) 
-                     
-                     If *after\AddedTabIndex( ) > *this\AddedTabIndex( ) 
-                        *after = *parent
-                        *last = *parent
-                     EndIf
-                     
-                     While PreviousElement( __widgets( ) )
-                        If __widgets( )\AddedTabIndex( ) = *this\AddedTabIndex( ) 
-                           If __widgets( )\parent = *parent 
-                              *after = __widgets( )
-                              *last = *after\LastWidget( )
-                              
-;                               If *last\haschildren
-;                                  PushListPosition( __widgets( ) )
-;                                  ChangeCurrentElement( __widgets( ), *last\address )
-;                                  While NextElement( __widgets( ) )
-;                                     If __widgets( ) = *this\AfterWidget( )
-;                                        Break
-;                                     EndIf
-;                                     *last = __widgets( )
-;                                  Wend
-;                                  PopListPosition( __widgets( ) )
-;                               EndIf
-                              
-                              Break
-                           EndIf
+;                If is_root_( *parent )
+;                   PushListPosition( __widgets( ) )
+;                   LastElement( __widgets( ) )
+;                   *last = __widgets( )
+;                   *after = __widgets( )
+;                   PopListPosition( __widgets( ) )
+;                Else
+                  *after = *parent\LastWidget( )
+                  
+                  *last = *after\LastWidget( )
+                  ;
+                  If *last\haschildren
+                     Debug 7777
+                     PushListPosition( __widgets( ) )
+                     ChangeCurrentElement( __widgets( ), *last\address )
+                     While NextElement( __widgets( ) )
+                        If __widgets( )\parent = *parent\parent
+                           Debug 8888
+                           Break
                         EndIf
+                        *last = __widgets( )
                      Wend
+                     PopListPosition( __widgets( ) )
                   EndIf
-                  PopListPosition( __widgets( ) )
-               EndIf
+                  
+                  ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                  
+                  If *this\AddedTabIndex( ) >= 0 
+                     PushListPosition( __widgets( ) )
+                     ChangeCurrentElement( __widgets( ), *last\address )
+                     If __widgets( )\AddedTabIndex( ) <> *this\AddedTabIndex( ) 
+                        
+                        If *after\AddedTabIndex( ) > *this\AddedTabIndex( ) 
+                           *after = *parent
+                           *last = *parent
+                        EndIf
+                        
+                        While PreviousElement( __widgets( ) )
+                           If __widgets( )\AddedTabIndex( ) = *this\AddedTabIndex( ) 
+                              If __widgets( )\parent = *parent 
+                                 *after = __widgets( )
+                                 *last = *after\LastWidget( )
+                                 
+                                 ;                               If *last\haschildren
+                                 ;                                  PushListPosition( __widgets( ) )
+                                 ;                                  ChangeCurrentElement( __widgets( ), *last\address )
+                                 ;                                  While NextElement( __widgets( ) )
+                                 ;                                     If __widgets( ) = *this\AfterWidget( )
+                                 ;                                        Break
+                                 ;                                     EndIf
+                                 ;                                     *last = __widgets( )
+                                 ;                                  Wend
+                                 ;                                  PopListPosition( __widgets( ) )
+                                 ;                               EndIf
+                                 
+                                 Break
+                              EndIf
+                           EndIf
+                        Wend
+                     EndIf
+                     PopListPosition( __widgets( ) )
+                  EndIf
+;                EndIf
                
-              ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+               ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
             EndIf
             ;             ;
             If *this\AddedTabIndex( ) > 0
@@ -14559,10 +14567,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\haschildren
                      PushListPosition( __widgets( ) )
                      While NextElement( __widgets( ) )
-;                         If Not IsChild( __widgets( ), *this )
-;                            Break
-;                         EndIf
                         If __widgets( ) = *this\AfterWidget( )
+                           Debug " --- "+__widgets( )\class
+                           Break
+                        EndIf
+                     Wend
+                     PopListPosition( __widgets( ) )
+                     PushListPosition( __widgets( ) )
+                     While NextElement( __widgets( ) )
+                        If Not IsChild( __widgets( ), *this )
                            Break
                         EndIf
                         
@@ -23316,7 +23329,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14469
-; FirstLine = 14458
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4L---r0m-f---V0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------803------
+; CursorPosition = 14573
+; FirstLine = 14485
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r48---X8N--+--r7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48t-------
 ; EnableXP
