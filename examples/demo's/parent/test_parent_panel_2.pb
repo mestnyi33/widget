@@ -63,7 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
          line + __widgets( )\class ; __widgets( )\text\string
          
          If __widgets( )\after\widget
-            Debug __widgets( )\after\widget
             line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
@@ -81,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 32
+; CursorPosition = 65
+; FirstLine = 43
 ; Folding = -
 ; EnableXP

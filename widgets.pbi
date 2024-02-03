@@ -14425,7 +14425,618 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
+      Procedure __SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
+         Protected parent, ReParent.b, x, y
+         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
+         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+         
+         ;\\
+         If *this = *parent
+            ProcedureReturn 0
+         EndIf
+         
+         If *parent
+            If *parent\container = 0 And *parent\child
+               Debug "SetParent("
+               *parent = *parent\parent
+            EndIf
+            ;
+            If *this\parent = *parent And
+               *this\AddedTabIndex( ) = tabindex
+               ProcedureReturn #False
+            EndIf
+            ;
+            ;\\
+            If tabindex < 0
+               If *parent\TabBox( )
+                  tabindex = *parent\TabBox( )\OpenedTabIndex( )
+               EndIf
+            EndIf
+            ;
+            ;\\ get the last widget to add it after it
+            If *parent\LastWidget( )
+               *after = *parent\LastWidget( )
+               *last = *after\LastWidget( )
+               
+               If tabindex >= 0 
+                  PushListPosition( __widgets( ) )
+                  ChangeCurrentElement( __widgets( ), *last\address )
+                  If __widgets( )\AddedTabIndex( ) <> tabindex 
+                     While PreviousElement( __widgets( ) )
+                        If __widgets( )\parent = *parent 
+                           If __widgets( )\AddedTabIndex( ) = tabindex 
+;                               *last = __widgets( )
+;                               *after = *last
+                              *after = __widgets( )
+                              *last = *after\LastWidget( )
+                              Break
+                           EndIf
+                        EndIf
+                     Wend
+                  EndIf
+                  PopListPosition( __widgets( ) )
+               EndIf
+               
+;                If *this\parent
+;                   ;  Debug ""+*this\text\string +" "+ *parent\FirstWidget( )\class +" "+ *parent\LastWidget( )\class
+;                EndIf
+               Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+            EndIf
+            ;             ;
+            If tabindex > 0
+               If *parent\type = #__type_Splitter
+                  If tabindex % 2
+                     *parent\split_1( )    = *this
+                     *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
+                     Update( *parent )
+                     If *parent\split_1_is( )
+                        ProcedureReturn 0
+                     EndIf
+                  Else
+                     *parent\split_2( )    = *this
+                     *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
+                     Update( *parent )
+                     If *parent\split_2_is( )
+                        ProcedureReturn 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            If tabindex < 0
+               *this\AddedTabIndex( ) = 0
+            Else
+               *this\AddedTabIndex( ) = tabindex
+            EndIf
+            ;
+            ; set hide state
+            If *parent\hide
+               *this\hide = #True
+            ElseIf *parent\TabBox( )
+               ; hide all children's except the selected tab
+               *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> tabindex)
+            EndIf
+            ;
+            ;\\
+            If *this And
+               *this\parent
+               ;
+               If *this\address
+                  *lastParent = *this\parent
+                  *lastParent\haschildren - 1
+                  
+                  ChangeCurrentElement( __widgets( ), *this\address )
+                  AddElement( *D( ) ) : *D( ) = __widgets( )
+                  
+                  If *this\haschildren
+                     PushListPosition( __widgets( ) )
+                     While NextElement( __widgets( ) )
+;                         If Not IsChild( __widgets( ), *this )
+;                            Break
+;                         EndIf
+                        If __widgets( ) = *this\AfterWidget( )
+                           Break
+                        EndIf
+                        
+                        AddElement( *D( ) )
+                        *D( ) = __widgets( )
+                        
+                        ; ChangeParent
+                        If *parent\window
+                           *D( )\window = *parent\window
+                        Else
+                           *D( )\window = *parent
+                        EndIf
+                        If *parent\root
+                           *D( )\root = *parent\root
+                        Else
+                           *D( )\root = *parent
+                        EndIf
+                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
+                        
+                        ;\\ integrall children's
+                        If *D( )\scroll
+                           If *D( )\scroll\v
+                              *D( )\scroll\v\root   = *D( )\root
+                              *D( )\scroll\v\window = *D( )\window
+                           EndIf
+                           If *D( )\scroll\h
+                              *D( )\scroll\h\root   = *D( )\root
+                              *D( )\scroll\h\window = *D( )\window
+                           EndIf
+                        EndIf
+                        
+                      
+                     Wend
+                     PopListPosition( __widgets( ) )
+                  EndIf
+                  
+                  ;\\ move with a parent and his children's
+                  If *last
+                     ; PushListPosition( __widgets( ) )
+                     LastElement( *D( ) )
+                     Repeat
+                        ChangeCurrentElement( __widgets( ), *D( )\address )
+                        MoveElement( __widgets( ), #PB_List_After, *last\address )
+                        *D( )\hide = HideState( *D( ) )
+                     Until PreviousElement( *D( ) ) = #False
+                     ; PopListPosition( __widgets( ) )
+                  EndIf
+
+                  ;
+                  ReParent = #True
+               EndIf
+               ;
+            Else
+               ;
+               If *last
+                  ChangeCurrentElement( __widgets( ) , *last\address )
+               Else
+                  LastElement( __widgets( ) )
+               EndIf
+               ;
+               AddElement( __widgets( ) )
+               __widgets( )  = *this
+               *this\index   = ListIndex( __widgets( ) )
+               *this\address = @__widgets( )
+            EndIf
+            ;
+            ;\\
+            ;
+            If *this\parent 
+               If *this\parent\FirstWidget( ) = *this
+                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
+               EndIf
+               ;
+               If *this\parent\LastWidget( ) = *this
+                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
+               EndIf
+            Else
+               *this\LastWidget( ) = *this 
+               *parent\LastWidget( ) = *this
+            EndIf
+            ;
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
+            EndIf
+            ;
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
+            EndIf
+            ;
+            If *after
+               If *after\parent = *parent
+                  If *after\AfterWidget( )
+                     *after\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  *this\AfterWidget( ) = *after\AfterWidget( )
+                  ;
+                  *this\BeforeWidget( ) = *after
+                  *after\AfterWidget( ) = *this
+               EndIf
+            EndIf
+            ;
+            If *parent\FirstWidget( ) = #Null
+               *parent\FirstWidget( ) = *this
+            EndIf
+            ;
+            ;\\
+            ChangeParent( *this, *parent )
+            ;
+            ;\\ TODO
+            If *this\window
+               Static NewMap typeCount.l( )
+               typeCount( Hex( *this\window + *this\type ) ) + 1
+               *this\count\index = typeCount( ) - 1
+               
+               If *parent\anchors
+                  typeCount( Str( *parent + *this\type ) ) + 1
+                  *this\count\type = typeCount( ) - 1
+               EndIf
+            EndIf
+            ;
+            ;\\ a_new( )
+            If *this\type = #__type_MDI And 
+               *this\flag & #__mdi_editable = #__mdi_editable 
+               a_init( *this )
+            Else
+               If Not *this\anchors
+                  *this\anchors.allocate( ANCHORS )
+                  *this\anchors\size = #__a_anchors_size
+                  *this\anchors\pos = *this\anchors\size / 2
+                  ;
+                  If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
+                     *this\anchors\mode = #__a_full
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ;\\
+            If ReParent
+               ;
+               If a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
+                  *this\resize | #__resize_x | #__resize_y
+                  
+                  x = *this\frame_x( ) - *parent\inner_x( )
+                  y = *this\frame_y( ) - *parent\inner_y( )
+                  
+                  If *this\anchors > 0
+                     x + ( x % mouse( )\steps )
+                     x = ( x / mouse( )\steps ) * mouse( )\steps
+                     
+                     y + ( y % mouse( )\steps )
+                     y = ( y / mouse( )\steps ) * mouse( )\steps
+                  EndIf
+                  
+                  *this\container_x( ) = x
+                  *this\container_y( ) = y
+               Else
+                  ;\\ resize
+                  x = *this\container_x( )
+                  y = *this\container_y( )
+                  
+                  ;\\ for the scrollarea container childrens
+                  ;\\ if new parent - scrollarea container
+                  If *parent\scroll And
+                     *parent\scroll\v And *parent\scroll\h
+                     x - *parent\scroll\h\bar\page\pos
+                     y - *parent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  ;\\ if last parent - scrollarea container
+                  If *LastParent\scroll And
+                     *LastParent\scroll\v And *LastParent\scroll\h
+                     x + *LastParent\scroll\h\bar\page\pos
+                     y + *LastParent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+               EndIf
+               
+               ;\\
+               PostRepaint( *parent\root )
+               PostRepaint( *lastParent\root )
+            EndIf
+         EndIf
+         
+         widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
       Procedure SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
+         Protected parent, ReParent.b, x, y
+         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
+         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+         
+         ;\\
+         If *this = *parent
+            ProcedureReturn 0
+         EndIf
+         
+         If *parent
+            If *parent\container = 0 And *parent\child
+               Debug "SetParent("
+               *parent = *parent\parent
+            EndIf
+            ;
+            If *this\parent = *parent And
+               *this\AddedTabIndex( ) = tabindex
+               ProcedureReturn #False
+            EndIf
+            ;
+            If tabindex >= 0
+               *this\AddedTabIndex( ) = tabindex
+            Else
+               If *parent\TabBox( )
+                  *this\AddedTabIndex( ) = *parent\TabBox( )\OpenedTabIndex( )
+               Else
+                  *this\AddedTabIndex( ) = 0
+               EndIf
+            EndIf
+            ;
+            ;\\ get the last widget to add it after it
+            If *parent\LastWidget( )
+               *after = *parent\LastWidget( )
+               *last = *after\LastWidget( )
+               
+              ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                    
+               If *this\AddedTabIndex( ) >= 0 
+                  PushListPosition( __widgets( ) )
+                  ChangeCurrentElement( __widgets( ), *last\address )
+                  If __widgets( )\AddedTabIndex( ) <> *this\AddedTabIndex( ) 
+                     
+                     If *after\AddedTabIndex( ) > *this\AddedTabIndex( ) 
+                        *after = *parent
+                        *last = *parent
+                     EndIf
+                     
+                     While PreviousElement( __widgets( ) )
+                        If __widgets( )\AddedTabIndex( ) = *this\AddedTabIndex( ) 
+                           If __widgets( )\parent = *parent 
+                              *after = __widgets( )
+                              *last = *after\LastWidget( )
+                              Break
+                           EndIf
+                        EndIf
+                     Wend
+                  EndIf
+                  PopListPosition( __widgets( ) )
+               EndIf
+               
+              ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+            EndIf
+            ;             ;
+            If *this\AddedTabIndex( ) > 0
+               If *parent\type = #__type_Splitter
+                  If *this\AddedTabIndex( ) % 2
+                     *parent\split_1( )    = *this
+                     *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
+                     Update( *parent )
+                     If *parent\split_1_is( )
+                        ProcedureReturn 0
+                     EndIf
+                  Else
+                     *parent\split_2( )    = *this
+                     *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
+                     Update( *parent )
+                     If *parent\split_2_is( )
+                        ProcedureReturn 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; set hide state
+            If *parent\hide
+               *this\hide = #True
+            ElseIf *parent\TabBox( )
+               ; hide all children's except the selected tab
+               *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> *this\AddedTabIndex( ))
+            EndIf
+            ;
+            ;\\
+            If *this And
+               *this\parent
+               ;
+               If *this\address
+                  *lastParent = *this\parent
+                  *lastParent\haschildren - 1
+                  
+                  ChangeCurrentElement( __widgets( ), *this\address )
+                  AddElement( *D( ) ) : *D( ) = __widgets( )
+                  
+                  If *this\haschildren
+                     PushListPosition( __widgets( ) )
+                     While NextElement( __widgets( ) )
+;                         If Not IsChild( __widgets( ), *this )
+;                            Break
+;                         EndIf
+                        If __widgets( ) = *this\AfterWidget( )
+                           Break
+                        EndIf
+                        
+                        AddElement( *D( ) )
+                        *D( ) = __widgets( )
+                        
+                        ; ChangeParent
+                        If *parent\window
+                           *D( )\window = *parent\window
+                        Else
+                           *D( )\window = *parent
+                        EndIf
+                        If *parent\root
+                           *D( )\root = *parent\root
+                        Else
+                           *D( )\root = *parent
+                        EndIf
+                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
+                        
+                        ;\\ integrall children's
+                        If *D( )\scroll
+                           If *D( )\scroll\v
+                              *D( )\scroll\v\root   = *D( )\root
+                              *D( )\scroll\v\window = *D( )\window
+                           EndIf
+                           If *D( )\scroll\h
+                              *D( )\scroll\h\root   = *D( )\root
+                              *D( )\scroll\h\window = *D( )\window
+                           EndIf
+                        EndIf
+                     Wend
+                     PopListPosition( __widgets( ) )
+                  EndIf
+                  
+                  ;\\ move with a parent and his children's
+                  If *last
+                     ; PushListPosition( __widgets( ) )
+                     LastElement( *D( ) )
+                     Repeat
+                        ChangeCurrentElement( __widgets( ), *D( )\address )
+                        MoveElement( __widgets( ), #PB_List_After, *last\address )
+                        
+                        *D( )\hide = HideState( *D( ) )
+            
+                     Until PreviousElement( *D( ) ) = #False
+                     ; PopListPosition( __widgets( ) )
+                  EndIf
+
+                  ;
+                  ReParent = #True
+               EndIf
+               ;
+            Else
+               ;
+               If *last
+                  ChangeCurrentElement( __widgets( ) , *last\address )
+               Else
+                  LastElement( __widgets( ) )
+               EndIf
+               ;
+               AddElement( __widgets( ) )
+               __widgets( )  = *this
+               *this\index   = ListIndex( __widgets( ) )
+               *this\address = @__widgets( )
+            EndIf
+            ;
+            ;\\
+            ;
+            If *this\parent 
+               If *this\parent\FirstWidget( ) = *this
+                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
+               EndIf
+               ;
+               If *this\parent\LastWidget( ) = *this
+                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
+               EndIf
+            Else
+               *this\LastWidget( ) = *this 
+               ;
+               If *parent\TabBox( )
+                  If *this\AddedTabIndex( ) = *parent\TabBox( )\count\items - 1
+                     *parent\LastWidget( ) = *this
+                  EndIf
+               Else
+                  *parent\LastWidget( ) = *this
+               EndIf
+            EndIf
+            ;
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
+            EndIf
+            ;
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
+            EndIf
+            ;
+            If *after
+               If *after\parent = *parent
+                  If *after\AfterWidget( )
+                     *after\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  *this\AfterWidget( ) = *after\AfterWidget( )
+                  ;
+                  *this\BeforeWidget( ) = *after
+                  *after\AfterWidget( ) = *this
+               Else
+                  If *parent\FirstWidget( )
+                     *this\AfterWidget( ) = *parent\FirstWidget( )
+                     *this\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  ;
+                  *this\BeforeWidget( ) = #Null
+                  *parent\FirstWidget( ) = *this
+               EndIf
+            EndIf
+            ;
+            If *parent\FirstWidget( ) = #Null
+               *parent\FirstWidget( ) = *this
+            EndIf
+            ;
+            ;\\
+            ChangeParent( *this, *parent )
+            ;
+            ;\\ TODO
+            If *this\window
+               Static NewMap typeCount.l( )
+               typeCount( Hex( *this\window + *this\type ) ) + 1
+               *this\count\index = typeCount( ) - 1
+               
+               If *parent\anchors
+                  typeCount( Str( *parent + *this\type ) ) + 1
+                  *this\count\type = typeCount( ) - 1
+               EndIf
+            EndIf
+            ;
+            ;\\ a_new( )
+            If *this\type = #__type_MDI And 
+               *this\flag & #__mdi_editable = #__mdi_editable 
+               a_init( *this )
+            Else
+               If Not *this\anchors
+                  *this\anchors.allocate( ANCHORS )
+                  *this\anchors\size = #__a_anchors_size
+                  *this\anchors\pos = *this\anchors\size / 2
+                  ;
+                  If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
+                     *this\anchors\mode = #__a_full
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ;\\
+            If ReParent
+               ;
+               If a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
+                  *this\resize | #__resize_x | #__resize_y
+                  
+                  x = *this\frame_x( ) - *parent\inner_x( )
+                  y = *this\frame_y( ) - *parent\inner_y( )
+                  
+                  If *this\anchors > 0
+                     x + ( x % mouse( )\steps )
+                     x = ( x / mouse( )\steps ) * mouse( )\steps
+                     
+                     y + ( y % mouse( )\steps )
+                     y = ( y / mouse( )\steps ) * mouse( )\steps
+                  EndIf
+                  
+                  *this\container_x( ) = x
+                  *this\container_y( ) = y
+               Else
+                  ;\\ resize
+                  x = *this\container_x( )
+                  y = *this\container_y( )
+                  
+                  ;\\ for the scrollarea container childrens
+                  ;\\ if new parent - scrollarea container
+                  If *parent\scroll And
+                     *parent\scroll\v And *parent\scroll\h
+                     x - *parent\scroll\h\bar\page\pos
+                     y - *parent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  ;\\ if last parent - scrollarea container
+                  If *LastParent\scroll And
+                     *LastParent\scroll\v And *LastParent\scroll\h
+                     x + *LastParent\scroll\h\bar\page\pos
+                     y + *LastParent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+               EndIf
+               
+               ;\\
+               PostRepaint( *parent\root )
+               PostRepaint( *lastParent\root )
+            EndIf
+         EndIf
+         
+         widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure _SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
          Protected parent, ReParent.b, x, y
          Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
          Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
@@ -14589,9 +15200,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *D( )\scroll\h\window = *D( )\window
                            EndIf
                         EndIf
-                        
-                        *D( )\hide = HideState( *D( ) )
-            
                      Wend
                      PopListPosition( __widgets( ) )
                   EndIf
@@ -14603,6 +15211,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Repeat
                         ChangeCurrentElement( __widgets( ), *D( )\address )
                         MoveElement( __widgets( ), #PB_List_After, *after\address )
+                        
+                        *D( )\hide = HideState( *D( ) )
+            
                      Until PreviousElement( *D( ) ) = #False
                   EndIf
                   ;
@@ -14715,690 +15326,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *parent\LastWidget( ) = *this
             EndIf
             
-            ;\\
-            ChangeParent( *this, *parent )
-            ;
-            ;\\ TODO
-            If *this\window
-               Static NewMap typeCount.l( )
-               typeCount( Hex( *this\window + *this\type ) ) + 1
-               *this\count\index = typeCount( ) - 1
-               
-               If *parent\anchors
-                  typeCount( Str( *parent + *this\type ) ) + 1
-                  *this\count\type = typeCount( ) - 1
-               EndIf
-            EndIf
-            ;
-            ;\\ a_new( )
-            If *this\type = #__type_MDI And 
-               *this\flag & #__mdi_editable = #__mdi_editable 
-               a_init( *this )
-            Else
-               If Not *this\anchors
-                  *this\anchors.allocate( ANCHORS )
-                  *this\anchors\size = #__a_anchors_size
-                  *this\anchors\pos = *this\anchors\size / 2
-                  ;
-                  If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
-                     *this\anchors\mode = #__a_full
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ;\\
-            If ReParent
-               ;
-               If a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
-                  *this\resize | #__resize_x | #__resize_y
-                  
-                  x = *this\frame_x( ) - *parent\inner_x( )
-                  y = *this\frame_y( ) - *parent\inner_y( )
-                  
-                  If *this\anchors > 0
-                     x + ( x % mouse( )\steps )
-                     x = ( x / mouse( )\steps ) * mouse( )\steps
-                     
-                     y + ( y % mouse( )\steps )
-                     y = ( y / mouse( )\steps ) * mouse( )\steps
-                  EndIf
-                  
-                  *this\container_x( ) = x
-                  *this\container_y( ) = y
-               Else
-                  ;\\ resize
-                  x = *this\container_x( )
-                  y = *this\container_y( )
-                  
-                  ;\\ for the scrollarea container childrens
-                  ;\\ if new parent - scrollarea container
-                  If *parent\scroll And
-                     *parent\scroll\v And *parent\scroll\h
-                     x - *parent\scroll\h\bar\page\pos
-                     y - *parent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  ;\\ if last parent - scrollarea container
-                  If *LastParent\scroll And
-                     *LastParent\scroll\v And *LastParent\scroll\h
-                     x + *LastParent\scroll\h\bar\page\pos
-                     y + *LastParent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
-               EndIf
-               
-               ;\\
-               PostRepaint( *parent\root )
-               PostRepaint( *lastParent\root )
-            EndIf
-         EndIf
-         
-         widget( ) = *this
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure _SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
-         Protected parent, ReParent.b, x, y
-         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
-         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
-         
-         ;\\
-         If *this = *parent
-            ProcedureReturn 0
-         EndIf
-         
-         If *parent
-            If *parent\container = 0 And *parent\child
-               Debug "SetParent("
-               *parent = *parent\parent
-            EndIf
-            ;
-            If *this\parent = *parent And
-               *this\AddedTabIndex( ) = tabindex
-               ProcedureReturn #False
-            EndIf
-            ;
-            ;\\
-            If tabindex < 0
-               If *parent\TabBox( )
-                  tabindex = *parent\TabBox( )\OpenedTabIndex( )
-               EndIf
-            EndIf
-            ;
-            ;\\ get the last widget to add it after it
-            If *parent\LastWidget( )
-               *after = *parent\LastWidget( )
-               *last = *after\LastWidget( )
-               
-               ;                ;
-;                If *last
-                  If tabindex >= 0 
-                     ;
-                     PushListPosition( __widgets( ) )
-                     ChangeCurrentElement( __widgets( ), *last\address )
-                     If __widgets( )\AddedTabIndex( ) <> tabindex 
-                        ;Debug 67866778 
-                        ;If *parent\TabBox( )
-                        ;*after = *parent
-                        ; *last = *after
-                        ;
-                        While PreviousElement( __widgets( ) )
-                           If __widgets( )\parent = *parent 
-                              If __widgets( )\AddedTabIndex( ) = tabindex 
-                                 *last = __widgets( )
-                                 *after = *last
-                                 Break
-                              EndIf
-                           EndIf
-                        Wend
-                     EndIf
-                     PopListPosition( __widgets( ) )
-                     ;
-                 Else
-;                      ;                   ;
-;                      If *last\haschildren
-;                         If *last\AfterWidget( )
-;                            Debug "has after"
-;                            ; *after = *last\AfterWidget( )
-;                         Else
-;                            If *last = *this\parent
-;                               Debug "has *last = *this\parent"
-;                               *after = *this\BeforeWidget( )
-;                            Else
-;                               ;
-;                               PushListPosition( __widgets( ) )
-;                               If LastElement( __widgets( ) )
-;                                  *last = __widgets( )
-;                               EndIf
-;                               PopListPosition( __widgets( ) ) 
-;                               ;
-;                            EndIf
-;                         EndIf
-;                      EndIf
-;                      
-;                   EndIf
-;                   ;
-;                   ;                   Debug " added after "+ *last\class +" "+ *after\class
-                 EndIf
-                 Debug ""+*this\text\string +" "+ *last\class +" "+ *after\class
-
-;                ;                
-            EndIf
-            ;             ;
-            If tabindex > 0
-               If *parent\type = #__type_Splitter
-                  If tabindex % 2
-                     *parent\split_1( )    = *this
-                     *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
-                     If *parent\split_1_is( )
-                        ProcedureReturn 0
-                     EndIf
-                  Else
-                     *parent\split_2( )    = *this
-                     *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
-                     If *parent\split_2_is( )
-                        ProcedureReturn 0
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            If tabindex < 0
-               *this\AddedTabIndex( ) = 0
-            Else
-               *this\AddedTabIndex( ) = tabindex
-            EndIf
-            ;
-            ; set hide state
-            If *parent\hide
-               *this\hide = #True
-            ElseIf *parent\TabBox( )
-               ; hide all children's except the selected tab
-               *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> tabindex)
-            EndIf
-            ;
-            ;\\
-            If *this And
-               *this\parent
-               ;
-               If *this\address
-                  *lastParent = *this\parent
-                  *lastParent\haschildren - 1
-                  
-                  ChangeCurrentElement( __widgets( ), *this\address )
-                  AddElement( *D( ) ) : *D( ) = __widgets( )
-                  
-                  If *this\haschildren
-                     PushListPosition( __widgets( ) )
-                     While NextElement( __widgets( ) )
-                        If Not IsChild( __widgets( ), *this )
-                           Break
-                        EndIf
-                        
-                        AddElement( *D( ) )
-                        *D( ) = __widgets( )
-                        
-                        ; ChangeParent
-                        If *parent\window
-                           *D( )\window = *parent\window
-                        Else
-                           *D( )\window = *parent
-                        EndIf
-                        If *parent\root
-                           *D( )\root = *parent\root
-                        Else
-                           *D( )\root = *parent
-                        EndIf
-                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
-                        
-                        ;\\ integrall children's
-                        If *D( )\scroll
-                           If *D( )\scroll\v
-                              *D( )\scroll\v\root   = *D( )\root
-                              *D( )\scroll\v\window = *D( )\window
-                           EndIf
-                           If *D( )\scroll\h
-                              *D( )\scroll\h\root   = *D( )\root
-                              *D( )\scroll\h\window = *D( )\window
-                           EndIf
-                        EndIf
-                        
-                        *D( )\hide = HideState( *D( ) )
-            
-                     Wend
-                     PopListPosition( __widgets( ) )
-                  EndIf
-                  
-                  ;\\ move with a parent and his children's
-                  If *after
-                     ; move inside the list
-                     LastElement( *D( ) )
-                     Repeat
-                        ChangeCurrentElement( __widgets( ), *D( )\address )
-                        MoveElement( __widgets( ), #PB_List_After, *after\address )
-                     Until PreviousElement( *D( ) ) = #False
-                  EndIf
-                  ;
-                  ReParent = #True
-               EndIf
-               ;
-            Else
-               ;
-               If *last
-                  ChangeCurrentElement( __widgets( ) , *last\address )
-               Else
-                  LastElement( __widgets( ) )
-               EndIf
-               ;
-               AddElement( __widgets( ) )
-               __widgets( )  = *this
-               *this\index   = ListIndex( __widgets( ) )
-               *this\address = @__widgets( )
-            EndIf
-            
-            ;\\
-            If *parent\FirstWidget( ) = #Null
-               *parent\FirstWidget( ) = *this
-            EndIf
-            
-            If *this\parent = #Null
-               *this\LastWidget( ) = *this 
-               *parent\LastWidget( ) = *this
-            EndIf
-         
-            If *this\BeforeWidget( )
-               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
-            EndIf
-            
-            If *after
-               If *after\AfterWidget( )
-                  If *after\AfterWidget( )\parent = *parent
-                     *after\AfterWidget( )\BeforeWidget( ) = *this
-                     If *this\AfterWidget( )
-                        ;If *this\BeforeWidget( ) <> *parent
-                        *this\AfterWidget( )\BeforeWidget( ) = *this
-                        ;EndIf
-                   *after\BeforeWidget( ) = *this\BeforeWidget( )
-                 EndIf
-                     *this\AfterWidget( ) = *after\AfterWidget( )
-                 EndIf
-               EndIf
-               *after\AfterWidget( ) = *this
-            EndIf
-            
-            
-            If *after <> *parent
-               *this\BeforeWidget( ) = *after
-            EndIf
-            
-            ;\\
-            
-            If *parent\LastWidget( )
-               ; if the parent had the last item
-               ; then we make it "previous" instead of "present"
-               ; and "present" becomes "subsequent" instead of "previous"
-               If *this\parent
-;                   ;
-;                   If *this\AfterWidget( )
-;                      If *this\BeforeWidget( ) = *this
-;                         *this\AfterWidget( )\BeforeWidget( ) = #Null
-;                      Else
-;                         *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
-;                      EndIf
-;                   EndIf
-;                   ;
-;                   If *this\BeforeWidget( )
-;                      If *this\AfterWidget( ) = *this
-;                         *this\BeforeWidget( )\AfterWidget( ) = #Null
-;                      Else
-;                         *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
-;                      EndIf
-;                   EndIf
-;                   ;
-;                   If *this\parent\FirstWidget( ) = *this
-;                      If *this\AfterWidget( )
-;                         *this\parent\FirstWidget( ) = *this\AfterWidget( )
-;                      Else
-;                         *this\parent\FirstWidget( ) = *this\parent ; if last type
-;                      EndIf
-;                   EndIf
-;                   ;
-;                   If *this\parent\LastWidget( ) = *this
-;                      If *this\BeforeWidget( )
-;                         *this\parent\LastWidget( ) = *this\BeforeWidget( )
-;                      Else
-;                         *this\parent\LastWidget( ) = *this\parent ; if last type
-;                      EndIf
-;                   EndIf
-;                   ;
-               Else
-                  
-;                   *this\LastWidget( ) = *this ; if last type ;?
-                  
-               EndIf
-               
-               ;
-               If *Last 
-                 ; Debug "-->>>---   "+*this\class +"   "+ *Last\class +"   "+ *after\class
-                  
-;                   If *this\AddedTabIndex( ) = *Last\AddedTabIndex( ) ; *after\AddedTabIndex( )
-;                      If *this\BeforeWidget( )
-;                         If *this\BeforeWidget( ) = *Last ; *after
-;                            If *this\BeforeWidget( ) = *parent
-;                               *parent\FirstWidget( ) = *this
-;                               *parent\LastWidget( ) = *this
-;                               *this\BeforeWidget( ) = #Null
-;                            EndIf
-;                         Else
-;                            *this\BeforeWidget( ) = *Last
-;                         EndIf
-;                      Else
-; ;                         If *last <> *after
-;                            *this\BeforeWidget( ) = *after
-; ;                         Else
-; ;                            *this\BeforeWidget( ) = *last
-; ;                         EndIf
-;                      EndIf
-;                   EndIf
-;                   
-;                   If *this\AfterWidget( )
-;                      If *this\AfterWidget( )
-;                         *this\AfterWidget( ) = #Null
-;                      EndIf
-;                   Else
-;                      *this\AfterWidget( ) = *Last\AfterWidget( ) ; *after\AfterWidget( )
-;                   EndIf
-                  
-               EndIf
-               
-;                ;
-;                If *this\BeforeWidget( )
-;                   *this\BeforeWidget( )\AfterWidget( ) = *this
-;                EndIf
-            EndIf
-            
-            ;\\
-            ChangeParent( *this, *parent )
-            ;
-            ;\\ TODO
-            If *this\window
-               Static NewMap typeCount.l( )
-               typeCount( Hex( *this\window + *this\type ) ) + 1
-               *this\count\index = typeCount( ) - 1
-               
-               If *parent\anchors
-                  typeCount( Str( *parent + *this\type ) ) + 1
-                  *this\count\type = typeCount( ) - 1
-               EndIf
-            EndIf
-            ;
-            ;\\ a_new( )
-            If *this\type = #__type_MDI And 
-               *this\flag & #__mdi_editable = #__mdi_editable 
-               a_init( *this )
-            Else
-               If Not *this\anchors
-                  *this\anchors.allocate( ANCHORS )
-                  *this\anchors\size = #__a_anchors_size
-                  *this\anchors\pos = *this\anchors\size / 2
-                  ;
-                  If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
-                     *this\anchors\mode = #__a_full
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ;\\
-            If ReParent
-               ;
-               If a_index( ) = #__a_moved And *this\dragstart ; = #PB_Drag_Resize
-                  *this\resize | #__resize_x | #__resize_y
-                  
-                  x = *this\frame_x( ) - *parent\inner_x( )
-                  y = *this\frame_y( ) - *parent\inner_y( )
-                  
-                  If *this\anchors > 0
-                     x + ( x % mouse( )\steps )
-                     x = ( x / mouse( )\steps ) * mouse( )\steps
-                     
-                     y + ( y % mouse( )\steps )
-                     y = ( y / mouse( )\steps ) * mouse( )\steps
-                  EndIf
-                  
-                  *this\container_x( ) = x
-                  *this\container_y( ) = y
-               Else
-                  ;\\ resize
-                  x = *this\container_x( )
-                  y = *this\container_y( )
-                  
-                  ;\\ for the scrollarea container childrens
-                  ;\\ if new parent - scrollarea container
-                  If *parent\scroll And
-                     *parent\scroll\v And *parent\scroll\h
-                     x - *parent\scroll\h\bar\page\pos
-                     y - *parent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  ;\\ if last parent - scrollarea container
-                  If *LastParent\scroll And
-                     *LastParent\scroll\v And *LastParent\scroll\h
-                     x + *LastParent\scroll\h\bar\page\pos
-                     y + *LastParent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
-               EndIf
-               
-               ;\\
-               PostRepaint( *parent\root )
-               PostRepaint( *lastParent\root )
-            EndIf
-         EndIf
-         
-         widget( ) = *this
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure __SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
-         Protected parent, ReParent.b, x, y
-         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
-         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
-         
-         ;\\
-         If *this = *parent
-            ProcedureReturn 0
-         EndIf
-         
-         If *parent
-            If *parent\container = 0 And *parent\child
-               Debug "SetParent("
-               *parent = *parent\parent
-            EndIf
-            ;
-            If *this\parent = *parent And
-               *this\AddedTabIndex( ) = tabindex
-               ProcedureReturn #False
-            EndIf
-            ;
-            ;\\
-            If tabindex < 0
-               If *parent\TabBox( )
-                  tabindex = *parent\TabBox( )\OpenedTabIndex( )
-               EndIf
-            EndIf
-            ;
-            ;\\ get the last widget to add it after it
-            If *parent\LastWidget( )
-               *after = *parent\LastWidget( )
-               *last = *after\LastWidget( )
-               
-               If tabindex >= 0 
-                  PushListPosition( __widgets( ) )
-                  ChangeCurrentElement( __widgets( ), *last\address )
-                  If __widgets( )\AddedTabIndex( ) <> tabindex 
-                     While PreviousElement( __widgets( ) )
-                        If __widgets( )\parent = *parent 
-                           If __widgets( )\AddedTabIndex( ) = tabindex 
-                              *last = __widgets( )
-                              *after = *last
-                              Break
-                           EndIf
-                        EndIf
-                     Wend
-                  EndIf
-                  PopListPosition( __widgets( ) )
-               EndIf
-               
-               Debug ""+*this\text\string +" "+ *last\class +" "+ *after\class
-            EndIf
-            ;             ;
-            If tabindex > 0
-               If *parent\type = #__type_Splitter
-                  If tabindex % 2
-                     *parent\split_1( )    = *this
-                     *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
-                     If *parent\split_1_is( )
-                        ProcedureReturn 0
-                     EndIf
-                  Else
-                     *parent\split_2( )    = *this
-                     *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
-                     If *parent\split_2_is( )
-                        ProcedureReturn 0
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            If tabindex < 0
-               *this\AddedTabIndex( ) = 0
-            Else
-               *this\AddedTabIndex( ) = tabindex
-            EndIf
-            ;
-            ; set hide state
-            If *parent\hide
-               *this\hide = #True
-            ElseIf *parent\TabBox( )
-               ; hide all children's except the selected tab
-               *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> tabindex)
-            EndIf
-            ;
-            ;\\
-            If *this And
-               *this\parent
-               ;
-               If *this\address
-                  *lastParent = *this\parent
-                  *lastParent\haschildren - 1
-                  
-                  ChangeCurrentElement( __widgets( ), *this\address )
-                  AddElement( *D( ) ) : *D( ) = __widgets( )
-                  
-                  If *this\haschildren
-                     PushListPosition( __widgets( ) )
-                     While NextElement( __widgets( ) )
-                        If Not IsChild( __widgets( ), *this )
-                           Break
-                        EndIf
-                        
-                        AddElement( *D( ) )
-                        *D( ) = __widgets( )
-                        
-                        ; ChangeParent
-                        If *parent\window
-                           *D( )\window = *parent\window
-                        Else
-                           *D( )\window = *parent
-                        EndIf
-                        If *parent\root
-                           *D( )\root = *parent\root
-                        Else
-                           *D( )\root = *parent
-                        EndIf
-                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
-                        
-                        ;\\ integrall children's
-                        If *D( )\scroll
-                           If *D( )\scroll\v
-                              *D( )\scroll\v\root   = *D( )\root
-                              *D( )\scroll\v\window = *D( )\window
-                           EndIf
-                           If *D( )\scroll\h
-                              *D( )\scroll\h\root   = *D( )\root
-                              *D( )\scroll\h\window = *D( )\window
-                           EndIf
-                        EndIf
-                        
-                        *D( )\hide = HideState( *D( ) )
-            
-                     Wend
-                     PopListPosition( __widgets( ) )
-                  EndIf
-                  
-                  ;\\ move with a parent and his children's
-                  If *after
-                     ; move inside the list
-                     LastElement( *D( ) )
-                     Repeat
-                        ChangeCurrentElement( __widgets( ), *D( )\address )
-                        MoveElement( __widgets( ), #PB_List_After, *after\address )
-                     Until PreviousElement( *D( ) ) = #False
-                  EndIf
-                  ;
-                  ReParent = #True
-               EndIf
-               ;
-            Else
-               ;
-               If *last
-                  ChangeCurrentElement( __widgets( ) , *last\address )
-               Else
-                  LastElement( __widgets( ) )
-               EndIf
-               ;
-               AddElement( __widgets( ) )
-               __widgets( )  = *this
-               *this\index   = ListIndex( __widgets( ) )
-               *this\address = @__widgets( )
-            EndIf
-            
-            ;\\
-            If *parent\FirstWidget( ) = #Null
-               *parent\FirstWidget( ) = *this
-            EndIf
-            ;
-            If *this\parent = #Null
-               *this\LastWidget( ) = *this 
-               *parent\LastWidget( ) = *this
-            EndIf
-            ;
-            If *this\BeforeWidget( )
-               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
-            EndIf
-            ;
-            If *this\AfterWidget( )
-               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
-            EndIf
-            ;
-            If *after
-               If *after\parent = *parent
-                  If *after\AfterWidget( )
-                     *after\AfterWidget( )\BeforeWidget( ) = *this
-                  EndIf
-                  *this\AfterWidget( ) = *after\AfterWidget( )
-                  ;
-                  *this\BeforeWidget( ) = *after
-                  *after\AfterWidget( ) = *this
-               EndIf
-            EndIf
-            ;
             ;\\
             ChangeParent( *this, *parent )
             ;
@@ -23659,7 +23586,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14800
-; FirstLine = 14424
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------m-f-8-V0--45---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 14945
+; FirstLine = 14696
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------2P-X8--82---2ez-v---q+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
