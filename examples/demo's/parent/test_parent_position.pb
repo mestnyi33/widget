@@ -63,11 +63,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;*CHILD = Button(10,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
       *CHILD = Container(10,10,160,70) : SetClass(*CHILD, "CHILD") 
+      Container(10,10,160,70) : SetClass(widget(), "CHILD(>)") 
+      Container(10,10,160,70) : SetClass(widget(), "CHILD(>>)") 
       Button(5,5,70,30,"Button1") : SetClass(widget(), "CHILD(0)")  
-;       Button(15,15,70,30,"Button2") : SetClass(widget(), "CHILD(1)")  
-;       Button(25,25,70,30,"Button3") : SetClass(widget(), "CHILD(2)")  
+      ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "CHILD(1)")  
+      ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "CHILD(2)")  
       CloseList( )
-  
+      CloseList( )
+      CloseList( )
+      
       Show_DEBUG()
       
       SetParent(*CHILD, *PANEL, 0)
@@ -91,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 28
+; CursorPosition = 65
+; FirstLine = 30
 ; Folding = 4-
 ; EnableXP
