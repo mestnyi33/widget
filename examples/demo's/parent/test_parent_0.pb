@@ -118,6 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Container(5, 60, 180, 30, #__Flag_NoGadgets)  : SetText(widget(), "     10") : SetClass(widget(), "10")
    CloseList( ) ; 7
    CloseList( ) ; (Panel(0))
+   Debug "-------------"
    ;
    Container(10, 45, 70, 180)                    : SetText(widget(), "     (Panel(1))") : SetClass(widget(), "(Panel(1))")
    CloseList( ) ; (Panel(1))
@@ -315,6 +316,7 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 120
+; FirstLine = 60
 ; Folding = v-f--
 ; EnableXP
