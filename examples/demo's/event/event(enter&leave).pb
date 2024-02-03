@@ -65,13 +65,13 @@ Procedure events_widgets()
            #__event_MouseMove
          
          If EventWidget( ) <> Root( )
-            If EventWidget( )\state\enter 
+            If EventWidget( )\enter 
                If EventWidget( )\color\frame <> colorframe1 
                   EventWidget( )\color\frame = colorframe1
                   repaint = 1 
                EndIf
                
-               If EventWidget( )\state\enter = 2
+               If EventWidget( )\enter = 2
                   If EventWidget( )\color\back <> colorback1 
                      EventWidget( )\color\back = colorback1
                      repaint = 1 
@@ -101,7 +101,7 @@ Procedure events_widgets()
    EndIf
 EndProcedure
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 97
+; CursorPosition = 73
 ; FirstLine = 63
 ; Folding = ---
 ; EnableXP

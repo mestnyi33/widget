@@ -1,7 +1,153 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
+
 CompilerIf #PB_Compiler_IsMainFile
+   
+   EnableExplicit
+   UseLIB(widget)
+   
+   Enumeration
+      #window_0
+      #window
+   EndEnumeration
+   
+   Procedure Show_DEBUG( )
+      Define line.s
+      ;\\
+      Debug "---->>"
+      ForEach __widgets( )
+         ;Debug __widgets( )\class
+         line = "  "
+         
+         If __widgets( )\before\widget
+            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         Else
+            line + "-------- <<  " 
+         EndIf
+         
+         line + __widgets( )\class ; __widgets( )\text\string
+         
+         If __widgets( )\after\widget
+            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         Else
+            line + "  >> --------" 
+         EndIf
+         
+         Debug line
+      Next
+      Debug "<<----"
+   EndProcedure
+   
+   ;-\\ ANCHORS
+   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
+   Define i,a
+   Define *w._s_WIDGET, *g._s_WIDGET
+   
+   Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   
+   ;\\
+   Define *root1._s_WIDGET = root( ): *root1\class = "root1": SetText(*root1, "root1")
+   ;BindWidgetEvent( *root1, @BindEvents( ) )
+   
+   
+   
+   Define count = 2;0000
+   #st          = 1
+   Global mx    = #st, my = #st
+   
+   Define time = ElapsedMilliseconds( )
+   
+   Global *c, *p, *panel._s_WIDGET
+   Procedure events_containers( )
+      Protected repaint
+      Protected colorback = colors::*this\blue\fore,
+                colorframe = colors::*this\blue\frame,
+                colorback1 = $ff00ff00,
+                colorframe1 = $ff0000ff
+      
+      Select WidgetEventType( )
+         Case #__event_MouseEnter,
+              #__event_MouseLeave,
+              #__event_MouseMove
+            
+            If EventWidget( ) <> Root( )
+               If EventWidget( )\enter
+                  If EventWidget( )\color\frame <> colorframe1
+                     repaint                    = 1
+                     EventWidget( )\color\frame = colorframe1
+                  EndIf
+                  
+                  If EventWidget( )\inner_enter( )
+                     If EventWidget( )\color\back <> colorback1
+                        repaint                   = 1
+                        EventWidget( )\color\back = colorback1
+                     EndIf
+                  Else
+                     If EventWidget( )\color\back = colorback1
+                        repaint                   = 1
+                        EventWidget( )\color\back = colorback
+                     EndIf
+                  EndIf
+               Else
+                  If EventWidget( )\color\back <> colorback
+                     repaint                   = 1
+                     EventWidget( )\color\back = colorback
+                  EndIf
+                  If EventWidget( )\color\frame = colorframe1
+                     repaint                    = 1
+                     EventWidget( )\color\frame = colorframe
+                  EndIf
+               EndIf
+            EndIf
+            
+      EndSelect
+      
+      If repaint
+         ; Debug "change state"
+      EndIf
+   EndProcedure
+   
+   
+   ;OpenList( *root1 )
+   *panel = Panel(20, 20, 180 + 40, 180 + 60) : SetText(*panel, "1")
+   AddItem( *panel, -1, "(enter&leave)-test" )
+   
+   Container(40, 20, 180, 180)                   : SetText(widget(), "      (Panel(0))") : SetClass(widget(), "(Panel(0))")
+   Container(20, 20, 180, 180)                   : SetText(widget(), "      7") : SetClass(widget(), "7")
+   Container(5, 60, 180, 30, #__Flag_NoGadgets)  : SetText(widget(), "     10") : SetClass(widget(), "10")
+   CloseList( ) ; 7
+   CloseList( ) ; (Panel(0))
+   ;
+   Container(10, 45, 70, 180)                    : SetText(widget(), "     (Panel(1))") : SetClass(widget(), "(Panel(1))")
+   CloseList( ) ; (Panel(1))
+   CloseList( ) ; 1
+   
+   Show_DEBUG()
+;    ;\\
+;    OpenList( seven )
+;    SetText(Container( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
+;    CloseList( ) ; 7
+;    
+   ;\\
+   If *panel\root
+      ;PushListPosition( *panel\root\children( ))
+      If StartEnumerate( *panel)
+         Bind(widget( ), @events_containers( ), #__event_MouseEnter)
+         Bind(widget( ), @events_containers( ), #__event_MouseMove)
+         Bind(widget( ), @events_containers( ), #__event_MouseLeave)
+         StopEnumerate( )
+      EndIf
+      ;PopListPosition( *panel\root\children( ))
+   EndIf
+   
+   
+  
+   WaitClose( )
+   
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseLib(widget)
@@ -169,7 +315,6 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 38
-; Folding = --
+; CursorPosition = 1
+; Folding = v-f--
 ; EnableXP
