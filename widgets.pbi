@@ -4007,10 +4007,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PushListPosition( __widgets( ) )
             ChangeCurrentElement( __widgets( ), *this\address )
             While NextElement( __widgets( ) )
-              If __widgets( ) = *this\AfterWidget( )
-                 Break
+;                If __widgets( ) = *this\AfterWidget( )
+;                   Break
+;                EndIf
+               If Not IsChild( __widgets( ), *this )
+                  Break
                EndIf
-               
+                        
                ; hide all children's except those whose parent-item is selected
                __widgets( )\hide = HideState( __widgets( ) )
             Wend
@@ -4038,7 +4041,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PushListPosition( __widgets( ) )
             ChangeCurrentElement( __widgets( ), *this\address )
             While NextElement( __widgets( ) )
-               If __widgets( ) = *this\AfterWidget( )
+;                If __widgets( ) = *this\AfterWidget( )
+;                   Break
+;                EndIf
+               If Not IsChild( __widgets( ), *this )
                   Break
                EndIf
                
@@ -14567,14 +14573,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\haschildren
                      PushListPosition( __widgets( ) )
                      While NextElement( __widgets( ) )
-                        If __widgets( ) = *this\AfterWidget( )
-                           Debug " --- "+__widgets( )\class
-                           Break
-                        EndIf
-                     Wend
-                     PopListPosition( __widgets( ) )
-                     PushListPosition( __widgets( ) )
-                     While NextElement( __widgets( ) )
                         If Not IsChild( __widgets( ), *this )
                            Break
                         EndIf
@@ -14606,22 +14604,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *D( )\scroll\h\window = *D( )\window
                            EndIf
                         EndIf
+                        
+                        *D( )\hide = HideState( *D( ) )
+            
                      Wend
                      PopListPosition( __widgets( ) )
                   EndIf
                   
                   ;\\ move with a parent and his children's
                   If *last
-                     ; PushListPosition( __widgets( ) )
+                     PushListPosition( __widgets( ) )
                      LastElement( *D( ) )
                      Repeat
                         ChangeCurrentElement( __widgets( ), *D( )\address )
                         MoveElement( __widgets( ), #PB_List_After, *last\address )
-                        
-                        *D( )\hide = HideState( *D( ) )
-            
                      Until PreviousElement( *D( ) ) = #False
-                     ; PopListPosition( __widgets( ) )
+                     PopListPosition( __widgets( ) )
                   EndIf
 
                   ;
@@ -23329,7 +23327,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14573
-; FirstLine = 14485
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r48---X8N--+--r7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48t-------
+; CursorPosition = 14607
+; FirstLine = 14537
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------848---r0n-f---X0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------803------
 ; EnableXP
