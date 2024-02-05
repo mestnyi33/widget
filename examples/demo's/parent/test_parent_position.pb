@@ -99,19 +99,19 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       CloseList( )
       
-; ;       Show_DEBUG()
-;       
-;       SetParent(*CHILD, *PANEL, 0)
-;       
-; ;       Show_DEBUG()
-;       
-;       SetParent(*CHILD, *PANEL, 1)
-;       
-; ;       Show_DEBUG()
-;       
-;       SetParent(*CHILD, *PANEL, 2)
-;        
-; ;       Show_DEBUG()
+      Show_DEBUG()
+      
+      SetParent(*CHILD, *PANEL, 0)
+      
+      Show_DEBUG()
+      
+      SetParent(*CHILD, *PANEL, 1)
+      
+      Show_DEBUG()
+      
+      SetParent(*CHILD, *PANEL, 2)
+       
+      Show_DEBUG()
       
       SetParent(*CHILD, *PANEL, 1)
        
