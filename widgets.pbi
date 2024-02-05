@@ -14451,71 +14451,71 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *last\AddedTabIndex( ) <> *this\AddedTabIndex( ) 
                   ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
                   
-                  If *last\parent = *parent
-                     If *after\haschildren
-                        Debug "777 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-                        PushListPosition( __widgets( ) )
-                        ChangeCurrentElement( __widgets( ), *after\address )
-                        While NextElement( __widgets( ) )
-                           If Not IsChild( __widgets( ), *after )
-                              Break
-                           EndIf
-                           If IsChild( __widgets( ), *this )
-                              Break
-                           EndIf
-                           ;
-                           *last = __widgets( )
-                        Wend
-                        PopListPosition( __widgets( ) )
-                        
-                        ; Childrens( *after, *this, @*last )
-                     EndIf
-                  ;
-                  If *this\AddedTabIndex( ) >= 0 
+                 If *last\parent = *parent
+                   If *after\haschildren
+                     Debug "777 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                     PushListPosition( __widgets( ) )
+                     ChangeCurrentElement( __widgets( ), *after\address )
+                     While NextElement( __widgets( ) )
+                       If Not IsChild( __widgets( ), *after )
+                         Break
+                       EndIf
+                       If IsChild( __widgets( ), *this )
+                         Break
+                       EndIf
+                       ;
+                       *last = __widgets( )
+                     Wend
+                     PopListPosition( __widgets( ) )
+                     
+                     ; Childrens( *after, *this, @*last )
+                   EndIf
+                   ;
+                   If *this\AddedTabIndex( ) >= 0 
                      PushListPosition( __widgets( ) )
                      ChangeCurrentElement( __widgets( ), *last\address )
                      If __widgets( )\AddedTabIndex( ) <> *this\AddedTabIndex( ) 
-                        ;
-                        If *after\AddedTabIndex( ) > *this\AddedTabIndex( ) 
-                           *after = *parent
-                           *last = *parent
-                        EndIf
-                        ;
-                        While PreviousElement( __widgets( ) )
-                           If __widgets( )\AddedTabIndex( ) = *this\AddedTabIndex( ) 
-                              If __widgets( )\parent = *parent 
-                                 *after = __widgets( )
-                                 *last = *after\LastWidget( )
-                                 ;
-                                 If *after\haschildren
-                                    ;Debug "999 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-                                    PushListPosition( __widgets( ) )
-                                    ChangeCurrentElement( __widgets( ), *after\address )
-                                    While NextElement( __widgets( ) )
-                                       If Not IsChild( __widgets( ), *after )
-                                          Break
-                                       EndIf
-                                       If IsChild( __widgets( ), *this )
-                                          Break
-                                       EndIf
-                                       ;
-                                       *last = __widgets( )
-                                    Wend
-                                    PopListPosition( __widgets( ) )
-                                    
-                                    ; Childrens( *after, *this, @*last )
+                       ;
+                       If *after\AddedTabIndex( ) > *this\AddedTabIndex( ) 
+                         *after = *parent
+                         *last = *parent
+                       EndIf
+                       ;
+                       While PreviousElement( __widgets( ) )
+                         If __widgets( )\AddedTabIndex( ) = *this\AddedTabIndex( ) 
+                           If __widgets( )\parent = *parent 
+                             *after = __widgets( )
+                             *last = *after\LastWidget( )
+                             ;
+                             If *after\haschildren
+                               ;Debug "999 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                               PushListPosition( __widgets( ) )
+                               ChangeCurrentElement( __widgets( ), *after\address )
+                               While NextElement( __widgets( ) )
+                                 If Not IsChild( __widgets( ), *after )
+                                   Break
+                                 EndIf
+                                 If IsChild( __widgets( ), *this )
+                                   Break
                                  EndIf
                                  ;
-                                 Break
-                              EndIf
+                                 *last = __widgets( )
+                               Wend
+                               PopListPosition( __widgets( ) )
+                               
+                               ; Childrens( *after, *this, @*last )
+                             EndIf
+                             ;
+                             Break
                            EndIf
-                        Wend
+                         EndIf
+                       Wend
                      EndIf
                      PopListPosition( __widgets( ) )
-                  EndIf
-                  ;
-                  EndIf
-                  Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                   EndIf
+                   ;
+                   Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                 EndIf
                EndIf
             EndIf
             ;             ;
@@ -23665,8 +23665,6 @@ CompilerEndIf
 ; FirstLine = 2592
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14517
-; FirstLine = 14448
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4fP-vHn38-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fP-vHn38-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
