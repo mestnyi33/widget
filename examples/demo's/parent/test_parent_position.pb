@@ -99,17 +99,21 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       CloseList( )
       
-      Show_DEBUG()
-      
-      SetParent(*CHILD, *PANEL, 0)
-      
-      Show_DEBUG()
+; ;       Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 0)
+;       
+; ;       Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 1)
+;       
+; ;       Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 2)
+;        
+; ;       Show_DEBUG()
       
       SetParent(*CHILD, *PANEL, 1)
-      
-      Show_DEBUG()
-      
-      SetParent(*CHILD, *PANEL, 2)
        
       Show_DEBUG()
       
@@ -122,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 109
-; FirstLine = 59
+; CursorPosition = 113
+; FirstLine = 63
 ; Folding = 4-
 ; EnableXP

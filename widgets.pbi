@@ -4002,20 +4002,68 @@ CompilerIf Not Defined( Widget, #PB_Module )
          _this_\resize | #__reclip
       EndMacro
       
-      Procedure HideChildrens( *this._s_WIDGET )
-         If *this\address
+      
+      Procedure Childrens( *this._s_WIDGET, *mode = 0, *result.Integer = 0 )
+         If *this\address ; *this\haschildren
             PushListPosition( __widgets( ) )
             ChangeCurrentElement( __widgets( ), *this\address )
             While NextElement( __widgets( ) )
-;                If __widgets( ) = *this\AfterWidget( )
-;                   Break
-;                EndIf
                If Not IsChild( __widgets( ), *this )
                   Break
                EndIf
-                        
-               ; hide all children's except those whose parent-item is selected
-               __widgets( )\hide = HideState( __widgets( ) )
+               If *mode > 255
+                  If IsChild( __widgets( ), *mode )
+                     Break
+                  EndIf
+               Else
+                  If *mode = 1
+                     ; hide all children's except those whose parent-item is selected
+                     __widgets( )\hide = HideState( __widgets( ) )
+                  EndIf
+                  If *mode = 2
+                     ; disable all children's except those whose parent-item is selected
+                     If *this\disable
+                        __widgets( )\disable = - 1
+                     Else
+                        __widgets( )\disable = 0
+                     EndIf
+                     
+                     If __widgets( )\TabBox( )
+                        If __widgets( )\disable
+                           __widgets( )\TabBox( )\disable = - 1
+                        Else
+                           __widgets( )\TabBox( )\disable = 0
+                        EndIf
+                     EndIf
+                     If __widgets( )\StringBox( )
+                        If __widgets( )\disable
+                           __widgets( )\StringBox( )\disable = - 1
+                        Else
+                           __widgets( )\StringBox( )\disable = 0
+                        EndIf
+                     EndIf
+                     If __widgets( )\scroll
+                        If __widgets( )\scroll\v
+                           If __widgets( )\disable
+                              __widgets( )\scroll\v\disable = - 1
+                           Else
+                              __widgets( )\scroll\v\disable = 0
+                           EndIf
+                        EndIf
+                        If __widgets( )\scroll\h
+                           If __widgets( )\disable
+                              __widgets( )\scroll\h\disable = - 1
+                           Else
+                              __widgets( )\scroll\h\disable = 0
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+               If *result
+                  *result\i = __widgets( )
+               EndIf
             Wend
             PopListPosition( __widgets( ) )
          EndIf
@@ -4030,80 +4078,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\hide = HideState( *this )
             
             If *this\haschildren
-               HideChildrens( *this )
+               Childrens( *this, 1 )
             EndIf
          EndIf
       EndProcedure
       
       ;
-      Procedure DisableChildrens( *this._s_WIDGET )
-         If *this\address
-            PushListPosition( __widgets( ) )
-            ChangeCurrentElement( __widgets( ), *this\address )
-            While NextElement( __widgets( ) )
-;                If __widgets( ) = *this\AfterWidget( )
-;                   Break
-;                EndIf
-               If Not IsChild( __widgets( ), *this )
-                  Break
-               EndIf
-               
-               ; disable all children's except those whose parent-item is selected
-               If *this\disable
-                  __widgets( )\disable = - 1
-               Else
-                  __widgets( )\disable = 0
-               EndIf
-               
-               If __widgets( )\TabBox( )
-                  If __widgets( )\disable
-                     __widgets( )\TabBox( )\disable = - 1
-                  Else
-                     __widgets( )\TabBox( )\disable = 0
-                  EndIf
-               EndIf
-               If __widgets( )\StringBox( )
-                  If __widgets( )\disable
-                     __widgets( )\StringBox( )\disable = - 1
-                  Else
-                     __widgets( )\StringBox( )\disable = 0
-                  EndIf
-               EndIf
-               If __widgets( )\scroll
-                  If __widgets( )\scroll\v
-                     If __widgets( )\disable
-                        __widgets( )\scroll\v\disable = - 1
-                     Else
-                        __widgets( )\scroll\v\disable = 0
-                     EndIf
-                  EndIf
-                  If __widgets( )\scroll\h
-                     If __widgets( )\disable
-                        __widgets( )\scroll\h\disable = - 1
-                     Else
-                        __widgets( )\scroll\h\disable = 0
-                     EndIf
-                  EndIf
-               EndIf
-               
-            Wend
-            PopListPosition( __widgets( ) )
-            
-            ; ;                 PushListPosition(widget( ))
-            ; ;                 If StartEnumerate( *this )
-            ; ;                   ; Debug "disable "+widget( )\text\string
-            ; ;                   If *this\disable
-            ; ;                     widget( )\disable =- 1
-            ; ;                   Else
-            ; ;                     widget( )\disable = 0
-            ; ;                   EndIf
-            ; ;                   StopEnumerate( )
-            ; ;                 EndIf
-            ; ;                 PopListPosition(widget( ))
-            
-         EndIf
-      EndProcedure
-      
       Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
          Protected result.b = *this\disable
          
@@ -4157,7 +4137,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\haschildren
-               DisableChildrens( *this._s_WIDGET )
+               Childrens( *this._s_WIDGET, 2 )
             EndIf
             
             PostRepaint( *this\root )
@@ -5240,7 +5220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If is_integral_( *this )
                If *this\parent\haschildren
-                  HideChildrens( *this\parent )
+                  Childrens( *this\parent, 1 )
                EndIf
                *this = *this\parent
             EndIf
@@ -14467,9 +14447,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                *after = *parent\LastWidget( )
                *last = *after\LastWidget( )
-                  ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+               ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
                
                If *after\haschildren
+                  Debug "777 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
                   PushListPosition( __widgets( ) )
                   ChangeCurrentElement( __widgets( ), *after\address )
                   While NextElement( __widgets( ) )
@@ -14483,6 +14464,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *last = __widgets( )
                   Wend
                   PopListPosition( __widgets( ) )
+               
+                 ; Childrens( *after, *this, @*last )
                EndIf
                ;
                If *this\AddedTabIndex( ) >= 0 
@@ -14502,22 +14485,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *last = *after\LastWidget( )
                               ;
                               If *after\haschildren
+                                 Debug "999 "+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
                                  PushListPosition( __widgets( ) )
                                  ChangeCurrentElement( __widgets( ), *after\address )
                                  While NextElement( __widgets( ) )
                                     If Not IsChild( __widgets( ), *after )
-                                       ;Debug 333
                                        Break
                                     EndIf
                                     If IsChild( __widgets( ), *this )
                                        Break
                                     EndIf
                                     ;
-                                    ; Debug ""+__widgets( )\class +" "+ __widgets( ) +" "+ __widgets( )\after\widget
-                                    
                                     *last = __widgets( )
                                  Wend
                                  PopListPosition( __widgets( ) )
+                                 
+                                 ; Childrens( *after, *this, @*last )
                               EndIf
                               ;
                               Break
@@ -14528,7 +14511,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PopListPosition( __widgets( ) )
                EndIf
                ;
-               ; Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+                Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
             EndIf
             ;             ;
             If *this\AddedTabIndex( ) > 0
@@ -14552,9 +14535,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             ; set hide state
-            If *parent\hide
-               *this\hide = #True
-            ElseIf *parent\TabBox( )
+            *this\hide = *parent\hide
+            If *parent\TabBox( )
                ; hide all children's except the selected tab
                *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> *this\AddedTabIndex( ))
             EndIf
@@ -14569,6 +14551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ChangeCurrentElement( __widgets( ), *this\address )
                   AddElement( *D( ) ) : *D( ) = __widgets( )
+                  ;Debug ""+*parent\TabBox( )\FocusedTabIndex( ) +" "+ *this\AddedTabIndex( ) 
                   
                   If *this\haschildren
                      PushListPosition( __widgets( ) )
@@ -14606,7 +14589,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         *D( )\hide = HideState( *D( ) )
-            
+                        ;Debug *D( )\hidden
+                        
                      Wend
                      PopListPosition( __widgets( ) )
                   EndIf
@@ -14621,7 +14605,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Until PreviousElement( *D( ) ) = #False
                      PopListPosition( __widgets( ) )
                   EndIf
-
+                  
                   ;
                   ReParent = #True
                EndIf
@@ -14833,7 +14817,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      PopListPosition( __widgets( ) )
                      ;
-                 Else
+                  Else
                      ;                   ;
                      If *last\haschildren
                         If *last\AfterWidget( )
@@ -14954,7 +14938,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         MoveElement( __widgets( ), #PB_List_After, *after\address )
                         
                         *D( )\hide = HideState( *D( ) )
-            
+                        
                      Until PreviousElement( *D( ) ) = #False
                   EndIf
                   ;
@@ -15027,7 +15011,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                If *Last 
-                 ; Debug "-->>>---   "+*this\class +"   "+ *Last\class +"   "+ *after\class
+                  ; Debug "-->>>---   "+*this\class +"   "+ *Last\class +"   "+ *after\class
                   
                   If *this\AddedTabIndex( ) = *Last\AddedTabIndex( ) ; *after\AddedTabIndex( )
                      If *this\BeforeWidget( )
@@ -15041,11 +15025,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\BeforeWidget( ) = *Last
                         EndIf
                      Else
-;                         If *last <> *after
-                           *this\BeforeWidget( ) = *after
-;                         Else
-;                            *this\BeforeWidget( ) = *last
-;                         EndIf
+                        ;                         If *last <> *after
+                        *this\BeforeWidget( ) = *after
+                        ;                         Else
+                        ;                            *this\BeforeWidget( ) = *last
+                        ;                         EndIf
                      EndIf
                   EndIf
                   
@@ -17762,7 +17746,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\disable = - 1
                      
                      If *this\haschildren
-                        DisableChildrens( *this )
+                        Childrens( *this, 2 )
                      EndIf
                   EndIf
                   
@@ -23327,7 +23311,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14472
-; FirstLine = 14464
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0+f--a-6-4---V------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ev0------
+; CursorPosition = 14453
+; FirstLine = 14442
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

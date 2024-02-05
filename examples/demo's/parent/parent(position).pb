@@ -110,7 +110,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *SCROLLAREA = ScrollArea(10,445,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(*SCROLLAREA, "SCROLLAREA") 
     *SCROLLAREA_0 = Button(pos_x,90,160,30,"(ScrollArea)") : SetClass(*SCROLLAREA_0, GetText(*SCROLLAREA_0)) 
-    *CHILD = Button(pos_x,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
+    ;
+    ; *CHILD = Button(pos_x,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
+    *CHILD = Container(30,10,160,70)
+    Button(5,5,70,30,"Button1") 
+    Button(15,15,70,30,"Button2") 
+    Button(25,25,70,30,"Button3") 
+    CloseList( )
+    ;
     CloseList()
     
     Show_DEBUG()
@@ -128,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 112
-; FirstLine = 72
+; CursorPosition = 116
+; FirstLine = 73
 ; Folding = 6z
 ; EnableXP
