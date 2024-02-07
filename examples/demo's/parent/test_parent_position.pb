@@ -143,26 +143,26 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
      
-      ; test - 1 bug
-      SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
-      SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
-      
-      Last( *PANEL, 0 )
-      SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
-    
+;       ; test - 1 bug - fixed
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+;       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+;     
 ;       ; test - 2 good
 ;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
 ;       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
 ;       SetParent(*CHILD, *PANEL, 2) : Show_DEBUG()
 ;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
-      
-
+;     
+      ; test - 3 bug
+      SetParent(*CHILD, *PANEL, 2) : Show_DEBUG()
+      SetParent(*CHILD, root( )) : Show_DEBUG()
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 22
-; Folding = --
+; CursorPosition = 155
+; FirstLine = 99
+; Folding = f-
 ; EnableXP
