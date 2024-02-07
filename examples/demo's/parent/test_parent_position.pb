@@ -21,6 +21,22 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
+   Procedure Last( *parent._s_WIDGET, tabindex )
+      Define._s_WIDGET *last, *after
+      
+      *after = GetPositionAfter( *parent, tabindex )
+      ;*last = GetPositionLast( *after, tabindex )
+      
+      If *after\parent <> *parent And *after\LastWidget( )\AddedTabIndex( ) > tabindex
+         *last = *after
+      Else
+         *last = GetPositionLast( *after, tabindex )
+      EndIf
+      
+      Debug "after "+ *after\class
+      ; Debug "*last "+ *last\class
+   EndProcedure
+   
    Procedure Show_DEBUG( )
       Define line.s
       ;\\
@@ -51,53 +67,55 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PANEL = Panel(10,145,200,160)  : SetClass(*PANEL, "PANEL") 
       AddItem(*PANEL, -1, "item (0)")
-;        ;
-;        Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-;        Container(10,90,160,30) : SetClass(widget(), "((0>))")
-;        Container(10,90,160,30) : SetClass(widget(), "((0>>))")
-;        CloseList( )
-;        CloseList( )
-;        CloseList( )
-;        ;
+      ;              ;
+      ;              Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
+      ;              Container(10,90,160,30) : SetClass(widget(), "((0>))")
+      ;              Container(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      ;              CloseList( )
+      ;              CloseList( )
+      ;              ;
       AddItem(*PANEL, -1, "item (1)")
-       ;
-       Container(10,90,160,30) : SetClass(widget(), "(Panel(1))")
-;        Container(10,90,160,30) : SetClass(widget(), "((1>))")
-;        ; Container(10,90,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
-;        CloseList( )
-       CloseList( )
-       ;
+      ;
+      Container(10,90,160,30) : SetClass(widget(), "(Panel(1))")
+      Container(10,90,160,30) : SetClass(widget(), "((1>))")
+      Container(10,90,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
+      CloseList( )
+      CloseList( )
+      ;
       AddItem(*PANEL, -1, "item (2)") ;: *PANEL_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PANEL_2, GetText(*PANEL_2)) 
-       ;
-       Container(10,90,160,30) : SetClass(widget(), "(Panel(2))")
-;        Container(10,90,160,30) : SetClass(widget(), "((2>))")
-;        ; Container(10,90,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
-;        CloseList( )
-       CloseList( )
-       
+                                      ;
+      Container(10,90,160,30) : SetClass(widget(), "(Panel(2))")
+      Container(10,90,160,30) : SetClass(widget(), "((2>))")
+      Container(10,90,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
+      CloseList( )
+      CloseList( )
+      
       CloseList()
       
+      ;
       Debug ">"
       OpenList( *PANEL, 0 )
-       ;*PANEL_0 = Button(10,90,160,30,"(Panel(0))") : SetClass(*PANEL_0, GetText(*PANEL_0))
-       Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-;        Container(10,90,160,30) : SetClass(widget(), "((0>))")
-;        Container(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
-;        CloseList( )
-       CloseList( )
+      Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
+      Container(10,90,160,30) : SetClass(widget(), "((0>))")
+      Container(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      CloseList( )
+      CloseList( )
       CloseList( )
       Debug "<"
       
-;       *CHILD = Button(10,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
+      ;;Last(Opened( ), 0)
+      ;       *CHILD = Button(10,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
       *CHILD = Container(10,10,160,70) : SetClass(*CHILD, "CHILD") 
       Container(10,10,160,70) : SetClass(widget(), "(CH>)") 
       Container(10,10,160,70) : SetClass(widget(), "(CH>>)") 
-;       Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH0)")  
-;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH1)")  
-;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH2)")  
+      Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
+      ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
+      ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
       CloseList( )
       CloseList( )
       CloseList( )
+      ;  
+      
       
       Show_DEBUG()
       
@@ -109,12 +127,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Show_DEBUG()
       
+      ; Last(*PANEL, 2)
       SetParent(*CHILD, *PANEL, 2)
-       
+      
       Show_DEBUG()
       
       SetParent(*CHILD, *PANEL, 1)
-       
+      
       Show_DEBUG()
       
       SetParent(*CHILD, root( ))
@@ -126,7 +145,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 113
-; FirstLine = 63
-; Folding = 4-
+; CursorPosition = 118
+; FirstLine = 107
+; Folding = --
 ; EnableXP
