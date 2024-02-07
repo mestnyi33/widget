@@ -11,6 +11,32 @@ CompilerIf #PB_Compiler_IsMainFile
       #window
    EndEnumeration
    
+   Procedure Show_DEBUG( )
+      Define line.s
+      ;\\
+      Debug "---->>"
+      ForEach __widgets( )
+         ;Debug __widgets( )\class
+         line = "  "
+         
+         If __widgets( )\before\widget
+            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         Else
+            line + "-------- <<  " 
+         EndIf
+         
+         line + __widgets( )\class ; __widgets( )\text\string
+         
+         If __widgets( )\after\widget
+            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         Else
+            line + "  >> --------" 
+         EndIf
+         
+         Debug line
+      Next
+      Debug "<<----"
+   EndProcedure
    
    ;-\\ ANCHORS
    Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
@@ -71,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem( *panel, -1, "(hide&show)-test" )
    
    *c = Panel(110, 5, 150, 155)
-;    AddItem(*c, -1, "0")
+    AddItem(*c, -1, "0")
    
 ;    *p = Panel(10, 5, 150, 65)
 ;    AddItem(*p, -1, "item-1")
@@ -98,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    CloseList( )
    CloseList( )
    
-   
+   Show_DEBUG( )
 
    WaitClose( )
    
@@ -420,6 +446,8 @@ CompilerEndIf
 ;       WaitClose( )
 ;    EndIf   
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = t8-4-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 94
+; FirstLine = 54
+; Folding = vd--+-
 ; EnableXP

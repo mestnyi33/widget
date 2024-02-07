@@ -64,29 +64,36 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
+   Procedure OpenGadget( x,y,width,height )
+      Protected *PANEL 
+      ;*PANEL = Panel( x,y,width,height*2 ) : AddItem(*PANEL, - 1, "item_0" )
+      *PANEL = Container( x,y,width,height ) 
+      ProcedureReturn *PANEL
+   EndProcedure
+   
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PANEL = Panel(10,145,200,160)  : SetClass(*PANEL, "PANEL") 
       AddItem(*PANEL, -1, "item (0)")
       ;              ;
-      ;              Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-      ;              Container(10,90,160,30) : SetClass(widget(), "((0>))")
-      ;              Container(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(0))")
+      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "((0>))")
+      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
       ;              CloseList( )
       ;              CloseList( )
       ;              ;
       AddItem(*PANEL, -1, "item (1)")
       ;
-      Container(10,90,160,30) : SetClass(widget(), "(Panel(1))")
-      Container(10,90,160,30) : SetClass(widget(), "((1>))")
-      Container(10,90,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
+      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(1))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((1>))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
       CloseList( )
       CloseList( )
       ;
       AddItem(*PANEL, -1, "item (2)") ;: *PANEL_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PANEL_2, GetText(*PANEL_2)) 
                                       ;
-      Container(10,90,160,30) : SetClass(widget(), "(Panel(2))")
-      Container(10,90,160,30) : SetClass(widget(), "((2>))")
-      Container(10,90,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
+      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(2))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((2>))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
       CloseList( )
       CloseList( )
       
@@ -95,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       Debug ">"
       OpenList( *PANEL, 0 )
-      Container(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-      Container(10,90,160,30) : SetClass(widget(), "((0>))")
-      Container(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(0))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((0>))")
+      OpenGadget(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
       CloseList( )
       CloseList( )
       CloseList( )
@@ -105,9 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;;Last(Opened( ), 0)
       ;       *CHILD = Button(10,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
-      *CHILD = Container(10,10,160,70) : SetClass(*CHILD, "CHILD") 
-      Container(10,10,160,70) : SetClass(widget(), "(CH>)") 
-      Container(10,10,160,70) : SetClass(widget(), "(CH>>)") 
+      *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
+      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
+      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
       Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
       ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
       ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
@@ -119,33 +126,39 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Show_DEBUG()
       
-      SetParent(*CHILD, *PANEL, 0)
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 2) : Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+;       
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+;       
+;       SetParent(*CHILD, root( )) : Show_DEBUG()
       
-      Show_DEBUG()
       
-      SetParent(*CHILD, *PANEL, 1)
       
-      Show_DEBUG()
+     
+      ; test - 1 bug
+      SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+      SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+      SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+    
+;       ; test - 2 good
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
+;       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+;       SetParent(*CHILD, *PANEL, 2) : Show_DEBUG()
+;       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
       
-      ; Last(*PANEL, 2)
-      SetParent(*CHILD, *PANEL, 2)
-      
-      Show_DEBUG()
-      
-      SetParent(*CHILD, *PANEL, 1)
-      
-      Show_DEBUG()
-      
-      SetParent(*CHILD, root( ))
-      
-      Show_DEBUG()
-      
+
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 118
-; FirstLine = 107
+; CursorPosition = 145
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
