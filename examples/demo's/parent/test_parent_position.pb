@@ -112,8 +112,6 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       Debug "<"
       
-      ;;Last(Opened( ), 0)
-      ;       *CHILD = Button(10,10,160,70,"(CHILD)") : SetClass(*CHILD, "CHILD") 
       *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
@@ -162,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 99
+; CursorPosition = 114
+; FirstLine = 45
 ; Folding = f-
 ; EnableXP
