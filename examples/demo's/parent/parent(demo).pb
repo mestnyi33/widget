@@ -107,6 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             Else
 ;               Debug "parent - window (" + GetWindow(*CHILD) + ")"
 ;             EndIf
+            
+            ; Debug *CHILD\hide
           EndIf
       EndSelect 
   EndProcedure
@@ -219,6 +221,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 110
+; FirstLine = 48
 ; Folding = -0
 ; EnableXP

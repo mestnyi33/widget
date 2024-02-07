@@ -14530,6 +14530,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             *this\AddedTabIndex( ) = tabindex
+            
             ;
             ; set hide state
             If *parent\hide
@@ -14537,6 +14538,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf *parent\TabBox( )
                ; hide all children's except the selected tab
                *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> *this\AddedTabIndex( ))
+            ElseIf Not *this\hidden
+               If *this\hide = #True
+                  *this\hide = #False
+               EndIf
             EndIf
             ;
             ;\\
@@ -14550,7 +14555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ChangeCurrentElement( __widgets( ), *this\address )
                   AddElement( *D( ) ) : *D( ) = __widgets( )
                   ;Debug ""+*parent\TabBox( )\FocusedTabIndex( ) +" "+ *this\AddedTabIndex( ) 
-                  *D( )\hide = HideState( *D( ) )
+                  ;*D( )\hide = HideState( *D( ) )
                   
                   If *this\haschildren
                      PushListPosition( __widgets( ) )
@@ -20953,21 +20958,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If GetActive( )
                   Keyboard( )\key[1] = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Modifiers )
-                  
+                  ;
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      If Keyboard( )\key[1] & #PB_Canvas_Command
                         Keyboard( )\key[1] & ~ #PB_Canvas_Command
                         Keyboard( )\key[1] | #PB_Canvas_Control
                      EndIf
                   CompilerEndIf
-                  
+                  ;
                   ;\\
                   If eventtype = #PB_EventType_Input
                      Keyboard( )\input = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Input )
                   Else
                      Keyboard( )\Key = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Key )
                   EndIf
-                  
+                  ;
                   ;\\ keyboard events
                   If eventtype = #PB_EventType_KeyDown
                      DoEvents( GetActive( ), #__event_keydown )
@@ -20978,7 +20983,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If eventtype = #PB_EventType_KeyUp
                      DoEvents( GetActive( ), #__event_keyup )
                   EndIf
-                  
+                  ;
                   ;\\ change keyboard focus-widget
                   If eventtype = #PB_EventType_KeyDown
                      ; If Not GetActive( )\anchors
@@ -21037,7 +21042,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndSelect
                      ; EndIf
                   EndIf
-                  
+                  ;
                   ;\\
                   If eventtype = #PB_EventType_KeyUp
                      Keyboard( )\key[1] = 0
@@ -21091,29 +21096,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ;\\ mouse-drag-start send drag event
-                        If PressedWidget( ) And
-                           PressedWidget( )\press And
-                           PressedWidget( )\inner_enter( ) And
-                           PressedWidget( )\dragstart = #PB_Drag_None
-                           
-                           If mouse( )\change
-                              PressedWidget( )\dragstart = #PB_Drag_Update
+                        If mouse( )\press
+                           If PressedWidget( ) And
+                              PressedWidget( )\press And
+                              PressedWidget( )\inner_enter( ) And
+                              PressedWidget( )\dragstart = #PB_Drag_None
                               
-                              PressedWidget( )\resize = 0 ; temp
-                              
-                              ;                         If mouse( )\press
-                              ;                            If PressedWidget( )
-                              ;                               If PressedWidget( )\split_1( )
-                              ;                                  Hide( PressedWidget( )\split_1( ), 1 )
-                              ;                               EndIf
-                              ;                               If PressedWidget( )\split_2( )
-                              ;                                  Hide( PressedWidget( )\split_2( ), 1 )
-                              ;                               EndIf
-                              ;                            EndIf
-                              ;                         EndIf
-                              ; Debug PressedWidget( )\dragstart
-                              
-                              DoEvents( PressedWidget( ), #__event_DragStart )
+                              If mouse( )\change
+                                 PressedWidget( )\dragstart = #PB_Drag_Update
+                                 
+                                 PressedWidget( )\resize = 0 ; temp
+                                 
+                                 ;                         If mouse( )\press
+                                 ;                            If PressedWidget( )
+                                 ;                               If PressedWidget( )\split_1( )
+                                 ;                                  Hide( PressedWidget( )\split_1( ), 1 )
+                                 ;                               EndIf
+                                 ;                               If PressedWidget( )\split_2( )
+                                 ;                                  Hide( PressedWidget( )\split_2( ), 1 )
+                                 ;                               EndIf
+                                 ;                            EndIf
+                                 ;                         EndIf
+                                 ; Debug PressedWidget( )\dragstart
+                                 
+                                 DoEvents( PressedWidget( ), #__event_DragStart )
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -23663,7 +23670,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14500
-; FirstLine = 14264
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v-------------------------------------f-P-v-4jT8---48-----+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------807------
+; CursorPosition = 21118
+; FirstLine = 20338
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v-------------------------------------f-P----Hn+---v4-----0------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+---------------------------------------------v4r-------
 ; EnableXP
