@@ -1,8 +1,111 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-
 CompilerIf #PB_Compiler_IsMainFile
+   
+   EnableExplicit
+   UseLIB(widget)
+   
+   Enumeration
+      #window_0
+      #window
+   EndEnumeration
+   
+   
+   ;-\\ ANCHORS
+   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
+   
+   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   
+   
+   ;\\
+   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
+   ;BindWidgetEvent( *root1, @BindEvents( ) )
+   
+  
+   
+   
+   Define *g,editable,a,count = 2;0000
+   #st          = 1
+   Global mx    = #st, my = #st
+   
+   Define time = ElapsedMilliseconds( )
+   
+   Global *c, *p, *panel._s_WIDGET
+   Procedure do_Events( )
+      Select WidgetEventType( )
+         Case #__event_LeftClick
+            
+            Select GetText( EventWidget( ) )
+               Case "hide_children"
+                  hide(*p, 1)
+                  ; Disable(*c, 1)
+                  
+               Case "show_children"
+                  hide(*p, 0)
+                  
+               Case "hide_parent"
+                  hide(*c, GetState( EventWidget( ) ))
+                  
+            EndSelect
+            
+            ;         ;Case #__event_LeftButtonUp
+            ;         ClearDebugOutput( )
+            ; PushListPosition( panel_children( ))
+            ;         If StartEnumerate(*panel);Root( ))
+            ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
+            ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
+            ;           EndIf
+            ;           StopEnumerate( )
+            ;         EndIf
+            ; PopListPosition( panel_children( ))
+            
+            
+      EndSelect
+   EndProcedure
+   
+   OpenList( *root1 )
+   *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
+   AddItem( *panel, -1, "item_1" )
+   
+   AddItem( *panel, -1, "(hide&show)-test" )
+   
+   *c = Panel(110, 5, 150, 155)
+;    AddItem(*c, -1, "0")
+   
+;    *p = Panel(10, 5, 150, 65)
+;    AddItem(*p, -1, "item-1")
+; ;    Container(10, 5, 150, 55, #PB_Container_Flat)
+; ; ;    Container(10, 5, 150, 55, #PB_Container_Flat)
+   Button(10, 5, 50, 25, "butt1")
+; ; ;    CloseList( )
+; ;    CloseList( )
+; ; ;    AddItem(*p, -1, "item-2")
+; ; ;    Container(10, 5, 150, 55, #PB_Container_Flat)
+; ; ;    Container(10, 5, 150, 55, #PB_Container_Flat)
+; ; ;    Button(10, 5, 50, 25, "butt2")
+; ; ;    CloseList( )
+; ; ;    CloseList( )
+; ; ;    AddItem(*c, -1, "1")
+;    CloseList( )
+   
+;    Container(10, 75, 150, 55, #PB_Container_Flat)
+;    Container(10, 5, 150, 55, #PB_Container_Flat)
+;    Container(10, 5, 150, 55, #PB_Container_Flat)
+;    Button(10, 5, 50, 45, "butt1")
+;    CloseList( )
+;    CloseList( )
+;    CloseList( )
+   CloseList( )
+   
+   
+
+   WaitClose( )
+   
+CompilerEndIf
+
+
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseLIB(widget)
@@ -149,6 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile = 99
+  
    
    EnableExplicit
    UseLib(widget)
@@ -233,6 +337,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose()
    EndIf
 CompilerEndIf
+
 ; CompilerIf #PB_Compiler_IsMainFile
 ;    EnableExplicit
 ;    UseLib(widget)
@@ -315,8 +420,6 @@ CompilerEndIf
 ;       WaitClose( )
 ;    EndIf   
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 120
-; FirstLine = 60
-; Folding = v-f--
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = t8-4-
 ; EnableXP
