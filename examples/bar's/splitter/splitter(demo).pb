@@ -2,6 +2,14 @@
 
 Uselib(widget)
 
+Macro GetIndex( widgetID )
+   Index( widgetID )
+EndMacro
+
+Macro GetWidget( index )
+   WidgetID( index )
+EndMacro
+
 Procedure events_gadgets()
   ClearDebugOutput()
   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
@@ -56,5 +64,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_Sys
 ;     Until event = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -
+; CursorPosition = 9
+; FirstLine = 6
+; Folding = --
 ; EnableXP

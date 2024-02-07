@@ -20,29 +20,29 @@ CompilerIf Not Defined(Splitter, #PB_Module)
     
     ;- PUBLIC
     Procedure GetState(Gadget.i)
-      If widget::ChangeCurrentRoot( GadgetID(gadget) )
+      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
         ProcedureReturn widget::GetState( widget::Root( ) )
       EndIf
     EndProcedure
     
     Procedure GetAttribute(Gadget.i, Attribute.i)
-      If widget::ChangeCurrentRoot( GadgetID(gadget) )
+      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
         ProcedureReturn widget::GetAttribute( widget::Root( ), Attribute )
       EndIf
     EndProcedure
     
     Procedure SetState(Gadget.i, State.i)
-      If widget::ChangeCurrentRoot( GadgetID(gadget) )
+      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
         If widget::SetState( widget::Root( ), State) 
-          widget::PostCanvasRepaint( widget::Root( ) )
+          widget::PostEventRepaint( widget::Root( ) )
         EndIf
       EndIf
     EndProcedure
     
     Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-      If widget::ChangeCurrentRoot( GadgetID(gadget) )
+      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
         If widget::SetAttribute( widget::Root( ), Attribute, Value)
-          widget::PostCanvasRepaint( widget::Root( ) )
+          widget::PostEventRepaint( widget::Root( ) )
         EndIf
       EndIf
     EndProcedure
@@ -232,7 +232,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 44
+; FirstLine = 31
 ; Folding = ----
 ; EnableXP

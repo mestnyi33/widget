@@ -254,15 +254,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       Macro PostEventRepaint( _root_ )
          If _root_
-            If __gui\loop
-               If Not Send( _root_, #__event_Repaint )
+            If widget::__gui\loop
+               If Not widget::Send( _root_, constants::#__event_Repaint )
                   ; Debug "PostEventRepaint - ReDraw"
-                  Redraw( _root_ )
+                  widget::Redraw( _root_ )
                EndIf
             Else
                If _root_\canvas\repaint = 0
                   _root_\canvas\repaint = 1
-                  If Not Send( _root_, #__event_Repaint )
+                  If Not widget::Send( _root_, constants::#__event_Repaint )
                      PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
                   EndIf
                EndIf
@@ -3073,7 +3073,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Wend
                
-               *this\enter = - 1
+                ;  *this\enter = - 1
+                ;  Debug 7777
                ;Debug "*parent "+*this\class
             EndIf
          EndIf
@@ -19474,9 +19475,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ entered position state
-         If *this\enter > 0
+         ;If *this\enter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
-               If *this\enter = 1
+              If *this\enter <> 2
                   *this\inner_enter( )
                   *this\root\repaint = 1
                EndIf
@@ -19484,7 +19485,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\enter        = 1
                *this\root\repaint = 1
             EndIf
-         EndIf
+         ;EndIf
+         
+         ;  Debug *this\enter;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
+        
          
          ;\\ widget::_events_Anchors( )
          If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
@@ -20466,7 +20470,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PressedWidget( )       = EnteredWidget( )
                      PressedWidget( )\press = #True
                   EndIf
-                  
+                  ;
                   ;\\ set active widget
                   If eventtype = #PB_EventType_LeftButtonDown
                      If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
@@ -20480,7 +20484,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  
+                  ;
                   ;\\ mouse delta pos
                   If eventtype <> #PB_EventType_MiddleButtonDown
                      mouse( )\delta\x = mouse( )\x
@@ -20538,7 +20542,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ drag & drop stop
                   If PressedWidget( )\dragstart
                      PressedWidget( )\dragstart = #PB_Drag_Finish
-                     
                      
                      ;\\ do drop events
                      If mouse( )\drag
@@ -22856,7 +22859,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20048
-; FirstLine = 19820
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp----------------------------------------------------------------------------------------------------------------------------------------------------------------+8----------------------------------------------ev-------
+; CursorPosition = 20535
+; FirstLine = 19845
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp------------------------------------------------------------------------------------------4v+-8b------------------------------------------------------------8dvW-0---4f84--------------------------------------fv4-------
 ; EnableXP
