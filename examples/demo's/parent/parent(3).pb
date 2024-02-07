@@ -92,7 +92,7 @@ If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCen
    Button(10,430, 200, 30, "change parent", #__Button_Toggle) : SetClass(widget( ), "change_parent" )
 ;    
     SetParent(*CHILD, *CONT1)
-;    SetParent(*CHILD, *CONT2)
+    SetParent(*CHILD, *CONT2)
    
    show_DEBUG( )
    
