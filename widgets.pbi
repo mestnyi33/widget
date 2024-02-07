@@ -14474,6 +14474,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn 0
          EndIf
          
+               
          If *parent
             If *parent\container = 0 And *parent\child
                Debug "SetParent("
@@ -14485,38 +14486,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             ;
-            If tabindex >= 0
-               *this\AddedTabIndex( ) = tabindex
-            Else
+            If tabindex < 0
                If *parent\TabBox( )
-                  *this\AddedTabIndex( ) = *parent\TabBox( )\OpenedTabIndex( )
+                  tabindex = *parent\TabBox( )\OpenedTabIndex( )
                Else
-                  *this\AddedTabIndex( ) = 0
+                  tabindex = 0
                EndIf
             EndIf
             ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
-               *after = GetPositionAfter( *parent, *this\AddedTabIndex( ) )
-               If tabindex = 2
-                  Debug ""+*parent\class +" "+ *this\AddedTabIndex( ) +" "+ tabindex +" after-"+ *after\class
-               EndIf
-               
+               *after = GetPositionAfter( *parent, tabindex )
                ;
-               If *after\parent <> *parent And  *after\LastWidget( )\AddedTabIndex( ) > *this\AddedTabIndex( )
-                   *last = *after
+               If *after\parent = *parent
+                  *last = GetPositionLast( *after, tabindex )
                Else
-                  *last = GetPositionLast( *after, *this\AddedTabIndex( ) )
+                  *last = *after
                EndIf
                
-;                If tabindex = 2
-;                   Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-;                EndIf
+               ;                If tabindex = 2
+               ;                   Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+               ;                EndIf
             EndIf
-            ;             ;
-            If *this\AddedTabIndex( ) > 0
+            ;
+            If tabindex > 0
                If *parent\type = #__type_Splitter
-                  If *this\AddedTabIndex( ) % 2
+                  If tabindex % 2
                      *parent\split_1( )    = *this
                      *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
                      Update( *parent )
@@ -14533,6 +14528,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
+            ;
+            *this\AddedTabIndex( ) = tabindex
             ;
             ; set hide state
             If *parent\hide
@@ -23666,7 +23663,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14556
-; FirstLine = 14344
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v---------------------------------------Pe--vHn3---v4-----0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------482-------
+; CursorPosition = 14501
+; FirstLine = 14263
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v-------------------------------------f-P-v-4jT8---48-----+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------807------
 ; EnableXP

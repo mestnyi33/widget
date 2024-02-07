@@ -27,14 +27,16 @@ CompilerIf #PB_Compiler_IsMainFile
       *after = GetPositionAfter( *parent, tabindex )
       ;*last = GetPositionLast( *after, tabindex )
       
-      If *after\parent <> *parent And *after\LastWidget( )\AddedTabIndex( ) > tabindex
+      If *after\parent <> *parent ;And *after\LastWidget( )\AddedTabIndex( ) > tabindex
          *last = *after
       Else
          *last = GetPositionLast( *after, tabindex )
       EndIf
       
-      Debug "after "+ *after\class
-      ; Debug "*last "+ *last\class
+;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
+;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
+;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
+       Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
    EndProcedure
    
    Procedure Show_DEBUG( )
@@ -144,6 +146,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ; test - 1 bug
       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
       SetParent(*CHILD, *PANEL, 1) : Show_DEBUG()
+      
+      Last( *PANEL, 0 )
       SetParent(*CHILD, *PANEL, 0) : Show_DEBUG()
     
 ;       ; test - 2 good
@@ -158,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 122
+; CursorPosition = 38
+; FirstLine = 22
 ; Folding = --
 ; EnableXP
