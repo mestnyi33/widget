@@ -3073,7 +3073,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Wend
                
-                ;  *this\enter = - 1
+                 *this\enter = - 1
                 ;  Debug 7777
                ;Debug "*parent "+*this\class
             EndIf
@@ -17516,9 +17516,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *root\autosize And
                         *root\haschildren = 0 )
                   ;\\
-                  PushListPosition( __widgets( ))
-                  ForEach __widgets( )
-                     If __widgets( )\root = *root
+;                   PushListPosition( __widgets( ))
+;                   ForEach __widgets( )
+;                      If __widgets( )\root <> *root
+;                        Continue    
+;                      EndIf
+                  If *root\FirstWidget( )
+                     PushListPosition( __widgets( ) )
+                     ChangeCurrentElement( __widgets( ), *root\FirstWidget( )\address )
+                     Repeat 
+                        If __widgets( )\root <> *root
+                           Break    
+                        EndIf
+                        
                         ;\\ begin draw all widgets except pressed-move-widget
                         If Not ( __widgets( )\dragstart And
                                  __widgets( )\resize )
@@ -17600,10 +17610,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
-                        
-                     EndIf
-                  Next
-                  
+                     Until Not NextElement( __widgets( ) )
+                  EndIf
+               
                   ;\\ draw clip out transform widgets frame
                   UnclipOutput( )
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -18061,6 +18070,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ entered anchor index
          If Not mouse( )\press
+;             If *this
+;                If is_innerside_( *this, mouse( )\x, mouse( )\y )
+;                   If *this\enter <> 2
+;                      *this\inner_enter( )
+;                      *this\root\repaint = 1
+;                   EndIf
+;                ElseIf *this\inner_enter( )
+;                   *this\enter        = 1
+;                   *this\root\repaint = 1
+;                EndIf
+;             EndIf
+         
             If a_entered( ) And 
                a_entered( )\anchors And
                a_entered( )\root = *root
@@ -19475,9 +19496,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ entered position state
-         ;If *this\enter > 0
+         If *this\enter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
-              If *this\enter <> 2
+              If *this\enter = 1
                   *this\inner_enter( )
                   *this\root\repaint = 1
                EndIf
@@ -19485,7 +19506,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\enter        = 1
                *this\root\repaint = 1
             EndIf
-         ;EndIf
+         EndIf
          
          ;  Debug *this\enter;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
         
@@ -19988,8 +20009,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  #__event_Up
                
                If Not a_index( )
-                  If PressedWidget( ) And PressedWidget( )\press
-                     do_cursor_( PressedWidget( ), PressedWidget( )\cursor, 2 )
+                  If PressedWidget( ) And PressedWidget( )\press 
+                     ;If PressedWidget( )\inner_enter( )
+                        do_cursor_( PressedWidget( ), PressedWidget( )\cursor, 2 )
+                     ;EndIf
                   Else
                      If *this\inner_enter( )
                         do_cursor_( *this, *this\cursor, 1 )
@@ -22859,7 +22882,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20535
-; FirstLine = 19845
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp------------------------------------------------------------------------------------------4v+-8b------------------------------------------------------------8dvW-0---4f84--------------------------------------fv4-------
+; CursorPosition = 19500
+; FirstLine = 19110
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp------------------------------------------------------------------------------------------vf0-44+-----------------------------------------------------------v40a04---f-tf---------------------------------------0e-------
 ; EnableXP
