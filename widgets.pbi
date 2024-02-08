@@ -3089,7 +3089,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_entered( ) = 0
          EndIf
          ;
-         ; Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
          ;
          If *this\anchors And *this\anchors\mode
             If a_entered( ) <> *this
@@ -3153,6 +3152,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        *this\screen_height( ) )
                ;
                a_enter( *this, - 1 )
+;                If a_entered( )
+;                   Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
+;                EndIf
                ;
                ProcedureReturn *this
             EndIf
@@ -17516,11 +17518,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *root\autosize And
                         *root\haschildren = 0 )
                   ;\\
-;                   PushListPosition( __widgets( ))
-;                   ForEach __widgets( )
-;                      If __widgets( )\root <> *root
-;                        Continue    
-;                      EndIf
                   If *root\FirstWidget( )
                      PushListPosition( __widgets( ) )
                      ChangeCurrentElement( __widgets( ), *root\FirstWidget( )\address )
@@ -17528,56 +17525,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If __widgets( )\root <> *root
                            Break    
                         EndIf
-                        
-                        ;\\ begin draw all widgets except pressed-move-widget
-                        If Not ( __widgets( )\dragstart And
+                        ;
+                        ;\\ except pressed-move-widget
+                        If ( __widgets( )\dragstart And
                                  __widgets( )\resize )
+                           Continue
+                        EndIf
+                        ;
+                        ;\\ begin draw all widgets
+                        Draw( __widgets( ))
                            
-                           Draw( __widgets( ))
-                           
-                           ;\\ draw current focus frame
-                           If GetActive( ) And
-                              GetActive( )\focus And
-                              GetActive( )\hide = 0 And
-                              GetActive( ) = __widgets( )
-                              
-                              If GetActive( )\root = *root
-                                 ; If Not GetActive( )\autosize
-                                 If Not ( GetActive( )\anchors And
-                                          GetActive( )\anchors\mode )
-                                    UnclipOutput( )
-                                    ; ;                                     ClipOutput( GetActive( )\parent\inner_x( ),
-                                    ; ;                                                 GetActive( )\parent\inner_y( ),
-                                    ; ;                                                 GetActive( )\parent\inner_width( ),
-                                    ; ;                                                 GetActive( )\parent\inner_height( ) )
-                                    ;
-                                    ; ;                                     clip_output_( GetActive( )\parent, [#__c_draw] )
-                                    
-                                    drawing_mode_(#PB_2DDrawing_Outlined)
-                                    If Not GetActive( )\fs
-                                       draw_roundbox_( GetActive( )\x - 2, GetActive( )\y - 2, GetActive( )\width + 4, GetActive( )\height + 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                                    EndIf
-                                    draw_roundbox_( GetActive( )\x - 1, GetActive( )\y - 1, GetActive( )\width + 2, GetActive( )\height + 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                                    If GetActive( )\fs
-                                       draw_roundbox_( GetActive( )\x, GetActive( )\y, GetActive( )\width, GetActive( )\height, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                                    EndIf
+                        ;\\ draw current focus frame
+                        If GetActive( ) And
+                           GetActive( )\focus And
+                           GetActive( )\hide = 0 And
+                           GetActive( ) = __widgets( )
+                           ;
+                           If GetActive( )\root = *root
+                              If Not ( GetActive( )\anchors And
+                                       GetActive( )\anchors\mode )
+                                 ;
+                                 UnclipOutput( )
+                                 ;
+                                 drawing_mode_(#PB_2DDrawing_Outlined)
+                                 If Not GetActive( )\fs
+                                    draw_roundbox_( GetActive( )\x - 2, GetActive( )\y - 2, GetActive( )\width + 4, GetActive( )\height + 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
                                  EndIf
-                                 ; EndIf
+                                 draw_roundbox_( GetActive( )\x - 1, GetActive( )\y - 1, GetActive( )\width + 2, GetActive( )\height + 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                                 If GetActive( )\fs
+                                    draw_roundbox_( GetActive( )\x, GetActive( )\y, GetActive( )\width, GetActive( )\height, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                                 EndIf
                               EndIf
                            EndIf
-                           
                         EndIf
                         
-                        ;                            ;\\ draw current pressed-move-widget
-                        ;                            If PressedWidget( ) And
-                        ;                               PressedWidget( )\resize And
-                        ;                               PressedWidget( )\dragstart And
-                        ;                               PressedWidget( )\parent = __widgets( )\parent
-                        ;
-                        ;                               If PressedWidget( )\parent\LastWidget( ) = __widgets( )
-                        ;                                  Draw( PressedWidget( ) )
-                        ;                               EndIf
-                        ;                            EndIf
+                        
+;                                                    ;\\ draw current pressed-move-widget
+;                                                    If PressedWidget( ) And
+;                                                       PressedWidget( )\resize And
+;                                                       PressedWidget( )\dragstart And
+;                                                       PressedWidget( )\parent = __widgets( )\parent
+;                         
+;                                                       If PressedWidget( )\parent\LastWidget( ) = __widgets( )
+;                                                          Draw( PressedWidget( ) )
+;                                                       EndIf
+;                                                    EndIf
                         
                         ;\\ draw current pressed-move-widget
                         If __widgets( ) = __widgets( )\parent\LastWidget( ) And
@@ -17610,6 +17602,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
+                        
                      Until Not NextElement( __widgets( ) )
                   EndIf
                
@@ -17641,22 +17634,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Draw( PressedWidget( ) )
                EndIf
             EndIf
-            
-            ;             ;\\ draw current focus frame
-            ;             If GetActive( ) And
-            ;                GetActive( )\focus
-            ;                If GetActive( )\root = *root
-            ;                   ; If Not GetActive( )\autosize
-            ;                   If Not ( GetActive( )\anchors And
-            ;                            GetActive( )\anchors\mode )
-            ;                      UnclipOutput( )
-            ;                      drawing_mode_(#PB_2DDrawing_Outlined)
-            ;                      draw_roundbox_( GetActive( )\x - 1, GetActive( )\y - 1, GetActive( )\width + 2, GetActive( )\height + 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-            ;                      draw_roundbox_( GetActive( )\x, GetActive( )\y, GetActive( )\width, GetActive( )\height, GetActive( )\round, GetActive( )\round, $ffff0000 )
-            ;                   EndIf
-            ;                   ; EndIf
-            ;                EndIf
-            ;             EndIf
             
             ;\\ draw anchors (movable & sizable)
             If a_transform( ) 
@@ -17720,7 +17697,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ temp
+            ;\\ TEMP
             If test_buttons_draw
                If EnteredButton( ) And
                   EnteredWidget( ) And
@@ -22882,7 +22859,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19500
-; FirstLine = 19110
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp------------------------------------------------------------------------------------------vf0-44+-----------------------------------------------------------v40a04---f-tf---------------------------------------0e-------
+; CursorPosition = 17635
+; FirstLine = 17261
+; Folding = -----------------------------------------------------------------8r+-----f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp-----------------------------------------------------------------------------0ev-+7-------vf0-44+-----------------------------------------------------------v40a04---f-tf---------------------------------------0e-------
 ; EnableXP
