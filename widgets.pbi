@@ -3575,21 +3575,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_transform( )\selectorframecolor = $BA161616
                   ;a_selector( )\color\front = $ffffffff
                EndIf
-            EndIf
-            
-            ;\\
-            If *this\container > 0 And
-               *this\inner_enter( )
                
-               If Not a_index( )
-                  a_grid_change( *this )
+               ;\\
+               If *this\container > 0 And
+                  *this\inner_enter( )
                   
-                  ReDraw( *this\root )
-                  
-                  If *this\root
-                     If StartDrawing( Output( *this\root ))
-                        a_transform( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
-                        StopDrawing( )
+                  If Not a_index( )
+                     a_grid_change( *this )
+                     
+                     ReDraw( *this\root )
+                     
+                     If *this\root
+                        If StartDrawing( Output( *this\root ))
+                           a_transform( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
+                           StopDrawing( )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -17528,7 +17528,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         ;\\ except pressed-move-widget
                         If ( __widgets( )\dragstart And
-                                 __widgets( )\resize )
+                             __widgets( )\resize )
+                           ;
+                           ;\\ draw current pressed-move-widget
+                           If PressedWidget( ) And
+                              PressedWidget( )\resize And
+                              PressedWidget( )\dragstart And
+                              PressedWidget( )\parent = __widgets( )\parent
+                              
+                              If PressedWidget( )\parent\LastWidget( ) = __widgets( )
+                                 Draw( PressedWidget( ) )
+                              EndIf
+                           EndIf
+                           ;
                            Continue
                         EndIf
                         ;
@@ -17558,18 +17570,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
-                        
-                        
-;                                                    ;\\ draw current pressed-move-widget
-;                                                    If PressedWidget( ) And
-;                                                       PressedWidget( )\resize And
-;                                                       PressedWidget( )\dragstart And
-;                                                       PressedWidget( )\parent = __widgets( )\parent
-;                         
-;                                                       If PressedWidget( )\parent\LastWidget( ) = __widgets( )
-;                                                          Draw( PressedWidget( ) )
-;                                                       EndIf
-;                                                    EndIf
                         
                         ;\\ draw current pressed-move-widget
                         If __widgets( ) = __widgets( )\parent\LastWidget( ) And
@@ -17623,18 +17623,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ draw current pressed-move-widget
-            If PressedWidget( ) And
-               PressedWidget( )\resize And
-               PressedWidget( )\dragstart
-               If PressedWidget( )\root = *root
-                  If PressedWidget( )\parent
-                     clip_output_( PressedWidget( )\parent, [#__c_draw] )
-                  EndIf
-                  Draw( PressedWidget( ) )
-               EndIf
-            EndIf
-            
+;             ;\\ draw current pressed-move-widget
+;             If PressedWidget( ) And
+;                PressedWidget( )\resize And
+;                PressedWidget( )\dragstart
+;                If PressedWidget( )\root = *root
+;                   If PressedWidget( )\parent
+;                      clip_output_( PressedWidget( )\parent, [#__c_draw] )
+;                   EndIf
+;                   Draw( PressedWidget( ) )
+;                EndIf
+;             EndIf
+;             
             ;\\ draw anchors (movable & sizable)
             If a_transform( ) 
                ;\\
@@ -22859,7 +22859,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17635
-; FirstLine = 17261
-; Folding = -----------------------------------------------------------------8r+-----f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp-----------------------------------------------------------------------------0ev-+7-------vf0-44+-----------------------------------------------------------v40a04---f-tf---------------------------------------0e-------
+; CursorPosition = 17542
+; FirstLine = 17238
+; Folding = -----------------------------------------------------------------8r+-----f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-v0-------------------------------------68--6xp-----------------------------------------------------------------------------080ef0-------4v+-8b------------------------------------------------------------48et+8---v-3v---------------------------------------ev-------
 ; EnableXP
