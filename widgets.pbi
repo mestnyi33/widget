@@ -2963,19 +2963,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If *this\anchors\id[a_index]\state <> #__s_1
                *this\anchors\id[a_index]\state = #__s_1
-               ;
-               *this\root\repaint = #True
-               ;
                do_cursor_( *this, mouse( )\anchors\cursor[a_index], *data )
+               *this\root\repaint = #True
             EndIf
             ; 
-            If *this\enter > 0
-               If *data
-                  DoEvents( *this, #__event_MouseLeave )
-               EndIf
+            If *this\enter = 0
+               *this\frame_enter( )
+            ElseIf *this\enter > 0
+               *this\frame_enter( )
+               DoEvents( *this, #__event_MouseLeave )
             EndIf
             ; 
-            *this\frame_enter( )
             result = *this
          EndIf
          ;
@@ -3498,7 +3496,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If eventtype = #__event_MouseEnter
             ; Debug "        e "+*this\class
-            ; a_show( *this )
          EndIf
          
          ;\\
@@ -14484,6 +14481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If tabindex > 0
                If *parent\type = #__type_Splitter
                   If tabindex % 2
+                     *parent\FirstWidget( ) = *this
                      *parent\split_1( )    = *this
                      *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
                      Update( *parent )
@@ -14491,6 +14489,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ProcedureReturn 0
                      EndIf
                   Else
+                     *parent\LastWidget( ) = *this
                      *parent\split_2( )    = *this
                      *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
                      Update( *parent )
@@ -14611,14 +14610,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                *this\LastWidget( ) = *this 
-               ;
-               If *parent\TabBox( )
-                  If *this\AddedTabIndex( ) = *parent\TabBox( )\count\items - 1
-                     *parent\LastWidget( ) = *this
-                  EndIf
-               Else
+            EndIf
+            ;
+            If *parent\TabBox( )
+               If *this\AddedTabIndex( ) = *parent\TabBox( )\count\items - 1
                   *parent\LastWidget( ) = *this
                EndIf
+            Else
+               *parent\LastWidget( ) = *this
             EndIf
             ;
             If *this\BeforeWidget( )
@@ -14639,9 +14638,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\BeforeWidget( ) = *after
                   *after\AfterWidget( ) = *this
                Else
+                  *this\AfterWidget( ) = *parent\FirstWidget( )
                   If *parent\FirstWidget( )
-                     *this\AfterWidget( ) = *parent\FirstWidget( )
-                     *this\AfterWidget( )\BeforeWidget( ) = *this
+                    *this\AfterWidget( )\BeforeWidget( ) = *this
                   EndIf
                   ;
                   *this\BeforeWidget( ) = #Null
@@ -17621,20 +17620,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            ;\\ draw current pressed-move-widget
-                           If __widgets( ) = __widgets( )\parent\LastWidget( ) And
-                              __widgets( )\parent <> __widgets( )\parent\LastWidget( )
+                           If __widgets( ) = __widgets( )\parent\LastWidget( ) And __widgets( )\parent <> __widgets( )\parent\LastWidget( )
                               Protected *widget._s_widget = __widgets( )\parent
                               
                               ;\\
                               If Not *widget\hide
-                                 If *widget\anchors And
-                                    *widget\anchors\mode
-                                    If *widget\enter
-                                       clip_output_( *widget, [#__c_draw] )
-                                       a_draw( *widget )
-                                    EndIf
-                                 EndIf
-                                 
                                  ;\\ UnclipOutput( )
                                  If *widget\scroll\v And *widget\scroll\h
                                     clip_output_( *widget, [#__c_draw] )
@@ -17651,10 +17641,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  EndIf
                               EndIf
                            EndIf
-                        
-                     Until Not NextElement( __widgets( ) )
-                  EndIf
-               
+                           
+                           ;\\ draw entered parent anchors
+                           If a_entered( ) And 
+                              a_entered( )\enter And 
+                              a_entered( )\haschildren And IsChild( __widgets( ), a_entered( ) )
+                              Debug " "+__widgets( )\class +" "+ a_entered( )\LastWidget( )\class
+                              ; __widgets( ) = a_entered( )\LastWidget( ) ; 
+                              ; draw entered anchors
+                              clip_output_( a_entered( ), [#__c_draw] )
+                              a_draw( a_entered( ) )
+                           EndIf
+                           
+                        Until Not NextElement( __widgets( ) )
+                     EndIf
+                     
                   ;\\ draw clip out transform widgets frame
                   UnclipOutput( )
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -18125,7 +18126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Not ( a_transform( ) And a_focused( ) = a_entered( ) )
                         ;
                         a_index( ) = 0
-                        a_show( *this )
+                        ; a_show( *this )
                      Else
                         *this = a_entered( ) 
                      EndIf
@@ -22902,7 +22903,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22439
-; FirstLine = 20104
-; Folding = --------------------------------------------------------------4---8r9-vz--e-+4vvf-----4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--3-------------------------------------nv--nHn+---------------------------------------------------------------------4--p---4280+7-------vf0-44+----------------------------------------8----------u+8u0---v40a04---f-tf---------------------------------------0e8------
+; CursorPosition = 14610
+; FirstLine = 13538
+; Folding = -----------------------------------------------------------7--8---0V--46-fvf-844v-----8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f8-------------------------------------z4b-8-T----------------------------------------------------------------------8--1---87dvv+-------8X--0t-----------------------------------------+---------vr-ub----8dvW-0---4f84--------------------------------------fv4+------
 ; EnableXP

@@ -8,8 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Global  pos_x = 10
-   Global._S_widget *PANEL, *WINDOW, *CONTAINER, *SCROLLAREA, *CONTAINER_0, *SCROLLAREA_0
-   Global._S_widget *CHILD, *WINDOW_0, *PANEL0, *PANEL1, *PANEL2, *PANEL_0, *PANEL_1, *PANEL_2
+   Global._S_widget *PARENT, *CHILD1, *CHILD2
    
    UsePNGImageDecoder()
    
@@ -64,24 +63,23 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   Procedure OpenGadget( x,y,width,height )
-      Protected *PANEL 
-     *PANEL = Panel( x,y,width,height*2 ) : AddItem(*PANEL, - 1, "item_0" )
-       ;*PANEL = Container( x,y,width,height ) 
-      ProcedureReturn *PANEL
-   EndProcedure
-   
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      *PANEL = Panel(10,145,200,160)  : SetClass(*PANEL, "PANEL") 
-      AddItem(*PANEL, -1, "item (0)")
-      ;
-      AddItem(*PANEL, -1, "item (1)")
-      ;
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
-         Button(10,10,80,20,"((1>>))") : SetClass(widget(), "((1>>))") 
-      CloseList( )
+      ;Button(10,10,80,20,"((0>>))") : SetClass(widget(), "((0>>))") 
+      *CHILD1 = Button(10,10,80,20,"((1>>))") : SetClass(widget(), "((1>>))") 
+      *CHILD2 = Button(10,30,80,20,"((2>>))") : SetClass(widget(), "((2>>))") 
       
-      Debug ""+widget()\class +" "+ widget()\hide +" "+ widget()\hidden
+      Show_DEBUG()
+      
+;       ;\\ test 1 ok
+;       *PARENT = Container( 10, 60, 150, 150)
+;       SetParent( *CHILD1, *PARENT )
+;       SetParent( *CHILD2, *PARENT )
+      
+      ;\\ test 2
+     *PARENT = Splitter( 10, 60, 150, 150, *CHILD1, *CHILD2 )
+      
+      Debug ""+*PARENT\first\widget\class
+      Debug ""+*PARENT\last\widget\class
       
       Show_DEBUG()
       
@@ -90,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 54
-; Folding = --
+; CursorPosition = 78
+; FirstLine = 14
+; Folding = X-
 ; EnableXP
