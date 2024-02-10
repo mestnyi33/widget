@@ -46,10 +46,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Debug "--- enumerate all widgets ---"
-   ForEach root( )
-      Debug "     window "+ root( )\class
-      If StartEnumerate( root( ) )
-         Debug "       gadget - "+ enumWidget()\class
+   ForEach __roots( )
+      Debug "     window "+ __roots( )\class
+      If StartEnumerate( __roots( ) )
+         Debug "       gadget - "+ widget()\class
          StopEnumerate( )
       EndIf
    Next
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 48
-; FirstLine = 20
+; CursorPosition = 50
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

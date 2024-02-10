@@ -1,6 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
-
 ; Shows using of several panels...
 EnableExplicit
 If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -78,7 +77,6 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 40
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
