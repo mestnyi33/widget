@@ -33,10 +33,10 @@ CompilerIf #PB_Compiler_IsMainFile
          *last = GetPositionLast( *after, tabindex )
       EndIf
       
-;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
-;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
-;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
-       Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
+      ;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
+      ;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
+      ;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
+      Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
    EndProcedure
    
    Procedure Show_DEBUG( )
@@ -84,21 +84,21 @@ CompilerIf #PB_Compiler_IsMainFile
       ;              CloseList( )
       ;              ;
       AddItem(*PARENT, -1, "item (1)")
-      ;
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
-;       CloseList( )
-;       CloseList( )
-      ;
+      ;       ;
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       ;
       AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
-                                      ;
+                                       ;                                ;
       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(2))")
       OpenGadget(10,10,160,30) : SetClass(widget(), "((2>))")
       OpenGadget(10,10,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
       CloseList( )
       CloseList( )
-      
+      ;
       CloseList()
       
       ;
@@ -112,49 +112,48 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       Debug "<"
       
-;       *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
-;       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
-;       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
-;       Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
-;       ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
-;       ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
-;       CloseList( )
-;       CloseList( )
-;       CloseList( )
-;       ;  
+      ;       *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
+      ;       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
+      ;       OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
+      ;       Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
+      ;       ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
+      ;       ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       ;  
       
-      
-   Debug "--- enumerate all gadgets ---"
-   If StartEnumerate2( root( ) )
-      If Not is_window_( enumWidget( ) )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+      Debug "--- enumerate all gadgets ---"
+      If StartEnumerate2( root( ) )
+         If Not is_window_( enumWidget( ) )
+            Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         EndIf
+         StopEnumerate2( )
       EndIf
-      StopEnumerate2( )
-   EndIf
-   
-   Debug "--- enumerate all (item 0) ---"
-   If StartEnumerate2( *PARENT, 0 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate2( )
-   EndIf
-   
-   Debug "--- enumerate all (item 1) ---"
-   If StartEnumerate2( *PARENT, 1 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate2( )
-   EndIf
-   
-   Debug "--- enumerate all (item 2) ---"
-   If StartEnumerate2( *PARENT, 2 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate2( )
-   EndIf
-   
-       WaitClose()
+      
+      Debug "--- enumerate all (item 0) ---"
+      If StartEnumerate2( *PARENT, 0 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate2( )
+      EndIf
+      
+      Debug "--- enumerate all (item 1) ---"
+      If StartEnumerate2( *PARENT, 1 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate2( )
+      EndIf
+      
+      Debug "--- enumerate all (item 2) ---"
+      If StartEnumerate2( *PARENT, 2 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate2( )
+      EndIf
+      
+      WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 96
-; FirstLine = 87
+; CursorPosition = 153
+; FirstLine = 120
 ; Folding = ---
 ; EnableXP

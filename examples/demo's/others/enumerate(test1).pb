@@ -33,10 +33,10 @@ CompilerIf #PB_Compiler_IsMainFile
          *last = GetPositionLast( *after, tabindex )
       EndIf
       
-;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
-;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
-;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
-       Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
+      ;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
+      ;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
+      ;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
+      Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
    EndProcedure
    
    Procedure Show_DEBUG( )
@@ -84,15 +84,15 @@ CompilerIf #PB_Compiler_IsMainFile
       ;              CloseList( )
       ;              ;
       AddItem(*PARENT, -1, "item (1)")
-;       ;
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
-;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
-;       CloseList( )
-;       CloseList( )
-;       ;
+      ;       ;
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
+      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       ;
       AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
-                                      ;
+                                       ;
       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(2))")
       OpenGadget(10,10,160,30) : SetClass(widget(), "((2>))")
       OpenGadget(10,10,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
@@ -124,37 +124,37 @@ CompilerIf #PB_Compiler_IsMainFile
       ;  
       
       
-   Debug "--- enumerate all gadgets ---"
-   If StartEnumerate( root( ) )
-      If Not is_window_( enumWidget( ) )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+      Debug "--- enumerate all gadgets ---"
+      If StartEnumerate( root( ) )
+         If Not is_window_( enumWidget( ) )
+            Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         EndIf
+         StopEnumerate( )
       EndIf
-      StopEnumerate( )
-   EndIf
-   
-   Debug "--- enumerate all (item 0) ---"
-   If StartEnumerate( *PARENT, 0 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate( )
-   EndIf
-   
-   Debug "--- enumerate all (item 1) ---"
-   If StartEnumerate( *PARENT, 1 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate( )
-   EndIf
-   
-   Debug "--- enumerate all (item 2) ---"
-   If StartEnumerate( *PARENT, 2 )
-      Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-      StopEnumerate( )
-   EndIf
-   
-       WaitClose()
+      
+      Debug "--- enumerate all (item 0) ---"
+      If StartEnumerate( *PARENT, 0 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate( )
+      EndIf
+      
+      Debug "--- enumerate all (item 1) ---"
+      If StartEnumerate( *PARENT, 1 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate( )
+      EndIf
+      
+      Debug "--- enumerate all (item 2) ---"
+      If StartEnumerate( *PARENT, 2 )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         StopEnumerate( )
+      EndIf
+      
+      WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 92
-; FirstLine = 76
+; CursorPosition = 154
+; FirstLine = 121
 ; Folding = ---
 ; EnableXP
