@@ -3072,48 +3072,48 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this = integral_parent_( *this ) 
             *this\enter = - 1
          Else
-;             If *this\root\FirstWidget( )
-;                PushListPosition( __widgets( ) )
-;                ChangeCurrentElement( __widgets( ), *this\root\FirstWidget( )\address )
-;                Repeat 
-;                   If __widgets( )\root <> *this\root
-;                      Break    
-;                   EndIf
-;                   If __widgets( )\type = #__type_splitter
-;                      If IsChild( *this, __widgets( ) )
-;                         *this = __widgets( )
-;                         *this\enter = - 1
-;                         Break
-;                      EndIf
-;                   EndIf
-;                Until Not NextElement( __widgets( ) )
-;                PopListPosition( __widgets( ))      
-;             EndIf
-;             
-            If *this\parent And *this\parent <> - 1 And 
-               *this\parent\type = #__type_splitter
-               ;Debug ""+*this\class +" "+ *this\parent\class
-               
-               ;\\ get main parent
-               Protected *parent._s_WIDGET = *this\parent
-               While *parent
-                  If IsChild( *this, *parent )
-                     If *parent\parent
-                        If *parent\parent\type <> #__type_splitter
-                           ;Debug "*parent "+*parent\class
-                           *this = *parent
-                           *this\enter = - 1
-                           Break
-                        EndIf
-                     EndIf
-                     *parent = *parent\parent
+            If *this\root\FirstWidget( )
+               PushListPosition( __widgets( ) )
+               ChangeCurrentElement( __widgets( ), *this\root\FirstWidget( )\address )
+               Repeat 
+                  If __widgets( )\root <> *this\root
+                     Break    
                   EndIf
-               Wend
-               
-                 
-               ;   Debug *this\enter 
-               ;Debug "*parent "+*this\class
+                  If __widgets( )\type = #__type_splitter
+                     If IsChild( *this, __widgets( ) )
+                        *this = __widgets( )
+                        *this\enter = - 1
+                        Break
+                     EndIf
+                  EndIf
+               Until Not NextElement( __widgets( ) )
+               PopListPosition( __widgets( ))      
             EndIf
+            
+;             If *this\parent And *this\parent <> - 1 And 
+;                *this\parent\type = #__type_splitter
+;                ;Debug ""+*this\class +" "+ *this\parent\class
+;                
+;                ;\\ get main parent
+;                Protected *parent._s_WIDGET = *this\parent
+;                While *parent
+;                   If IsChild( *this, *parent )
+;                      If *parent\parent
+;                         If *parent\parent\type <> #__type_splitter
+;                            ;Debug "*parent "+*parent\class
+;                            *this = *parent
+;                            *this\enter = - 1
+;                            Break
+;                         EndIf
+;                      EndIf
+;                      *parent = *parent\parent
+;                   EndIf
+;                Wend
+;                
+;                  
+;                ;   Debug *this\enter 
+;                ;Debug "*parent "+*this\class
+;             EndIf
          EndIf
          
          If a_entered( )
@@ -17571,6 +17571,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If Not ( *root\autosize And
                         *root\haschildren = 0 )
+                  
+                  PushListPosition( __widgets( ) )
+                  If LastElement( __widgets( ) )
+                     Protected *last._s_WIDGET = __widgets( )
+                  EndIf
+                  PopListPosition( __widgets( ) )
+                  
                   ;\\
                   If *root\FirstWidget( )
                      ;PushListPosition( __widgets( ) )
@@ -17579,6 +17586,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If __widgets( )\root <> *root
                            Break    
                         EndIf
+                        ;
+                        ; draw entered anchors
+                        If a_entered( ) And 
+                           a_entered( )\enter And 
+                           a_entered( )\haschildren 
+                           ;     
+                           If __widgets( ) = a_entered( )\AfterWidget( )
+                              clip_output_( a_entered( ), [#__c_draw] )
+                              a_draw( a_entered( ) )
+                           EndIf
+                        EndIf
+                        
                            ;
                            ;\\ except pressed-move-widget
                            If ( __widgets( )\dragstart And
@@ -17645,12 +17664,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ draw entered parent anchors
                            If a_entered( ) And 
                               a_entered( )\enter And 
-                              a_entered( )\haschildren And IsChild( __widgets( ), a_entered( ) )
-                              Debug " "+__widgets( )\class +" "+ a_entered( )\LastWidget( )\class
-                              ; __widgets( ) = a_entered( )\LastWidget( ) ; 
-                              ; draw entered anchors
-                              clip_output_( a_entered( ), [#__c_draw] )
-                              a_draw( a_entered( ) )
+                              a_entered( )\haschildren
+                              ;
+                              If __widgets( ) = *last
+                                 If IsChild( __widgets( ), a_entered( ) )
+                                    clip_output_( a_entered( ), [#__c_draw] )
+                                    a_draw( a_entered( ) )
+                                 EndIf
+                              EndIf
                            EndIf
                            
                         Until Not NextElement( __widgets( ) )
@@ -22903,7 +22924,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14610
-; FirstLine = 13538
-; Folding = -----------------------------------------------------------7--8---0V--46-fvf-844v-----8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f8-------------------------------------z4b-8-T----------------------------------------------------------------------8--1---87dvv+-------8X--0t-----------------------------------------+---------vr-ub----8dvW-0---4f84--------------------------------------fv4+------
+; CursorPosition = 17670
+; FirstLine = 16356
+; Folding = -----------------------------------------------------------7--8---0V--46-fvf-844v-----8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f8-------------------------------------z4b-8-T----------------------------------------------------------------------8--1---8Xvv4X--------0r--+3----------------------------------------f----------42f4t----0uXr-+---8v08--------------------------------------v4b------
 ; EnableXP

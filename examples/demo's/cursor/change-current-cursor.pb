@@ -72,6 +72,11 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
+   SetClass( Splitter_1, "Splitter_1")
+   SetClass( Splitter_2, "Splitter_2")
+   SetClass( Splitter_3, "Splitter_3")
+   SetClass( Splitter_4, "Splitter_4")
+   SetClass( Splitter_5, "Splitter_5")
    
    ;\\
    Bind( parent, @CustomEvents(), #__event_cursor )
@@ -107,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 47
+; CursorPosition = 78
+; FirstLine = 51
 ; Folding = --
 ; EnableXP
