@@ -472,12 +472,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          While NextElement( __widgets( ))
             If IsChild( __widgets( ), _parent_ )
-               widget( ) = __widgets( )
-               If _item_ >= 0
-                  If _item_ + 1 = __widgets( )\TabAddIndex( )
-                     Break
-                  EndIf
+               If _item_ >= 0 And 
+                  __widgets( )\parent = _parent_ And 
+                  _item_ <> __widgets( )\TabAddIndex( )
+                  Break
                EndIf
+               widget( ) = __widgets( )
             EndMacro
             
             Macro AbortEnumerate( )
@@ -492,60 +492,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro StartEnumerate2( _parent_, _item_ = #PB_All )
-   Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
-   
-   If _parent_\FirstWidget( )\address
-      ChangeCurrentElement( __widgets( ), _parent_\FirstWidget( )\address )
-   Else
-      ResetList( __widgets( ) )
-   EndIf
-   
-   ;\\
-   If _item_ >= 0
-      Repeat
-         If __widgets( )\root <> _parent_\root
-            Break    
+         Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
+         
+         If _parent_\FirstWidget( )\address
+            ChangeCurrentElement( __widgets( ), _parent_\FirstWidget( )\address )
+         Else
+            ResetList( __widgets( ) )
          EndIf
-         If __widgets( )\parent = _parent_ And 
-            __widgets( )\TabAddIndex( ) = _item_
-            Break
+         
+         ;\\
+         If _item_ > 0
+            Repeat
+               If __widgets( )\root <> _parent_\root
+                  Break    
+               EndIf
+               If __widgets( )\parent = _parent_ And 
+                  __widgets( )\TabAddIndex( ) = _item_
+                  Break
+               EndIf
+            Until Not NextElement( __widgets( ) ) 
          EndIf
-      Until Not NextElement( __widgets( ) ) 
-   EndIf
-   
-   ;\\
-   Repeat
-      If __widgets( )\root <> _parent_\root
-         Break    
-      EndIf
-      If __widgets( ) = _parent_\AfterWidget( ) 
-         Break
-      EndIf
-;       ;
-;       If ListIndex( __widgets( ) ) = ListSize( __widgets( ) ) - 1 And _item_ <> __widgets( )\TabAddIndex( )
-; ;          If Not IsChild( __widgets( ), _parent_\LastWidget( ) )
-;              Break 
-; ;          EndIf
-;       EndIf
-      ;
-      If _item_ >= 0 And 
-         __widgets( )\parent = _parent_ And 
-         _item_ <> __widgets( )\TabAddIndex( )
-          Break
-      EndIf
-     ;
-      ;Debug __widgets( )\class
-      widget( ) = __widgets( )
-      ;
-   EndMacro
-   
-   Macro AbortEnumerate2( )
-      Break
-   EndMacro
-   
-   Macro StopEnumerate2( )
-   Until Not NextElement( __widgets( ) )
-EndMacro
+         
+         ;\\
+         If Not ( ListIndex( __widgets( ) ) = ListSize( __widgets( ) ) - 1 And 
+             __widgets( )\TabAddIndex( ) <> _item_ )
+            ;
+            Repeat
+               If __widgets( )\root <> _parent_\root
+                  Break    
+               EndIf
+               If __widgets( ) = _parent_\AfterWidget( ) 
+                  Break
+               EndIf
+               ;
+               If _item_ >= 0 And 
+                  __widgets( )\parent = _parent_ And 
+                  _item_ <> __widgets( )\TabAddIndex( )
+                  Break
+               EndIf
+               ;
+               widget( ) = __widgets( )
+            EndMacro
+            
+            Macro AbortEnumerate2( )
+               Break
+            EndMacro
+            
+            Macro StopEnumerate2( )
+            Until Not NextElement( __widgets( ) )
+         EndIf
+      EndMacro
 
       ;-
       Macro _get_colors_( ) : colors::*this\blue : EndMacro
@@ -22987,7 +22983,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 528
-; FirstLine = 506
+; CursorPosition = 478
+; FirstLine = 451
 ; Folding = -----------------------------------------------------------f0--0---+q--89-v4v-0884-----0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------08--0-p----------------------------------------------------------------------0-f7---0r448r--------+2-ff8----------------------------------------v----------87v83----e4r2f----04+0--------------------------------------48t------
 ; EnableXP
