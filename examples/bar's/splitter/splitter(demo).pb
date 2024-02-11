@@ -2,16 +2,8 @@
 
 Uselib(widget)
 
-Macro GetIndex( widgetID )
-   Index( widgetID )
-EndMacro
-
-Macro GetWidget( index )
-   WidgetID( index )
-EndMacro
-
 Procedure events_gadgets()
-  ClearDebugOutput()
+  ;ClearDebugOutput()
   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
   
   Select EventType()
@@ -22,13 +14,13 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  ClearDebugOutput()
+  ;ClearDebugOutput()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\event+ "  state - " GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Change
+    Case #__event_Change
       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( GetWidget(0) ) +" "+ Height( GetWidget(1) )
   EndSelect
 EndProcedure
 
@@ -64,7 +56,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_Sys
 ;     Until event = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
-; FirstLine = 6
-; Folding = --
+; CursorPosition = 5
+; FirstLine = 1
+; Folding = -
 ; EnableXP

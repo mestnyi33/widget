@@ -6,11 +6,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    UseLib(widget)
-   Define i, time.q
+   Define i, time.q, count = 10000
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      For i = 0 To 99000
-         Button( 5*i, 5*i, 50,50, Str(i))
+      For i = 0 To count
+         Container( 5*i, 5*i, 50,50)
+      Next
+      For i = 0 To count
+         CloseList( )
       Next
       
       time = ElapsedMilliseconds( )
@@ -25,6 +28,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP

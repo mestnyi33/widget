@@ -1,6 +1,7 @@
 ﻿;- 
 #IDE_path = "../"
 XIncludeFile #IDE_path + "widgets.pbi"
+;XIncludeFile #IDE_path + "a_widgets.pbi"
 
 EnableExplicit
 
@@ -1320,6 +1321,6 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
+; CursorPosition = 3
 ; Folding = ----------v-----8-----
 ; EnableXP
