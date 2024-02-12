@@ -3090,7 +3090,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If is_integral_( *this )
             *this = integral_parent_( *this ) 
-            *this\enter = - 1
+            *this\frame_enter( )
          Else
             If StartEnumerate( *this\root )
                If __widgets( )\type = #__type_splitter
@@ -3099,7 +3099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If IsChild( *this, __widgets( ) )
                         *this = __widgets( )
-                        *this\enter = - 1
+                        *this\frame_enter( )
                         Break
                      EndIf
                   EndIf
@@ -3502,7 +3502,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not *this\enter 
                      If Not a_index( )
                         If *this\parent And
-                           *this\parent\enter = - 1
+                           *this\parent\frame_enter( )
                            *this\parent\enter = 0
                            *this\root\repaint = #True
                         EndIf
@@ -12650,6 +12650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.s
          
          Select event
+            Case #__event_cursor : result.s = "#__event_Cursor"
             Case #__event_free : result.s = "#__event_Free"
             Case #__event_drop : result.s = "#__event_Drop"
             Case #__event_create : result.s = "#__event_Create"
@@ -18051,7 +18052,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             
             ;             If EnteredWidget( ) And
-            ;                EnteredWidget( )\enter = - 1
+            ;                EnteredWidget( )\frame_enter( )
             ;                Debug "777777 "+ EnteredWidget( )\class
             ;                EnteredWidget( )\enter = 0
             ;             EndIf
@@ -19468,7 +19469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;             If a_entered( ) = *this
 ;                a_entered( )\enter = 1
 ;             Else
-;                a_entered( )\enter = - 1
+;                a_entered( )\frame_enter( )
 ;             EndIf
 ;          EndIf
          
@@ -22854,7 +22855,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19518
-; FirstLine = 16386
-; Folding = ------------------------------------------------------------------4-4--O--80-----------------fq+f2--------------------------8-------------------------------------------------------------------------------------------------------------------------------f--------8--+---0-+---+-+---------------------------------------------r+----------------------------------------------------------------------------------------------------------------------------------+----r4-----------+2-f408-8f4-4---------v-----------------8--+----------------------------------------------------------------------------------
+; CursorPosition = 12653
+; FirstLine = 11024
+; Folding = ------------------------------------------------------------------4-4--O--80-----------------fq+f2--------------------------8-------------------------------------------------------------------------------------------------------------------------------f--------8--+---0-+---+-+---------------------------------------------r-----------------------------------------------------------------------------------------------------------------------------------+----r4-----------+2-f408-8f4-4---------------------------8--+----------------------------------------------------------------------------------
 ; EnableXP

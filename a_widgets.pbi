@@ -2973,7 +2973,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_index( ) = 0
          EndIf
          ;
+         ;
          If a_entered( ) <> *this
+            If a_index
+               If a_entered( ) And 
+                  a_entered( )\enter
+                  ; Debug "Leave from a_entered( )"
+                  a_entered( )\enter = 0
+                  DoEvents( a_entered( ), #__event_MouseLeave )
+               EndIf
+            EndIf
             a_entered( ) = *this
          EndIf
          ;
@@ -3090,7 +3099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If is_integral_( *this )
             *this = integral_parent_( *this ) 
-            *this\enter = - 1
+            *this\frame_enter( )
          Else
             If StartEnumerate( *this\root )
                If __widgets( )\type = #__type_splitter
@@ -3099,7 +3108,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If IsChild( *this, __widgets( ) )
                         *this = __widgets( )
-                        *this\enter = - 1
+                        *this\frame_enter( )
                         Break
                      EndIf
                   EndIf
@@ -3503,7 +3512,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not *this\enter 
                      If Not a_index( )
                         If *this\parent And
-                           *this\parent\enter = - 1
+                           *this\parent\frame_enter( )
                            *this\parent\enter = 0
                            *this\root\repaint = #True
                         EndIf
@@ -12651,6 +12660,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.s
          
          Select event
+            Case #__event_cursor : result.s = "#__event_Cursor"
             Case #__event_free : result.s = "#__event_Free"
             Case #__event_drop : result.s = "#__event_Drop"
             Case #__event_create : result.s = "#__event_Create"
@@ -18052,7 +18062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             
             ;             If EnteredWidget( ) And
-            ;                EnteredWidget( )\enter = - 1
+            ;                EnteredWidget( )\frame_enter( )
             ;                Debug "777777 "+ EnteredWidget( )\class
             ;                EnteredWidget( )\enter = 0
             ;             EndIf
@@ -19450,7 +19460,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;             If a_entered( ) = *this
 ;                a_entered( )\enter = 1
 ;             Else
-;                a_entered( )\enter = - 1
+;                a_entered( )\frame_enter( )
 ;             EndIf
 ;          EndIf
          
@@ -19486,19 +19496,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
           
-;          ;\\
-;          If eventtype = #__event_MouseEnter
-;             Debug "                e "+*this\class
-;          EndIf
-;          
-; ;          If a_entered( )
-; ;             Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
-; ;          EndIf
-;          
-;          ;\\
-;          If eventtype = #__event_MouseLeave
-;             Debug "                l "+*this\class
-;          EndIf
+         ;\\
+         If eventtype = #__event_MouseEnter
+            Debug "                e "+*this\class
+         EndIf
+         
+         If a_entered( )
+            Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
+         EndIf
+         
+         ;\\
+         If eventtype = #__event_MouseLeave
+            Debug "                l "+*this\class
+         EndIf
          
          ;\\
          If Not *this\disable
@@ -22947,7 +22957,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19500
-; FirstLine = 19092
-; Folding = --------------------------------------------------------------f---x-4--P---0-8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ev-------
+; CursorPosition = 12663
+; FirstLine = 12282
+; Folding = ---------------------------------------------------------------0--H-f---9--4-v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv4-------
 ; EnableXP
