@@ -2951,17 +2951,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      a_entered( )\anchors\id[i]\state <> #__s_0
                      a_entered( )\anchors\id[i]\state = #__s_0
                      ;
-                     If a_entered( )\frame_enter( )
-                        If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
-                                 is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) )
-                           Debug ">>in leave from anchors"
-                           a_entered( )\enter = 1
-                           DoEvents( a_entered( ), #__event_MouseEnter )
-                        Else
+                     If Not a_index
+                        If a_entered( )\frame_enter( )
+                           If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
+                                is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) )
+                              Debug ">>in leave from anchors"
+                              a_entered( )\enter = 1
+                              DoEvents( a_entered( ), #__event_MouseEnter )
+                           Else
                            ;
-                           Debug "<<out leave from anchors" 
-                           a_entered( )\enter = 0
-                           do_cursor_( a_entered( ), a_entered( )\cursor, - 4 )
+                              Debug "<<out leave from anchors" 
+                              a_entered( )\enter = 0
+                              Mouse()\cursor = -1 ;do_cursor_( a_entered( ), a_entered( )\cursor, - 4 )
+                           EndIf
                         EndIf
                      EndIf
                      ;
@@ -2981,9 +2983,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If a_entered( ) <> *this
             If a_index
-               If a_entered( ) And 
-                  a_entered( )\enter
-                  ; Debug "Leave from a_entered( )"
+               If a_entered( ) And a_entered( )\enter
+                   Debug "Leave from a_entered( )"
                   a_entered( )\enter = 0
                   DoEvents( a_entered( ), #__event_MouseLeave )
                EndIf
@@ -19517,7 +19518,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If a_entered( )
-            Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
+            Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) +" "+ *data ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
          EndIf
          
          ;\\
@@ -22972,7 +22973,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12673
-; FirstLine = 11991
-; Folding = ---------------------------------------------------------------0---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---0----0+----------8----------------------------------------------------------------------------------------------------------------------------------------------------f-7---v-v----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 2963
+; FirstLine = 2947
+; Folding = ---------------------------------------------------------------8---8-8-fn--0f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8----80----------4-----------------------------------------------------------------------------------------------------------------------------------------------------+2---f-f-----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
