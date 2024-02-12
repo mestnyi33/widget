@@ -2948,7 +2948,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\anchors\id[i] And ;???
                      *this\anchors\id[i]\state <> #__s_0
                      *this\anchors\id[i]\state = #__s_0
-                     ;
+                     
                      If Not a_index
                         If *this\frame_enter( )
                            If Not ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
@@ -2967,26 +2967,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next 
          EndIf
          ;
-         If a_index( ) And 
-            a_entered( ) And
-            a_entered( )\anchors\id[a_index( )] And
-            Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
-            ; Debug ""+a_index( ) +" "+ a_entered( )\class;
-            a_index( ) = 0
+         If a_entered( )
+            If a_index( )
+               If a_entered( )\anchors\id[a_index( )] 
+                  If a_entered( )\anchors\id[a_index( )]\state <> #__s_0
+                     a_entered( )\anchors\id[a_index( )]\state = #__s_0
+                  EndIf
+                  If Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                     ; Debug ""+a_index +" "+ a_index( ) +" "+ a_entered( )\class +" "+ *this\class;
+                     a_index( ) = 0
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            If a_entered( ) <> *this
+               If a_entered( )\enter > 0
+                  If a_index
+                     ; Debug "Leave from a_entered( )"
+                     a_entered( )\enter = 0
+                     DoEvents( a_entered( ), #__event_MouseLeave )
+                  EndIf
+                  *this\frame_enter( )
+               EndIf
+            EndIf
          EndIf
          ;
-         If a_entered( ) <> *this
-            If a_index
-               If a_entered( ) And 
-                  a_entered( )\enter
-                  ; Debug "Leave from a_entered( )"
-                  a_entered( )\enter = 0
-                  DoEvents( a_entered( ), #__event_MouseLeave )
-               EndIf
-               *this\frame_enter( )
-            EndIf
-            a_entered( ) = *this
-         EndIf
+         a_entered( ) = *this
          ;
          ; set new entered anchors index state
          If a_index
@@ -3120,8 +3126,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; --------------------
-         If *this\frame_enter( )
-            If a_entered( ) = *this
+         If a_entered( ) = *this
+            If *this\frame_enter( )
                ProcedureReturn 0
             EndIf
          EndIf
@@ -3129,30 +3135,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          If a_entered( ) And
             a_entered( )\anchors And
-            a_entered( )\anchors\mode And
-            a_entered( ) <> *this 
+            a_entered( )\anchors\mode
             ;
-            If Not ( a_transform( ) And a_entered( ) = a_focused( ) )
-               ; Debug "remove "+a_entered( )\class
-               a_remove( a_entered( ) )
+            If a_entered( ) <> *this 
+               ;
+               If Not ( a_transform( ) And a_entered( ) = a_focused( ) )
+                  ; Debug "remove "+a_entered( )\class
+                  a_remove( a_entered( ) )
+               EndIf
+               
+               ; --------------------
+               If a_entered( )\enter > 0
+                  ; Debug "lllll "+a_entered( )\enter
+                  a_entered( )\enter = 0
+                  DoEvents( a_entered( ), #__event_MouseLeave )
+               EndIf
+               
+               If EnteredWidget( ) And
+                  EnteredWidget( )\enter > 0
+                  ; Debug "leeee "+a_entered( )\enter
+                  EnteredWidget( )\enter = 0
+                  DoEvents( EnteredWidget( ), #__event_MouseLeave )
+               EndIf
+               ; -------------------
+               
+               a_entered( ) = 0
             EndIf
-            
-            ; --------------------
-            If a_entered( )\enter > 0
-               ; Debug "lllll "+a_entered( )\enter
-               a_entered( )\enter = 0
-               DoEvents( a_entered( ), #__event_MouseLeave )
-            EndIf
-            
-            If EnteredWidget( ) And
-               EnteredWidget( )\enter > 0
-               ; Debug "leeee "+a_entered( )\enter
-               EnteredWidget( )\enter = 0
-               DoEvents( EnteredWidget( ), #__event_MouseLeave )
-            EndIf
-            ; -------------------
-            
-            a_entered( ) = 0
          EndIf
          ;
          ;
@@ -3221,6 +3229,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        *this\screen_height( ) )
                ;
                a_enter( *this, - 1 )
+               
                ;
                ProcedureReturn *this
             EndIf
@@ -17589,15 +17598,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *root\autosize And
                         *root\haschildren = 0 )
                   
-                  Protected *last._s_WIDGET = GetPositionLast( *root, - 1 )
+                  If a_entered( )
+                     Protected *last._s_WIDGET = GetPositionLast( a_entered( ), - 1 )
+                  EndIf
                   
                   ;\\
                   If StartEnumerate( *root )
                      ;
                      ; draw entered anchors
-                     If a_entered( ) And ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                                           is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] )) And 
-                        ; a_entered( )\enter And 
+                     If a_entered( ) And ;( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                                          ; is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] )) And 
+                        a_entered( )\enter And 
                         a_entered( )\haschildren 
                         ;     
                         If __widgets( ) = a_entered( )\AfterWidget( )
@@ -17670,9 +17681,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ;\\ draw entered parent anchors
-                     If a_entered( ) And ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                                           is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] )) And 
-                        ; a_entered( )\enter And 
+                     If a_entered( ) And ;( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                                         ;  is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] )) And 
+                        a_entered( )\enter And 
                         a_entered( )\haschildren
                         ;
                         If __widgets( ) = *last
@@ -18289,37 +18300,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   LeavedWidget( )\parent\enter = 0
                EndIf
                ;
-               If Not is_interact_row_( LeavedWidget( ) )
-                  If Not a_transformer( LeavedWidget( ) )
-                     If Not IsChild( *this, LeavedWidget( ) )
-                        If Not is_root_( LeavedWidget( ) )
-                           If LeavedWidget( )\address
-                              ChangeCurrentElement( __widgets( ), LeavedWidget( )\address )
-                              Repeat
-                                 If __widgets( )\haschildren And __widgets( )\enter <> 0
-                                    If is_atpoint_( __widgets( ), mouse_x, mouse_y, [#__c_draw] )
-                                       If Not ( *this And *this\index > __widgets( )\index )
-                                          Break
-                                       EndIf
-                                    EndIf
-                                    ;
-                                    If Not is_interact_row_( __widgets( ) ) And
-                                       IsChild( LeavedWidget( ), __widgets( )) And
-                                       Not IsChild( *this, __widgets( ))
-                                       ;
-                                       __widgets( )\enter = 0
-                                       ;
-                                       If Not __widgets( )\anchors
-                                          DoEvents( __widgets( ), #__event_StatusChange, -1, - 1 )
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              Until Not PreviousElement( __widgets( ))
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
+;                If Not is_interact_row_( LeavedWidget( ) )
+;                   If Not a_transformer( LeavedWidget( ) )
+;                      If Not IsChild( *this, LeavedWidget( ) )
+;                         If Not is_root_( LeavedWidget( ) )
+;                            If LeavedWidget( )\address
+;                               ChangeCurrentElement( __widgets( ), LeavedWidget( )\address )
+;                               Repeat
+;                                  If __widgets( )\haschildren And __widgets( )\enter <> 0
+;                                     If is_atpoint_( __widgets( ), mouse_x, mouse_y, [#__c_draw] )
+;                                        If Not ( *this And *this\index > __widgets( )\index )
+;                                           Break
+;                                        EndIf
+;                                     EndIf
+;                                     ;
+;                                     If Not is_interact_row_( __widgets( ) ) And
+;                                        IsChild( LeavedWidget( ), __widgets( )) And
+;                                        Not IsChild( *this, __widgets( ))
+;                                        ;
+;                                        __widgets( )\enter = 0
+;                                        ;
+;                                        If Not __widgets( )\anchors
+;                                           DoEvents( __widgets( ), #__event_StatusChange, -1, - 1 )
+;                                        EndIf
+;                                     EndIf
+;                                  EndIf
+;                               Until Not PreviousElement( __widgets( ))
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                EndIf
+               
             EndIf
             
             ;\\
@@ -18334,60 +18346,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\parent\enter = 1
                EndIf
                ;
-               If Not is_interact_row_( *this )
-                  If Not a_transformer( *this )
-                     If Not *this\bounds\attach
-                        If *this\address
-                           ForEach __widgets( )
-                              If __widgets( ) = *this
-                                 Break
-                              EndIf
-                              ;
-                              If __widgets( )\haschildren And __widgets( )\enter = 0
-                                 If Not is_interact_row_( __widgets( ) )
-                                    If IsChild( *this, __widgets( ))
-                                       ;
-                                       __widgets( )\frame_enter( )
-                                       ;
-                                       If Not __widgets( )\anchors
-                                          DoEvents( __widgets( ), #__event_StatusChange, -1, 1 )
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           Next
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
+;                If Not is_interact_row_( *this )
+;                   If Not a_transformer( *this )
+;                      If Not *this\bounds\attach
+;                         If *this\address
+;                            ForEach __widgets( )
+;                               If __widgets( ) = *this
+;                                  Break
+;                               EndIf
+;                               ;
+;                               If __widgets( )\haschildren And __widgets( )\enter = 0
+;                                  If Not is_interact_row_( __widgets( ) )
+;                                     If IsChild( *this, __widgets( ))
+;                                        ;
+;                                        __widgets( )\frame_enter( )
+;                                        ;
+;                                        If Not __widgets( )\anchors
+;                                           DoEvents( __widgets( ), #__event_StatusChange, -1, 1 )
+;                                        EndIf
+;                                     EndIf
+;                                  EndIf
+;                               EndIf
+;                            Next
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                EndIf
+               
             EndIf
             
             LeavedWidget( ) = *this
          EndIf
-         
-         ;\\
-         If Not mouse( )\press
-            If Not a_index( )
-               If a_entered( ) And
-                  a_entered( ) = *this And 
-                  a_entered( )\frame_enter( )
-                  ;
-                  If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                       is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
-                     ;
-                     Debug "(>>>) in leave from anchors"
-                              a_entered( )\enter = 1
-                     DoEvents( a_entered( ), #__event_MouseEnter )
-                  Else
-                     ;
-                     Debug "(<<<) out leave from anchors" 
-                              a_entered( )\enter = 0
-                      do_cursor_( a_entered( ), a_entered( )\cursor, - 4 )
-                  EndIf   
-               EndIf
-            EndIf
-         EndIf
-         
       EndProcedure
       
       Procedure DoEvent_RowTimerEvents( )
@@ -22960,7 +22949,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3134
-; FirstLine = 3041
-; Folding = ---------------------------------------------------------------8---v-v--d+-46------------------U0-q--------------------------4--------------------------------------------------------------------------------------------------------------------------------+-------4--0---8-0---0-0---------------------------------------------X-----------------------------------------------------------------------------------------------------------------------------------0----Xv-----------0r--8ud-f----+--------------------------f--4-----------------------------------------------------------------------------------
+; CursorPosition = 2956
+; FirstLine = 2938
+; Folding = ----------------------------------------------------------------+-0P+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -19,13 +19,12 @@ CompilerIf #PB_Compiler_IsMainFile
    ;a_init(parent, 4)
    
    ;\\
-   Splitter(220, 10, 200, 120, 0, String(0, 0, 0, 0, "Button 1"), #PB_Splitter_Vertical)
    object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 30)
    ;object = Button(50, 50, 150, 150, "button")
    ;;object1 = Button(150, 150, 150, 150, "Button")
    object1 = Button(125, 140, 150, 150, "Button")
    ;object1 = String(125, 140, 150, 150, "string")
-   object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
+   object2 = Splitter(250, 50, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
    object3 = ScrollArea(0, 250, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object3, 0)
    
 
@@ -56,6 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    a_set(object1, #__a_full, anchor_size)
 ;    a_set(object2, #__a_full, anchor_size)
 ;    
+   ;Splitter(220, 10, 200, 120, 0, String(0, 0, 0, 0, "Button 1"), #PB_Splitter_Vertical)
    DisableExplicit
    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
    Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Splitter_5 = widget::Splitter(10, 300, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
+   Splitter_5 = widget::Splitter(300, 300, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
    SetState(Splitter_5, 50)
    SetState(Splitter_4, 50)
    SetState(Splitter_3, 40)
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 51
+; CursorPosition = 57
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
