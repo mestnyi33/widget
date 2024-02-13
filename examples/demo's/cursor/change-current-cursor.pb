@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
    Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Splitter_5 = widget::Splitter(300, 300, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
+   Splitter_5 = widget::Splitter(180, 310, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
    SetState(Splitter_5, 50)
    SetState(Splitter_4, 50)
    SetState(Splitter_3, 40)
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 41
+; CursorPosition = 68
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

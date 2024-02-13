@@ -263,6 +263,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;Debug SizeOf(_s_ANCHORS)
       ;
       Structure _s_TRANSFORMDATA
+         *main._s_WIDGET
          ;
          mark.b
          List *group._s_A_GROUP( )
@@ -277,8 +278,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dot_line.l
          dot_space.l
          
-         *main._s_WIDGET
-         *focused._s_WIDGET
          
          backcolor.l[3]
          framecolor.l[3]
@@ -291,7 +290,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;
       Structure _s_TRANSFORM
          index.a
-         *widget._s_WIDGET
+         *widget._s_WIDGET[2]
          cursor.a[constants::#__a_moved + 1]
          
          *transform._s_TRANSFORMDATA
@@ -741,7 +740,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 267
-; FirstLine = 149
+; CursorPosition = 266
+; FirstLine = 146
 ; Folding = -HCB-uf6--
 ; EnableXP
