@@ -255,6 +255,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;
       Structure _s_ANCHORS
+         hide.b ;????
          pos.w 
          size.c
          mode.i
@@ -740,7 +741,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 90
+; CursorPosition = 257
+; FirstLine = 136
 ; Folding = -HCB-uf6--
 ; EnableXP

@@ -30,12 +30,12 @@ CompilerIf #PB_Compiler_IsMainFile
 
    ;\\
    Define anchor_size = 30
-   a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
-   a_set(object, #__a_full, anchor_size)
-   a_set(object1, #__a_full, anchor_size)
-   a_set(object2, #__a_full, anchor_size)
-  a_set(object3, #__a_full, anchor_size)
-   
+;    a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
+;    a_set(object, #__a_full, anchor_size)
+;    a_set(object1, #__a_full, anchor_size)
+;    a_set(object2, #__a_full, anchor_size)
+;   a_set(object3, #__a_full, anchor_size)
+;    
 ;    ;\\
 ;    ;     parent = Root( )
 ;    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 47
+; CursorPosition = 37
+; FirstLine = 22
 ; Folding = --
 ; EnableXP
