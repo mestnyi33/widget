@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root(), 4)
+   ;a_init(root(), 4)
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
@@ -112,7 +112,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 22
+; CursorPosition = 12
 ; Folding = --
 ; EnableXP
