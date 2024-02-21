@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   ;a_init(root(), 4)
+   a_init(root(), 4)
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
@@ -30,12 +30,12 @@ CompilerIf #PB_Compiler_IsMainFile
 
    ;\\
    Define anchor_size = 30
-;    a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
-;    a_set(object, #__a_full, anchor_size)
-;    a_set(object1, #__a_full, anchor_size)
-;    a_set(object2, #__a_full, anchor_size)
-;   a_set(object3, #__a_full, anchor_size)
-;    
+   a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
+   a_set(object, #__a_full, anchor_size)
+   a_set(object1, #__a_full, anchor_size)
+   a_set(object2, #__a_full, anchor_size)
+  a_set(object3, #__a_full, anchor_size)
+   
 ;    ;\\
 ;    ;     parent = Root( )
 ;    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
@@ -84,16 +84,31 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Bind( object1, @CustomEvents(), #__event_cursor )
 ;    Bind( object2, @CustomEvents(), #__event_cursor )
    
+   Bind( root(), @CustomEvents(), #__event_enter )
+  Bind( root(), @CustomEvents(), #__event_leave )
+  
    ;\\
    WaitClose( )
    
    ;\\
    Procedure CustomEvents( )
+      Protected *enter._s_WIDGET = object1
       Select WidgetEventType( )
+         Case #__event_enter
+            Debug "enter " + EventWidget( )\class
+         Case #__event_leave
+            Debug "leave " + EventWidget( )\class
+            
             
             ;\\ demo change current cursor
          Case #__event_cursor
            ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
+            
+            If GetCursor( ) = cursor::#__cursor_default
+               If *enter And *enter\anchors And *enter\anchors\id[#__a_left]
+                  Debug ""+*enter\anchors\id[#__a_left]\state
+               EndIf
+            EndIf
             
             If EventWidget( ) = object2
                If a_transform( )
@@ -112,6 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12
+; CursorPosition = 111
+; FirstLine = 90
 ; Folding = --
 ; EnableXP
