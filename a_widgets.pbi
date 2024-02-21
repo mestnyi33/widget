@@ -691,7 +691,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          mouse( )\anchors\transform\main
       EndMacro
       Macro a_focused( )
-         mouse( )\anchors\transform\focused
+         mouse( )\anchors\widget[1] ; mouse( )\anchors\transform\focused
       EndMacro
       Macro a_index( )
          mouse( )\anchors\index
@@ -2890,6 +2890,90 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndMacro
       
+      Procedure a_delta( *this._s_WIDGET )
+         ;\\
+         If a_index( ) And
+            *this And
+            *this\anchors\id[a_index( )]
+            ;
+            ;\\ set current transformer index state
+            *this\anchors\id[a_index( )]\state = #__s_2
+            
+            ;\\ set delta pos
+            ;\\ not multi group transformer
+            ;If Not *this\anchors\multi
+            ;\\
+            If *this\parent
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                  mouse( )\delta\x + *this\parent\inner_x( )
+               EndIf
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                  mouse( )\delta\y + *this\parent\inner_y( )
+               EndIf
+               
+               ;\\
+               If *this\child <= 0
+                  Select a_index( )
+                     Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                        mouse( )\delta\x + *this\parent\scroll_x( )
+                  EndSelect
+                  
+                  Select a_index( )
+                     Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                        mouse( )\delta\y + *this\parent\scroll_y( )
+                  EndSelect
+               EndIf
+            EndIf
+            
+            ;\\
+            mouse( )\delta\x - *this\anchors\id[a_index( )]\x
+            mouse( )\delta\y - *this\anchors\id[a_index( )]\y
+            
+            ;\\ window flag - sizeGadgets
+            If a_index( ) = #__a_moved
+               mouse( )\delta\x + ( *this\anchors\id[a_index( )]\x - *this\x )
+               mouse( )\delta\y + ( *this\anchors\id[a_index( )]\y - *this\y )
+            EndIf
+            
+            ;\\
+            Select a_index( )
+               Case #__a_left_top, #__a_moved
+                  mouse( )\delta\x - *this\anchors\pos
+                  mouse( )\delta\y - *this\anchors\pos
+               Case #__a_left
+                  mouse( )\delta\x - *this\anchors\pos
+               Case #__a_top
+                  mouse( )\delta\y - *this\anchors\pos
+               Case #__a_right, #__a_right_top
+                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
+                  mouse( )\delta\y - *this\anchors\pos
+               Case #__a_bottom, #__a_left_bottom
+                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
+                  mouse( )\delta\x - *this\anchors\pos
+               Case #__a_right_bottom
+                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
+                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
+            EndSelect
+            
+            ;\\
+            If *this\type = #__type_window
+               Select a_index( )
+                  Case #__a_right, #__a_right_top
+                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                     
+                  Case #__a_bottom, #__a_left_bottom
+                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                     
+                  Case #__a_right_bottom
+                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
+                     
+               EndSelect
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
       Procedure a_remove( *this._s_WIDGET )
          Protected i
          For i = 0 To #__a_count
@@ -3009,90 +3093,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          ;
          ProcedureReturn result
-      EndProcedure
-      
-      Procedure a_delta( *this._s_WIDGET )
-         ;\\
-         If a_index( ) And
-            *this And
-            *this\anchors\id[a_index( )]
-            ;
-            ;\\ set current transformer index state
-            *this\anchors\id[a_index( )]\state = #__s_2
-            
-            ;\\ set delta pos
-            ;\\ not multi group transformer
-            ;If Not *this\anchors\multi
-            ;\\
-            If *this\parent
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  mouse( )\delta\x + *this\parent\inner_x( )
-               EndIf
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  mouse( )\delta\y + *this\parent\inner_y( )
-               EndIf
-               
-               ;\\
-               If *this\child <= 0
-                  Select a_index( )
-                     Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                        mouse( )\delta\x + *this\parent\scroll_x( )
-                  EndSelect
-                  
-                  Select a_index( )
-                     Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                        mouse( )\delta\y + *this\parent\scroll_y( )
-                  EndSelect
-               EndIf
-            EndIf
-            
-            ;\\
-            mouse( )\delta\x - *this\anchors\id[a_index( )]\x
-            mouse( )\delta\y - *this\anchors\id[a_index( )]\y
-            
-            ;\\ window flag - sizeGadgets
-            If a_index( ) = #__a_moved
-               mouse( )\delta\x + ( *this\anchors\id[a_index( )]\x - *this\x )
-               mouse( )\delta\y + ( *this\anchors\id[a_index( )]\y - *this\y )
-            EndIf
-            
-            ;\\
-            Select a_index( )
-               Case #__a_left_top, #__a_moved
-                  mouse( )\delta\x - *this\anchors\pos
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_left
-                  mouse( )\delta\x - *this\anchors\pos
-               Case #__a_top
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_right, #__a_right_top
-                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_bottom, #__a_left_bottom
-                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\x - *this\anchors\pos
-               Case #__a_right_bottom
-                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
-            EndSelect
-            
-            ;\\
-            If *this\type = #__type_window
-               Select a_index( )
-                  Case #__a_right, #__a_right_top
-                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                     
-                  Case #__a_bottom, #__a_left_bottom
-                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                     
-                  Case #__a_right_bottom
-                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                     
-               EndSelect
-            EndIf
-         EndIf
-         
       EndProcedure
       
       Procedure a_show( *this._s_WIDGET )
@@ -22959,7 +22959,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2923
-; FirstLine = 2919
-; Folding = ------------------------------------------------------------------5-8--n---+-0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-7--------------------------------------------------------------------------------------------------------------------80+------
+; CursorPosition = 2979
+; FirstLine = 2962
+; Folding = -----------------------------------------------------------4-4----5-8--n---+-0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8S--------------------------------------------------------------------------------------------------------------------80+-------
 ; EnableXP
