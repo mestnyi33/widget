@@ -3145,11 +3145,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) )
                            ;
                             Debug "(<) out leave from anchors " + a_index( ) +" "+ a_entered( )\enter
+                            
                             If a_index( )
                                a_index( ) = 0
                             Else
                                a_entered( )\enter = 0
                             EndIf
+                            
+;                             a_remove( a_entered( ) )
+;                             a_entered( ) = 0
                         EndIf
                      EndIf
                      ;
@@ -3176,7 +3180,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                      EndIf
 ;                   EndIf
                   If Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
-                     Debug "22222 "+a_index +" "+ a_index( ) +" "+ a_entered( )\class +" "+ *this\class +" "+ a_entered( )\enter ;
+                    ; Debug "22222 "+a_index +" "+ a_index( ) +" "+ a_entered( )\class +" "+ *this\class +" "+ a_entered( )\enter ;
                      
                      If a_entered( )\frame_enter( )
                         If is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
@@ -3196,9 +3200,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If a_entered( ) <> *this
                If a_entered( )\enter > 0
-                  Debug 33333
+                  ; Debug 33333
                   If a_index
-                     Debug "Leave from a_entered( )"
+                     ; Debug "Leave from a_entered( )"
                      a_entered( )\enter = 0
                      DoEvents( a_entered( ), #__event_MouseLeave )
                   EndIf
@@ -3454,17 +3458,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If Not a_index( )
                If *this And 
-                  *this\enter <= 0 And
-                  *this <> a_entered( )
+                  *this\enter <= 0 
                   ;
-                  If *this\child And 
-                     *this\parent And 
-                     *this\parent\enter > 0
-                     ;Debug "child parent leave "+*this\parent\enter ;
-                     DoEvents( *this\parent, #__event_MouseLeave )
+                  If *this = a_entered( )
+                     If Not a_index( )
+                        If *this\frame_enter( )
+                           If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                                is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
+                              ;
+                              *this\enter = 1
+                              Debug "(> )"
+                              DoEvents( *this, #__event_MouseEnter )
+                           EndIf   
+                        EndIf
+                     EndIf
+                  Else
+                     ;
+                     If *this\child And 
+                        *this\parent And 
+                        *this\parent\enter > 0
+                        ;Debug "child parent leave "+*this\parent\enter ;
+                        DoEvents( *this\parent, #__event_MouseLeave )
+                     EndIf
+                     ;
+                     a_show( *this )
                   EndIf
-                  ;
-                  a_show( *this )
                EndIf
             EndIf  
          EndIf
@@ -17667,41 +17685,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure draw_frame_( *this._s_WIDGET )
-         If *this\scroll\v And *this\scroll\h
-            clip_output_( *this, [#__c_draw] )
-            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-            
-            ;\\ Scroll area coordinate
-            draw_box_( *this\inner_x( ) + *this\scroll_x( ), *this\inner_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
-            
-            ;\\
-            draw_box_( *this\scroll\h\frame_x( ) + *this\scroll_x( ), *this\scroll\v\frame_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
-            
-            ;\\ page coordinate
-            draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
-         EndIf
-         
-         ;\\
-         If *this\anchors And *this\anchors\mode
-            clip_output_( *this, [#__c_draw] )
-            a_draw( *this )
-         Else
-            If *this\focus
-               UnclipOutput( )
-               ;
-               drawing_mode_(#PB_2DDrawing_Outlined)
-               If Not *this\fs
-                  draw_roundbox_( *this\frame_x( ) - 2, *this\frame_y( ) - 2, *this\frame_width( ) + 4, *this\frame_height( ) + 4, *this\round, *this\round, $ffff0000 )
-               EndIf
-               draw_roundbox_( *this\frame_x( ) - 1, *this\frame_y( ) - 1, *this\frame_width( ) + 2, *this\frame_height( ) + 2, *this\round, *this\round, $ffff0000 )
-               If *this\fs
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ffff0000 )
-               EndIf
-            EndIf
-         EndIf
-      EndProcedure
-      
       Procedure ReDraw( *root._s_ROOT )
          
          ;\\
@@ -17744,29 +17727,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
                         ;
                         If a_entered( )\AfterWidget( ) = __widgets( )  
-                           draw_frame_( a_entered( ) )
+                           clip_output_( a_entered( ), [#__c_draw] )
+                           a_draw( a_entered( ) )
                         EndIf
                      EndIf
                      ;
                      ;\\ begin draw all widgets
                      Draw( __widgets( ))
                      ;
-                     ;\\
+                     ;\\ draw scroll area frames
                      If __widgets( )\parent
                         If Not __widgets( )\parent\hide
                            If __widgets( ) <> __widgets( )\parent
                               If __widgets( ) = __widgets( )\parent\LastWidget( ) 
                                  If __widgets( )\parent\scroll\v And __widgets( )\parent\scroll\h
-                                    draw_frame_( __widgets( )\parent )
+                                    clip_output_( __widgets( )\parent, [#__c_draw] )
+                                    drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                                    
+                                    ;\\ Scroll area coordinate
+                                    draw_box_( __widgets( )\parent\inner_x( ) + __widgets( )\parent\scroll_x( ), __widgets( )\parent\inner_y( ) + __widgets( )\parent\scroll_y( ), __widgets( )\parent\scroll_width( ), __widgets( )\parent\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\
+                                    draw_box_( __widgets( )\parent\scroll\h\frame_x( ) + __widgets( )\parent\scroll_x( ), __widgets( )\parent\scroll\v\frame_y( ) + __widgets( )\parent\scroll_y( ), __widgets( )\parent\scroll_width( ), __widgets( )\parent\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\ page coordinate
+                                    draw_box_( __widgets( )\parent\scroll\h\frame_x( ), __widgets( )\parent\scroll\v\frame_y( ), __widgets( )\parent\scroll\h\bar\page\len, __widgets( )\parent\scroll\v\bar\page\len, $FF00FF00 )
                                  EndIf
                               EndIf
                            EndIf
                         EndIf
                      EndIf
                      ;
-                     ;\\ draw parent current focus frame
-                     If __widgets( ) = GetActive( )
-                        draw_frame_( GetActive( ) )
+                     ;\\ draw current focus frame
+                     If __widgets( )\focus
+                        If __widgets( ) = GetActive( )
+                           UnclipOutput( )
+                           drawing_mode_(#PB_2DDrawing_Outlined)
+                           ;
+                           If Not __widgets( )\fs
+                              draw_roundbox_( __widgets( )\frame_x( ) - 2, __widgets( )\frame_y( ) - 2, __widgets( )\frame_width( ) + 4, __widgets( )\frame_height( ) + 4, __widgets( )\round, __widgets( )\round, $ffff0000 )
+                           EndIf
+                           draw_roundbox_( __widgets( )\frame_x( ) - 1, __widgets( )\frame_y( ) - 1, __widgets( )\frame_width( ) + 2, __widgets( )\frame_height( ) + 2, __widgets( )\round, __widgets( )\round, $ffff0000 )
+                           If __widgets( )\fs
+                              draw_roundbox_( __widgets( )\frame_x( ), __widgets( )\frame_y( ), __widgets( )\frame_width( ), __widgets( )\frame_height( ), __widgets( )\round, __widgets( )\round, $ffff0000 )
+                           EndIf
+                        EndIf
                      EndIf
                      ;
                      ;\\ draw entered parent anchors
@@ -17777,43 +17782,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         If __widgets( ) = *last
                            If IsChild( __widgets( ), a_entered( ) )
-                              draw_frame_( a_entered( ) )
+                              clip_output_( a_entered( ), [#__c_draw] )
+                              a_draw( a_entered( ) )
                            EndIf
                         EndIf
                      EndIf
-                     
+                     ;
                      StopEnumerate( )
                   EndIf
                   
                   ;\\ draw clip out transform widgets frame
                   UnclipOutput( )
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  ForEach __widgets( )
-                     If Not __widgets( )\parent\hide And __widgets( )\root = *root And
+                  If StartEnumerate( *root )
+                     If Not __widgets( )\parent\hide And
                         Not ( Not __widgets( )\hide And __widgets( )\draw_width( ) > 0 And __widgets( )\draw_height( ) > 0 )
                         
                         If is_child_( __widgets( ), __widgets( )\parent )
                            draw_roundbox_( __widgets( )\inner_x( ), __widgets( )\inner_y( ), __widgets( )\inner_width( ), __widgets( )\inner_height( ), __widgets( )\round, __widgets( )\round, $ff00ffff )
                         EndIf
                      EndIf
-                  Next
-                  
-                  ;PopListPosition( __widgets( ))
+                     StopEnumerate( )
+                  EndIf
+                  ;
                EndIf
             EndIf
-            
-            ;             ;\\ draw current pressed-move-widget
-            ;             If PressedWidget( ) And
-            ;                PressedWidget( )\resize And
-            ;                PressedWidget( )\dragstart
-            ;                If PressedWidget( )\root = *root
-            ;                   If PressedWidget( )\parent
-            ;                      clip_output_( PressedWidget( )\parent, [#__c_draw] )
-            ;                   EndIf
-            ;                   Draw( PressedWidget( ) )
-            ;                EndIf
-            ;             EndIf
-            ;             
+            ;
             ;\\ draw anchors (movable & sizable)
             If a_transform( ) 
                ;\\
@@ -17865,7 +17859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
+            ;
             ;\\ draw current-popup-widget
             If Popup( ) = *root
                If Popup( )\widget
@@ -19539,19 +19533,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          ;EndIf
          
-         ;          ;\\
-         ;          If eventtype = #__event_MouseEnter
-         ;             Debug "                e "+*this\class
-         ;          EndIf
-         ;          
-         ;          If a_entered( )
-         ;             Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) +" "+ *data ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
-         ;          EndIf
-         ;          
-         ;          ;\\
-         ;          If eventtype = #__event_MouseLeave
-         ;             Debug "                l "+*this\class
-         ;          EndIf
+                  ;\\
+                  If eventtype = #__event_MouseEnter
+                     Debug "                e "+*this\class
+                  EndIf
+                  
+                  If a_entered( )
+                     Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) +" "+ *data ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
+                  EndIf
+                  
+                  ;\\
+                  If eventtype = #__event_MouseLeave
+                     Debug "                l "+*this\class
+                  EndIf
          
          ;\\
          If Not *this\disable
@@ -22992,7 +22986,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3176
-; FirstLine = 2897
-; Folding = ----------------------------------------------------------02--t--0-----v--nC--40-v4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-8------------8X-v0f--------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17789
+; FirstLine = 17142
+; Folding = ----------------------------------------------------------02--t--0-----v--nC---d--8t-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+e-++8-------vf0-+-0--------------------------------------------------------------------------------------------------------------------
 ; EnableXP

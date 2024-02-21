@@ -86,6 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Bind( root(), @CustomEvents(), #__event_enter )
   Bind( root(), @CustomEvents(), #__event_leave )
+;   Bind( root(), @CustomEvents(), #__event_Draw )
   
    ;\\
    WaitClose( )
@@ -98,17 +99,15 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "enter " + EventWidget( )\class
          Case #__event_leave
             Debug "leave " + EventWidget( )\class
-            
-            
+;             
+;          Case #__event_draw
+; ;              If *enter And *enter\anchors And *enter\anchors\id[#__a_left]
+; ;                   Debug ""+*enter\anchors\id[#__a_left]\state
+; ;                EndIf
+;                
             ;\\ demo change current cursor
          Case #__event_cursor
            ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
-            
-            If GetCursor( ) = cursor::#__cursor_default
-               If *enter And *enter\anchors And *enter\anchors\id[#__a_left]
-                  Debug ""+*enter\anchors\id[#__a_left]\state
-               EndIf
-            EndIf
             
             If EventWidget( ) = object2
                If a_transform( )
@@ -127,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 111
-; FirstLine = 90
+; CursorPosition = 100
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
