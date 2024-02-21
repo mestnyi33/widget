@@ -580,7 +580,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _this_\resize & #__resize_height )
       EndMacro
       
-      ;-
       Macro is_text_gadget_( _this_ )
          Bool( _this_\type = #__type_Editor Or
                _this_\type = #__type_HyperLink Or
@@ -720,8 +719,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Macro GetTitle( window ): widget::GetText( window ): EndMacro
       Macro Title( ): text: EndMacro
+      Macro GetTitle( window ): widget::GetText( window ): EndMacro
       Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
       Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
       Macro MinimizeButton( ): caption\button[#__wb_mini]: EndMacro
@@ -2505,21 +2504,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Global *Data_Transform_Cursor._s_DATA_TRANSFORM_CURSOR = ?DATA_TRANSFORM_CURSOR
       
-      Procedure integral_parent_( *this._s_WIDGET )
-         Protected result = *this\parent
-         While Not is_integral_( *this )
-            *this = *this\parent
-         Wend
-         ProcedureReturn result
-      EndProcedure
-      
       Macro a_transformer( _this_ )
          Bool( _this_\anchors Or ( is_integral_( _this_ ) And _this_\parent\anchors ) )
       EndMacro
       
       Macro a_draw( _this_ )
-          ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
-          If Not _this_\anchors\mode & #__a_novisible ; 
+         ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
+         If Not _this_\anchors\mode & #__a_novisible ; 
             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
             
             ; draw a_object frame 
@@ -3004,16 +2995,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn a_remove( *this )
          If *this\anchors
             If *this\anchors\mode & #__a_novisible
-             ; *this\anchors\mode &~ #__a_novisible
+               ; *this\anchors\mode &~ #__a_novisible
             Else
-              ;  *this\anchors\mode | #__a_novisible
+               ;  *this\anchors\mode | #__a_novisible
             EndIf
          EndIf
       EndProcedure
       
       Procedure a_create( *this._s_WIDGET, mode )
          Protected a_index
-            
+         
          If Not *this\anchors
             *this\anchors.allocate( ANCHORS )
          EndIf 
@@ -3101,7 +3092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            a_entered( )\enter = 0
                            
                            If a_index( ) = i
-                             ; Debug "from entered to focused anchors id "+a_index( ) +" "+ a_entered( )\class +" "+ *this\class
+                              ; Debug "from entered to focused anchors id "+a_index( ) +" "+ a_entered( )\class +" "+ *this\class
                               If a_entered( )\anchors\id[a_index( )]\state <> #__s_0
                                  a_entered( )\anchors\id[a_index( )]\state = #__s_0
                                  Debug "(11111) "+a_index +" "+ a_entered( )\class +" "+ *this\class
@@ -3144,16 +3135,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If Not ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ) And
                                  is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) )
                            ;
-                            Debug "(<) out leave from anchors " + a_index( ) +" "+ a_entered( )\enter
-                            
-                            If a_index( )
-                               a_index( ) = 0
-                            Else
-                               a_entered( )\enter = 0
-                            EndIf
-                            
-;                             a_remove( a_entered( ) )
-;                             a_entered( ) = 0
+                           ;Debug "(<) out leave from anchors " + a_index( ) +" "+ a_entered( )\enter
+                           
+                           If a_index( )
+                              a_index( ) = 0
+                              a_entered( )\enter = 0 ;?????
+                           Else
+                              a_entered( )\enter = 0
+                           EndIf
                         EndIf
                      EndIf
                      ;
@@ -3166,30 +3155,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If a_entered( )
             If a_index( ) 
                If a_entered( )\anchors\id[a_index( )] 
-;                   If a_entered( ) <> *this
-;                      If a_entered( )\anchors\id[a_index( )]\state <> #__s_0
-;                         a_entered( )\anchors\id[a_index( )]\state = #__s_0
-;                         Debug "11111 "+a_index +" "+ a_entered( )\class +" "+ *this\class
-;                         ;
-;                         If a_index
-;                            a_entered( )\root\repaint = 1
-;                            a_remove( a_entered( ) )
-;                            a_entered( ) = *this
-;                            PostEventRepaint( a_entered( )\root )
-;                         EndIf
-;                      EndIf
-;                   EndIf
+                  ;                   If a_entered( ) <> *this
+                  ;                      If a_entered( )\anchors\id[a_index( )]\state <> #__s_0
+                  ;                         a_entered( )\anchors\id[a_index( )]\state = #__s_0
+                  ;                         Debug "11111 "+a_index +" "+ a_entered( )\class +" "+ *this\class
+                  ;                         ;
+                  ;                         If a_index
+                  ;                            a_entered( )\root\repaint = 1
+                  ;                            a_remove( a_entered( ) )
+                  ;                            a_entered( ) = *this
+                  ;                            PostEventRepaint( a_entered( )\root )
+                  ;                         EndIf
+                  ;                      EndIf
+                  ;                   EndIf
                   If Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
-                    ; Debug "22222 "+a_index +" "+ a_index( ) +" "+ a_entered( )\class +" "+ *this\class +" "+ a_entered( )\enter ;
+                     ; Debug "22222 "+a_index +" "+ a_index( ) +" "+ a_entered( )\class +" "+ *this\class +" "+ a_entered( )\enter ;
                      
                      If a_entered( )\frame_enter( )
                         If is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
                            is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] )
                            
-                           ;
-                           Debug "(>) in leave from anchors "+a_entered( )\enter
-                           a_entered( )\enter = 1
-                           DoEvents( a_entered( ), #__event_MouseEnter )
+                           If a_entered( )\type <> #__type_Splitter
+                              ;Debug "(>) in leave from anchors "+ *this\class ; a_entered( )\enter
+                              a_entered( )\enter = 1
+                              DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, 111 )
+                           EndIf
                         EndIf
                      EndIf
                      
@@ -3202,9 +3192,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If a_entered( )\enter > 0
                   ; Debug 33333
                   If a_index
-                     ; Debug "Leave from a_entered( )"
                      a_entered( )\enter = 0
-                     DoEvents( a_entered( ), #__event_MouseLeave )
+                     DoEvents( a_entered( ), #__event_MouseLeave, #PB_All, 222  )
                   EndIf
                   *this\frame_enter( )
                EndIf
@@ -3230,7 +3219,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\frame_enter( )
             ElseIf *this\enter > 0
                *this\frame_enter( )
-               DoEvents( *this, #__event_MouseLeave )
+               DoEvents( *this, #__event_MouseLeave, #PB_All, 111  )
             EndIf
             ; 
             result = *this
@@ -3241,36 +3230,60 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_show( *this._s_WIDGET )
          Protected a_index
-         
-         ;\\
+         ;Protected *child._s_WIDGET = *this
+         ;
+         If a_entered( ) = *this
+            ProcedureReturn 0
+         EndIf
+         ; 
+         If a_entered( ) 
+            If a_entered( )\enter > 0
+               If Not is_integral_( *this )
+                  a_entered( )\enter = 0
+                  DoEvents( a_entered( ), #__event_MouseLeave, #PB_All, 333 )
+               EndIf
+            Else
+               If LeavedWidget( )  
+                  If LeavedWidget( )\enter > 0
+                     LeavedWidget( )\enter = 0
+                     DoEvents( LeavedWidget( ), #__event_MouseLeave, #PB_All, 555 )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         ;
          If is_integral_( *this )
-           *this = integral_parent_( *this ) 
-           *this\frame_enter( )
+            Repeat
+               *this = *this\parent
+            Until Not is_integral_( *this )
+            *this\frame_enter( )
          EndIf
          ;
          If StartEnumerate( *this\root )
-           If __widgets( )\type = #__type_splitter
-             If __widgets( )\anchors And
-                __widgets( )\anchors\mode 
-               ;
-               If IsChild( *this, __widgets( ) )
-                 *this = __widgets( )
-                 *this\frame_enter( )
-                 Break
+            If __widgets( )\type = #__type_splitter
+               If __widgets( )\anchors And
+                  __widgets( )\anchors\mode 
+                  ;
+                  If IsChild( *this, __widgets( ) )
+                     *this = __widgets( )
+                     *this\frame_enter( )
+                     Break
+                  EndIf
                EndIf
-             EndIf
-           EndIf
-           StopEnumerate( )     
+            EndIf
+            StopEnumerate( )     
          EndIf
-         ; 
-         If a_entered( ) And
-            a_entered( )\anchors And
-            a_entered( )\anchors\mode And
-            a_entered( ) <> *this And
-            a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-            ; Debug "remove "+a_entered( )\class
-            a_remove( a_entered( ) )
-            a_entered( ) = 0
+         ;
+         If a_entered( ) = *this
+            ProcedureReturn 0
+         EndIf
+         ;
+         If a_entered( )
+            If a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
+                                            ;Debug "remove "+a_entered( )\class
+               a_remove( a_entered( ) )
+               a_entered( ) = 0
+            EndIf
          EndIf
          ;
          ;
@@ -3429,7 +3442,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_atpoint( *this._s_WIDGET )
-        ;\\ entered anchor index
+         ;\\ entered anchor index
          If Not mouse( )\press
             If a_entered( ) And 
                a_entered( )\anchors And
@@ -3439,11 +3452,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If a_entered( )
                      If ( *this And a_entered( )\index < *this\index ) And 
                         a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                        ;
+                                                     ;
                         a_index( ) = 0
                         ; a_show( *this )
                      Else
-                       ProcedureReturn a_entered( )
+                        ProcedureReturn a_entered( )
                      EndIf
                   EndIf
                Else
@@ -3467,8 +3480,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                 is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
                               ;
                               *this\enter = 1
-                              Debug "(> )"
-                              DoEvents( *this, #__event_MouseEnter )
+                              ;Debug "(> )"
+                              DoEvents( *this, #__event_MouseEnter, #PB_All, 444 )
                            EndIf   
                         EndIf
                      EndIf
@@ -3478,7 +3491,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\parent And 
                         *this\parent\enter > 0
                         ;Debug "child parent leave "+*this\parent\enter ;
-                        DoEvents( *this\parent, #__event_MouseLeave )
+                        DoEvents( *this\parent, #__event_MouseLeave, #PB_All, 444  )
                      EndIf
                      ;
                      a_show( *this )
@@ -3502,7 +3515,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-          EndIf
+         EndIf
       EndProcedure  
       
       Procedure.i a_init( *this._s_WIDGET, grid_size.a = 7, grid_type.b = 0 )
@@ -17725,7 +17738,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_entered( )\enter And 
                         a_entered( )\haschildren And
                         a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                        ;
+                                                     ;
                         If a_entered( )\AfterWidget( ) = __widgets( )  
                            clip_output_( a_entered( ), [#__c_draw] )
                            a_draw( a_entered( ) )
@@ -17779,7 +17792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_entered( )\enter And 
                         a_entered( )\haschildren And
                         a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                        ;
+                                                     ;
                         If __widgets( ) = *last
                            If IsChild( __widgets( ), a_entered( ) )
                               clip_output_( a_entered( ), [#__c_draw] )
@@ -18307,7 +18320,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      a_entered( )\enter = 1
                      Debug "(>)"
-                     DoEvents( a_entered( ), #__event_MouseEnter )
+                     DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, 888888 )
                   Else
                      ;
                      a_entered( )\enter = 0
@@ -19475,10 +19488,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn 0
          EndIf
          
-         ;\\
-         If eventtype = #__event_MouseEnter
-         EndIf               
-         
          ;\\ activate send event
          If *this\root And
             *this\root\event
@@ -19528,24 +19537,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          
          ;\\ widget::_events_Anchors( )
          ;If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
-            If a_events( *this, eventtype, *button, *data)
-               *this\root\repaint = #True
-            EndIf
+         If a_events( *this, eventtype, *button, *data)
+            *this\root\repaint = #True
+         EndIf
          ;EndIf
          
-                  ;\\
-                  If eventtype = #__event_MouseEnter
-                     Debug "                e "+*this\class
-                  EndIf
-                  
-                  If a_entered( )
-                     Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) +" "+ *data ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
-                  EndIf
-                  
-                  ;\\
-                  If eventtype = #__event_MouseLeave
-                     Debug "                l "+*this\class
-                  EndIf
+;          ;\\
+;          If eventtype = #__event_MouseEnter
+;             Debug "                e "+*this\class +" - "+ *data
+;          EndIf
+;          
+;          ;                   If a_entered( )
+;          ;                      Debug ""+*this\class +"_"+ *this\index +" "+ *this\enter +" "+ a_entered( )\class +" "+ ClassFromEvent( eventtype ) +" "+ *data ;is_innerside_( *this, mouse( )\x, mouse( )\y );Bool(*this\inner_enter( ))
+;          ;                   EndIf
+;          
+;          ;\\
+;          If eventtype = #__event_MouseLeave
+;             Debug "                l "+*this\class +" - "+ *data
+;          EndIf
          
          ;\\
          If Not *this\disable
@@ -22985,6 +22994,8 @@ CompilerEndIf
 ; FirstLine = 2592
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------02--t--0-----v--nC---d--8t-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+e-++8-------vf0-+-0--------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 19556
+; FirstLine = 19531
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
