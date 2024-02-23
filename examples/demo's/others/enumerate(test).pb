@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                   Break    
 ;                EndIf
 ;                If __widgets( )\parent = _parent_  
-;                   If __widgets( )\TabAddIndex( ) = _item_
+;                   If __widgets( )\TabIndex( ) = _item_
 ;                      Break
 ;                   EndIf
 ;                EndIf
@@ -121,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
                If _item_ >= 0 And 
                   __widgets( )\parent = _parent_ And 
-                  _item_ <> __widgets( )\TabAddIndex( )
+                  _item_ <> __widgets( )\TabIndex( )
                   Debug 888
                   Break
                EndIf
@@ -179,7 +179,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 116
-; FirstLine = 74
+; CursorPosition = 97
+; FirstLine = 57
 ; Folding = f--
 ; EnableXP

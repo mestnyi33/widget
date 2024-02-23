@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *after = GetPositionAfter( *parent, tabindex )
       ;*last = GetPositionLast( *after, tabindex )
       
-      If *after\parent <> *parent And *after\LastWidget( )\AddedTabIndex( ) > tabindex
+      If *after\parent <> *parent And *after\LastWidget( )\TabIndex( ) > tabindex
          *last = *after
       Else
          *last = GetPositionLast( *after, tabindex )
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 14
-; Folding = X-
+; CursorPosition = 28
+; FirstLine = 9
+; Folding = f-
 ; EnableXP
