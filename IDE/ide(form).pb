@@ -83,7 +83,7 @@ Global ide_window,
 
 Global ide_design_splitter, 
        ide_design_panel, 
-       ide_design_form,
+       ide_design_MDI,
        ide_design_code
 
 Global ide_debug_splitter, 
@@ -277,7 +277,7 @@ Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
    code = Space( ( *new\level-2 )*4 ) + add_line( *new._s_widget, Class.s )
    
    ;   ForEach widget( )
-   ;     If Child( widget( ), ide_design_form )
+   ;     If Child( widget( ), ide_design_MDI )
    ;       Debug widget( )\class
    ;     EndIf
    ;   Next
@@ -659,7 +659,9 @@ EndProcedure
 ;-
 Macro ToolBar( parent, flag = #PB_ToolBar_Small )
    Container( 0,0,0,0 ) 
+   widget( )\class = "TOOLBAR"
    Text( widget( )\x+widget( )\width, 5,3,30,"" )
+   widget( )\class = "^"
 EndMacro
 
 Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
@@ -670,7 +672,7 @@ Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
    EndIf
    
    ;widget( )\color = widget( )\parent\color
-   widget( )\class = "ToolBar"
+   widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
    widget( )\data = _button_
    
    Bind( widget( ), @ide_events( ) )
@@ -678,9 +680,12 @@ EndMacro
 
 Macro Separator( )
    Text( widget( )\x+widget( )\width, 5,1,30,"" )
+   widget( )\class = "<"
    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
+   widget( )\class = "|"
    ; SetData( widget( ), - MacroExpandedCount )
    Text( widget( )\x+widget( )\width, 5,1,30,"" )
+   widget( )\class = ">"
 EndMacro
 
 
@@ -1072,38 +1077,38 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ; gadgets
    
    ;\\\ 
-   ide_design_panel = Panel( 0,0,0,0 ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
+   ide_design_panel = Panel( 0,0,0,0 ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
-   ide_design_form = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) 
-   a_init( ide_design_form);, 0 )
+   ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) : SetClass(ide_design_MDI, "ide_design_MDI" ) 
+   a_init( ide_design_MDI);, 0 )
    
    ;AddItem( ide_design_panel, -1, "Code" )
-   ;ide_design_code = Editor( 0,0,0,0 ) ; bug then move anchors window
+   ;ide_design_code = Editor( 0,0,0,0 ) : SetClass(ide_design_code, "ide_design_code" ) ; bug then move anchors window
    CloseList( )
    
    ;
-   ide_debug_view = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
+   ide_debug_view = Editor( 0,0,0,0 ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
    If Not ide_design_code
       ide_design_code = ide_debug_view
    EndIf
    
    ;\\\ open inspector gadgets 
-   ide_inspector_view = Tree( 0,0,0,0 ) ;, #__flag_gridlines )
+   ide_inspector_view = Tree( 0,0,0,0 ) : SetClass(ide_inspector_view, "ide_inspector_view" ) ;, #__flag_gridlines )
    EnableDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
    
    ; ide_inspector_splitter_panel_open
-   ide_inspector_panel = Panel( 0,0,0,0 )
+   ide_inspector_panel = Panel( 0,0,0,0 ) : SetClass(ide_inspector_panel, "ide_inspector_panel" )
    
    ; ide_inspector_splitter_panel_item_1
    AddItem( ide_inspector_panel, -1, "elements", 0, 0 ) 
-   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless )
+   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
       ide_add_image_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_splitter_panel_item_2 
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
-   ide_inspector_properties = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless )
+   ide_inspector_properties = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
       AddItem( ide_inspector_properties, #_pi_group_0,  "Common" )
       AddItem( ide_inspector_properties, #_pi_id,       "ID"      , #__Type_String, 1 )
@@ -1123,7 +1128,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    
    ; ide_inspector_splitter_panel_item_3 
    AddItem( ide_inspector_panel, -1, "events", 0, 0 )  
-   ide_inspector_events = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_borderless ) 
+   ide_inspector_events = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_borderless ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
    If ide_inspector_events
       AddItem( ide_inspector_events, #_ei_leftclick,  "LeftClick" )
       AddItem( ide_inspector_events, #_ei_change,  "Change" )
@@ -1135,17 +1140,17 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    CloseList( )
    
    ; ide_inspector_ide_help_splitter_text
-   ide_help_view  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border )
+   ide_help_view  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_help_view, "ide_help_view" )
    ;\\\ close inspector gadgets 
    
    ;
    ;\\\ ide splitters
    ;
-   ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar,ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator )
-   ide_inspector_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed )
-   ide_debug_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed )
-   ide_help_splitter = Splitter( 0,0,0,0, ide_inspector_splitter,ide_help_view, #PB_Splitter_SecondFixed )
-   ide_splitter = Splitter( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
+   ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar,ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+   ide_inspector_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_splitter, "ide_inspector_splitter" )
+   ide_debug_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
+   ide_help_splitter = Splitter( 0,0,0,0, ide_inspector_splitter,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_help_splitter, "ide_help_splitter" )
+   ide_splitter = Splitter( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
    
    ; set splitters default minimum size
    SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
@@ -1196,8 +1201,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;     ; example 1
-   ;     ;   ;OpenList( ide_design_form )
-   ;     ide_form = widget_add( ide_design_form, "window", 10, 10, 350, 200 )
+   ;     ;   ;OpenList( ide_design_MDI )
+   ;     ide_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    ;         Define *container = widget_add( ide_form, "container", 130, 20, 220, 140 )
    ;         widget_add( *container, "button", 10, 20, 30, 30 )
    ;         widget_add( ide_form, "button", 10, 20, 100, 30 )
@@ -1213,17 +1218,17 @@ CompilerIf #PB_Compiler_IsMainFile
    ;         SetState( ide_inspector_view, 0 )
    ;         widget_add( ide_form, "button", 10, 130, 100, 30 )
    ;         
-   ; ; ;         ;   Define ide_form = widget_add( ide_design_form, "window", 10, 10 )
+   ; ; ;         ;   Define ide_form = widget_add( ide_design_MDI, "window", 10, 10 )
    ; ; ;         ;   Define *container = widget_add( ide_form, "container", 80, 10 )
    ; ; ;         ;   widget_add( *container, "button", -10, 20 )
    ; ; ;         ;   widget_add( ide_form, "button", 10, 20 )
    ; ; ;         ;   ;CloseList( )
    ; ; ;         
    ;             ; example 2
-   ;             ;   ;OpenList( ide_design_form )
+   ;             ;   ;OpenList( ide_design_MDI )
    ;             SetState( group_select, 1 ) 
    ;             
-   ;             Define ide_form = widget_add( ide_design_form, "window", 30, 30, 400, 250 )
+   ;             Define ide_form = widget_add( ide_design_MDI, "window", 30, 30, 400, 250 )
    ;             widget_add( ide_form, "button", 15, 25, 50, 30 )
    ;             widget_add( ide_form, "text", 25, 65, 50, 30 )
    ;             widget_add( ide_form, "button", 35, 65+40, 50, 30 )
@@ -1245,10 +1250,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ; example 3
-   ;   ;OpenList(ide_design_form)
+   ;   ;OpenList(ide_design_MDI)
    SetState(group_select, 1) 
+   Define result
+   Define._S_WIDGET *this, *parent
    
-  ide_form = widget_add(ide_design_form, "window", 30, 30, 400, 250)
+  ide_form = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
    widget_add(ide_form, "button", 15, 25, 50, 30)
    widget_add(ide_form, "text", 25, 65, 50, 30)
    widget_add(ide_form, "button", 35, 65+40, 50, 30)
@@ -1261,7 +1268,26 @@ CompilerIf #PB_Compiler_IsMainFile
    widget_add(*container, "text", 25, 65, 50, 30)
    widget_add(*container, "button", 35, 65+40, 80, 30)
    widget_add(*container, "text", 45, 65+40*2, 50, 30)
-   ;     
+   
+;    Debug "--- enumerate all gadgets ---"
+;    If StartEnumerate( root( ) )
+;       Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+;       StopEnumerate( )
+;    EndIf
+;    
+;    Debug ""
+;    *parent = *container
+;    *this = GetPositionLast( *parent )
+;    Debug ""+*this\class +"           ("+ *parent\class +")" ;  +" - ("+ *this\text\string +")"
+;    
+;    
+;    If StartEnumerate( *parent )
+;       Debug "   *parent  gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+;       StopEnumerate( )
+;    EndIf
+;    
+   
+  ;     
    ;     Define *container2 = widget_add(ide_form, "container", 100+140, 25+45, 165, 140)
    ;     widget_add(*container2, "button", 75, 25, 30, 30)
    ;     widget_add(*container2, "text", 25, 65, 50, 30)
@@ -1321,6 +1347,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3
-; Folding = ----------v-----8-----
+; CursorPosition = 1287
+; FirstLine = 1110
+; Folding = ----------v--8--8-----
 ; EnableXP

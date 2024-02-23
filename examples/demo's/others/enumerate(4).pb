@@ -74,87 +74,53 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      *PARENT = Panel(10,145,200,160)  : SetClass(*PARENT, "PANEL") 
-      AddItem(*PARENT, -1, "item (0)")
-      ;              ;
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(0))")
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "((0>))")
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
-      ;              CloseList( )
-      ;              CloseList( )
-      ;              ;
-      AddItem(*PARENT, -1, "item (1)")
-      ;       ;
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
-      ;       CloseList( )
-      ;       CloseList( )
-      ;       ;
-      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
-                                       ;
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(2))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((2>))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
+      OpenGadget(10,10,160,30) : SetClass(widget(), "(Window)")
+      Button(5,5,70,30,"Button1") : SetClass(widget(), "(w>0)")  
+      Button(15,15,70,30,"Button2") : SetClass(widget(), "(w>1)")  
+      Button(25,25,70,30,"Button3") : SetClass(widget(), "(w>2)")  
+      
+      OpenGadget(10,10,160,30) : SetClass(widget(), "(Container)")
+      Button(5,5,70,30,"Button1") : SetClass(widget(), "(c>0)")  
+      Button(15,15,70,30,"Button2") : SetClass(widget(), "(c>1)")  
+      Button(25,25,70,30,"Button3") : SetClass(widget(), "(c>2)")  
+      
+      *PARENT = OpenGadget(10,10,160,30) : SetClass(widget(), "(ScrollArea)")
+      Button(5,5,70,30,"Button1") : SetClass(widget(), "(s>0)")  
+      Button(15,15,70,30,"Button2") : SetClass(widget(), "(s>1)")  
+      Button(25,25,70,30,"Button3") : SetClass(widget(), "(s>2)")  
       CloseList( )
+      
       CloseList( )
       
       CloseList()
       
-      ;
-      Debug ">"
-      OpenList( *PARENT, 0 )
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(0))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((0>))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
-      CloseList( )
-      CloseList( )
-      CloseList( )
-      Debug "<"
-      
-      *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
-      ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
-      ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
-      CloseList( )
-      CloseList( )
-      CloseList( )
+      Button(5,5,70,30,"Button1") : SetClass(widget(), "(r>0)")  
+      Button(15,15,70,30,"Button2") : SetClass(widget(), "(r>1)")  
+      Button(25,25,70,30,"Button3") : SetClass(widget(), "(r>2)")  
       ;  
       
       
       Debug "--- enumerate all gadgets ---"
       If StartEnumerate( root( ) )
          If Not is_window_( enumWidget( ) )
-            Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-         EndIf
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+      EndIf
          StopEnumerate( )
       EndIf
       
-      Debug "--- enumerate all (item 0) ---"
-      If StartEnumerate( *PARENT, 0 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+      Debug "--- enumerate all gadgets ScrollArea ---"
+      If StartEnumerate( *PARENT )
+         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
          StopEnumerate( )
       EndIf
       
-      Debug "--- enumerate all (item 1) ---"
-      If StartEnumerate( *PARENT, 1 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-         StopEnumerate( )
-      EndIf
-      
-      Debug "--- enumerate all (item 2) ---"
-      If StartEnumerate( *PARENT, 2 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
-         StopEnumerate( )
-      EndIf
+      ; Show_DEBUG()
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 154
-; FirstLine = 121
+; CursorPosition = 110
+; FirstLine = 88
 ; Folding = ---
 ; EnableXP

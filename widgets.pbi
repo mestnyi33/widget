@@ -407,6 +407,72 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::WaitClose( )
       EndMacro
       
+      Macro widget( ): __gui\widget: EndMacro ; Returns current-root last added widget
+      
+      ;-
+      Macro StartEnumerate( _parent_, _item_ = #PB_All )
+         Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
+         PushListPosition( __widgets( ) )
+         ;
+         If _parent_\FirstWidget( )\address
+            ChangeCurrentElement( __widgets( ), _parent_\FirstWidget( )\address )
+         Else
+            ResetList( __widgets( ) )
+         EndIf
+         ;
+         ;\\
+         If _item_ > 0
+            Repeat
+               If __widgets( ) = _parent_\AfterWidget( ) 
+                  Break
+               EndIf
+               If __widgets( )\root <> _parent_\root
+                  Break    
+               EndIf
+               If  __widgets( )\level < _parent_\level
+                  Break
+               EndIf
+               If __widgets( )\parent = _parent_  
+                  If __widgets( )\TabAddIndex( ) = _item_
+                     Break
+                  EndIf
+               EndIf
+            Until Not NextElement( __widgets( ) ) 
+         EndIf
+         ;
+         ;\\
+         If __widgets( )\parent = _parent_
+            Repeat
+               If __widgets( ) = _parent_\AfterWidget( ) 
+                  Break
+               EndIf
+               If __widgets( )\root <> _parent_\root
+                  Break    
+               EndIf
+               If  __widgets( )\level < _parent_\level
+                  Break
+               EndIf
+               If __widgets( )\parent = _parent_  
+                  If _item_ <> __widgets( )\TabAddIndex( )
+                     If _item_ >= 0  
+                        Break
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               widget( ) = __widgets( )
+            EndMacro
+            ;
+            Macro AbortEnumerate( )
+               Break
+            EndMacro
+            ;
+            Macro StopEnumerate( )
+            Until Not NextElement( __widgets( ) )
+         EndIf
+         PopListPosition( __widgets( ) )
+      EndMacro
+      
       
       ;-
       Macro draw_x( ): x[#__c_draw]: EndMacro
@@ -450,64 +516,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro scroll_inner_width( ): width[#__c_inner]: EndMacro
       Macro scroll_inner_height( ): height[#__c_inner]: EndMacro
       Macro caption_inner_width( ): caption\width[#__c_inner]: EndMacro
-      
-      Macro widget( ): __gui\widget: EndMacro ; Returns current-root last added widget
-      
-      ;-
-      Macro StartEnumerate( _parent_, _item_ = #PB_All )
-         Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
-         PushListPosition( __widgets( ) )
-         ;
-         If _parent_\FirstWidget( )\address
-            ChangeCurrentElement( __widgets( ), _parent_\FirstWidget( )\address )
-         Else
-            ResetList( __widgets( ) )
-         EndIf
-         ;
-         ;\\
-         If _item_ > 0
-            Repeat
-               If __widgets( ) = _parent_\AfterWidget( ) 
-                  Break
-               EndIf
-               If __widgets( )\root <> _parent_\root
-                  Break    
-               EndIf
-               If __widgets( )\parent = _parent_  
-                  If __widgets( )\TabAddIndex( ) = _item_
-                     Break
-                  EndIf
-               EndIf
-            Until Not NextElement( __widgets( ) ) 
-         EndIf
-         ;
-         ;\\
-         If __widgets( )\parent = _parent_
-            Repeat
-               If __widgets( ) = _parent_\AfterWidget( ) 
-                  Break
-               EndIf
-               If __widgets( )\root <> _parent_\root
-                  Break    
-               EndIf
-               If _item_ >= 0 And 
-                  __widgets( )\parent = _parent_ And 
-                  _item_ <> __widgets( )\TabAddIndex( )
-                  Break
-               EndIf
-               ;
-               widget( ) = __widgets( )
-            EndMacro
-            ;
-            Macro AbortEnumerate( )
-               Break
-            EndMacro
-            ;
-            Macro StopEnumerate( )
-            Until Not NextElement( __widgets( ) )
-         EndIf
-         PopListPosition( __widgets( ) )
-      EndMacro
       
       ;-
       Macro _get_colors_( ) : colors::*this\blue : EndMacro
@@ -1273,7 +1281,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare SetBackgroundImage( *this, *image )
       
       Declare  GetPositionAfter( *this, tabindex.l )
-      Declare  GetPositionLast( *this, tabindex.l )
+      Declare  GetPositionLast( *this, tabindex.l = #PB_Default )
       
       Declare.i Create( *parent, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
       
@@ -4230,27 +4238,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure IsChild( *this._s_WIDGET, *parent._s_WIDGET )
-         ; ProcedureReturn Bool( Not ( *parent\AfterWidget( ) And *parent\AfterWidget( ) = *this )) ;
          Protected result
-         
+         ;
          If *this And
-            ; *this <> *parent And
+            *this <> *parent And
             *parent\haschildren
-            
+            ;
             Repeat
-               If *parent = *this\parent
-                  result = *this
-                  Break
-               EndIf
-               
                *this = *this\parent
-               If Not *this
-                  result = 0
+               If *this
+                  If *parent = *this
+                     result = *this
+                     Break
+                  EndIf
+               Else
                   Break
                EndIf
             Until is_root_( *this )
          EndIf
-         
+         ;
          ProcedureReturn result
       EndProcedure
       
@@ -13416,7 +13422,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure GetPositionLast( *this._s_WIDGET, tabindex.l )
+      Procedure GetPositionLast( *this._s_WIDGET, tabindex.l = #PB_Default )
          Protected *last._s_WIDGET = *this;\LastWidget( )
          If StartEnumerate( *this )
             *last = __widgets( )
@@ -14637,9 +14643,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *after\parent = *parent
                   *last = GetPositionLast( *after, tabindex )
+                  
+;                   *last = *after 
+;                   If StartEnumerate( *after )
+;                      *last = __widgets( )
+;                      StopEnumerate( )
+;                   EndIf
                   ;
                   If *this = *after Or IsChild( *last, *this )
                      *last = GetPositionLast( *this\BeforeWidget( ), tabindex )
+                     
+;                      *last = *this\BeforeWidget( )
+;                      If StartEnumerate( *this\BeforeWidget( ) )
+;                        *last = __widgets( )
+;                        StopEnumerate( )
+;                      EndIf
+                  
                   EndIf
                Else
                   *last = *after
@@ -17746,22 +17765,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *root\autosize And
                         *root\haschildren = 0 )
                   
-                  If a_entered( )
-                     Protected *last._s_WIDGET = GetPositionLast( a_entered( ), - 1 )
-                  EndIf
-                  
                   ;\\
                   If StartEnumerate( *root )
                      ;
                      ;\\ draw entered widget anchors
-                     If a_entered( ) And
-                        a_entered( )\enter And 
-                        a_entered( )\haschildren And
-                        a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                                                     ;
-                        If a_entered( )\AfterWidget( ) = __widgets( )  
-                           clip_output_( a_entered( ), [#__c_draw] )
-                           a_draw( a_entered( ) )
+                     If Not mouse( )\press
+                        If a_entered( ) And
+                           a_entered( )\enter And 
+                           a_entered( )\haschildren And
+                           a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
+                                                        ;
+                           If a_entered( )\AfterWidget( ) = __widgets( )  
+                              clip_output_( a_entered( ), [#__c_draw] )
+                              a_draw( a_entered( ) )
+                           EndIf
                         EndIf
                      EndIf
                      ;
@@ -17808,15 +17825,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      ;\\ draw entered parent anchors
-                     If a_entered( ) And 
-                        a_entered( )\enter And 
-                        a_entered( )\haschildren And
-                        a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                                                     ;
-                        If __widgets( ) = *last
-                           If IsChild( __widgets( ), a_entered( ) )
-                              clip_output_( a_entered( ), [#__c_draw] )
-                              a_draw( a_entered( ) )
+                     If Not mouse( )\press
+                        If a_entered( ) And 
+                           a_entered( )\enter And 
+                           a_entered( )\haschildren And
+                           a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
+                           
+                           If Not a_entered( )\AfterWidget( ) 
+                              If __widgets( ) = GetPositionLast( a_entered( ) )
+                                 ; Debug ""+__widgets( )\parent\class +" "+ __widgets( )\class +" "+ a_entered( )\class +" ("+ __widgets( )\text\string +") "+ IsChild( __widgets( ), a_entered( ) )
+                                 
+                                 ; If IsChild( __widgets( ), a_entered( ) )
+                                 clip_output_( a_entered( ), [#__c_draw] )
+                                 a_draw( a_entered( ) )
+                                 ; EndIf
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -22120,280 +22143,14 @@ EndMacro
 
 
 ;-
-CompilerIf #PB_Compiler_IsMainFile
-   EnableExplicit
-   Uselib(widget)
-   
-   Global object, object1, object2, object3, parent
-   Declare CustomEvents( )
-   
-   ;\\
-   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root(), 4)
-   
-   ;\\
-   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-   SetColor(parent, #__color_back, $FFE9E9E9)
-   SetFrame(parent, 20 )
-   ;a_init(parent, 4)
-   
-   ;\\
-   object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 30)
-   ;object = Button(50, 50, 150, 150, "button")
-   ;;object1 = Button(150, 150, 150, 150, "Button")
-   object1 = Button(125, 140, 150, 150, "Button")
-   ;object1 = String(125, 140, 150, 150, "string")
-   object2 = Splitter(250, 50, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
-   object3 = ScrollArea(0, 250, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object3, 0)
-   
-   
-   ;\\
-   Define anchor_size = 30
-   a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
-   a_set(object, #__a_full, anchor_size)
-   a_set(object1, #__a_full, anchor_size)
-   a_set(object2, #__a_full, anchor_size)
-   a_set(object3, #__a_full, anchor_size)
-   
-   ;    ;\\
-   ;    ;     parent = Root( )
-   ;    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
-   ;    SetColor(parent, #__color_back, $FFE9E9E9)
-   ;    SetFrame(parent, 20 )
-   ;    
-   ;    ;\\
-   ;    Splitter(220, 10, 200, 120, 0, String(0, 0, 0, 0, "splitter-string"), #PB_Splitter_Vertical)
-   ;    object = Button(50, 50, 150, 150, "button")
-   ;    object1 = String(150, 150, 150, 150, "string")
-   ;    object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
-   ;    
-   ;    ;\\
-   ;    Define anchor_size = 30
-   ;    a_set(parent, #__a_full, anchor_size/2)
-   ;    a_set(object, #__a_full, anchor_size)
-   ;    a_set(object1, #__a_full, anchor_size)
-   ;    a_set(object2, #__a_full, anchor_size)
-   ;    
-   ;Splitter(220, 10, 200, 120, 0, String(0, 0, 0, 0, "Button 1"), #PB_Splitter_Vertical)
-   DisableExplicit
-   Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-   ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
-   Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-   Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-   Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Splitter_5 = widget::Splitter(180, 310, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-   SetState(Splitter_5, 50)
-   SetState(Splitter_4, 50)
-   SetState(Splitter_3, 40)
-   SetState(Splitter_1, 50)
-   
-   SetClass( Splitter_1, "Splitter_1")
-   SetClass( Splitter_2, "Splitter_2")
-   SetClass( Splitter_3, "Splitter_3")
-   SetClass( Splitter_4, "Splitter_4")
-   SetClass( Splitter_5, "Splitter_5")
-   
-   ;\\
-   Bind( parent, @CustomEvents(), #__event_cursor )
-   ;    Bind( object, @CustomEvents(), #__event_cursor )
-   ;    Bind( object1, @CustomEvents(), #__event_cursor )
-   ;    Bind( object2, @CustomEvents(), #__event_cursor )
-   
-   ;\\
-   WaitClose( )
-   
-   ;\\
-   Procedure CustomEvents( )
-      Select WidgetEventType( )
-            
-            ;\\ demo change current cursor
-         Case #__event_cursor
-            ; Debug " SETCURSOR " + EventWidget( )\class +" "+ GetCursor( )
-            
-            If EventWidget( ) = object2
-               If a_transform( )
-                  If GetCursor( )
-                     If a_index( )
-                        ProcedureReturn cursor::#__cursor_Hand
-                     Else
-                        ProcedureReturn cursor::#__cursor_Cross
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-      EndSelect
-   EndProcedure
-   
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile = 99
-   EnableExplicit
-   Uselib(widget)
-   
-   Global object, parent
-   Declare CustomEvents( )
-   
-   ;\\
-   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root( ), 4)
-   Define fs = 20
-   ;\\
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
-   parent = Container(50, 50, 500, 500)
-   SetFrame(parent, fs)
-   
-   ;\\
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-   ; object = Container(100, 100, 250, 250)
-   object = ScrollArea(100, 100, 250, 250, 350, 350, 1) : SetState( GetBar( object, 1 ), 80 )
-   ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1)
-   Button( 50, 50, 100, 100, GetClass(object))
-   ; Container( 50,50,100,100) : CloseList( )
-   ; Window(50,50,100,100, GetClass(object), #PB_Window_BorderLess | #PB_Window_SizeGadget, object) : CloseList( )
-   a_set(widget( ), #__a_full, 18)
-   CloseList( )
-   
-   ;\\
-   SetFrame(object, fs)
-   a_set(object, #__a_full, 8)
-   ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-   ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
-   
-   ;\\
-   Bind( widget( ), @CustomEvents( ), #__event_Draw )
-   WaitClose( )
-   
-   ;\\
-   Procedure CustomEvents( )
-      Select WidgetEventType( )
-         Case #__event_Draw
-            
-            ; Demo draw on element
-            UnclipOutput( )
-            DrawingMode(#PB_2DDrawing_Outlined)
-            
-            If Eventwidget( )\bounds\move
-               Box(Eventwidget( )\parent\x[#__c_frame] + Eventwidget( )\bounds\move\min\x,
-                   Eventwidget( )\parent\y[#__c_frame] + Eventwidget( )\parent\fs[2] + Eventwidget( )\bounds\move\min\y,
-                   Eventwidget( )\bounds\move\max\x - Eventwidget( )\bounds\move\min\x,
-                   Eventwidget( )\bounds\move\max\y - Eventwidget( )\bounds\move\min\y, $ff0000ff)
-            EndIf
-            
-            If Eventwidget( )\bounds\size
-               ;           Box(Eventwidget( )\bounds\size\min\width,
-               ;               Eventwidget( )\bounds\size\min\height,
-               ;               Eventwidget( )\bounds\size\max\width-Eventwidget( )\bounds\size\min\width,
-               ;               Eventwidget( )\bounds\size\max\height-Eventwidget( )\bounds\size\min\height, $ffff0000)
-               
-               Box(Eventwidget( )\x[#__c_frame],
-                   Eventwidget( )\y[#__c_frame],
-                   Eventwidget( )\bounds\size\min\width,
-                   Eventwidget( )\bounds\size\min\height, $ff00ff00)
-               
-               Box(Eventwidget( )\x[#__c_frame],
-                   Eventwidget( )\y[#__c_frame],
-                   Eventwidget( )\bounds\size\max\width,
-                   Eventwidget( )\bounds\size\max\height, $ffff0000)
-            EndIf
-            
-            ; Box(Eventwidget( )\x,Eventwidget( )\y,Eventwidget( )\width,Eventwidget( )\height, draw_color)
-            
-      EndSelect
-      
-   EndProcedure
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile = 99
-   EnableExplicit
-   Uselib(widget)
-   
-   Global object, parent
-   Declare CustomEvents( )
-   
-   ;\\
-   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root( ), 4)
-   Define fs = 20
-   ;\\
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
-   parent       = Container(50, 50, 500, 500)
-   widget( )\fs = fs : Resize(widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-   
-   ;\\
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-   ; object = Container(100, 100, 250, 250) : CloseList( )
-   object = ScrollArea(100, 100, 250, 250, 350, 350, 1) : CloseList( )
-   ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList( )
-   
-   ;\\
-   widget( )\fs = fs : Resize(widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-   
-   ;\\
-   a_set(object, #__a_full, 8)
-   ; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-   ; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
-   
-   ;\\
-   Bind( widget( ), @CustomEvents( ), #__event_Draw )
-   WaitClose( )
-   
-   ;\\
-   Procedure CustomEvents( )
-      Select WidgetEventType( )
-         Case #__event_Draw
-            
-            ; Demo draw on element
-            UnclipOutput( )
-            DrawingMode(#PB_2DDrawing_Outlined)
-            
-            If Eventwidget( )\bounds\move
-               Box(Eventwidget( )\parent\x[#__c_frame] + Eventwidget( )\bounds\move\min\x,
-                   Eventwidget( )\parent\y[#__c_frame] + Eventwidget( )\parent\fs[2] + Eventwidget( )\bounds\move\min\y,
-                   Eventwidget( )\bounds\move\max\x - Eventwidget( )\bounds\move\min\x,
-                   Eventwidget( )\bounds\move\max\y - Eventwidget( )\bounds\move\min\y, $ff0000ff)
-            EndIf
-            
-            If Eventwidget( )\bounds\size
-               ;           Box(Eventwidget( )\bounds\size\min\width,
-               ;               Eventwidget( )\bounds\size\min\height,
-               ;               Eventwidget( )\bounds\size\max\width-Eventwidget( )\bounds\size\min\width,
-               ;               Eventwidget( )\bounds\size\max\height-Eventwidget( )\bounds\size\min\height, $ffff0000)
-               
-               Box(Eventwidget( )\x[#__c_frame],
-                   Eventwidget( )\y[#__c_frame],
-                   Eventwidget( )\bounds\size\min\width,
-                   Eventwidget( )\bounds\size\min\height, $ff00ff00)
-               
-               Box(Eventwidget( )\x[#__c_frame],
-                   Eventwidget( )\y[#__c_frame],
-                   Eventwidget( )\bounds\size\max\width,
-                   Eventwidget( )\bounds\size\max\height, $ffff0000)
-            EndIf
-            
-            ; Box(Eventwidget( )\x,Eventwidget( )\y,Eventwidget( )\width,Eventwidget( )\height, draw_color)
-            
-      EndSelect
-      
-   EndProcedure
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile 
    Uselib(widget)
    
    Global MDI, MDI_splitter, Splitter
    
    If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      MDI        = MDI(0, 0, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
+      MDI        = MDI(10, 10, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
       Define *g0 = AddItem(MDI, -1, "form_0")
       ; 		Button(10,10,80,80,"button_0")
       ; 		
@@ -22999,7 +22756,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3175
-; FirstLine = 3152
-; Folding = ----------------------------------------------------------------f------9f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+f----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22152
+; FirstLine = 21945
+; Folding = ----------------------------------------------------------------f------9f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---+---------vf0-+------------------------------------------------------------------------------------------------------------------
 ; EnableXP
