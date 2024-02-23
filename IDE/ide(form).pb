@@ -1326,7 +1326,6 @@ CompilerEndIf
 
 ;\\ include images
 DataSection   
-   ;IncludePath "include/images"
    IncludePath #IDE_path + "ide/include/images"
    
    file_open:        : IncludeBinary "delete1.png"
@@ -1347,7 +1346,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1287
-; FirstLine = 1110
+; CursorPosition = 1328
+; FirstLine = 1157
 ; Folding = ----------v--8--8-----
 ; EnableXP

@@ -3377,13 +3377,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                
-               If a_entered( )
-                  Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
-               Else
-                  Debug "   a_show " +" "+ *this\class +" "+ a_index() +" "+ *this\enter
-               EndIf
+;                If a_entered( )
+;                   Debug "a_show "+a_entered( )\class +" "+ *this\class +" "+ a_index() +" "+ *this\enter
+;                Else
+;                   Debug "   a_show " +" "+ *this\class +" "+ a_index() +" "+ *this\enter
+;                EndIf
                
-               ;a_entered( ) = *this
                ;
                ProcedureReturn *this
             EndIf
@@ -17809,17 +17808,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      ;\\ draw current focus frame
-                     If __widgets( )\focus
-                        If __widgets( ) = GetActive( )
-                           UnclipOutput( )
-                           drawing_mode_(#PB_2DDrawing_Outlined)
-                           ;
-                           If Not __widgets( )\fs
-                              draw_roundbox_( __widgets( )\frame_x( ) - 2, __widgets( )\frame_y( ) - 2, __widgets( )\frame_width( ) + 4, __widgets( )\frame_height( ) + 4, __widgets( )\round, __widgets( )\round, $ffff0000 )
-                           EndIf
-                           draw_roundbox_( __widgets( )\frame_x( ) - 1, __widgets( )\frame_y( ) - 1, __widgets( )\frame_width( ) + 2, __widgets( )\frame_height( ) + 2, __widgets( )\round, __widgets( )\round, $ffff0000 )
-                           If __widgets( )\fs
-                              draw_roundbox_( __widgets( )\frame_x( ), __widgets( )\frame_y( ), __widgets( )\frame_width( ), __widgets( )\frame_height( ), __widgets( )\round, __widgets( )\round, $ffff0000 )
+                     If Not __widgets( )\hide
+                        If __widgets( )\focus
+                           If __widgets( ) = GetActive( )
+                              UnclipOutput( )
+                              drawing_mode_(#PB_2DDrawing_Outlined)
+                              ;
+                              If Not __widgets( )\fs
+                                 draw_roundbox_( __widgets( )\frame_x( ) - 2, __widgets( )\frame_y( ) - 2, __widgets( )\frame_width( ) + 4, __widgets( )\frame_height( ) + 4, __widgets( )\round, __widgets( )\round, $ffff0000 )
+                              EndIf
+                              draw_roundbox_( __widgets( )\frame_x( ) - 1, __widgets( )\frame_y( ) - 1, __widgets( )\frame_width( ) + 2, __widgets( )\frame_height( ) + 2, __widgets( )\round, __widgets( )\round, $ffff0000 )
+                              If __widgets( )\fs
+                                 draw_roundbox_( __widgets( )\frame_x( ), __widgets( )\frame_y( ), __widgets( )\frame_width( ), __widgets( )\frame_height( ), __widgets( )\round, __widgets( )\round, $ffff0000 )
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -22143,7 +22144,7 @@ EndMacro
 
 
 ;-
-CompilerIf #PB_Compiler_IsMainFile 
+CompilerIf #PB_Compiler_IsMainFile = 99
    Uselib(widget)
    
    Global MDI, MDI_splitter, Splitter
@@ -22166,7 +22167,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    UseLIB(widget)
@@ -22756,7 +22757,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 312
-; FirstLine = 312
-; Folding = ----------------------------------------------------------------f------9f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---+---------vf0-+------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22171
+; FirstLine = 21820
+; Folding = ----------------------------------------------------------------f------9f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vt48++7-------vf0-+-----------------------------------------------------------------------------------------------------------0------
 ; EnableXP
