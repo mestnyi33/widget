@@ -9,7 +9,7 @@ CompilerEndIf
 EnableExplicit
    Uselib( widget )
    
-Global Window_0=-1, Window_0_Image_0=-1, Window_0_Button_0=-1, Window_0_Button_1=-1, Window_0_Button_2=-1
+Global Window_0=-1, Image_View=-1, Button_Load=-1, Button_Ok=-1, Button_Cancel=-1
 Global Window_0_OpenFile$, Window_0_0_Image=-1, Event_=-1, Properties_Image=-1, Properties_ImageBg=-1
 
 Procedure CFE_Helper_Buttons_Events( )
@@ -17,15 +17,15 @@ Procedure CFE_Helper_Buttons_Events( )
   
   Select WidgetEventType( )
     Case #__Event_Close
-      Close(EventWidget( ))
+      Close( EventWidget( ) )
       
     Case #__Event_LeftClick
       Select EventWidget( )
-        Case Window_0_Button_2
-          Close( Window_0_Button_2 )
+        Case Button_Cancel
+          Close( GetWindow( Button_Cancel ) )
           
-        Case Window_0_Button_1 
-          Window_0_0_Image = GetState(Window_0_Image_0)
+        Case Button_Ok 
+          Window_0_0_Image = GetState(Image_View)
           
           Select Event_ ; Is(*Create\Checked)
             Case Properties_ImageBg
@@ -47,9 +47,9 @@ Procedure CFE_Helper_Buttons_Events( )
           SetText(Event_, Window_0_OpenFile$)
           ;*Create\ImagePuch(Str(Window_0_0_Image)) = Window_0_OpenFile$
           
-          Close(Window_0_Button_1)
+          Close(Button_Ok)
           
-        Case Window_0_Button_0
+        Case Button_Load
           Protected StandardFile$ = "C:\Users\mestnyi\Google Диск\SyncFolder()\Module()\"  
           Protected Pattern$ = "Image (png;bmp)|*.png;*.gif;*.bmp|All files (*.*)|*.*"
           Protected Pattern = 0    ; use the first of the three possible patterns as standard
@@ -59,7 +59,7 @@ Procedure CFE_Helper_Buttons_Events( )
           
           UsePNGImageDecoder()
           If img
-            SetState(Window_0_Image_0, img)
+            SetState(Image_View, img)
           EndIf
           
       EndSelect
@@ -88,21 +88,23 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   Window_0 = Window( X,Y, Width, Height, "Редактор изображения", Flag|#PB_Window_Invisible)
   Sticky(Window_0, #True)
   
-  Window_0_Image_0 = Image(5, 5, 231, 166, 0);, #_Flag_Image_Center)
-  Window_0_Button_0 = Button(240, 5, 101, 21, "Загрузить")
-  Window_0_Button_1 = Button(240, 125, 101, 21, "Применить")
-  Window_0_Button_2 = Button(240, 150, 101, 21, "Отмена")
-  
+  Image_View = Image(5, 5, 231, 166, 0);, #_Flag_Image_Center)
+  ;
+  Button_Load = Button(240, 5, 101, 21, "Загрузить")
+  Button_Ok = Button(240, 125, 101, 21, "Применить")
+  Button_Cancel = Button(240, 150, 101, 21, "Отмена")
+  ;
   Bind(Window_0, @CFE_Helper_Buttons_Events())
-  ;WaitWindowEventClose(Window_0)
-  ;Debug 444444444
+  ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)
+  Hide(Window_0, #False)
+  CloseList()
+  
+  ; WaitQuit( )
+  
   If *Image
     *Image\i = Window_0_0_Image
   EndIf
   
-  ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)
-  Hide(Window_0, #False)
-  CloseList()
   
   ProcedureReturn 
 EndProcedure
@@ -115,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(#PB_Any, 0,0, 432,284+4*65, "Demo ()") 
   
   Define Window = root( )
-  a_init(Window)
+  ;a_init(Window)
   ;Define  h = GetAttribute(Window, #_Attribute_CaptionHeight)
   Define gImage 
   CFE_Helper_Image(Window)
@@ -124,9 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose(Window)
 CompilerEndIf
 
-
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 118
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 101
 ; FirstLine = 88
 ; Folding = ---
 ; EnableXP

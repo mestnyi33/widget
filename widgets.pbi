@@ -412,8 +412,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
          widget::WaitCloses( )
       EndMacro
-      Macro WaitClose( )
-         widget::WaitCloses( )
+      Macro WaitClose( _root_ = #Null, _waitTime_ = 0 )
+         widget::WaitCloses( _root_, _waitTime_ )
       EndMacro
       
       ;-
@@ -2497,12 +2497,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;-\\  ANCHORs
-      Structure _s_DATA_TRANSFORM_CURSOR
+      Structure _s_CURSORDATA
          cursor.i[#__a_count + 1]
       EndStructure
       
       DataSection
-         DATA_TRANSFORM_CURSOR:
+         CURSORDATA:
          Data.i cursor::#__cursor_Default          ; 0
          Data.i cursor::#__cursor_Left             ; 1=#__a_left
          Data.i cursor::#__cursor_Up               ; 2=#__a_top
@@ -2515,13 +2515,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Data.i cursor::#__cursor_Arrows           ; 9=#__a_moved
       EndDataSection
       
-      Global *Data_Transform_Cursor._s_DATA_TRANSFORM_CURSOR = ?DATA_TRANSFORM_CURSOR
+      Global *CURSORDATA._s_CURSORDATA = ?CURSORDATA
       
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-         
-         ;\\
-         DrawingStop( )
-         
          Macro a_grid_change( _this_ )
             If a_transform( )\grid_widget <> _this_
                If mouse( )\steps > 1 And a_transform( )\grid_widget
@@ -2535,47 +2531,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndMacro
          
-         Static ID
+         ;\\
+         ;Steps - 1
          Protected hDC, x, y
-         startx = 0
-         starty = 0
-         If Not ID
-            ;Steps - 1
-            
-            ExamineDesktops( )
-            Protected width = DesktopWidth( 0 )
-            Protected height = DesktopHeight( 0 )
-            ID = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
-            
+         ExamineDesktops( )
+         Protected width = DesktopWidth( 0 )
+         Protected height = DesktopHeight( 0 )
+         hDC = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
+         ;
+         ;\\
+         DrawingStop( )
+         If StartDrawing( ImageOutput( hDC ))
+            drawing_mode_( #PB_2DDrawing_AllChannels )
             If Color = 0 : Color = $ff808080 : EndIf
-            
-            If StartDrawing( ImageOutput( ID ))
-               drawing_mode_( #PB_2DDrawing_AllChannels )
-               ;Box( 0, 0, width, height, BoxColor )
-               
-               For x = startx To width - 1
-                  
-                  For y = starty To height - 1
-                     
-                     If line
-                        Line( x, 0, 1, height, Color )
-                        Line( 0, y, width, 1, Color )
-                     Else
-                        Line( x, y, 1, 1, Color )
-                     EndIf
-                     
-                     y + Steps
-                  Next
-                  
-                  
-                  x + Steps
+            ;
+            For x = startx To width - 1
+               For y = starty To height - 1
+                  ;
+                  If line
+                     Line( x, 0, 1, height, Color )
+                     Line( 0, y, width, 1, Color )
+                  Else
+                     Line( x, y, 1, 1, Color )
+                  EndIf
+                  ;
+                  y + Steps
                Next
-               
-               StopDrawing( )
-            EndIf
+               x + Steps
+            Next
+            ;
+            StopDrawing( )
          EndIf
          
-         ProcedureReturn ID
+         ProcedureReturn hDC
       EndProcedure
       
       Macro a_draw( _this_ )
@@ -2590,7 +2578,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; draw lines
-               If _this_\focus
+               If _this_ = a_focused( )
                   ;\\ left line
                   If a_selector([#__a_line_left])
                      If Not ( _this_\anchors\id[#__a_moved] And a_selector([#__a_line_left])\y = _this_\frame_y( ) And a_selector([#__a_line_left])\height = _this_\frame_height( ))
@@ -2826,75 +2814,74 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_selector([#__a_line_bottom])\y      = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_selector([#__a_line_bottom])\height
             
             ;\\
-            If a_focused( )\root And ListSize( __widgets( ))
-               PushListPosition( __widgets( ))
-               ForEach __widgets( )
-                  If __widgets( )\anchors And Not __widgets( )\hide And __widgets( ) <> a_focused( )
-                     If is_level_( __widgets( ), a_focused( ) )
-                        
-                        ;\\ left-line
-                        If a_focused( )\frame_x( ) = __widgets( )\frame_x( )
-                           If a_selector([#__a_line_left])\y > __widgets( )\frame_y( )
-                              a_selector([#__a_line_left])\y = __widgets( )\frame_y( )
-                           EndIf
-                           If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
-                              a_selector([#__a_line_left])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( ) ) - a_selector([#__a_line_left])\y
-                           Else
-                              a_selector([#__a_line_left])\height = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_selector([#__a_line_left])\y
-                           EndIf
-                           
-                           a_selector([#__a_line_left])\state = 2
-                        EndIf
-                        
-                        ;\\ right-line
-                        If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                           If a_selector([#__a_line_top])\y > __widgets( )\frame_y( )
-                              a_selector([#__a_line_top])\y = __widgets( )\frame_y( )
-                           EndIf
-                           If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
-                              a_selector([#__a_line_top])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( )) - a_selector([#__a_line_top])\y
-                           Else
-                              a_selector([#__a_line_top])\height = (a_focused( )\frame_y( ) + a_focused( )\frame_height( )) - a_selector([#__a_line_top])\y
-                           EndIf
-                           
-                           a_selector([#__a_line_top])\state = 2
-                        EndIf
-                        
-                        ;\\ top-line
-                        If a_focused( )\frame_y( ) = __widgets( )\frame_y( )
-                           If a_selector([#__a_line_right])\x > __widgets( )\frame_x( )
-                              a_selector([#__a_line_right])\x = __widgets( )\frame_x( )
-                           EndIf
-                           If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                              a_selector([#__a_line_right])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_selector([#__a_line_right])\x
-                           Else
-                              a_selector([#__a_line_right])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_selector([#__a_line_right])\x
-                           EndIf
-                           
-                           a_selector([#__a_line_right])\state = 1
-                        EndIf
-                        
-                        ;\\ bottom-line
-                        If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) = __widgets( )\frame_y( ) + __widgets( )\frame_height( )
-                           If a_selector([#__a_line_bottom])\x > __widgets( )\frame_x( )
-                              a_selector([#__a_line_bottom])\x = __widgets( )\frame_x( )
-                           EndIf
-                           If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                              a_selector([#__a_line_bottom])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_selector([#__a_line_bottom])\x
-                           Else
-                              a_selector([#__a_line_bottom])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_selector([#__a_line_bottom])\x
-                           EndIf
-                           
-                           a_selector([#__a_line_bottom])\state = 1
-                        EndIf
+            If StartEnumerate( a_focused( )\parent )
+               If __widgets( )\anchors And Not __widgets( )\hide And __widgets( ) <> a_focused( ) And __widgets( )\level = a_focused( )\level
+                  ; If is_level_( __widgets( ), a_focused( ) )
+                  ;
+                  ;\\ left-line
+                  If a_focused( )\frame_x( ) = __widgets( )\frame_x( )
+                     If a_selector([#__a_line_left])\y > __widgets( )\frame_y( )
+                        a_selector([#__a_line_left])\y = __widgets( )\frame_y( )
                      EndIf
+                     If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                        a_selector([#__a_line_left])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( ) ) - a_selector([#__a_line_left])\y
+                     Else
+                        a_selector([#__a_line_left])\height = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_selector([#__a_line_left])\y
+                     EndIf
+                     
+                     a_selector([#__a_line_left])\state = 2
                   EndIf
-               Next
-               PopListPosition( __widgets( ))
+                  ;
+                  ;\\ right-line
+                  If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                     If a_selector([#__a_line_top])\y > __widgets( )\frame_y( )
+                        a_selector([#__a_line_top])\y = __widgets( )\frame_y( )
+                     EndIf
+                     If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                        a_selector([#__a_line_top])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( )) - a_selector([#__a_line_top])\y
+                     Else
+                        a_selector([#__a_line_top])\height = (a_focused( )\frame_y( ) + a_focused( )\frame_height( )) - a_selector([#__a_line_top])\y
+                     EndIf
+                     
+                     a_selector([#__a_line_top])\state = 2
+                  EndIf
+                  ;
+                  ;\\ top-line
+                  If a_focused( )\frame_y( ) = __widgets( )\frame_y( )
+                     If a_selector([#__a_line_right])\x > __widgets( )\frame_x( )
+                        a_selector([#__a_line_right])\x = __widgets( )\frame_x( )
+                     EndIf
+                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                        a_selector([#__a_line_right])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_selector([#__a_line_right])\x
+                     Else
+                        a_selector([#__a_line_right])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_selector([#__a_line_right])\x
+                     EndIf
+                     
+                     a_selector([#__a_line_right])\state = 1
+                  EndIf
+                  ;
+                  ;\\ bottom-line
+                  If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) = __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                     If a_selector([#__a_line_bottom])\x > __widgets( )\frame_x( )
+                        a_selector([#__a_line_bottom])\x = __widgets( )\frame_x( )
+                     EndIf
+                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                        a_selector([#__a_line_bottom])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_selector([#__a_line_bottom])\x
+                     Else
+                        a_selector([#__a_line_bottom])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_selector([#__a_line_bottom])\x
+                     EndIf
+                     
+                     a_selector([#__a_line_bottom])\state = 1
+                  EndIf
+                  ; EndIf
+               EndIf
+               ;
+               StopEnumerate( )
             EndIf
          EndIf
          
       EndMacro
+      
       
       Procedure a_delta( *this._s_WIDGET )
          ;\\
@@ -2980,36 +2967,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure a_remove( *this._s_WIDGET )
-         Protected i
-         For i = 0 To #__a_count
-            If *this\anchors\id[i]
-               FreeStructure( *this\anchors\id[i] )
-               *this\anchors\id[i] = #Null
-            EndIf
-         Next i
-      EndProcedure
-      
-      Procedure a_free( *this._s_WIDGET )
-         If *this\focus
-            a_set( *this\parent )
-         EndIf
-         a_remove( *this )
-         FreeStructure( *this\anchors )
-         *this\anchors = #Null
-      EndProcedure
-      
-      Procedure a_hide( *this._s_WIDGET )
-         ProcedureReturn a_remove( *this )
-         If *this\anchors
-            If *this\anchors\mode & #__a_novisible
-               ; *this\anchors\mode &~ #__a_novisible
-            Else
-               ;  *this\anchors\mode | #__a_novisible
-            EndIf
-         EndIf
-      EndProcedure
-      
       Procedure a_create( *this._s_WIDGET, mode )
          Protected a_index
          
@@ -3065,11 +3022,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\anchors\id.allocate( A_BUTTONS, [a_index] )
                EndIf
                ;
-               mouse( )\anchors\cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
+               mouse( )\anchors\cursor[a_index] = *CURSORDATA\cursor[a_index]
             Next a_index
          EndIf 
          
          ProcedureReturn *this\anchors
+      EndProcedure
+      
+      Procedure a_remove( *this._s_WIDGET )
+         Protected a_index
+         ;
+         For a_index = 0 To #__a_count
+            If *this\anchors\id[a_index]
+               FreeStructure( *this\anchors\id[a_index] )
+               *this\anchors\id[a_index] = #Null
+            EndIf
+         Next a_index
+      EndProcedure
+      
+      Procedure a_free( *this._s_WIDGET )
+         If *this\focus
+            a_set( *this\parent )
+         EndIf
+         a_remove( *this )
+         FreeStructure( *this\anchors )
+         *this\anchors = #Null
+      EndProcedure
+      
+      Procedure a_hide( *this._s_WIDGET )
+         ProcedureReturn a_remove( *this )
+         If *this\anchors
+            If *this\anchors\mode & #__a_novisible
+               ; *this\anchors\mode &~ #__a_novisible
+            Else
+               ;  *this\anchors\mode | #__a_novisible
+            EndIf
+         EndIf
       EndProcedure
       
       Procedure a_enter( *this._s_WIDGET, *data )
@@ -3352,7 +3340,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\anchors\id.allocate( A_BUTTONS, [a_index] )
                      EndIf
                      ;
-                     mouse( )\anchors\cursor[a_index] = *Data_Transform_Cursor\cursor[a_index]
+                     mouse( )\anchors\cursor[a_index] = *CURSORDATA\cursor[a_index]
                   Next a_index
                EndIf
                ;
@@ -3563,7 +3551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             FreeImage( a_transform( )\grid_image )
          EndIf
          ;
-         a_transform( )\grid_image = a_grid_image( mouse( )\steps - 1, a_transform( )\grid_type, $FF000000, *this\fs, *this\fs )
+         a_transform( )\grid_image = a_grid_image( mouse( )\steps - 1, a_transform( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
          ;
          a_transform( )\framecolor[#__s_0] = $ff000000
          a_transform( )\framecolor[#__s_1] = $ffFF0000
@@ -21426,6 +21414,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If is_root_( *window )
                   *window   = *window\root\canvas\window
                   is_window = #True
+               Else
+                  If is_widget_( *window )
+                    *window = GetWindow( *window )
+                  EndIf
+                  is_window = #True
                EndIf
             EndIf
          EndIf
@@ -21497,10 +21490,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Next
-         Else
-            If is_widget_( *window )
-               Free( *window )
-            EndIf
          EndIf
          
          ;\\
@@ -22816,7 +22805,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19637
-; FirstLine = 18713
-; Folding = -------H------------j------------------------------------vP9----f------9f---pwf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8t4v88r--------e0-+-----------------------------------------------------------------------------------------------------------+------
+; CursorPosition = 2580
+; FirstLine = 2442
+; Folding = -------H------------j------------------------------------vv+--Xtn-----f+----Wov-40-v8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v0384002-------fv+f-------------------------------------------------------------------------------------------r4--------------f-------
 ; EnableXP
