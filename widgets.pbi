@@ -256,11 +256,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-\\
+      Macro widget( ): widget::__gui\widget: EndMacro ; Returns current-root last added widget
       Macro Root( ): widget::__gui\root: EndMacro
       ; Macro FirstRoot( ): first\root: EndMacro
       Macro LastRoot( ): last\root: EndMacro
       Macro AfterRoot( ): after\root: EndMacro
       Macro BeforeRoot( ): before\root: EndMacro
+      ;
       Macro ChangeCurrentCanvas( _canvas_ )
          FindMapElement( widget::__roots( ), Str( _canvas_ ) )
          widget::Root( ) = widget::__roots( )
@@ -290,8 +292,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro Mouse( ): widget::__gui\mouse: EndMacro
       Macro Keyboard( ): widget::__gui\keyboard: EndMacro
-      Macro Opened( ): widget::__gui\opened: EndMacro ; list opened widget
-                                                      ;-
+      
+      ;-
+      Macro Opened( ): widget::__gui\opened: EndMacro ; object list opened container
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       
@@ -299,15 +302,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro StatusBox( ): statusbox: EndMacro
       Macro CheckedBox( ): checkbox: EndMacro
       Macro ButtonBox( ): buttonbox: EndMacro
-      
       ;
       Macro StringBox( ): stringbox: EndMacro
       Macro GroupBox( ): groupbox: EndMacro
       Macro TabBox( ): tab\widget: EndMacro
+      
       ;-
       Macro EnteredTab( ): tab\entered: EndMacro         ; Returns mouse entered tab
       Macro PressedTab( ): tab\pressed: EndMacro         ; Returns mouse focused tab
       Macro FocusedTab( ): tab\focused: EndMacro         ; Returns mouse focused tab
+                                                         ;
       Macro OpenedTabIndex( ): index[1]: EndMacro        ;
       Macro FocusedTabIndex( ): index[2]: EndMacro       ;
       Macro TabIndex( ): index[3]: EndMacro           ;
@@ -364,12 +368,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro AfterWidget( ): after\widget: EndMacro
       Macro BeforeWidget( ): before\widget: EndMacro
       
+      ;-
       Macro EnteredWidget( ): mouse( )\entered\widget: EndMacro ; Returns mouse entered widget
-      Macro PressedWidget( ): mouse( )\pressed\widget: EndMacro
+      Macro PressedWidget( ): mouse( )\pressed\widget: EndMacro ; Returns mouse button pushed widget
       
-      Macro ActiveWindow( ): Keyboard( )\window: EndMacro   ; Returns activeed window
-      Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro   ; Returns activeed window
-      Macro GetActive( ): Keyboard( )\widget: EndMacro          ; Returns activeed window
+      ;-
+      Macro GetActive( ): Keyboard( )\widget: EndMacro        ; Returns activeed object
+      Macro ActiveWindow( ): Keyboard( )\window: EndMacro     ; Returns activeed window
+      Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
       
       ;-
       Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
@@ -404,10 +410,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
-         widget::WaitClose( )
+         widget::WaitCloses( )
       EndMacro
-      
-      Macro widget( ): __gui\widget: EndMacro ; Returns current-root last added widget
+      Macro WaitClose( )
+         widget::WaitCloses( )
+      EndMacro
       
       ;-
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
@@ -452,9 +459,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If  __widgets( )\level < _parent_\level
                   Break
                EndIf
-               If __widgets( )\parent = _parent_  
-                  If _item_ <> __widgets( )\TabIndex( )
-                     If _item_ >= 0  
+               If _item_ >= 0  
+                  If __widgets( )\parent = _parent_  
+                     If _item_ <> __widgets( )\TabIndex( )
                         Break
                      EndIf
                   EndIf
@@ -1164,7 +1171,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare EventHandler( event = - 1, canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
       Declare PostQuit( *root = #Null )
       Declare WaitQuit( *root = #Null )
-      Declare WaitClose( *root = #Null, waittime.l = 0 )
+      Declare WaitCloses( *root = #Null, waittime.l = 0 )
       Declare Message( Title.s, Text.s, flag.q = #Null )
       
       Declare.i Tree_properties( x.l, y.l, width.l, height.l, flag.q = 0 )
@@ -3413,7 +3420,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\bs - *this\anchors\pos
                         *this\anchors\pos = size / 2
                         *this\bs + *this\anchors\pos  ; + *this\fs
-                                                      ;a_entered( ) = 0
                      EndIf
                   EndIf
                   ;
@@ -3422,7 +3428,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\bs - *this\anchors\pos
                         *this\anchors\pos = position
                         *this\bs + *this\anchors\pos  ; + *this\fs
-                                                      ;a_entered( ) = 0
                      EndIf
                   EndIf
                   ;
@@ -3442,7 +3447,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   result = *this
                   a_focused( ) = *this
-                  ;GetActive( ) = *this
                   ;
                   If a_entered( ) = *this
                      a_size( *this, *this\anchors\id, *this\anchors\size )
@@ -3470,7 +3474,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_atpoint( *this._s_WIDGET )
          ;\\ entered anchor index
-         If Not mouse( )\press
+         If mouse( )\press
+            If a_index( ) And 
+               a_entered( ) And 
+               a_entered( )\anchors\id[a_index( )] And
+               a_entered( )\anchors\id[a_index( )]\state
+               ;
+               If Not a_entered( )\dragstart
+                  ;
+                  If *this <> a_entered( ) And 
+                     *this\root <> a_entered( )\root 
+                     EnteredWidget( ) = a_entered( )
+                     ProcedureReturn a_entered( )
+                  EndIf
+               EndIf
+            EndIf
+            
+         Else
             If a_entered( ) And 
                a_entered( )\anchors And
                Not (*this And a_entered( )\root <> *this\root )
@@ -3525,23 +3545,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf  
-         EndIf
-         
-         ;\\
-         If mouse( )\press
-            If a_index( ) And 
-               a_entered( ) And 
-               a_entered( )\anchors\id[a_index( )] And
-               a_entered( )\anchors\id[a_index( )]\state
-               ;
-               If Not a_entered( )\dragstart
-                  ;
-                  If *this <> a_entered( ) 
-                     EnteredWidget( ) = a_entered( )
-                     ProcedureReturn a_entered( )
-                  EndIf
-               EndIf
-            EndIf
          EndIf
       EndProcedure  
       
@@ -21789,7 +21792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure WaitClose( *root._s_ROOT = #Null, waitTime.l = 0 )
+      Procedure WaitCloses( *root._s_ROOT = #Null, waitTime.l = 0 )
          Static mainWindow = - 1
          Protected result
          Protected *ew._s_WIDGET
@@ -22841,7 +22844,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3463
-; FirstLine = 3361
-; Folding = ----------------------------------------------------------------f------9f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------3bvf44X---------7-0-----------------------------------------------------------------------------------------------------------8------
+; CursorPosition = 3449
+; FirstLine = 3262
+; Folding = -------H------------j--------------------------------------------+-----6-+--Thf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8t4v88r--------e0-+-----------------------------------------------------------------------------------------------------------0------
 ; EnableXP
