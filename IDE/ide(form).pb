@@ -1199,76 +1199,52 @@ CompilerIf #PB_Compiler_IsMainFile
    Define event
    ide_open( )
    
-   
-   ;     ; example 1
-   ;     ;   ;OpenList( ide_design_MDI )
-   ;     ide_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
-   ;         Define *container = widget_add( ide_form, "container", 130, 20, 220, 140 )
-   ;         widget_add( *container, "button", 10, 20, 30, 30 )
-   ;         widget_add( ide_form, "button", 10, 20, 100, 30 )
-   ;         
-   ;         Define item = 1
-   ;         SetState( ide_inspector_view, item )
-   ;         If IsGadget( g_ide_design_code )
-   ;           SetGadgetState( g_ide_design_code, item )
-   ;         EndIf
-   ;         Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-   ;         widget_add( *container2, "button", 10, 20, 30, 30 )
-   ;         
-   ;         SetState( ide_inspector_view, 0 )
-   ;         widget_add( ide_form, "button", 10, 130, 100, 30 )
-   ;         
-   ; ; ;         ;   Define ide_form = widget_add( ide_design_MDI, "window", 10, 10 )
-   ; ; ;         ;   Define *container = widget_add( ide_form, "container", 80, 10 )
-   ; ; ;         ;   widget_add( *container, "button", -10, 20 )
-   ; ; ;         ;   widget_add( ide_form, "button", 10, 20 )
-   ; ; ;         ;   ;CloseList( )
-   ; ; ;         
-   ;             ; example 2
-   ;             ;   ;OpenList( ide_design_MDI )
-   ;             SetState( group_select, 1 ) 
-   ;             
-   ;             Define ide_form = widget_add( ide_design_MDI, "window", 30, 30, 400, 250 )
-   ;             widget_add( ide_form, "button", 15, 25, 50, 30 )
-   ;             widget_add( ide_form, "text", 25, 65, 50, 30 )
-   ;             widget_add( ide_form, "button", 35, 65+40, 50, 30 )
-   ;             widget_add( ide_form, "text", 45, 65+40*2, 50, 30 )
-   ;             
-   ;             ;Define *container = widget_add( ide_form, "container", 100, 25, 265, 170 )
-   ;             Define *container = widget_add( ide_form, "scrollarea", 100, 25, 265, 170 )
-   ;             widget_add( *container, "progress", 15, 25, 30, 30 )
-   ;             widget_add( *container, "text", 25, 65, 50, 30 )
-   ;             widget_add( *container, "button", 35, 65+40, 80, 30 )
-   ;             widget_add( *container, "text", 45, 65+40*2, 50, 30 )
-   ;             
-   ;             Define *container2 = widget_add( ide_form, "container", 100+140, 25+45, 165, 140 )
-   ;             widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
-   ;             widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
-   ;             widget_add( *container2, "string", 25, 65, 100, 30 )
-   ;             widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
-   
-   
-   
-   ; example 3
    ;   ;OpenList(ide_design_MDI)
    SetState(group_select, 1) 
-   Define result
-   Define._S_WIDGET *this, *parent
+   Define result, example = 3
    
-  ide_form = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
-   widget_add(ide_form, "button", 15, 25, 50, 30)
-   widget_add(ide_form, "text", 25, 65, 50, 30)
-   widget_add(ide_form, "button", 35, 65+40, 50, 30)
-   widget_add(ide_form, "text", 45, 65+40*2, 50, 30)
+  
+   If example = 1
+      ;\\ example 1
+      ide_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+      
+   ElseIf example = 2
+      ;\\ example 2
+      ide_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+      Define *container = widget_add( ide_form, "container", 130, 20, 220, 140 )
+      widget_add( *container, "button", 10, 20, 30, 30 )
+      widget_add( ide_form, "button", 10, 20, 100, 30 )
+      
+      Define item = 1
+      SetState( ide_inspector_view, item )
+      If IsGadget( g_ide_design_code )
+         SetGadgetState( g_ide_design_code, item )
+      EndIf
+      Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+      widget_add( *container2, "button", 10, 20, 30, 30 )
+      
+      SetState( ide_inspector_view, 0 )
+      widget_add( ide_form, "button", 10, 130, 100, 30 )
+      
+   ElseIf example = 3
+      ;\\ example 3
+      ide_form = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
+      widget_add(ide_form, "button", 15, 25, 50, 30)
+      widget_add(ide_form, "text", 25, 65, 50, 30)
+      widget_add(ide_form, "button", 35, 65+40, 50, 30)
+      widget_add(ide_form, "text", 45, 65+40*2, 50, 30)
+      
+      ;Define *container = widget_add(ide_form, "container", 100, 25, 265, 170)
+      Define *container = widget_add(ide_form, "scrollarea", 100, 25, 265, 170)
+      ;Define *container = widget_add(ide_form, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
+      widget_add(*container, "button", 15, 25, 30, 30)
+      widget_add(*container, "text", 25, 65, 50, 30)
+      widget_add(*container, "button", 35, 65+40, 80, 30)
+      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+   EndIf
    
-   ;Define *container = widget_add(ide_form, "container", 100, 25, 265, 170)
-   Define *container = widget_add(ide_form, "scrollarea", 100, 25, 265, 170)
-   ;Define *container = widget_add(ide_form, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
-   widget_add(*container, "button", 15, 25, 30, 30)
-   widget_add(*container, "text", 25, 65, 50, 30)
-   widget_add(*container, "button", 35, 65+40, 80, 30)
-   widget_add(*container, "text", 45, 65+40*2, 50, 30)
    
+;    Define._S_WIDGET *this, *parent
 ;    Debug "--- enumerate all gadgets ---"
 ;    If StartEnumerate( root( ) )
 ;       Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
@@ -1287,40 +1263,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    EndIf
 ;    
    
-  ;     
-   ;     Define *container2 = widget_add(ide_form, "container", 100+140, 25+45, 165, 140)
-   ;     widget_add(*container2, "button", 75, 25, 30, 30)
-   ;     widget_add(*container2, "text", 25, 65, 50, 30)
-   ;     widget_add(*container2, "button", 15, 65+40, 80, 30)
-   ;     widget_add(*container2, "text", 45, 65+40*2, 50, 30)
-   
-   
-   
-   
-   ; ; ; ;   Open( OpenWindow( #PB_Any, 150, 150, 200, 200, "PB ( window_1 )", #PB_Window_SizeGadget | #PB_Window_SystemMenu ) )
-   ; ; ; ;   ButtonGadget( #PB_Any, 0,0,80,20,"button" )
-   ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
-   ; ; ; ;   
-   ; ; ; ;   
-   ; ; ; ;   
-   ; ; ; ;   Open( Window( 200, 200, 200, 200, "window_2", #__Window_SizeGadget | #__Window_SystemMenu ) )
-   ; ; ; ;   Debug widget( )\height[#__c_inner2]
-   ; ; ; ;   ContainerGadget( #PB_Any, widget( )\x[#__c_inner], widget( )\y[#__c_inner], widget( )\width[#__c_inner2],widget( )\height[#__c_inner2] )
-   ; ; ; ;   ButtonGadget( #PB_Any, 0,0,80,20,"button" )
-   ; ; ; ;   ButtonGadget( #PB_Any, 200-80,200-20,80,20,"button" )
-   ; ; ; ;   CloseGadgetList( )
-   
+   ;\\ 
    WaitClose( )
-   ;    ;     Bind( Root(), #PB_Default )
-   ;    Repeat 
-   ;       event = WaitWindowEvent( ) 
-   ;       
-   ;       ;     Select EventWindow( )
-   ;       ;       Case ide_window 
-   ;       ;         ide_window_events( event )
-   ;       ;     EndSelect
-   ;       
-   ;    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
 
@@ -1346,7 +1290,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1328
-; FirstLine = 1157
+; CursorPosition = 1203
+; FirstLine = 1046
 ; Folding = ----------v--8--8-----
 ; EnableXP
