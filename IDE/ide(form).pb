@@ -533,9 +533,12 @@ Procedure widget_events( )
          
          properties_updates( ide_inspector_properties, *ew )
          
-;          If GetActive( ) <> ide_inspector_view 
-;             SetActive( ide_inspector_view )
-;          EndIf
+         ; Debug "Focus "+*ew\class +" ("+*ew\text\string+")"
+         
+         If GetActive( ) = *ew
+            ; Debug "reFocus (ide_inspector_view)"
+            SetActive( ide_inspector_view )
+         EndIf
          
       Case #__event_DragStart
          If a_index( ) = #__a_moved
@@ -1290,7 +1293,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1203
-; FirstLine = 1046
-; Folding = ----------v--8--8-----
+; CursorPosition = 539
+; FirstLine = 516
+; Folding = ----------f--4--4------
 ; EnableXP
