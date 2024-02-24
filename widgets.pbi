@@ -2517,9 +2517,66 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Global *Data_Transform_Cursor._s_DATA_TRANSFORM_CURSOR = ?DATA_TRANSFORM_CURSOR
       
-      Macro a_transformer( _this_ )
-         Bool( _this_\anchors Or ( is_integral_( _this_ ) And _this_\parent\anchors ) )
-      EndMacro
+      Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
+         
+         ;\\
+         DrawingStop( )
+         
+         Macro a_grid_change( _this_ )
+            If a_transform( )\grid_widget <> _this_
+               If mouse( )\steps > 1 And a_transform( )\grid_widget
+                  SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
+               EndIf
+               a_transform( )\grid_widget = _this_
+               
+               If mouse( )\steps > 1 And a_transform( )\grid_widget
+                  SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
+               EndIf
+            EndIf
+         EndMacro
+         
+         Static ID
+         Protected hDC, x, y
+         startx = 0
+         starty = 0
+         If Not ID
+            ;Steps - 1
+            
+            ExamineDesktops( )
+            Protected width = DesktopWidth( 0 )
+            Protected height = DesktopHeight( 0 )
+            ID = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
+            
+            If Color = 0 : Color = $ff808080 : EndIf
+            
+            If StartDrawing( ImageOutput( ID ))
+               drawing_mode_( #PB_2DDrawing_AllChannels )
+               ;Box( 0, 0, width, height, BoxColor )
+               
+               For x = startx To width - 1
+                  
+                  For y = starty To height - 1
+                     
+                     If line
+                        Line( x, 0, 1, height, Color )
+                        Line( 0, y, width, 1, Color )
+                     Else
+                        Line( x, y, 1, 1, Color )
+                     EndIf
+                     
+                     y + Steps
+                  Next
+                  
+                  
+                  x + Steps
+               Next
+               
+               StopDrawing( )
+            EndIf
+         EndIf
+         
+         ProcedureReturn ID
+      EndProcedure
       
       Macro a_draw( _this_ )
          ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
@@ -2593,67 +2650,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
-      
-      Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-         
-         ;\\
-         DrawingStop( )
-         
-         Macro a_grid_change( _this_ )
-            If a_transform( )\grid_widget <> _this_
-               If mouse( )\steps > 1 And a_transform( )\grid_widget
-                  SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
-               EndIf
-               a_transform( )\grid_widget = _this_
-               
-               If mouse( )\steps > 1 And a_transform( )\grid_widget
-                  SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
-               EndIf
-            EndIf
-         EndMacro
-         
-         Static ID
-         Protected hDC, x, y
-         startx = 0
-         starty = 0
-         If Not ID
-            ;Steps - 1
-            
-            ExamineDesktops( )
-            Protected width = DesktopWidth( 0 )
-            Protected height = DesktopHeight( 0 )
-            ID = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
-            
-            If Color = 0 : Color = $ff808080 : EndIf
-            
-            If StartDrawing( ImageOutput( ID ))
-               drawing_mode_( #PB_2DDrawing_AllChannels )
-               ;Box( 0, 0, width, height, BoxColor )
-               
-               For x = startx To width - 1
-                  
-                  For y = starty To height - 1
-                     
-                     If line
-                        Line( x, 0, 1, height, Color )
-                        Line( 0, y, width, 1, Color )
-                     Else
-                        Line( x, y, 1, 1, Color )
-                     EndIf
-                     
-                     y + Steps
-                  Next
-                  
-                  
-                  x + Steps
-               Next
-               
-               StopDrawing( )
-            EndIf
-         EndIf
-         
-         ProcedureReturn ID
-      EndProcedure
       
       Macro a_size( _this_, _address_, _size_ )
          If _address_[#__a_left] ; left
@@ -2983,7 +2979,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
       EndProcedure
-      
       
       Procedure a_remove( *this._s_WIDGET )
          Protected i
@@ -3717,7 +3712,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this
       EndProcedure
       
-      Procedure a_events( *this._s_WIDGET, eventtype.l, *button, *data )
+      Procedure a_events( *this._s_WIDGET, eventtype.l )
          Static *pressed._s_WIDGET
          Protected mouse_x.l = mouse( )\x
          Protected mouse_y.l = mouse( )\y
@@ -14374,7 +14369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this And Not *this\disable
             ;\\
-            If a_transformer( *this )
+            If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors )
                If *this\anchors
                   If GetActiveGadget( ) <> *this\root\canvas\gadget
                      SetActiveGadget( *this\root\canvas\gadget )
@@ -19611,7 +19606,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not *this
             ProcedureReturn 0
          EndIf
-         
+         ;
          ;\\ activate send event
          If *this\root And
             *this\root\event
@@ -19625,15 +19620,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\event = - 1
             EndIf
          EndIf
-         
-         ;          If a_entered( )
-         ;             If a_entered( ) = *this
-         ;                a_entered( )\enter = 1
-         ;             Else
-         ;                a_entered( )\frame_enter( )
-         ;             EndIf
-         ;          EndIf
-         
+         ;
          ;\\ entered position state
          If *this\enter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
@@ -19646,25 +19633,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\root\repaint = 1
             EndIf
          EndIf
-         
-         
-         
-         ;             If is_innerside_( *this, mouse( )\x, mouse( )\y )
-         ;                If *this\enter <> 2
-         ;                   *this\inner_enter( )
-         ;                   *this\root\repaint = 1
-         ;                EndIf
-         ;             ElseIf *this\inner_enter( )
-         ;                *this\enter        = 1
-         ;                *this\root\repaint = 1
-         ;             EndIf
          ;          
-         ;\\ widget::_events_Anchors( )
-         ;If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors ) ; a_transformer( *this )
-         If a_events( *this, eventtype, *button, *data)
-            *this\root\repaint = #True
-         EndIf
-         ;EndIf
+         ;\\ DoEvents_Anchors( )
+         a_events( *this, eventtype )
+         
          
 ;          ;\\
 ;          If eventtype = #__event_MouseEnter
@@ -22844,7 +22816,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3449
-; FirstLine = 3262
-; Folding = -------H------------j--------------------------------------------+-----6-+--Thf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8t4v88r--------e0-+-----------------------------------------------------------------------------------------------------------0------
+; CursorPosition = 19637
+; FirstLine = 18713
+; Folding = -------H------------j------------------------------------vP9----f------9f---pwf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8t4v88r--------e0-+-----------------------------------------------------------------------------------------------------------+------
 ; EnableXP
