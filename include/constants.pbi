@@ -657,12 +657,11 @@
       #__a_left_bottom  = 8
       #__a_moved        = 9
       
-      
-      #__a_line_left   = 1;10
-      #__a_line_top    = 2;12
-      #__a_line_right  = 3;11
-      #__a_line_bottom = 4;13
-      #__a_count       = 9;#__a_moved
+      ; a_selector( )
+      #__a_line_left    = 0
+      #__a_line_top     = 1
+      #__a_line_right   = 2
+      #__a_line_bottom  = 3
       
       ; a_set( ) flags
       EnumerationBinary 1
@@ -671,8 +670,9 @@
          #__a_height   ; по высоте
          #__a_corner   ; по углам
          #__a_zoom     ; по растянутый
-         #__a_novisible
+         #__a_nodraw
       EndEnumeration
+      ;
       #__a_edge = #__a_width | #__a_height ; по крайам
       #__a_size = #__a_corner | #__a_edge
       #__a_full = #__a_position | #__a_size
@@ -847,7 +847,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 673
-; FirstLine = 670
+; CursorPosition = 660
+; FirstLine = 647
 ; Folding = ---
 ; EnableXP

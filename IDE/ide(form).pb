@@ -414,9 +414,13 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             *new = Container( x,y,width,height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
-         Case "panel"       : *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
+         Case "panel"       
+            *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
+            SetColor( *new, #__color_back, $FFF1F1F1 )
+            
          Case "scrollarea"  
             *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
+            SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
          Case "image"       : *new = Image( x,y,width,height, img, flag )
@@ -585,7 +589,7 @@ Procedure widget_events( )
          
       Case #__event_LeftButtonDown
          If IsContainer( *ew )
-            If a_transform( )\type > 0 Or group_select
+            If a_selector( )\type > 0 Or group_select
                If group_select 
                   group_drag = *ew
                EndIf
@@ -651,7 +655,7 @@ Procedure widget_events( )
       ; end new create
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
-         a_transform( )\type = 0
+         a_selector( )\type = 0
          ChangeCursor( *ew, #PB_Cursor_Default )
       EndIf
    EndIf
@@ -920,7 +924,7 @@ Procedure ide_events( )
          
       Case #__event_DragStart
          If *ew = ide_inspector_elements
-            a_transform( )\type = 0
+            a_selector( )\type = 0
             
             Debug " ------ drag ide_events() ----- "
             If DragPrivate( #_DD_CreateNew, #PB_Drag_Copy )
@@ -971,7 +975,7 @@ Procedure ide_events( )
          EndIf
          
          If *ew = ide_inspector_elements
-            a_transform( )\type = GetState( *ew )
+            a_selector( )\type = GetState( *ew )
          EndIf
          
          If *ew = ide_design_code
@@ -1293,7 +1297,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 539
-; FirstLine = 516
+; CursorPosition = 977
+; FirstLine = 804
 ; Folding = ----------f--4--4------
 ; EnableXP

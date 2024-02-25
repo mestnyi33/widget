@@ -250,6 +250,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_A_BUTTONS Extends _s_COORDINATE
          state.b
       EndStructure
+      ;
+      Structure _s_SELECTOR Extends _s_COORDINATE
+         type.a
+         
+         dot_ted.a
+         dot_line.a
+         dot_space.a
+         
+         backcolor.i
+         framecolor.i
+      EndStructure
+      ;
       Structure _s_A_GROUP Extends _s_COORDINATE
          *widget._s_WIDGET
       EndStructure
@@ -261,40 +273,30 @@ CompilerIf Not Defined(Structures, #PB_Module)
          mode.i
          *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
-      ;Debug SizeOf(_s_ANCHORS)
-      ;
+      ;--     TRANSFORMDATA
       Structure _s_TRANSFORMDATA
-         *main._s_WIDGET
-         ;
-         mark.b
          List *group._s_A_GROUP( )
-         *type
          *grab ; grab image handle
          
          *grid_image
          grid_type.l
          *grid_widget
+      EndStructure
+      ;--     TRANSFORM
+      Structure _s_TRANSFORM
+         index.a                             ; a_index( )
+         *main._s_WIDGET                     ; a_main( )
+         *enter._s_WIDGET                    ; a_entered( )
+         *focus._s_WIDGET                    ; a_focused( )
+         line._s_A_BUTTONS[4]                ; a_line( )
          
-         dot_ted.l
-         dot_line.l
-         dot_space.l
-         
+         ;
+         cursor.a[constants::#__a_moved + 1] ;
+                                             ;
+         *transform._s_TRANSFORMDATA         ;
          
          backcolor.l[3]
          framecolor.l[3]
-         ;
-         selectorbackcolor.l
-         selectorframecolor.l
-         
-         id._s_A_BUTTONS[5];constants::#__a_moved + 1]
-      EndStructure
-      ;
-      Structure _s_TRANSFORM
-         index.a
-         *widget._s_WIDGET[2]
-         cursor.a[constants::#__a_moved + 1]
-         
-         *transform._s_TRANSFORMDATA
       EndStructure
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
@@ -312,6 +314,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          wheel._s_POINT          ;
          delta._s_POINT          ;
          anchors._s_TRANSFORM    ;
+         selector._s_SELECTOR    ; a_selector( )
          ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
@@ -741,7 +744,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 315
-; FirstLine = 185
-; Folding = -PCB-uf6--
+; CursorPosition = 258
+; FirstLine = 142
+; Folding = -PCB-d-y--
 ; EnableXP
