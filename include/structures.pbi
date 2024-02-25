@@ -266,14 +266,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
       EndStructure
       ;
-      Structure _s_ANCHORS
-         hide.b ;????
-         pos.w 
-         size.c
-         mode.i
-         *id._s_A_BUTTONS[constants::#__a_moved + 1]
-      EndStructure
-      ;--     TRANSFORMDATA
       Structure _s_TRANSFORMDATA
          List *group._s_A_GROUP( )
          *grab ; grab image handle
@@ -281,6 +273,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *grid_image
          grid_type.l
          *grid_widget
+      EndStructure
+      ;
+      Structure _s_ANCHORS
+         hide.b ;????
+         pos.w 
+         size.c
+         mode.i
+         *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM
@@ -744,7 +744,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 258
-; FirstLine = 142
+; CursorPosition = 268
+; FirstLine = 135
 ; Folding = -PCB-d-y--
 ; EnableXP
