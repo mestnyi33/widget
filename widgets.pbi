@@ -3455,9 +3455,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_grid_change( *this\parent )
                   ;
                   *this\root\repaint = 1
-;                   ;
-;                   GetActive( ) = *this
-;                   DoFocus( *this, #__event_Focus, a_index( ), *this\data )
                EndIf
             EndIf
          EndIf
@@ -3705,9 +3702,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetColor( *this, #__color_frame, Color & $FFFFFF | 255 << 24)
          EndIf
          ;
-         If a_set( *this, #__a_full )
-            DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
-         EndIf
+         a_set( *this, #__a_full )
          ;
          ProcedureReturn *this
       EndProcedure
@@ -3807,10 +3802,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\buttons & #PB_Canvas_LeftButton
                ;\\ set current
                If a_entered( )
-                  If a_transform( ) And Not a_entered( )\anchors\mode & #__a_nodraw
-                     ;
-                     a_set( a_entered( ) )
-                  EndIf
+;                   If a_transform( ) And Not a_entered( )\anchors\mode & #__a_nodraw
+;                      Debug 444
+;                      ;
+;                      ;a_set( a_entered( ) )
+;                   EndIf
                   a_delta( a_entered( ) )
                   *pressed = a_entered( )
                EndIf
@@ -4156,19 +4152,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If a_focused( )\parent
                               If a_focused( )\parent\parent And
                                  a_focused( )\parent\parent\anchors
-                                 If SetActive( a_focused( )\parent )
-                                  ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
-                                 EndIf
+                                 SetActive( a_focused( )\parent )
                               Else
                                  If a_focused( )\parent\FirstWidget( )
-                                    If SetActive( a_focused( )\parent\FirstWidget( ) )
-                                      ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
-                                    EndIf
+                                    SetActive( a_focused( )\parent\FirstWidget( ) )
                                  Else
                                     If a_main( )\FirstWidget( )
-                                       If SetActive( a_main( )\FirstWidget( ) )
-                                         ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
-                                       EndIf
+                                       SetActive( a_main( )\FirstWidget( ) )
                                     EndIf
                                  EndIf
                               EndIf
@@ -4176,33 +4166,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                         Case #PB_Shortcut_Up
                            If a_focused( )\BeforeWidget( )
-                              ;Debug ""+a_focused( )\class +" "+ a_focused( )\BeforeWidget( )\class +" "+ GetActive( )\class
-                                If GetActive( )\row
-                                   Debug ""+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
-                                   GetActive( )\FocusedRowIndex( ) - 1 
-                                 EndIf
-                               If SetActive( a_focused( )\BeforeWidget( ) )
-                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                              If GetActive( )\row
+                                 Debug ""+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
+                                 GetActive( )\FocusedRowIndex( ) - 1 
                               EndIf
+                              SetActive( a_focused( )\BeforeWidget( ) )
                            EndIf
                            
                         Case #PB_Shortcut_Down
                            If a_focused( )\AfterWidget( )
-                                If GetActive( )\row
-                                    GetActive( )\FocusedRowIndex( ) + 1 
-                                 EndIf
-                              If SetActive( a_focused( )\AfterWidget( ) )
-                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                              If GetActive( )\row
+                                 GetActive( )\FocusedRowIndex( ) + 1 
                               EndIf
+                              SetActive( a_focused( )\AfterWidget( ) )
                            EndIf
                            
                         Case #PB_Shortcut_Right
                            If a_focused( )\FirstWidget( )
-                              If SetActive( a_focused( )\FirstWidget( ) )
-                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
-                              EndIf
+                              SetActive( a_focused( )\FirstWidget( ) )
                            EndIf
-                           
                            
                      EndSelect
                      
@@ -22852,7 +22834,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4191
-; FirstLine = 3529
-; Folding = ------------------------------------------------------------------------------+-f4--0t--08vvsn---X+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--4---+---------------------------------------------------------------------------------------------
+; CursorPosition = 3808
+; FirstLine = 3508
+; Folding = ------------------------------------------------------------------------------+-f4---3---+8L86---l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0--v----------------------------------------------------------------------------------------------
 ; EnableXP
