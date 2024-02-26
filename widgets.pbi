@@ -3455,8 +3455,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_grid_change( *this\parent )
                   ;
                   *this\root\repaint = 1
-                  ;
-                  ;DoFocus( *this, #__event_Focus, a_index( ), *this\data )
+;                   ;
+;                   GetActive( ) = *this
+;                   DoFocus( *this, #__event_Focus, a_index( ), *this\data )
                EndIf
             EndIf
          EndIf
@@ -3704,7 +3705,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetColor( *this, #__color_frame, Color & $FFFFFF | 255 << 24)
          EndIf
          ;
-         a_set( *this, #__a_full )
+         If a_set( *this, #__a_full )
+            DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+         EndIf
          ;
          ProcedureReturn *this
       EndProcedure
@@ -4153,13 +4156,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If a_focused( )\parent
                               If a_focused( )\parent\parent And
                                  a_focused( )\parent\parent\anchors
-                                 a_set( a_focused( )\parent )
+                                 If SetActive( a_focused( )\parent )
+                                  ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                                 EndIf
                               Else
                                  If a_focused( )\parent\FirstWidget( )
-                                    a_set( a_focused( )\parent\FirstWidget( ) )
+                                    If SetActive( a_focused( )\parent\FirstWidget( ) )
+                                      ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                                    EndIf
                                  Else
                                     If a_main( )\FirstWidget( )
-                                       a_set( a_main( )\FirstWidget( ) )
+                                       If SetActive( a_main( )\FirstWidget( ) )
+                                         ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                                       EndIf
                                     EndIf
                                  EndIf
                               EndIf
@@ -4167,17 +4176,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                         Case #PB_Shortcut_Up
                            If a_focused( )\BeforeWidget( )
-                              a_set( a_focused( )\BeforeWidget( ) )
+                              ;Debug ""+a_focused( )\class +" "+ a_focused( )\BeforeWidget( )\class +" "+ GetActive( )\class
+                                If GetActive( )\row
+                                   Debug ""+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
+                                   GetActive( )\FocusedRowIndex( ) - 1 
+                                 EndIf
+                               If SetActive( a_focused( )\BeforeWidget( ) )
+                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                              EndIf
                            EndIf
                            
                         Case #PB_Shortcut_Down
                            If a_focused( )\AfterWidget( )
-                              a_set( a_focused( )\AfterWidget( ) )
+                                If GetActive( )\row
+                                    GetActive( )\FocusedRowIndex( ) + 1 
+                                 EndIf
+                              If SetActive( a_focused( )\AfterWidget( ) )
+                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                              EndIf
                            EndIf
                            
                         Case #PB_Shortcut_Right
                            If a_focused( )\FirstWidget( )
-                              a_set( a_focused( )\FirstWidget( ) )
+                              If SetActive( a_focused( )\FirstWidget( ) )
+                                ; DoFocus( a_focused( ), #__event_Focus, a_index( ), a_focused( )\data ) 
+                              EndIf
                            EndIf
                            
                            
@@ -11575,7 +11598,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *this\WidgetChange( ) = - 1
                                     EndIf
                                  EndIf
-                                 
+                                 ; 
                                  DoEvents( *this, #__event_Change, *this\__rows( )\index, *this\__rows( ) )
                                  result = 1
                               EndIf
@@ -11615,7 +11638,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *this\WidgetChange( ) = - 1
                                     EndIf
                                  EndIf
-                                 
+                                 ;
                                  DoEvents( *this, #__event_Change, *this\__rows( )\index, *this\__rows( ) )
                                  result = 1
                               EndIf
@@ -14367,10 +14390,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors )
                If *this\anchors
-                  If GetActiveGadget( ) <> *this\root\canvas\gadget
-                     SetActiveGadget( *this\root\canvas\gadget )
-                  EndIf
-                  ; ProcedureReturn a_set( *this )
+;                   If GetActiveGadget( ) <> *this\root\canvas\gadget
+;                      SetActiveGadget( *this\root\canvas\gadget )
+;                   EndIf
+                  a_set( *this, *this\anchors\mode, *this\anchors\size, *this\anchors\pos )
                Else
                   ProcedureReturn 0
                EndIf
@@ -14421,7 +14444,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If IsChild( *this, widget( ) )
                               If widget( )\focus = #False
                                  widget( )\focus = #True
-                                 DoFocus( widget( ), #__event_Focus )
+                                 ;If Not widget( )\anchors
+                                    DoFocus( widget( ), #__event_Focus )
+                                 ;EndIf
                               EndIf
                            EndIf
                         EndIf
@@ -14450,12 +14475,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ActiveWindow( ) And ; Not is_root_( ActiveWindow( ) ) And
                      ActiveWindow( )\focus = #False
                      ActiveWindow( )\focus = #True
-                     DoFocus( ActiveWindow( ), #__event_Focus )
+                     ;If Not ActiveWindow( )\anchors
+                        DoFocus( ActiveWindow( ), #__event_Focus )
+                     ;EndIf
                   EndIf
                EndIf
                
                ;\\
-               DoFocus( *this, #__event_Focus )
+               ;If Not *this\anchors
+                  DoFocus( *this, #__event_Focus )
+               ;EndIf
                
                If ActiveWindow( )
                   ; when we activate the window
@@ -14463,7 +14492,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ActiveGadget( ) And
                      ActiveGadget( )\focus = #False
                      ActiveGadget( )\focus = #True
-                     DoFocus( ActiveGadget( ), #__event_Focus )
+                     ;If Not ActiveGadget( )\anchors
+                        DoFocus( ActiveGadget( ), #__event_Focus )
+                     ;EndIf
                   EndIf
                   
                   ; set window foreground position
@@ -18899,6 +18930,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this\row
+            If eventtype = #__event_Focus Or
+               eventtype = #__event_Down Or
+               eventtype = #__event_Drop
+               ;
+               If *this\EnteredRow( )
+                  *this\FocusedRowIndex( ) = *this\EnteredRow( )\index
+               EndIf
+            EndIf
+            
             ;\\ search at point entered items
             If Not Mouse( )\drag Or *this\drop
                If *this\inner_enter( )
@@ -19134,10 +19174,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ok
             If eventtype = #__event_Focus
-               If *this\EnteredRow( )
-                  *this\FocusedRowIndex( ) = *this\EnteredRow( )\index
-               EndIf
-               
                ;\\
                If *this\mode\multiSelect Or *this\mode\clickSelect
                   PushListPosition( *this\__rows( ) )
@@ -19202,8 +19238,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Down
                If mouse( )\buttons & #PB_Canvas_LeftButton
                   If *this\EnteredRow( ) And Not EnteredButton( )
-                     *this\FocusedRowIndex( ) = *this\EnteredRow( )\index
-                     
                      ;\\
                      If *this\mode\multiSelect And Not *this\mode\clickSelect
                         PushListPosition( *this\__rows( ) )
@@ -19286,10 +19320,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #__event_Drop ; Ok
-               If *this\EnteredRow( )
-                  *this\FocusedRowIndex( ) = *this\EnteredRow( )\index
-               EndIf
-               
                ;           If *this\FocusedRow( )
                ;             ;             Debug "drop p - "+*this\PressedRow( ) +" "+ *this\PressedRow( )\text\string +" "+ *this\PressedRow( )\press +" "+ *this\PressedRow( )\enter +" "+ *this\PressedRow( )\focus
                ;             ;             ;Debug "drop e - "+*this\EnteredRow( ) +" "+ *this\EnteredRow( )\text\string +" "+ *this\EnteredRow( )\press +" "+ *this\EnteredRow( )\enter +" "+ *this\EnteredRow( )\focus
@@ -19395,7 +19425,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\PressedRow( )       = #Null
                         
                         If *this\FocusedRow( )
-                           *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
+                           ;; *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
                            *this\FocusedRow( )\color\state = #__s_2
                            
                            If *this\FocusedRow( )\press
@@ -19629,10 +19659,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\root\repaint = 1
             EndIf
          EndIf
+         
+         
+         ;\\
+         If eventtype = #__event_cursor
+            Protected cursor, result
+            
+            DrawingStop( )
+            
+            result = Send( *this, eventtype, #PB_All, *data )
+            If result > 0
+               cursor = result
+            Else
+               cursor = mouse( )\cursor
+            EndIf
+            
+            ;Debug " DO CURSOR "+*this\class +" "+ cursor +" TYPE "+ *data
+            
+            ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
+            Cursor::Set( *this\root\canvas\gadget, cursor ) 
+         Else
+            If *this\row
+               If *this\dragstart
+                  If *this\FocusedRow( )
+                     *button = *this\FocusedRow( )\index
+                     *data   = *this\FocusedRow( )
+                  EndIf
+               Else
+                  If *this\EnteredRow( )
+                     *button = *this\EnteredRow( )\index
+                     *data   = *this\EnteredRow( )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         If eventtype = #__event_Change
+            If *this\row
+               *this\FocusedRowIndex( )        = *button
+            EndIf
+         EndIf
+         
          ;          
          ;\\ DoEvents_Anchors( )
          a_events( *this, eventtype )
          
+                        
          
 ;          ;\\
 ;          If eventtype = #__event_MouseEnter
@@ -19996,39 +20068,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\scroll And *this\scroll\v And
                bar_SetState( *this\scroll\v, *this\scroll\v\bar\page\pos - mouse( )\wheel\y )
                *this\root\repaint = #True
-            EndIf
-         EndIf
-         
-         ;\\
-         If eventtype = #__event_cursor
-            Protected cursor, result
-            
-            DrawingStop( )
-            
-            result = Send( *this, eventtype, #PB_All, *data )
-            If result > 0
-               cursor = result
-            Else
-               cursor = mouse( )\cursor
-            EndIf
-            
-            ;Debug " DO CURSOR "+*this\class +" "+ cursor +" TYPE "+ *data
-            
-            ;Debug ""+*this\class +" event( CURSOR ) - "+ cursor
-            Cursor::Set( *this\root\canvas\gadget, cursor ) 
-         Else
-            If *this\row
-               If *this\dragstart
-                  If *this\FocusedRow( )
-                     *button = *this\FocusedRow( )\index
-                     *data   = *this\FocusedRow( )
-                  EndIf
-               Else
-                  If *this\EnteredRow( )
-                     *button = *this\EnteredRow( )\index
-                     *data   = *this\EnteredRow( )
-                  EndIf
-               EndIf
             EndIf
          EndIf
          
@@ -22813,7 +22852,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3947
-; FirstLine = 3899
-; Folding = -------------------------------------------------------------------------------------------f3z----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4191
+; FirstLine = 3529
+; Folding = ------------------------------------------------------------------------------+-f4--0t--08vvsn---X+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--4---+---------------------------------------------------------------------------------------------
 ; EnableXP
