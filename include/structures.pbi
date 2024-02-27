@@ -316,10 +316,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          anchors._s_TRANSFORM    ;
          selector._s_SELECTOR    ; a_selector( )
          ;
+         *widget._s_WIDGET
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
-         ;
-         ;leaved._s_OBJECTTYPE    ; mouse leaved element
       EndStructure
       ;;--     margin
       Structure _s_margin Extends _s_coordinate
@@ -744,7 +743,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 268
-; FirstLine = 135
+; CursorPosition = 319
+; FirstLine = 188
 ; Folding = -PCB-d-y--
 ; EnableXP
