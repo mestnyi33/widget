@@ -3238,7 +3238,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_show( *this._s_WIDGET )
-         Protected a_index, *a_entered._s_WIDGET
+         Protected a_index
+         Protected *a_entered._s_WIDGET
+         Protected *entered._s_WIDGET = EnteredWidget( )
          ;
          If a_entered( ) = *this
             ProcedureReturn 0
@@ -3251,10 +3253,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   DoEvents( a_entered( ), #__event_MouseLeave, #PB_All, 333 )
                EndIf
             Else
-               If EnteredWidget( )  
-                  If EnteredWidget( )\enter > 0
-                     EnteredWidget( )\enter = 0
-                     DoEvents( EnteredWidget( ), #__event_MouseLeave, #PB_All, 555 )
+               If *entered  
+                  If *entered\enter > 0
+                     *entered\enter = 0
+                     DoEvents( *entered, #__event_MouseLeave, #PB_All, 555 )
                   EndIf
                EndIf
             EndIf
@@ -3287,7 +3289,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          ;
          If a_entered( )
-            *a_entered = a_entered( ) 
+            If *entered
+               *a_entered = a_entered( ) 
+            EndIf
             ;
             If a_entered( )\frame_enter( )
                a_entered( )\enter = 0
@@ -3322,10 +3326,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_enter( *this, - 1 )
                ;
                If *a_entered 
-                  If EnteredWidget( )
-                     If Not a_index( )
-                        do_cursor_( *a_entered, *this\cursor, - 100 )
-                     EndIf
+                  If Not a_index( )
+                     do_cursor_( *a_entered, *this\cursor, - 100 )
                   EndIf
                EndIf
                ;
@@ -3399,7 +3401,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                           *this\screen_width( ),
                           *this\screen_height( ) )
                   ;
-                  a_enter( *this, - 1 )
+                  a_enter( *this, - 2 )
                   ;
                   *this\root\repaint = #True
                EndIf
@@ -3418,38 +3420,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\id[a_index( )]\state
                ;
                If Not a_entered( )\dragstart
-                  ;
                   If *this <> a_entered( ) And 
-                     *this\root <> a_entered( )\root 
+                     *this\root = a_entered( )\root 
+                     ;
                      EnteredWidget( ) = a_entered( )
                      ProcedureReturn a_entered( )
                   EndIf
                EndIf
             EndIf
-            
          Else
-            If a_entered( ) And 
-               a_entered( )\anchors And
-               Not (*this And a_entered( )\root <> *this\root )
-               ;
-               If a_enter( a_entered( ), - 3 )
-                  If a_entered( )
-                     If ( *this And a_entered( )\index < *this\index ) And 
-                        a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
-                                                     ;
+            If a_entered( )  
+               If a_entered( )\anchors And
+                  Not (*this And a_entered( )\root <> *this\root )
+                  ;
+                  If a_enter( a_entered( ), - 3 )
+                     If a_entered( )
+                        If ( *this And a_entered( )\index < *this\index ) And 
+                           a_entered( ) <> a_focused( ) ; Not ( a_transform( ) And a_focused( ) = a_entered( ) )
+                                                        ;
+                           a_index( ) = 0
+                        Else
+                           ProcedureReturn a_entered( )
+                        EndIf
+                     EndIf
+                  Else
+                     If a_index( )
+                        Debug "out to parent border "+a_entered( )\enter 
+                        
+                        ; a_entered( )\enter = 0
                         a_index( ) = 0
-                     Else
-                        ProcedureReturn a_entered( )
                      EndIf
                   EndIf
-               Else
-                  If a_index( )
-                     Debug "out to parent border "+a_entered( )\enter 
-                     
-                     ; a_entered( )\enter = 0
-                     a_index( ) = 0
-                  EndIf
                EndIf
+            Else
+               a_enter( a_focused( ), - 4 )
             EndIf
             ;
             If Not a_index( )
@@ -14357,7 +14361,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             GetActive( ) = *this
-            
+            ;Debug "------ "+*this\class
             ;\\
             If *this\focus = #False
                *this\focus = #True
@@ -18389,7 +18393,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If Not mouse( )\press
             If Not a_index( )
-               If a_entered( ) And *this = a_entered( ) And 
+               If a_entered( ) And 
+                  a_entered( ) = *this And 
                   a_entered( )\frame_enter( )
                   ;
                   If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
@@ -20443,22 +20448,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #PB_EventType_LeftButtonDown,
                        #PB_EventType_RightButtonDown,
                        #PB_EventType_MiddleButtonDown
-                     
+                     ;
                      ;\\
                      mouse( )\press  = 1
                      mouse( )\change = 1 << 5
+                     ;
                      If eventtype = #PB_EventType_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
                      If eventtype = #PB_EventType_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
                      If eventtype = #PB_EventType_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
-                     
+                     ;
                   Case #PB_EventType_LeftButtonUp,
                        #PB_EventType_RightButtonUp,
                        #PB_EventType_MiddleButtonUp
-                     
+                     ;
                      If mouse( )\interact = 1
                         mouse( )\interact = - 1
                      EndIf
-                     
+                     ;
                      ;\\
                      If mouse( )\press
                         mouse( )\press = 0
@@ -20502,7 +20508,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;                         EndIf
                         ;                      EndIf
                      EndIf
-                     
+                     ;
                      ;\\
                      mouse( )\change = 1 << 6
                      mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
@@ -20512,6 +20518,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ get enter&leave widget address
                If mouse( )\change
                   If mouse( )\interact <> 1
+                     ; Debug Root( )
                      ;\\ enter&leave mouse events
                      GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
                   EndIf
@@ -20577,38 +20584,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #PB_EventType_LeftButtonDown Or
                    eventtype = #PB_EventType_MiddleButtonDown Or
                    eventtype = #PB_EventType_RightButtonDown
-               
-               Protected *entered._s_WIDGET = EnteredWidget( )
-                  
-               If a_index( )
-                  *entered = a_entered( )
-               EndIf
-               
-               
+               ;
                ;\\
-               If *entered
-                  Debug "canvas - press " + EnteredWidget( )\class +" "+ *entered\class
-                
-                  ;
+               If EnteredWidget( )
+                  Debug "canvas - press " + EnteredWidget( )\class
+                 ;
                   ;\\ set active widget
-                  If *entered\disable
-                     If Not *entered\parent\disable
+                  If EnteredWidget( )\disable
+                     If Not EnteredWidget( )\parent\disable
                         If eventtype = #PB_EventType_LeftButtonDown
-                           If GetActive( ) <> *entered\parent
+                           If GetActive( ) <> EnteredWidget( )\parent
                               If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
-                                 SetActive( *entered\parent)
+                                 SetActive( EnteredWidget( )\parent)
                               EndIf
                            EndIf
                         EndIf
                      EndIf
                   Else
-                     PressedWidget( )       = *entered
+                     PressedWidget( )       = EnteredWidget( )
                      PressedWidget( )\press = #True
                      ;
                      If eventtype = #PB_EventType_LeftButtonDown
-                        If GetActive( ) <> *entered
+                        If GetActive( ) <> EnteredWidget( )
                            If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
-                              SetActive( *entered)
+                              SetActive( EnteredWidget( ))
                            EndIf
                         EndIf
                      EndIf
@@ -20620,18 +20619,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      mouse( )\delta\y = mouse( )\y
                      ;
                      If Not a_index( )
-                        If *entered\bar And EnteredButton( ) > 0
-                           mouse( )\delta\x - *entered\bar\thumb\pos
-                           mouse( )\delta\y - *entered\bar\thumb\pos
+                        If EnteredWidget( )\bar And EnteredButton( ) > 0
+                           mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                           mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
                         Else
                            If Not a_transform( ) 
-                              mouse( )\delta\x - *entered\container_x( )
-                              mouse( )\delta\y - *entered\container_y( )
+                              mouse( )\delta\x - EnteredWidget( )\container_x( )
+                              mouse( )\delta\y - EnteredWidget( )\container_y( )
                               ;
-                              If Not *entered\child
-                                 If *entered\parent
-                                    mouse( )\delta\x - *entered\parent\scroll_x( )
-                                    mouse( )\delta\y - *entered\parent\scroll_y( )
+                              If Not EnteredWidget( )\child
+                                 If EnteredWidget( )\parent
+                                    mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
+                                    mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
                                  EndIf
                               EndIf
                            EndIf
@@ -20648,16 +20647,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      mouse( )\click = 1
                   EndIf
                   ClickTime = ElapsedMilliseconds
-                  DoEvents( *entered, #__event_Down )
+                  DoEvents( EnteredWidget( ), #__event_Down )
                   If mouse( )\click = 1
                      If eventtype = #PB_EventType_LeftButtonDown
-                        DoEvents( *entered, #__event_leftdown )
+                        DoEvents( EnteredWidget( ), #__event_leftdown )
                      EndIf
                      If eventtype = #PB_EventType_MiddleButtonDown
-                        DoEvents( *entered, #__event_middledown )
+                        DoEvents( EnteredWidget( ), #__event_middledown )
                      EndIf
                      If eventtype = #PB_EventType_RightButtonDown
-                        DoEvents( *entered, #__event_rightdown )
+                        DoEvents( EnteredWidget( ), #__event_rightdown )
                      EndIf
                   EndIf
                EndIf
@@ -22803,7 +22802,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20555
-; FirstLine = 20189
-; Folding = ----------------------------------------------------------------------------------b---8v-s---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Xr-----6v0-----------------------------------------------
+; CursorPosition = 14363
+; FirstLine = 14234
+; Folding = ---------------------------------------------------------------------------v------4+--4f-Z-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------07---0-0---------8-----------------+-v-8--------------------7dvW---u+zfr--+9-------------------------------------------
 ; EnableXP
