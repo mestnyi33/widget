@@ -538,7 +538,7 @@ Procedure widget_events( )
             
             properties_updates( w_ide_inspector_properties, *e_widget )
             
-            ; Debug "Focus "+*e_widget\class +" ("+*e_widget\text\string+")"
+            ;Debug "Focus "+*e_widget\class +" ("+*e_widget\text\string+")"
             
             If GetActive( ) <> w_ide_inspector_view 
                ; Debug "reFocus (w_ide_inspector_view)"   
@@ -1207,7 +1207,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;   ;OpenList(w_ide_design_MDI)
    SetState(group_select, 1) 
-   Define result, example = 3
+   Define result, example = 5
    
   
    If example = 1
@@ -1240,15 +1240,42 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(w_ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(w_ide_design_form, "text", 45, 65+40*2, 50, 30)
       
-      ;Define *container = widget_add(w_ide_design_form, "container", 100, 25, 265, 170)
-      Define *container = widget_add(w_ide_design_form, "scrollarea", 100, 25, 265, 170)
-      ;Define *container = widget_add(w_ide_design_form, "panel", 100, 25, 265, 170) : AddItem(*container,-1,"panel-item-1" )
+      Define *container = widget_add(w_ide_design_form, "scrollarea", 150, 25, 165, 175)
+      widget_add(*container, "button", 15, 25, 30, 30)
+      widget_add(*container, "text", 25, 65, 50, 30)
+      widget_add(*container, "button", 35, 65+40, 80, 30)
+      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      
+   ElseIf example = 4
+      ;\\ example 3
+      w_ide_design_form = widget_add(w_ide_design_MDI, "window", 30, 30, 400, 250)
+      Define q=widget_add(w_ide_design_form, "button", 15, 25, 50, 30)
+      widget_add(w_ide_design_form, "text", 25, 65, 50, 30)
+      widget_add(w_ide_design_form, "button", 285, 25, 50, 30)
+      widget_add(w_ide_design_form, "text", 45, 65+40*2, 50, 30)
+      
+      Define *container = widget_add(w_ide_design_form, "scrollarea", 100, 25, 165, 170)
+      widget_add(*container, "button", 15, 25, 30, 30)
+      widget_add(*container, "text", 25, 65, 50, 30)
+      widget_add(*container, "button", 35, 65+40, 80, 30)
+      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      
+   ElseIf example = 5
+      ;\\ example 3
+      w_ide_design_form = widget_add(w_ide_design_MDI, "window", 30, 30, 400, 250)
+      Define q=widget_add(w_ide_design_form, "button", 280, 25, 50, 30)
+      widget_add(w_ide_design_form, "text", 25, 65, 50, 30)
+      widget_add(w_ide_design_form, "button", 340, 25, 50, 30)
+      widget_add(w_ide_design_form, "text", 45, 65+40*2, 50, 30)
+      
+      Define *container = widget_add(w_ide_design_form, "scrollarea", 100, 25, 155, 170)
       widget_add(*container, "button", 15, 25, 30, 30)
       widget_add(*container, "text", 25, 65, 50, 30)
       widget_add(*container, "button", 35, 65+40, 80, 30)
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
    EndIf
    
+     SetActive( q )
    
 ;    Define._S_WIDGET *this, *parent
 ;    Debug "--- enumerate all gadgets ---"
@@ -1299,7 +1326,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 531
-; FirstLine = 603
-; Folding = ---------r2ufh--tV+----
+; CursorPosition = 1277
+; FirstLine = 906
+; Folding = ---------r0ufh--tV+----
 ; EnableXP

@@ -2804,15 +2804,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_line([#__a_line_left])\x      = a_focused( )\frame_x( )
             a_line([#__a_line_left])\y      = a_focused( )\frame_y( )
             
-            a_line([#__a_line_right])\height = 1
-            a_line([#__a_line_right])\width  = a_focused( )\frame_width( )
-            a_line([#__a_line_right])\x      = a_focused( )\frame_x( )
-            a_line([#__a_line_right])\y      = a_focused( )\frame_y( )
-            
-            a_line([#__a_line_top])\width  = 1
-            a_line([#__a_line_top])\height = a_focused( )\frame_height( )
-            a_line([#__a_line_top])\x      = ( a_focused( )\frame_x( ) + a_focused( )\frame_width( ) ) - a_line([#__a_line_top])\width
+            a_line([#__a_line_top])\height = 1
+            a_line([#__a_line_top])\width  = a_focused( )\frame_width( )
+            a_line([#__a_line_top])\x      = a_focused( )\frame_x( )
             a_line([#__a_line_top])\y      = a_focused( )\frame_y( )
+            
+            a_line([#__a_line_right])\width  = 1
+            a_line([#__a_line_right])\height = a_focused( )\frame_height( )
+            a_line([#__a_line_right])\x      = ( a_focused( )\frame_x( ) + a_focused( )\frame_width( ) ) - a_line([#__a_line_right])\width
+            a_line([#__a_line_right])\y      = a_focused( )\frame_y( )
             
             a_line([#__a_line_bottom])\height = 1
             a_line([#__a_line_bottom])\width  = a_focused( )\frame_width( )
@@ -2830,40 +2830,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_line([#__a_line_left])\y = __widgets( )\frame_y( )
                      EndIf
                      If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
-                        a_line([#__a_line_left])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( ) ) - a_line([#__a_line_left])\y
+                        If a_line([#__a_line_left])\height < __widgets( )\frame_y( ) + __widgets( )\frame_height( ) 
+                           a_line([#__a_line_left])\height = __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                        EndIf
                      Else
-                        a_line([#__a_line_left])\height = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_line([#__a_line_left])\y
+                        If a_line([#__a_line_left])\height < a_focused( )\frame_y( ) + a_focused( )\frame_height( ) 
+                           a_line([#__a_line_left])\height = a_focused( )\frame_y( ) + a_focused( )\frame_height( )
+                        EndIf
                      EndIf
                      
                      a_line([#__a_line_left])\state = 2
                   EndIf
                   ;
-                  ;\\ right-line
-                  If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                     If a_line([#__a_line_top])\y > __widgets( )\frame_y( )
-                        a_line([#__a_line_top])\y = __widgets( )\frame_y( )
-                     EndIf
-                     If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
-                        a_line([#__a_line_top])\height = ( __widgets( )\frame_y( ) + __widgets( )\frame_height( )) - a_line([#__a_line_top])\y
-                     Else
-                        a_line([#__a_line_top])\height = (a_focused( )\frame_y( ) + a_focused( )\frame_height( )) - a_line([#__a_line_top])\y
-                     EndIf
-                     
-                     a_line([#__a_line_top])\state = 2
-                  EndIf
-                  ;
                   ;\\ top-line
                   If a_focused( )\frame_y( ) = __widgets( )\frame_y( )
-                     If a_line([#__a_line_right])\x > __widgets( )\frame_x( )
-                        a_line([#__a_line_right])\x = __widgets( )\frame_x( )
+                       Debug " "+__widgets( )\class +" "+ __widgets( )\index +" "+ __widgets( )\x + " " 
+                     If a_line([#__a_line_top])\x > __widgets( )\frame_x( )
+                        a_line([#__a_line_top])\x = __widgets( )\frame_x( )
                      EndIf
-                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                        a_line([#__a_line_right])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_line([#__a_line_right])\x
+                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) <= __widgets( )\frame_x( ) + __widgets( )\frame_width( ) 
+                        If a_line([#__a_line_top])\width < __widgets( )\frame_x( ) + __widgets( )\frame_width( ) 
+                           a_line([#__a_line_top])\width = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                        EndIf
                      Else
-                        a_line([#__a_line_right])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_line([#__a_line_right])\x
+                        If a_line([#__a_line_top])\width < a_focused( )\frame_x( ) + a_focused( )\frame_width( ) 
+                           a_line([#__a_line_top])\width = a_focused( )\frame_x( ) + a_focused( )\frame_width( )
+                        EndIf
                      EndIf
                      
-                     a_line([#__a_line_right])\state = 1
+                     a_line([#__a_line_top])\state = 1
+                  EndIf
+                  ;
+                  ;\\ right-line
+                  If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                     If a_line([#__a_line_right])\y > __widgets( )\frame_y( )
+                        a_line([#__a_line_right])\y = __widgets( )\frame_y( )
+                     EndIf
+                      If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                        If a_line([#__a_line_right])\height < __widgets( )\frame_y( ) + __widgets( )\frame_height( ) 
+                           a_line([#__a_line_right])\height = __widgets( )\frame_y( ) + __widgets( )\frame_height( )
+                        EndIf
+                      Else
+                        If a_line([#__a_line_right])\height < a_focused( )\frame_y( ) + a_focused( )\frame_height( ) 
+                            a_line([#__a_line_right])\height = a_focused( )\frame_y( ) + a_focused( )\frame_height( )
+                        EndIf
+                      EndIf
+                     
+                     a_line([#__a_line_right])\state = 2
                   EndIf
                   ;
                   ;\\ bottom-line
@@ -2872,9 +2885,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_line([#__a_line_bottom])\x = __widgets( )\frame_x( )
                      EndIf
                      If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < __widgets( )\frame_x( ) + __widgets( )\frame_width( )
-                        a_line([#__a_line_bottom])\width = ( __widgets( )\frame_x( ) + __widgets( )\frame_width( )) - a_line([#__a_line_bottom])\x
+                        If a_line([#__a_line_bottom])\width < __widgets( )\frame_x( ) + __widgets( )\frame_width( ) 
+                           a_line([#__a_line_bottom])\width = __widgets( )\frame_x( ) + __widgets( )\frame_width( )
+                        EndIf
                      Else
-                        a_line([#__a_line_bottom])\width = (a_focused( )\frame_x( ) + a_focused( )\frame_width( )) - a_line([#__a_line_bottom])\x
+                        If a_line([#__a_line_bottom])\width < a_focused( )\frame_x( ) + a_focused( )\frame_width( ) 
+                           a_line([#__a_line_bottom])\width = a_focused( )\frame_x( ) + a_focused( )\frame_width( )
+                        EndIf
                      EndIf
                      
                      a_line([#__a_line_bottom])\state = 1
@@ -2883,6 +2900,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                StopEnumerate( )
+               ;
+               If a_line([#__a_line_left])\height > a_line([#__a_line_left])\y
+                  a_line([#__a_line_left])\height - a_line([#__a_line_left])\y
+               EndIf
+               If a_line([#__a_line_top])\width > a_line([#__a_line_top])\x
+                  a_line([#__a_line_top])\width - a_line([#__a_line_top])\x
+               EndIf
+               If a_line([#__a_line_right])\height > a_line([#__a_line_right])\y
+                  a_line([#__a_line_right])\height - a_line([#__a_line_right])\y
+               EndIf
+               If a_line([#__a_line_bottom])\width > a_line([#__a_line_bottom])\x
+                  a_line([#__a_line_bottom])\width - a_line([#__a_line_bottom])\x
+               EndIf
             EndIf
          EndIf
          
@@ -4044,12 +4074,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;-\\ widget::a_key_events
          If eventtype = #__event_KeyDown
-            If a_focused( )
-               If a_focused( )\anchors ;= 1
-                  mx = a_focused( )\container_x( )
-                  my = a_focused( )\container_y( )
-                  mw = a_focused( )\frame_width( )
-                  mh = a_focused( )\frame_height( )
+            If *this = a_focused( )
+               ; Debug "event_KeyDown "+*this\class
+               If *this\anchors ;= 1
+                  mx = *this\container_x( )
+                  my = *this\container_y( )
+                  mw = *this\frame_width( )
+                  mh = *this\frame_height( )
                Else
                   mx = a_selector( )\x
                   my = a_selector( )\y
@@ -4067,7 +4098,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #PB_Shortcut_Down : mh + mouse( )\steps : a_index( ) = #__a_bottom
                      EndSelect
                      
-                     Resize( a_focused( ), mx, my, mw, mh )
+                     Resize( *this, mx, my, mw, mh )
                      
                   Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
                      Select Keyboard( )\Key
@@ -4078,7 +4109,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #PB_Shortcut_Down : my + mouse( )\steps : a_index( ) = #__a_moved
                      EndSelect
                      
-                     Resize( a_focused( ), mx, my, mw, mh )
+                     Resize( *this, mx, my, mw, mh )
                      
                   Default
                      ;\\ tab focus
@@ -4086,13 +4117,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #PB_Shortcut_Tab
                            
                         Case #PB_Shortcut_Left
-                           If a_focused( )\parent
-                              If a_focused( )\parent\parent And
-                                 a_focused( )\parent\parent\anchors
-                                 SetActive( a_focused( )\parent )
+                           If *this\parent
+                              If *this\parent\parent And
+                                 *this\parent\parent\anchors
+                                 SetActive( *this\parent )
                               Else
-                                 If a_focused( )\parent\FirstWidget( )
-                                    SetActive( a_focused( )\parent\FirstWidget( ) )
+                                 If *this\parent\FirstWidget( )
+                                    SetActive( *this\parent\FirstWidget( ) )
                                  Else
                                     If a_main( )\FirstWidget( )
                                        SetActive( a_main( )\FirstWidget( ) )
@@ -4102,26 +4133,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                         Case #PB_Shortcut_Up
-                           If a_focused( )\BeforeWidget( )
-                              If GetActive( )\row And GetActive( )\FocusedRowIndex( ) > 0
-                                ; Debug "-"+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
-                                 GetActive( )\FocusedRowIndex( ) - 1 
-                              EndIf
-                              SetActive( a_focused( )\BeforeWidget( ) )
+                           If *this\BeforeWidget( )
+;                               If GetActive( )\row And GetActive( )\FocusedRowIndex( ) > 0
+;                                 ; Debug "-"+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
+;                                  GetActive( )\FocusedRowIndex( ) - 1 
+;                               EndIf
+                              SetActive( *this\BeforeWidget( ) )
                            EndIf
                            
                         Case #PB_Shortcut_Down
-                           If a_focused( )\AfterWidget( )
-                              If GetActive( )\row And GetActive( )\FocusedRowIndex( ) < GetActive( )\count\items
-                                ; Debug "+"+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
-                                 GetActive( )\FocusedRowIndex( ) + 1 
-                              EndIf
-                              SetActive( a_focused( )\AfterWidget( ) )
+                           If *this\AfterWidget( )
+;                               If GetActive( )\row And GetActive( )\FocusedRowIndex( ) < GetActive( )\count\items
+;                                 ; Debug "+"+GetActive( )\class +" "+ GetActive( )\FocusedRowIndex( )
+;                                  GetActive( )\FocusedRowIndex( ) + 1 
+;                               EndIf
+                              SetActive( *this\AfterWidget( ) )
                            EndIf
                            
                         Case #PB_Shortcut_Right
-                           If a_focused( )\FirstWidget( )
-                              SetActive( a_focused( )\FirstWidget( ) )
+                           If *this\FirstWidget( )
+                              SetActive( *this\FirstWidget( ) )
                            EndIf
                            
                      EndSelect
@@ -20304,75 +20335,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ keyboard events
                   If eventtype = #PB_EventType_KeyDown
                      DoEvents( GetActive( ), #__event_keydown )
+                     ;
+                     ;\\ tab focus
+                     Select Keyboard( )\Key
+                        Case #PB_Shortcut_Tab
+                           If GetActive( )\container And
+                              GetActive( )\FirstWidget( )
+                              ;
+                              SetActive( GetActive( )\FirstWidget( ) )
+                           ElseIf GetActive( )\AfterWidget( )
+                              SetActive( GetActive( )\AfterWidget( ) )
+                           Else
+                              If GetActive( )\parent
+                                 If GetActive( )\parent\AfterWidget( )
+                                    SetActive( GetActive( )\parent\AfterWidget( ) )
+                                 Else
+                                    If GetActive( )\root\FirstWidget( )
+                                       SetActive( GetActive( )\root\FirstWidget( ) )
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                     EndSelect
                   EndIf
                   If eventtype = #PB_EventType_Input
                      DoEvents( GetActive( ), #__event_input )
                   EndIf
                   If eventtype = #PB_EventType_KeyUp
                      DoEvents( GetActive( ), #__event_keyup )
-                  EndIf
-                  ;
-                  ;\\ change keyboard focus-widget
-                  If eventtype = #PB_EventType_KeyDown
-                     ; If Not GetActive( )\anchors
-                     
-                     ;\\ tab focus
-                     Select Keyboard( )\Key
-                        Case #PB_Shortcut_Tab
-                           If GetActive( )\container > 0 And
-                              GetActive( )\FirstWidget( )
-                              SetActive( GetActive( )\FirstWidget( ) )
-                           Else
-                              If GetActive( )\AfterWidget( )
-                                 SetActive( GetActive( )\AfterWidget( ) )
-                              Else
-                                 If GetActive( )\parent
-                                    If GetActive( )\parent\AfterWidget( )
-                                       SetActive( GetActive( )\parent\AfterWidget( ) )
-                                    Else
-                                       
-                                       ;                                     If GetActive( )\anchors
-                                       ;                                        If a_main( )\FirstWidget( )
-                                       ;                                           SetActive( a_main( )\FirstWidget( ) )
-                                       ;                                        EndIf
-                                       ;                                     Else
-                                       ;                                        If GetActive( )\root\FirstWidget( )
-                                       ;                                           SetActive( GetActive( )\root\FirstWidget( ) )
-                                       ;                                        EndIf
-                                       ;                                     EndIf
-                                       
-                                       ;                                     If GetActive( )\parent
-                                       ;                                        If GetActive( )\parent\FirstWidget( )
-                                       ;                                           Debug "777 "+GetActive( )\parent\FirstWidget( )\class
-                                       ;                                           SetActive( GetActive( )\parent\FirstWidget( ) )
-                                       ;                                        EndIf
-                                       ;                                     Else
-                                       
-                                       Protected *main._s_WIDGET = GetMainParent( GetActive( ) )
-                                       If *main ;And *main\FirstWidget( )
-                                          If *main\AfterWidget( )
-                                             Debug "after " + *main\AfterWidget( )\class
-                                             SetActive( *main\AfterWidget( ) )
-                                          Else
-                                             SetActive( *main )
-                                          EndIf
-                                       Else
-                                          If GetActive( )\root\FirstWidget( )
-                                             SetActive( GetActive( )\root\FirstWidget( ) )
-                                          EndIf
-                                       EndIf
-                                       ;                                     EndIf
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                     EndSelect
-                     ; EndIf
-                  EndIf
-                  ;
-                  ;\\
-                  If eventtype = #PB_EventType_KeyUp
+                     ;
                      Keyboard( )\key[1] = 0
                      Keyboard( )\Key    = 0
                   EndIf
@@ -22810,7 +22801,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3464
-; FirstLine = 3274
-; Folding = ----------------------------------------------------------------------Xq--4---v---f8--f-0n0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------07---0-0---------v--z--v+e08bvP0--f--4---------------------28et+--d0n-W--06-------------------------------------------
+; CursorPosition = 2873
+; FirstLine = 2815
+; Folding = ----------------------------------------------------------------------Xq------v---f8--f-0n0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv+--f-f----------8--9--rvX-+38T---4--0--------------------f0uX874u+zfr--+9-------------------------------------------
 ; EnableXP
