@@ -529,7 +529,7 @@ Procedure widget_events( )
       Case #__event_Focus
          If a_focused( ) = *e_widget
             If GetData( *e_widget ) >= 0
-               Debug GetData( *e_widget )
+               ;Debug GetData( *e_widget )
                If IsGadget( g_ide_design_code )
                   SetGadgetState( g_ide_design_code, GetData( *e_widget ) )
                EndIf
@@ -970,7 +970,7 @@ Procedure ide_events( )
          
       Case #__event_Change
          If *e_widget = w_ide_inspector_view
-            Debug GetState(*e_widget)
+            ;Debug GetState(*e_widget)
             a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
          EndIf
          
@@ -1299,7 +1299,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 543
-; FirstLine = 525
+; CursorPosition = 531
+; FirstLine = 603
 ; Folding = ---------r2ufh--tV+----
 ; EnableXP
