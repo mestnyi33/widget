@@ -469,11 +469,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                widget( ) = __widgets( )
             EndMacro
-            ;
-            Macro AbortEnumerate( )
-               Break
-            EndMacro
-            ;
+;             ;
+;             Macro AbortEnumerate( )
+;                Break
+;             EndMacro
+;             ;
             Macro StopEnumerate( )
             Until Not NextElement( __widgets( ) )
          EndIf
@@ -2844,7 +2844,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ;\\ top-line
                   If a_focused( )\frame_y( ) = __widgets( )\frame_y( )
-                       Debug " "+__widgets( )\class +" "+ __widgets( )\index +" "+ __widgets( )\x + " " 
                      If a_line([#__a_line_top])\x > __widgets( )\frame_x( )
                         a_line([#__a_line_top])\x = __widgets( )\frame_x( )
                      EndIf
@@ -21348,9 +21347,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If MapSize( __roots( ) )
             Protected canvas = Root( )\canvas\gadget
          EndIf
-         
-         Open( Window, x, y, width, height, "", #PB_Canvas_Container, 0, Gadget )
-         
+         ;
+         Open( Window, x, y, width, height, "", #PB_Canvas_Container, #Null, Gadget )
+         ;
          Select Type
             Case #__type_Tree : *this = Tree( 0, 0, width, height, flag )
             Case #__type_Text : *this = Text( 0, 0, width, height, Text, flag )
@@ -21360,9 +21359,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_HyperLink : *this = HyperLink( 0, 0, width, height, Text, *param1, flag )
             Case #__type_Splitter : *this = Splitter( 0, 0, width, height, *param1, *param2, flag )
          EndSelect
-         
+         ;
          CloseGadgetList( )
-         
+         ;
          If Gadget = - 1
             Gadget = GetGadget( Root( ))
             g      = Gadget
@@ -21376,7 +21375,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; CloseList( )
             ;Debug ""+Gadget+" "+canvas
             ChangeCurrentCanvas( GadgetID(canvas) )
-            OpenList( Root( ) )
+           ; OpenList( Root( ) )
          EndIf
          
          ProcedureReturn g
@@ -22801,7 +22800,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2873
-; FirstLine = 2815
-; Folding = ----------------------------------------------------------------------Xq------v---f8--f-0n0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv+--f-f----------8--9--rvX-+38T---4--0--------------------f0uX874u+zfr--+9-------------------------------------------
+; CursorPosition = 21377
+; FirstLine = 19472
+; Folding = ----------------------------------------------------------------------L2------4---v0--v-+z+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vX---v-v----------0-f+--24rff80p---8--+--------------------ve4rd0bX-6v2-ff+-------------------------------------------
 ; EnableXP
