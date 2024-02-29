@@ -415,7 +415,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "panel"       
-            *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_0" ) : CloseList( )
+            *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "scrollarea"  
@@ -1207,7 +1207,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;   ;OpenList(w_ide_design_MDI)
    SetState(group_select, 1) 
-   Define result, example = 5
+   Define result, example = 3
    
   
    If example = 1
@@ -1234,17 +1234,28 @@ CompilerIf #PB_Compiler_IsMainFile
       
    ElseIf example = 3
       ;\\ example 3
-      w_ide_design_form = widget_add(w_ide_design_MDI, "window", 30, 30, 400, 250)
+      w_ide_design_form = widget_add(w_ide_design_MDI, "window", 30, 30, 500, 250)
       widget_add(w_ide_design_form, "button", 15, 25, 50, 30)
       widget_add(w_ide_design_form, "text", 25, 65, 50, 30)
       widget_add(w_ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(w_ide_design_form, "text", 45, 65+40*2, 50, 30)
       
-      Define *container = widget_add(w_ide_design_form, "scrollarea", 150, 25, 165, 175)
-      widget_add(*container, "button", 15, 25, 30, 30)
-      widget_add(*container, "text", 25, 65, 50, 30)
-      widget_add(*container, "button", 35, 65+40, 80, 30)
-      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      Define *scrollarea = widget_add(w_ide_design_form, "scrollarea", 120, 25, 165, 175)
+      widget_add(*scrollarea, "button", 15, 25, 30, 30)
+      widget_add(*scrollarea, "text", 25, 65, 50, 30)
+      widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
+      widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
+      
+      Define *panel = widget_add(w_ide_design_form, "panel", 320, 25, 165, 175)
+      widget_add(*panel, "button", 15, 25, 30, 30)
+      widget_add(*panel, "text", 25, 65, 50, 30)
+      widget_add(*panel, "button", 35, 65+40, 80, 30)
+      widget_add(*panel, "text", 45, 65+40*2, 50, 30)
+      AddItem( *panel, -1, "pane_item_1" )
+      widget_add(*panel, "button", 15, 25, 30, 30)
+      widget_add(*panel, "text", 25, 65, 50, 30)
+      widget_add(*panel, "button", 35, 65+40, 80, 30)
+      widget_add(*panel, "text", 45, 65+40*2, 50, 30)
       
    ElseIf example = 4
       ;\\ example 3
@@ -1326,7 +1337,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1277
-; FirstLine = 906
+; CursorPosition = 1258
+; FirstLine = 883
 ; Folding = ---------r0ufh--tV+----
 ; EnableXP
