@@ -330,7 +330,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TAB
          *widget._s_WIDGET
          
-         change.b ; TEMP
+         ;change.b ; TEMP
+         state.c
+         addindex.c
          
          ; tab
          *entered._s_rows
@@ -572,6 +574,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          type.b
          class.s
          ;
+         tabindex.c
          level.c
          resize.i                 ; state
          ;
@@ -743,7 +746,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 319
-; FirstLine = 188
+; CursorPosition = 577
+; FirstLine = 440
 ; Folding = -PCB-d-y--
 ; EnableXP
