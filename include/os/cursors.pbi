@@ -81,6 +81,7 @@ DeclareModule Cursor
    ;Declare   Hide( state.b )
    Declare   Free( *cursor )
    ;Declare   Get( )
+   ;Declare   Clip( x.l,y.l,width.l,height.l )
    Declare   Image( type.a = 0 )
    Declare   Set( Gadget.i, *cursor );, x.i = 0, y.i = 0)
    Declare   Change( GadgetID.i, state.b )
@@ -869,7 +870,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 27
+; CursorPosition = 83
+; FirstLine = 67
 ; Folding = ----0--------
 ; EnableXP

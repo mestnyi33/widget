@@ -312,9 +312,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PressedTab( ): tab\pressed: EndMacro         ; Returns mouse focused tab
       Macro FocusedTab( ): tab\focused: EndMacro         ; Returns mouse focused tab
                                                          ;
-      Macro OpenedTabIndex( ): index[1]: EndMacro        ;
-      Macro FocusedTabIndex( ): index[2]: EndMacro       ;
-      Macro TabIndex( ): index[3]: EndMacro           ;
+      Macro OpenedTab( ): index[1]: EndMacro       ;
+      Macro TabState( ): index[2]: EndMacro        ;
+      Macro TabIndex( ): index[3]: EndMacro        ;
       
       ;-
       Macro TextChange( ): text\change: EndMacro   ; temp
@@ -536,7 +536,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
       
       Macro is_child_( _this_, _parent_ )
-         Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\FocusedTabIndex( ) ))
+         Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\TabState( ) ))
       EndMacro
       Macro is_level_( _address_1, _address_2 )
          Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
@@ -4264,7 +4264,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool( _this_\hidden Or
                _this_\parent\hide Or
                ( _this_\parent\TabBox( ) And
-                 _this_\parent\TabBox( )\FocusedTabIndex( ) <> _this_\TabIndex( ) ))
+                 _this_\parent\TabBox( )\TabState( ) <> _this_\TabIndex( ) ))
          
          
          ; Чтобы обновить границы отоброжения (clip-coordinate)
@@ -5372,8 +5372,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Item = ListIndex( *this\__tabs( ))
          Else
             If SelectElement( *this\__tabs( ), Item )
-               If *this\FocusedTabIndex( ) >= Item
-                  *this\FocusedTabIndex( ) + 1
+               If *this\TabState( ) >= Item
+                  *this\TabState( ) + 1
                EndIf
                
                InsertElement( *this\__tabs( ))
@@ -5399,7 +5399,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ TabBar last opened item
-         *this\OpenedTabIndex( ) = Item
+         *this\OpenedTab( ) = Item
          *this\TabChange( )      = #True
          *this\count\items + 1
          
@@ -5418,11 +5418,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\FocusedTab( )       = *this\__tabs( )
             *this\FocusedTab( )\focus = - 1 ; scroll to active tab
-            *this\FocusedTabIndex( ) = 0
+            *this\TabState( ) = 0
          EndIf
          
          set_image_( *this, *this\__tabs( )\Image, Image )
          PostRepaint( *this\root )
+         ;
+         If *this\child
+            If *this\parent <> Opened( )
+               OpenList( *this\parent, Item )
+            EndIf
+         EndIf
          
          ProcedureReturn Item
       EndProcedure
@@ -5438,8 +5444,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             item = *this\count\items - 1
          EndIf
          
-         If *this\FocusedTabIndex( ) <> item
-            *this\FocusedTabIndex( ) = item
+         If *this\TabState( ) <> item
+            *this\TabState( ) = item
             
             *this\TabChange( ) = #True
             
@@ -5477,8 +5483,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If SelectElement( *this\__tabs( ), item )
             *this\TabChange( ) = #True
             
-            If *this\FocusedTabIndex( ) = *this\__tabs( )\index
-               *this\FocusedTabIndex( ) = item - 1
+            If *this\TabState( ) = *this\__tabs( )\index
+               *this\TabState( ) = item - 1
             EndIf
             
             DeleteElement( *this\__tabs( ), 1 )
@@ -5569,7 +5575,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected widget_backcolor = $FFD0D0D0;$FFEEEEEE ; $FFE6E5E5;
             
             Protected *activeTAB._s_TABS = *this\FocusedTab( )
-            Protected focused_tab_index = *this\FocusedTabIndex( )
+            Protected focused_tab_index = *this\TabState( )
             
             Protected typ = 0
             Protected pos = 1
@@ -13566,14 +13572,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\type = #__type_Panel
             If *this\TabBox( )
-               ProcedureReturn *this\TabBox( )\FocusedTabIndex( )
+               ProcedureReturn *this\TabBox( )\TabState( )
             EndIf
          EndIf
          
          If *this\type = #__type_TabBar Or
             *this\type = #__type_ToolBar
             
-            ProcedureReturn *this\FocusedTabIndex( )
+            ProcedureReturn *this\TabState( )
          Else
             If *this\bar
                ProcedureReturn *this\bar\page\pos
@@ -14627,7 +14633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If tabindex < 0
                If *parent\TabBox( )
-                  tabindex = *parent\TabBox( )\OpenedTabIndex( )
+                  tabindex = *parent\TabBox( )\OpenedTab( )
                Else
                   tabindex = 0
                EndIf
@@ -14695,7 +14701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\hide = #True
             ElseIf *parent\TabBox( )
                ; hide all children's except the selected tab
-               *this\hide = Bool(*parent\TabBox( )\FocusedTabIndex( ) <> *this\TabIndex( ))
+               *this\hide = Bool(*parent\TabBox( )\TabState( ) <> *this\TabIndex( ))
             ElseIf Not *this\hidden
                If *this\hide = #True
                   *this\hide = #False
@@ -14712,7 +14718,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ChangeCurrentElement( __widgets( ), *this\address )
                   AddElement( *D( ) ) : *D( ) = __widgets( )
-                  ;Debug ""+*parent\TabBox( )\FocusedTabIndex( ) +" "+ *this\TabIndex( ) 
                   ;*D( )\hide = HideState( *D( ) )
                   
                   If *this\haschildren
@@ -20916,7 +20921,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i = Opened( )
          
          If *this = Opened( )
-            ProcedureReturn result
+            If *this\TabBox( )
+               If *this\TabBox( )\OpenedTab( ) = item
+                  ProcedureReturn result
+               EndIf
+            Else
+               ProcedureReturn result
+            EndIf
          EndIf
          
          If *this
@@ -20939,7 +20950,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If *this\TabBox( )
-               *this\TabBox( )\OpenedTabIndex( ) = item
+               *this\TabBox( )\OpenedTab( ) = item
             EndIf
             
             Opened( ) = *this
@@ -21905,7 +21916,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      
       Procedure MessageEvents( )
          
          Select WidgetEventType( )
@@ -22800,7 +22810,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21377
-; FirstLine = 19472
-; Folding = ----------------------------------------------------------------------L2------4---v0--v-+z+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vX---v-v----------0-f+--24rff80p---8--+--------------------ve4rd0bX-6v2-ff+-------------------------------------------
+; CursorPosition = 314
+; FirstLine = 303
+; Folding = ----------------------------------------------------------------------L2------4---v0--v-+z+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------e0---+-+---------4--6--Xfv+0t4n+--v--8---------------------7dv32vd0n-W--06------------------e---0-----f-v-f0---------
 ; EnableXP

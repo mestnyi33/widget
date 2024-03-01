@@ -1251,11 +1251,14 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*panel, "text", 25, 65, 50, 30)
       widget_add(*panel, "button", 35, 65+40, 80, 30)
       widget_add(*panel, "text", 45, 65+40*2, 50, 30)
+      
       AddItem( *panel, -1, "pane_item_1" )
+      ;OpenList( *panel, 1 )
       widget_add(*panel, "button", 15, 25, 30, 30)
       widget_add(*panel, "text", 25, 65, 50, 30)
       widget_add(*panel, "button", 35, 65+40, 80, 30)
       widget_add(*panel, "text", 45, 65+40*2, 50, 30)
+      ;CloseList( )
       
    ElseIf example = 4
       ;\\ example 3
@@ -1337,7 +1340,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1258
-; FirstLine = 883
+; CursorPosition = 417
+; FirstLine = 398
 ; Folding = ---------r0ufh--tV+----
 ; EnableXP

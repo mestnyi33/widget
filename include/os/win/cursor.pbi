@@ -247,6 +247,13 @@ Module Cursor
     ProcedureReturn ShowCursor_(state)
   EndProcedure
   
+  Procedure   Clip( x.l,y.l,width.l,height.l )
+     Protected rect.RECT
+     ;GetWindowRect_(GadgetID,rect.RECT)
+     SetRect_(rect,x,y,x+width,y+height)
+     ProcedureReturn ClipCursor_(rect)
+  EndProcedure
+  
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
     Protected *create_icon, cursor_info.ICONINFO
     cursor_info\fIcon = 0
@@ -419,6 +426,7 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 5
+; Folding = 4-v------
 ; EnableXP

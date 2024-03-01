@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
    a_set(object, #__a_full, anchor_size)
    a_set(object1, #__a_full, anchor_size)
    a_set(object2, #__a_full, anchor_size)
-  a_set(object3, #__a_full, anchor_size)
+   a_set(object3, #__a_full, anchor_size)
    
 ;    ;\\
 ;    ;     parent = Root( )
@@ -130,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 32
+; CursorPosition = 36
 ; FirstLine = 13
 ; Folding = --
 ; EnableXP
