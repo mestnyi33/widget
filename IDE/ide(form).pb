@@ -364,7 +364,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
    Protected is_window.b, flag.i 
    
    If *parent 
-      OpenList( *parent, GetState( *parent ) ) 
+      OpenList( *parent, CountItems( *parent ) - 1 )
       class.s = LCase( Trim( class ) )
       
       ; defaul width&height
@@ -544,7 +544,9 @@ Procedure widget_events( )
                ; Debug "reFocus (w_ide_inspector_view)"   
                SetActive( w_ide_inspector_view )
             EndIf
-         EndIf
+            
+            ;Debug "focus " + GetActive( )\focusedRow( )\color\state
+          EndIf
          
       Case #__event_DragStart
          If a_index( ) = #__a_moved
@@ -666,7 +668,27 @@ EndProcedure
 
 
 ;-
+Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
+   Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30)
+   SetAlignment( *this, #__align_full|#__align_top )
+   ProcedureReturn *this
+EndProcedure
+
+Macro _ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+   If widget( )
+      AddItem( widget( ), -1, _text_, _image_, _mode_)
+   EndIf
+EndMacro
+
+Macro _Separator( )
+   If widget( )
+      AddItem( widget( ), 65535, "|", -1, #Null )
+   EndIf
+EndMacro
+
+
 Macro ToolBar( parent, flag = #PB_ToolBar_Small )
+   ;_ToolBar( parent, flag )
    Container( 0,0,0,0 ) 
    widget( )\class = "TOOLBAR"
    Text( widget( )\x+widget( )\width, 5,3,30,"" )
@@ -674,7 +696,8 @@ Macro ToolBar( parent, flag = #PB_ToolBar_Small )
 EndMacro
 
 Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-   If _image_
+   ;_ToolBarButton( _button_, _image_, _mode_, _text_ )
+   If _image_ > 0
       ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
    Else
       Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
@@ -688,6 +711,7 @@ Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
 EndMacro
 
 Macro Separator( )
+   ;_Separator( )
    Text( widget( )\x+widget( )\width, 5,1,30,"" )
    widget( )\class = "<"
    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
@@ -696,7 +720,6 @@ Macro Separator( )
    Text( widget( )\x+widget( )\width, 5,1,30,"" )
    widget( )\class = ">"
 EndMacro
-
 
 ;-
 Procedure.i ide_add_image_list( *id, Directory$ )
@@ -1052,10 +1075,10 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
    w_ide_toolbar = ToolBar( w_ide_toolbar )
-   ToolBarButton( #_tb_file_open, 0, 0, "Open" )
-   ToolBarButton( #_tb_file_save, 0, 0, "Save" )
+   ToolBarButton( #_tb_file_open, -1, 0, "Open" )
+   ToolBarButton( #_tb_file_save, -1, 0, "Save" )
    Separator( )
-   ToolBarButton( #_tb_group_select, - 1, #PB_Button_Toggle ) : group_select = widget( )
+   ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) : group_select = widget( )
    SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
    SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
    Separator( )
@@ -1254,11 +1277,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       AddItem( *panel, -1, "pane_item_1" )
       ;OpenList( *panel, 1 )
-      widget_add(*panel, "button", 15, 25, 30, 30)
-      widget_add(*panel, "text", 25, 65, 50, 30)
-      widget_add(*panel, "button", 35, 65+40, 80, 30)
-      widget_add(*panel, "text", 45, 65+40*2, 50, 30)
+      widget_add(*panel, "button", 115, 25, 30, 30)
+      widget_add(*panel, "text", 125, 65, 50, 30)
+      widget_add(*panel, "button", 135, 65+40, 80, 30)
+      widget_add(*panel, "text", 145, 65+40*2, 50, 30)
       ;CloseList( )
+      SetState( *panel, 1 )
       
    ElseIf example = 4
       ;\\ example 3
@@ -1273,6 +1297,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 25, 65, 50, 30)
       widget_add(*container, "button", 35, 65+40, 80, 30)
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      SetActive( q )
       
    ElseIf example = 5
       ;\\ example 3
@@ -1287,10 +1312,10 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 25, 65, 50, 30)
       widget_add(*container, "button", 35, 65+40, 80, 30)
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      SetActive( q )
    EndIf
    
-     SetActive( q )
-   
+    
 ;    Define._S_WIDGET *this, *parent
 ;    Debug "--- enumerate all gadgets ---"
 ;    If StartEnumerate( root( ) )
@@ -1340,7 +1365,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 417
-; FirstLine = 398
-; Folding = ---------r0ufh--tV+----
+; CursorPosition = 699
+; FirstLine = 617
+; Folding = ---------r0uf-0-vpy----
 ; EnableXP

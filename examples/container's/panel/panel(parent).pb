@@ -54,14 +54,14 @@ CompilerIf #PB_Compiler_IsMainFile
        Debug " reparent "
        SetParent( *butt0, *panel, 0 )
       
-;       ;
-;       *butt1 = Button( x,5,80,25, "*butt1" ) 
-;       *butt2 = Button( x,35,80,25, "*butt2" ) 
-;       
-;       If *panel
-;          SetState( *panel, 2 )
-;       EndIf
-;       
+      ;
+      *butt1 = Button( x,5,80,25, "*butt1" ) 
+      *butt2 = Button( x,35,80,25, "*butt2" ) 
+      
+      If *panel
+         SetState( *panel, 2 )
+      EndIf
+      
       Debug "----panel all childrens-----"
       If StartEnumerate( *panel )
          Debug widget( )\text\string
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 48
-; FirstLine = 33
+; CursorPosition = 63
+; FirstLine = 14
 ; Folding = --
 ; EnableXP

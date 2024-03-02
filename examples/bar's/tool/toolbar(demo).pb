@@ -28,23 +28,33 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    *parent\ToolBarHeight = 32;+2 + 6
-                              ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
-    *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
-    Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-    ProcedureReturn *parent\tab\widget
+;     *parent\ToolBarHeight = 32;+2 + 6
+;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
+;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;     ProcedureReturn *parent\tab\widget
+     
+     Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30)
+     SetAlignment( *this, #__align_full|#__align_top )
+     ProcedureReturn *this
   EndProcedure
   
   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-    If widget( )\tab\widget
-      AddItem( widget( )\tab\widget, _button_, _text_, _image_, _mode_)
+    If widget( )
+      AddItem( widget( ), _button_, _text_, _image_, _mode_)
     EndIf
+;     If widget( )\TabBox( )
+;       AddItem( widget( )\TabBox( ), _button_, _text_, _image_, _mode_)
+;     EndIf
   EndMacro
   
   Macro Separator( )
-    If widget( )\tab\widget
-      AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
+    If widget( )
+      AddItem( widget( ), 65535, "|", #Null, #Null )
     EndIf
+;     If widget( )\tab\widget
+;       AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
+;     EndIf
   EndMacro
   
   Macro DisableButton( _address_, _button_, _state_ )
@@ -133,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 69
+; CursorPosition = 52
+; FirstLine = 34
 ; Folding = --
 ; EnableXP

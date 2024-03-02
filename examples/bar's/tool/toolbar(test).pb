@@ -27,7 +27,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *toolbar._s_widget, th=24
   
-  Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
+  Procedure ToolBarEvents( )
+      Protected *e_widget._s_WIDGET = EventWidget( )
+      Protected toolbarbutton = GetData( *e_widget ) 
+      
+      
+   EndProcedure
+   
+   
+   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
 ;     *parent\ToolBarHeight = 32;+2 + 6
 ;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
 ;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
@@ -110,8 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 37
-; FirstLine = 20
 ; Folding = --
 ; EnableXP

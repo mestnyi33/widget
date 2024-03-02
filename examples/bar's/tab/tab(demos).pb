@@ -1,4 +1,8 @@
 ﻿XIncludeFile "../../../widgets.pbi"
+#__s_Disable = 3
+#__s_Select = 2
+#__s_Check = 1
+#__event_CloseItem = 300
 
 ; Attribute für das TabBar
 Enumeration
@@ -430,5 +434,6 @@ Repeat
 ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 5
 ; Folding = ----
 ; EnableXP

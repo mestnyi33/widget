@@ -24,9 +24,9 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  ;If WidgetEventType( ) <> #__event_MouseMove And WidgetEventType( ) <> #__event_Draw
+  If WidgetEventType( ) <> #__event_MouseMove And WidgetEventType( ) <> #__event_Draw
     Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
-  ;EndIf
+  EndIf
 EndProcedure
 
 Procedure events_gbuttons()
@@ -59,7 +59,7 @@ EndProcedure
 
 Procedure events_wbuttons()
   Select WidgetEventType( )
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       Select GetIndex( EventWidget( ) )
         Case 2 
           If CountItems( GetWidget(1)) > 1
@@ -165,6 +165,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 33
+; FirstLine = 130
 ; Folding = ---
 ; EnableXP

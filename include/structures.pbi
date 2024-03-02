@@ -331,8 +331,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET
          
          ;change.b ; TEMP
-         ;state.c
-         ;addindex.c
+         state.c
+         index.c
          
          ; tab
          *entered._s_rows
@@ -566,7 +566,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         ;tabindex.c
+         tabindex.c
+         index.l[4]
+         ; \index[0] - widget index
+         ;
+         ; \index[1] - panel opened tab index     - TabAddIndex( )
+         ; \index[2] - panel selected tab index   - TabState( )
+         ; \index[3] - panel added tab index      - TabIndex( )
+         ;
+         ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
+         ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
+         ;
+         ; \index[1] - edit entered line index    - EnteredLineIndex( )
+         ; \index[2] - edit focused line index    - FocusedLineIndex( )
+         ; \index[3] - edit pressed line index    - PressedLineIndex( )
+         
+         
          y.l[constants::#__c]
          x.l[constants::#__c]
          height.l[constants::#__c]
@@ -637,20 +652,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \gadget[0] - window active child gadget
          ; \gadget[1] - splitter( ) first gadget
          ; \gadget[2] - splitter( ) second gadget
-         
-         *index[4]
-         ; \index[0] - widget index
-         ;
-         ; \index[1] - panel opened tab index     - OpenedTabIndex( )
-         ; \index[2] - panel selected tab index   - FocusedTabIndex( )
-         ; \index[3] - panel added tab index      - FocusedTabIndex( )
-         ;
-         ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
-         ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
-         ;
-         ; \index[1] - edit entered line index    - EnteredLineIndex( )
-         ; \index[2] - edit focused line index    - FocusedLineIndex( )
-         ; \index[3] - edit pressed line index    - PressedLineIndex( )
          
          image._s_image[4]
          ; \image[0] - draw image
@@ -746,7 +747,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 334
-; FirstLine = 217
+; CursorPosition = 574
+; FirstLine = 432
 ; Folding = -PCB-d-y--
 ; EnableXP
