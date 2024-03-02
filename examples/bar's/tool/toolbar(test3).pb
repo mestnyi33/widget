@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-      Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30)
+      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 30)
       SetAlignment( *this, #__align_full|#__align_top )
       
       Bind( *this, @ToolBarEvents( ), #__event_LeftClick )
@@ -121,36 +121,42 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    
-   If OpenWindow(0, 100, 200, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
-      
+   If Open( 0, 30, 200, 800, 380, "ToolBar example")   
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small)
-         ToolBarImageButton(0, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-         ToolBarImageButton(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-         ToolBarImageButton(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
+         ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
+         ToolBarImageButton( #_tb_file_save, 0, 0, "Save" )
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_group_select, ImageID(CatchImage( #PB_Any,?group )), #PB_ToolBar_Toggle ) ;: group_select = widget( )
+                                                                                                  ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+                                                                                                  ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_group_left, ImageID(CatchImage( #PB_Any,?group_left )) )
+         ToolBarImageButton( #_tb_group_right, ImageID(CatchImage( #PB_Any,?group_right )) )
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_group_top, ImageID(CatchImage( #PB_Any,?group_top )) )
+         ToolBarImageButton( #_tb_group_bottom, ImageID(CatchImage( #PB_Any,?group_bottom )) )
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_group_width, ImageID(CatchImage( #PB_Any,?group_width )) )
+         ToolBarImageButton( #_tb_group_height, ImageID(CatchImage( #PB_Any,?group_height )) )
          
-         ToolBarSeparator()
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_widget_copy, ImageID(CatchImage( #PB_Any,?widget_copy )) )
+         ToolBarImageButton( #_tb_widget_paste, ImageID(CatchImage( #PB_Any,?widget_paste )) )
+         ToolBarImageButton( #_tb_widget_cut, ImageID(CatchImage( #PB_Any,?widget_cut )) )
+         ToolBarImageButton( #_tb_widget_delete, ImageID(CatchImage( #PB_Any,?widget_delete )) )
+         ToolBarSeparator( )
+         ToolBarImageButton( #_tb_align_left, ImageID(CatchImage( #PB_Any,?group_left )) )
+         ToolBarImageButton( #_tb_align_top, ImageID(CatchImage( #PB_Any,?group_top )) )
+         ToolBarImageButton( #_tb_align_center, ImageID(CatchImage( #PB_Any,?group_width )) )
+         ToolBarImageButton( #_tb_align_bottom, ImageID(CatchImage( #PB_Any,?group_bottom )) )
+         ToolBarImageButton( #_tb_align_right, ImageID(CatchImage( #PB_Any,?group_right )) )
          
-         ToolBarImageButton(3, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-         ToolBarToolTip(0, 3, "Cut")
-         
-         ToolBarImageButton(4, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-         ToolBarToolTip(0, 4, "Copy")
-         
-         ToolBarImageButton(5, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-         ToolBarToolTip(0, 5, "Paste")
-         
-         ToolBarSeparator()
-         
-         ToolBarImageButton(6, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-         ToolBarToolTip(0, 6, "Find a document")
       EndIf
       
-      DisableToolBarButton(0, 2, 1) ; Disable the button '2'
-   EndIf
-   
-   
-   If Open( 1, 300, 200, 800, 380, "ToolBar example");, #PB_Window_BorderLess )
-                                                     ;a_init(root( ))
+      ;DisableToolBarButton(0, 2, 1) ; Disable the button '2'
+      
+      
+      ;a_init(root( ))
       Define w_ide_toolbar                           ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       w_ide_toolbar = ToolBar( w_ide_toolbar )
@@ -227,7 +233,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 50
+; CursorPosition = 123
+; FirstLine = 115
 ; Folding = ---
 ; EnableXP
