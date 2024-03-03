@@ -82,6 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Macro _Separator( )
       If widget( )
          AddItem( widget( ), 65535, "|", - 1, #Null )
+         ; widget( )\__tabs( )\width = 20
       EndIf
    EndMacro
    
@@ -164,8 +165,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_file_save, -1, 0, "Save" )
       Separator( )
       ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) ;: group_select = widget( )
-                                                                                          ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-                                                                                          ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+      
+;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
       Separator( )
       ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
       ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
@@ -233,7 +235,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 123
-; FirstLine = 115
+; CursorPosition = 84
+; FirstLine = 62
 ; Folding = ---
 ; EnableXP

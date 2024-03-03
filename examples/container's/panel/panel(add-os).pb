@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList() ; close *PANEL_1 list
       
       ;\\
-      SetGadgetState(*PANEL_1,1 )
+      SetGadgetState( *PANEL_1,1 )
       
       ;\\
       AddGadgetItem(*PANEL_1, i, "*PANEL_1 - 3")
@@ -30,6 +30,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget(-1, 200,80,80,30,"Button6")
       
       Debug "items count "+CountGadgetItems(*PANEL_1)
+      
+      SetGadgetState(*PANEL_1, - 1 )
       
       Repeat
          Define Event = WaitWindowEvent()
@@ -61,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11
+; CursorPosition = 23
 ; FirstLine = 3
 ; Folding = -
 ; EnableXP

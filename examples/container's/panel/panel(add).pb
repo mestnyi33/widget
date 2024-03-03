@@ -38,6 +38,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "items count "+CountItems( *PANEL_1 )
       
+      ; reset selected items
+      SetState( *PANEL_1, - 1 )
+      
       WaitClose( )
    EndIf   
 CompilerEndIf
@@ -64,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15
-; FirstLine = 3
+; CursorPosition = 40
+; FirstLine = 9
 ; Folding = -
 ; EnableXP

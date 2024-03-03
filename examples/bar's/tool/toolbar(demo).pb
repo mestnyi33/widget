@@ -1,7 +1,8 @@
 ﻿;                                                       - PB
 ;                               Separator( [*address] ) - ToolBarSeparator( )
-;                                                         ToolBarID( #ToolBar )
+;                                     WidgetID( index ) - ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
+
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                  DisableItem( *address, item, state ) - DisableToolBarButton( #ToolBar, Button, State )
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
@@ -143,7 +144,6 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 34
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP

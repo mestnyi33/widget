@@ -967,7 +967,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FrontColor( #PB_Default ) ; bug
       EndMacro
       
-      Macro draw_gradient_box_( _vertical_, _x_, _y_, _width_, _height_, _color_1_, _color_2_, _round_ = 0, _alpha_ = 255 )
+      Macro draw_gradientbox_( _vertical_, _x_, _y_, _width_, _height_, _color_1_, _color_2_, _round_ = 0, _alpha_ = 255 )
          BackColor( _color_1_ & $FFFFFF | _alpha_ << 24 )
          FrontColor( _color_2_ & $FFFFFF | _alpha_ << 24 )
          
@@ -5529,36 +5529,70 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Macro bar_tab_item_draw_( _vertical_, _address_, _x_, _y_, _fore_color_, _back_color_, _frame_color_, _text_color_, _round_)
-         ;Draw back
+      Macro bar_item_draw_( _address_, _vertical_, _x_, _y_, _round_, _mode_ = )
+         ; Draw back
          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-         draw_gradient_box_( _vertical_, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _fore_color_, _back_color_, _round_, _address_\color\_alpha )
+         draw_gradientbox_( _vertical_, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\color\_alpha )
          ; Draw frame
          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _frame_color_ & $FFFFFF | _address_\color\_alpha << 24 )
+         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          ; Draw items image
          If _address_\image\id
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\color\_alpha )
-            ; draw_background_image_(_address_, _x_, _y_ )
          EndIf
          ; Draw items text
          If _address_\text\string
-            drawing_mode_( #PB_2DDrawing_Transparent )
-            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _text_color_ & $FFFFFF | _address_\color\_alpha << 24 )
+            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
-      Macro bar_item_draw_( _this_, _item_, x, y, _round_, _mode_ = )
-         ;_draw_font_item_( _this_, _item_, 0 )
+      Procedure DrawTABITEMS( *this._s_WIDGET, vertical, x,y, round, List *items._s_TABS( ) )
          
-         bar_tab_item_draw_( _this_\bar\vertical, _item_, x, y,
-                             _item_\color\fore#_mode_,
-                             _item_\color\back#_mode_,
-                             _item_\color\frame#_mode_,
-                             _item_\color\front#_mode_, _round_ )
-      EndMacro
-      
+         ; draw all visible items
+         ForEach *items( )
+            draw_font_item_( *this, *items( ), 0 )
+            
+            ; real visible items
+            If vertical
+               *items( )\visible = Bool( Not *items( )\hide And
+                                        (( y + *items( )\y + *items( )\height ) > *this\inner_y( ) And
+                                         ( y + *items( )\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
+            Else
+               *items( )\visible = Bool( Not *items( )\hide And
+                                        (( x + *items( )\x + *items( )\width ) > *this\inner_x( ) And
+                                         ( x + *items( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
+            EndIf
+            ;
+            ;no &~ entered &~ focused
+            If *items( )\visible 
+               If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
+                  
+                  bar_item_draw_( *items( ), vertical, x, y, round, [0] )
+               EndIf
+            EndIf
+         Next
+         ;
+         ; draw mouse-enter visible item
+         If *this\EnteredTab( ) <> *this\FocusedTab( )
+            If *this\EnteredTab( ) And
+               *this\EnteredTab( )\visible 
+               
+               draw_font_item_( *this, *this\EnteredTab( ), 0 )
+               bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\color\state] )
+            EndIf
+         EndIf
+         ;
+         ; draw key-focus visible item
+         If *this\FocusedTab( ) And
+            *this\FocusedTab( )\visible
+            
+            draw_font_item_( *this, *this\FocusedTab( ), 0 )
+            bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [2] )
+         EndIf
+      EndProcedure
+
       Procedure.b bar_tab_draw( *this._s_WIDGET )
          With *this
             Protected Color
@@ -5573,7 +5607,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected widget_backcolor = $FFD0D0D0;$FFEEEEEE ; $FFE6E5E5;
             
             Protected *activeTAB._s_TABS = *this\FocusedTab( )
-            Protected focused_tab_index = *this\TabState( )
+            
             Protected index
             
             Protected typ = 0
@@ -5592,6 +5626,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Protected layout = pos * 2
             Protected text_pos = 6
+            
             
             If Not *this\hide And *this\color\_alpha
                If *this\color\back <> - 1
@@ -5629,7 +5664,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *bar\vertical
                         *this\__tabs( )\y = *bar\max + pos
                         
-                        If focused_tab_index = index
+                        If *this\TabState( ) = index
                            *this\__tabs( )\x     = 0
                            *this\__tabs( )\width = *SB\width + 1
                         Else
@@ -5645,14 +5680,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         *bar\max + *this\__tabs( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
                         ;
-                        If typ And focused_tab_index = index
+                        If typ And *this\TabState( ) = index
                            *this\__tabs( )\height + 4
                            *this\__tabs( )\y - 2
                         EndIf
                      Else
                         *this\__tabs( )\x = *bar\max + pos
                         
-                        If focused_tab_index = index
+                        If *this\TabState( ) = index
                            *this\__tabs( )\y      = pos;pos - Bool( pos>0 )*2
                            *this\__tabs( )\height = *SB\height - *this\__tabs( )\y + 1
                         Else
@@ -5673,7 +5708,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         *bar\max + *this\__tabs( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
                         ;
-                        If typ And focused_tab_index = index
+                        If typ And *this\TabState( ) = index
                            *this\__tabs( )\width + 4
                            *this\__tabs( )\x - 2
                         EndIf
@@ -5698,61 +5733,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                
-               Protected State_3, Color_frame
+            
                Protected x = *SB\x
                Protected y = *SB\y
                
-               
-               
-               ;           drawing_mode_alpha_( #PB_2DDrawing_Default )
-               ;                 color = *this\parent\color\frame[0]
-               ;                draw_box_( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), *this\parent\fs-1, color);*this\color\frame )
-               
-               ; draw all visible items
-               ForEach *this\__tabs( )
-                  draw_font_item_( *this, *this\__tabs( ), 0 )
-                  
-                  ; real visible items
-                  If *bar\vertical
-                     *this\__tabs( )\visible = Bool( Not *this\__tabs( )\hide And
-                                                     (( y + *this\__tabs( )\y + *this\__tabs( )\height ) > *this\inner_y( ) And
-                                                      ( y + *this\__tabs( )\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
-                  Else
-                     *this\__tabs( )\visible = Bool( Not *this\__tabs( )\hide And
-                                                     (( x + *this\__tabs( )\x + *this\__tabs( )\width ) > *this\inner_x( ) And
-                                                      ( x + *this\__tabs( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
-                  EndIf
-                  
-                  ;no &~ entered &~ focused
-                  If *this\__tabs( )\visible And
-                     *this\__tabs( )\enter = #False And
-                     *this\__tabs( )\press = #False
-                     
-                     ;                ( *this\__tabs( )\enter = #False Or
-                     ;                  *this\__tabs( )\press = #True ) And
-                     ;
-                     bar_item_draw_( *this, *this\__tabs( ), x, y, *SB\round, [0] )
-                  EndIf
-               Next
-               
-               ; draw mouse-enter visible item
-               If *this\EnteredTab( ) And
-                  *this\EnteredTab( )\visible And
-                  Not *this\EnteredTab( )\focus
-                  
-                  draw_font_item_( *this, *this\EnteredTab( ), 0 )
-                  bar_item_draw_( *this, *this\EnteredTab( ), x, y, *SB\round, [*this\EnteredTab( )\color\state] )
-               EndIf
-               
-               ; draw key-focus visible item
-               If *activeTAB And
-                  *activeTAB\visible
-                  
-                  draw_font_item_( *this, *activeTAB, 0 )
-                  bar_item_draw_( *this, *activeTAB, x, y, *SB\round, [2] )
-               EndIf
-               
-               
+               DrawTABITEMS( *this, *this\bar\vertical, x,y, *SB\round, *this\__tabs( ) )
+
+               ;
+               ;\\
+               Protected State_3, Color_frame
                color = $FF909090
                drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                
@@ -8441,14 +8430,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ForEach *this\__tabs( )
                            If *this\PressedTab( ) = *this\__tabs( )
                               ;ChangeCurrentElement( *this\__tabs( ), *this\PressedTab( ) )
-                        Debug ListIndex( *this\__tabs( ) ) 
-                        If bar_tab_SetState( *this, ListIndex( *this\__tabs( ) ) ) 
-                        ;If bar_tab_SetState( *this, *this\PressedTab( )\index )
-                           *this\root\repaint = #True
-                        EndIf
-                        Break
-                     EndIf
-                  Next
+                              ;Debug ListIndex( *this\__tabs( ) ) 
+                              If bar_tab_SetState( *this, ListIndex( *this\__tabs( ) ) ) 
+                                 ;If bar_tab_SetState( *this, *this\PressedTab( )\index )
+                                 *this\root\repaint = #True
+                              EndIf
+                              Break
+                           EndIf
+                        Next
                      EndIf
                   EndIf
                EndIf
@@ -16895,7 +16884,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Small )
-         ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 20, flag )
+         ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
       EndProcedure
       
       Procedure ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
@@ -17791,48 +17780,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                   If StartEnumerate( *root )
-                     ;                      ;
-                     ;                      ;\\ draw active widget frame
-                     ;                      If GetActive( ) And
-                     ;                         GetActive( )\focus And 
-                     ;                         GetActive( )\haschildren 
-                     ;                         
-                     ;                         If GetActive( )\AfterWidget( ) = __widgets( )  
-                     ;                            clip_output_( GetActive( ), [#__c_draw] )
-                     ;                            drawing_mode_(#PB_2DDrawing_Outlined)
-                     ;                            draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                            draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                            draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                         EndIf
-                     ;                      EndIf
                      ;
                      ;\\ draw active parent frame
                      If ActiveWindow( ) 
-                        If ActiveWindow( )\focus And 
-                           ActiveWindow( )\haschildren 
-                           
-                           If ActiveWindow( )\AfterWidget( ) = __widgets( )  
-                              clip_output_( ActiveWindow( ), [#__c_draw] )
-                              drawing_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                           EndIf
-                        EndIf
-                        ;
-                        ;\\ draw active child frame
-                        If ActiveGadget( ) And
-                           ActiveGadget( )\focus And 
-                           ActiveGadget( )\haschildren 
-                           
-                           If ActiveGadget( )\AfterWidget( ) = __widgets( )  
-                              clip_output_( ActiveGadget( ), [#__c_draw] )
-                              drawing_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                           EndIf
-                        EndIf
+;                         If ActiveWindow( )\focus And 
+;                            ActiveWindow( )\haschildren 
+;                            
+;                            If ActiveWindow( )\AfterWidget( ) = __widgets( )  
+;                               clip_output_( ActiveWindow( ), [#__c_draw] )
+;                               drawing_mode_(#PB_2DDrawing_Outlined)
+;                               draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                               draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                               draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                            EndIf
+;                         EndIf
+;                         ;
+;                         ;\\ draw active child frame
+;                         If ActiveGadget( ) And
+;                            ActiveGadget( )\focus And 
+;                            ActiveGadget( )\haschildren 
+;                            
+;                            If ActiveGadget( )\AfterWidget( ) = __widgets( )  
+;                               clip_output_( ActiveGadget( ), [#__c_draw] )
+;                               drawing_mode_(#PB_2DDrawing_Outlined)
+;                               draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                               draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                               draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                            EndIf
+;                         EndIf
                      EndIf
                      ;
                      ;\\ draw entered widget anchors
@@ -17874,54 +17849,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
-                     ;                      ;
-                     ;                      ;\\ draw active widget frame
-                     ;                      If GetActive( ) And
-                     ;                         GetActive( )\focus And 
-                     ;                         GetActive( )\haschildren 
-                     ;                         
-                     ;                         If Not GetActive( )\AfterWidget( ) 
-                     ;                            If __widgets( ) = GetPositionLast( GetActive( ) )
-                     ;                               clip_output_( GetActive( ), [#__c_draw] )
-                     ;                               drawing_mode_(#PB_2DDrawing_Outlined)
-                     ;                               draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                               draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                               draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                     ;                            EndIf
-                     ;                         EndIf
-                     ;                      EndIf
                      ;
                      ;\\ draw active parent frame
                      If ActiveWindow( ) 
-                        If ActiveWindow( )\focus And 
-                           ActiveWindow( )\haschildren 
-                           
-                           If Not ActiveWindow( )\AfterWidget( ) 
-                              If __widgets( ) = GetPositionLast( ActiveWindow( ) )
-                                 clip_output_( ActiveWindow( ), [#__c_draw] )
-                                 drawing_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                              EndIf
-                           EndIf
-                        EndIf
-                        ; 
-                        ;\\ draw active child frame
-                        If ActiveGadget( ) And
-                           ActiveGadget( )\focus And 
-                           ActiveGadget( )\haschildren 
-                           
-                           If Not ActiveGadget( )\AfterWidget( ) 
-                              If __widgets( ) = GetPositionLast( ActiveGadget( ) )
-                                 clip_output_( ActiveGadget( ), [#__c_draw] )
-                                 drawing_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                              EndIf
-                           EndIf
-                        EndIf
+;                         If ActiveWindow( )\focus And 
+;                            ActiveWindow( )\haschildren 
+;                            
+;                            If Not ActiveWindow( )\AfterWidget( ) 
+;                               If __widgets( ) = GetPositionLast( ActiveWindow( ) )
+;                                  clip_output_( ActiveWindow( ), [#__c_draw] )
+;                                  drawing_mode_(#PB_2DDrawing_Outlined)
+;                                  draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                                  draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                                  draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+;                               EndIf
+;                            EndIf
+;                         EndIf
+;                         ; 
+;                         ;\\ draw active child frame
+;                         If ActiveGadget( ) And
+;                            ActiveGadget( )\focus And 
+;                            ActiveGadget( )\haschildren 
+;                            
+;                            If Not ActiveGadget( )\AfterWidget( ) 
+;                               If __widgets( ) = GetPositionLast( ActiveGadget( ) )
+;                                  clip_output_( ActiveGadget( ), [#__c_draw] )
+;                                  drawing_mode_(#PB_2DDrawing_Outlined)
+;                                  draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                                  draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                                  draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+;                               EndIf
+;                            EndIf
+;                         EndIf
                      EndIf
                      ;
                      ;\\ draw entered parent anchors
@@ -19735,23 +19694,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Case #__event_Focus
-                  If Not *this\anchors
-                     If Not *this\disable
-                        *this\color\state  = #__s_2
-                        *this\root\repaint = #True
-                     EndIf
-                  EndIf
+;                   If Not *this\anchors
+;                      If *this\type <> #__type_Button
+;                         If Not *this\disable
+;                            *this\color\state  = #__s_2
+;                            *this\root\repaint = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
                   
                Case #__event_LostFocus
-                  If Not *this\anchors
-                     If *this\color\state = #__s_2
-                        *this\color\state  = #__s_3
-                        *this\root\repaint = #True
-                     EndIf
-                     If *this <> GetActive( )
-                        *this\root\repaint = #True
-                     EndIf
-                  EndIf
+;                   If *this\type <> #__type_Button
+;                      If Not *this\anchors
+;                         If *this\color\state = #__s_2
+;                            *this\color\state  = #__s_3
+;                            *this\root\repaint = #True
+;                         EndIf
+;                         If *this <> GetActive( )
+;                            *this\root\repaint = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
                   
                Case #__event_MouseMove
                   ;                   If *this\bar
@@ -22828,7 +22791,7 @@ CompilerEndIf
 ; Folding = ----------------------------------------------------------P+5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+2------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8449
-; FirstLine = 8169
-; Folding = ----------------------------------------------------------------------L2------4---v0--v-+z+----------------------------------------------------------------------------------------------------------------------------------------------v4b4--------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------82--------0-------+-f-d-248--8-p---8------+---------8------Xv82q9tr-947-ff+-----------------v4--f------4-8-X----------
+; CursorPosition = 19710
+; FirstLine = 17812
+; Folding = ----------------------------------------------------------------------L2------4---v0--v-+z+----------------------------------------------------4-0----v---8------+fv----------------------------------------------------------------------evd--------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------bf-+---------e0-------f-------v--4f4f00+--+f7---+------v------v-0------r40aV+32f+b0-vP------------------48--v------8-0-r----------
 ; EnableXP

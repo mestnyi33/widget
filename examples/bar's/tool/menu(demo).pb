@@ -10,8 +10,8 @@
 ;                                                                     - MenuID( #Menu )
 ; 
 ;                                                     Title( Title$ ) - MenuTitle( Title$ )
-;                    GetItemText( *address, #PB_Default, TitleIndex ) - GetMenuTitleText( #Menu, Title )
-;            SetItemText( *address, #PB_Default, text.s, TitleIndex ) - SetMenuTitleText( #Menu, Title, Text$ )
+;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
+;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
 ; 
 ;                                                    Free( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
@@ -125,5 +125,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
