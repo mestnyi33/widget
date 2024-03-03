@@ -157,7 +157,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       CloseList( )
       
-      Resize( w_ide_toolbar, 0, 0, 800,60)
+      Resize( w_ide_toolbar, 0, 60, 800,60)
    EndIf
    
    
@@ -201,8 +201,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 52
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -+
 ; EnableXP
