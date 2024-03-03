@@ -64,6 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
       Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 30)
+      *this\type = #__type_ToolBar
       SetAlignment( *this, #__align_full|#__align_top )
       
       Bind( *this, @ToolBarEvents( ), #__event_LeftClick )
@@ -235,7 +236,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 62
+; CursorPosition = 66
+; FirstLine = 58
 ; Folding = ---
 ; EnableXP

@@ -299,12 +299,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       
       ;-
-      Macro StatusBox( ): statusbox: EndMacro
-      Macro CheckedBox( ): checkbox: EndMacro
-      Macro ButtonBox( ): buttonbox: EndMacro
-      ;
-      Macro StringBox( ): stringbox: EndMacro
-      Macro GroupBox( ): groupbox: EndMacro
+      Macro ToggleButton( ): flag & #PB_Button_Toggle: EndMacro
+      Macro ToggleState( ): state: EndMacro
+      Macro DragState( ): drag\state: EndMacro
+      Macro ColorState( ): color\state: EndMacro
+      Macro ScrollState( ): scroll\state: EndMacro
+      Macro CheckBoxState( ): checkbox\state: EndMacro
+      Macro ButtonBoxState( ): buttonbox\state: EndMacro
+      
+      ;-
+      Macro StateButton( ): box: EndMacro ;  
+      Macro CombButton( ): combobox: EndMacro
+      
+      ;-
+      Macro StringBox( ): string: EndMacro
+      Macro GroupBox( ): group: EndMacro
       Macro TabBox( ): tab\widget: EndMacro
       
       ;-
@@ -939,16 +948,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro draw_plus_( _address_, _plus_, _size_ = 5 )
-         Line(_address_\x + (_address_\width - _size_) / 2, _address_\y + (_address_\height - 1) / 2, _size_, 1, _address_\color\front[_address_\color\state])
+         Line(_address_\x + (_address_\width - _size_) / 2, _address_\y + (_address_\height - 1) / 2, _size_, 1, _address_\color\front[_address_\ColorState( )])
          If _plus_
-            Line(_address_\x + (_address_\width - 1) / 2, _address_\y + (_address_\height - _size_) / 2, 1, _size_, _address_\color\front[_address_\color\state])
+            Line(_address_\x + (_address_\width - 1) / 2, _address_\y + (_address_\height - _size_) / 2, 1, _size_, _address_\color\front[_address_\ColorState( )])
          EndIf
       EndMacro
       
       Macro draw_arrows_( _address_, _type_ )
          Arrow( _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
                 _address_\y + ( _address_\height - _address_\arrow\size ) / 2, _address_\arrow\size, _type_,
-                _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24, _address_\arrow\type )
+                _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24, _address_\arrow\type )
       EndMacro
       
       Macro draw_gradient_( _vertical_, _address_, _color_fore_, _color_back_, _mode_ = )
@@ -984,26 +993,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_box( _address_, _color_type_, _mode_ = )
          draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
-                         _address_\round, _address_\round, _address_\_color_type_[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+                         _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
       EndMacro
       
       Macro draw_box_button_( _address_, _color_type_ )
          If Not _address_\hide
-            draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-            draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-            draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+            draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+            draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+            draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
       Macro draw_close_button_( _address_, _size_ )
          ; close button
          If Not _address_\hide
-            If _address_\color\state
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+            If _address_\ColorState( )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button_( _address_, color\frame )
@@ -1012,12 +1021,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_maximize_button_( _address_, _size_ )
          If Not _address_\hide
-            If _address_\color\state
-               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+            If _address_\ColorState( )
+               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button_( _address_, color\frame )
@@ -1026,12 +1035,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_minimize_button_( _address_, _size_ )
          If Not _address_\hide
-            If _address_\color\state
-               Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+            If _address_\ColorState( )
+               Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
-               Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button_( _address_, color\frame )
@@ -1041,7 +1050,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro draw_help_button_( _address_, _size_ )
          If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
-                            _address_\round, _address_\round, _address_\color\frame[_address_\color\state] & $FFFFFF | _address_\color\_alpha << 24 )
+                            _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
@@ -1061,14 +1070,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro draw_check_button_( _address_, _size_, _color_ )
-         If _address_\state
-            LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
-            LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
-            
-            LineXY(( _address_\x + 5 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
-            LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
-         EndIf
+      Macro draw_button_check_( _address_, _size_, _color_ )
+         LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
+         LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
+         
+         LineXY(( _address_\x + 5 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
+         LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
       EndMacro
       
       Macro draw_button_( _type_, _x_, _y_, _width_, _height_, _checked_, _round_, _color_fore_ = $FFFFFFFF, _color_fore2_ = $FFE9BA81, _color_back_ = $80E2E2E2, _color_back2_ = $FFE89C3D, _color_frame_ = $80C8C8C8, _color_frame2_ = $FFDC9338, _alpha_ = 255 )
@@ -1393,8 +1400,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If _address_\enter = #True
             _address_\enter = #False
             
-            If _address_\color\state = #__s_1
-               _address_\color\state = #__s_0
+            If _address_\ColorState( ) = #__s_1
+               _address_\ColorState( ) = #__s_0
             EndIf
          EndIf
       EndMacro
@@ -1403,8 +1410,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If _address_\enter = #False
             _address_\enter = #True
             
-            If _address_\color\state = #__s_0
-               _address_\color\state = #__s_1
+            If _address_\ColorState( ) = #__s_0
+               _address_\ColorState( ) = #__s_1
             EndIf
          EndIf
       EndMacro
@@ -1660,17 +1667,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndMacro
       
-      Macro set_check_state_( _address_, _three_state_ )
+      Macro set_check_state_( _state_, _three_state_ )
          ; change checkbox state
-         Select _address_\state
+         Select _state_
             Case #PB_Checkbox_Unchecked
                If _three_state_
-                  _address_\state = #PB_Checkbox_Inbetween
+                  _state_ = #PB_Checkbox_Inbetween
                Else
-                  _address_\state = #PB_Checkbox_Checked
+                  _state_ = #PB_Checkbox_Checked
                EndIf
-            Case #PB_Checkbox_Checked : _address_\state = #PB_Checkbox_Unchecked
-            Case #PB_Checkbox_Inbetween : _address_\state = #PB_Checkbox_Checked
+            Case #PB_Checkbox_Checked : _state_ = #PB_Checkbox_Unchecked
+            Case #PB_Checkbox_Inbetween : _state_ = #PB_Checkbox_Checked
          EndSelect
       EndMacro
       
@@ -2261,7 +2268,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\drop
                If *this\inner_enter( )
-                  If mouse( )\drag\state = #PB_Drag_Enter
+                  If mouse( )\DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                      
                      If *this\row
@@ -2301,7 +2308,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             drawing_mode_( #PB_2DDrawing_Outlined )
             If *this\drop
                If *this\inner_enter( )
-                  If mouse( )\drag\state = #PB_Drag_Enter
+                  If mouse( )\DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                      
                      If *this\row
@@ -5066,15 +5073,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\type = #__type_ComboBox
                If *this\StringBox( )
-                  *this\combobox\width = *this\fs[3]
-                  *this\combobox\x     = ( *this\x + *this\width ) - *this\fs[3]
+                  *this\CombButton( )\width = *this\fs[3]
+                  *this\CombButton( )\x     = ( *this\x + *this\width ) - *this\fs[3]
                Else
-                  *this\combobox\width = *this\inner_width( )
-                  *this\combobox\x     = *this\inner_x( )
+                  *this\CombButton( )\width = *this\inner_width( )
+                  *this\CombButton( )\x     = *this\inner_x( )
                EndIf
                
-               *this\combobox\y      = *this\inner_y( )
-               *this\combobox\height = *this\inner_height( )
+               *this\CombButton( )\y      = *this\inner_y( )
+               *this\CombButton( )\height = *this\inner_height( )
             EndIf
             
             ;\\
@@ -5580,7 +5587,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\EnteredTab( )\visible 
                
                draw_font_item_( *this, *this\EnteredTab( ), 0 )
-               bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\color\state] )
+               bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\ColorState( )] )
             EndIf
          EndIf
          ;
@@ -5589,7 +5596,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\FocusedTab( )\visible
             
             draw_font_item_( *this, *this\FocusedTab( ), 0 )
-            bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [2] )
+            If *this\type = #__type_ToolBar
+               bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [*this\FocusedTab( )\ColorState( )] )
+            Else
+               bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [2] )
+            EndIf
          EndIf
       EndProcedure
 
@@ -5842,12 +5853,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Navigation
                Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
-               backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\color\state]
+               backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
                If Not backcolor
-                  backcolor = *this\parent\color\back[\parent\color\state]
+                  backcolor = *this\parent\color\back[\parent\ColorState( )]
                EndIf
                If Not backcolor
-                  backcolor = *BB2\color\back[\color\state]
+                  backcolor = *BB2\color\back[\ColorState( )]
                EndIf
                
                
@@ -5903,46 +5914,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;             forecolor = TabBarGadget_ColorPlus(Item_Color_Background, Color)
                   ;             ;backcolor = TabBarGadget_ColorMinus(Item_Color_Background, Color)
                   ;
-                  ;             If *BB1\color\state = 3
+                  ;             If *BB1\ColorState( ) = 3
                   ;               Color = $FF303030
-                  ;              framecolor = TabBarGadget_ColorMinus(*BB1\color\back[*BB1\color\state], Color)
-                  ;              *BB1\color\frame[*BB1\color\state] = framecolor
-                  ;              *BB1\color\front[*BB1\color\state] = framecolor
+                  ;              framecolor = TabBarGadget_ColorMinus(*BB1\color\back[*BB1\ColorState( )], Color)
+                  ;              *BB1\color\frame[*BB1\ColorState( )] = framecolor
+                  ;              *BB1\color\front[*BB1\ColorState( )] = framecolor
                   ; ;
-                  ;             ElseIf *BB1\color\state = 1
+                  ;             ElseIf *BB1\ColorState( ) = 1
                   ; ;                Color = $FF303030
-                  ; ;              framecolor = TabBarGadget_ColorMinus(*BB1\color\back[*BB1\color\state], Color)
+                  ; ;              framecolor = TabBarGadget_ColorMinus(*BB1\color\back[*BB1\ColorState( )], Color)
                   ; ;              framecolor = TabBarGadget_ColorMinus(framecolor, Color)
-                  ; ;              *BB1\color\frame[*BB1\color\state] = framecolor
-                  ; ;              *BB1\color\front[*BB1\color\state] = framecolor
+                  ; ;              *BB1\color\frame[*BB1\ColorState( )] = framecolor
+                  ; ;              *BB1\color\front[*BB1\ColorState( )] = framecolor
                   ;
-                  ;                *BB1\color\frame[*BB1\color\state] = *BB1\color\front[*BB1\color\state];backcolor
-                  ;               *BB1\color\back[*BB1\color\state] = backcolor
+                  ;                *BB1\color\frame[*BB1\ColorState( )] = *BB1\color\front[*BB1\ColorState( )];backcolor
+                  ;               *BB1\color\back[*BB1\ColorState( )] = backcolor
                   ;             *BB1\arrow\size = 6
                   ;
-                  ;             ElseIf *BB1\color\state = 0
-                  ;               *BB1\color\frame[*BB1\color\state] = backcolor
-                  ;               *BB1\color\back[*BB1\color\state] = backcolor
+                  ;             ElseIf *BB1\ColorState( ) = 0
+                  ;               *BB1\color\frame[*BB1\ColorState( )] = backcolor
+                  ;               *BB1\color\back[*BB1\ColorState( )] = backcolor
                   ;               *BB1\arrow\size = 4
                   ;             EndIf
                   
                   ; Draw buttons
                   If *BB2\color\fore <> - 1
                      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
+                     draw_gradient_( *bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
                   Else
                      drawing_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\color\state] & $FFFFFF | *BB2\color\_alpha << 24 )
+                     draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\color\_alpha << 24 )
                   EndIf
                EndIf
                If Not *BB1\hide
                   ; Draw buttons
                   If *BB1\color\fore <> - 1
                      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
+                     draw_gradient_( *bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
                   Else
                      drawing_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\color\state] & $FFFFFF | *BB1\color\_alpha << 24 )
+                     draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\color\_alpha << 24 )
                   EndIf
                EndIf
                
@@ -5950,7 +5961,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw buttons frame
                If Not *BB1\hide
-                  draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\color\state] & $FFFFFF | *BB1\color\_alpha << 24 )
+                  draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\color\_alpha << 24 )
                   
                   ; Draw arrows
                   If Not *BB1\hide And *BB1\arrow\size
@@ -5958,7 +5969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                If Not *BB2\hide
-                  draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\color\state] & $FFFFFF | *BB2\color\_alpha << 24 )
+                  draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\color\_alpha << 24 )
                   
                   ; Draw arrows
                   If *BB2\arrow\size
@@ -6008,7 +6019,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not *BB1\hide
                   If *BB1\color\fore <> - 1
                      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
+                     draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
                   Else
                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                      draw_box(*BB1, color\back)
@@ -6017,7 +6028,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not *BB2\hide
                   If *BB2\color\fore <> - 1
                      drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
+                     draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
                   Else
                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                      draw_box(*BB2, color\back)
@@ -6060,13 +6071,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *bar\thumb\len And *this\type <> #__type_ProgressBar
                   ; Draw thumb
                   drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                  draw_gradient_(*bar\vertical, *SB, *SB\color\fore[*SB\color\state], *SB\color\back[*SB\color\state])
+                  draw_gradient_(*bar\vertical, *SB, *SB\color\fore[*SB\ColorState( )], *SB\color\back[*SB\ColorState( )])
                   
                   If *SB\arrow\type ;*this\type = #__type_ScrollBar
                      If *SB\arrow\size
                         drawing_mode_alpha_( #PB_2DDrawing_Default )
                         ;                 Arrow(*SB\x + (*SB\width -*SB\arrow\size )/2, *SB\y + (*SB\height -*SB\arrow\size )/2,
-                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\color\state]&$FFFFFF |*SB\color\_alpha<<24, *SB\arrow\type )
+                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\ColorState( )]&$FFFFFF |*SB\color\_alpha<<24, *SB\arrow\type )
                         
                         draw_arrows_( *SB, *SB\arrow\direction )
                      EndIf
@@ -6074,13 +6085,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Draw thumb lines
                      drawing_mode_alpha_( #PB_2DDrawing_Default )
                      If *bar\vertical
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                      Else
-                        Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
-                        Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                      EndIf
                   EndIf
                   
@@ -6369,7 +6380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i bar_spin_draw( *this._s_WIDGET )
-         Protected state = *this\color\state
+         Protected state = *this\ColorState( )
          Protected *bar._s_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2
          *BB1 = *bar\button[1]
@@ -6397,8 +6408,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ draw spin-buttons back
          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-         draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\color\state], *BB1\color\back[*BB1\color\state] )
-         draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\color\state], *BB2\color\back[*BB2\color\state] )
+         draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
+         draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
          
          ;\\
          drawing_mode_( #PB_2DDrawing_Outlined )
@@ -6432,13 +6443,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ draw spin-buttons frame
          If EnteredButton( ) <> *BB1
-            draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\color\state] )
+            draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\ColorState( )] )
          EndIf
          If EnteredButton( ) <> *BB2
-            draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\color\state] )
+            draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\ColorState( )] )
          EndIf
          If EnteredButton( )
-            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, EnteredButton( )\color\frame[EnteredButton( )\color\state] )
+            draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, EnteredButton( )\color\frame[EnteredButton( )\ColorState( )] )
          EndIf
          
          ;\\ draw split-string frame
@@ -6502,17 +6513,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          drawing_mode_alpha_( #PB_2DDrawing_Default )
          
          ; draw the splitter background
-         draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\color\state] & $ffffff | 210 << 24 )
+         draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\ColorState( )] & $ffffff | 210 << 24 )
          
          ; draw the first\second background
-         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\color\state] ) : EndIf
-         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\color\state] ) : EndIf
+         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
          
          drawing_mode_( #PB_2DDrawing_Outlined )
          
          ; draw the frame
-         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\color\state] ) : EndIf
-         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\color\state] ) : EndIf
+         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
          
          ;
          If *bar\thumb\len
@@ -7393,7 +7404,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar
                      
-                     *BB1\color\state = #__s_3
+                     *BB1\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
@@ -7417,7 +7428,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar
                      
-                     *BB1\color\state = #__s_0
+                     *BB1\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
@@ -7444,7 +7455,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar
                      
-                     *BB2\color\state = #__s_3
+                     *BB2\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
@@ -7467,7 +7478,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar
                      
-                     *BB2\color\state = #__s_0
+                     *BB2\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
@@ -7486,19 +7497,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ button-thumb
             If *this\type = #__type_ScrollBar
                If *bar\thumb\len
-                  If *BB1\color\state = #__s_3 And
-                     *BB2\color\state = #__s_3
+                  If *BB1\ColorState( ) = #__s_3 And
+                     *BB2\ColorState( ) = #__s_3
                      
                      If *SB\disable = #False
                         *SB\disable = #True
                         
-                        *SB\color\state = #__s_3
+                        *SB\ColorState( ) = #__s_3
                      EndIf
                   Else
                      If *SB\disable = #True
                         *SB\disable = #False
                         
-                        *SB\color\state = #__s_0
+                        *SB\ColorState( ) = #__s_0
                      EndIf
                   EndIf
                EndIf
@@ -8330,7 +8341,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If EnteredButton( ) And
                   EnteredButton( )\disable = #False And
-                  EnteredButton( )\color\state <> #__s_3 And ; change the color state of non-disabled buttons
+                  EnteredButton( )\ColorState( ) <> #__s_3 And ; change the color state of non-disabled buttons
                   EnteredButton( )\press = #False
                   
                   PressedButton( )       = EnteredButton( )
@@ -8338,9 +8349,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If Not ( *this\type = #__type_TrackBar Or
                            ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
-                     PressedButton( )\color\state = #__s_2
+                     PressedButton( )\ColorState( ) = #__s_2
                   EndIf
-                  PressedButton( )\color\back[PressedButton( )\color\state] = $FF2C70F5
+                  PressedButton( )\color\back[PressedButton( )\ColorState( )] = $FF2C70F5
                   
                   ;
                   If ( *BB2\press And *bar\invert ) Or
@@ -8377,7 +8388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\PressedTab( )\press = #False
                         *this\PressedTab( )\press = #True
                         
-                        *this\PressedTab( )\color\state = #__s_2
+                        *this\PressedTab( )\ColorState( ) = #__s_2
                         *this\root\repaint              = #True
                      EndIf
                   EndIf
@@ -8394,17 +8405,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PressedButton( )\press = #False
                   
                   If PressedButton( )\disable = #False And
-                     PressedButton( )\color\state <> #__s_3
+                     PressedButton( )\ColorState( ) <> #__s_3
                      
                      ; change color state
-                     If PressedButton( )\color\state = #__s_2 And
+                     If PressedButton( )\ColorState( ) = #__s_2 And
                         Not ( *this\type = #__type_TrackBar Or
                               ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
                         
                         If PressedButton( )\enter
-                           PressedButton( )\color\state = #__s_1
+                           PressedButton( )\ColorState( ) = #__s_1
                         Else
-                           PressedButton( )\color\state = #__s_0
+                           PressedButton( )\ColorState( ) = #__s_0
                         EndIf
                      EndIf
                      
@@ -8418,9 +8429,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\PressedTab( )\press = #False
                      
                      If *this\PressedTab( )\enter
-                        *this\PressedTab( )\color\state = #__s_1
+                        *this\PressedTab( )\ColorState( ) = #__s_1
                      Else
-                        *this\PressedTab( )\color\state = #__s_0
+                        *this\PressedTab( )\ColorState( ) = #__s_0
                      EndIf
                      
                      ; select new tab item if non-drag the item
@@ -8477,12 +8488,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro edit_row_select_( _this_, _address_, _index_ )
          _address_\focus = 0
          ;_address_\enter = 0
-         _address_\color\state = 0
+         _address_\ColorState( ) = 0
          
          _address_ = SelectElement( _this_\__rows( ), _index_ )
          
          If _address_
-            _address_\color\state = 1
+            _address_\ColorState( ) = 1
             ;_address_\enter = 1
             _address_\focus = #True
          EndIf
@@ -8547,14 +8558,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ReDrawing( *this, *rowLine )
          
          *this\root\repaint = #True
-         ;\\ *rowLine\color\state = #__s_2
+         ;\\ *rowLine\ColorState( ) = #__s_2
          *rowLine\focus = #True
          
          If mode = #__sel_to_remove
             
             CaretLeftPos         = 0
             CaretRightPos        = 0
-            *rowLine\color\state = #__s_0
+            *rowLine\ColorState( ) = #__s_0
             *rowLine\focus       = #False
             
          ElseIf mode = #__sel_to_set
@@ -9514,7 +9525,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\FocusedLine( )\focus = #False
                   EndIf
                   
-                  ;*this\FocusedLine( )\color\state = #__s_0
+                  ;*this\FocusedLine( )\ColorState( ) = #__s_0
                EndIf
                
                *this\FocusedLine( ) = *this\__rows( )
@@ -9524,7 +9535,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;
-               *this\FocusedLine( )\color\state = #__s_2
+               *this\FocusedLine( )\ColorState( ) = #__s_2
             EndIf
             
             ;
@@ -9563,7 +9574,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\FocusedLine( )\focus = #False
                         EndIf
                         
-                        *this\FocusedLine( )\color\state = #__s_0
+                        *this\FocusedLine( )\ColorState( ) = #__s_0
                      EndIf
                      
                      *this\FocusedLine( )      = *this\__rows( )
@@ -9573,7 +9584,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\FocusedLine( )\focus = #True
                      EndIf
                      
-                     *this\FocusedLine( )\color\state = #__s_2
+                     *this\FocusedLine( )\ColorState( ) = #__s_2
                   EndIf
                   Break
                EndIf
@@ -9648,7 +9659,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Protected TxtHeight = *this\text\height
                Protected String.s, String1.s, CountString
                Protected IT, len.l, Position.l, width
-               Protected ColorFont = *this\color\front[\color\state]
+               Protected ColorFont = *this\color\front[\ColorState( )]
                
                ; *this\max
                If *this\text\vertical
@@ -10016,9 +10027,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; Draw back color
-               ;         If *this\color\fore[\color\state]
+               ;         If *this\color\fore[\ColorState( )]
                ;           drawing_mode_( #PB_2DDrawing_Gradient )
-               ;           draw_gradient_( *this\text\vertical, *this,\color\fore[\color\state],\color\back[\color\state], [#__c_frame] )
+               ;           draw_gradient_( *this\text\vertical, *this,\color\fore[\ColorState( )],\color\back[\ColorState( )], [#__c_frame] )
                ;         Else
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[0] )
@@ -10114,15 +10125,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Protected text_sel_state_2 = 0;2 + Bool( *this\focus = #False )
                         Protected text_sel_width = *this\__rows( )\text\edit[2]\width + Bool( *this\focus = #False ) * *this\text\caret\width
                         
-                        ;                 ;                 If *this\PressedLine( ) = *this\__rows( );Keyboard( )\key And *this\__rows( )\color\state
-                        ;                 ;                   Debug "state - "+*this\__rows( )\index +" "+ *this\__rows( )\color\state
+                        ;                 ;                 If *this\PressedLine( ) = *this\__rows( );Keyboard( )\key And *this\__rows( )\ColorState( )
+                        ;                 ;                   Debug "state - "+*this\__rows( )\index +" "+ *this\__rows( )\ColorState( )
                         ;                 ;                 EndIf
                         ;                 ;
                         ;                 ;                 If *this\text\caret\y+1 + scroll_y = y
-                        ;                 ;                   ;Debug " state "+ *this\__rows( )\index +" "+ *this\__rows( )\color\state; text_enter_state = 1
+                        ;                 ;                   ;Debug " state "+ *this\__rows( )\index +" "+ *this\__rows( )\ColorState( ); text_enter_state = 1
                         ;                 ;                   text_enter_state = 1
                         ;                 ;                 EndIf
-                        ;                 If *this\__rows( )\color\state = 2
+                        ;                 If *this\__rows( )\ColorState( ) = 2
                         ;                   ; Debug *this\__rows( )\index
                         ;
                         ;                 EndIf
@@ -10148,17 +10159,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            ;                   If *this\__rows( )\press
-                           ;                     *this\__rows( )\color\state = 0
+                           ;                     *this\__rows( )\ColorState( ) = 0
                            ;                   ElseIf *this\__rows( )\enter ;And *this\press
-                           ;                     *this\__rows( )\color\state = 1
+                           ;                     *this\__rows( )\ColorState( ) = 1
                            ;                   Else
-                           ;                     *this\__rows( )\color\state = 0
+                           ;                     *this\__rows( )\ColorState( ) = 0
                            ;                   EndIf
                            
-                           Protected text_enter_state = Bool( *this\__rows( )\color\state Or *this\__rows( ) = *this\PressedLine( ))
-                           ;Bool( *this\__rows( ) = *this\EnteredLine( ) ); *this\__rows( )\color\state ; Bool( *this\__rows( )\color\state = 1 Or *this\__rows( ) = *this\PressedLine( ))
+                           Protected text_enter_state = Bool( *this\__rows( )\ColorState( ) Or *this\__rows( ) = *this\PressedLine( ))
+                           ;Bool( *this\__rows( ) = *this\EnteredLine( ) ); *this\__rows( )\ColorState( ) ; Bool( *this\__rows( )\ColorState( ) = 1 Or *this\__rows( ) = *this\PressedLine( ))
                            
-                           ; text_enter_state = Bool(*this\__rows( ) = *this\FocusedLine( )) ; *this\__rows( )\color\state ; Bool( *this\__rows( )\color\state ) ; Bool( *this\__rows( )\index = *this\EnteredLine( )\index ) + Bool( *this\__rows( )\index = *this\EnteredLine( )\index And *this\focus = #False )*2
+                           ; text_enter_state = Bool(*this\__rows( ) = *this\FocusedLine( )) ; *this\__rows( )\ColorState( ) ; Bool( *this\__rows( )\ColorState( ) ) ; Bool( *this\__rows( )\index = *this\EnteredLine( )\index ) + Bool( *this\__rows( )\index = *this\EnteredLine( )\index And *this\focus = #False )*2
                            ; Draw entered selection
                            If text_enter_state = 1
                               If *this\__rows( )\color\back[text_enter_state] <> - 1              ; no draw transparent
@@ -10173,8 +10184,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        ;Debug *this\__rows( )\color\state
-                        Protected text_sel_state = *this\color\state
+                        ;Debug *this\__rows( )\ColorState( )
+                        Protected text_sel_state = *this\ColorState( )
                         Protected text_no_sel_state = 0
                         
                         
@@ -10241,12 +10252,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               draw_box_( sel_text_x2, Y, text_sel_width, *this\__rows( )\height, $FFFBD9B7 );*this\__rows( )\color\back[2] )
                            EndIf
                            
-                           If *this\color\state = 2
+                           If *this\ColorState( ) = 2
                               drawing_mode_( #PB_2DDrawing_Transparent )
                               DrawRotatedText( Text_x, Text_Y, *this\__rows( )\text\string.s, *this\text\rotate, *this\__rows( )\color\front[text_sel_state_2] )
                            Else
                               drawing_mode_( #PB_2DDrawing_Transparent )
-                              DrawRotatedText( Text_x, Text_Y, *this\__rows( )\text\string.s, *this\text\rotate, *this\__rows( )\color\front[*this\__rows( )\color\state] )
+                              DrawRotatedText( Text_x, Text_Y, *this\__rows( )\text\string.s, *this\text\rotate, *this\__rows( )\color\front[*this\__rows( )\ColorState( )] )
                            EndIf
                         EndIf
                         
@@ -10284,8 +10295,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
                ElseIf *this\bs
                   drawing_mode_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[\color\state] )
-                  If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\color\state] ) : EndIf  ; Сглаживание краев ) ))
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[\ColorState( )] )
+                  If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
                EndIf
                
                If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
@@ -10361,9 +10372,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
                            Else
                               If *this\FocusedLine( )\index > 0
-                                 *this\FocusedLine( )\color\state = #__s_0
+                                 *this\FocusedLine( )\ColorState( ) = #__s_0
                                  *this\FocusedLine( )             = SelectElement( *this\__rows( ), *this\FocusedLine( )\index - 1 )
-                                 *this\FocusedLine( )\color\state = #__s_1
+                                 *this\FocusedLine( )\ColorState( ) = #__s_1
                                  
                                  If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
                                     *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
@@ -10417,9 +10428,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
                            Else
                               If *this\FocusedLine( )\index < ( *this\count\items - 1 )
-                                 *this\FocusedLine( )\color\state = #__s_0
+                                 *this\FocusedLine( )\ColorState( ) = #__s_0
                                  *this\FocusedLine( )             = SelectElement( *this\__rows( ), *this\FocusedLine( )\index + 1 )
-                                 *this\FocusedLine( )\color\state = #__s_1
+                                 *this\FocusedLine( )\ColorState( ) = #__s_1
                                  
                                  If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
                                     *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
@@ -10458,9 +10469,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            If *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
                               If *this\FocusedLine( )\index > 0
-                                 *this\FocusedLine( )\color\state = #__s_0
+                                 *this\FocusedLine( )\ColorState( ) = #__s_0
                                  *this\FocusedLine( )             = SelectElement( *this\__rows( ), *this\FocusedLine( )\index - 1 )
-                                 *this\FocusedLine( )\color\state = #__s_1
+                                 *this\FocusedLine( )\ColorState( ) = #__s_1
                               EndIf
                            EndIf
                            
@@ -10507,9 +10518,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     EndIf
                                  EndIf
                                  
-                                 *this\FocusedLine( )\color\state = #__s_0
+                                 *this\FocusedLine( )\ColorState( ) = #__s_0
                                  *this\FocusedLine( )             = SelectElement( *this\__rows( ), *this\FocusedLine( )\index + 1 )
-                                 *this\FocusedLine( )\color\state = #__s_1
+                                 *this\FocusedLine( )\ColorState( ) = #__s_1
                               EndIf
                            EndIf
                            
@@ -10710,12 +10721,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;     ;SetActiveGadget( EventWidget( )\\canvas\gadget )
          ;
          ;     If FocusedRow( EventWidget( ) )
-         ;       FocusedRow( EventWidget( ) )\color\state = 0
+         ;       FocusedRow( EventWidget( ) )\ColorState( ) = 0
          ;     EndIf
          ;
          ;     FocusedRow( EventWidget( ) ) = EventWidget( )*this\__rows( )
-         ;     EventWidget( )*this\__rows( )\color\state = 2
-         ;     EventWidget( )\color\state = 2
+         ;     EventWidget( )*this\__rows( )\ColorState( ) = 2
+         ;     EventWidget( )\ColorState( ) = 2
          ;
          ;     ;Tree_reDraw( EventWidget( ))
          
@@ -10835,15 +10846,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;\\ check box size
                            If ( *this\mode\check = #__m_checkselect Or
                                 *this\mode\check = #__m_optionselect )
-                              *this\__rows( )\CheckedBox( )\width  = boxsize
-                              *this\__rows( )\CheckedBox( )\height = boxsize
+                              *this\__rows( )\checkbox\width  = boxsize
+                              *this\__rows( )\checkbox\height = boxsize
                            EndIf
                            
                            ;\\ collapse box size
                            If ( *this\mode\Lines Or *this\mode\Buttons ) And
                               Not ( *this\__rows( )\sublevel And *this\mode\check = #__m_optionselect )
-                              *this\__rows( )\ButtonBox( )\width  = buttonsize
-                              *this\__rows( )\ButtonBox( )\height = buttonsize
+                              *this\__rows( )\buttonbox\width  = buttonsize
+                              *this\__rows( )\buttonbox\height = buttonsize
                            EndIf
                            
                            ;\\ sublevel position
@@ -10854,23 +10865,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                 *this\mode\check = #__m_optionselect )
                               
                               If *this\__rows( )\ParentRow( ) And *this\mode\check = #__m_optionselect
-                                 *this\__rows( )\CheckedBox( )\x = *this\row\sublevelpos - *this\__rows( )\CheckedBox( )\width
+                                 *this\__rows( )\checkbox\x = *this\row\sublevelpos - *this\__rows( )\checkbox\width
                               Else
-                                 *this\__rows( )\CheckedBox( )\x = boxpos
+                                 *this\__rows( )\checkbox\x = boxpos
                               EndIf
-                              *this\__rows( )\CheckedBox( )\y = ( *this\__rows( )\height ) - ( *this\__rows( )\height + *this\__rows( )\CheckedBox( )\height ) / 2
+                              *this\__rows( )\checkbox\y = ( *this\__rows( )\height ) - ( *this\__rows( )\height + *this\__rows( )\checkbox\height ) / 2
                            EndIf
                            
                            ;\\ expanded & collapsed box position
                            If ( *this\mode\Lines Or *this\mode\Buttons ) And Not ( *this\__rows( )\sublevel And *this\mode\check = #__m_optionselect )
                               
                               If *this\mode\check = #__m_optionselect
-                                 *this\__rows( )\ButtonBox( )\x = *this\row\sublevelpos - 10
+                                 *this\__rows( )\buttonbox\x = *this\row\sublevelpos - 10
                               Else
-                                 *this\__rows( )\ButtonBox( )\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
+                                 *this\__rows( )\buttonbox\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
                               EndIf
                               
-                              *this\__rows( )\ButtonBox( )\y = ( *this\__rows( )\height ) - ( *this\__rows( )\height + *this\__rows( )\ButtonBox( )\height ) / 2
+                              *this\__rows( )\buttonbox\y = ( *this\__rows( )\height ) - ( *this\__rows( )\height + *this\__rows( )\buttonbox\height ) / 2
                            EndIf
                            
                            ;\\ image position
@@ -11013,7 +11024,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_font_item_( *this, *rows( ), 0 )
                
                ;\\
-               state = *rows( )\color\state
+               state = *rows( )\ColorState( )
                X     = row_x_( *this, *rows( ) )
                Y     = row_y_( *this, *rows( ) )
                Xs    = x - _scroll_x_
@@ -11078,7 +11089,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\hide
-                     *buttonBox = *rows( )\last\ButtonBox( )
+                     *buttonBox = *rows( )\last\buttonbox
                      Xs         = row_x_( *this, *rows( ) ) - _scroll_x_
                      Ys         = row_y_( *this, *rows( ) ) - _scroll_y_
                      ; Debug " 9999 "+*rows( )\text\string
@@ -11088,14 +11099,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Line((xs + *buttonBox\x + *buttonBox\width / 2), (ys + *rows( )\height), 1, (*rows( )\last\y - *rows( )\y) - *rows( )\last\height / 2, *rows( )\color\line )
                      EndIf
                      If *rows( )\ParentRow( ) And Not *rows( )\ParentRow( )\visible And *rows( )\ParentRow( )\last = *rows( ) And *rows( )\sublevel
-                        Line((xs + *rows( )\ButtonBox( )\x + *rows( )\ButtonBox( )\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
+                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (*rows( )\ParentRow( )\y + *rows( )\ParentRow( )\height) - _scroll_y_, 1, (*rows( )\y - *rows( )\ParentRow( )\y) - *rows( )\height / 2, *rows( )\ParentRow( )\color\line )
                      EndIf
                      
                      ; for the tree horizontal line
                      If Not (*this\mode\Buttons And *rows( )\childrens)
-                        Line((xs + *rows( )\ButtonBox( )\x + *rows( )\ButtonBox( )\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
+                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), 7, 1, *rows( )\color\line )
                      Else
-                        If Bool( Not *rows( )\ButtonBox( )\state)
+                        If Bool( Not *rows( )\ButtonBoxState( ))
                            ;  LineXY((xs + *buttonBox\x+2), (ys + 9), (x + *buttonBox\x + *buttonBox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
                            LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
                            ;  LineXY((xs + *buttonBox\x-2), (ys + 12), (x + *buttonBox\x + *buttonBox\width / 2-1), ys + *rows( )\height-1, *rows( )\color\line )
@@ -11106,7 +11117,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; for the tree item first vertical line
                If *this\FirstRow( ) And *this\LastRow( )
-                  Line((*this\inner_x( ) + *this\FirstRow( )\ButtonBox( )\x + *this\FirstRow( )\ButtonBox( )\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
+                  Line((*this\inner_x( ) + *this\FirstRow( )\buttonbox\x + *this\FirstRow( )\buttonbox\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\FirstRow( ) ) + *this\FirstRow( )\height / 2) - _scroll_y_, 1, (*this\LastRow( )\y - *this\FirstRow( )\y), *this\FirstRow( )\color\line )
                EndIf
             EndIf
             
@@ -11122,10 +11133,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If *rows( )\ParentRow( ) And *this\mode\check = #__m_optionselect
                         ; option box
-                        draw_button_( 1, x + *rows( )\CheckedBox( )\x, y + *rows( )\CheckedBox( )\y, *rows( )\CheckedBox( )\width, *rows( )\CheckedBox( )\height, *rows( )\CheckedBox( )\state , 4 )
+                        draw_button_( 1, x + *rows( )\checkbox\x, y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\CheckBoxState( ) , 4 )
                      Else
                         ; check box
-                        draw_button_( 3, x + *rows( )\CheckedBox( )\x, y + *rows( )\CheckedBox( )\y, *rows( )\CheckedBox( )\width, *rows( )\CheckedBox( )\height, *rows( )\CheckedBox( )\state , 2 )
+                        draw_button_( 3, x + *rows( )\checkbox\x, y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\CheckBoxState( ) , 2 )
                      EndIf
                   EndIf
                Next
@@ -11134,8 +11145,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach *rows( )
                   If *rows( )\visible And Not *rows( )\hide
                      
-                     X = row_x_( *this, *rows( ) ) + *rows( )\ButtonBox( )\x - _scroll_x_
-                     Y = row_y_( *this, *rows( ) ) + *rows( )\ButtonBox( )\y - _scroll_y_
+                     X = row_x_( *this, *rows( ) ) + *rows( )\buttonbox\x - _scroll_x_
+                     Y = row_y_( *this, *rows( ) ) + *rows( )\buttonbox\y - _scroll_y_
                      
                      If *this\mode\Buttons And *rows( )\childrens And
                         Not ( *rows( )\sublevel And *this\mode\check = #__m_optionselect )
@@ -11143,12 +11154,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;               If #PB_Compiler_OS = #PB_OS_Windows Or
                         ;                  (*rows( )\ParentRow( ) And *rows( )\ParentRow( )\last And *rows( )\ParentRow( )\sublevel = *rows( )\ParentRow( )\last\sublevel)
                         ;
-                        ;                 draw_button_( 0, x, y, *rows( )\ButtonBox( )\width, *rows( )\ButtonBox( )\height, 0,2)
-                        ;                 draw_box( *rows( )\ButtonBox( ), color\frame )
+                        ;                 draw_button_( 0, x, y, *rows( )\buttonbox\width, *rows( )\buttonbox\height, 0,2)
+                        ;                 draw_box( *rows( )\buttonbox, color\frame )
                         ;
-                        ;                 Line(x + 2, y + *rows( )\ButtonBox( )\height/2, *rows( )\ButtonBox( )\width - 4, 1, $ff000000)
-                        ;                 If *rows( )\ButtonBox( )\state
-                        ;                   Line(x + *rows( )\ButtonBox( )\width/2, y + 2, 1, *rows( )\ButtonBox( )\height - 4, $ff000000)
+                        ;                 Line(x + 2, y + *rows( )\buttonbox\height/2, *rows( )\buttonbox\width - 4, 1, $ff000000)
+                        ;                 If *rows( )\ButtonBoxState( )
+                        ;                   Line(x + *rows( )\buttonbox\width/2, y + 2, 1, *rows( )\buttonbox\height - 4, $ff000000)
                         ;                 EndIf
                         ;
                         ;               Else
@@ -11157,10 +11168,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If (x - 7 >= 0 And x + 7 <= *this\root\width) And ; в мак ос эти строки не нужны так как plot( ) может рисовать за пределамы границы
                            (y - 7 >= 0 And y + 7 <= *this\root\height)
                            
-                           If *rows( )\color\state
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBox( )\state))
+                           If *rows( )\ColorState( )
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBoxState( )))
                            Else
-                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBox( )\state), $ff000000)
+                              DrawArrow2(x, y, 3 - Bool(*rows( )\ButtonBoxState( )), $ff000000)
                            EndIf
                         EndIf
                         
@@ -11198,12 +11209,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ SetState( scroll-to-see )
-            If *this\FocusedRow( ) And *this\scroll\state = - 1
+            If *this\FocusedRow( ) And *this\ScrollState( ) = - 1
                
                row_scroll_y_( *this, *this\FocusedRow( ) )
                
                *this\scroll\v\WidgetChange( ) = 0
-               *this\scroll\state             = #True
+               *this\ScrollState( )             = #True
             EndIf
             
             ;\\
@@ -11244,8 +11255,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ draw frames
             If *this\bs
                drawing_mode_( #PB_2DDrawing_Outlined )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\color\state] )
-               If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\color\state] ) : EndIf  ; Сглаживание краев ) ))
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+               If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
             EndIf
             
          EndIf
@@ -11381,7 +11392,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\mode\collapsed And *rows\ParentRow( ) And
                   *rows\sublevel > *rows\ParentRow( )\sublevel
-                  *rows\ParentRow( )\ButtonBox( )\state = 1
+                  *rows\ParentRow( )\ButtonBoxState( ) = 1
                   *rows\hide                            = 1
                EndIf
                
@@ -11402,7 +11413,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; add lines
                *rows\color       = *this\color ; _get_colors_( )
-               *rows\color\state = 0
+               *rows\ColorState( ) = 0
                *rows\color\back  = 0
                *rows\color\frame = 0
                
@@ -11425,15 +11436,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\FocusedRow( )
                      *this\FocusedRow( )\focus       = 0
-                     *this\FocusedRow( )\color\state = #__s_0
+                     *this\FocusedRow( )\ColorState( ) = #__s_0
                      
                      *this\FocusedRow( )             = *rows
                      *this\FocusedRow( )\focus       = 1
-                     *this\FocusedRow( )\color\state = #__s_2 + Bool( *this\focus = #False )
+                     *this\FocusedRow( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
                   EndIf
                   
-                  If *this\scroll\state = #True
-                     *this\scroll\state = - 1
+                  If *this\ScrollState( ) = #True
+                     *this\ScrollState( ) = - 1
                   EndIf
                   
                   PostRepaint( *this\root )
@@ -11459,9 +11470,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If _address_\press = #True
-               _address_\color\state = #__s_2
+               _address_\ColorState( ) = #__s_2
             ElseIf _address_\enter
-               _address_\color\state = #__s_1
+               _address_\ColorState( ) = #__s_1
             EndIf
             
          ElseIf _address_
@@ -11476,7 +11487,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If _address_\press = #False
-               _address_\color\state = #__s_0
+               _address_\ColorState( ) = #__s_0
             EndIf
          EndIf
       EndMacro
@@ -11488,16 +11499,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Bool(( *this\PressedRow( )\index >= *this\__rows( )\index And _current_row_\index <= *this\__rows( )\index ) Or ; верх
                        ( *this\PressedRow( )\index <= *this\__rows( )\index And _current_row_\index >= *this\__rows( )\index ))   ; вниз
                   
-                  If *this\__rows( )\color\state <> #__s_2
-                     *this\__rows( )\color\state = #__s_2
+                  If *this\__rows( )\ColorState( ) <> #__s_2
+                     *this\__rows( )\ColorState( ) = #__s_2
                      *this\root\repaint          = #True
                   EndIf
                   
                Else
                   
                   If Not *this\__rows( )\press
-                     If *this\__rows( )\color\state <> #__s_0
-                        *this\__rows( )\color\state = #__s_0
+                     If *this\__rows( )\ColorState( ) <> #__s_0
+                        *this\__rows( )\ColorState( ) = #__s_0
                         *this\root\repaint          = #True
                      EndIf
                   EndIf
@@ -11552,15 +11563,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\FocusedRow( ) <> *this\__rows( )
                                  If *this\FocusedRow( )
                                     If *this\FocusedRow( )\enter
-                                       *this\FocusedRow( )\color\state = 1
+                                       *this\FocusedRow( )\ColorState( ) = 1
                                     Else
-                                       *this\FocusedRow( )\color\state = 0
+                                       *this\FocusedRow( )\ColorState( ) = 0
                                     EndIf
                                  EndIf
                                  
                                  *rows_selected                  = *this\__rows( )
                                  *this\FocusedRow( )             = *this\__rows( )
-                                 *this\FocusedRow( )\color\state = 2
+                                 *this\FocusedRow( )\ColorState( ) = 2
                                  
                                  If *this\FocusedRow( )\y + *this\scroll_y( ) <= 0
                                     If row_scroll_y_( *this, *this\FocusedRow( ) )
@@ -11599,15 +11610,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\FocusedRow( ) <> *this\__rows( )
                                  If *this\FocusedRow( )
                                     If *this\FocusedRow( )\enter
-                                       *this\FocusedRow( )\color\state = 1
+                                       *this\FocusedRow( )\ColorState( ) = 1
                                     Else
-                                       *this\FocusedRow( )\color\state = 0
+                                       *this\FocusedRow( )\ColorState( ) = 0
                                     EndIf
                                  EndIf
                                  
                                  *rows_selected                  = *this\__rows( )
                                  *this\FocusedRow( )             = *this\__rows( )
-                                 *this\FocusedRow( )\color\state     = 2
+                                 *this\FocusedRow( )\ColorState( )     = 2
                                  
                                  If *this\FocusedRow( )\y >= *this\inner_height( )
                                     If row_scroll_y_( *this, *this\FocusedRow( ) )
@@ -11674,10 +11685,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\mode\clickSelect
                         If *current\press = #True
                            *current\press       = #False
-                           *current\color\state = #__s_1
+                           *current\ColorState( ) = #__s_1
                         Else
                            *current\press       = #True
-                           *current\color\state = #__s_2
+                           *current\ColorState( ) = #__s_2
                            *this\FocusedRow( )  = *current
                         EndIf
                         
@@ -11847,8 +11858,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\EnteredRow( )\enter
                   
                   ; collapsed/expanded button
-                  If *this\EnteredRow( )\ButtonBox( )\enter
-                     If *this\EnteredRow( )\ButtonBox( )\state
+                  If *this\EnteredRow( )\buttonbox\enter
+                     If *this\EnteredRow( )\ButtonBoxState( )
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Expanded )
                      Else
                         SetItemState( *this, *this\EnteredRow( )\index, #PB_Tree_Collapsed )
@@ -11858,18 +11869,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; change box ( option&check )
-                  If *this\EnteredRow( )\CheckedBox( )\enter
+                  If *this\EnteredRow( )\checkbox\enter
                      ; change box option
                      If *this\mode\check = #__m_optionselect
                         If *this\EnteredRow( )\ParentRow( ) And *this\EnteredRow( )\OptionGroupRow
                            If *this\EnteredRow( )\OptionGroupRow\ParentRow( ) And
-                              *this\EnteredRow( )\OptionGroupRow\CheckedBox( )\state
-                              *this\EnteredRow( )\OptionGroupRow\CheckedBox( )\state = #PB_Checkbox_Unchecked
+                              *this\EnteredRow( )\OptionGroupRow\CheckBoxState( )
+                              *this\EnteredRow( )\OptionGroupRow\CheckBoxState( ) = #PB_Checkbox_Unchecked
                            EndIf
                            
                            If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow <> *this\EnteredRow( )
                               If *this\EnteredRow( )\OptionGroupRow\OptionGroupRow
-                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\CheckedBox( )\state = #PB_Checkbox_Unchecked
+                                 *this\EnteredRow( )\OptionGroupRow\OptionGroupRow\CheckBoxState( ) = #PB_Checkbox_Unchecked
                               EndIf
                               *this\EnteredRow( )\OptionGroupRow\OptionGroupRow = *this\EnteredRow( )
                            EndIf
@@ -11877,10 +11888,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ; tree checkbox change check
-                     set_check_state_( *this\EnteredRow( )\CheckedBox( ), *this\mode\threestate )
+                     set_check_state_( *this\EnteredRow( )\CheckBoxState( ), *this\mode\threestate )
                      
                      ;                         ;\\
-                     ;                         If *this\EnteredRow( )\color\state = #__s_2
+                     ;                         If *this\EnteredRow( )\ColorState( ) = #__s_2
                      ;                            DoEvents( *this, #__event_Change, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                      ;                         EndIf
                   EndIf
@@ -11893,8 +11904,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\EnteredRow( ) And
                   *this\EnteredRow( )\enter
                   
-                  If *this\EnteredRow( )\color\state = #__s_0
-                     *this\EnteredRow( )\color\state = #__s_1
+                  If *this\EnteredRow( )\ColorState( ) = #__s_0
+                     *this\EnteredRow( )\ColorState( ) = #__s_1
                      
                      ; Post event item status change
                      If *this\anchors
@@ -11903,7 +11914,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;DoEvents( *this, #__event_StatusChange, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                      EndIf
                   Else
-                     If *this\EnteredRow( )\ButtonBox( )\enter
+                     If *this\EnteredRow( )\buttonbox\enter
                         Send( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                         ;                      Else
                         ;                         Send( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
@@ -12056,11 +12067,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ ComboBox
-               If *display\combobox
+               If *display\CombButton( )
                   If *this\hide
-                     *display\combobox\arrow\direction = 2
+                     *display\CombButton( )\arrow\direction = 2
                   Else
-                     *display\combobox\arrow\direction = 3
+                     *display\CombButton( )\arrow\direction = 3
                   EndIf
                EndIf
             EndIf
@@ -12536,13 +12547,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ;\\
                   If *this\type = #__type_Button
-                     If flag & #PB_Button_Toggle
+                     If ToggleButton( )
                         If state
-                           *this\state       = #True
-                           *this\color\state = #__s_2
+                           *this\ToggleState( )       = #True
+                           *this\ColorState( ) = #__s_2
                         Else
-                           *this\state       = #False
-                           *this\color\state = #__s_0
+                           *this\ToggleState( )       = #False
+                           *this\ColorState( ) = #__s_0
                         EndIf
                      EndIf
                      
@@ -12615,7 +12626,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PushListPosition( *this\__rows( ))
                         ForEach *this\__rows( )
                            If *this\__rows( )\ParentRow( )
-                              *this\__rows( )\CheckedBox( )\state = #PB_Checkbox_Unchecked
+                              *this\__rows( )\CheckBoxState( ) = #PB_Checkbox_Unchecked
                               *this\__rows( )\OptionGroupRow      = Bool( state ) * GetItem( *this\__rows( ), 0 )
                            EndIf
                         Next
@@ -12632,7 +12643,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         PushListPosition( *this\__rows( ))
                         ForEach *this\__rows( )
                            If *this\__rows( )\ParentRow( )
-                              *this\__rows( )\ParentRow( )\ButtonBox( )\state = state
+                              *this\__rows( )\ParentRow( )\ButtonBoxState( ) = state
                               *this\__rows( )\hide                            = state
                            EndIf
                         Next
@@ -13146,13 +13157,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\FocusedRow( )
                   If *this\FocusedRow( )\ParentRow( ) And
-                     *this\FocusedRow( )\ParentRow( )\ButtonBox( )\state
+                     *this\FocusedRow( )\ParentRow( )\ButtonBoxState( )
                      *this\FocusedRow( ) = *this\FocusedRow( )\ParentRow( )
                   EndIf
                   
                   *this\FocusedRow( )\press       = #True
                   *this\FocusedRow( )\focus       = 1
-                  *this\FocusedRow( )\color\state = #__s_2 + Bool( *this\focus = #False )
+                  *this\FocusedRow( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
                EndIf
             EndIf
             
@@ -13195,7 +13206,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\count\items     = 0
                
                If *this\FocusedRow( )
-                  *this\FocusedRow( )\color\state = 0
+                  *this\FocusedRow( )\ColorState( ) = 0
                   ClearStructure(*this\FocusedRow( ), _s_ROWS)
                   *this\FocusedRow( ) = 0
                EndIf
@@ -13531,9 +13542,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.f GetState( *this._s_WIDGET )
+         ; This is a universal function which works For almost all gadgets: 
+         ; 
+         ; - ButtonImage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
+         ; - Button( )       : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
+         ; - Option( )       : returns 1 If activated, 0 otherwise. 
+         ; - CheckBox( )     : returns one of the following values:
+         ;                           #PB_Checkbox_Checked  : The check mark is set.
+         ;                           #PB_Checkbox_Unchecked: The check mark is Not set.
+         ;                           #PB_Checkbox_Inbetween: The "in between" state is set. (Only For #PB_CheckBox_ThreeState checkboxes)
+         ;
+         ; - Calendar( )     : returns the currently selected date. 
+         ; - Date( )         : returns the currently selected date/time. If #PB_Date_CheckBox was used, And the checkbox is unchecked, 0 is returned. 
+         ;
+         ; - Shortcut( )     : returns the currently selected keyboard shortcut. 
+         ; - Image( )        : returns the ImageID of the currently displayed image. 
+         ; - IPAddress( )    : returns the current IP address. 
+         ;
+         ; - MDI( )          : returns the currently focused child window, -1 If none has the focus. 
+         ; - Panel( )        : returns the current panel index, -1 If no panel. 
+         ;
+         ; - Spin( )         : returns the current value of the SpinGadget. 
+         ; - Splitter( )     : returns the current splitter position, in pixels. 
+         ; - ProgressBar( )  : returns the current value of the ProgressBar. 
+         ; - ScrollBar( )    : returns the current slider position. 
+         ; - TrackBar( )     : returns the current position of the TrackBar (value inside the minimum - maximum range). 
+         ;
+         ; - ListIcon( )     : returns the first selected item index, -1 If none is selected. 
+         ; - ComboBox( )     : returns the currently selected item index, -1 If none is selected. 
+         ; - ListView( )     : returns the currently selected item index, -1 If none is selected. 
+         ; - Tree( )         : returns the currently selected item index, -1 If none is selected.
+         ; - ExplorerList( ) : returns the index of the first selected item in the Gadget, -1 If none is selected. 
+         ; - ExplorerTree( ) : returns the type of the currently selected item (#PB_Explorer_File Or #PB_Explorer_Directory). 
+         
          ;\\ custom object
          If *this\type = 0
-            ProcedureReturn *this\state
+            ProcedureReturn *this\ToggleState( )
          EndIf
          
          ;\\ ComboBox
@@ -13564,18 +13608,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *this\FocusedRowIndex( )
          EndIf
          
-         If *this\type = #__type_Button Or
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox
-            
-            ProcedureReturn *this\state
-         EndIf
-         
          If *this\type = #__type_Panel
             If *this\TabBox( )
                ProcedureReturn *this\TabBox( )\TabState( )
             EndIf
+         EndIf
+         
+         If *this\type = #__type_CheckBox Or
+            *this\type = #__type_Option Or
+            *this\type = #__type_Button Or
+            *this\type = #__type_ButtonImage
+            
+            ProcedureReturn *this\ToggleState( )
          EndIf
          
          If *this\type = #__type_TabBar Or
@@ -13683,7 +13727,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If mouse( )\drag
             If *this\dragstart
                If *this\enter > 0
-                  If mouse( )\drag\state <> #PB_Drag_Leave
+                  If mouse( )\DragState( ) <> #PB_Drag_Leave
                      ; Debug "changeDRAG-CURSOR ( "+ *this\cursor +" ) " + mouse( )\drag\cursor
                      mouse( )\drag\cursor = *this\cursor
                   EndIf
@@ -13751,12 +13795,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.b SetState( *this._s_WIDGET, state.f )
+         ; This is a universal function which works For almost all gadgets: 
+         ; 
+         ; - ButtonImage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
+         ; - Button( )      : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
+         ; - Option( )      : 1 To activate it, 0 otherwise. 
+         ; - CheckBox( )    : Change the state of the checkbox. The following values are possible:
+         ;                     #PB_Checkbox_Checked  : Set the check mark.
+         ;                     #PB_Checkbox_Unchecked: Remove the check mark.
+         ;                     #PB_Checkbox_Inbetween: Set the "in between" state. (Only For #PB_CheckBox_ThreeState checkboxes)
+         ;
+         ; - Calendar( )    : set the currently selected date. 
+         ; - Date( )        : set the currently displayed date/time. If #PB_Date_CheckBox was used, set 'State' To 0 To uncheck the checkbox. 
+         ;
+         ; - Shortcut( )    : Change the current shortcut. 
+         ; - Image( )       : change the current image of the gadget. 
+         ; - IPAddress( )   : change the current IP address. 
+         ;
+         ; - Panel( )       : change the current panel. 
+         ; - MDI( )         : Change the currently focused childwindow (by giving the related #Window number), Or use one of the following values:
+         ;                     #PB_MDI_Cascade         : Cascade the child windows
+         ;                     #PB_MDI_TileVertically  : Tile the childwindows vertically
+         ;                     #PB_MDI_TileHorizontally: Tile the childwindows horizontally
+         ;                     #PB_MDI_Next            : Give focus To the Next childwindow
+         ;                     #PB_MDI_Previous        : Give focus To the previous childwindow
+         ;                     #PB_MDI_Arrange         : Arrange the iconic (minimized) windows
+         ;
+         ; - Spin( )        : change the current value. 
+         ; - Splitter( )    : change the current splitter position, in pixels. 
+         ; - TrackBar( )    : change the current cursor position. 
+         ; - ProgressBar( ) : change progress bar value. A value of #PB_ProgressBar_Unknown can be used To indicate that the progress is unknown. 
+         ; - ScrollBar( )   : change the current slider position. 
+         ;
+         ; - ListIcon( )    : change the currently selected item. If -1 is specified, all items will be deselected. 
+         ; - ComboBox( )    : change the currently selected item. 
+         ; - ListView( )    : change the currently selected item. . If -1 is specified, it will remove the selection. 
+         ; - Tree( )        : change the currently selected item, -1 selects no item. 
+         ; - Web( )         : perform some action on the gadget. See WebGadget For further descriptions.
+         
          Protected result
          
          ;\\ custom object
          If *this\type = 0
-            *this\state = state
-            ProcedureReturn 1
+            *this\ToggleState( ) = state
+            ProcedureReturn #True
          EndIf
          
          ;\\
@@ -13773,12 +13855,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\popup\FocusedRow( )\focus = #False
                      EndIf
                      
-                     *this\popup\FocusedRow( )\color\state = #__s_0
+                     *this\popup\FocusedRow( )\ColorState( ) = #__s_0
                   EndIf
                   
                   *this\popup\FocusedRow( )             = *this\popup\__rows( )
                   *this\popup\FocusedRow( )\focus       = #True
-                  *this\popup\FocusedRow( )\color\state = #__s_2
+                  *this\popup\FocusedRow( )\ColorState( ) = #__s_2
                   Debug "SETSTATE - combo " + GetState( *this\popup )
                   ;*this\text\string = *this\popup\FocusedRow( )\text\string
                   
@@ -13788,44 +13870,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\
-         If *this\type = #__type_Button Or
-            *this\type = #__type_ButtonImage
-            
-            If *this\flag & #PB_Button_Toggle
-               If *this\state <> state
-                  *this\state = state
-                  If state
-                     *this\color\state = #__s_2
-                  Else
-                     If *this\enter
-                        *this\color\state = #__s_1
-                     Else
-                        *this\color\state = #__s_0
-                     EndIf
-                  EndIf
-                  
-                  DoEvents( *this, #__event_Change )
-                  PostRepaint( *this\root )
-                  ProcedureReturn #True
-               EndIf
-            EndIf
-         EndIf
-         
          ;\\ Ok
          If *this\type = #__type_Option Or
             *this\type = #__type_CheckBox
             
-            If *this\state <> state
+            If *this\ToggleState( ) <> state
                If *this\GroupBox( )
                   If *this\GroupBox( )\GroupBox( ) <> *this
                      If *this\GroupBox( )\GroupBox( )
-                        *this\GroupBox( )\GroupBox( )\state = 0
+                        *this\GroupBox( )\GroupBox( )\ToggleState( ) = 0
                      EndIf
                      *this\GroupBox( )\GroupBox( ) = *this
                   EndIf
                EndIf
-               *this\state = state
+               *this\ToggleState( ) = state
                If Not Send( *this, #__event_Change )
                   PostEventRepaint( *this\root )
                EndIf
@@ -13963,13 +14021,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\FocusedRowIndex( ) = state
                   
                   ;\\ scroll to visible
-                  *this\scroll\state = - 1
+                  *this\ScrollState( ) = - 1
                   
                   If state = - 1
                      ;\\ reset all selected items
                      If *this\FocusedRow( )
                         *this\FocusedRow( )\focus       = 0
-                        *this\FocusedRow( )\color\state = #__s_0
+                        *this\FocusedRow( )\ColorState( ) = #__s_0
                         *this\FocusedRow( )             = #Null
                      EndIf
                   Else
@@ -14020,7 +14078,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\FocusedRow( ) <> *this\__rows( )
                         If *this\FocusedRow( )
                            *this\FocusedRow( )\focus       = 0
-                           *this\FocusedRow( )\color\state = #__s_0
+                           *this\FocusedRow( )\ColorState( ) = #__s_0
                         EndIf
                         
                         *this\FocusedRow( ) = *this\__rows( )
@@ -14029,16 +14087,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\mode\clickSelect
                            If *this\FocusedRow( )\focus
                               *this\FocusedRow( )\focus       = 0
-                              *this\FocusedRow( )\color\state = #__s_0
+                              *this\FocusedRow( )\ColorState( ) = #__s_0
                            Else
                               *this\FocusedRow( )\focus       = 1
-                              *this\FocusedRow( )\color\state = #__s_3
+                              *this\FocusedRow( )\ColorState( ) = #__s_3
                            EndIf
                            
                            DoEvents( *this, #__event_Change, *this\FocusedRow( )\index, *this\FocusedRow( ) )
                         Else
                            *this\FocusedRow( )\focus       = 1
-                           *this\FocusedRow( )\color\state = #__s_2 + Bool( *this\focus = #False )
+                           *this\FocusedRow( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
                            If *this\anchors
                               *this\root\repaint = #True
                            Else
@@ -14050,6 +14108,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ProcedureReturn #True
                      EndIf
                   EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If *this\type = #__type_Button Or
+            *this\type = #__type_ButtonImage
+            
+            If *this\ToggleButton( )
+               If *this\ToggleState( ) <> state
+                  *this\ToggleState( ) = state
+                  ;
+                  If state
+                     *this\ColorState( ) = #__s_2
+                  Else
+                     If *this\enter
+                        *this\ColorState( ) = #__s_1
+                     Else
+                        *this\ColorState( ) = #__s_0
+                     EndIf
+                  EndIf
+                  
+                  DoEvents( *this, #__event_Change )
+                  PostRepaint( *this\root )
+                  ProcedureReturn #True
                EndIf
             EndIf
          EndIf
@@ -15645,13 +15728,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ElseIf *this\type = #__type_Tree Or *this\type = #__type_ListIcon
             
             If is_item_( *this, item ) And SelectElement( *this\__rows( ), Item )
-               If *this\__rows( )\color\state
+               If *this\__rows( )\ColorState( )
                   result | #PB_Tree_Selected
                EndIf
                
-               If *this\__rows( )\CheckedBox( )\state
+               If *this\__rows( )\CheckBoxState( )
                   If *this\mode\threestate And
-                     *this\__rows( )\CheckedBox( )\state = #PB_Checkbox_Inbetween
+                     *this\__rows( )\CheckBoxState( ) = #PB_Checkbox_Inbetween
                      result | #PB_Tree_Inbetween
                   Else
                      result | #PB_Tree_Checked
@@ -15659,7 +15742,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *this\__rows( )\childrens And
-                  *this\__rows( )\ButtonBox( )\state = 0
+                  *this\__rows( )\ButtonBoxState( ) = 0
                   result | #PB_Tree_Expanded
                Else
                   result | #PB_Tree_Collapsed
@@ -15873,16 +15956,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\FocusedRow( ) <> *this\__rows( )
                      *this\FocusedRow( )             = *this\__rows( )
                      *this\FocusedRow( )\focus       = - 1
-                     *this\FocusedRow( )\color\state = #__s_2 + Bool( *this\focus = #False )
+                     *this\FocusedRow( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
                   EndIf
                EndIf
                
                If State & #PB_Tree_Inbetween = #PB_Tree_Inbetween
-                  *this\__rows( )\CheckedBox( )\state = #PB_Checkbox_Inbetween
+                  *this\__rows( )\CheckBoxState( ) = #PB_Checkbox_Inbetween
                ElseIf State & #PB_Tree_Checked = #PB_Tree_Checked
-                  *this\__rows( )\CheckedBox( )\state = #PB_Checkbox_Checked
+                  *this\__rows( )\CheckBoxState( ) = #PB_Checkbox_Checked
                Else
-                  *this\__rows( )\CheckedBox( )\state = #PB_Checkbox_Unchecked
+                  *this\__rows( )\CheckBoxState( ) = #PB_Checkbox_Unchecked
                EndIf
                
                If *this\__rows( )\childrens
@@ -15890,12 +15973,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      State & #PB_Tree_Collapsed = #PB_Tree_Collapsed
                      
                      *this\WidgetChange( )              = #True
-                     *this\__rows( )\ButtonBox( )\state = Bool( State & #PB_Tree_Collapsed )
+                     *this\__rows( )\ButtonBoxState( ) = Bool( State & #PB_Tree_Collapsed )
                      
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
                         If *this\__rows( )\ParentRow( )
-                           *this\__rows( )\hide = Bool( *this\__rows( )\ParentRow( )\ButtonBox( )\state | *this\__rows( )\ParentRow( )\hide )
+                           *this\__rows( )\hide = Bool( *this\__rows( )\ParentRow( )\ButtonBoxState( ) | *this\__rows( )\ParentRow( )\hide )
                         EndIf
                         
                         If *this\__rows( )\sublevel = *this_current_row\sublevel
@@ -15906,7 +15989,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               result = *this_current_row\ButtonBox( )\state
+               result = *this_current_row\ButtonBoxState( )
             EndIf
             
          EndIf
@@ -16010,7 +16093,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ set activate state
          If *this\type = #__type_String
-            *this\color\state = #__s_2
+            *this\ColorState( ) = #__s_2
          EndIf
          
          ;\\ Flags
@@ -16189,15 +16272,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\back  = _get_colors_( )\fore
                *this\color\front = _get_colors_( )\front
                
-               *this\StatusBox( ).allocate( BUTTONS )
-               *this\StatusBox( )\color      = _get_colors_( )
-               *this\StatusBox( )\color\back = $ffffffff
+               *this\StateButton( ).allocate( BUTTONS )
+               *this\StateButton( )\color      = _get_colors_( )
+               *this\StateButton( )\color\back = $ffffffff
                
-               *this\StatusBox( )\round  = 7
-               *this\StatusBox( )\width  = 15
-               *this\StatusBox( )\height = *this\StatusBox( )\width
+               *this\StateButton( )\round  = 7
+               *this\StateButton( )\width  = 15
+               *this\StateButton( )\height = *this\StateButton( )\width
                
-               *this\text\padding\x = *this\StatusBox( )\width + 8
+               *this\text\padding\x = *this\StateButton( )\width + 8
                
                ; temp
                If flag
@@ -16212,15 +16295,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\back  = _get_colors_( )\fore
                *this\color\front = _get_colors_( )\front
                
-               *this\StatusBox( ).allocate( BUTTONS )
-               *this\StatusBox( )\color      = _get_colors_( )
-               *this\StatusBox( )\color\back = $ffffffff
+               *this\StateButton( ).allocate( BUTTONS )
+               *this\StateButton( )\color      = _get_colors_( )
+               *this\StateButton( )\color\back = $ffffffff
                
-               *this\StatusBox( )\round  = 2
-               *this\StatusBox( )\height = 15
-               *this\StatusBox( )\width  = *this\StatusBox( )\height
+               *this\StateButton( )\round  = 2
+               *this\StateButton( )\height = 15
+               *this\StateButton( )\width  = *this\StateButton( )\height
                
-               *this\text\padding\x = *this\StatusBox( )\width + 8
+               *this\text\padding\x = *this\StateButton( )\width + 8
             EndIf
             
             If *this\type = #__type_HyperLink
@@ -16344,11 +16427,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ - Create ComboBox
          If *this\type = #__type_ComboBox
-            *this\combobox.allocate( BUTTONS )
-            *this\combobox\color           = _get_colors_( )
-            *this\combobox\arrow\type      = #__arrow_type
-            *this\combobox\arrow\size      = #__arrow_size
-            *this\combobox\arrow\direction = 2
+            *this\CombButton( ).allocate( BUTTONS )
+            *this\CombButton( )\color           = _get_colors_( )
+            *this\CombButton( )\arrow\type      = #__arrow_type
+            *this\CombButton( )\arrow\size      = #__arrow_size
+            *this\CombButton( )\arrow\direction = 2
             
             ;\\
             If *this\flag & #PB_ComboBox_Editable
@@ -16501,15 +16584,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; button draw color
                *SB\focus       = 1
-               *SB\color\state = #__s_2
+               *SB\ColorState( ) = #__s_2
                
                If Not *this\flag & #PB_TrackBar_Ticks
                   If *this\bar\invert
                      *BB2\focus       = 1
-                     *BB2\color\state = #__s_2
+                     *BB2\ColorState( ) = #__s_2
                   Else
                      *BB1\focus       = 1
-                     *BB1\color\state = #__s_2
+                     *BB1\ColorState( ) = #__s_2
                   EndIf
                EndIf
             EndIf
@@ -16905,26 +16988,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             
             If *this\fs And *this\round And Not *this\fs[2]
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\color\state] )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\ColorState( )] )
             EndIf
             
             ; Draw back
-            If *this\color\back[mouse_interact_state * *this\color\state]
+            If *this\color\back[mouse_interact_state * *this\ColorState( )]
                If *this\fs > *this\round / 3 And *this\round
-                  draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\color\back[mouse_interact_state * *this\color\state] )
+                  draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\color\back[mouse_interact_state * *this\ColorState( )] )
                Else
                   If *this\round
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\ColorState( )] )
                   Else
-                     draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\color\state] )
+                     draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\ColorState( )] )
                   EndIf
                EndIf
             EndIf
             
             If gradient And Not *this\round
                drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-               BackColor( *this\color\fore[\color\state] & $FFFFFF | 255 << 24 )
-               FrontColor( *this\color\frame[\color\state] & $FFFFFF | 255 << 24 )
+               BackColor( *this\color\fore[\ColorState( )] & $FFFFFF | 255 << 24 )
+               FrontColor( *this\color\frame[\ColorState( )] & $FFFFFF | 255 << 24 )
             EndIf
             
             If *this\fs[2] And Not *this\round
@@ -16937,20 +17020,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If gradient
                   LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
                EndIf
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\color\state] )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\ColorState( )] )
                
                If *this\fs[2]
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\color\state] )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\ColorState( )] )
                EndIf
                
                If gradient
                   drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-                  BackColor( *this\color\fore[\color\state] & $FFFFFF | 255 << 24 )
-                  FrontColor( *this\color\frame[\color\state] & $FFFFFF | 255 << 24 )
+                  BackColor( *this\color\fore[\ColorState( )] & $FFFFFF | 255 << 24 )
+                  FrontColor( *this\color\frame[\ColorState( )] & $FFFFFF | 255 << 24 )
                   LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
                EndIf
-               draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, *this\frame_width( ), r + *this\fs, *this\color\frame[\color\state] )
+               draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, *this\frame_width( ), r + *this\fs, *this\color\frame[\ColorState( )] )
             EndIf
             
             ; Draw frame
@@ -16967,47 +17050,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If gradient
                         LinearGradient( *this\frame_x( ), *this\frame_y( ) + *this\fs * 2, *this\frame_x( ), *this\frame_y( ) - *this\fs )
                      EndIf
-                     draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
+                     draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\ColorState( )] )
                      ; left&top
                      If gradient
                         BoxedGradient(*this\frame_x( ), *this\frame_y( ), *this\fs * 2, *this\fs * 2)
                      EndIf
-                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
                      
                      ; right&top
                      If gradient
                         BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ), *this\fs * 2, *this\fs * 2)
                      EndIf
-                     draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\color\state] )
+                     draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
                   EndIf
                   
                   ; left
                   If gradient
                      LinearGradient( *this\frame_x( ) + *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) - *this\fs, *this\frame_y( ) + *this\fs + ch )
                   EndIf
-                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\color\state] )
+                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\ColorState( )] )
                   ; right
                   If gradient
                      LinearGradient( *this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) + *this\frame_width( ) + *this\fs, *this\frame_y( ) + *this\fs + ch )
                   EndIf
-                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\color\state] )
+                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\ColorState( )] )
                   ; bottom
                   If gradient
                      LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) + *this\fs )
                   EndIf
-                  draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\color\state] )
+                  draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\ColorState( )] )
                   
                   ; left&bottom
                   If gradient
                      BoxedGradient(*this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
                   EndIf
-                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\color\state] )
+                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
                   
                   ; right&bottom
                   If gradient
                      BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
                   EndIf
-                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\color\state] )
+                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
                   
                EndIf
             EndIf
@@ -17016,18 +17099,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\fs
                   drawing_mode_alpha_( #PB_2DDrawing_Default )
                   ; inner top
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2] - 1, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2] - 1, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\ColorState( )] )
                   ; inner left
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\ColorState( )] )
                   ; inner right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\ColorState( )] )
                   ; inner bottom
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - *this\fs, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - *this\fs, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\ColorState( )] )
                EndIf
             Else
                If *this\round
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\color\state] )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\ColorState( )] )
                EndIf
             EndIf
             
@@ -17035,19 +17118,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\fs
                   If Not *this\fs[2]
                      ; frame top
-                     Line( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), 1, *this\color\frame[\color\state] )
+                     Line( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), 1, *this\color\frame[\ColorState( )] )
                   EndIf
                   ; frame bottom
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, *this\color\frame[\ColorState( )] )
                   ; frame left
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\ColorState( )] )
                   ; frame right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\ColorState( )] )
                ElseIf *this\fs[2]
                   ; frame left
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\ColorState( )] )
                   ; frame right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\color\state] )
+                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\ColorState( )] )
                EndIf
             EndIf
             
@@ -17056,28 +17139,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                   ; Draw caption back
                ;                   If *this\caption\color\back
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-               ;                     draw_gradient_( 0, *this\caption, *this\caption\color\fore[\color\state], *this\caption\color\back[\color\state] )
+               ;                     draw_gradient_( 0, *this\caption, *this\caption\color\fore[\ColorState( )], *this\caption\color\back[\ColorState( )] )
                ;                   EndIf
                ;
                ;                   ; Draw caption frame
                ;                   If *this\fs
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                     draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\fs + *this\fs[2], *this\caption\round, *this\caption\round, *this\color\frame[\color\state] )
+               ;                     draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\fs + *this\fs[2], *this\caption\round, *this\caption\round, *this\color\frame[\ColorState( )] )
                ;
                ;                     ; erase the bottom edge of the frame
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-               ;                     BackColor( *this\caption\color\fore[\color\state] )
-               ;                     FrontColor( *this\caption\color\back[\color\state] )
+               ;                     BackColor( *this\caption\color\fore[\ColorState( )] )
+               ;                     FrontColor( *this\caption\color\back[\ColorState( )] )
                ;
                ;                     ;Protected i
                ;                     For i = 0 To *this\caption\round
-               ;                       Line( *this\inner_x( ) - *this\fs + 1, *this\frame_y( ) + (*this\fs + *this\fs[2] - *this\caption\round) + i - 2, *this\frame_width( ) - 2, 1, *this\caption\color\back[\color\state] )
+               ;                       Line( *this\inner_x( ) - *this\fs + 1, *this\frame_y( ) + (*this\fs + *this\fs[2] - *this\caption\round) + i - 2, *this\frame_width( ) - 2, 1, *this\caption\color\back[\ColorState( )] )
                ;                     Next
                ;
                ;                     ; two edges of the frame
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                     Line( *this\frame_x( ), *this\frame_y( ) + *this\caption\round / 2 + 2, 1, caption_height - *this\caption\round / 2, *this\color\frame[\color\state] )
-               ;                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\caption\round / 2 + 2, 1, caption_height - *this\caption\round / 2, *this\color\frame[\color\state] )
+               ;                     Line( *this\frame_x( ), *this\frame_y( ) + *this\caption\round / 2 + 2, 1, caption_height - *this\caption\round / 2, *this\color\frame[\ColorState( )] )
+               ;                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\caption\round / 2 + 2, 1, caption_height - *this\caption\round / 2, *this\color\frame[\ColorState( )] )
                ;                   EndIf
                
                ; buttins background
@@ -17119,7 +17202,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawText( *this\Title( )\x, *this\Title( )\y, *this\Title( )\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                  DrawText( *this\Title( )\x, *this\Title( )\y, *this\Title( )\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                   
                   ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                   ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
@@ -17164,11 +17247,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ SetState( scroll-to-see )
-            If *this\FocusedRow( ) And *this\scroll\state = - 1
+            If *this\FocusedRow( ) And *this\ScrollState( ) = - 1
                row_scroll_y_( *this, *this\FocusedRow( ) )
                
                *this\scroll\v\WidgetChange( ) = 0
-               *this\scroll\state             = #True
+               *this\ScrollState( )             = #True
             EndIf
             
             ;\\
@@ -17187,7 +17270,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Draw background
             If *this\color\_alpha
                drawing_mode_alpha_( #PB_2DDrawing_Default )
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\color\state] )
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             EndIf
             
             ;\\ Draw background image
@@ -17255,8 +17338,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected state
             If *this\type = #__type_Button Or
                *this\type = #__type_ButtonImage
-               state = *this\color\state
-               If *this\state
+               state = *this\ColorState( )
+               If *this\ToggleState( )
                   state = #__s_2
                EndIf
             EndIf
@@ -17298,22 +17381,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; update widget ( option&checkbox ) position
                If *this\WidgetChange( )
-                  *this\StatusBox( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\StatusBox( )\height ) / 2
+                  *this\StateButton( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\StateButton( )\height ) / 2
                   
                   If *this\text\align\right
-                     *this\StatusBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StatusBox( )\height - 3 )
+                     *this\StateButton( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StateButton( )\height - 3 )
                   ElseIf Not *this\text\align\left
-                     *this\StatusBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StatusBox( )\width ) / 2
+                     *this\StateButton( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\StateButton( )\width ) / 2
                      
                      If Not *this\text\align\top
                         If *this\text\rotate = 0
-                           *this\StatusBox( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\StatusBox( )\height
+                           *this\StateButton( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\StateButton( )\height
                         Else
-                           *this\StatusBox( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                           *this\StateButton( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
                         EndIf
                      EndIf
                   Else
-                     *this\StatusBox( )\x = *this\inner_x( ) + 3
+                     *this\StateButton( )\x = *this\inner_x( ) + 3
                   EndIf
                EndIf
             EndIf
@@ -17364,7 +17447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _box_type_ = 3
             EndIf
             If _box_type_
-               draw_button_( _box_type_, *this\StatusBox( )\x, *this\StatusBox( )\y, *this\StatusBox( )\width, *this\StatusBox( )\height, *this\state , *this\StatusBox( )\round );, *this\color )
+               draw_button_( _box_type_, *this\StateButton( )\x, *this\StateButton( )\y, *this\StateButton( )\width, *this\StateButton( )\height, *this\ToggleState( ) , *this\StateButton( )\round );, *this\color )
             EndIf
             
             ;\\ draw image
@@ -17403,22 +17486,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected state
          Protected arrow_right
          
-         state = *this\color\state
+         state = *this\ColorState( )
          If state = #__s_3
             state = 0
          EndIf
          
          *this\text\x = 5
-         *this\text\y = ( *this\combobox\height - *this\text\height ) / 2
+         *this\text\y = ( *this\CombButton( )\height - *this\text\height ) / 2
          
          ;
          If *this\StringBox( )
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradient_( 0, *this\combobox, *this\color\fore[*this\color\state], *this\color\back[state] )
+            draw_gradient_( 0, *this\CombButton( ), *this\color\fore[*this\ColorState( )], *this\color\back[state] )
             ; Editor_Draw( *this\StringBox( ) )
          Else
             drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradient_( *this\text\vertical, *this, *this\color\fore[*this\color\state], *this\color\back[state], [#__c_frame] )
+            draw_gradient_( *this\text\vertical, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
             If *this\text\string
                drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawText( *this\frame_x( ) + *this\text\x,
@@ -17430,11 +17513,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          drawing_mode_alpha_( #PB_2DDrawing_Default )
          If *this\StringBox( )
-            draw_arrows_( *this\combobox, *this\combobox\arrow\direction )
+            draw_arrows_( *this\CombButton( ), *this\CombButton( )\arrow\direction )
          Else
-            Arrow( *this\combobox\x + ( *this\combobox\width - *this\combobox\arrow\size * 2 - 4 ),
-                   *this\combobox\y + ( *this\combobox\height - *this\combobox\arrow\size ) / 2, *this\combobox\arrow\size, *this\combobox\arrow\direction,
-                   *this\combobox\color\front[state] & $FFFFFF | *this\combobox\color\_alpha << 24, *this\combobox\arrow\type )
+            Arrow( *this\CombButton( )\x + ( *this\CombButton( )\width - *this\CombButton( )\arrow\size * 2 - 4 ),
+                   *this\CombButton( )\y + ( *this\CombButton( )\height - *this\CombButton( )\arrow\size ) / 2, *this\CombButton( )\arrow\size, *this\CombButton( )\arrow\direction,
+                   *this\CombButton( )\color\front[state] & $FFFFFF | *this\CombButton( )\color\_alpha << 24, *this\CombButton( )\arrow\type )
          EndIf
          
          ; frame draw
@@ -17443,7 +17526,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
          EndIf
          
-         ;draw_box_( *this\combobox\x, *this\combobox\y, *this\combobox\width, *this\combobox\height, $ff000000 )
+         ;draw_box_( *this\CombButton( )\x, *this\CombButton( )\y, *this\CombButton( )\width, *this\CombButton( )\height, $ff000000 )
          
       EndProcedure
       
@@ -17455,9 +17538,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type <> #__type_panel And *this\type <> #__type_Frame
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                   For i = 0 To *this\fs - 1
-                     draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\color\state] )
+                     draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
                      If *this\round
-                        draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\color\state] )
+                        draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
                      EndIf
                   Next
                EndIf
@@ -17466,9 +17549,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ backcolor
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\color\state] )
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             Else
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\color\state] )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             EndIf
             
             ;\\
@@ -17502,16 +17585,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
                          *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
-                         *this\text\string, *this\color\front[\color\state] & $FFFFFF | *this\color\_alpha << 24 )
+                         *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
             EndIf
             
             
             ;             If *this\type = #__type_panel
             ;                If *this\fs > 1
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\color\state] )
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\color\state] )
-            ;                   draw_roundbox_( *this\frame_x( ) + *this\frame_width( ) - *this\fs + 1, *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\color\state] )
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs + 1, *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\color\state] )
+            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+            ;                   draw_roundbox_( *this\frame_x( ) + *this\frame_width( ) - *this\fs + 1, *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs + 1, *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
             ;                EndIf
             ;             EndIf
             
@@ -18464,23 +18547,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;               If *this\FocusedRow( ) <> *this\VisibleLastRow( )
                      ;                 ;                 If *this\EnteredRow( )
                      ;                 ;                   *this\EnteredRow( )\enter = 0
-                     ;                 ;                   *this\EnteredRow( )\color\state = 0
+                     ;                 ;                   *this\EnteredRow( )\ColorState( ) = 0
                      ;                 ;                 EndIf
                      ;                 ;                 *this\EnteredRow( ) = *this\VisibleLastRow( )
                      ;                 ;                 *this\EnteredRow( )\enter = 1
-                     ;                 ;                 *this\EnteredRow( )\color\state = 1
+                     ;                 ;                 *this\EnteredRow( )\ColorState( ) = 1
                      ;
                      ;                 If *this\FocusedRow( )
                      ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\VisibleLastRow( )\index +" "+ *this\FocusedRow( )\index
                      ;                   *this\FocusedRow( )\focus = 0
-                     ;                   *this\FocusedRow( )\color\state = 0
+                     ;                   *this\FocusedRow( )\ColorState( ) = 0
                      ;                 EndIf
                      ;
                      ;                 ; edit_sel__( *this, *this\VisibleLastRow( ), *this\PressedLine( ), *this\FocusedRow( ), 0, *this\FocusedRow( )\text\len )
                      ;                 *this\FocusedRow( ) = *this\VisibleLastRow( )
                      ;                 ;*this\FocusedRow( ) = SelectElement( *this\__rows( ), *this\VisibleLastRow( )\index )
                      ;                 *this\FocusedRow( )\focus = 1
-                     ;                 *this\FocusedRow( )\color\state = 1
+                     ;                 *this\FocusedRow( )\ColorState( ) = 1
                      ;                 *this\FocusedRow( )\root\repaint = 1
                      ;
                      ;                 Debug *this\FocusedRow( )\index
@@ -18629,8 +18712,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\EnteredLine( )\enter
                      *this\EnteredLine( )\enter = #False
                      
-                     If *this\EnteredLine( )\color\state = #__s_1
-                        *this\EnteredLine( )\color\state = #__s_0
+                     If *this\EnteredLine( )\ColorState( ) = #__s_1
+                        *this\EnteredLine( )\ColorState( ) = #__s_0
                      EndIf
                      
                      If *this\dragstart = #PB_Drag_Update
@@ -18681,8 +18764,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *item\enter = 0
                         *item\enter = 1
                         
-                        If *item\color\state = #__s_0
-                           *item\color\state = #__s_1
+                        If *item\ColorState( ) = #__s_0
+                           *item\ColorState( ) = #__s_1
                         EndIf
                         
                         If *this\dragstart = #PB_Drag_Update
@@ -18755,8 +18838,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PushListPosition( *this\__rows( ) )
                ForEach *this\__rows( )
                   If *this\__rows( )\focus
-                     If *this\__rows( )\color\state = #__s_3
-                        *this\__rows( )\color\state = #__s_2
+                     If *this\__rows( )\ColorState( ) = #__s_3
+                        *this\__rows( )\ColorState( ) = #__s_2
                         
                         *this\root\repaint = #True
                      EndIf
@@ -18770,8 +18853,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PushListPosition( *this\__rows( ) )
                ForEach *this\__rows( )
                   If *this\__rows( )\focus
-                     If *this\__rows( )\color\state = #__s_2
-                        *this\__rows( )\color\state = #__s_3
+                     If *this\__rows( )\ColorState( ) = #__s_2
+                        *this\__rows( )\ColorState( ) = #__s_3
                         
                         *this\root\repaint = #True
                      EndIf
@@ -18797,8 +18880,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\__rows( )\focus = #False
                            EndIf
                            
-                           If *this\__rows( )\color\state <> #__s_0
-                              *this\__rows( )\color\state = #__s_0
+                           If *this\__rows( )\ColorState( ) <> #__s_0
+                              *this\__rows( )\ColorState( ) = #__s_0
                            EndIf
                         Next
                         PopListPosition( *this\__rows( ) )
@@ -18809,7 +18892,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\FocusedLine( )\focus = #False
                            *this\FocusedLine( )\focus = #True
                         EndIf
-                        *this\FocusedLine( )\color\state = #__s_2
+                        *this\FocusedLine( )\ColorState( ) = #__s_2
                      EndIf
                      
                      
@@ -18864,9 +18947,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If *this\PressedLine( )\focus = #False
                            If *this\PressedLine( )\enter
-                              *this\PressedLine( )\color\state = #__s_1
+                              *this\PressedLine( )\ColorState( ) = #__s_1
                            Else
-                              *this\PressedLine( )\color\state = #__s_0
+                              *this\PressedLine( )\ColorState( ) = #__s_0
                            EndIf
                         EndIf
                      EndIf
@@ -18976,17 +19059,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Not *this\mode\multiSelect And
                         Not *this\mode\clickSelect
                         
-                        If *this\EnteredRow( )\color\state = #__s_2
-                           *this\EnteredRow( )\color\state = #__s_0
+                        If *this\EnteredRow( )\ColorState( ) = #__s_2
+                           *this\EnteredRow( )\ColorState( ) = #__s_0
                         EndIf
                      Else
-                        If *this\EnteredRow( )\color\state = #__s_1
-                           *this\EnteredRow( )\color\state = #__s_0
+                        If *this\EnteredRow( )\ColorState( ) = #__s_1
+                           *this\EnteredRow( )\ColorState( ) = #__s_0
                         EndIf
                         
                         If *this\EnteredRow( )\focus
-                           If *this\EnteredRow( )\color\state <> #__s_2
-                              *this\EnteredRow( )\color\state = #__s_3
+                           If *this\EnteredRow( )\ColorState( ) <> #__s_2
+                              *this\EnteredRow( )\ColorState( ) = #__s_3
                               *this\root\repaint              = #True
                            EndIf
                         EndIf
@@ -19016,17 +19099,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If ( *this\press And Not Mouse( )\drag ) And ( *this\mode\clickSelect = 0 Or
                                                                        ( *this\mode\clickSelect And *this\mode\multiSelect ))
-                           If *item\color\state = #__s_0
-                              *item\color\state = #__s_2
+                           If *item\ColorState( ) = #__s_0
+                              *item\ColorState( ) = #__s_2
                            EndIf
                         Else
-                           If *item\color\state = #__s_0
-                              *item\color\state = #__s_1
+                           If *item\ColorState( ) = #__s_0
+                              *item\ColorState( ) = #__s_1
                            EndIf
                            
                            If *item\focus
-                              If *item\color\state <> #__s_2
-                                 *item\color\state = #__s_1
+                              If *item\ColorState( ) <> #__s_2
+                                 *item\ColorState( ) = #__s_1
                               EndIf
                            EndIf
                         EndIf
@@ -19099,7 +19182,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If PressedWidget( )\FocusedRow( )
                         PressedWidget( )\FocusedRow( )\focus       = 0
-                        PressedWidget( )\FocusedRow( )\color\state = #__s_0
+                        PressedWidget( )\FocusedRow( )\ColorState( ) = #__s_0
                      EndIf
                      
                      PressedWidget( )\FocusedRow( )       = PressedWidget( )\PressedRow( )
@@ -19108,7 +19191,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If PressedWidget( )\FocusedRow( )
                         PressedWidget( )\FocusedRow( )\focus       = 1
-                        PressedWidget( )\FocusedRow( )\color\state = #__s_2
+                        PressedWidget( )\FocusedRow( )\ColorState( ) = #__s_2
                      EndIf
                   EndIf
                EndIf
@@ -19131,8 +19214,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PushListPosition( *this\__rows( ) )
                   ForEach *this\__rows( )
                      If *this\__rows( ) <> *this\FocusedRow( )
-                        If *this\__rows( )\color\state = #__s_3
-                           *this\__rows( )\color\state = #__s_2
+                        If *this\__rows( )\ColorState( ) = #__s_3
+                           *this\__rows( )\ColorState( ) = #__s_2
                            *this\root\repaint          = 1
                         EndIf
                      EndIf
@@ -19143,10 +19226,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If *this\FocusedRow( )
                   If *this\FocusedRow( )\focus And
-                     *this\FocusedRow( )\color\state = #__s_3
+                     *this\FocusedRow( )\ColorState( ) = #__s_3
                      ;
                      *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
-                     *this\FocusedRow( )\color\state = #__s_2
+                     *this\FocusedRow( )\ColorState( ) = #__s_2
                      *this\root\repaint              = #True
                      
                      ;\\
@@ -19165,8 +19248,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PushListPosition( *this\__rows( ) )
                   ForEach *this\__rows( )
                      If *this\__rows( ) <> *this\FocusedRow( )
-                        If *this\__rows( )\color\state = #__s_2
-                           *this\__rows( )\color\state = #__s_3
+                        If *this\__rows( )\ColorState( ) = #__s_2
+                           *this\__rows( )\ColorState( ) = #__s_3
                            *this\root\repaint          = 1
                         EndIf
                      EndIf
@@ -19178,7 +19261,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\FocusedRow( )
                   ; Debug ""+*this\x+" "+*this\y ;????????????????????
                   If *this\FocusedRow( )\focus
-                     *this\FocusedRow( )\color\state = #__s_3
+                     *this\FocusedRow( )\ColorState( ) = #__s_3
                      *this\root\repaint              = 1
                   EndIf
                EndIf
@@ -19194,8 +19277,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\mode\multiSelect And Not *this\mode\clickSelect
                         PushListPosition( *this\__rows( ) )
                         ForEach *this\__rows( )
-                           If *this\__rows( )\color\state <> #__s_0
-                              *this\__rows( )\color\state = #__s_0
+                           If *this\__rows( )\ColorState( ) <> #__s_0
+                              *this\__rows( )\ColorState( ) = #__s_0
                               
                               If *this\__rows( )\focus
                                  Debug " multiselect " + *this\__rows( )\focus + " " + *this\__rows( )\text\string
@@ -19217,9 +19300,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\mode\clickSelect
                         *this\PressedRow( )\press ! 1
                         If *this\PressedRow( )\press
-                           *this\PressedRow( )\color\state = #__s_2
+                           *this\PressedRow( )\ColorState( ) = #__s_2
                         Else
-                           *this\PressedRow( )\color\state = #__s_1
+                           *this\PressedRow( )\ColorState( ) = #__s_1
                         EndIf
                         
                         ; If Not *this\anchors
@@ -19227,12 +19310,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; EndIf
                      Else
                         *this\PressedRow( )\press       = 1
-                        *this\PressedRow( )\color\state = #__s_2
+                        *this\PressedRow( )\ColorState( ) = #__s_2
                         
                         If *this\PressedRow( ) <> *this\FocusedRow( )
                            If *this\FocusedRow( ) And
-                              *this\FocusedRow( )\color\state = #__s_2
-                              *this\FocusedRow( )\color\state = #__s_3
+                              *this\FocusedRow( )\ColorState( ) = #__s_2
+                              *this\FocusedRow( )\ColorState( ) = #__s_3
                               If *this\anchors
                                  *this\root\repaint = #True
                               Else
@@ -19258,7 +19341,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                               ;                   If *this\FocusedRow( )\focus = 1
                                               ; ;                     *this\FocusedRow( )\focus = 0
                                               ; ;
-                                              ; ;                     *this\FocusedRow( )\color\state = #__s_0
+                                              ; ;                     *this\FocusedRow( )\ColorState( ) = #__s_0
                                               ; ;
                                               ; ;                      Debug "change5"
                                               ; ;                     DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
@@ -19286,7 +19369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;             EndIf
                ;             *this\FocusedRow( )\focus = 0
                ;             *this\FocusedRow( )\press = 0
-               ;             *this\FocusedRow( )\color\state = #__s_0
+               ;             *this\FocusedRow( )\ColorState( ) = #__s_0
                ;           EndIf
             EndIf
             
@@ -19317,7 +19400,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\mode\multiSelect
                            PushListPosition( *this\__rows( ) )
                            ForEach *this\__rows( )
-                              If *this\__rows( )\color\state = #__s_2
+                              If *this\__rows( )\ColorState( ) = #__s_2
                                  If *this\__rows( )\press <> 1
                                     *this\__rows( )\press = 1
                                  EndIf
@@ -19329,18 +19412,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\PressedRow( ) <> *this\EnteredRow( )
                                  If *this\EnteredRow( )
                                     *this\PressedRow( )\press       = 0
-                                    *this\PressedRow( )\color\state = #__s_0
+                                    *this\PressedRow( )\ColorState( ) = #__s_0
                                     
                                     *this\EnteredRow( )\press       = 1
-                                    *this\EnteredRow( )\color\state = #__s_2
+                                    *this\EnteredRow( )\ColorState( ) = #__s_2
                                     
                                     ;Debug "change1"
                                     DoEvents(*this, #__event_Change, *this\EnteredRow( )\index, *this\EnteredRow( ))
                                  Else
                                     If *this\PressedRow( )\press
-                                       *this\PressedRow( )\color\state = #__s_0
+                                       *this\PressedRow( )\ColorState( ) = #__s_0
                                     Else
-                                       *this\PressedRow( )\color\state = #__s_2
+                                       *this\PressedRow( )\ColorState( ) = #__s_2
                                     EndIf
                                     *this\PressedRow( )\press ! 1
                                     
@@ -19360,7 +19443,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\FocusedRow( ) <> *this\EnteredRow( )
                                  *this\FocusedRow( )\enter       = 0
                                  *this\FocusedRow( )\focus       = 0
-                                 *this\FocusedRow( )\color\state = #__s_0
+                                 *this\FocusedRow( )\ColorState( ) = #__s_0
                               EndIf
                            EndIf
                            
@@ -19371,7 +19454,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\PressedRow( ) <> *this\EnteredRow( )
                               If Not *this\PressedRow( )\focus
                                  *this\PressedRow( )\enter       = 0
-                                 *this\PressedRow( )\color\state = #__s_0
+                                 *this\PressedRow( )\ColorState( ) = #__s_0
                               EndIf
                            EndIf
                         EndIf
@@ -19381,7 +19464,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If *this\FocusedRow( )
                            ;; *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
-                           *this\FocusedRow( )\color\state = #__s_2
+                           *this\FocusedRow( )\ColorState( ) = #__s_2
                            
                            If *this\FocusedRow( )\press
                               *this\FocusedRow( )\press = 0
@@ -19422,9 +19505,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If *this\row
                If *this\EnteredRow( )
-                  *BB1 = *this\EnteredRow( )\CheckedBox( )
+                  *BB1 = *this\EnteredRow( )\checkbox
                   If *this\EnteredRow( )\childrens
-                     *BB2 = *this\EnteredRow( )\ButtonBox( )
+                     *BB2 = *this\EnteredRow( )\buttonbox
                   EndIf
                   mouse_x = mouse( )\x - *this\inner_x( ) - *this\EnteredRow( )\x - *this\scroll_x( )
                   mouse_y = mouse( )\y - *this\inner_y( ) - *this\EnteredRow( )\y - *this\scroll_y( )
@@ -19686,9 +19769,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\row
                      ; Debug "status-change " + *button
                      ;               Protected *row._s_ROWS = *Data
-                     ;               If *row And *row\color\state = #__s_2
+                     ;               If *row And *row\ColorState( ) = #__s_2
                      ;                 ;Debug *button
-                     ;                 *row\color\back[*row\color\state] = $FF2C70F5 ; TEMP
+                     ;                 *row\color\back[*row\ColorState( )] = $FF2C70F5 ; TEMP
                      ;               EndIf
                      *this\root\repaint = #True
                   EndIf
@@ -19697,24 +19780,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   If Not *this\anchors
 ;                      If *this\type <> #__type_Button
 ;                         If Not *this\disable
-;                            *this\color\state  = #__s_2
+;                            *this\ColorState( )  = #__s_2
 ;                            *this\root\repaint = #True
 ;                         EndIf
 ;                      EndIf
 ;                   EndIf
                   
+                  *this\root\repaint = #True
+                  
                Case #__event_LostFocus
 ;                   If *this\type <> #__type_Button
 ;                      If Not *this\anchors
-;                         If *this\color\state = #__s_2
-;                            *this\color\state  = #__s_3
-;                            *this\root\repaint = #True
-;                         EndIf
-;                         If *this <> GetActive( )
+;                         If *this\ColorState( ) = #__s_2
+;                            *this\ColorState( )  = #__s_3
 ;                            *this\root\repaint = #True
 ;                         EndIf
 ;                      EndIf
 ;                   EndIf
+                  
+                  *this\root\repaint = #True
                   
                Case #__event_MouseMove
                   ;                   If *this\bar
@@ -19832,26 +19916,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                Case #__type_Button, #__type_ButtonImage
-                  If *this\state = #False
+                  If Not *this\ToggleState( ) 
                      Select eventtype
                         Case #__event_MouseEnter
                            If *this\enter > 0
                               If *this\press
-                                 *this\color\state = #__s_2
+                                 *this\ColorState( ) = #__s_2
                               Else
-                                 *this\color\state = #__s_1
+                                 *this\ColorState( ) = #__s_1
                               EndIf
                            EndIf
                            
                         Case #__event_MouseLeave
                            ; If Not *this\press
-                           *this\color\state = #__s_0
+                           *this\ColorState( ) = #__s_0
                            ; EndIf
                            
                         Case #__event_Down
                            If *this\enter > 0
                               If mouse( )\buttons & #PB_Canvas_LeftButton
-                                 *this\color\state = #__s_2
+                                 *this\ColorState( ) = #__s_2
                               EndIf
                               ; If *this\type = #__type_ButtonImage
                               If *this\image[#__image_pressed]\id
@@ -19863,9 +19947,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__event_Up
                            If mouse( )\buttons & #PB_Canvas_LeftButton
                               If *this\enter > 0
-                                 *this\color\state = #__s_1
+                                 *this\ColorState( ) = #__s_1
                               Else
-                                 *this\color\state = #__s_0
+                                 *this\ColorState( ) = #__s_0
                               EndIf
                            EndIf
                            ; If *this\type = #__type_ButtonImage
@@ -19878,11 +19962,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   If eventtype = #__event_Up
-                     If *this\enter > 0
-                        If mouse( )\buttons & #PB_Canvas_LeftButton
-                           If *this\flag & #PB_Button_Toggle
-                              If SetState( *this, Bool( *this\state ! 1 ))
-                              EndIf
+                     If mouse( )\buttons & #PB_Canvas_LeftButton
+                        If *this\enter > 0
+                           If *this\ToggleButton( )
+                              SetState( *this, Bool( *this\ToggleState( ) ! 1 ))
                            EndIf
                         EndIf
                      EndIf
@@ -19899,7 +19982,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                Case #__type_checkBox
                   If eventtype = #__event_LeftClick
-                     If SetState( *this, Bool( *this\state ! 1 ) )
+                     If SetState( *this, Bool( *this\ToggleState( ) ! 1 ) )
                         
                      EndIf
                   EndIf
@@ -19920,13 +20003,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      eventtype = #__event_MouseLeave
                      
                      If *this\inner_enter( )
-                        If *this\color\state <> #__s_1
-                           *this\color\state = #__s_1
+                        If *this\ColorState( ) <> #__s_1
+                           *this\ColorState( ) = #__s_1
                         EndIf
                         *this\root\repaint = 1
                      Else
-                        If *this\color\state <> #__s_0
-                           *this\color\state = #__s_0
+                        If *this\ColorState( ) <> #__s_0
+                           *this\ColorState( ) = #__s_0
                         EndIf
                      EndIf
                   EndIf
@@ -20106,8 +20189,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ( *this\drop\private = mouse( )\drag\private Or
                           *this\drop\private & mouse( )\drag\private )
                         
-                        If mouse( )\drag\state <> #PB_Drag_Enter
-                           mouse( )\drag\state = #PB_Drag_Enter
+                        If mouse( )\DragState( ) <> #PB_Drag_Enter
+                           mouse( )\DragState( ) = #PB_Drag_Enter
                            ; Debug "#PB_Drag_Enter"
                            
                            If PressedWidget( )\cursor <> mouse( )\drag\cursor
@@ -20116,8 +20199,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   Else
-                     If mouse( )\drag\state = #PB_Drag_Enter
-                        mouse( )\drag\state = #PB_Drag_Leave
+                     If mouse( )\DragState( ) = #PB_Drag_Enter
+                        mouse( )\DragState( ) = #PB_Drag_Leave
                         ; Debug "#PB_Drag_Leave"
                         
                         If PressedWidget( )\cursor = cursor::#__cursor_Drop
@@ -20182,7 +20265,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If Not *this\disable
             If *this\root\repaint = 1
-               ; Debug ""+*this\class+" "+*this\color\state +" "+ ClassFromEvent(eventtype)
+               ; Debug ""+*this\class+" "+*this\ColorState( ) +" "+ ClassFromEvent(eventtype)
                PostEventRepaint( *this\root )
                *this\root\repaint = 0
             EndIf
@@ -20657,15 +20740,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ do drop events
                      If mouse( )\drag
-                        If mouse( )\drag\state = #PB_Drag_Enter
-                           mouse( )\drag\state = #PB_Drag_Finish
+                        If mouse( )\DragState( ) = #PB_Drag_Enter
+                           mouse( )\DragState( ) = #PB_Drag_Finish
                         EndIf
                         
                         If mouse( )\drag\actions & #PB_Drag_Drop
                            If PressedWidget( )\drop
                               DoEvents( PressedWidget( ), #__event_Drop )
                            EndIf
-                        ElseIf mouse( )\drag\state = #PB_Drag_Finish
+                        ElseIf mouse( )\DragState( ) = #PB_Drag_Finish
                            If EnteredWidget( )\drop
                               DoEvents( EnteredWidget( ), #__event_Drop )
                            EndIf
@@ -21254,9 +21337,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\MaximizeButton( )\color = colors::*this\blue
             *this\MinimizeButton( )\color = colors::*this\green
             
-            *this\CloseButton( )\color\state    = 1
-            *this\MaximizeButton( )\color\state = 1
-            *this\MinimizeButton( )\color\state = 1
+            *this\CloseButton( )\ColorState( )    = 1
+            *this\MaximizeButton( )\ColorState( ) = 1
+            *this\MinimizeButton( )\ColorState( ) = 1
             
             *this\CloseButton( )\round    = 4 + 3
             *this\MaximizeButton( )\round = *this\CloseButton( )\round
@@ -22400,16 +22483,22 @@ CompilerIf #PB_Compiler_IsMainFile
    *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__text_password | #__text_right)
    
    ;\\
+   Global *button_item1, *button_item2
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "1"
             SetState(*button_panel, 0)
+            SetState(*button_item2, 0)
          Case "2"
             SetState(*button_panel, 1)
+            SetState(*button_item1, 0)
       EndSelect
-   EndProcedure
-   Bind(Button( 220, 220, 25, 50, "1"), @button_tab_events( ), #__event_LeftClick )
-   Bind(Button( 220 + 25, 220, 25, 50, "2"), @button_tab_events( ), #__event_LeftClick )
+   EndProcedure 
+   
+   *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
+   *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
+   Bind(*button_item1, @button_tab_events( ), #__event_Down )
+   Bind(*button_item2, @button_tab_events( ), #__event_Down )
    ;\\Close( )
    
    ;\\
@@ -22784,7 +22873,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 314
+; FirstLine = 300
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4d---v----------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------8------
 ; EnableXP

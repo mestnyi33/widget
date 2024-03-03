@@ -148,11 +148,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     STATE
       Structure _s_STATE
          round.a
+         
+         toggle.b
+         state.b
+         
          hide.b
          enter.b
          focus.b
          press.b
-         state.b
          disable.b
       EndStructure
       ;--     BOX
@@ -330,7 +333,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TAB
          *widget._s_WIDGET
          
-         ;change.b ; TEMP
          state.c
          index.c
          
@@ -620,12 +622,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
          ;
-         *statusbox._s_BUTTONS    ; checkbox; optionbox
+         *box._s_BUTTONS    ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
          *popup._s_WIDGET         ; = ComboBox( ) list view box
-         *groupbox._s_WIDGET      ; = Option( ) group widget
-         *stringbox._s_WIDGET     ; = SpinBar( ) string box
+         *group._s_WIDGET      ; = Option( ) group widget
+         *string._s_WIDGET     ; = SpinBar( ) string box
                                   ;                           
          BarWidth.w               ; bar v size
          BarHeight.w              ; bar h size
@@ -747,7 +749,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 574
-; FirstLine = 432
-; Folding = -PCB-d-y--
+; CursorPosition = 624
+; FirstLine = 491
+; Folding = -PSB-d-y--
 ; EnableXP
