@@ -80,8 +80,9 @@ Global g_ide_design_code,
 
 Global w_ide_root,
        w_ide_splitter,
+       w_ide_toolbar_container, 
        w_ide_toolbar
-
+        
 Global w_ide_design_splitter, 
        w_ide_design_panel, 
        w_ide_design_MDI,
@@ -666,59 +667,68 @@ Procedure widget_events( )
 EndProcedure
 
 
+Global w_ide_design_form ; TEMP
+Declare ide_events( )
+
 
 ;-
 Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-   Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30)
-   SetAlignment( *this, #__align_full|#__align_top )
-   ProcedureReturn *this
-EndProcedure
-
-Macro _ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-   If widget( )
-      AddItem( widget( ), -1, _text_, _image_, _mode_)
-   EndIf
-EndMacro
-
-Macro _Separator( )
-   If widget( )
-      AddItem( widget( ), 65535, "|", -1, #Null )
-   EndIf
-EndMacro
-
+      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
+      *this\class = "ToolBar"
+      *this\type = #__type_ToolBar
+      ; SetAlignment( *this, #__align_full|#__align_top )
+      
+      ProcedureReturn *this
+   EndProcedure
+   
+   Macro _ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+      If widget( )
+         AddItem( widget( ), -1, _text_, _image_, _mode_)
+         widget( )\__tabs( )\itemindex = _button_
+      EndIf
+   EndMacro
+   
+   Macro _Separator( )
+      If widget( )
+         AddItem( widget( ), #PB_Ignore, "", - 1, #Null )
+         widget( )\__tabs( )\itemindex = #PB_Ignore
+         ; widget( )\__tabs( )\width = 20
+      EndIf
+   EndMacro
+   
 
 Macro ToolBar( parent, flag = #PB_ToolBar_Small )
-   ;_ToolBar( parent, flag )
-   Container( 0,0,0,0 ) 
-   widget( )\class = "TOOLBAR"
-   Text( widget( )\x+widget( )\width, 5,3,30,"" )
-   widget( )\class = "^"
+   _ToolBar( parent, flag )
+;    Container( 0,0,0,0 ) 
+;    widget( )\class = "TOOLBAR"
+;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
+;    widget( )\class = "^"
 EndMacro
 
 Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-   ;_ToolBarButton( _button_, _image_, _mode_, _text_ )
-   If _image_ > 0
-      ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-   Else
-      Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-   EndIf
-   
-   ;widget( )\color = widget( )\parent\color
-   widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-   widget( )\data = _button_
-   
-   Bind( widget( ), @ide_events( ) )
+   _ToolBarButton( _button_, _image_, _mode_, _text_ )
+;    If _image_ > 0
+;       ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+;    Else
+;       Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
+;    EndIf
+;    
+;    ;widget( )\color = widget( )\parent\color
+;    widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
+;    widget( )\data = _button_
+;    
+;    Bind( widget( ), @ide_events( ) )
 EndMacro
 
 Macro Separator( )
-   ;_Separator( )
-   Text( widget( )\x+widget( )\width, 5,1,30,"" )
-   widget( )\class = "<"
-   Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-   widget( )\class = "|"
-   ; SetData( widget( ), - MacroExpandedCount )
-   Text( widget( )\x+widget( )\width, 5,1,30,"" )
-   widget( )\class = ">"
+   _Separator( )
+;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;    widget( )\class = "<"
+;    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
+;    widget( )\class = "|"
+;    ; SetData( widget( ), - MacroExpandedCount )
+;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;    widget( )\class = ">"
 EndMacro
 
 ;-
@@ -834,22 +844,32 @@ Procedure.i ide_add_image_list( *id, Directory$ )
    EndIf
 EndProcedure
 
-Global w_ide_design_form ; TEMP
-       
 Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
    
+   Debug "ide_menu_events "+toolbarbutton
    
    Select toolbarbutton
       Case 1
-         If Getstate( *e_widget )  
-            ; group
-            group_select = *e_widget
-            ; SetAtributte( *e_widget, #PB_Button_PressedImage )
+         If Type( *e_widget ) = #__type_ToolBar
+            If GetItemState( *e_widget, toolbarbutton )  
+               ; group
+               group_select = *e_widget
+               ; SetAtributte( *e_widget, #PB_Button_PressedImage )
+            Else
+               ; un group
+               group_select = 0
+            EndIf
          Else
-            ; un group
-            group_select = 0
+            If Getstate( *e_widget )  
+               ; group
+               group_select = *e_widget
+               ; SetAtributte( *e_widget, #PB_Button_PressedImage )
+            Else
+               ; un group
+               group_select = 0
+            EndIf
          EndIf
          
          ForEach a_group( )
@@ -1055,8 +1075,12 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_LeftClick
-         If getclass( *e_widget ) = "ToolBar"
-            ide_menu_events( *e_widget, GetData( *e_widget ) )
+         If type( *e_widget ) = #__type_ToolBar
+            ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
+         Else
+            If getclass( *e_widget ) = "ToolBar"
+               ide_menu_events( *e_widget, GetData( *e_widget ) )
+            EndIf
          EndIf
          
    EndSelect
@@ -1074,13 +1098,19 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
-   w_ide_toolbar = ToolBar( w_ide_toolbar )
+   w_ide_toolbar_container = Container( 0,0,0,0 ) 
+   w_ide_toolbar = ToolBar( w_ide_toolbar_container )
    ToolBarButton( #_tb_file_open, -1, 0, "Open" )
    ToolBarButton( #_tb_file_save, -1, 0, "Save" )
    Separator( )
-   ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) : group_select = widget( )
-   SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-   SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+   ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
+   ; TEMP
+   If Type(widget( )) = #__type_Button
+      SetState(widget( ), 1) 
+      SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+      SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+   EndIf
+   ;
    Separator( )
    ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
    ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
@@ -1176,7 +1206,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;
    ;\\\ ide splitters
    ;
-   w_ide_design_splitter = Splitter( 0,0,0,0, w_ide_toolbar,w_ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(w_ide_design_splitter, "w_ide_design_splitter" )
+   w_ide_design_splitter = Splitter( 0,0,0,0, w_ide_toolbar_container,w_ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(w_ide_design_splitter, "w_ide_design_splitter" )
    w_ide_inspector_splitter = Splitter( 0,0,0,0, w_ide_inspector_view,w_ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(w_ide_inspector_splitter, "w_ide_inspector_splitter" )
    w_ide_debug_splitter = Splitter( 0,0,0,0, w_ide_design_splitter,w_ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_debug_splitter, "w_ide_debug_splitter" )
    w_ide_help_splitter = Splitter( 0,0,0,0, w_ide_inspector_splitter,w_ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_help_splitter, "w_ide_help_splitter" )
@@ -1200,11 +1230,14 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, 42 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1)
    
    ;
    ;\\\ ide events binds
    ;
+   If Type( w_ide_toolbar ) = #__type_ToolBar
+      Bind( w_ide_toolbar, @ide_events( ), #__event_LeftClick )
+   EndIf
    Bind( w_ide_inspector_view, @ide_events( ) )
    ;
    Bind( w_ide_design_code, @ide_events( ), #__event_Change )
@@ -1229,7 +1262,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ide_open( )
    
    ;   ;OpenList(w_ide_design_MDI)
-   SetState(group_select, 1) 
    Define result, example = 3
    
   
@@ -1365,7 +1397,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 699
-; FirstLine = 617
-; Folding = ---------r0uf-0-vpy----
+; CursorPosition = 855
+; FirstLine = 665
+; Folding = ---------r0uf-0--4K-----
 ; EnableXP

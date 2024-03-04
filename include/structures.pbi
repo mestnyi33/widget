@@ -344,7 +344,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     TABS
       Structure _s_TABS Extends _s_BOX
-         index.l  ; Index of new list element
+         index.l     ; Index of new list element
+         itemindex.l
          
          visible.b
          
@@ -749,7 +750,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 624
-; FirstLine = 491
+; CursorPosition = 346
+; FirstLine = 220
 ; Folding = -PSB-d-y--
 ; EnableXP

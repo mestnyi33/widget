@@ -58,17 +58,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *e_widget._s_WIDGET = EventWidget( )
       Protected toolbarbutton = WidgetEventItem( ) ; GetData( *e_widget ) 
       
-      Debug "click " + toolbarbutton +" "+ *e_widget\EnteredTab( )\index
+      Debug "click " + toolbarbutton +" "+ *e_widget\EnteredTab( )\itemindex
    EndProcedure
    
    
    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 30)
+      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 36)
       *this\type = #__type_ToolBar
+      ;SetFrame(*this, 10 )
       SetAlignment( *this, #__align_full|#__align_top )
-      
-      Bind( *this, @ToolBarEvents( ), #__event_LeftClick )
-      ;Bind( *this, @ToolBarEvents( ), #__event_Change )
       
       ProcedureReturn *this
    EndProcedure
@@ -76,13 +74,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Macro _ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
       If widget( )
          AddItem( widget( ), -1, _text_, _image_, _mode_)
-         widget( )\__tabs( )\index = _button_
+         widget( )\__tabs( )\itemindex = _button_
       EndIf
    EndMacro
    
    Macro _Separator( )
       If widget( )
-         AddItem( widget( ), 65535, "|", - 1, #Null )
+         AddItem( widget( ), #PB_Ignore, "", - 1, #Null )
+         widget( )\__tabs( )\itemindex = #PB_Ignore
          ; widget( )\__tabs( )\width = 20
       EndIf
    EndMacro
@@ -124,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open( 0, 30, 200, 800, 380, "ToolBar example")   
-      If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small)
+      If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large)
          ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
          ToolBarImageButton( #_tb_file_save, 0, 0, "Save" )
          ToolBarSeparator( )
@@ -161,6 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init(root( ))
       Define w_ide_toolbar                           ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
+      Container( 10,60,800,60 )
+      
       w_ide_toolbar = ToolBar( w_ide_toolbar )
       ToolBarButton( #_tb_file_open, -1, 0, "Open" )
       ToolBarButton( #_tb_file_save, -1, 0, "Save" )
@@ -191,7 +192,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
       ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       
-      ;CloseList( ) : Resize( w_ide_toolbar, 0, 0, 800,60)
+      CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
+      
+      Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
+      ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
+      
+      
    EndIf
    
    
@@ -236,7 +242,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 58
+; CursorPosition = 60
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP

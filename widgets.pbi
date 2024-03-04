@@ -5372,7 +5372,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure bar_tab_AddItem( *this._s_WIDGET, Item.i, Text.s, Image.i = -1, sublevel.i = 0 )
          Protected result, index = Item
          
-         If Item = - 1 Or
+         If Item < 0 Or
             Item > *this\count\items - 1
             LastElement( *this\__tabs( ))
             AddElement( *this\__tabs( ))
@@ -5387,7 +5387,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
 ;                PushListPosition( *this\__tabs( ))
 ;                While NextElement( *this\__tabs( ))
-;                   *this\__tabs( )\index = ListIndex( *this\__tabs( ))
+;                   *this\__tabs( )\_index = ListIndex( *this\__tabs( ))
 ;                Wend
 ;                PopListPosition( *this\__tabs( ))
                
@@ -5415,7 +5415,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\__tabs( )\color       = _get_colors_( )
          *this\__tabs( )\height      = *this\height - 1
          *this\__tabs( )\text\string = Text.s
-         ;*this\__tabs( )\index       = index
+         ;*this\__tabs( )\_index       = index
          
          ;\\ set default selected tab
          If Not *this\FocusedTab( )
@@ -5488,9 +5488,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If SelectElement( *this\__tabs( ), item )
             *this\TabChange( ) = #True
             
-            If *this\TabState( ) = *this\__tabs( )\index
-               *this\TabState( ) = item - 1
-            EndIf
+;             If *this\TabState( ) = *this\__tabs( )\index
+;                *this\TabState( ) = item - 1
+;             EndIf
             
             DeleteElement( *this\__tabs( ), 1 )
             
@@ -5573,10 +5573,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             ;no &~ entered &~ focused
-            If *items( )\visible 
-               If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
-                  
-                  bar_item_draw_( *items( ), vertical, x, y, round, [0] )
+            If *items( )\itemindex = #PB_Ignore
+              draw_roundbox_( x + *items( )\x+*items( )\width/2, y + *items( )\y+3, 1, *items( )\height-6, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
+            Else
+               If *items( )\visible 
+                  If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
+                     
+                     bar_item_draw_( *items( ), vertical, x, y, round, [0] )
+                  EndIf
                EndIf
             EndIf
          Next
@@ -5585,21 +5589,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\EnteredTab( ) <> *this\FocusedTab( )
             If *this\EnteredTab( ) And
                *this\EnteredTab( )\visible 
-               
-               draw_font_item_( *this, *this\EnteredTab( ), 0 )
-               bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\ColorState( )] )
+               ;
+               If *this\EnteredTab( )\itemindex <> #PB_Ignore
+                  draw_font_item_( *this, *this\EnteredTab( ), 0 )
+                  bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\ColorState( )] )
+               EndIf
             EndIf
          EndIf
          ;
          ; draw key-focus visible item
          If *this\FocusedTab( ) And
             *this\FocusedTab( )\visible
-            
-            draw_font_item_( *this, *this\FocusedTab( ), 0 )
-            If *this\type = #__type_ToolBar
-               bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [*this\FocusedTab( )\ColorState( )] )
-            Else
-               bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [2] )
+            ;   
+            If *this\FocusedTab( )\itemindex <> #PB_Ignore
+               draw_font_item_( *this, *this\FocusedTab( ), 0 )
+               If *this\type = #__type_ToolBar
+                  bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [*this\FocusedTab( )\ColorState( )] )
+               Else
+                  bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [2] )
+               EndIf
             EndIf
          EndIf
       EndProcedure
@@ -5666,7 +5674,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Continue
                      EndIf
                      
-                     index = ListIndex( *this\__tabs( ) ) ; *this\__tabs( )\index
+                     index = ListIndex( *this\__tabs( ) ) ; *this\__tabs( )\_index
                      
                      ;
                      draw_font_item_( *this, *this\__tabs( ), *this\__tabs( )\change )
@@ -5675,7 +5683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *bar\vertical
                         *this\__tabs( )\y = *bar\max + pos
                         
-                        If *this\TabState( ) = index
+                        If *this\TabState( ) = index And *this\type = #__type_TabBar
                            *this\__tabs( )\x     = 0
                            *this\__tabs( )\width = *SB\width + 1
                         Else
@@ -5687,18 +5695,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         *this\__tabs( )\text\y = *this\text\y + *this\__tabs( )\y
                         *this\__tabs( )\text\x = *this\text\x + *this\__tabs( )\x
-                        *this\__tabs( )\height = *this\text\y * 2 + *this\__tabs( )\text\height
+                        ;
+                        If *this\__tabs( )\itemindex = #PB_Ignore
+                           *this\__tabs( )\height = 3
+                        Else
+                           *this\__tabs( )\height = *this\text\y * 2 + *this\__tabs( )\text\height
+                        EndIf
+                     
                         
                         *bar\max + *this\__tabs( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
                         ;
+                        If *this\type = #__type_TabBar
                         If typ And *this\TabState( ) = index
                            *this\__tabs( )\height + 4
                            *this\__tabs( )\y - 2
                         EndIf
+                        EndIf
                      Else
                         *this\__tabs( )\x = *bar\max + pos
                         
-                        If *this\TabState( ) = index
+                        If *this\TabState( ) = index And *this\type = #__type_TabBar
                            *this\__tabs( )\y      = pos;pos - Bool( pos>0 )*2
                            *this\__tabs( )\height = *SB\height - *this\__tabs( )\y + 1
                         Else
@@ -5714,15 +5730,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         *this\__tabs( )\image\x = *this\__tabs( )\x + Bool( *this\__tabs( )\image\width ) * *this\image\x ;+ Bool( *this\__tabs( )\text\width ) * ( *this\text\x )
                         *this\__tabs( )\text\x  = *this\__tabs( )\image\x + *this\__tabs( )\image\width + *this\text\x
-                        *this\__tabs( )\width   = Bool( *this\__tabs( )\text\width ) * ( *this\text\x * 2 ) + *this\__tabs( )\text\width +
-                                                  Bool( *this\__tabs( )\image\width ) * ( *this\image\x * 2 ) + *this\__tabs( )\image\width - ( Bool( *this\__tabs( )\image\width And *this\__tabs( )\text\width ) * ( *this\text\x ))
                         
+                        ;
+                        If *this\__tabs( )\itemindex = #PB_Ignore
+                           *this\__tabs( )\width = 3
+                        Else
+                           *this\__tabs( )\width = Bool( *this\__tabs( )\text\width ) * ( *this\text\x * 2 ) + *this\__tabs( )\text\width +
+                                                  Bool( *this\__tabs( )\image\width ) * ( *this\image\x * 2 ) + *this\__tabs( )\image\width - ( Bool( *this\__tabs( )\image\width And *this\__tabs( )\text\width ) * ( *this\text\x ))
+                        EndIf
+                     
                         *bar\max + *this\__tabs( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
                         ;
-                        If typ And *this\TabState( ) = index
-                           *this\__tabs( )\width + 4
-                           *this\__tabs( )\x - 2
+                        If *this\type = #__type_TabBar
+                           If typ And *this\TabState( ) = index 
+                              *this\__tabs( )\width + 4
+                              *this\__tabs( )\x - 2
+                           EndIf
                         EndIf
+                        
                      EndIf
                      
                   Next
@@ -5757,7 +5782,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                
                ; draw lines
-               If *activeTAB
+               If *this\type = #__type_TabBar
+            If *activeTAB
                   If *bar\vertical
                      color = *activeTAB\color\frame[2]
                      ; frame on the selected item
@@ -5850,7 +5876,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
+            EndIf
+            
                ; Navigation
                Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
                backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
@@ -8443,7 +8470,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;ChangeCurrentElement( *this\__tabs( ), *this\PressedTab( ) )
                               ;Debug ListIndex( *this\__tabs( ) ) 
                               If bar_tab_SetState( *this, ListIndex( *this\__tabs( ) ) ) 
-                                 ;If bar_tab_SetState( *this, *this\PressedTab( )\index )
+                                 ;If bar_tab_SetState( *this, *this\PressedTab( )\_index )
                                  *this\root\repaint = #True
                               EndIf
                               Break
@@ -22874,7 +22901,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 314
-; FirstLine = 300
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4d---v----------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------8------
+; CursorPosition = 5492
+; FirstLine = 5431
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------f-X-----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u8+--f----------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------4------
 ; EnableXP
