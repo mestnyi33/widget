@@ -673,30 +673,21 @@ Declare ide_events( )
 
 ;-
 Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-   ProcedureReturn ToolBar( *parent, flag )
-   Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
-      *this\class = "ToolBar"
-      *this\type = #__type_ToolBar
-      ; SetAlignment( *this, #__align_full|#__align_top )
-      
-      ProcedureReturn *this
-   EndProcedure
+; ;    ProcedureReturn ToolBar( *parent, flag )
+; ;    Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
+; ;       *this\class = "ToolBar"
+; ;       *this\type = #__type_ToolBar
+; ;       ; SetAlignment( *this, #__align_full|#__align_top )
+; ;       
    
-   Macro _ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-      If widget( )
-         AddItem( widget( ), -1, _text_, _image_, _mode_)
-         widget( )\__tabs( )\itemindex = _button_
-      EndIf
-   EndMacro
+   *parent\ToolBarHeight = 34
+   Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+   *parent\TabBox( ) = *this
+   ;Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
    
-   Macro _Separator( )
-      If widget( )
-         AddItem( widget( ), #PB_Ignore, "", - 1, #Null )
-         widget( )\__tabs( )\itemindex = #PB_Ignore
-         ; widget( )\__tabs( )\width = 20
-      EndIf
-   EndMacro
-   
+   widget( ) = *this 
+   ProcedureReturn *this
+EndProcedure
 
 Macro ToolBar( parent, flag = #PB_ToolBar_Small )
    _ToolBar( parent, flag )
@@ -706,8 +697,7 @@ Macro ToolBar( parent, flag = #PB_ToolBar_Small )
 ;    widget( )\class = "^"
 EndMacro
 
-Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-   _ToolBarButton( _button_, _image_, _mode_, _text_ )
+; Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
 ;    If _image_ > 0
 ;       ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
 ;    Else
@@ -719,10 +709,9 @@ Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
 ;    widget( )\data = _button_
 ;    
 ;    Bind( widget( ), @ide_events( ) )
-EndMacro
-
-Macro Separator( )
-   _Separator( )
+; EndMacro
+; 
+; Macro Separator( )
 ;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
 ;    widget( )\class = "<"
 ;    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
@@ -730,7 +719,7 @@ Macro Separator( )
 ;    ; SetData( widget( ), - MacroExpandedCount )
 ;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
 ;    widget( )\class = ">"
-EndMacro
+; EndMacro
 
 ;-
 Procedure.i ide_add_image_list( *id, Directory$ )
@@ -1400,7 +1389,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1082
-; FirstLine = 799
-; Folding = ---------r0uf-0--4K-----
+; CursorPosition = 687
+; FirstLine = 594
+; Folding = ---------r0uf4--fr9-----
 ; EnableXP

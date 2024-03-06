@@ -325,21 +325,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabState( ): tab\state: EndMacro       ; index[2]  
       Macro TabAddIndex( ): tab\index: EndMacro    ; index[1]  
       
-      Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-         If widget( )
-            AddItem( widget( ), -1, _text_, _image_, _mode_)
-            widget( )\__tabs( )\itemindex = _button_
-         EndIf
-      EndMacro
-      
-      Macro Separator( )
-         If widget( )
-            AddItem( widget( ), #PB_Ignore, "", - 1, #Null )
-            widget( )\__tabs( )\itemindex = #PB_Ignore
-         EndIf
-      EndMacro
-      
-  
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\change
       Macro TextChange( ): text\change: EndMacro   ; temp
@@ -1357,7 +1342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 )
       
       ; menu
-      Declare ToolBar( *parent, flag.q = #PB_ToolBar_Normal )
+      Declare ToolBar( *parent, flag.q = #PB_ToolBar_Small )
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
       
@@ -2739,7 +2724,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
-                     _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] ) - _this_\ToolBarHeight - _address_[#__a_top]\height / 2
+                     _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] ) - _address_[#__a_top]\height / 2
                   EndIf
                Else
                   If _address_[#__a_moved] ; moved
@@ -5424,6 +5409,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ TabBar last opened item
+         If *this\type = #__type_TabBar
+            *this\TabAddIndex( ) = Item
+         EndIf
          *this\TabChange( )      = #True
          *this\count\items + 1
          
@@ -5437,21 +5425,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ set default selected tab
          If Not *this\FocusedTab( )
             If item = 0 
-               *this\TabState( )         = 0
                *this\FocusedTab( )       = *this\__tabs( )
                *this\FocusedTab( )\focus = - 1 ; scroll to active tab
+               *this\TabState( )         = 0
             EndIf
          EndIf
          
          set_image_( *this, *this\__tabs( )\Image, Image )
          PostRepaint( *this\root )
-         ;         
+         ;
          If *this\child
-            If *this\parent = Opened( )
-               If *this\type = #__type_TabBar
-                  *this\parent\TabAddIndex( ) = Item
-               EndIf
-            Else
+            If *this\parent <> Opened( )
                OpenList( *this\parent, Item )
             EndIf
          EndIf
@@ -14767,7 +14751,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If tabindex < 0
-               tabindex = *parent\TabAddIndex( )
+               If *parent\TabBox( )
+                  tabindex = *parent\TabBox( )\TabAddIndex( )
+               Else
+                  tabindex = 0
+               EndIf
             EndIf
             ;
             ;\\ get the last widget to add it after it
@@ -17012,24 +17000,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
-;          ;ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
-;          Create( Opened( ), #PB_Compiler_Procedure, #__type_ToolBar, 0, 0, 0, 34, #Null$, flag, 0, 0, 0, 40, 0, 40 )
-;          SetAlignment( widget( ), #__align_full|#__align_top )
-;          ProcedureReturn widget( )
-         If flag & #PB_ToolBar_Small 
-            *parent\ToolBarHeight = 25
-         ElseIf flag & #PB_ToolBar_Large 
-            *parent\ToolBarHeight = 45
-         Else;If flag & #PB_ToolBar_Normal 
-            *parent\ToolBarHeight = 35
-         EndIf
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-         *parent\TabBox( ) = *this
-         Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
-         
-         widget( ) = *this 
-         ProcedureReturn *this
+      Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Small )
+         ;ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         Create( Opened( ), #PB_Compiler_Procedure, #__type_ToolBar, 0, 0, 0, 34, #Null$, flag, 0, 0, 0, 40, 0, 40 )
+         SetAlignment( widget( ), #__align_full|#__align_top )
+         ProcedureReturn widget( )
       EndProcedure
       
       Procedure ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
@@ -21047,7 +21022,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i = Opened( )
          
          If *this = Opened( )
-            If *this\TabAddIndex( ) = item
+            If *this\TabBox( )
+               If *this\TabBox( )\TabAddIndex( ) = item
+                  ProcedureReturn result
+               EndIf
+            Else
                ProcedureReturn result
             EndIf
          EndIf
@@ -21070,10 +21049,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ; add 
-            If *this\TabBox( ) And 
-               *this\TabBox( )\type = #__type_TabBar
-               *this\TabAddIndex( ) = item
+            ;
+            If *this\TabBox( )
+               *this\TabBox( )\TabAddIndex( ) = item
             EndIf
             
             Opened( ) = *this
@@ -22433,60 +22411,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *w._s_WIDGET, *g._s_WIDGET, editable
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    
-;    
-;    
-;    Define *toolbar = ToolBar( *root )
-;     
-;     If *toolbar
-;       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-;       ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-;       ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
-;       
-;       Separator( )
-;       
-;       ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-;       ; ToolTip(*toolbar, 3, "Cut")
-;       
-;       ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-;       ; ToolTip(*toolbar, 4, "Copy")
-;       
-;       ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-;       ; ToolTip(*toolbar, 5, "Paste")
-;       
-;       Separator( )
-;       
-;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-;       ; ToolTip(*toolbar, 6, "Find a document")
-;    EndIf
-   
    ;BindWidgetEvent( *root, @BindEvents( ) )
    view = Container(10, 10, 406, 238, #PB_Container_Flat)
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
    a_init( view, 8 )
-   
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small )
-    
-    If *toolbar
-      ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
-      
-      Separator( )
-      
-      ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-      ; ToolTip(*toolbar, 3, "Cut")
-      
-      ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-      ; ToolTip(*toolbar, 4, "Copy")
-      
-      ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-      ; ToolTip(*toolbar, 5, "Paste")
-      
-      Separator( )
-      
-      ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-      ; ToolTip(*toolbar, 6, "Find a document")
-    EndIf
    
    Define *a0._s_WIDGET = Button( 10, 10, 60, 60, "Button" )
    Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
@@ -22983,7 +22911,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17028
-; FirstLine = 17014
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------
+; CursorPosition = 21020
+; FirstLine = 21045
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

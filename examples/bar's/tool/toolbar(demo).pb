@@ -29,37 +29,34 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-     *parent\ToolBarHeight = 32;+2 + 6
-  ;*parent\fs[2] + *parent\ToolBarHeight
-   ;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
-;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
-;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-;     ProcedureReturn *parent\tab\widget
-     
-     Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30 );, #__flag_child)
-     SetAlignment( *this, #__align_full|#__align_top )
-     Resize( *parent, #PB_Ignore, 20, #PB_Ignore, #PB_Ignore )
-     
+    ; ProcedureReturn *parent
+      ;         If Flag & #__bar_vertical = #False
+;                   *parent\fs[2] + #__panel_height
+;                Else
+;                   *parent\fs[1] = #__panel_width
+;                EndIf
+      If flag & #PB_ToolBar_Small 
+         *parent\ToolBarHeight = 25
+      ElseIf flag & #PB_ToolBar_Large 
+         *parent\ToolBarHeight = 45
+      Else;If flag & #PB_ToolBar_Normal 
+         *parent\ToolBarHeight = 35
+      EndIf
+      Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+               *parent\TabBox( ) = *this
+               
+               ;ProcedureReturn ToolBar( *parent, flag )
+      
+             ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
+      ;*this\type = #__type_ToolBar
+      ;SetFrame(*this, 10 )
+      ;SetAlignment( *this, #__align_full|#__align_top )
+      
+      Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
+      
+      widget( ) = *this ;????????????????
      ProcedureReturn *this
   EndProcedure
-  
-  Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-    If widget( )
-      AddItem( widget( ), _button_, _text_, _image_, _mode_)
-    EndIf
-;     If widget( )\TabBox( )
-;       AddItem( widget( )\TabBox( ), _button_, _text_, _image_, _mode_)
-;     EndIf
-  EndMacro
-  
-  Macro Separator( )
-    If widget( )
-      AddItem( widget( ), 65535, "|", #Null, #Null )
-    EndIf
-;     If widget( )\tab\widget
-;       AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
-;     EndIf
-  EndMacro
   
   Macro DisableButton( _address_, _button_, _state_ )
    ; DisableItem( _address_, _button_, _state_ )
@@ -148,7 +145,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 25
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = --
 ; EnableXP
