@@ -623,12 +623,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
          ;
-         *box._s_BUTTONS    ; checkbox; optionbox
+         *box._s_BUTTONS          ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
+         *toolbar._s_WIDGET          ; 
          *popup._s_WIDGET         ; = ComboBox( ) list view box
-         *group._s_WIDGET      ; = Option( ) group widget
-         *string._s_WIDGET     ; = SpinBar( ) string box
+         *group._s_WIDGET         ; = Option( ) group widget
+         *string._s_WIDGET        ; = SpinBar( ) string box
                                   ;                           
          BarWidth.w               ; bar v size
          BarHeight.w              ; bar h size
@@ -750,7 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 346
-; FirstLine = 220
+; CursorPosition = 628
+; FirstLine = 495
 ; Folding = -PSB-d-y--
 ; EnableXP

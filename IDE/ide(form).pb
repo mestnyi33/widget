@@ -673,7 +673,8 @@ Declare ide_events( )
 
 ;-
 Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
+   ProcedureReturn ToolBar( *parent, flag )
+   Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
       *this\class = "ToolBar"
       *this\type = #__type_ToolBar
       ; SetAlignment( *this, #__align_full|#__align_top )
@@ -1076,7 +1077,9 @@ Procedure ide_events( )
          
       Case #__event_LeftClick
          If type( *e_widget ) = #__type_ToolBar
-            ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
+            If *e_widget\EnteredTab( )
+               ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
+            EndIf
          Else
             If getclass( *e_widget ) = "ToolBar"
                ide_menu_events( *e_widget, GetData( *e_widget ) )
@@ -1397,7 +1400,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 855
-; FirstLine = 665
+; CursorPosition = 1082
+; FirstLine = 799
 ; Folding = ---------r0uf-0--4K-----
 ; EnableXP

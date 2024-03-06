@@ -29,14 +29,17 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *toolbar._s_widget, th=24
   
   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-;     *parent\ToolBarHeight = 32;+2 + 6
-;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+     *parent\ToolBarHeight = 32;+2 + 6
+  ;*parent\fs[2] + *parent\ToolBarHeight
+   ;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
 ;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
 ;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
 ;     ProcedureReturn *parent\tab\widget
      
-     Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30)
+     Protected *this._s_WIDGET = widget::Tab(0, 0, 100, 30 );, #__flag_child)
      SetAlignment( *this, #__align_full|#__align_top )
+     Resize( *parent, #PB_Ignore, 20, #PB_Ignore, #PB_Ignore )
+     
      ProcedureReturn *this
   EndProcedure
   
@@ -120,7 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     DisableButton(*toolbar, 2, 1) ; Disable the button '2'
     
-    ;  Bind( root( ), #PB_Default )
+      Button( 10,10, 50,50,"" )
+     ;  Bind( root( ), #PB_Default )
   EndIf
   
   
@@ -144,6 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 31
+; FirstLine = 25
 ; Folding = --
 ; EnableXP

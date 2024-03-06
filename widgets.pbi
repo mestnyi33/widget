@@ -2807,24 +2807,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ line default size&pos
             a_line([#__a_line_left])\width  = 1
-            a_line([#__a_line_left])\height = a_focused( )\frame_height( )
+            a_line([#__a_line_left])\height = 0 ; a_focused( )\frame_height( )
             a_line([#__a_line_left])\x      = a_focused( )\frame_x( )
             a_line([#__a_line_left])\y      = a_focused( )\frame_y( )
             
             a_line([#__a_line_top])\height = 1
-            a_line([#__a_line_top])\width  = a_focused( )\frame_width( )
+            a_line([#__a_line_top])\width  = 0 ; a_focused( )\frame_width( )
             a_line([#__a_line_top])\x      = a_focused( )\frame_x( )
             a_line([#__a_line_top])\y      = a_focused( )\frame_y( )
             
             a_line([#__a_line_right])\width  = 1
-            a_line([#__a_line_right])\height = a_focused( )\frame_height( )
-            a_line([#__a_line_right])\x      = ( a_focused( )\frame_x( ) + a_focused( )\frame_width( ) ) ; - a_line([#__a_line_right])\width
+            a_line([#__a_line_right])\height = 0 ; a_focused( )\frame_height( )
+            a_line([#__a_line_right])\x      = ( a_focused( )\frame_x( ) + a_focused( )\frame_width( ) ) - a_line([#__a_line_right])\width
             a_line([#__a_line_right])\y      = a_focused( )\frame_y( )
             
             a_line([#__a_line_bottom])\height = 1
-            a_line([#__a_line_bottom])\width  = a_focused( )\frame_width( )
+            a_line([#__a_line_bottom])\width  = 0 ; a_focused( )\frame_width( )
             a_line([#__a_line_bottom])\x      = a_focused( )\frame_x( )
-            a_line([#__a_line_bottom])\y      = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) ; - a_line([#__a_line_bottom])\height
+            a_line([#__a_line_bottom])\y      = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_line([#__a_line_bottom])\height
             
             ;\\
             If StartEnumerate( a_focused( )\parent )
@@ -4643,8 +4643,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          EndIf
          
          ;\\
-         If *this\type = #__type_Window Or
-            *this\type = #__type_Container
+         If *this\type = #__type_Window Or *this\type = #__type_Container
             If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
             EndIf
@@ -5038,7 +5037,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
                
                ;\\
-               If *this\type = #__type_Panel
+               If *this\container ; type = #__type_Panel
                   If *this\TabBox( )\bar\vertical
                      If *this\fs[1]
                         Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
@@ -5048,7 +5047,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\fs[2]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
+                        If *this\ToolBarHeight
+                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight , *this\frame_width( ), *this\ToolBarHeight )
+                        Else
+                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
+                        EndIf
                      EndIf
                      If *this\fs[4]
                         Resize( *this\TabBox( ), *this\fs, *this\inner_height( ), *this\inner_width( ), *this\fs[4])
@@ -5056,15 +5059,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;\\
-               If *this\type = #__type_window
-                  Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\frame_width( ), *this\ToolBarHeight )
-               EndIf
+;                ;\\
+;                If *this\type = #__type_window
+;                   Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\frame_width( ), *this\ToolBarHeight )
+;                EndIf
                
                *this\inner_x( ) + *this\fs + *this\fs[1]
                *this\inner_y( ) + *this\fs + *this\fs[2]
             EndIf
-            
+              
             ;\\
             If *this\type = #__type_Window
                result = Update( *this )
@@ -12725,7 +12728,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.b, _scroll_pos_.f
          
          ; update draw coordinate
-         If *this\type = #__type_Panel
+         If *this\TabBox( ) ; *this\type = #__type_Panel
             result = bar_Update( *this\TabBox( ) )
          EndIf
          
@@ -16994,7 +16997,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Small )
-         ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         ;ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         Create( Opened( ), #PB_Compiler_Procedure, #__type_ToolBar, 0, 0, 0, 34, #Null$, flag, 0, 0, 0, 40, 0, 40 )
+         SetAlignment( widget( ), #__align_full|#__align_top )
+         ProcedureReturn widget( )
       EndProcedure
       
       Procedure ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
@@ -22306,7 +22312,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile 
    
    EnableExplicit
    UseLIB(widget)
@@ -22901,7 +22907,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5492
-; FirstLine = 5431
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------f-X-----0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u8+--f----------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------4------
+; CursorPosition = 12730
+; FirstLine = 12556
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------f-X-----0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------u8+------------------------------------------------------------------8-4-v+-------------------------------------------------------------------------------------------v----------------------------------------------------------------3------
 ; EnableXP

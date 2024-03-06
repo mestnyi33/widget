@@ -54,6 +54,34 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndEnumeration
    
+   
+   Procedure Show_DEBUG( )
+      Define line.s
+      ;\\
+      Debug "---->>"
+      ForEach __widgets( )
+         ;Debug __widgets( )\class
+         line = "  "
+         
+         If __widgets( )\before\widget
+            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         Else
+            line + "-------- <<  " 
+         EndIf
+         
+         line + __widgets( )\class +"_"+ __widgets( )\TabIndex( ) ; TabAddIndex( ) ; TabState( )
+         
+         If __widgets( )\after\widget
+            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         Else
+            line + "  >> --------" 
+         EndIf
+         
+         Debug line
+      Next
+      Debug "<<----"
+   EndProcedure
+   
    Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
       Protected toolbarbutton = WidgetEventItem( ) ; GetData( *e_widget ) 
@@ -63,11 +91,27 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-      Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 36)
-      *this\type = #__type_ToolBar
-      ;SetFrame(*this, 10 )
-      SetAlignment( *this, #__align_full|#__align_top )
+     ; ProcedureReturn *parent
+      ;         If Flag & #__bar_vertical = #False
+;                   *parent\fs[2] + #__panel_height
+;                Else
+;                   *parent\fs[1] = #__panel_width
+;                EndIf
+               *parent\ToolBarHeight = 34;+2 + 6
+               Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, 34, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+               ;Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, 34, #Null$, Flag, 0, 0, 0, 0, 0, 30 )
+               ;*parent\toolbar = *this
+               *parent\TabBox( ) = *this
+               ;ProcedureReturn ToolBar( *parent, flag )
       
+               Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
+      ;*this\type = #__type_ToolBar
+      ;SetFrame(*this, 10 )
+      ;SetAlignment( *this, #__align_full|#__align_top )
+      
+      Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
+      
+      widget( ) = *this ;????????????????
       ProcedureReturn *this
    EndProcedure
    
@@ -123,13 +167,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open( 0, 30, 200, 800, 380, "ToolBar example")   
+      a_init(root( ), 0)
+      
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large)
          ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
          ToolBarImageButton( #_tb_file_save, 0, 0, "Save" )
          ToolBarSeparator( )
          ToolBarImageButton( #_tb_group_select, ImageID(CatchImage( #PB_Any,?group )), #PB_ToolBar_Toggle ) ;: group_select = widget( )
-                                                                                                  ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-                                                                                                  ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+                                                                                                            ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+                                                                                                            ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
          ToolBarSeparator( )
          ToolBarImageButton( #_tb_group_left, ImageID(CatchImage( #PB_Any,?group_left )) )
          ToolBarImageButton( #_tb_group_right, ImageID(CatchImage( #PB_Any,?group_right )) )
@@ -157,19 +203,22 @@ CompilerIf #PB_Compiler_IsMainFile
       ;DisableToolBarButton(0, 2, 1) ; Disable the button '2'
       
       
-      ;a_init(root( ))
-      Define w_ide_toolbar                           ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+      Define w_ide_toolbar, w_ide_toolbar_container                          ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
-      Container( 10,60,800,60 )
+      w_ide_toolbar_container = Container( 10,60,700,120 )
+      ;w_ide_toolbar_container = Window( 10,60,700,120, "", #PB_Window_SystemMenu )
+      ;w_ide_toolbar_container = Panel( 10,60,700,120 )
       
-      w_ide_toolbar = ToolBar( w_ide_toolbar )
+       Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
+       
+       w_ide_toolbar = ToolBar( w_ide_toolbar_container )
       ToolBarButton( #_tb_file_open, -1, 0, "Open" )
       ToolBarButton( #_tb_file_save, -1, 0, "Save" )
       Separator( )
       ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) ;: group_select = widget( )
       
-;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+      ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+      ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
       Separator( )
       ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
       ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
@@ -191,15 +240,18 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
       ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
       ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
-      
-      CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
-      
-      Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
+       Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
       ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
       
+       Button( 110,10, 50,50,"btn1" ) : SetClass(widget( ), "btn1" )
+     CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
+      
+      
+      a_set( w_ide_toolbar_container )
       
    EndIf
    
+   Show_DEBUG( )
    
    Define Event, Quit
    Repeat
@@ -219,30 +271,31 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    End   ; All resources are automatically freed
+   
+   DataSection   
+      IncludePath #IDE_path + "ide/include/images"
+      
+      file_open:        : IncludeBinary "delete1.png"
+      file_save:        : IncludeBinary "paste.png"
+      
+      widget_delete:    : IncludeBinary "delete1.png"
+      widget_paste:     : IncludeBinary "paste.png"
+      widget_copy:      : IncludeBinary "copy.png"
+      widget_cut:       : IncludeBinary "cut.png"
+      
+      group:            : IncludeBinary "group/group.png"
+      group_un:         : IncludeBinary "group/group_un.png"
+      group_top:        : IncludeBinary "group/group_top.png"
+      group_left:       : IncludeBinary "group/group_left.png"
+      group_right:      : IncludeBinary "group/group_right.png"
+      group_bottom:     : IncludeBinary "group/group_bottom.png"
+      group_width:      : IncludeBinary "group/group_width.png"
+      group_height:     : IncludeBinary "group/group_height.png"
+   EndDataSection
 CompilerEndIf
 
-DataSection   
-   IncludePath #IDE_path + "ide/include/images"
-   
-   file_open:        : IncludeBinary "delete1.png"
-   file_save:        : IncludeBinary "paste.png"
-   
-   widget_delete:    : IncludeBinary "delete1.png"
-   widget_paste:     : IncludeBinary "paste.png"
-   widget_copy:      : IncludeBinary "copy.png"
-   widget_cut:       : IncludeBinary "cut.png"
-   
-   group:            : IncludeBinary "group/group.png"
-   group_un:         : IncludeBinary "group/group_un.png"
-   group_top:        : IncludeBinary "group/group_top.png"
-   group_left:       : IncludeBinary "group/group_left.png"
-   group_right:      : IncludeBinary "group/group_right.png"
-   group_bottom:     : IncludeBinary "group/group_bottom.png"
-   group_width:      : IncludeBinary "group/group_width.png"
-   group_height:     : IncludeBinary "group/group_height.png"
-EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 57
-; Folding = ---
+; CursorPosition = 71
+; FirstLine = 54
+; Folding = --+
 ; EnableXP
