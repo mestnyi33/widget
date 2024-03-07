@@ -356,6 +356,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMove.i
          OffsetMoveMin.i
          OffsetMoveMax.i
+         
+         *data  ; set/get item data
       EndStructure
       
       ;--     ROWS
@@ -378,7 +380,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; edit
          margin._s_edit
          
-         *data  ; set/get item data
+         ;*data  ; set/get item data
          sublevel.w
       EndStructure
       
@@ -412,7 +414,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *tt._s_tt
          
          ;box._s_buttons
-         ;List _s._s_rows( )
+         List *_s._s_rows( )
+         List lines._s_rows( )
+         List items._s_rows( )
          
       EndStructure
       ;--     BAR
@@ -533,6 +537,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          text._s_TEXT
          image._s_image
          
+         ;List *items._s_rows( )
          List items._s_rows( )
       EndStructure
       
@@ -723,6 +728,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET             ; enumerate widget
          *root._s_ROOT                 ; enumerate root
          
+         *menu._s_WIDGET[2]            ;
+         
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
@@ -751,7 +758,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 628
-; FirstLine = 495
-; Folding = -PSB-d-y--
+; CursorPosition = 412
+; FirstLine = 283
+; Folding = -PSB-d-7--
 ; EnableXP

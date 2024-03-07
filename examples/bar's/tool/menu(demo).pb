@@ -38,38 +38,30 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Procedure Menu( *parent._s_widget, flags = #Null )
-    ;     If _is_root_( *parent )
-    ;       CreateToolBar(#PB_Any, UseGadgetList(0)) 
-    ;       
-    ; ;       StartDrawing(WindowOutput(*parent\root\canvas\window))
-    ; ;       DrawingFont(PB_( GetGadgetFont )( #PB_Default ))
-    ; ;       Box(0,0,OutputWidth(),OutputHeight(),RGB(255,255,255))
-    ; ;       DrawText( 5, 5, "menu", $ff000000)
-    ; ;       StopDrawing()
-    ;       
-    ;       ToolBarImageButton(0, 0)
-    ;     EndIf
-    
-    ;*parent\bs = 20
-    ;*parent\fs = 1
-    ;*parent\bs = 20
-    *parent\MenuBarHeight = #__menu_height
-    Debug *parent\MenuBarHeight
-    ;     Protected i
-    ;     For i=0 To constants::#__c-1
-    ;       Debug "   "+i
-    ;       Debug *parent\x[i]
-    ;       Debug *parent\y[i]
-    ;       Debug *parent\height[i]
-    ;       Debug *parent\width[i]
-    ;     Next
-    
-     SetFrame(*parent, 1);, -1)
-    
-    Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-    Debug 6666;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              ;;  Redraw(root())
+  Procedure Menu( *parent._s_widget, flag = #Null )
+     *parent\MenuBarHeight = #__menu_height
+     
+     Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 900, *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+     
+     *parent\TabBox( ) = *this
+     
+     Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
+     
+     widget( ) = *this 
+     ProcedureReturn *this
+  EndProcedure
+  
+  Procedure Title( title.s )
+     ToolBarButton( -1, -1, #PB_ToolBar_Toggle, title.s )
+  EndProcedure
+  
+  Procedure Item( item, text.s, image = - 1 )
+     Debug widget( )\count\items
+     ; ToolBarButton( item, image, #PB_ToolBar_Toggle, text.s )
+  EndProcedure
+  
+  Procedure Bar( )
+     ;
   EndProcedure
   
   Procedure TestHandler()
@@ -82,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Define window = GetWindow(Open(OpenWindow(#PB_Any, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu)))
-  Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
+  Define window = GetWindow(Open( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu))
+  ;Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
   
   
   CreateMenu(0, WindowID(window))
@@ -99,8 +91,9 @@ CompilerIf #PB_Compiler_IsMainFile
   MenuItem(5, "title-3-item-1")
   MenuItem(6, "title-3-item-2")
   
-  MenuTitle("Title-4")
+  MenuTitle("Title-event-test")
   MenuItem(7, "test")
+  MenuBar()
   MenuItem(8, "quit")
   
   BindMenuEvent(0, 7, @TestHandler())
@@ -112,12 +105,28 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   widget( )\bs = 8
   ;   SetFrame(widget( ), 3);, -1)
   
-  Menu( *window ) ;root( )\window )
+  Define *menu = Menu( *window )
+  Title("Title-1")
+  Item(1, "title-1-item-1")
+  Item(2, "title-1-item-2")
+  
+  Title("Title-2")
+  Item(3, "title-2-item-1")
+  Item(4, "title-2-item-2")
+  
+  Title("Title-3")
+  Item(5, "title-3-item-1")
+  Item(6, "title-3-item-2")
+  
+  Title("Title-event-test")
+  Item(7, "test")
+  Bar( )
+  Item(8, "quit")
+  
+;   Bind(*menu, @TestHandler(), 7)
+;   Bind(*menu, @QuitHandler(), 8)
   
   
-  ;   ResizeWindow(GetWindow(root()), #PB_Ignore, #PB_Ignore, 600, 600)
-  ;   ResizeGadget(GetGadget(root()), #PB_Ignore, #PB_Ignore, 600, 600)
-  ;;Bind( #PB_Default, #PB_Default )
   
   Define Event
   Repeat
@@ -125,6 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13
-; Folding = -
+; CursorPosition = 72
+; FirstLine = 62
+; Folding = --
 ; EnableXP

@@ -523,6 +523,9 @@ Procedure widget_events( )
    ;    Static *beforeWidget
    
    Select eventtype 
+      Case #__event_RightButtonDown
+         Debug "right"
+         
          ; disable window-toolbar-buttons events
       Case #__event_Close ;, #__event_Minimize, #__event_Maximize
          ProcedureReturn 1
@@ -672,54 +675,12 @@ Declare ide_events( )
 
 
 ;-
-Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-; ;    ProcedureReturn ToolBar( *parent, flag )
-; ;    Protected *this._s_WIDGET = widget::Tab(0, 0, 900, 34);, #__flag_autosize)
-; ;       *this\class = "ToolBar"
-; ;       *this\type = #__type_ToolBar
-; ;       ; SetAlignment( *this, #__align_full|#__align_top )
-; ;       
-   
-   *parent\ToolBarHeight = 34
-   Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-   *parent\TabBox( ) = *this
-   ;Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
-   
-   widget( ) = *this 
-   ProcedureReturn *this
-EndProcedure
-
-Macro ToolBar( parent, flag = #PB_ToolBar_Small )
-   _ToolBar( parent, flag )
-;    Container( 0,0,0,0 ) 
+; Macro ToolBar( parent, flag = #PB_ToolBar_Small )
 ;    widget( )\class = "TOOLBAR"
 ;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
 ;    widget( )\class = "^"
-EndMacro
+; EndMacro
 
-; Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-;    If _image_ > 0
-;       ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-;    Else
-;       Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-;    EndIf
-;    
-;    ;widget( )\color = widget( )\parent\color
-;    widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-;    widget( )\data = _button_
-;    
-;    Bind( widget( ), @ide_events( ) )
-; EndMacro
-; 
-; Macro Separator( )
-;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;    widget( )\class = "<"
-;    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-;    widget( )\class = "|"
-;    ; SetData( widget( ), - MacroExpandedCount )
-;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;    widget( )\class = ">"
-; EndMacro
 
 ;-
 Procedure.i ide_add_image_list( *id, Directory$ )
@@ -1389,7 +1350,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 687
-; FirstLine = 594
-; Folding = ---------r0uf4--fr9-----
+; CursorPosition = 527
+; FirstLine = 513
+; Folding = ---------r0uf0-vnK-----
 ; EnableXP
