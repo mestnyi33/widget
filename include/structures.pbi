@@ -167,6 +167,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
+         index.l     ; Index of new list element
          size.l
          noFocus.a
          arrow._s_arrow
@@ -758,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 412
-; FirstLine = 283
-; Folding = -PSB-d-7--
+; CursorPosition = 347
+; FirstLine = 248
+; Folding = -PyB-d-7--
 ; EnableXP

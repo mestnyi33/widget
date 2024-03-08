@@ -120,6 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     DisableButton(*toolbar, 2, 1) ; Disable the button '2'
     
+    ;SetState(*toolbar, 12 )
       Button( 10,10, 50,50,"" )
      ;  Bind( root( ), #PB_Default )
   EndIf
@@ -145,7 +146,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 40
+; CursorPosition = 122
+; FirstLine = 83
 ; Folding = f-
 ; EnableXP
