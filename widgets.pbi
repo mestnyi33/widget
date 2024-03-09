@@ -4571,8 +4571,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *this\child And Not *this\bounds\attach
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu Or
                      *this\type = #__type_ScrollBar
                      ;
@@ -4653,7 +4653,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\TabBox( )
             *this\TabBox( )\draw_x( )      = *this\draw_x( )
             *this\TabBox( )\draw_y( )      = *this\draw_y( )
-            *this\TabBox( )\draw_width( )  = *this\draw_width( )
+            *this\TabBox( )\draw_width( )  = *this\draw_width( )  ; 39;*this\width[#__c_draw2] ; 
             *this\TabBox( )\draw_height( ) = *this\draw_height( )
          EndIf
          If *this\StringBox( )
@@ -5106,9 +5106,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      If *this\fs[2]
                         If *this\ToolBarHeight
-                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight , *this\frame_width( ), *this\ToolBarHeight )
+                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight + 1 , *this\inner_width( ), *this\ToolBarHeight - 1 )
                         ElseIf *this\MenuBarHeight
-                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\frame_width( ), *this\MenuBarHeight )
+                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
                         Else
                            Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
                         EndIf
@@ -5758,9 +5758,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; Draw back
          drawing_mode_alpha_( #PB_2DDrawing_Gradient )
          draw_gradientbox_( _vertical_, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\color\_alpha )
-         ; Draw frame
-         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          ; Draw items image
          If _address_\image\id
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
@@ -5771,6 +5768,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
+         ; Draw frame
+         drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
       EndMacro
       
       Procedure DrawTABITEMS( *this._s_WIDGET, vertical, x,y, round, List *items._s_TABS( ) )
@@ -5802,11 +5802,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *items( )\visible 
                   If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
                      
-                     If *this\type = #__type_Menu
+                     If ( *this\type = #__type_ToolBar Or
+                          *this\type = #__type_Menu )
+                        ;
+                        ; Draw items image
+                        If *items( )\image\id
+                           drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+                           DrawAlphaImage( *items( )\image\id, x + *items( )\image\x, y + *items( )\image\y, *items( )\color\_alpha )
+                        EndIf
+                        ;
+                        ; Draw items text
                         If *items( )\text\string
                            drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                            DrawText( x + *items( )\text\x, y + *items( )\text\y, *items( )\text\string, *items( )\color\front[0] & $FFFFFF | *items( )\color\_alpha << 24 )
                         EndIf
+                        ;
                      Else ; ( *BB2\x + *BB2\width < x + *items( )\x )
                         Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *items( )\x ) +" - "+ *SB\width
                         Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *items( )\x )
@@ -5840,6 +5850,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
                draw_font_item_( *this, *this\FocusedTab( ), 0 )
+               ;
                If *this\type = #__type_ToolBar Or
                   *this\type = #__type_Menu
                   ;   
@@ -6730,14 +6741,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             Select *this\type
-               Case #__type_Spin : bar_spin_draw( *this )
-               Case #__type_TabBar : bar_tab_draw( *this )
-               Case #__type_ToolBar : bar_tab_draw( *this )
-               Case #__type_Menu : bar_tab_draw( *this )
-               Case #__type_TrackBar : bar_track_draw( *this )
-               Case #__type_ScrollBar : bar_scroll_draw( *this )
+               Case #__type_ToolBar     : bar_tab_draw( *this )
+               Case #__type_TabBar      : bar_tab_draw( *this )
+               Case #__type_Menu        : bar_tab_draw( *this )
+               Case #__type_ScrollBar   : bar_scroll_draw( *this )
                Case #__type_ProgressBar : bar_progress_draw( *this )
-               Case #__type_Splitter : bar_splitter_draw( *this )
+               Case #__type_TrackBar    : bar_track_draw( *this )
+               Case #__type_Splitter    : bar_splitter_draw( *this )
+               Case #__type_Spin        : bar_spin_draw( *this )
             EndSelect
             
             ;drawing_mode_( #PB_2DDrawing_Outlined ) :draw_box_( *this\inner_x( ),\inner_y( ),\inner_width( ),\inner_height( ), $FF00FF00 )
@@ -7283,9 +7294,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *bar\area\len ; TODO - ?
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
                   *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
-                  
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or 
+                  ;
+                  If *this\type = #__type_ToolBar Or 
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu 
                      ;
                      If *bar\max
@@ -7419,8 +7430,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             Else
-               If *this\type = #__type_TabBar Or
-                  *this\type = #__type_ToolBar Or
+               If *this\type = #__type_ToolBar Or
+                  *this\type = #__type_TabBar Or
                   *this\type = #__type_Menu
                   ;
                   If *bar\page\pos < *bar\min
@@ -7505,21 +7516,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *BB1\disable = #True
                   
                   ;\\
-                  If *this\type = #__type_ScrollBar Or
-                     *this\type = #__type_spin Or
-                     *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
-                     *this\type = #__type_Menu
+                  If *this\type = #__type_Spin Or
+                     *this\type = #__type_ScrollBar 
                      ;
                      *BB1\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu
                      ;
                      *BB1\hide = 1
+                     *BB1\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
@@ -7532,21 +7541,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *BB1\disable = #False
                   
                   ;\\
-                  If *this\type = #__type_ScrollBar Or
-                     *this\type = #__type_spin Or
-                     *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
-                     *this\type = #__type_Menu
+                  If *this\type = #__type_Spin Or
+                     *this\type = #__type_ScrollBar 
                      ;
                      *BB1\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu
                      ;
                      *BB1\hide = 0
+                     *BB1\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
@@ -7562,21 +7569,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *BB2\disable = #True
                   
                   ;\\
-                  If *this\type = #__type_ScrollBar Or
-                     *this\type = #__type_spin Or
-                     *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
-                     *this\type = #__type_Menu
+                  If *this\type = #__type_Spin Or
+                     *this\type = #__type_ScrollBar 
                      ;
                      *BB2\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu
                      ;
                      *BB2\hide = 1
+                     *BB2\ColorState( ) = #__s_3
                   EndIf
                   
                   ;\\
@@ -7588,21 +7593,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *BB2\disable = #True
                   *BB2\disable = #False
                   ;\\
-                  If *this\type = #__type_ScrollBar Or
-                     *this\type = #__type_spin Or
-                     *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
-                     *this\type = #__type_Menu
+                  If *this\type = #__type_Spin Or
+                     *this\type = #__type_ScrollBar
                      ;
                      *BB2\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar Or
                      *this\type = #__type_Menu
                      ;
                      *BB2\hide = 0
+                     *BB2\ColorState( ) = #__s_0
                   EndIf
                   
                   ;\\
@@ -7642,8 +7645,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ resize buttons coordinate
             ;
             ;\\
-            If *this\type = #__type_TabBar Or
-               *this\type = #__type_ToolBar Or
+            If *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar Or
                *this\type = #__type_Menu
                ;
                ; inner coordinate
@@ -8376,10 +8379,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                         Else
                            ; to reset the button size to default
-                           If *this\type = #__type_ScrollBar Or
+                           If *this\type = #__type_ToolBar Or
                               *this\type = #__type_TabBar Or
-                              *this\type = #__type_ToolBar Or
-                              *this\type = #__type_Menu
+                              *this\type = #__type_Menu Or
+                              *this\type = #__type_ScrollBar
                               ;
                               If *value
                                  *BB1\size = - 1
@@ -13264,10 +13267,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         If *this\type = #__type_ScrollBar Or
+         If *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
             *this\type = #__type_Menu Or
+            *this\type = #__type_ScrollBar Or
             *this\type = #__type_ProgressBar Or
             *this\type = #__type_TrackBar Or
             *this\type = #__type_Splitter Or
@@ -13337,8 +13340,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_root : result.s = "root"
             Case #__type_statusbar : result.s = "status"
             Case #__type_popupmenu : result.s = "popupmenu"
+            Case #__type_toolbar : result.s = "tool"
             Case #__type_menu : result.s = "menu"
-            Case #__type_ToolBar : result.s = "tool"
                
             Case #__type_window : result.s = "window"
             Case #__type_Unknown : result.s = "create"
@@ -13540,8 +13543,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             ProcedureReturn bar_tab_AddItem( *this, Item, Text, Image, flag )
@@ -13663,8 +13666,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Panel
             result = bar_tab_removeItem( *this\TabBox( ), Item )
             
-         ElseIf *this\type = #__type_TabBar Or
-                *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_ToolBar Or
+                *this\type = #__type_TabBar Or
                 *this\type = #__type_Menu
             ;
             result = bar_tab_removeItem( *this, Item )
@@ -13709,8 +13712,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Panel
             result = bar_tab_clearItems( *this\TabBox( ) )
             
-         ElseIf *this\type = #__type_TabBar Or 
-                *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_ToolBar Or
+                *this\type = #__type_TabBar Or 
                 *this\type = #__type_Menu
             ;
             result = bar_tab_clearItems( *this )
@@ -14011,13 +14014,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndSelect
          EndIf
          
-         If *this\type = #__type_Spin Or
+         If *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
             *this\type = #__type_Menu Or
-            *this\type = #__type_TrackBar Or
             *this\type = #__type_ScrollBar Or
-            *this\type = #__type_ProgressBar ; Or *this\type = #__type_Splitter
+            *this\type = #__type_ProgressBar Or
+            *this\type = #__type_TrackBar Or ; Or *this\type = #__type_Splitter
+            *this\type = #__type_Spin
             
             Select Attribute
                Case #__bar_minimum : result = *this\bar\min          ; 1
@@ -14115,8 +14118,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *this\ToggleState( )
          EndIf
          
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             ProcedureReturn *this\TabState( )
@@ -14636,11 +14639,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_Panel
                result = bar_tab_SetState( *this\TabBox( ), state )
                
-            Case #__type_TabBar ;, #__type_ToolBar, #__type_Menu
-               result = bar_tab_SetState( *this, state )
-               
             Case #__type_ToolBar, #__type_Menu
                result = bar_SetState( *this, state )
+               
+            Case #__type_TabBar
+               result = bar_tab_SetState( *this, state )
                
             Case #__type_Spin ,
                  #__type_TrackBar,
@@ -14661,14 +14664,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i
          Protected value = *value
          
-         If *this\type = #__type_Spin Or
-            *this\type = #__type_TabBar Or
+         If *this\type = #__type_TabBar Or
             *this\type = #__type_ToolBar Or
             *this\type = #__type_Menu Or
-            *this\type = #__type_TrackBar Or
             *this\type = #__type_ScrollBar Or
             *this\type = #__type_ProgressBar Or
-            *this\type = #__type_Splitter
+            *this\type = #__type_TrackBar Or
+            *this\type = #__type_Splitter Or
+            *this\type = #__type_Spin
+            ;
             result = bar_SetAttribute( *this, Attribute, *value )
          EndIf
          
@@ -16152,8 +16156,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn bar_tab_GetItemText( *this\TabBox( ), Item, Column )
          EndIf
          
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             ProcedureReturn bar_tab_GetItemText( *this, Item, Column )
@@ -16311,8 +16315,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.l SetItemText( *this._s_WIDGET, Item.l, Text.s, Column.l = 0 )
          Protected result
          
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             If is_no_select_item_( *this\__tabs( ), item )
@@ -16350,8 +16354,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ElseIf *this\type = #__type_Panel
             result = SetItemText( *this\TabBox( ), Item, Text, Column )
             
-         ElseIf *this\type = #__type_TabBar Or 
-                *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_ToolBar Or
+                *this\type = #__type_TabBar Or 
                 *this\type = #__type_Menu
             ;
             If is_item_( *this, Item ) And
@@ -16429,8 +16433,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b SetItemState( *this._s_WIDGET, Item.l, State.b )
          Protected result
          
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             If is_no_select_item_( *this\__tabs( ), Item )
@@ -16625,8 +16629,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ Border & Frame size
-         If *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
             If *this\child
@@ -16958,14 +16962,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ - Create Bars
-         If *this\type = #__type_ScrollBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Menu Or
+            *this\type = #__type_ScrollBar Or
             *this\type = #__type_ProgressBar Or
             *this\type = #__type_TrackBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_Menu Or
-            *this\type = #__type_Spin Or
-            *this\type = #__type_Splitter
+            *this\type = #__type_Splitter Or
+            *this\type = #__type_Spin
             
             *this\bar.allocate( BAR )
             *this\bar\button.allocate( BUTTONS )
@@ -17105,8 +17109,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; - Create Tab
-            If *this\type = #__type_TabBar Or
-               *this\type = #__type_ToolBar Or
+            If *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar Or
                *this\type = #__type_Menu
                ;
                ;;*this\TextChange( ) = 1
@@ -17213,12 +17217,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Post( *this, #__event_create )
          
          ;\\ Set Attribute
-         If *this\type = #__type_ScrollBar Or
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Menu Or
+            *this\type = #__type_ScrollBar Or
             *this\type = #__type_ProgressBar Or
             *this\type = #__type_TrackBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_Menu Or
             *this\type = #__type_Spin
             
             If *this\type = #__type_Spin
@@ -17476,20 +17480,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
-         ;          ;ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
-         ;          Create( Opened( ), #PB_Compiler_Procedure, #__type_ToolBar, 0, 0, 0, 34, #Null$, flag, 0, 0, 0, 40, 0, 40 )
-         ;          SetAlignment( widget( ), #__align_full|#__align_top )
-         ;          ProcedureReturn widget( )
+         ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         ;
          If flag & #PB_ToolBar_Small 
-            *parent\ToolBarHeight = 25
+            *parent\ToolBarHeight = 24
          ElseIf flag & #PB_ToolBar_Large 
-            *parent\ToolBarHeight = 45
-         Else;If flag & #PB_ToolBar_Normal 
-            *parent\ToolBarHeight = 35
+            *parent\ToolBarHeight = 44
+         Else ; If flag & #PB_ToolBar_Normal 
+            *parent\ToolBarHeight = 34
          EndIf
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+         ;
+         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
+                                             0, 0, 0, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
          *parent\TabBox( ) = *this
-         Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
+         Resize( *parent, #PB_Ignore, *parent\inner_y( ) + 1, #PB_Ignore, #PB_Ignore )
          
          widget( ) = *this 
          ProcedureReturn *this
@@ -18229,15 +18233,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                      *this\text\string, *this\color\front & $FFFFFF | *this\color\_alpha << 24 )
                         EndIf
                         
-                     Case #__type_Spin ,
+                     Case #__type_ToolBar,
                           #__type_TabBar, 
-                          #__type_ToolBar,
                           #__type_Menu,
-                          #__type_TrackBar,
                           #__type_ScrollBar,
                           #__type_ProgressBar,
-                          #__type_Splitter
-                        
+                          #__type_TrackBar,
+                          #__type_Splitter,
+                          #__type_Spin
+                          
                         bar_draw( *this )
                   EndSelect
                   
@@ -20554,12 +20558,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Editor_events( *this, eventtype, mouse( )\x, mouse( )\y )
                   
                Case #__type_TabBar, #__type_ToolBar, #__type_Menu,
-                    #__type_TrackBar,
                     #__type_ScrollBar,
+                    #__type_ProgressBar,
+                    #__type_TrackBar,
                     #__type_Splitter,
-                    #__type_Spin,
-                    #__type_ProgressBar
-                  
+                    #__type_Spin
+                    
                   If Bar_Events( *this, eventtype, *button, *data )
                      *this\root\repaint = #True
                   EndIf
@@ -23455,7 +23459,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14638
-; FirstLine = 14629
+; CursorPosition = 5805
+; FirstLine = 5787
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

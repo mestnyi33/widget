@@ -41,7 +41,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Menu( *parent._s_widget, flag = #Null )
      *parent\MenuBarHeight = #__menu_height
      
-     Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 900, *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+     Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
+                                         *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
      
      *parent\TabBox( ) = *this
      
@@ -134,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 72
-; FirstLine = 62
+; CursorPosition = 43
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
