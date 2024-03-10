@@ -1051,8 +1051,8 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
-   w_ide_toolbar_container = Container( 0,0,0,0, #__flag_borderless ) 
-   w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Small )
+   w_ide_toolbar_container = Container( 0,0,0,0);, #__flag_borderless ) 
+   w_ide_toolbar = ToolBar( w_ide_toolbar_container );, #PB_ToolBar_Small )
    ToolBarButton( #_tb_file_open, -1, 0, "Open" )
    ToolBarButton( #_tb_file_save, -1, 0, "Save" )
    Separator( )
@@ -1351,6 +1351,6 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 1053
-; FirstLine = 615
+; FirstLine = 611
 ; Folding = ---------r0uf0-vnK-----
 ; EnableXP

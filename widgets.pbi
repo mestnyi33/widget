@@ -4923,7 +4923,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ потому что окну задаются внутренные размеры
-            If *this\type = #__type_window
+            If *this\type = #__type_window Or *this\type = #__type_Container
                width + *this\fs * 2 + ( *this\fs[1] + *this\fs[3] )
                Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
             EndIf
@@ -18064,14 +18064,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          With *this
             If *this\fs
-               If *this\type <> #__type_panel And *this\type <> #__type_Frame
-                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  For i = 0 To *this\fs - 1
-                     draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-                     If *this\round
-                        draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-                     EndIf
-                  Next
+;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
+;                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+;                   For i = 0 To *this\fs - 1
+;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+;                      If *this\round
+;                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+;                      EndIf
+;                   Next
+;                EndIf
+            EndIf
+            
+            If *this\image\id Or
+               *this\image[#__image_background]\id
+               
+               If *this\ImageChange( ) <> 0
+                  set_align_x_( *this\image, *this\image, *this\inner_width( ), 0 )
+                  set_align_y_( *this\image, *this\image, *this\inner_height( ), 270 )
+                  *this\ImageChange( ) = 0
                EndIf
             EndIf
             
@@ -18086,12 +18096,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\image\id Or
                *this\image[#__image_background]\id
-               
-               If *this\ImageChange( ) <> 0
-                  set_align_x_( *this\image, *this\image, *this\inner_width( ), 0 )
-                  set_align_y_( *this\image, *this\image, *this\inner_height( ), 270 )
-                  *this\ImageChange( ) = 0
-               EndIf
                
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                
@@ -18118,14 +18122,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             
-            ;             If *this\type = #__type_panel
-            ;                If *this\fs > 1
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-            ;                   draw_roundbox_( *this\frame_x( ) + *this\frame_width( ) - *this\fs + 1, *this\frame_y( ), *this\fs - 1, *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-            ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs + 1, *this\frame_width( ), *this\fs - 1, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-            ;                EndIf
-            ;             EndIf
+            If *this\fs
+               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+               Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+               Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+               
+              draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+              draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\frame )
+            EndIf
+            
+
             
          EndWith
       EndProcedure
@@ -23459,7 +23465,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5805
-; FirstLine = 5787
+; CursorPosition = 4925
+; FirstLine = 4921
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
