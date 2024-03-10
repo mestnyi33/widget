@@ -31,8 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SplitterGadget( #PB_Any, 10,230,200,200, 3,4 )
     
     Container( 0,0,0,0, #__flag_Flat ) 
-    ToolBar( widget( ) )
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    ToolBar( widget( ) )
     CloseList( )
     Container( 0,0,0,0, #__flag_Single ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -44,6 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 33
-; FirstLine = 8
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 100,100,200,100, #__flag_Flat ) 
     
-    ToolBar( widget( ) )
+    ToolBar( widget( ) );, #PB_ToolBar_Small )
     ToolBarButton( #_tb_file_open, -1, 0, "Open" )
     ToolBarButton( #_tb_file_save, -1, 0, "Save" )
     Separator( )
@@ -65,6 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
     ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
     
+    
+    Button( 0,0,80,30,"button")
     CloseList( )
     
     WaitClose( )
@@ -91,6 +93,8 @@ DataSection
   group_width:      : IncludeBinary "group/group_width.png"
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 40
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

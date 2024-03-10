@@ -4701,8 +4701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          EndIf
          
          ;\\
-         If *this\type = #__type_Window Or
-            *this\type = #__type_Container
+         If *this\type = #__type_Window 
            ;
            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
@@ -5110,7 +5109,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      If *this\fs[2]
                         If *this\ToolBarHeight
-                           Resize( *this\TabBox( ), *this\fs + 1 , ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight + 1 , *this\inner_width( ) - 2, *this\ToolBarHeight - 1 )
+                           Resize( *this\TabBox( ), *this\fs + 1, ( *this\fs[2] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
                         ElseIf *this\MenuBarHeight
                            Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
                         Else
@@ -5118,7 +5117,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      If *this\fs[4]
-                        Resize( *this\TabBox( ), *this\fs, *this\inner_height( ), *this\inner_width( ), *this\fs[4])
+                        If *this\ToolBarHeight
+                           Resize( *this\TabBox( ), *this\fs + 1 , *this\fs + *this\inner_height( ) + ( *this\fs[4] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
+                        ElseIf *this\MenuBarHeight
+                           Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - ( *this\fs + *this\fs[4] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
+                        Else
+                           Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - *this\fs, *this\inner_width( ), *this\fs[4])
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -17487,12 +17492,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
          ;
          If flag & #PB_ToolBar_Small 
-            *parent\ToolBarHeight = 24
+            *parent\ToolBarHeight = 25
          ElseIf flag & #PB_ToolBar_Large 
-            *parent\ToolBarHeight = 44
+            *parent\ToolBarHeight = 45
          Else ; If flag & #PB_ToolBar_Normal 
-            *parent\ToolBarHeight = 34
+            *parent\ToolBarHeight = 35
          EndIf
+         ;*parent\fs = 4
+        ;  *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
+         *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
          ;
          Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
                                              0, 0, 0, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
@@ -18132,8 +18140,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
                
               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-              If *this\inner_height( ) 
-                draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff000000);*this\color\frame )
+              If *this\inner_width( ) And 
+                 *this\inner_height( ) 
+                draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
               EndIf
             EndIf
             
@@ -23469,6 +23478,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40----------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------8--8--4---------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 5111
+; FirstLine = 4834
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40----------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------4--4--v---------------------------------------------------------------------------
 ; EnableXP
