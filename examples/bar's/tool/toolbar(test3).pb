@@ -284,8 +284,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 126
-; Folding = -v-
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---
 ; EnableXP

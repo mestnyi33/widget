@@ -1,24 +1,18 @@
 ﻿;- 
 #IDE_path = "../"
 XIncludeFile #IDE_path + "widgets.pbi"
-;XIncludeFile #IDE_path + "a_widgets.pbi"
-
+;
 EnableExplicit
-
-Macro a_trans( )
-   anchors 
-   ;_a_\transform 
-EndMacro
-
+;
 Uselib( WIDGET )
 UsePNGImageDecoder( )
-
+;
+;- ENUMs
 #_DD_CreateNew = 1<<1
 #_DD_reParent = 1<<2
 #_DD_Group = 1<<3
 #_DD_CreateCopy = 1<<4
-
-;- ENUMs
+;
 ; properties items
 Enumeration 
    #_pi_group_0 
@@ -45,7 +39,7 @@ Enumeration
    #_ei_leave
 EndEnumeration
 
-; toolbar buttons
+; bar items
 Enumeration 
    #_tb_group_select = 1
    
@@ -298,7 +292,7 @@ Declare widget_events( )
 Macro widget_copy( )
    ClearList( *copy( ) )
    
-   If a_focused( )\a_trans( )
+   If a_focused( )\anchors
       AddElement( *copy( ) ) 
       *copy.allocate( A_GROUP, ( ) )
       *copy( )\widget = a_focused( )
@@ -318,7 +312,7 @@ Macro widget_copy( )
 EndMacro
 
 Macro widget_delete( )
-   If a_focused( )\a_trans( )
+   If a_focused( )\anchors
       RemoveItem( w_ide_inspector_view, GetData( a_focused( ) ) )
       
       Free( a_focused( ) )
@@ -613,7 +607,7 @@ Procedure widget_events( )
       Case #__event_LeftButtonUp
          ; then group select
          If IsContainer( *e_widget )
-            If a_transform( ) And a_focused( ) And a_focused( )\a_trans( ) = - 1
+            If a_transform( ) And a_focused( ) And a_focused( )\anchors = - 1
                SetState( w_ide_inspector_view, - 1 )
                If IsGadget( g_ide_design_code )
                   SetGadgetState( g_ide_design_code, - 1 )
@@ -1051,7 +1045,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
-   w_ide_toolbar_container = Container( 0,0,0,0);, #__flag_borderless ) 
+   w_ide_toolbar_container = Container( 0,0,0,0 ) ;#__flag_borderless ) 
    w_ide_toolbar = ToolBar( w_ide_toolbar_container );, #PB_ToolBar_Small )
    ToolBarButton( #_tb_file_open, -1, 0, "Open" )
    ToolBarButton( #_tb_file_save, -1, 0, "Save" )
@@ -1183,7 +1177,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1 );+ 2 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1 + 2 )
    
    ;
    ;\\\ ide events binds
@@ -1349,8 +1343,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1053
-; FirstLine = 611
-; Folding = ---------r0uf0-vnK-----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ---------2+4v+-4Tl-----
 ; EnableXP

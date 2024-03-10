@@ -4701,8 +4701,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          EndIf
          
          ;\\
-         If *this\type = #__type_Window Or *this\type = #__type_Container
-            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+         If *this\type = #__type_Window Or
+            *this\type = #__type_Container
+           ;
+           If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
             EndIf
          EndIf
@@ -4923,7 +4925,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ потому что окну задаются внутренные размеры
-            If *this\type = #__type_window Or *this\type = #__type_Container
+            If *this\type = #__type_window
                width + *this\fs * 2 + ( *this\fs[1] + *this\fs[3] )
                Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
             EndIf
@@ -4934,22 +4936,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          iy      = ( y + *this\fs + *this\fs[2] )
          iwidth  = width - *this\fs * 2 - ( *this\fs[1] + *this\fs[3] )
          iheight = height - *this\fs * 2 - ( *this\fs[2] + *this\fs[4] )
-         
+             
          ;\\
-         If *this\screen_x( ) <> x - ( *this\bs - *this\fs ) : Change_x = ( x - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
-         If *this\screen_y( ) <> y - ( *this\bs - *this\fs ) : Change_y = ( y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
-         If *this\screen_width( ) <> width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
-         If *this\screen_height( ) <> height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
+         If Not Change_x And *this\screen_x( ) <> x - ( *this\bs - *this\fs ) : Change_x = ( x - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
+         If Not Change_y And *this\screen_y( ) <> y - ( *this\bs - *this\fs ) : Change_y = ( y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
+         If Not Change_width And *this\screen_width( ) <> width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
+         If Not Change_height And *this\screen_height( ) <> height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
          
-         If *this\frame_x( ) <> x : Change_x = x - *this\frame_x( ) : EndIf
-         If *this\frame_y( ) <> y : Change_y = y - *this\frame_y( ) : EndIf
-         If *this\frame_width( ) <> width : Change_width = width - *this\frame_width( ) : EndIf
-         If *this\frame_height( ) <> height : Change_height = height - *this\frame_height( ) : EndIf
+         If Not Change_x And *this\frame_x( ) <> x : Change_x = x - *this\frame_x( ) : EndIf
+         If Not Change_y And *this\frame_y( ) <> y : Change_y = y - *this\frame_y( ) : EndIf
+         If Not Change_width And *this\frame_width( ) <> width : Change_width = width - *this\frame_width( ) : EndIf
+         If Not Change_height And *this\frame_height( ) <> height : Change_height = height - *this\frame_height( ) : EndIf
          
-         ;          If *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
-         ;          If *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
-         ;          If *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
-         ;          If *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
+         If Not Change_x And *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
+         If Not Change_y And *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
+         If Not Change_width And *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
+         If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
          
          ;\\
          If Change_x
@@ -4990,6 +4992,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             *this\inner_height( ) = *this\container_height( )
          EndIf
+         
+         ;;Debug "resize_"+*this\class +" "+ height +" "+ iheight +" "+ *this\inner_height( ) +" "+ *this\fs[2]
          
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
@@ -5106,7 +5110,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      If *this\fs[2]
                         If *this\ToolBarHeight
-                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight + 1 , *this\inner_width( ), *this\ToolBarHeight - 1 )
+                           Resize( *this\TabBox( ), *this\fs + 1 , ( *this\fs + *this\fs[2] ) - *this\ToolBarHeight + 1 , *this\inner_width( ) - 2, *this\ToolBarHeight - 1 )
                         ElseIf *this\MenuBarHeight
                            Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
                         Else
@@ -18124,11 +18128,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\fs
                drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-               Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
-               Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
                
               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-              draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\frame )
+              If *this\inner_height( ) 
+                draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff000000);*this\color\frame )
+              EndIf
             EndIf
             
 
@@ -20287,7 +20293,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          
          ;\\ DoEvents_Anchors( )
          a_events( *this, eventtype )
-         
          
          
          ;          ;\\
@@ -23464,8 +23469,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4925
-; FirstLine = 4921
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40----------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------8--8--4---------------------------------------------------------------------------
 ; EnableXP
