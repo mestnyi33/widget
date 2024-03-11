@@ -806,12 +806,31 @@
       ; ;   #PB_canvas_DrawFocus
       ; ;
       
+      ;- \\ ToolBar
       CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
          #PB_ToolBar_Small = 1 << 0
       CompilerEndIf
+      #PB_ToolBar_Buttons = 1<<4
+      
+;       Debug #PB_ToolBar_Small
+;       Debug #PB_ToolBar_Large
+;       Debug #PB_ToolBar_Text ; Text will be displayed below the button
+;       Debug #PB_ToolBar_InlineText
+;       Debug #PB_ToolBar_Buttons
+;       ;
+;       Debug ""
+;       Debug #PB_ToolBar_Normal
+;       Debug #PB_ToolBar_Toggle
+
+
+
+
+      
       CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
          #PB_Canvas_Container = 1 << 5
       CompilerEndIf
+      
+      ;- \\ Message
       CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
          #PB_MessageRequester_Info = 1 << 2
       CompilerEndIf
@@ -822,11 +841,12 @@
          #PB_MessageRequester_Warning = 1 << 4
       CompilerEndIf
       
-      ;- \\ message
       #__message_Cancel = #PB_MessageRequester_Cancel           ; 2
-      #__message_Error = #PB_MessageRequester_Error             ; 8
       #__message_Info = #PB_MessageRequester_Info               ; 4
+      #__message_Error = #PB_MessageRequester_Error             ; 8
       #__message_Warning = 32;#PB_MessageRequester_Warning
+      #__message_ScreenCentered = 256;#PB_Window_ScreenCentered ; 64
+      ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
       
       #__message_Ok = #PB_MessageRequester_Ok                   ; 0
       #__message_YesNo = #PB_MessageRequester_YesNo             ; 1
@@ -834,8 +854,6 @@
       #__message_Yes = #PB_MessageRequester_Yes                 ; 6
       #__message_No = #PB_MessageRequester_No                   ; 7
       
-      #__message_ScreenCentered = 256;#PB_Window_ScreenCentered ; 64
-      ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
       
    EndDeclareModule
    
@@ -847,7 +865,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 660
-; FirstLine = 647
+; CursorPosition = 823
+; FirstLine = 800
 ; Folding = ---
 ; EnableXP

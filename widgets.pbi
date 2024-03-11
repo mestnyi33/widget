@@ -5617,7 +5617,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected index
             Protected typ = 0
             Protected pos = 1
-
+            
+            
             Protected._s_BAR *bar = *this\bar
             Protected._s_BUTTONS *BB1, *BB2, *SB
             *SB  = *bar\button
@@ -5632,12 +5633,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Protected layout = pos * 2
             Protected text_pos = 6
-            
+               Protected seperator_step = 1
+                        
             
             If Not *this\hide 
                
                ; - widget::bar_tab_update_( )
                If *this\TabChange( )
+                  *bar\max = 0
                   *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
                   ;Debug " --- widget::Tab_Update( ) - " + *this\image\x
                   
@@ -5647,10 +5650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\text\x = text_pos
                   EndIf
                   
-                  *bar\max = 0
                   ; *this\text\width = *this\width
-                  *this\scroll_width( ) = 0
-                  *this\scroll_height( ) = 0
                   
                   ForEach *items( )
                      ; if not visible then skip
@@ -5665,84 +5665,121 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ; init items position
                      If *bar\vertical
-                        *items( )\y = *bar\max + pos
                         
-                        If *this\TabState( ) = index And *this\type = #__type_TabBar
-                           *items( )\x     = 0
-                           *items( )\width = *SB\width + 1
+                        If *items( )\itemindex  = #PB_Ignore
+                           *items( )\y = *bar\max + seperator_step
+                           *items( )\height = 1
+                           *items( )\x         = 3
+                           *items( )\width     = *SB\width - *items( )\x * 2
+                           *bar\max + *items( )\height + seperator_step * 2
                         Else
-                           *items( )\x     = 0
-                           *items( )\width = *SB\width - 1
+                           If *this\type = #__type_TabBar
+                              *items( )\y = *bar\max + pos
+                              ;
+                              If *this\TabState( ) = index
+                                 *items( )\x       = 0
+                                 *items( )\width   = *SB\width + 1
+                              Else
+                                 *items( )\x       = 0
+                                 *items( )\width   = *SB\width - 1
+                              EndIf
+                              
+                              *this\text\x = ( *items( )\width - *items( )\text\width ) / 2
+                              
+                              *items( )\text\y = *this\text\y + *items( )\y
+                              *items( )\text\x = *this\text\x + *items( )\x
+                              *items( )\height = *this\text\y * 2 + *items( )\text\height
+                           Else
+                              *items( )\y = *bar\max
+                              *items( )\x       = 0
+                              *items( )\width   = *SB\width - *items( )\x * 2
+                              
+                              *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width ) / 2
+                              *items( )\text\x  = *items( )\x + *this\text\x
+                              
+                              ;
+                              *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
+                              *items( )\text\y  = *items( )\image\y + *items( )\image\width + *this\text\y
+                              
+                              *items( )\height = Bool( *items( )\text\height ) * ( *this\text\y * 2 ) + *items( )\text\height +
+                                             Bool( *items( )\image\height ) * ( *this\image\y * 2 ) + *items( )\image\height - ( Bool( *items( )\image\height And *items( )\text\height ) * ( *this\text\y ))
+                           
+                           EndIf
+                           ;
                         EndIf
                         
-                        *this\text\x = ( *items( )\width - *items( )\text\width ) / 2
-                        
-                        *items( )\text\y = *this\text\y + *items( )\y
-                        *items( )\text\x = *this\text\x + *items( )\x
-                        ;
-                        If *items( )\itemindex = #PB_Ignore
-                           *items( )\height = 3
-                        Else
-                           *items( )\height = *this\text\y * 2 + *items( )\text\height
-                        EndIf
-                        
-                        
-                        *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
                         ;
                         If *this\type = #__type_TabBar
+                           *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
+                           ;
                            If typ And *this\TabState( ) = index
                               *items( )\height + 4
                               *items( )\y - 2
                            EndIf
+                        Else
+                           *bar\max + *items( )\height + Bool( index = *this\count\items - 1 )
                         EndIf
-                        
-                        *items( )\y = *this\scroll_height( )
-                        If *this\scroll_width( ) < ( *items( )\x + *items( )\text\x + *items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                           *this\scroll_width( ) = ( *items( )\x + *items( )\text\x + *items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                        EndIf
+                        ;
                      Else
-                        *items( )\x = *bar\max + pos
-                        
-                        If *this\TabState( ) = index And *this\type = #__type_TabBar
-                           *items( )\y      = pos;pos - Bool( pos>0 )*2
-                           *items( )\height = *SB\height - *items( )\y + 1
+                        If *items( )\itemindex  = #PB_Ignore
+                           *items( )\x = *bar\max + seperator_step
+                           *items( )\width = 1
+                           *items( )\y          = 3
+                           *items( )\height     = *SB\height - *items( )\y * 2
+                           *bar\max + *items( )\width + seperator_step * 2
                         Else
-                           *items( )\y      = pos;pos
-                           *items( )\height = *SB\height - *items( )\y - 1
-                        EndIf
-                        
-                        *this\text\y = ( *items( )\height - *items( )\text\height ) / 2
-                        ;
-                        *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
-                        *items( )\text\y  = *items( )\y + *this\text\y
-                        
-                        ;
-                        *items( )\image\x = *items( )\x + Bool( *items( )\image\width ) * *this\image\x ;+ Bool( *items( )\text\width ) * ( *this\text\x )
-                        *items( )\text\x  = *items( )\image\x + *items( )\image\width + *this\text\x
-                        
-                        ;
-                        If *items( )\itemindex = #PB_Ignore
-                           *items( )\width = 3
-                        Else
+                           
+                           If *this\type = #__type_TabBar
+                              *items( )\x = *bar\max + pos
+                              ;
+                              If *this\TabState( ) = index
+                                 *items( )\y       = pos;pos - Bool( pos>0 )*2
+                                 *items( )\height  = *SB\height - *items( )\y + 1
+                              Else
+                                 *items( )\y       = pos;pos
+                                 *items( )\height  = *SB\height - *items( )\y - 1
+                              EndIf
+                           Else
+                              *items( )\x = *bar\max 
+                              *items( )\y       = 0;*this\bs
+                              *items( )\height  = *SB\height - *items( )\y * 2
+                           EndIf
+                           
+                           *this\text\y = ( *items( )\height - *items( )\text\height ) / 2
+                           ;
+                           *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
+                           *items( )\text\y  = *items( )\y + *this\text\y
+                           
+                           ;
+                           *items( )\image\x = *items( )\x + Bool( *items( )\image\width ) * *this\image\x ;+ Bool( *items( )\text\width ) * ( *this\text\x )
+                           *items( )\text\x  = *items( )\image\x + *items( )\image\width + *this\text\x
+                           
+                           ;
                            *items( )\width = Bool( *items( )\text\width ) * ( *this\text\x * 2 ) + *items( )\text\width +
-                                                   Bool( *items( )\image\width ) * ( *this\image\x * 2 ) + *items( )\image\width - ( Bool( *items( )\image\width And *items( )\text\width ) * ( *this\text\x ))
-                        EndIf
-                        
-                        *bar\max + *items( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
-                        ;
-                        If *this\type = #__type_TabBar
-                           If typ And *this\TabState( ) = index 
-                              *items( )\width + 4
-                              *items( )\x - 2
+                                             Bool( *items( )\image\width ) * ( *this\image\x * 2 ) + *items( )\image\width - ( Bool( *items( )\image\width And *items( )\text\width ) * ( *this\text\x ))
+                           ;
+                           If *this\type = #__type_TabBar
+                              *bar\max + *items( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
+                              ;
+                              If typ And *this\TabState( ) = index 
+                                 *items( )\width + 4
+                                 *items( )\x - 2
+                              EndIf
+                           Else
+                              *bar\max + *items( )\width + Bool( index = *this\count\items - 1 ) 
                            EndIf
                         EndIf
-                        
                      EndIf
-                     
                   Next
-                  
+                  ;
+                  If *bar\vertical
+                     *this\scroll_height( ) = *bar\max
+                  Else
+                     *this\scroll_width( ) = *bar\max
+                  EndIf
+                  ;
                   bar_Update( *this, 1 )
-                  
+                  ;
                   *this\TabChange( ) = #False
                EndIf
                
@@ -5804,10 +5841,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                           ( x + *items( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
             EndIf
             ;
-            ;no &~ entered &~ focused
+            ; Draw seperator
             If *items( )\itemindex = #PB_Ignore
-               draw_roundbox_( x + *items( )\x+*items( )\width/2, y + *items( )\y+3, 1, *items( )\height-6, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
-            Else
+;                If vertical
+;                   draw_roundbox_( x + *items( )\x, y + *items( )\y+*items( )\height/2, *items( )\width, 1, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
+;                Else
+;                   draw_roundbox_( x + *items( )\x+*items( )\width/2, y + *items( )\y, 1, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
+;                EndIf
+               draw_roundbox_( x + *items( )\x, y + *items( )\y, *items( )\width, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
+               Else
+               ;no &~ entered &~ focused
                If *items( )\visible 
                   If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
                      
@@ -6001,61 +6044,61 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-               
-               ; Navigation
-               Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
-               backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
-               If Not backcolor
-                  backcolor = *this\parent\color\back[\parent\ColorState( )]
-               EndIf
-               If Not backcolor
-                  backcolor = *BB2\color\back[\ColorState( )]
-               EndIf
-               
-               
-               drawing_mode_alpha_( #PB_2DDrawing_Gradient )
-               ResetGradientColors( )
-               GradientColor( 0.0, backcolor & $FFFFFF )
-               GradientColor( 0.5, backcolor & $FFFFFF | $A0 << 24 )
-               GradientColor( 1.0, backcolor & $FFFFFF | 245 << 24 )
-               
-               fabe_out = Size - button_size
-               ;
-               If *bar\vertical
-                  ; to top
-                  If Not *BB2\hide
-                     fabe_pos = *this\y + ( size ) - *this\fs
-                     LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos - fabe_out )
-                     draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1, - Size, round, round )
+                  
+                  ; Navigation
+                  Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
+                  backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
+                  If Not backcolor
+                     backcolor = *this\parent\color\back[\parent\ColorState( )]
+                  EndIf
+                  If Not backcolor
+                     backcolor = *BB2\color\back[\ColorState( )]
                   EndIf
                   
-                  ; to bottom
-                  If Not *BB1\hide
-                     fabe_pos = *this\y + *this\height - ( size ) + *this\fs * 2
-                     LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos + fabe_out )
-                     draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1 , Size, round, round )
-                  EndIf
-               Else
-                  ; to left
-                  If Not *BB2\hide
-                     fabe_pos = *this\x + ( size ) - *this\fs
-                     LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos - fabe_out, *this\y + *this\bs )
-                     draw_roundbox_( fabe_pos, *this\y + *this\bs, - Size, *this\height - *this\bs - 1, round, round )
+                  
+                  drawing_mode_alpha_( #PB_2DDrawing_Gradient )
+                  ResetGradientColors( )
+                  GradientColor( 0.0, backcolor & $FFFFFF )
+                  GradientColor( 0.5, backcolor & $FFFFFF | $A0 << 24 )
+                  GradientColor( 1.0, backcolor & $FFFFFF | 245 << 24 )
+                  
+                  fabe_out = Size - button_size
+                  ;
+                  If *bar\vertical
+                     ; to top
+                     If Not *BB2\hide
+                        fabe_pos = *this\y + ( size ) - *this\fs
+                        LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos - fabe_out )
+                        draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1, - Size, round, round )
+                     EndIf
+                     
+                     ; to bottom
+                     If Not *BB1\hide
+                        fabe_pos = *this\y + *this\height - ( size ) + *this\fs * 2
+                        LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos + fabe_out )
+                        draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1 , Size, round, round )
+                     EndIf
+                  Else
+                     ; to left
+                     If Not *BB2\hide
+                        fabe_pos = *this\x + ( size ) - *this\fs
+                        LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos - fabe_out, *this\y + *this\bs )
+                        draw_roundbox_( fabe_pos, *this\y + *this\bs, - Size, *this\height - *this\bs - 1, round, round )
+                     EndIf
+                     
+                     ; to right
+                     If Not *BB1\hide
+                        fabe_pos = *this\x + *this\width - ( size ) + *this\fs * 2
+                        LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos + fabe_out, *this\y + *this\bs )
+                        draw_roundbox_( fabe_pos, *this\y + *this\bs, Size, *this\height - *this\bs - 1 , round, round )
+                     EndIf
                   EndIf
                   
-                  ; to right
-                  If Not *BB1\hide
-                     fabe_pos = *this\x + *this\width - ( size ) + *this\fs * 2
-                     LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos + fabe_out, *this\y + *this\bs )
-                     draw_roundbox_( fabe_pos, *this\y + *this\bs, Size, *this\height - *this\bs - 1 , round, round )
-                  EndIf
-               EndIf
-               
-               ResetGradientColors( )
+                  ResetGradientColors( )
                EndIf
                
                
-               ; draw navigator
+               ; Draw navigator
                ; Draw buttons back
                If Not *BB2\hide
                   ; Draw buttons
@@ -23479,7 +23522,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5111
-; FirstLine = 4834
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40----------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------4--4--v---------------------------------------------------------------------------
+; CursorPosition = 5703
+; FirstLine = 5426
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------4--P+4r7---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------f--f---+---------------------------------------------------------------------------
 ; EnableXP

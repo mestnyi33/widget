@@ -28,36 +28,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *toolbar._s_widget, th=24
   
-  Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    ; ProcedureReturn *parent
-      ;         If Flag & #__bar_vertical = #False
-;                   *parent\fs[2] + #__panel_height
-;                Else
-;                   *parent\fs[1] = #__panel_width
-;                EndIf
-      If flag & #PB_ToolBar_Small 
-         *parent\ToolBarHeight = 25
-      ElseIf flag & #PB_ToolBar_Large 
-         *parent\ToolBarHeight = 45
-      Else;If flag & #PB_ToolBar_Normal 
-         *parent\ToolBarHeight = 35
-      EndIf
-      Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-               *parent\TabBox( ) = *this
-               
-               ;ProcedureReturn ToolBar( *parent, flag )
-      
-             ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
-      ;*this\type = #__type_ToolBar
-      ;SetFrame(*this, 10 )
-      ;SetAlignment( *this, #__align_full|#__align_top )
-      
-      Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
-      
-      widget( ) = *this ;????????????????
-     ProcedureReturn *this
-  EndProcedure
-  
   Macro DisableButton( _address_, _button_, _state_ )
    ; DisableItem( _address_, _button_, _state_ )
   EndMacro
@@ -146,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 122
-; FirstLine = 83
-; Folding = f-
+; CursorPosition = 30
+; FirstLine = 41
+; Folding = 4-
 ; EnableXP
