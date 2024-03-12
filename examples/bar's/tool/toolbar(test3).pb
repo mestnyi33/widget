@@ -156,10 +156,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    EndMacro
    
    
-   If Open( 0, 30, 200, 800, 380, "ToolBar example")   
-      a_init(root( ), 0)
+   If OpenWindow( 0, 30, 200, 800, 380, "ToolBar example")   
+     Open(0,10,70,780,300)
+     a_init(root( ), 0)
       
-      If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large)
+      If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_InlineText)
          ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
          ToolBarImageButton( #_tb_file_save, 0, 0, "Save" )
          ToolBarSeparator( )

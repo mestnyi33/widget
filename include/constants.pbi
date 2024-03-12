@@ -180,10 +180,10 @@
          
          ;frame
          #__flag_borderless
-         #__flag_flat
-         #__flag_double
-         #__flag_raised
-         #__flag_single
+         #__flag_borderflat
+         #__flag_bordersingle
+         #__flag_borderraised
+         #__flag_borderdouble
          ;#__flag_sizegadget
          #__flag_anchorsgadget
          
@@ -864,8 +864,6 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 823
-; FirstLine = 800
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

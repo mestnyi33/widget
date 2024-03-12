@@ -33,9 +33,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   
-  If OpenWindow(0, 100, 200, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
+  If OpenWindow(0, 100, 200, 220, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
     
-    If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small)
+    If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ToolBarImageButton(0, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
       ToolBarImageButton(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
       ToolBarImageButton(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
@@ -61,9 +61,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   
-  If Open( 1, 300, 200, 300, 380, "ToolBar example");, #PB_Window_BorderLess )
+  If Open( 1, 350, 200, 300, 380, "ToolBar example");, #PB_Window_BorderLess )
      a_init(root( ))
-     Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+     Window( 10, 10, 220, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
     *toolbar = ToolBar( widget( ), #PB_ToolBar_Small )
     
     If *toolbar
@@ -115,8 +115,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 41
-; Folding = 4-
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --
 ; EnableXP

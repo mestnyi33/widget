@@ -12829,6 +12829,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags | #__flag_BorderLess
                EndIf
                ;
+            Case #__type_Container
+;                If PBFlag & #PB_Container_BorderLess = #PB_Container_BorderLess 
+;                   flags & ~ #PB_Container_BorderLess
+;                   flags = #__flag_BorderLess
+;                EndIf
+               If PBFlag & #PB_Container_Flat = #PB_Container_Flat ;
+                  flags & ~ #PB_Container_Flat
+                  flags = #__flag_BorderFlat
+               EndIf
+               If PBFlag & #PB_Container_Single = #PB_Container_Single ;
+                  flags & ~ #PB_Container_Single
+                  flags = #__flag_BorderSingle
+               EndIf
+               If PBFlag & #PB_Container_Raised = #PB_Container_Raised ;
+                  flags & ~ #PB_Container_Raised
+                  flags = #__flag_BorderRaised
+               EndIf
+               If PBFlag & #PB_Container_Double = #PB_Container_Double ;
+                  flags & ~ #PB_Container_Double
+                  flags = #__flag_BorderDouble
+               EndIf
+               ;
+           Case #__type_Frame
+;                If PBFlag & #PB_Frame_BorderLess = #PB_Frame_BorderLess 
+;                   flags & ~ #PB_Frame_BorderLess
+;                   flags = #__flag_BorderLess
+;                EndIf
+               If PBFlag & #PB_Frame_Flat = #PB_Frame_Flat ;
+                  flags & ~ #PB_Frame_Flat
+                  flags = #__flag_BorderFlat
+               EndIf
+               If PBFlag & #PB_Frame_Single = #PB_Frame_Single ;
+                  flags & ~ #PB_Frame_Single
+                  flags = #__flag_BorderSingle
+               EndIf
+;                If PBFlag & #PB_Frame_Raised = #PB_Frame_Raised ;
+;                   flags & ~ #PB_Frame_Raised
+;                   flags = #__flag_BorderRaised
+;                EndIf
+               If PBFlag & #PB_Frame_Double = #PB_Frame_Double ;
+                  flags & ~ #PB_Frame_Double
+                  flags = #__flag_BorderDouble
+               EndIf
+               ;
             Case #__type_MDI
                If PBFlag & #PB_MDI_AutoSize = #PB_MDI_AutoSize
                   flags & ~ #PB_MDI_AutoSize
@@ -12963,6 +13007,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected flags.q = Flag
          
          Select Type
+             Case #__type_Container
+               If Flag & #__flag_BorderLess = #__flag_BorderLess
+                  flags & ~ #__flag_BorderLess
+                  flags | #PB_Container_BorderLess
+               EndIf
+               If Flag & #__flag_BorderFlat = #__flag_BorderFlat
+                  flags & ~ #__flag_BorderFlat
+                  flags | #PB_Container_Flat
+               EndIf
+               If Flag & #__flag_BorderSingle = #__flag_BorderSingle
+                  flags & ~ #__flag_BorderSingle
+                  flags | #PB_Container_Single
+               EndIf
+               If Flag & #__flag_BorderRaised = #__flag_BorderRaised
+                  flags & ~ #__flag_BorderRaised
+                  flags | #PB_Container_Raised
+               EndIf
+               If Flag & #__flag_BorderDouble = #__flag_BorderDouble
+                  flags & ~ #__flag_BorderDouble
+                  flags | #PB_Container_Double
+               EndIf
+            
             Case #__type_Button
                If Flag & #__text_wordwrap = #__text_wordwrap
                   flags & ~ #__text_wordwrap
@@ -12999,6 +13065,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\type = #__type_ListView Or
                                     *this\type = #__type_Property )
          
+         Protected container = Bool( *this\type = #__type_Container Or
+                                     *this\type = #__type_Panel Or
+                                     *this\type = #__type_ScrollArea Or
+                                     *this\type = #__type_Frame )
+         container = Bool(*this\type = #__type_Container)
          ;
          state = Bool( state )
          ;
@@ -13218,7 +13289,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; ;             *this\image\align\right = state
                ; ;           EndIf
                
-               
+               If container
+                 
+               EndIf
                
                ;\\
                If *this\TextChange( )
@@ -16713,19 +16786,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\type = #__type_Panel Or
                *this\type = #__type_Frame
                
-               ;
-               If *this\Flag & #__flag_borderLess
-               Else
+              ;
+              If *this\flag & #__flag_BorderFlat
+                *this\fs = 1
+              ElseIf *this\flag & #__flag_BorderSingle
+                *this\fs = 1
+              ElseIf *this\flag & #__flag_BorderDouble
+                *this\fs = 2
+              ElseIf *this\flag & #__flag_BorderRaised
+                *this\fs = 2
+              ElseIf *this\Flag & #__flag_BorderLess
+                *this\fs = 0
+              Else
                   *this\fs = 1
-                  ;             If *this\flag = #__flag_Single
-                  ;             ElseIf *this\flag = #__flag_Double
-                  ;             ElseIf *this\flag = #__flag_Flat
-                  ;             ElseIf *this\flag = #__flag_Raised
-                  ;             Else
-                  ;             EndIf
-               EndIf
+              EndIf
             EndIf
-         EndIf
+          EndIf
          If *this\type = #__type_Text
             *this\fs = Bool( Flag & #PB_Text_Border = #PB_Text_Border )
             If *this\flag & #__text_left
@@ -16950,7 +17026,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Panel Or
             *this\type = #__type_MDI Or
             *this\type = #__type_Frame
-            
+           
             If *this\type = #__type_Frame
                *this\container = - 1
             Else
@@ -18118,7 +18194,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected i
          
          With *this
-            If *this\fs
+           If *this\fs
+             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+              If *this\flag & #__flag_BorderSingle Or *this\flag & #__flag_BorderDouble 
+                draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+              EndIf
+              If *this\flag & #__flag_BorderDouble 
+                draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+              EndIf
+              
 ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
 ;                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
 ;                   For i = 0 To *this\fs - 1
@@ -18178,15 +18268,61 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             If *this\fs
-               drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
-;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
-               
-              draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-              If *this\inner_width( ) And 
-                 *this\inner_height( ) 
-                draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+              drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+              ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+              ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+              
+              ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+;               If *this\fs[1] Or
+;                  *this\fs[2] Or
+;                  *this\fs[3] Or
+;                  *this\fs[4] 
+;                  ;
+;                 If *this\inner_width( ) And 
+;                    *this\inner_height( ) 
+;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+;                 EndIf
+;               EndIf
+              
+              If *this\flag & #__flag_BorderFlat
+                If *this\inner_width( ) And 
+                   *this\inner_height( ) 
+                  draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, *this\color\frame )
+                EndIf
+                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                
+              ElseIf *this\flag & #__flag_BorderSingle Or *this\flag & #__flag_BorderDouble
+                Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
+                Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
+                Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
+                Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
+;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
+                
+              ElseIf *this\flag & #__flag_BorderRaised
+                Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                
+                Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
+                Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
               EndIf
+              
+              If *this\flag & #__flag_BorderDouble
+;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
+;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+                
+                Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
+                Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
+                Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
+                Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
+              EndIf
+              
             EndIf
             
 
@@ -18255,30 +18391,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ; Draw frames
                      Case #__type_Frame
-                        If *this\fs
-                           
-                           drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                           If *this\flag = #PB_Frame_Single
-                              draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                              
-                              draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ) + 1, *this\inner_height( ) + 1, *this\round, *this\round, $FFF5F5F5 )
-                           ElseIf *this\flag = #PB_Frame_Double
-                              draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                              
-                              draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ) + 1, *this\inner_height( ) + 1, *this\round, *this\round, $FFF5F5F5 )
-                              
-                              draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $FFAFAFAF )
-                           ElseIf *this\flag = #PB_Frame_Flat
-                              draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                           Else
-                              draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
-                           EndIf
-                           
-                           drawing_mode_alpha_( #PB_2DDrawing_Default )
-                           draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back )
-                           
-                        EndIf
-                        
+;                         If *this\fs
+;                            
+;                            drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+;                            If *this\flag = #PB_Frame_Single
+;                               draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+;                               
+;                               draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ) + 1, *this\inner_height( ) + 1, *this\round, *this\round, $FFF5F5F5 )
+;                            ElseIf *this\flag = #PB_Frame_Double
+;                               draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+;                               
+;                               draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ) + 1, *this\inner_height( ) + 1, *this\round, *this\round, $FFF5F5F5 )
+;                               
+;                               draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $FFAFAFAF )
+;                            ElseIf *this\flag = #PB_Frame_Flat
+;                               draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+;                            Else
+;                               draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+;                            EndIf
+;                            
+;                            drawing_mode_alpha_( #PB_2DDrawing_Default )
+;                            draw_roundbox_(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back )
+;                            
+;                         EndIf
+                        Container_Draw( *this )
                         If *this\text\string
                            ;
                            drawing_mode_alpha_( #PB_2DDrawing_Default )
@@ -23521,8 +23657,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5703
-; FirstLine = 5426
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------4--P+4r7---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------f--f---+---------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------4--P+4r7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---+-------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------v-----------------8--8--4---------------------------------------------------------------------------
 ; EnableXP

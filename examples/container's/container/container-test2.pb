@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     
-    Container( 100,100,200,100, #__flag_Flat ) 
+    Container( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
     
     ToolBar( widget( ) );, #PB_ToolBar_Small )
     ToolBarButton( #_tb_file_open, -1, 0, "Open" )
@@ -93,8 +93,6 @@ DataSection
   group_width:      : IncludeBinary "group/group_width.png"
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 28
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

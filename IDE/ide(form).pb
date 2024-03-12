@@ -1045,7 +1045,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
-   w_ide_toolbar_container = Container( 0,0,0,0 ) ;, #__flag_borderless ) 
+   w_ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
    w_ide_toolbar = ToolBar( w_ide_toolbar_container );, #PB_ToolBar_Small )
    ToolBarButton( #_tb_file_open, -1, 0, "Open" )
    ToolBarButton( #_tb_file_save, -1, 0, "Save" )
@@ -1343,8 +1343,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1047
-; FirstLine = 626
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---------2+4v+-4Tl-----
 ; EnableXP
