@@ -5764,6 +5764,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            *items( )\width = Bool( *items( )\text\width ) * ( *this\text\x * 2 ) + *items( )\text\width +
                                              Bool( *items( )\image\width ) * ( *this\image\x * 2 ) + *items( )\image\width - ( Bool( *items( )\image\width And *items( )\text\width ) * ( *this\text\x ))
+                           
                            ;
                            If *this\type = #__type_TabBar
                               *bar\max + *items( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
@@ -5773,6 +5774,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *items( )\x - 2
                               EndIf
                            Else
+                              
+                              If Not *this\flag & #PB_ToolBar_InlineText
+                                 If *items( )\text\width
+                                    If *items( )\width > *items( )\image\width 
+                                       *items( )\width - *items( )\image\width 
+                                    EndIf
+                                    ;
+                                    *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height - *items( )\text\height ) / 2
+                                    *items( )\text\y  = *items( )\image\y + *items( )\image\height
+                                    ;
+                                    *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
+                                    *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
+                                 EndIf
+                              EndIf
+                              
                               *bar\max + *items( )\width + pos + Bool( index = *this\count\items - 1 )
                            EndIf
                         EndIf
@@ -17628,14 +17644,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *parent\ToolBarHeight = 35
          EndIf
          
+         ;*parent\ToolBarHeight + 2
          If Not flag & #PB_ToolBar_InlineText
-            *parent\ToolBarHeight + 20
+          ; *parent\ToolBarHeight + 20
          EndIf
-         
          ;*parent\fs = 4
          ;  *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
          *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
+         ;*parent\ToolBarHeight - 3
          ;
+         Debug "size "+*parent\fs[2] +" "+ *parent\ToolBarHeight
          Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
                                              0, 0, 0, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
          *parent\TabBox( ) = *this
@@ -23674,7 +23692,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17632
-; FirstLine = 16797
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------f---5fvq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8--------------------------------------------------------------------------------------------------------+-0-------------------------------------------------------------------8-----------------+--+--0---------------------------------------------------------------------------
+; CursorPosition = 5783
+; FirstLine = 5503
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40--------------------8--H-8V0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--f--------------------------------------------------------------------------------------------------------4-v-------------------------------------------------------------------f-----------------4--4--v---------------------------------------------------------------------------
 ; EnableXP
