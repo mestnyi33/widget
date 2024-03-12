@@ -19,7 +19,7 @@ Enumeration
   #__tab_Editable             = 1<<9
   #__tab_MultiSelect          = 1<<10
   #__tab_CheckBox             = 1<<11
-  #__tab_SelectedCloseButton    = 1<<12
+  #__tab_SelectedCloseButton  = 1<<12
   #__tab_ReverseOrdering      = 1<<13
   #__tab_ImageSize            = 1<<23
   #__tab_TabTextAlignment     = 1<<24
@@ -231,7 +231,7 @@ UsePNGImageDecoder()
 
 Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_TabBar)
 
-ResizeGadget( GetGadget( ), 10, 10, 650-20, 30)
+;ResizeGadget( GetGadget( ), 10, 10, 650-20, 30)
 *tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
 AddItem(*tab1, #PB_Default, "In this")
 AddItem(*tab1, #PB_Default, "example")
@@ -434,6 +434,7 @@ Repeat
 ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
+; CursorPosition = 233
+; FirstLine = 223
 ; Folding = ----
 ; EnableXP

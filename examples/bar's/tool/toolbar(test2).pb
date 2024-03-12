@@ -62,37 +62,37 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   Macro ToolBar( parent, flag = #PB_ToolBar_Small )
-      Container( 0,0,0,0 ) 
-      widget( )\class = "TOOLBAR"
-      Text( widget( )\x+widget( )\width, 5,3,30,"" )
-      widget( )\class = "^"
-   EndMacro
-   
-   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-      If _image_ > 0
-         ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-      Else
-         Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-      EndIf
-      
-      ;widget( )\color = widget( )\parent\color
-      widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-      widget( )\data = _button_
-      
-      Bind( widget( ), @ToolBarEvents( ), #__event_LeftClick )
-   EndMacro
-   
-   Macro Separator( )
-      Text( widget( )\x+widget( )\width, 5,1,30,"" )
-      widget( )\class = "<"
-      Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-      widget( )\class = "|"
-      
-      ; SetData( widget( ), - MacroExpandedCount )
-      Text( widget( )\x+widget( )\width, 5,1,30,"" )
-      widget( )\class = ">"
-   EndMacro
+;    Macro ToolBar( parent, flag = #PB_ToolBar_Small )
+;       Container( 0,0,0,0 ) 
+;       widget( )\class = "TOOLBAR"
+;       Text( widget( )\x+widget( )\width, 5,3,30,"" )
+;       widget( )\class = "^"
+;    EndMacro
+;    
+;    Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+;       If _image_ > 0
+;          ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+;       Else
+;          Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
+;       EndIf
+;       
+;       ;widget( )\color = widget( )\parent\color
+;       widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
+;       widget( )\data = _button_
+;       
+;       Bind( widget( ), @ToolBarEvents( ), #__event_LeftClick )
+;    EndMacro
+;    
+;    Macro Separator( )
+;       Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;       widget( )\class = "<"
+;       Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
+;       widget( )\class = "|"
+;       
+;       ; SetData( widget( ), - MacroExpandedCount )
+;       Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;       widget( )\class = ">"
+;    EndMacro
    
    
    If OpenWindow(0, 100, 200, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
@@ -157,7 +157,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       CloseList( )
       
-      Resize( w_ide_toolbar, 0, 60, 800,60)
+     ; Resize( w_ide_toolbar, 0, 60, 800,60)
    EndIf
    
    
@@ -202,7 +202,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 202
-; FirstLine = 166
+; CursorPosition = 127
+; FirstLine = 118
 ; Folding = --
 ; EnableXP

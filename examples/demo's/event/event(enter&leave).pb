@@ -5,7 +5,7 @@ Uselib(widget)
 
 Declare events_widgets( )
 
-Define editable ;= #__flag_anchorsgadget  ; #__flag_flat ; 
+Define editable = #__flag_BorderFlat;|#__flag_anchorsgadget  ; #__flag_flat ; 
 Global colorback = colors::*this\blue\fore,
        colorframe=colors::*this\blue\frame, 
        colorback1 = $ff00ff00,
@@ -101,7 +101,6 @@ Procedure events_widgets()
    EndIf
 EndProcedure
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 63
+; CursorPosition = 7
 ; Folding = ---
 ; EnableXP

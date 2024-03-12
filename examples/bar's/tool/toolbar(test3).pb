@@ -92,73 +92,73 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Normal )
-     ; ProcedureReturn *parent
-      ;         If Flag & #__bar_vertical = #False
-;                   *parent\fs[2] + #__panel_height
-;                Else
-;                   *parent\fs[1] = #__panel_width
-;                EndIf
-      If flag & #PB_ToolBar_Small 
-         *parent\ToolBarHeight = 25
-      ElseIf flag & #PB_ToolBar_Large 
-         *parent\ToolBarHeight = 45
-      Else;If flag & #PB_ToolBar_Normal 
-         *parent\ToolBarHeight = 35
-      EndIf
-      Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-               *parent\TabBox( ) = *this
-               
-               ;ProcedureReturn ToolBar( *parent, flag )
-      
-             ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
-      ;*this\type = #__type_ToolBar
-      ;SetFrame(*this, 10 )
-      ;SetAlignment( *this, #__align_full|#__align_top )
-      
-      Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
-      
-      widget( ) = *this ;????????????????
-      ProcedureReturn *this
-   EndProcedure
-   
-   
-   Macro ToolBar( parent, flag = #PB_ToolBar_Normal )
-      _ToolBar( parent, flag )
-      ;    Container( 0,0,0,0 ) 
-      ;    widget( )\class = "TOOLBAR"
-      ;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
-      ;    widget( )\class = "^"
-   EndMacro
-   
-;    Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-;          If _image_
-;             ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-;          Else
-;             Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-;          EndIf
-;          
-;          ;widget( )\color = widget( )\parent\color
-;          widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-;          widget( )\data = _button_
-;          
-;          Bind( widget( ), @ide_events( ) )
+;    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Normal )
+;       ; ProcedureReturn *parent
+;       ;         If Flag & #__bar_vertical = #False
+;       ;                   *parent\fs[2] + #__panel_height
+;       ;                Else
+;       ;                   *parent\fs[1] = #__panel_width
+;       ;                EndIf
+;       If flag & #PB_ToolBar_Small 
+;          *parent\ToolBarHeight = 25
+;       ElseIf flag & #PB_ToolBar_Large 
+;          *parent\ToolBarHeight = 45
+;       Else;If flag & #PB_ToolBar_Normal 
+;          *parent\ToolBarHeight = 35
+;       EndIf
+;       Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+;       *parent\TabBox( ) = *this
+;       
+;       ;ProcedureReturn ToolBar( *parent, flag )
+;       
+;       ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
+;       ;*this\type = #__type_ToolBar
+;       ;SetFrame(*this, 10 )
+;       ;SetAlignment( *this, #__align_full|#__align_top )
+;       
+;       Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
+;       
+;       widget( ) = *this ;????????????????
+;       ProcedureReturn *this
+;    EndProcedure
+;    
+;    
+;    Macro ToolBar( parent, flag = #PB_ToolBar_Normal )
+;       _ToolBar( parent, flag )
+;       ;    Container( 0,0,0,0 ) 
+;       ;    widget( )\class = "TOOLBAR"
+;       ;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
+;       ;    widget( )\class = "^"
 ;    EndMacro
 ;    
-;    Macro Separator( )
-;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;          widget( )\class = "<"
-;          Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-;          widget( )\class = "|"
-;          ; SetData( widget( ), - MacroExpandedCount )
-;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;          widget( )\class = ">"
-;    EndMacro
+;    ;    Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+;    ;          If _image_
+;    ;             ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
+;    ;          Else
+;    ;             Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
+;    ;          EndIf
+;    ;          
+;    ;          ;widget( )\color = widget( )\parent\color
+;    ;          widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
+;    ;          widget( )\data = _button_
+;    ;          
+;    ;          Bind( widget( ), @ide_events( ) )
+;    ;    EndMacro
+;    ;    
+;    ;    Macro Separator( )
+;    ;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;    ;          widget( )\class = "<"
+;    ;          Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
+;    ;          widget( )\class = "|"
+;    ;          ; SetData( widget( ), - MacroExpandedCount )
+;    ;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
+;    ;          widget( )\class = ">"
+;    ;    EndMacro
    
    
    If OpenWindow( 0, 30, 200, 800, 380, "ToolBar example")   
-     Open(0,10,70,780,300)
-     a_init(root( ), 0)
+      Open(0,10,70,780,300)
+      a_init(root( ), 0)
       
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_InlineText)
          ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
@@ -200,11 +200,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ;w_ide_toolbar_container = Window( 10,60,700,120, "", #PB_Window_SystemMenu )
       ;w_ide_toolbar_container = Panel( 10,60,700,120 )
       
-       Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
-       
-       w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Normal )
+      Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
+      
+      w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Normal )
       ToolBarButton( #_tb_file_open, -1, 0, "Open" )
-       ToolBarButton( #_tb_file_save, -1, 0, "Save" )
+      ToolBarButton( #_tb_file_save, -1, 0, "Save" )
       Separator( )
       ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) ;: group_select = widget( )
       
@@ -231,11 +231,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
       ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
       ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
-       Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
+      
+      Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
       ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
       
-       Button( 110,10, 50,50,"btn1" ) : SetClass(widget( ), "btn1" )
-     CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
+      Button( 110,10, 50,50,"btn1" ) : SetClass(widget( ), "btn1" )
+      CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
       
       
       a_set( w_ide_toolbar_container )
@@ -284,7 +285,8 @@ CompilerIf #PB_Compiler_IsMainFile
       group_height:     : IncludeBinary "group/group_height.png"
    EndDataSection
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 213
+; FirstLine = 170
+; Folding = -0
 ; EnableXP

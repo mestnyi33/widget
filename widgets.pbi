@@ -1391,7 +1391,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; container
       Declare.i Panel( x.l, y.l, width.l, height.l, flag.q = 0 )
-      Declare.i Container( x.l, y.l, width.l, height.l, flag.q = 0 )
+      Declare.i Container( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
       Declare.i Frame( x.l, y.l, width.l, height.l, Text.s, flag.q = #__flag_nogadgets )
       Declare.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent = 0 )
       Declare.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
@@ -5633,8 +5633,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Protected layout = pos * 2
             Protected text_pos = 6
-               Protected seperator_step = 1
-                        
+            Protected seperator_step = 1
+            
+            If *this\type = #__type_ToolBar Or
+               *this\type = #__type_Menu
+               
+               If *this\flag & #PB_ToolBar_Buttons          
+                  pos = seperator_step
+               Else
+                  pos = 0
+               EndIf
+            EndIf
             
             If Not *this\hide 
                
@@ -5667,15 +5676,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *bar\vertical
                         
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\y = *bar\max + seperator_step
+                           *items( )\y = *bar\max + pos + seperator_step
                            *items( )\height = 1
                            *items( )\x         = 3
                            *items( )\width     = *SB\width - *items( )\x * 2
-                           *bar\max + *items( )\height + seperator_step * 2
+                           *bar\max + *items( )\height + pos + (seperator_step * 2)
                         Else
+                           *items( )\y = *bar\max + pos
+                           ;
                            If *this\type = #__type_TabBar
-                              *items( )\y = *bar\max + pos
-                              ;
                               If *this\TabState( ) = index
                                  *items( )\x       = 0
                                  *items( )\width   = *SB\width + 1
@@ -5690,7 +5699,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\text\x = *this\text\x + *items( )\x
                               *items( )\height = *this\text\y * 2 + *items( )\text\height
                            Else
-                              *items( )\y = *bar\max
                               *items( )\x       = 0
                               *items( )\width   = *SB\width - *items( )\x * 2
                               
@@ -5717,20 +5725,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\y - 2
                            EndIf
                         Else
-                           *bar\max + *items( )\height + Bool( index = *this\count\items - 1 )
+                           *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
                         EndIf
                         ;
                      Else
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\x = *bar\max + seperator_step
+                           *items( )\x = *bar\max + pos + seperator_step
                            *items( )\width = 1
                            *items( )\y          = 3
                            *items( )\height     = *SB\height - *items( )\y * 2
-                           *bar\max + *items( )\width + seperator_step * 2
+                           *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
-                           
+                           *items( )\x = *bar\max + pos
+                              
                            If *this\type = #__type_TabBar
-                              *items( )\x = *bar\max + pos
                               ;
                               If *this\TabState( ) = index
                                  *items( )\y       = pos;pos - Bool( pos>0 )*2
@@ -5740,7 +5748,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *items( )\height  = *SB\height - *items( )\y - 1
                               EndIf
                            Else
-                              *items( )\x = *bar\max 
                               *items( )\y       = 0;*this\bs
                               *items( )\height  = *SB\height - *items( )\y * 2
                            EndIf
@@ -5766,7 +5773,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *items( )\x - 2
                               EndIf
                            Else
-                              *bar\max + *items( )\width + Bool( index = *this\count\items - 1 ) 
+                              *bar\max + *items( )\width + pos + Bool( index = *this\count\items - 1 )
                            EndIf
                         EndIf
                      EndIf
@@ -5853,9 +5860,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;no &~ entered &~ focused
                If *items( )\visible 
                   If *items( ) <> *this\FocusedTab( ) And *items( ) <> *this\EnteredTab( )
-                     
                      If ( *this\type = #__type_ToolBar Or
-                          *this\type = #__type_Menu )
+                          *this\type = #__type_Menu ) And Not *this\flag&#PB_ToolBar_Buttons
                         ;
                         ; Draw items image
                         If *items( )\image\id
@@ -17590,7 +17596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
       EndProcedure
       
-      Procedure.i Container( x.l, y.l, width.l, height.l, flag.q = 0 )
+      Procedure.i Container( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
       EndProcedure
       
@@ -17610,6 +17616,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
          ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
          ;
+         If Not *parent
+            *parent = Root( )
+         EndIf
+         
          If flag & #PB_ToolBar_Small 
             *parent\ToolBarHeight = 25
          ElseIf flag & #PB_ToolBar_Large 
@@ -17617,16 +17627,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else ; If flag & #PB_ToolBar_Normal 
             *parent\ToolBarHeight = 35
          EndIf
+         
+         If Not flag & #PB_ToolBar_InlineText
+            *parent\ToolBarHeight + 20
+         EndIf
+         
          ;*parent\fs = 4
-        ;  *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
+         ;  *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
          *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
          ;
          Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
                                              0, 0, 0, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
          *parent\TabBox( ) = *this
-         Resize( *parent, #PB_Ignore, *parent\inner_y( ) + 1, #PB_Ignore, #PB_Ignore )
+         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
          
          widget( ) = *this 
+         
          ProcedureReturn *this
       EndProcedure
       
@@ -23105,7 +23121,7 @@ CompilerIf #PB_Compiler_IsMainFile
    OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
    
    Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable
+   Define *w._s_WIDGET, *g._s_WIDGET, editable = #__flag_BorderFlat
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    
    ;    
@@ -23657,6 +23673,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------4--P+4r7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---+-------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------v-----------------8--8--4---------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 17632
+; FirstLine = 16797
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-------------------f---5fvq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8--------------------------------------------------------------------------------------------------------+-0-------------------------------------------------------------------8-----------------+--+--0---------------------------------------------------------------------------
 ; EnableXP

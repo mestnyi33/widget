@@ -35,33 +35,33 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-    ;  ProcedureReturn ToolBar( *parent, flag )
-;     *parent\ToolBarHeight = 32;+2 + 6
-;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
-;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
-;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-;     ProcedureReturn *parent\tab\widget
-     Protected *this._s_WIDGET
-     *this = widget::Tab(0, 0, *parent\width, 30);, #__flag_autosize)
-     SetAlignment(*this, #__align_full|#__align_top )
-     ProcedureReturn *this
-  EndProcedure
-  
-  Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-;     If widget( )\tab\widget
-;       AddItem( widget( )\tab\widget, _button_, _text_, _image_, _mode_)
+;    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
+;     ;  ProcedureReturn ToolBar( *parent, flag )
+; ;     *parent\ToolBarHeight = 32;+2 + 6
+; ;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
+; ;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
+; ;     Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+; ;     ProcedureReturn *parent\tab\widget
+;      Protected *this._s_WIDGET
+;      *this = widget::Tab(0, 0, *parent\width, 30);, #__flag_autosize)
+;      SetAlignment(*this, #__align_full|#__align_top )
+;      ProcedureReturn *this
+;   EndProcedure
+;   
+;   Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+; ;     If widget( )\tab\widget
+; ;       AddItem( widget( )\tab\widget, _button_, _text_, _image_, _mode_)
+; ;     EndIf
+;     If widget( )
+;       AddItem( widget( ), _button_, _text_, _image_, _mode_)
 ;     EndIf
-    If widget( )
-      AddItem( widget( ), _button_, _text_, _image_, _mode_)
-    EndIf
-  EndMacro
-  
-  Macro Separator( )
-    If widget( )\tab\widget
-      AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
-    EndIf
-  EndMacro
+;   EndMacro
+;   
+;   Macro Separator( )
+;     If widget( )\tab\widget
+;       AddItem( widget( )\tab\widget, 65535, "|", #Null, #Null )
+;     EndIf
+;   EndMacro
   
   Macro DisableButton( _address_, _button_, _state_ )
    ; DisableItem( _address_, _button_, _state_ )
@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open( 1, 300, 200, 300, 380, "ToolBar example", #PB_Window_SizeGadget )
      a_init(root( ))
-    *toolbar = _ToolBar( root( ) )
+    *toolbar = ToolBar( root( ) )
     
     If *toolbar
       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
@@ -96,6 +96,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     DisableButton(*toolbar, 2, 1) ; Disable the button '2'
     
+    
+    Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
+      
     ;  Bind( root( ), #PB_Default )
   EndIf
   
@@ -120,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 32
+; CursorPosition = 100
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

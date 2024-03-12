@@ -198,7 +198,7 @@ Procedure AliginsEvent()
   Protected Ev = EventWidget( )
   
   Select WidgetEventType( )
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       Static L,LT,T,RT,R,RB,B,LB,C,Result
       
       L = GetState(L_Button)
@@ -388,7 +388,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   SetState(LT_Button, 1)
   
   ;SetState(LT_Button, 1)
-  ; Post(#PB_EventType_LeftClick, LT_Button)
+  ; Post(#__event_LeftClick, LT_Button)
   
   C_Add = Button(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__button_Toggle, -1, 7)
   ; ToolTip(C_Add, "Дополнительные параметры")
@@ -447,7 +447,7 @@ ShowAlignWindow()
 
 Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 352
-; FirstLine = 334
+; CursorPosition = 390
+; FirstLine = 367
 ; Folding = -------
 ; EnableXP

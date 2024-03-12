@@ -4,97 +4,73 @@
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  ; Shows possible flags of ButtonGadget in action...
-  EnableExplicit
-  Uselib(widget)
-  
-  Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
-    Protected vertical
-    ;_flag_ | #__flag_vertical
-    ;_flag_ &~ #__text_invert
-    
-   ; _text_ +#LF$+ _text_
-    
-  ;  Text(_x_,_y_,_width_,_height_,_text_,_flag_)
-  ;   Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ;  Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ;  CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ; Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
-    String(_x_,_y_,_width_,_height_,_text_,_flag_)
-     
-  ;  widget()\text\vertical = 1
-  
-EndProcedure
-  
-  Define m.s = #LF$
-  Define height = 80
-  Define hor_space = 80
-  Define text_v.s = "Standard"+ m.s +"Button Button"+ m.s +"(Vertical)"
-  Define text_h.s = "Standard"+ m.s +"Button Button"+ m.s +"(horizontal)"
-  
-  If OpenWindow(0, 0, 0, 908, (height+5)*5+20+110, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  ;If OpenWindow(0, 0, 0, 458, (height)*3 + 30, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_borderless)
-    
-    GadgeCreate(0, 8,  10, 140, height, text_h,                        #__text_left|#__text_top);
-    GadgeCreate(1, 8,  (height+hor_space)*1+10, 140, height, text_h,           #__text_left|#__text_center);
-    GadgeCreate(2, 8,  (height+hor_space)*2+10, 140, height, text_h,           #__text_left|#__text_bottom);
-    
-    GadgeCreate(3, 8+150,  20+height, 140, height, text_h,                    #__text_center|#__text_top);
-    GadgeCreate(4, 8+150,  (height+hor_space)*1+20+height, 140, height, text_h,       #__text_center);
-    GadgeCreate(5, 8+150,  (height+hor_space)*2+20+height, 140, height, text_h,       #__text_center|#__text_bottom);
-    
-    GadgeCreate(6, 8+300,  10, 140, height, text_h,                    #__text_right|#__text_top);
-    GadgeCreate(7, 8+300,  (height+hor_space)*1+10, 140, height, text_h,       #__text_right|#__text_center);
-    GadgeCreate(8, 8+300,  (height+hor_space)*2+10, 140, height, text_h,       #__text_right|#__text_bottom);
-    
-    ; invert
-    GadgeCreate(10, 8+450,  10, 140, height, text_h,                  #__text_invert|#__text_left|#__text_top);
-    GadgeCreate(11, 8+450,  (height+hor_space)*1+10, 140, height, text_h,     #__text_invert|#__text_left|#__text_center);
-    GadgeCreate(12, 8+450,  (height+hor_space)*2+10, 140, height, text_h,     #__text_invert|#__text_left|#__text_bottom);
-    
-    GadgeCreate(13, 8+150+450,  20+height, 140, height, text_h,              #__text_invert|#__text_center|#__text_top);
-    GadgeCreate(14, 8+150+450,  (height+hor_space)*1+20+height, 140, height, text_h, #__text_invert|#__text_center);
-    GadgeCreate(15, 8+150+450,  (height+hor_space)*2+20+height, 140, height, text_h, #__text_invert|#__text_center|#__text_bottom);
-    
-    GadgeCreate(16, 8+300+450,  10, 140, height, text_h,              #__text_invert|#__text_right|#__text_top);
-    GadgeCreate(17, 8+300+450,  (height+hor_space)*1+10, 140, height, text_h, #__text_invert|#__text_right|#__text_center);
-    GadgeCreate(18, 8+300+450,  (height+hor_space)*2+10, 140, height, text_h, #__text_invert|#__text_right|#__text_bottom);
-    
-;     
-;     ; vertical
-;     GadgeCreate(20, 8,  (height+5)*3+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_top);
-;     GadgeCreate(21, 8,  (height+5)*4+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_center);
-;     GadgeCreate(22, 8,  (height+5)*5+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_bottom);
-;     
-;     GadgeCreate(23, 8+150,  (height+5)*3+10, 140, height, text_h,     #__flag_vertical|#__text_center|#__text_top);
-;     GadgeCreate(24, 8+150,  (height+5)*4+10, 140, height, text_h,     #__flag_vertical|#__text_center);
-;     GadgeCreate(25, 8+150,  (height+5)*5+10, 140, height, text_h,     #__flag_vertical|#__text_center|#__text_bottom);
-;     
-;     GadgeCreate(26, 8+300,  (height+5)*3+10, 140, height, text_h,     #__flag_vertical|#__text_right|#__text_top);
-;     GadgeCreate(27, 8+300,  (height+5)*4+10, 140, height, text_h,     #__flag_vertical|#__text_right|#__text_center);
-;     GadgeCreate(28, 8+300,  (height+5)*5+10, 140, height, text_h,     #__flag_vertical|#__text_right|#__text_bottom);
-;     
-;     ; invert vertical
-;     GadgeCreate(30, 8+450,  (height+5)*3+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_top);
-;     GadgeCreate(31, 8+450,  (height+5)*4+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_center);
-;     GadgeCreate(32, 8+450,  (height+5)*5+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_bottom);
-;     
-;     GadgeCreate(33, 8+150+450,  (height+5)*3+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_center|#__text_top);
-;     GadgeCreate(34, 8+150+450,  (height+5)*4+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_center);
-;     GadgeCreate(35, 8+150+450,  (height+5)*5+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_center|#__text_bottom);
-;     
-;     GadgeCreate(36, 8+300+450,  (height+5)*3+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_right|#__text_top);
-;     GadgeCreate(37, 8+300+450,  (height+5)*4+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_right|#__text_center);
-;     GadgeCreate(38, 8+300+450,  (height+5)*5+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_right|#__text_bottom);
-    
-    
-    redraw(root());
+   ; Shows possible flags of ButtonGadget in action...
+   EnableExplicit
+   Uselib(widget)
+   
+   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+    End
   EndIf
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  
+   Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
+      ;Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__text_multiline, 0) ; image & text
+      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+      ;
+      ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+      ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+      ;
+      ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
+      ;Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
+      ;String(_x_,_y_,_width_,_height_,_text_,_flag_)
+   EndProcedure
+   
+   Define m.s = #LF$
+   Define width = 140
+   Define height = 90
+   Define space = 5
+   Define text_h.s = "Standard"+ m.s +"Button Button"+ m.s +"(horizontal)"
+   Define x,y = (height+space)*3 + 5
+   
+   
+   If Open(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      SetColor( widget( ), #__color_Back, $FFffffff )
+      
+      ; horizontal
+      GadgeCreate(0, 10, 10,                      width, height, text_h,                      #__text_left|#__text_top);
+      GadgeCreate(1, 10, 10+(height+space)*1, width, height, text_h,                      #__text_left|#__text_center) ;
+      GadgeCreate(2, 10, 10+(height+space)*2, width, height, text_h,                      #__text_left|#__text_bottom) ;
+      
+      GadgeCreate(3, 10+(width+space), 10,                      width, height, text_h,        #__text_center|#__text_top);
+      GadgeCreate(4, 10+(width+space), 10+(height+space)*1, width, height, text_h,        #__text_center)                ;
+      GadgeCreate(5, 10+(width+space), 10+(height+space)*2, width, height, text_h,        #__text_center|#__text_bottom) ;
+      
+      GadgeCreate(6, 10+(width+space)*2, 10,                      width, height, text_h,      #__text_right|#__text_top);
+      GadgeCreate(7, 10+(width+space)*2, 10+(height+space)*1, width, height, text_h,      #__text_right|#__text_center) ;
+      GadgeCreate(10, 10+(width+space)*2, 10+(height+space)*2, width, height, text_h,      #__text_right|#__text_bottom);
+      
+      
+      ; horizontal invert
+      GadgeCreate(20, x+10, y+10,                      width, height, text_h,                      #__text_invert|#__text_left|#__text_top);
+      GadgeCreate(21, x+10, y+10+(height+space)*1, width, height, text_h,                      #__text_invert|#__text_left|#__text_center) ;
+      GadgeCreate(22, x+10, y+10+(height+space)*2, width, height, text_h,                      #__text_invert|#__text_left|#__text_bottom) ;
+      
+      GadgeCreate(23, x+10+width+space, y+10,                      width, height, text_h,        #__text_invert|#__text_center|#__text_top);
+      GadgeCreate(24, x+10+width+space, y+10+(height+space)*1, width, height, text_h,        #__text_invert|#__text_center)                ;
+      GadgeCreate(25, x+10+width+space, y+10+(height+space)*2, width, height, text_h,        #__text_invert|#__text_center|#__text_bottom) ;
+      
+      GadgeCreate(26, x+10+(width+space)*2, y+10,                      width, height, text_h,      #__text_invert|#__text_right|#__text_top);
+      GadgeCreate(27, x+10+(width+space)*2, y+10+(height+space)*1, width, height, text_h,      #__text_invert|#__text_right|#__text_center) ;
+      GadgeCreate(210, x+10+(width+space)*2, y+10+(height+space)*2, width, height, text_h,      #__text_invert|#__text_right|#__text_bottom);
+      
+      
+      redraw(root());
+   EndIf
+   
+   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 15
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
