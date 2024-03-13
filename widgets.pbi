@@ -5104,26 +5104,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
                      EndIf
                      If *this\fs[3]
-                        Resize( *this\TabBox( ), *this\inner_width( ), *this\fs, *this\fs[3], *this\inner_height( ) )
+                        Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
                      EndIf
                   Else
                      If *this\fs[2]
-                        If *this\ToolBarHeight
-                           Resize( *this\TabBox( ), *this\fs + 1, ( *this\fs[2] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
-                        ElseIf *this\MenuBarHeight
-                           Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
-                        Else
-                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
-                        EndIf
+;                         If *this\ToolBarHeight
+;                            Resize( *this\TabBox( ), *this\fs + 1, ( *this\fs[2] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
+;                         ElseIf *this\MenuBarHeight
+;                            Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
+;                         Else
+;                            Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
+;                         EndIf
+                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_height( ), *this\fs[2] )
                      EndIf
                      If *this\fs[4]
-                        If *this\ToolBarHeight
-                           Resize( *this\TabBox( ), *this\fs + 1 , *this\fs + *this\inner_height( ) + ( *this\fs[4] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
-                        ElseIf *this\MenuBarHeight
-                           Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - ( *this\fs + *this\fs[4] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
-                        Else
-                           Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - *this\fs, *this\inner_width( ), *this\fs[4])
-                        EndIf
+;                         If *this\ToolBarHeight
+;                            Resize( *this\TabBox( ), *this\fs + 1 , *this\fs + *this\inner_height( ) + ( *this\fs[4] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
+;                         ElseIf *this\MenuBarHeight
+;                            Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - ( *this\fs + *this\fs[4] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
+;                         Else
+;                            Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - *this\fs, *this\inner_width( ), *this\fs[4])
+;                         EndIf
+                           Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                     
                      EndIf
                   EndIf
                EndIf
@@ -5637,12 +5640,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\type = #__type_ToolBar Or
                *this\type = #__type_Menu
-               
-               If *this\flag & #PB_ToolBar_Buttons          
-                  pos = seperator_step
-               Else
-                  pos = 0
-               EndIf
+               pos = seperator_step
             EndIf
             
             If Not *this\hide 
@@ -5676,58 +5674,79 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *bar\vertical
                         
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\y = *bar\max + pos + seperator_step
+                           *items( )\y = *bar\max + seperator_step + pos
                            *items( )\height = 1
-                           *items( )\x         = 3
-                           *items( )\width     = *SB\width - *items( )\x * 2
-                           *bar\max + *items( )\height + pos + (seperator_step * 2)
+                           *items( )\x      = 3
+                           *items( )\width  = *SB\width - *items( )\x * 2
+                           *bar\max + *items( )\height + (seperator_step * 2) + pos
                         Else
                            *items( )\y = *bar\max + pos
-                           ;
+                           
                            If *this\type = #__type_TabBar
+                              ;
                               If *this\TabState( ) = index
-                                 *items( )\x       = 0
-                                 *items( )\width   = *SB\width + 1
+                                 *items( )\x       = pos;pos - Bool( pos>0 )*2
+                                 *items( )\width  = *SB\width - *items( )\x + 1
                               Else
-                                 *items( )\x       = 0
-                                 *items( )\width   = *SB\width - 1
+                                 *items( )\x       = pos;pos
+                                 *items( )\width  = *SB\width - *items( )\x - 1
                               EndIf
-                              
-                              *this\text\x = ( *items( )\width - *items( )\text\width ) / 2
-                              
-                              *items( )\text\y = *this\text\y + *items( )\y
-                              *items( )\text\x = *this\text\x + *items( )\x
-                              *items( )\height = *this\text\y * 2 + *items( )\text\height
                            Else
-                              *items( )\x       = 0
-                              *items( )\width   = *SB\width - *items( )\x * 2
-                              
-                              *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width ) / 2
-                              *items( )\text\x  = *items( )\x + *this\text\x
+                              *items( )\x      = pos
+                              *items( )\width  = *SB\width - *items( )\x * 2
+                           EndIf
+                           
+                           ;
+                           If *items( )\image\height
+                              *items( )\height = *items( )\image\height
+                           EndIf
+                           If *items( )\text\height
+                              If *this\flag & #PB_ToolBar_InlineText
+                                 If Not *items( )\image\height 
+                                    *items( )\height = *items( )\text\height
+                                 EndIf
+                              Else
+                                 *items( )\height + *items( )\text\height
+                              EndIf
+                           EndIf
+                           ;
+                           *items( )\height + 6
+                           ;
+                           If *this\flag & #PB_ToolBar_InlineText
+                              ;
+                              *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width - *items( )\text\width ) / 2 
+                              *items( )\text\x  = *items( )\image\x + *items( )\image\width + 5
                               
                               ;
-                              *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
-                              *items( )\text\y  = *items( )\image\y + *items( )\image\width + *this\text\y
-                              
-                              *items( )\height = Bool( *items( )\text\height ) * ( *this\text\y * 2 ) + *items( )\text\height +
-                                             Bool( *items( )\image\height ) * ( *this\image\y * 2 ) + *items( )\image\height - ( Bool( *items( )\image\height And *items( )\text\height ) * ( *this\text\y ))
-                           
+                              *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height )/2
+                              *items( )\text\y  = *items( )\y + ( *items( )\height - *items( )\text\height )/2
+                              ;                          
+                           Else
+                              If *items( )\text\width
+                                 ;
+                                 *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height - *items( )\text\height ) / 2
+                                 *items( )\text\y  = *items( )\image\y + *items( )\image\height
+                                 ;
+                                 *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
+                                 *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
+                              EndIf
                            EndIf
+                           
                            ;
+                           If *this\type = #__type_TabBar
+                              *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
+                              ;
+                              If typ And *this\TabState( ) = index 
+                                 *items( )\height + 4
+                                 *items( )\y - 2
+                              EndIf
+                           Else
+                              
+                              *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
+                           EndIf
                         EndIf
                         
-                        ;
-                        If *this\type = #__type_TabBar
-                           *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
-                           ;
-                           If typ And *this\TabState( ) = index
-                              *items( )\height + 4
-                              *items( )\y - 2
-                           EndIf
-                        Else
-                           *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
-                        EndIf
-                        ;
+                        ;;;
                      Else
                         If *items( )\itemindex  = #PB_Ignore
                            *items( )\x = *bar\max + pos + seperator_step
@@ -5748,7 +5767,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *items( )\height  = *SB\height - *items( )\y - 1
                               EndIf
                            Else
-                              *items( )\y       = 0;*this\bs
+                              *items( )\y       = pos;*this\bs
                               *items( )\height  = *SB\height - *items( )\y * 2
                            EndIf
                            
@@ -23692,7 +23711,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5783
-; FirstLine = 5503
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40--------------------8--H-8V0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--f--------------------------------------------------------------------------------------------------------4-v-------------------------------------------------------------------f-----------------4--4--v---------------------------------------------------------------------------
+; CursorPosition = 5680
+; FirstLine = 5407
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-----------------v-+f---5fvq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8--------------------------------------------------------------------------------------------------------+-0-------------------------------------------------------------------8-----------------+--+--0---------------------------------------------------------------------------
 ; EnableXP
