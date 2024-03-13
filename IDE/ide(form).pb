@@ -1177,7 +1177,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1 + 2 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1 );+ 2 )
    
    ;
    ;\\\ ide events binds

@@ -329,7 +329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
          If widget( )
-            AddItem( widget( ), -1, _text_, _image_, _mode_)
+            AddItem( widget( ), - 1, _text_, _image_, _mode_)
             widget( )\__tabs( )\itemindex = _button_
          EndIf
          ;
@@ -4702,7 +4702,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_Window 
-           ;
            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
             EndIf
@@ -5058,10 +5057,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\parent\scroll And
                *this\parent\scroll\v And
                *this\parent\scroll\h
-               
-               
-               ;\\
-               If *this\parent\type <> #__type_MDI
+               ;
+               ;\\ parent mdi
+               If *this\parent\type = #__type_MDI
+                  If *this\child < 0
+                     If *this\parent\scroll\v <> *this And
+                        *this\parent\scroll\h <> *this And
+                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
+                        *this\parent\scroll\h\bar\PageChange( ) = 0
+                        
+                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
+                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                     EndIf
+                  EndIf
+                  ;
+               Else
                   If *this\child > 0
                      If *this\parent\container_width( ) = *this\parent\inner_width( ) And
                         *this\parent\container_height( ) = *this\parent\inner_height( )
@@ -5075,30 +5085,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
-               ;\\ parent mdi
-               If *this\parent\type = #__type_MDI
-                  If *this\child < 0
-                     If *this\parent\scroll\v <> *this And
-                        *this\parent\scroll\h <> *this And
-                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
-                        *this\parent\scroll\h\bar\PageChange( ) = 0
-                        
-                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
-                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
-                     EndIf
-                  EndIf
-               EndIf
             EndIf
-            
             
             ;\\ if the integral tab bar
             If *this\TabBox( )
-               *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
-               *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
-               
-               ;\\
-               If *this\container ; type = #__type_Panel
+               If *this\container
+                  *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
+                  *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
+                  
+                  ;\\
                   If *this\TabBox( )\bar\vertical
                      If *this\fs[1]
                         Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
@@ -5108,36 +5103,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\fs[2]
-;                         If *this\ToolBarHeight
-;                            Resize( *this\TabBox( ), *this\fs + 1, ( *this\fs[2] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
-;                         ElseIf *this\MenuBarHeight
-;                            Resize( *this\TabBox( ), *this\fs, ( *this\fs + *this\fs[2] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
-;                         Else
-;                            Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_width( ), *this\fs[2])
-;                         EndIf
-                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\inner_height( ), *this\fs[2] )
+                        Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight )
+                     ;   Resize( *this\TabBox( ), *this\fs, *this\fs + ( *this\barHeight + *this\MenuBarHeight ), *this\inner_width( ), *this\fs[2] - ( *this\barHeight + *this\MenuBarHeight ) )
                      EndIf
                      If *this\fs[4]
-;                         If *this\ToolBarHeight
-;                            Resize( *this\TabBox( ), *this\fs + 1 , *this\fs + *this\inner_height( ) + ( *this\fs[4] - *this\ToolBarHeight ) + *this\fs / 2, *this\inner_width( ) - 2, *this\ToolBarHeight )
-;                         ElseIf *this\MenuBarHeight
-;                            Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - ( *this\fs + *this\fs[4] ) - *this\MenuBarHeight , *this\inner_width( ), *this\MenuBarHeight )
-;                         Else
-;                            Resize( *this\TabBox( ), *this\fs, *this\inner_height( ) - *this\fs, *this\inner_width( ), *this\fs[4])
-;                         EndIf
-                           Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
-                     
+                        Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
                      EndIf
                   EndIf
+                  
+                  *this\inner_x( ) + *this\fs + *this\fs[1]
+                  *this\inner_y( ) + *this\fs + *this\fs[2]
                EndIf
-               
-               ;                ;\\
-               ;                If *this\type = #__type_window
-               ;                   Resize( *this\TabBox( ), *this\fs, (*this\fs + *this\fs[2]) - *this\ToolBarHeight , *this\frame_width( ), *this\ToolBarHeight )
-               ;                EndIf
-               
-               *this\inner_x( ) + *this\fs + *this\fs[1]
-               *this\inner_y( ) + *this\fs + *this\fs[2]
             EndIf
             
             ;\\
@@ -5492,9 +5468,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;*this\__tabs( )\_index       = index
          
          ;\\ set default selected tab
-         If Not *this\FocusedTab( )
-            If item = 0 
+         If item = 0 
+            If Not *this\FocusedTab( )
                *this\TabState( )         = 0
+               ;
                If *this\type = #__type_TabBar
                   *this\FocusedTab( )       = *this\__tabs( )
                   *this\FocusedTab( )\focus = - 1 ; scroll to active tab
@@ -5696,6 +5673,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\width  = *SB\width - *items( )\x * 2
                            EndIf
                            
+                           Debug "why "+*items( )\height +" ?"
+                           *items( )\height = 0
                            ;
                            If *items( )\image\height
                               *items( )\height = *items( )\image\height
@@ -5856,6 +5835,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             drawing_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
+         
+         If _address_\childrens
+            DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
+         EndIf
+         ;          
+;          Debug ""+_address_\childrens +" "+ _address_\parent
          ; Draw frame
          drawing_mode_alpha_( #PB_2DDrawing_Outlined )
          draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
@@ -5921,6 +5906,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
+                  
+                  If *items( )\childrens
+                     DrawText( x + *items( )\text\x + *items( )\text\width + 20, y + *items( )\text\y, ">", *items( )\color\front & $FFFFFF | *items( )\color\_alpha << 24 )
+                  EndIf
+                  
+                  ;Debug ""+*items( )\childrens +" "+ *items( )\parent
+                  
                EndIf
             EndIf
          Next
@@ -20398,6 +20390,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ leaved tabs
                If *this\EnteredTab( ) And
                   Leaved( *this\EnteredTab( ) )
+                  If *this\type = #__type_Menu
+                     If *this\EnteredTab( )\childrens
+                           If *this\EnteredTab( )\data 
+                              Hide( *this\EnteredTab( )\data, 1 )
+                           EndIf
+                        EndIf
+                     EndIf
                   *this\root\repaint = #True
                EndIf
                
@@ -20407,6 +20406,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\enter
                   If *this\EnteredTab( ) And
                      Entered( *this\EnteredTab( ) )
+                     If *this\type = #__type_Menu
+                        If *this\EnteredTab( )\childrens
+                           If *this\EnteredTab( )\data 
+                              Hide( *this\EnteredTab( )\data, 0 )
+                           EndIf
+                        EndIf
+                     EndIf
                      *this\root\repaint = #True
                   EndIf
                EndIf
@@ -23192,7 +23198,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
    a_init( view, 8 )
    
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small )
+   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
    
    If *toolbar
       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
@@ -23711,7 +23717,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5680
-; FirstLine = 5407
-; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----40-----------------v-+f---5fvq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8--------------------------------------------------------------------------------------------------------+-0-------------------------------------------------------------------8-----------------+--+--0---------------------------------------------------------------------------
+; CursorPosition = 20395
+; FirstLine = 18947
+; Folding = ------------------------------------------------------------------------------------------------------------------bv--0--4W4----4------------------4f+----5fvq-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---8--------------------------------------------------------------------------------------------------------+-0-------------------------------------------------------------------8-----------------+------0--------------------------------------------------------------------0------
 ; EnableXP

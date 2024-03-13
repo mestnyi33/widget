@@ -38,7 +38,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Procedure Menu( *parent._s_widget, flag = #Null )
+  Procedure CreateMenuBar( *parent._s_widget, flag = #Null )
+     ProcedureReturn ToolBar( *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
+     
      *parent\MenuBarHeight = #__menu_height
      
      Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
@@ -52,17 +54,25 @@ CompilerIf #PB_Compiler_IsMainFile
      ProcedureReturn *this
   EndProcedure
   
-  Procedure Title( title.s )
+  Procedure MenuBarTitle( title.s )
      ToolBarButton( -1, -1, #PB_ToolBar_Toggle, title.s )
   EndProcedure
   
-  Procedure Item( item, text.s, image = - 1 )
+  Procedure MenuBarItem( item, text.s, image = - 1 )
      Debug widget( )\count\items
      ; ToolBarButton( item, image, #PB_ToolBar_Toggle, text.s )
   EndProcedure
   
-  Procedure Bar( )
-     ;
+  Procedure MenuBarSeperator( )
+   ; Separator( )
+  EndProcedure
+  
+  Procedure MenuBarOpenSubItem( title.s, image = - 1 )
+   ; Separator( )
+  EndProcedure
+  
+  Procedure MenuBarCloseSubItem( )
+   ; Separator( )
   EndProcedure
   
   Procedure TestHandler()
@@ -83,19 +93,24 @@ CompilerIf #PB_Compiler_IsMainFile
   MenuTitle("Title-1")
   MenuItem(1, "title-1-item-1")
   MenuItem(2, "title-1-item-2")
+  MenuBar()
+  OpenSubMenu("title-1-sub-item")   
+  MenuItem(3, "title-1-item-3")
+  MenuItem(4, "title-1-item-4")
+  CloseSubMenu( ) 
   
   MenuTitle("Title-2")
-  MenuItem(3, "title-2-item-1")
-  MenuItem(4, "title-2-item-2")
-  
-  MenuTitle("Title-3")
-  MenuItem(5, "title-3-item-1")
-  MenuItem(6, "title-3-item-2")
+  MenuItem(5, "title-2-item-1")
+  MenuItem(6, "title-2-item-2")
   
   MenuTitle("Title-event-test")
   MenuItem(7, "test")
-  MenuBar()
+  MenuBar( )
   MenuItem(8, "quit")
+  
+  MenuTitle("Title-4")
+  MenuItem(9, "title-4-item-1")
+  MenuItem(10, "title-4-item-2")
   
   BindMenuEvent(0, 7, @TestHandler())
   BindMenuEvent(0, 8, @QuitHandler())
@@ -106,23 +121,29 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   widget( )\bs = 8
   ;   SetFrame(widget( ), 3);, -1)
   
-  Define *menu = Menu( *window )
-  Title("Title-1")
-  Item(1, "title-1-item-1")
-  Item(2, "title-1-item-2")
+  Define *menu = CreateMenuBar( *window )
+  MenuBarTitle("Title-1")
+  MenuBarItem(1, "title-1-item-1")
+  MenuBarItem(2, "title-1-item-2")
+  MenuBarSeperator( )
+  MenuBarOpenSubItem("title-1-sub-item")   
+  MenuBarItem(3, "title-1-item-3")
+  MenuBarItem(4, "title-1-item-4")
+  MenuBarCloseSubItem( ) 
   
-  Title("Title-2")
-  Item(3, "title-2-item-1")
-  Item(4, "title-2-item-2")
+  MenuBarTitle("Title-2")
+  MenuBarItem(5, "title-2-item-1")
+  MenuBarItem(6, "title-2-item-2")
   
-  Title("Title-3")
-  Item(5, "title-3-item-1")
-  Item(6, "title-3-item-2")
+  MenuBarTitle("Title-event-test")
+  MenuBarItem(7, "test")
+  MenuBarSeperator( )
+  MenuBarItem(8, "quit")
   
-  Title("Title-event-test")
-  Item(7, "test")
-  Bar( )
-  Item(8, "quit")
+  MenuBarTitle("Title-4")
+  MenuBarItem(9, "title-4-item-1")
+  MenuBarItem(10, "title-4-item-2")
+  
   
 ;   Bind(*menu, @TestHandler(), 7)
 ;   Bind(*menu, @QuitHandler(), 8)
@@ -135,7 +156,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 26
+; CursorPosition = 99
+; FirstLine = 114
 ; Folding = --
 ; EnableXP

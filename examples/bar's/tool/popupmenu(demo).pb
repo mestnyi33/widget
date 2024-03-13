@@ -1,15 +1,15 @@
 ﻿;                                                                     - PB 
-;                                                PopupMenu( [flags] ) - CreatePopupMenu( #Menu )
+;                                       CreatePopupMenuBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
 ;
-;                                           Menu( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                  CreateMenuBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
 ;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
 ; 
 ;                             Display( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
 ; 
-;                                                     Title( Title$ ) - MenuTitle( Title$ )
+;                                              MenuBarTitle( Title$ ) - MenuTitle( Title$ )
 ;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
 ;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
 ; 
@@ -18,18 +18,18 @@
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                             Separator( [*address] ) - MenuBar( )
+;                                      MenuBarSeparator( [*address] ) - MenuBar( )
 ;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
-;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
-;                                        OpenItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
-;                                                        CloseItem( ) - CloseSubMenu( )
+;                                     MenuBarItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
+;                              MenuBarOpenSubItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
+;                                              MenuBarCloseSubItem( ) - CloseSubMenu( )
 ; 
-;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
-;                               SetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;                        MenuBarSetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
+;                        MenuBarSetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
 ;
-;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;          BindMenuBarEvent( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
 XIncludeFile "../../../widgets.pbi" 
@@ -40,43 +40,76 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *menu
    
-   Procedure PopupMenu( flag = #Null ) 
-      ;__gui\menu = Create( root( ), "PopupMenu", #__type_ListView, 0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
-      __gui\menu = Create( root( ), "PopupMenu", #__type_Menu, 0, 0, 0, 0, #Null$, #__flag_child|#__flag_vertical, 0, 0, 0, 0, 0, 30 )
+   Procedure PopupMenu( x, y, width, height )
+      Protected *parent._s_WIDGET
+      *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
       
+      __gui\popupmenu = Create( *parent, *parent\class + "PopupMenu", #__type_Menu,
+                           x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical|#__flag_child
+      SetColor( __gui\popupmenu, #__color_back, $FFF7FDFF)
       
-      ;Hide( __gui\menu, #True )
-      ProcedureReturn __gui\menu
+      ;CloseList( ) ; *parent
+      
+      widget( ) = __gui\popupmenu 
+      
+      ProcedureReturn __gui\popupmenu
    EndProcedure
    
-   Procedure Item( item, text.s, image = - 1 )
-      If __gui\menu
-         ProcedureReturn AddItem( __gui\menu, item, text, image )
+   Procedure PopupMenuBar( flag = #Null ) 
+      ;__gui\popupmenu = Create( root( ), "PopupMenu", #__type_ListView, 0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
+      __gui\popupmenu = Create( root( ), "PopupMenu", #__type_Menu, 0, 0, 0, 0, #Null$, #__flag_child|#__flag_vertical, 0, 0, 0, 0, 0, 30 )
+      
+      
+      ;Hide( __gui\popupmenu, #True )
+      ProcedureReturn __gui\popupmenu
+   EndProcedure
+   
+   Procedure MenuBarItem( item, text.s, image = - 1 )
+      If __gui\popupmenu
+         AddItem( __gui\popupmenu, - 1, text, image )
+         If __gui\popupmenu[1]
+            Protected *parent_row._s_ROWS = __gui\popupmenu\data
+            
+            If *parent_row
+               *parent_row\childrens + 1
+               *parent_row\data = __gui\popupmenu
+               __gui\popupmenu\__tabs( )\parent = *parent_row
+            EndIf
+            
+         EndIf
+      EndIf
+      ProcedureReturn __gui\popupmenu\__tabs( )
+   EndProcedure
+   
+   Procedure MenuBarSeparator( )
+      If __gui\popupmenu
+         AddItem( __gui\popupmenu, #PB_Ignore, "", - 1, #Null )
+         __gui\popupmenu\__tabs( )\itemindex = #PB_Ignore
       EndIf
    EndProcedure
    
-   Procedure Bar( )
-      If __gui\menu
-         AddItem( __gui\menu, #PB_Ignore, "", - 1, #Null )
-      EndIf
-   EndProcedure
-   
-   Procedure OpenMenu( text.s, image =- 1)
+   Procedure MenuBarOpenSubItem( text.s, image =- 1)
       Protected *item._s_ROWS 
-      __gui\menu[1] = __gui\menu
+      *item = MenuBarItem( #PB_Ignore, text.s, image )
+      
+      __gui\popupmenu[1] = __gui\popupmenu
       ;
-      *item = Item( #PB_Ignore, text.s, image )
-      *item\data = PopupMenu( )
+      __gui\popupmenu = PopupMenu( 200,50,200,100 )
+      __gui\popupmenu\data = *item
+      Hide(__gui\popupmenu,  1) 
+      ;*item\data = __gui\popupmenu
       ;
-      ProcedureReturn *item\data
+      ProcedureReturn __gui\popupmenu
    EndProcedure
    
-   Procedure CloseMenu( )
-      If __gui\menu[1]
-         __gui\menu = __gui\menu[1]
+   Procedure MenuBarCloseSubItem( )
+      If __gui\popupmenu[1]
+         __gui\popupmenu = __gui\popupmenu[1]
+         __gui\popupmenu[1] = 0
       EndIf
    EndProcedure
    
+   ;-
    Macro row_x_( _this_, _address_ )
       ( _this_\inner_x( ) + _address_\x )  ; + _this_\scroll_x( )
    EndMacro
@@ -547,6 +580,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
+   ;-
    Procedure TestHandler()
       Debug "Test menu event"
    EndProcedure
@@ -572,13 +606,14 @@ CompilerIf #PB_Compiler_IsMainFile
    CreatePopupMenu( 0 )
    MenuItem(1, "Open")      ; You can use all commands for creating a menu
    MenuItem(2, "Save")      ; just like in a normal menu...
+   MenuBar()
+   OpenSubMenu("open sub item")
+   MenuItem(5, "1 sub item")
+   MenuItem(6, "2 sub item")
+   CloseSubMenu()
+   MenuBar()
    MenuItem(3, "Save as")
    MenuItem(4, "Quit")
-   MenuBar()
-   OpenSubMenu("Recent files")
-   MenuItem(5, "PureBasic.exe")
-   MenuItem(6, "Test.txt")
-   CloseSubMenu()
    
    BindMenuEvent(0, 6, @TestHandler())
    BindMenuEvent(0, 4, @QuitHandler())
@@ -586,22 +621,27 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
    Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+   CloseList( )
    ;   widget( )\bs = 8
    ;   SetFrame(widget( ), 3);, -1)
    
-   *menu = PopupMenu( )
-   Item(1, "Open")      ; You can use all commands for creating a menu
-   Item(2, "Save")      ; just like in a normal menu...
-   Item(3, "Save as")
-   Item(4, "Quit")
-   Bar()
-   OpenMenu("Recent files")
-   Item(5, "PureBasic.exe")
-   Item(6, "Test.txt")
-   CloseMenu()
+   ;*menu = PopupMenuBar( )
+   PopupMenu( 10, 10, 200, 200 )
+   
+   MenuBarItem(1, "Open")      ; You can use all commands for creating a menu
+   MenuBarItem(2, "Save")      ; just like in a normal menu...
+   MenuBarSeparator( )
+   MenuBarOpenSubItem("open sub item")
+   MenuBarItem(5, "1 sub item")
+   MenuBarItem(6, "2 sub item")
+   MenuBarCloseSubItem()
+   MenuBarSeparator( )
+   MenuBarItem(3, "Save as")
+   MenuBarItem(4, "Quit")
    
    ;   Bind(*menu, @TestHandler(), 7)
    ;   Bind(*menu, @QuitHandler(), 8)
+   
    
    
    Bind(root(), @ClickHandler(), #__event_LeftClick)
@@ -612,7 +652,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 109
-; FirstLine = 109
-; Folding = ----------------
+; CursorPosition = 96
+; FirstLine = 90
+; Folding = --8+---0-e------
 ; EnableXP

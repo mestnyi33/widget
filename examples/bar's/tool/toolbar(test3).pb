@@ -202,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
       
-      w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Normal )
+      w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Small)
       ToolBarButton( #_tb_file_open, -1, 0, "Open" )
       ToolBarButton( #_tb_file_save, -1, 0, "Save" )
       Separator( )
@@ -286,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 213
-; FirstLine = 170
+; CursorPosition = 204
+; FirstLine = 158
 ; Folding = -0
 ; EnableXP

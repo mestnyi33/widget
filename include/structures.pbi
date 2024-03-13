@@ -358,18 +358,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMin.i
          OffsetMoveMax.i
          
+         *parent._s_rows
+         childrens.w ; Row( )\ ; rows( )\ ; row\
+         
          *data  ; set/get item data
       EndStructure
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_TABS
-         childrens.w ; Row( )\ ; rows( )\ ; row\
          
          checkbox._s_buttons ; \box[1]\ -> \checkbox\
          buttonbox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
          
-         
-         *parent._s_rows
          
          *first._s_rows           ;TEMP first elemnt in the list
          *after._s_rows           ;TEMP first elemnt in the list
@@ -729,7 +729,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET             ; enumerate widget
          *root._s_ROOT                 ; enumerate root
          
-         *menu._s_WIDGET[2]            ;
+         *popupmenu._s_WIDGET[2]            ;
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -759,7 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 347
-; FirstLine = 248
+; CursorPosition = 362
+; FirstLine = 257
 ; Folding = -PyB-d-7--
 ; EnableXP
