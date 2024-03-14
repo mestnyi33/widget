@@ -46,14 +46,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure PopupMenuBar( x, y, width, height )
       Static count
-      Protected *parent._s_WIDGET
+      Protected *parent._s_WIDGET, menu 
       *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
       
+      menu = menu( )
       menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
                                 x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical
       SetColor( menu( ), #__color_back, $FFF7FDFF)
       Hide(menu( ),  1) 
-      menu( )\menu = menu( )
+      menu( )\menu = menu
       
       ;CloseList( ) ; *parent
       
@@ -80,40 +81,38 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure MenuBarItem( item, text.s, image = - 1 )
+      Protected *item._s_ROWS 
       If menu( )
-         AddItem( menu( ), - 1, text, image )
+         *item = AddItem( menu( ), - 1, text, image )
          
-         If menu( )\menu
-            Protected *parent_row._s_ROWS = menu( )\data
-            
-            If *parent_row
-               *parent_row\childrens + 1
-               *parent_row\data = menu( )
-               menu( )\__tabs( )\parent = *parent_row
-            EndIf
+         If menu( )\data
+            *item\parent = menu( )\data
+            *item\parent\childrens + 1
+            *item\parent\data = menu( )
          EndIf
       EndIf
-      ProcedureReturn menu( )\__tabs( )
+      ProcedureReturn *item
    EndProcedure
    
    Procedure MenuBarOpenSubItem( text.s, image =- 1)
-      Protected *item._s_ROWS, menu
-      *item = MenuBarItem( #PB_Ignore, text.s, image )
-      
-      menu = menu( )
-      
-      menu( ) = PopupMenuBar( 200,50,200,100 )
-      menu( )\menu = menu
-      menu( )\data = *item
-      ;*item\data = menu( )
-      
-      ; Debug "open " +menu( )\menu\class +" "+ menu( )\class
-      ProcedureReturn menu( )
+      Protected *item._s_ROWS
+      If menu( )
+         *item = MenuBarItem( #PB_Ignore, text.s, image )
+         
+         menu( ) = PopupMenuBar( 200,50,200,100 )
+         menu( )\data = *item
+         ;*item\data = menu( )
+         
+         ; Debug "open " +menu( )\menu\class +" "+ menu( )\class
+         ProcedureReturn menu( )
+      EndIf
    EndProcedure
    
    Procedure MenuBarCloseSubItem( )
       ; Debug "close "+menu( )\class +" "+  menu( )\menu\class
-      menu( ) = menu( )\menu
+     If menu( )\menu
+         menu( ) = menu( )\menu
+      EndIf
    EndProcedure
    
    
@@ -239,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 40
-; Folding = ---
+; CursorPosition = 109
+; FirstLine = 72
+; Folding = v--
 ; EnableXP
