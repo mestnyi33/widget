@@ -689,7 +689,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
          main.b                   ; is root
-      EndStructure
+     *menu._s_WIDGET
+          EndStructure
       
       ;--     CANVAS
       Structure _s_CANVAS
@@ -729,7 +730,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET             ; enumerate widget
          *root._s_ROOT                 ; enumerate root
          
-         *popupmenu._s_WIDGET[2]            ;
+         *popup._s_WIDGET;[2]            ;
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -759,7 +760,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 362
-; FirstLine = 257
+; CursorPosition = 732
+; FirstLine = 605
 ; Folding = -PyB-d-7--
 ; EnableXP

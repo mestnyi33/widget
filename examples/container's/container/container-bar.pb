@@ -14,6 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
      *this = *this\parent
+     
      ; reset position
       *this\fs[1] = 0
       *this\fs[2] = 0
@@ -21,10 +22,12 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\fs[4] = 0
       
       If position = 1 Or position = 3
-         *this\ToolBarHeight = 80
+         If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+            *this\ToolBarHeight = 80
+         EndIf
       EndIf
       
-      If position = 4
+      If position = 0
          *this\TabBox( )\hide = 1
       Else
          *this\TabBox( )\hide = 0
@@ -48,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       EndIf
       
-      If position = 0
+      If position = 2
          *this\TabBox( )\bar\vertical = 0
          If size = #PB_Default
             *this\fs[2] = *this\ToolBarHeight + 2 ; #__panel_height
@@ -57,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       EndIf
       
-      If position = 2
+      If position = 4
          *this\TabBox( )\bar\vertical = 0
          If size = #PB_Default
             *this\fs[4] = *this\ToolBarHeight + 2 ; #__panel_height
@@ -77,129 +80,129 @@ CompilerIf #PB_Compiler_IsMainFile
     Container( 10,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
-    TabViewType( widget( ), 2 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    TabViewType( widget( ), 4 )
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 220,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
-    TabViewType( widget( ), 2 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
+    TabViewType( widget( ), 4 )
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 430,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 3 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 640,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
     TabViewType( widget( ), 1 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     ;\\
     Container( 10,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large )
-    TabViewType( widget( ), 0 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    TabViewType( widget( ), 2 )
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 220,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
-    TabViewType( widget( ), 0 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText )
+    TabViewType( widget( ), 2 )
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 430,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 3 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     Container( 640,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #__color_Back, $FF95E3F6 )
     ToolBar( widget( ), #PB_ToolBar_Large )
     TabViewType( widget( ), 1 )
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_ToolBar_Normal, "save")
+    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
     Separator( )
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"), #PB_ToolBar_Normal, "Cut")
     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"), #PB_ToolBar_Normal, "Copy")
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     Separator( )
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
     CloseList( )
     
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 13
+; CursorPosition = 202
+; FirstLine = 166
 ; Folding = ---
 ; EnableXP
