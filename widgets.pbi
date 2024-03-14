@@ -4602,7 +4602,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this
-            ;\\ hide current popup widget
+            ;\\
             If *this\hidden
                Hide( *this, 0 )
             EndIf
@@ -4631,8 +4631,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If Not *this\root\widget
-               *displayRoot = CreatePopup( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
                Debug "displayBar - create " + *this\class +" "+ *this\root
+               *displayRoot = CreatePopup( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
                
                If *this\row
                   update_items_( *this, *this\__rows( ) )
@@ -4692,8 +4692,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                height + *this\fs * 2
                
                ;\\
-               If width < *display\width - 2
-                  width = *display\width - 2
+               If width < *display\width; - 2
+                  width = *display\width; - 2
                EndIf
                
                ;\\
@@ -4704,7 +4704,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                *displayRoot\class = "Root_"+*this\class
                *displayRoot\widget = *this
-               *displayRoot\parent = *display
+               ;*displayRoot\parent = *display
                ;                *this\autosize = 0
                ;                Resize( *this, 0, 0, *this\root\width, *this\root\height )
                *this\autosize = 1
@@ -4719,7 +4719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Resize( *this\root, 0, 0, width, height)
                
                ;\\
-               PostRepaint( *this\root )
+               ;PostRepaint( *this\root )
             EndIf
             
             If *this\root\widget   
@@ -23954,7 +23954,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4665
-; FirstLine = 4651
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------
+; CursorPosition = 4721
+; FirstLine = 4643
+; Folding = -------------------------------------------------------------------------------------------------------------n-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------
 ; EnableXP
