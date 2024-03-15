@@ -233,12 +233,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;===TEMP====
-;       Macro BarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
-;          MenuBarButton( _button_, _image_, _mode_, _text_ )
-;       EndMacro
-;       Macro BarSeparator( )
-;          MenuBarSeparator( )
-;       EndMacro
+      ;       Macro BarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+      ;          MenuBarButton( _button_, _image_, _mode_, _text_ )
+      ;       EndMacro
+      ;       Macro BarSeparator( )
+      ;          MenuBarSeparator( )
+      ;       EndMacro
       Macro ToolBar( _parent_, _flags_ = 0 )
          CreateBar( _parent_, _flags_ )
       EndMacro
@@ -4556,16 +4556,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *display
-;                If x = #PB_Ignore
-;                   x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
-;                Else
-;                   x + *display\x + 1
-;                EndIf
-;                If y = #PB_Ignore
-;                   y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
-;                Else
-;                   y + *display\y + 1
-;                EndIf
+               ;                If x = #PB_Ignore
+               ;                   x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
+               ;                Else
+               ;                   x + *display\x + 1
+               ;                EndIf
+               ;                If y = #PB_Ignore
+               ;                   y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
+               ;                Else
+               ;                   y + *display\y + 1
+               ;                EndIf
                If x = #PB_Ignore
                   x = *display\screen_x( )
                EndIf
@@ -5012,42 +5012,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\root\widget   
+               SetColor(*this\root, #__color_back, $FF0707AC )
+               ;\\
+               Debug "displayBar - resize " + *this\x + " " + *this\y + " " + *this\width + " " + *this\height + " " + *this\root\class + " " + *display\root\class
+               ;
+               width = *this\root\width
+               height = *this\root\height
+               
+               If *display\round
+                  x + *display\round
+               EndIf
+               
+               ;\\
+               If mode
+                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - width / 2
+                  
+                  If ListSize( *this\__rows( ) ) And *this\FocusedRow( )\focus
+                     y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\FocusedRow( ) ) - *this\FocusedRow( )\height / 2 )
+                  EndIf
+                  If ListSize( *this\__tabs( ) ) And *this\FocusedTab( )\focus
+                     y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2 )
+                  EndIf
+               EndIf
+               
+               ;\\
+               ; StickyWindow( window, #True )
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
+                  CocoaMessage(0, WindowID(*this\root\canvas\window), "setLevel:", 3)
+                  ; Debug CocoaMessage(0, WindowID(*this\root\canvas\window), "level")
+               CompilerEndIf
+               
+               ;\\
+               
+               ResizeWindow( *this\root\canvas\window, x, y, width, height )
                If *this\root\hide
                   HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
-               Else
-                  SetColor(*this\root, #__color_back, $FF0707AC )
-                  ;\\
-                  Debug "displayBar - resize " + *this\x + " " + *this\y + " " + *this\width + " " + *this\height + " " + *this\root\class + " " + *display\root\class
-                  ;
-                  width = *this\root\width
-                  height = *this\root\height
-                  
-                  If *display\round
-                     x + *display\round
-                  EndIf
-                  
-                  ;\\
-                  If mode
-                     x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - width / 2
-                     
-                     If ListSize( *this\__rows( ) ) And *this\FocusedRow( )\focus
-                        y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\FocusedRow( ) ) - *this\FocusedRow( )\height / 2 )
-                     EndIf
-                     If ListSize( *this\__tabs( ) ) And *this\FocusedTab( )\focus
-                        y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2 )
-                     EndIf
-                  EndIf
-                  
-                  ;\\
-                  ; StickyWindow( window, #True )
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     ; var windowLevel: UIWindow.Level { get set } ; stay on top
-                     CocoaMessage(0, WindowID(*this\root\canvas\window), "setLevel:", 3)
-                     ; Debug CocoaMessage(0, WindowID(*this\root\canvas\window), "level")
-                  CompilerEndIf
-                  
-                  ;\\
-                  ResizeWindow( *this\root\canvas\window, x, y, width, height )
                EndIf
                ;
                If Root( ) <> *display\root
@@ -24139,7 +24139,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4909
-; FirstLine = 4747
-; Folding = ------------------------------------------------------------------------------------------------------------------f8-e9------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24139
+; FirstLine = 24103
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
