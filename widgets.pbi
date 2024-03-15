@@ -4556,16 +4556,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *display
+;                If x = #PB_Ignore
+;                   x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
+;                Else
+;                   x + *display\x + 1
+;                EndIf
+;                If y = #PB_Ignore
+;                   y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
+;                Else
+;                   y + *display\y + 1
+;                EndIf
                If x = #PB_Ignore
-                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
-               Else
-                  x + *display\x + 1
+                  x = *display\screen_x( )
                EndIf
                If y = #PB_Ignore
-                  y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
-               Else
-                  y + *display\y + 1
+                  y = *display\screen_y( ) + *display\screen_height( )
                EndIf
+               
+               y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
+               x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
+               
                
                ;\\ ComboBox
                If *display\CombButton( )
@@ -4889,15 +4899,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *display
                If x = #PB_Ignore
-                  x = 0
+                  x = *display\screen_x( )
                EndIf
                If y = #PB_Ignore
-                  y = *display\screen_height( )
+                  y = *display\screen_y( ) + *display\screen_height( )
                EndIf
-               
+               ;
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               
+               ;
                ;\\ ComboBox
                If *display\CombButton( )
                   If *this\hide
@@ -24129,7 +24139,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4900
-; FirstLine = 4735
+; CursorPosition = 4909
+; FirstLine = 4747
 ; Folding = ------------------------------------------------------------------------------------------------------------------f8-e9------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
