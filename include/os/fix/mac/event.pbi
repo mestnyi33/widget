@@ -430,7 +430,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 392
-; FirstLine = 304
-; Folding = fn-------0
+; CursorPosition = 304
+; FirstLine = 265
+; Folding = fn--------
 ; EnableXP

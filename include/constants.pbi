@@ -565,8 +565,10 @@
       #__event_mousewheely = #__event_wheely
       ;
       #__event_leftbuttondown   = #__event_leftdown
+      #__event_middlebuttondown = #__event_middledown
       #__event_rightbuttondown  = #__event_rightdown
       #__event_leftbuttonup     = #__event_leftup
+      #__event_middlebuttonup   = #__event_middleup
       #__event_rightbuttonup    = #__event_rightup
       #__event_leftdoubleclick  = #__event_left2click
       #__event_rightdoubleclick = #__event_right2click
@@ -870,7 +872,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 814
-; FirstLine = 802
+; CursorPosition = 567
+; FirstLine = 555
 ; Folding = ---
 ; EnableXP

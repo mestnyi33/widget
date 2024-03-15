@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       If is_root_( EventWidget( ))
 ;          DisplayPopupMenu( 0, WindowID(EventWindow()))
 ;       Else
-          DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+          DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
 ;       EndIf
    EndProcedure
    
@@ -162,6 +162,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 57
-; FirstLine = 43
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
