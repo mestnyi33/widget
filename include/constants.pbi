@@ -810,7 +810,12 @@
       CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
          #PB_ToolBar_Small = 1 << 0
       CompilerEndIf
+;       #PB_ToolBar_child
+;       #PB_ToolBar_vertical
       #PB_ToolBar_Buttons = 1<<4
+      #PB_ToolBar_Left    = 1<<5
+      #PB_ToolBar_Right   = 1<<6
+      #PB_ToolBar_Bottom  = 1<<7
       
 ;       Debug #PB_ToolBar_Small
 ;       Debug #PB_ToolBar_Large
@@ -864,6 +869,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 814
+; FirstLine = 802
 ; Folding = ---
 ; EnableXP

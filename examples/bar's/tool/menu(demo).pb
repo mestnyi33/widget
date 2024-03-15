@@ -38,92 +38,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    Uselib(widget)
    
-   Macro menu( )
-      widget( ) ; __gui\popup
-   EndMacro
-   
-   Procedure PopupMenuBar( x, y, width, height )
-      Static count
-      Protected *parent._s_WIDGET, menu 
-      *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
-      
-      menu = menu( )
-      menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
-                        x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical
-      SetColor( menu( ), #__color_back, $FFF7FDFF)
-      Hide(menu( ),  1) 
-      menu( )\menu = menu
-      
-      ;CloseList( ) ; *parent
-      
-      widget( ) = menu( ) 
-      count + 1
-      ProcedureReturn menu( )
-   EndProcedure
-   
-   Procedure CreateMenuBar( *parent._s_widget, flag = #Null )
-      ProcedureReturn ToolBar( *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
-      
-      *parent\MenuBarHeight = #__menu_height
-      
-      Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
-                                          *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-      
-      *parent\TabBox( ) = *this
-      
-      Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
-      
-      widget( ) = *this 
-      ProcedureReturn *this
-   EndProcedure
-   
-   Procedure MenuBarSeparator( )
-      If menu( )
-         AddItem( menu( ), #PB_Ignore, "", - 1, #Null )
-         menu( )\__tabs( )\itemindex = #PB_Ignore
-      EndIf
-   EndProcedure
-   
-   Procedure MenuBarItem( item, text.s, image = - 1 )
-      Protected *item._s_ROWS 
-      If menu( )
-         *item = AddItem( menu( ), - 1, text, image )
-         
-         If menu( )\data
-            *item\parent = menu( )\data
-            *item\parent\childrens + 1
-            *item\parent\data = menu( )
-         EndIf
-      EndIf
-      ProcedureReturn *item
-   EndProcedure
-   
-   Procedure MenuBarOpenSubItem( text.s, image =- 1)
-      Protected *item._s_ROWS
-      If menu( )
-         *item = MenuBarItem( #PB_Ignore, text.s, image )
-         
-         menu( ) = PopupMenuBar( 200,50,200,100 )
-         menu( )\data = *item
-         ;*item\data = menu( )
-         
-         ; Debug "open " +menu( )\menu\class +" "+ menu( )\class
-         ProcedureReturn menu( )
-      EndIf
-   EndProcedure
-   
-   Procedure MenuBarCloseSubItem( )
-      ; Debug "close "+menu( )\class +" "+  menu( )\menu\class
-      If menu( )\menu
-         menu( ) = menu( )\menu
-      EndIf
-   EndProcedure
-   
-   Procedure MenuBarTitle( title.s )
-      MenuBarCloseSubItem( )
-      MenuBarOpenSubItem( title, - 1)
-   EndProcedure
-   
    
    ;-
    Procedure TestHandler()
@@ -173,32 +87,32 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   SetFrame(widget( ), 3);, -1)
    
    Define *menu = CreateMenuBar( *window )
-   MenuBarTitle("Title-1")
-   MenuBarItem(1, "title-1-item-1")
-   MenuBarItem(2, "title-1-item-2")
-   ;   MenuBarSeparator( )
-   ;   MenuBarOpenSubItem("title-1-sub-item")   
-   ;   MenuBarItem(3, "title-1-item-3")
-   ;   MenuBarItem(4, "title-1-item-4")
-   ;   MenuBarCloseSubItem( ) 
-   ;   
-   MenuBarTitle("Title-2")
-   MenuBarItem(5, "title-2-item-1")
-   MenuBarItem(6, "title-2-item-2")
-   ;   
-   ;   MenuBarTitle("Title-event-test")
-   ;   MenuBarItem(7, "test")
-   ;   MenuBarSeparator( )
-   ;   MenuBarItem(8, "quit")
-   ;   
-   ;   MenuBarTitle("Title-4")
-   ;   MenuBarItem(9, "title-4-item-1")
-   ;   MenuBarItem(10, "title-4-item-2")
-   ;   
-   ;   
-   ; ;   Bind(*menu, @TestHandler(), 7)
-   ; ;   Bind(*menu, @QuitHandler(), 8)
-   ;   
+   BarTitle("Title-1")
+   BarItem(1, "title-1-item-1")
+   BarItem(2, "title-1-item-2")
+   BarSeparator( )
+   OpenSubBar("title-1-sub-item")   
+   BarItem(3, "title-1-item-3")
+   BarItem(4, "title-1-item-4")
+   CloseSubBar( ) 
+   
+   BarTitle("Title-2")
+   BarItem(5, "title-2-item-1")
+   BarItem(6, "title-2-item-2")
+   
+   BarTitle("Title-event-test")
+   BarItem(7, "test")
+   BarSeparator( )
+   BarItem(8, "quit")
+   
+   BarTitle("Title-4")
+   BarItem(9, "title-4-item-1")
+   BarItem(10, "title-4-item-2")
+   
+   
+   ;   Bind(*menu, @TestHandler(), 7)
+   ;   Bind(*menu, @QuitHandler(), 8)
+   
    
    
    Define Event
@@ -207,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 105
-; FirstLine = 79
-; Folding = ---
+; CursorPosition = 83
+; FirstLine = 70
+; Folding = -
 ; EnableXP

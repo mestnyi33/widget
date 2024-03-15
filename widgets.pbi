@@ -233,6 +233,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;===TEMP====
+;       Macro BarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+;          MenuBarButton( _button_, _image_, _mode_, _text_ )
+;       EndMacro
+;       Macro BarSeparator( )
+;          MenuBarSeparator( )
+;       EndMacro
+      Macro ToolBar( _parent_, _flags_ = 0 )
+         CreateBar( _parent_, _flags_ )
+      EndMacro
+      Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+         BarButton( _button_, _image_, _mode_, _text_ )
+      EndMacro
+      Macro Separator( )
+         BarSeparator( )
+      EndMacro
       Macro enumWidget( )
          widget( )
       EndMacro
@@ -242,7 +257,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GetIndex( widgetID )
          Index( widgetID )
       EndMacro
-      ;=======
+      Macro TabBoxSize( )
+         ToolBarHeight
+      EndMacro;=======
       
       
       ;- \\
@@ -325,42 +342,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabIndex( ): tabindex: EndMacro        ; index[3]  
       Macro TabState( ): tab\state: EndMacro       ; index[2]  
       Macro TabAddIndex( ): tab\index: EndMacro    ; index[1]  
-      
-      ;-
-      Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
-         If widget( )
-            AddItem( widget( ), - 1, _text_, _image_, _mode_)
-            widget( )\__tabs( )\itemindex = _button_
-         EndIf
-         ;
-         ;    If _image_ > 0
-         ;       ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-         ;    Else
-         ;       Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-         ;    EndIf
-         ;    
-         ;    ;widget( )\color = widget( )\parent\color
-         ;    widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-         ;    widget( )\data = _button_
-         ;    
-         ;    Bind( widget( ), @ide_events( ) )
-      EndMacro
-      
-      Macro Separator( )
-         If widget( )
-            AddItem( widget( ), #PB_Ignore, "", - 1, #Null )
-            widget( )\__tabs( )\itemindex = #PB_Ignore
-         EndIf
-         ;    
-         ;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
-         ;    widget( )\class = "<"
-         ;    Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-         ;    widget( )\class = "|"
-         ;    ; SetData( widget( ), - MacroExpandedCount )
-         ;    Text( widget( )\x+widget( )\width, 5,1,30,"" )
-         ;    widget( )\class = ">"
-      EndMacro
-      
       
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\change
@@ -1397,11 +1378,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 )
       
       ; menu
-      Declare   ToolBar( *parent, flag.q = #PB_ToolBar_Normal )
+      Macro menu( )
+         widget( ) ; __gui\popup
+      EndMacro
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
       Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
+      Declare   ToolBar( *parent, flag.q = #PB_ToolBar_Normal )
+      Declare   CreateMenuBar( *parent, flag.q = #Null )
+      Declare   CreatePopupMenuBar( flag.q = #Null ) 
+      Declare   BarTitle( title.s, image = - 1 )
+      Declare   BarItem( item, text.s, image = - 1 )
+      Declare   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
+      Declare   BarSeparator( )
+      Declare   OpenSubBar( text.s, image = - 1 )
+      Declare   CloseSubBar( )
+      ;Declare   PopupMenuBar( x, y, width, height )
+      
       
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, item.l )
@@ -2782,7 +2776,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
-                     _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] ) - _this_\ToolBarHeight - _address_[#__a_top]\height / 2
+                     _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] ) - _this_\TabBoxSize( ) - _address_[#__a_top]\height / 2
                   EndIf
                Else
                   If _address_[#__a_moved] ; moved
@@ -4325,6 +4319,135 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Macro HideState( _this_ )
+         Bool( _this_\hidden Or
+               _this_\parent\hide Or
+               ( _this_\parent\TabBox( ) And
+                 _this_\parent\TabBox( )\TabState( ) <> _this_\TabIndex( ) ))
+         
+         
+         ; Чтобы обновить границы отоброжения (clip-coordinate)
+         _this_\resize | #__reclip
+      EndMacro
+      
+      
+      Procedure ChildrensState( *this._s_WIDGET, *mode = 0 )
+         If StartEnumerate( *this )
+            ;
+            If *mode = 1
+               ; hide all children's except those whose parent-item is selected
+               __widgets( )\hide = HideState( __widgets( ) )
+            EndIf
+            If *mode = 2
+               ; disable all children's except those whose parent-item is selected
+               If *this\disable
+                  __widgets( )\disable = - 1
+               Else
+                  __widgets( )\disable = 0
+               EndIf
+               
+               If __widgets( )\TabBox( )
+                  If __widgets( )\disable
+                     __widgets( )\TabBox( )\disable = - 1
+                  Else
+                     __widgets( )\TabBox( )\disable = 0
+                  EndIf
+               EndIf
+               If __widgets( )\StringBox( )
+                  If __widgets( )\disable
+                     __widgets( )\StringBox( )\disable = - 1
+                  Else
+                     __widgets( )\StringBox( )\disable = 0
+                  EndIf
+               EndIf
+               If __widgets( )\scroll
+                  If __widgets( )\scroll\v
+                     If __widgets( )\disable
+                        __widgets( )\scroll\v\disable = - 1
+                     Else
+                        __widgets( )\scroll\v\disable = 0
+                     EndIf
+                  EndIf
+                  If __widgets( )\scroll\h
+                     If __widgets( )\disable
+                        __widgets( )\scroll\h\disable = - 1
+                     Else
+                        __widgets( )\scroll\h\disable = 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            StopEnumerate( )
+         EndIf
+      EndProcedure
+      
+      Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default )
+         If State = #PB_Default : ProcedureReturn *this\hide : EndIf
+         
+         If *this\hidden <> state
+            *this\hidden = state
+            
+            *this\hide = HideState( *this )
+            
+            If *this\haschildren
+               ChildrensState( *this, 1 )
+            EndIf
+         EndIf
+      EndProcedure
+      
+      ;
+      Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
+         Protected result.b = *this\disable
+         
+         If State >= 0 And
+            *this\disable <> State
+            *this\disable = State
+            ;Debug " DISABLE - " + *this\class + " " + State
+            
+            If *this\TabBox( )
+               If *this\disable
+                  *this\TabBox( )\disable = - 1
+               Else
+                  *this\TabBox( )\disable = 0
+               EndIf
+            EndIf
+            If *this\StringBox( )
+               If *this\disable
+                  *this\StringBox( )\disable = - 1
+               Else
+                  *this\StringBox( )\disable = 0
+               EndIf
+            EndIf
+            If *this\scroll
+               If *this\scroll\v
+                  If *this\disable
+                     *this\scroll\v\disable = - 1
+                  Else
+                     *this\scroll\v\disable = 0
+                  EndIf
+               EndIf
+               If *this\scroll\h
+                  If *this\disable
+                     *this\scroll\h\disable = - 1
+                  Else
+                     *this\scroll\h\disable = 0
+                  EndIf
+               EndIf
+            EndIf
+            
+            If *this\haschildren
+               ChildrensState( *this, 2 )
+            EndIf
+            
+            PostRepaint( *this\root )
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      
+      ;-
       Procedure ChangeParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
          *parent\haschildren + 1
@@ -4592,12 +4715,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
+      Procedure   DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
          Protected width
          Protected height
          
-                  Protected index
-                  Protected mode = 0
+         Protected index
+         Protected mode = 0
          Protected *displayRoot._s_ROOT
          
          ;\\
@@ -4770,132 +4893,210 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Macro HideState( _this_ )
-         Bool( _this_\hidden Or
-               _this_\parent\hide Or
-               ( _this_\parent\TabBox( ) And
-                 _this_\parent\TabBox( )\TabState( ) <> _this_\TabIndex( ) ))
+      Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
+         *this = *this\parent
          
+         ; reset position
+         *this\fs[1] = 0
+         *this\fs[2] = 0
+         *this\fs[3] = 0
+         *this\fs[4] = 0
          
-         ; Чтобы обновить границы отоброжения (clip-coordinate)
-         _this_\resize | #__reclip
-      EndMacro
-      
-      
-      Procedure ChildrensState( *this._s_WIDGET, *mode = 0 )
-         If StartEnumerate( *this )
-            ;
-            If *mode = 1
-               ; hide all children's except those whose parent-item is selected
-               __widgets( )\hide = HideState( __widgets( ) )
+         If position = 1 Or position = 3
+            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+               *this\TabBoxSize( ) = 80
             EndIf
-            If *mode = 2
-               ; disable all children's except those whose parent-item is selected
-               If *this\disable
-                  __widgets( )\disable = - 1
-               Else
-                  __widgets( )\disable = 0
-               EndIf
-               
-               If __widgets( )\TabBox( )
-                  If __widgets( )\disable
-                     __widgets( )\TabBox( )\disable = - 1
-                  Else
-                     __widgets( )\TabBox( )\disable = 0
-                  EndIf
-               EndIf
-               If __widgets( )\StringBox( )
-                  If __widgets( )\disable
-                     __widgets( )\StringBox( )\disable = - 1
-                  Else
-                     __widgets( )\StringBox( )\disable = 0
-                  EndIf
-               EndIf
-               If __widgets( )\scroll
-                  If __widgets( )\scroll\v
-                     If __widgets( )\disable
-                        __widgets( )\scroll\v\disable = - 1
-                     Else
-                        __widgets( )\scroll\v\disable = 0
-                     EndIf
-                  EndIf
-                  If __widgets( )\scroll\h
-                     If __widgets( )\disable
-                        __widgets( )\scroll\h\disable = - 1
-                     Else
-                        __widgets( )\scroll\h\disable = 0
-                     EndIf
-                  EndIf
-               EndIf
+         EndIf
+         
+         If position = 0
+            *this\TabBox( )\hide = 1
+         Else
+            *this\TabBox( )\hide = 0
+         EndIf
+         
+         If position = 1
+            *this\TabBox( )\bar\vertical = 1
+            If size = #PB_Default
+               *this\fs[1] = *this\TabBoxSize( ) + 2 ; #__panel_width
+            Else
+               *this\fs[1] = size
             EndIf
-            ;
-            StopEnumerate( )
+         EndIf
+         
+         If position = 3
+            *this\TabBox( )\bar\vertical = 1
+            If size = #PB_Default
+               *this\fs[3] = *this\TabBoxSize( ) + 2 ; #__panel_width
+            Else
+               *this\fs[3] = size
+            EndIf
+         EndIf
+         
+         If position = 2
+            *this\TabBox( )\bar\vertical = 0
+            If size = #PB_Default
+               *this\fs[2] = *this\TabBoxSize( ) + 2 ; #__panel_height
+            Else
+               *this\fs[2] = size
+            EndIf
+         EndIf
+         
+         If position = 4
+            *this\TabBox( )\bar\vertical = 0
+            If size = #PB_Default
+               *this\fs[4] = *this\TabBoxSize( ) + 2 ; #__panel_height
+            Else
+               *this\fs[4] = size
+            EndIf
+         EndIf
+         
+         If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            PostEventRepaint( *this\root )
          EndIf
       EndProcedure
       
-      Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default )
-         If State = #PB_Default : ProcedureReturn *this\hide : EndIf
+      Procedure   CreateBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
+         ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         ;
+         If Not *parent
+            *parent = Root( )
+         EndIf
          
-         If *this\hidden <> state
-            *this\hidden = state
+         If flag & #PB_ToolBar_Small 
+            *parent\TabBoxSize( ) = 25
+         ElseIf flag & #PB_ToolBar_Large 
+            *parent\TabBoxSize( ) = 45
+         Else ; If flag & #PB_ToolBar_Normal 
+            *parent\TabBoxSize( ) = 35
+         EndIf
+         
+         ;*parent\TabBoxSize( ) + 2
+         ;If Not flag & #PB_ToolBar_InlineText
+         If flag & #PB_ToolBar_Left Or flag & #PB_ToolBar_Right
+            *parent\TabBoxSize( ) + 40
+         EndIf
+         ;EndIf
+         
+         If flag & #PB_ToolBar_Left
+            Flag | #__flag_vertical
+            *parent\fs[1] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         ElseIf flag & #PB_ToolBar_Right
+            Flag | #__flag_vertical
+            *parent\fs[3] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         ElseIf flag & #PB_ToolBar_Bottom
+            *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         Else
+            *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         EndIf
+         
+         ;
+         ;Debug "size "+*parent\fs[2] +" "+ *parent\TabBoxSize( )
+         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
+                                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+         *parent\TabBox( ) = *this  
+         ;Debug widget( )
+         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         ;Debug widget( )
+         ;
+         widget( ) = *this 
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure   PopupMenuBar( x, y, width, height )
+         Static count
+         Protected *parent._s_WIDGET, menu 
+         *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
+         
+         menu = menu( )
+         menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
+                           x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical
+         SetColor( menu( ), #__color_back, $FFF7FDFF)
+         Hide(menu( ),  1) 
+         menu( )\menu = menu
+         
+         ;CloseList( ) ; *parent
+         
+         widget( ) = menu( ) 
+         count + 1
+         ProcedureReturn menu( )
+      EndProcedure
+      
+      Procedure   CreatePopupMenuBar( flag.q = #Null ) 
+         ProcedureReturn PopupMenuBar( 10, 10, 100, 200 )
+         ;       ;menu( ) = Create( root( ), "PopupMenu", #__type_ListView, 0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
+         ;       menu( ) = Create( root( ), "PopupMenu", #__type_Menu, 0, 0, 0, 0, #Null$, #__flag_child|#__flag_vertical, 0, 0, 0, 0, 0, 30 )
+         ;       
+         ;       
+         ;       ;Hide( menu( ), #True )
+         ;       ProcedureReturn menu( )
+      EndProcedure
+      
+      Procedure   CreateMenuBar( *parent._s_widget, flag.q = #Null )
+         ProcedureReturn CreateBar( *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
+         
+         *parent\MenuBarHeight = #__menu_height
+         
+         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
+                                             *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+         
+         *parent\TabBox( ) = *this
+         
+         Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
+         
+         widget( ) = *this 
+         ProcedureReturn *this
+      EndProcedure
+      
+      ;-
+      Procedure   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
+         Protected *item._s_ROWS 
+         If menu( )
+            *item = AddItem( menu( ), - 1, text, image, mode)
+            *item\itemindex = button
+         EndIf
+         ProcedureReturn *item
+      EndProcedure
+      
+      Procedure   BarSeparator( )
+         BarButton( #PB_Ignore, - 1, #Null, #Null$ )
+      EndProcedure
+      
+      Procedure   BarItem( item, text.s, image = - 1 )
+         Protected *item._s_ROWS 
+         If menu( )
+            *item = BarButton( - 1, image, #Null, text.s )
             
-            *this\hide = HideState( *this )
-            
-            If *this\haschildren
-               ChildrensState( *this, 1 )
+            If menu( )\data
+               *item\parent = menu( )\data
+               *item\parent\childrens + 1
+               *item\parent\data = menu( )
             EndIf
+         EndIf
+         ProcedureReturn *item
+      EndProcedure
+      
+      Procedure   BarTitle( title.s, image = - 1 )
+         CloseSubBar( )
+         OpenSubBar( title, image )
+      EndProcedure
+      
+      Procedure   OpenSubBar( text.s, image = - 1)
+         Protected *item._s_ROWS
+         If menu( )
+            *item = BarItem( #PB_Ignore, text.s, image )
+            menu( ) = PopupMenuBar( 200,50,200,100 )
+            menu( )\data = *item
+            ProcedureReturn menu( )
          EndIf
       EndProcedure
       
-      ;
-      Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
-         Protected result.b = *this\disable
-         
-         If State >= 0 And
-            *this\disable <> State
-            *this\disable = State
-            ;Debug " DISABLE - " + *this\class + " " + State
-            
-            If *this\TabBox( )
-               If *this\disable
-                  *this\TabBox( )\disable = - 1
-               Else
-                  *this\TabBox( )\disable = 0
-               EndIf
-            EndIf
-            If *this\StringBox( )
-               If *this\disable
-                  *this\StringBox( )\disable = - 1
-               Else
-                  *this\StringBox( )\disable = 0
-               EndIf
-            EndIf
-            If *this\scroll
-               If *this\scroll\v
-                  If *this\disable
-                     *this\scroll\v\disable = - 1
-                  Else
-                     *this\scroll\v\disable = 0
-                  EndIf
-               EndIf
-               If *this\scroll\h
-                  If *this\disable
-                     *this\scroll\h\disable = - 1
-                  Else
-                     *this\scroll\h\disable = 0
-                  EndIf
-               EndIf
-            EndIf
-            
-            If *this\haschildren
-               ChildrensState( *this, 2 )
-            EndIf
-            
-            PostRepaint( *this\root )
+      Procedure   CloseSubBar( )
+         If menu( )\menu
+            menu( ) = menu( )\menu
          EndIf
-         
-         ProcedureReturn result
       EndProcedure
+      
+      
       
       ;-
       Macro clip_output_( _address_, _mode_ = [#__c_draw] )
@@ -5144,13 +5345,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;          If *this\barHeight
-         ;             Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\ToolBarHeight
+         ;             Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\TabBoxSize( )
          ;          EndIf
          
          ;\\
          If *this\type = #__type_Window 
-            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-               *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\TabBoxSize( )
+               *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\TabBoxSize( )
             EndIf
          EndIf
          
@@ -6068,12 +6269,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If Not *this\hide 
-               
                ; - widget::bar_tab_update_( )
                If *this\TabChange( )
                   *bar\max = 0
                   *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
-                  ;Debug " --- widget::Tab_Update( ) - " + *this\image\x
+                  Debug " --- widget::Tab_Update( ) - " + *this\width +" "+ *this\height
                   
                   If *bar\vertical
                      *this\text\y = text_pos
@@ -6290,8 +6490,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
          
-         If _address_\childrens
-            DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
+         If _vertical_
+            If _address_\childrens
+               DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
+            EndIf
          EndIf
          ;          
          ;          Debug ""+_address_\childrens +" "+ _address_\parent
@@ -6376,8 +6578,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *items( )\childrens
-                     DrawText( x + *items( )\text\x + *items( )\text\width + 20, y + *items( )\text\y, ">", *items( )\color\front & $FFFFFF | *items( )\color\_alpha << 24 )
+                  If vertical
+                     If *items( )\childrens
+                        DrawText( x + *items( )\text\x + *items( )\text\width + 20, y + *items( )\text\y, ">", *items( )\color\front & $FFFFFF | *items( )\color\_alpha << 24 )
+                     EndIf
                   EndIf
                   
                   
@@ -17863,41 +18067,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure ToolBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
-         ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
-         ;
-         If Not *parent
-            *parent = Root( )
-         EndIf
-         
-         If flag & #PB_ToolBar_Small 
-            *parent\ToolBarHeight = 25
-         ElseIf flag & #PB_ToolBar_Large 
-            *parent\ToolBarHeight = 45
-         Else ; If flag & #PB_ToolBar_Normal 
-            *parent\ToolBarHeight = 35
-         EndIf
-         
-         ;*parent\ToolBarHeight + 2
-         If Not flag & #PB_ToolBar_InlineText
-            ; *parent\ToolBarHeight + 20
-         EndIf
-         ;*parent\fs = 4
-         ;  *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
-         *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\ToolBarHeight + 2
-         ;*parent\ToolBarHeight - 3
-         ;
-         Debug "size "+*parent\fs[2] +" "+ *parent\ToolBarHeight
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
-                                             0, 0, 0, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-         *parent\TabBox( ) = *this
-         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         
-         widget( ) = *this 
-         
-         ProcedureReturn *this
-      EndProcedure
-      
       Procedure ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
          *this\tt\text\string = Text
       EndProcedure
@@ -20614,15 +20783,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\EnteredTab( ) And
                   Leaved( *this\EnteredTab( ) )
                   *this\root\repaint = #True
-                    
-                  If *this\enter
-                     If *this\type = #__type_Menu
-                        If *this\EnteredTab( )\childrens
-                           If *this\EnteredTab( )\data 
-                              Debug "leave "+  *this\class +" "+ *tabRow +" "+ ClassFromEvent(eventtype);GetClass(*this)+" "+ GetClass(*this\EnteredTab( )\data)
-                              Hide( GetRoot( *this\EnteredTab( )\data ), 1 )
-                              HideWindow( GetWindow( GetRoot( *this\EnteredTab( )\data ) ), 1 )
-                           EndIf
+                  ;
+                  If *this\EnteredTab( )\childrens
+                     If *this\EnteredTab( )\data 
+                        If *this\enter
+                           Debug "hide bar and leave "+  *this\class +" "+ *tabRow +" "+ ClassFromEvent(eventtype);GetClass(*this)+" "+ GetClass(*this\EnteredTab( )\data)
+                           Hide( GetRoot( *this\EnteredTab( )\data ), 1 )
+                           HideWindow( GetWindow( GetRoot( *this\EnteredTab( )\data ) ), 1 )
                         EndIf
                      EndIf
                   EndIf
@@ -20634,20 +20801,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\enter
                   If *this\EnteredTab( ) And
                      Entered( *this\EnteredTab( ) )
-                     If *this\type = #__type_Menu
-                        If *this\EnteredTab( )\childrens
-                           If *this\EnteredTab( )\data 
-                              Debug 888
+                     *this\root\repaint = #True
+                     ;
+                     If *this\EnteredTab( )\childrens
+                        If *this\EnteredTab( )\data 
+                           If *this\bar\vertical
+                              Debug "show menubar"
                               ;Hide( *this\EnteredTab( )\data, 0 )
                               DisplayPopupMenuBar( *this\EnteredTab( )\data, *this, 
                                                    GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\screen_width( ) - 10, 
                                                    GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\y)
                               
+                           Else
+                              Debug "show toolbar"
+                              ;Hide( *this\EnteredTab( )\data, 0 )
+                              DisplayPopupMenuBar( *this\EnteredTab( )\data, *this, 
+                                                   GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\x, 
+                                                   GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\y + *this\EnteredTab( )\height)
                               
                            EndIf
                         EndIf
                      EndIf
-                     *this\root\repaint = #True
                   EndIf
                EndIf
             EndIf
@@ -23954,7 +24128,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4721
-; FirstLine = 4643
-; Folding = -------------------------------------------------------------------------------------------------------------n-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------
+; CursorPosition = 6581
+; FirstLine = 6359
+; Folding = ------------------------------------------------------------------------------------------------------------------f----f--8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -669,14 +669,6 @@ Declare ide_events( )
 
 
 ;-
-; Macro ToolBar( parent, flag = #PB_ToolBar_Small )
-;    widget( )\class = "TOOLBAR"
-;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
-;    widget( )\class = "^"
-; EndMacro
-
-
-;-
 Procedure.i ide_add_image_list( *id, Directory$ )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
@@ -1046,39 +1038,39 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
    w_ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
-   w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
-   ToolBarButton( #_tb_file_open, -1, 0, "Open" )
-   ToolBarButton( #_tb_file_save, -1, 0, "Save" )
-   Separator( )
-   ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
-   ; TEMP
-   If Type(widget( )) = #__type_Button
-      SetState(widget( ), 1) 
-      SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-      SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
-   EndIf
+   w_ide_toolbar = CreateBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
+   BarButton( #_tb_file_open, -1, 0, "Open" )
+   BarButton( #_tb_file_save, -1, 0, "Save" )
+   BarSeparator( )
+   BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
+;    ; TEMP
+;    If Type(widget( )) = #__type_Button
+;       SetState(widget( ), 1) 
+;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+;    EndIf
    ;
-   Separator( )
-   ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-   ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
-   Separator( )
-   ToolBarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-   ToolBarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
-   Separator( )
-   ToolBarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-   ToolBarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+   BarSeparator( )
+   BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+   BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+   BarSeparator( )
+   BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+   BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   BarSeparator( )
+   BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+   BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
    
-   Separator( )
-   ToolBarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-   ToolBarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-   ToolBarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-   ToolBarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
-   Separator( )
-   ToolBarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-   ToolBarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-   ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-   ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-   ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+   BarSeparator( )
+   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+   BarSeparator( )
+   BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+   BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+   BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+   BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
    CloseList( )
    
    ; gadgets
@@ -1344,7 +1336,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1179
-; FirstLine = 753
+; CursorPosition = 1049
+; FirstLine = 623
 ; Folding = ---------2+4v+-4Tl-----
 ; EnableXP

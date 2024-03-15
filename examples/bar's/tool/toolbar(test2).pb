@@ -54,7 +54,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndEnumeration
    
-   Procedure ToolBarEvents( )
+   Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+     MenuBarButton( _button_, _image_, _mode_, _text_ )
+  EndMacro
+  
+  Macro Separator( )
+     MenuBarSeparator( )
+  EndMacro
+  
+  Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
       Protected toolbarbutton = GetData( *e_widget ) 
       
@@ -202,7 +210,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 127
-; FirstLine = 118
+; CursorPosition = 64
+; FirstLine = 56
 ; Folding = --
 ; EnableXP

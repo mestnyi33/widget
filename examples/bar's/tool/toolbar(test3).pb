@@ -82,7 +82,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   Procedure ToolBarEvents( )
+   Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+     MenuBarButton( _button_, _image_, _mode_, _text_ )
+  EndMacro
+  
+  Macro Separator( )
+     MenuBarSeparator( )
+  EndMacro
+  
+  Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
       Protected toolbarbutton = WidgetEventItem( ) ; GetData( *e_widget ) 
       
@@ -286,7 +294,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 204
-; FirstLine = 158
-; Folding = -0
+; CursorPosition = 92
+; FirstLine = 84
+; Folding = -4-
 ; EnableXP
