@@ -51,11 +51,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ClickHandler( )
-      If is_root_( EventWidget( ))
-         DisplayPopupMenu( 0, WindowID(EventWindow()))
-      Else
-         DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-      EndIf
+      Debug " "+mouse( )\x +" "+ mouse( )\y 
+;       If is_root_( EventWidget( ))
+;          DisplayPopupMenu( 0, WindowID(EventWindow()))
+;       Else
+          DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+;       EndIf
    EndProcedure
    
    ;\\
@@ -104,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-   Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+   Define *container._s_widget = Container( 100, 10, 300-20-90, 100-20, #PB_Container_Flat ) : CloseList( )
    CloseList( )
    ;   widget( )\bs = 8
    ;   SetFrame(widget( ), 3);, -1)
@@ -160,7 +161,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 107
+; CursorPosition = 57
+; FirstLine = 43
 ; Folding = -
 ; EnableXP

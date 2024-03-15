@@ -4715,6 +4715,162 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      
+      ;-
+      Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
+         *this = *this\parent
+         
+         ; reset position
+         *this\fs[1] = 0
+         *this\fs[2] = 0
+         *this\fs[3] = 0
+         *this\fs[4] = 0
+         
+         If position = 1 Or position = 3
+            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+               *this\TabBoxSize( ) = 80
+            EndIf
+         EndIf
+         
+         If position = 0
+            *this\TabBox( )\hide = 1
+         Else
+            *this\TabBox( )\hide = 0
+         EndIf
+         
+         If position = 1
+            *this\TabBox( )\bar\vertical = 1
+            If size = #PB_Default
+               *this\fs[1] = *this\TabBoxSize( ) + 2 ; #__panel_width
+            Else
+               *this\fs[1] = size
+            EndIf
+         EndIf
+         
+         If position = 3
+            *this\TabBox( )\bar\vertical = 1
+            If size = #PB_Default
+               *this\fs[3] = *this\TabBoxSize( ) + 2 ; #__panel_width
+            Else
+               *this\fs[3] = size
+            EndIf
+         EndIf
+         
+         If position = 2
+            *this\TabBox( )\bar\vertical = 0
+            If size = #PB_Default
+               *this\fs[2] = *this\TabBoxSize( ) + 2 ; #__panel_height
+            Else
+               *this\fs[2] = size
+            EndIf
+         EndIf
+         
+         If position = 4
+            *this\TabBox( )\bar\vertical = 0
+            If size = #PB_Default
+               *this\fs[4] = *this\TabBoxSize( ) + 2 ; #__panel_height
+            Else
+               *this\fs[4] = size
+            EndIf
+         EndIf
+         
+         If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            PostEventRepaint( *this\root )
+         EndIf
+      EndProcedure
+      
+      Procedure   CreateBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
+         ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
+         ;
+         If Not *parent
+            *parent = Root( )
+         EndIf
+         
+         If flag & #PB_ToolBar_Small 
+            *parent\TabBoxSize( ) = 25
+         ElseIf flag & #PB_ToolBar_Large 
+            *parent\TabBoxSize( ) = 45
+         Else ; If flag & #PB_ToolBar_Normal 
+            *parent\TabBoxSize( ) = 35
+         EndIf
+         
+         ;*parent\TabBoxSize( ) + 2
+         ;If Not flag & #PB_ToolBar_InlineText
+         If flag & #PB_ToolBar_Left Or flag & #PB_ToolBar_Right
+            *parent\TabBoxSize( ) + 40
+         EndIf
+         ;EndIf
+         
+         If flag & #PB_ToolBar_Left
+            Flag | #__flag_vertical
+            *parent\fs[1] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         ElseIf flag & #PB_ToolBar_Right
+            Flag | #__flag_vertical
+            *parent\fs[3] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         ElseIf flag & #PB_ToolBar_Bottom
+            *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         Else
+            *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+         EndIf
+         
+         ;
+         ;Debug "size "+*parent\fs[2] +" "+ *parent\TabBoxSize( )
+         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
+                                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+         *parent\TabBox( ) = *this  
+         ;Debug widget( )
+         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         ;Debug widget( )
+         ;
+         widget( ) = *this 
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure   PopupMenuBar( x, y, width, height )
+         Static count
+         Protected *parent._s_WIDGET, menu 
+         *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
+         
+         menu = menu( )
+         menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
+                           x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical
+         SetColor( menu( ), #__color_back, $FFF7FDFF)
+         Hide(menu( ),  1) 
+         menu( )\menu = menu
+         
+         ;CloseList( ) ; *parent
+         
+         widget( ) = menu( ) 
+         count + 1
+         ProcedureReturn menu( )
+      EndProcedure
+      
+      Procedure   CreateMenuBar( *parent._s_widget, flag.q = #Null )
+         ProcedureReturn CreateBar( *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
+         
+         *parent\MenuBarHeight = #__menu_height
+         
+         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
+                                             *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+         
+         *parent\TabBox( ) = *this
+         
+         Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
+         
+         widget( ) = *this 
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure   CreatePopupMenuBar( flag.q = #Null ) 
+         ProcedureReturn PopupMenuBar( 10, 10, 100, 200 )
+         ;       ;menu( ) = Create( root( ), "PopupMenu", #__type_ListView, 0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
+         ;       menu( ) = Create( root( ), "PopupMenu", #__type_Menu, 0, 0, 0, 0, #Null$, #__flag_child|#__flag_vertical, 0, 0, 0, 0, 0, 30 )
+         ;       
+         ;       
+         ;       ;Hide( menu( ), #True )
+         ;       ProcedureReturn menu( )
+      EndProcedure
+      
       Procedure   DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
          Protected width
          Protected height
@@ -4733,14 +4889,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *display
                If x = #PB_Ignore
-                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
+                  x = 0
                EndIf
                If y = #PB_Ignore
-                  y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\screen_height( )
+                  y = *display\screen_height( )
                EndIf
                
-               x + *display\screen_x( )
-               y + *display\screen_y( )
+               y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
+               x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                
                ;\\ ComboBox
                If *display\CombButton( )
@@ -4891,162 +5047,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndProcedure
-      
-      ;-
-      Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
-         *this = *this\parent
-         
-         ; reset position
-         *this\fs[1] = 0
-         *this\fs[2] = 0
-         *this\fs[3] = 0
-         *this\fs[4] = 0
-         
-         If position = 1 Or position = 3
-            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
-               *this\TabBoxSize( ) = 80
-            EndIf
-         EndIf
-         
-         If position = 0
-            *this\TabBox( )\hide = 1
-         Else
-            *this\TabBox( )\hide = 0
-         EndIf
-         
-         If position = 1
-            *this\TabBox( )\bar\vertical = 1
-            If size = #PB_Default
-               *this\fs[1] = *this\TabBoxSize( ) + 2 ; #__panel_width
-            Else
-               *this\fs[1] = size
-            EndIf
-         EndIf
-         
-         If position = 3
-            *this\TabBox( )\bar\vertical = 1
-            If size = #PB_Default
-               *this\fs[3] = *this\TabBoxSize( ) + 2 ; #__panel_width
-            Else
-               *this\fs[3] = size
-            EndIf
-         EndIf
-         
-         If position = 2
-            *this\TabBox( )\bar\vertical = 0
-            If size = #PB_Default
-               *this\fs[2] = *this\TabBoxSize( ) + 2 ; #__panel_height
-            Else
-               *this\fs[2] = size
-            EndIf
-         EndIf
-         
-         If position = 4
-            *this\TabBox( )\bar\vertical = 0
-            If size = #PB_Default
-               *this\fs[4] = *this\TabBoxSize( ) + 2 ; #__panel_height
-            Else
-               *this\fs[4] = size
-            EndIf
-         EndIf
-         
-         If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            PostEventRepaint( *this\root )
-         EndIf
-      EndProcedure
-      
-      Procedure   CreateBar( *parent._s_WIDGET, flag.q = #PB_ToolBar_Normal )
-         ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
-         ;
-         If Not *parent
-            *parent = Root( )
-         EndIf
-         
-         If flag & #PB_ToolBar_Small 
-            *parent\TabBoxSize( ) = 25
-         ElseIf flag & #PB_ToolBar_Large 
-            *parent\TabBoxSize( ) = 45
-         Else ; If flag & #PB_ToolBar_Normal 
-            *parent\TabBoxSize( ) = 35
-         EndIf
-         
-         ;*parent\TabBoxSize( ) + 2
-         ;If Not flag & #PB_ToolBar_InlineText
-         If flag & #PB_ToolBar_Left Or flag & #PB_ToolBar_Right
-            *parent\TabBoxSize( ) + 40
-         EndIf
-         ;EndIf
-         
-         If flag & #PB_ToolBar_Left
-            Flag | #__flag_vertical
-            *parent\fs[1] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
-         ElseIf flag & #PB_ToolBar_Right
-            Flag | #__flag_vertical
-            *parent\fs[3] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
-         ElseIf flag & #PB_ToolBar_Bottom
-            *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
-         Else
-            *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
-         EndIf
-         
-         ;
-         ;Debug "size "+*parent\fs[2] +" "+ *parent\TabBoxSize( )
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar,
-                                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-         *parent\TabBox( ) = *this  
-         ;Debug widget( )
-         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         ;Debug widget( )
-         ;
-         widget( ) = *this 
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure   PopupMenuBar( x, y, width, height )
-         Static count
-         Protected *parent._s_WIDGET, menu 
-         *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
-         
-         menu = menu( )
-         menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
-                           x, y, width, height, #Null$, #__flag_vertical, 0, 0, 0, 0, 0, 30 ) ; |#__flag_vertical
-         SetColor( menu( ), #__color_back, $FFF7FDFF)
-         Hide(menu( ),  1) 
-         menu( )\menu = menu
-         
-         ;CloseList( ) ; *parent
-         
-         widget( ) = menu( ) 
-         count + 1
-         ProcedureReturn menu( )
-      EndProcedure
-      
-      Procedure   CreatePopupMenuBar( flag.q = #Null ) 
-         ProcedureReturn PopupMenuBar( 10, 10, 100, 200 )
-         ;       ;menu( ) = Create( root( ), "PopupMenu", #__type_ListView, 0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
-         ;       menu( ) = Create( root( ), "PopupMenu", #__type_Menu, 0, 0, 0, 0, #Null$, #__flag_child|#__flag_vertical, 0, 0, 0, 0, 0, 30 )
-         ;       
-         ;       
-         ;       ;Hide( menu( ), #True )
-         ;       ProcedureReturn menu( )
-      EndProcedure
-      
-      Procedure   CreateMenuBar( *parent._s_widget, flag.q = #Null )
-         ProcedureReturn CreateBar( *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
-         
-         *parent\MenuBarHeight = #__menu_height
-         
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_Menu", #__type_Menu, 0, 0, 0, 
-                                             *parent\MenuBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-         
-         *parent\TabBox( ) = *this
-         
-         Resize( *parent, #PB_Ignore, *parent\inner_y( )+1, #PB_Ignore, #PB_Ignore )
-         
-         widget( ) = *this 
-         ProcedureReturn *this
-      EndProcedure
-      
       ;-
       Procedure   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
          Protected *item._s_ROWS 
@@ -20805,19 +20805,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If *this\EnteredTab( )\childrens
                         If *this\EnteredTab( )\data 
+                           Protected *popupmenu._s_WIDGET = *this\EnteredTab( )\data
                            If *this\bar\vertical
                               Debug "show menubar"
                               ;Hide( *this\EnteredTab( )\data, 0 )
                               DisplayPopupMenuBar( *this\EnteredTab( )\data, *this, 
-                                                   GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\screen_width( ) - 10, 
-                                                   GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\y)
+                                                   *this\screen_width( ) - 10, 
+                                                   *this\EnteredTab( )\y)
                               
                            Else
                               Debug "show toolbar"
                               ;Hide( *this\EnteredTab( )\data, 0 )
                               DisplayPopupMenuBar( *this\EnteredTab( )\data, *this, 
-                                                   GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\x, 
-                                                   GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *this\EnteredTab( )\y + *this\EnteredTab( )\height)
+                                                   *this\screen_x( ) + *this\EnteredTab( )\x, 
+                                                   *this\screen_y( ) + *this\EnteredTab( )\y + *this\EnteredTab( )\height)
                               
                            EndIf
                         EndIf
@@ -24128,7 +24129,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6581
-; FirstLine = 6359
-; Folding = ------------------------------------------------------------------------------------------------------------------f----f--8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4900
+; FirstLine = 4735
+; Folding = ------------------------------------------------------------------------------------------------------------------f8-e9------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
