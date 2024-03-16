@@ -1012,15 +1012,17 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_LeftClick
-         If type( *e_widget ) = #__type_ToolBar
-            If *e_widget\EnteredTab( )
-               ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
-            EndIf
-         Else
-            If getclass( *e_widget ) = "ToolBar"
-               ide_menu_events( *e_widget, GetData( *e_widget ) )
-            EndIf
-         EndIf
+         ide_menu_events( *e_widget, WidgetEventItem( ) )
+         
+;          If type( *e_widget ) = #__type_ToolBar
+;             If *e_widget\EnteredTab( )
+;                ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
+;             EndIf
+;          Else
+;             If getclass( *e_widget ) = "ToolBar"
+;                ide_menu_events( *e_widget, GetData( *e_widget ) )
+;             EndIf
+;          EndIf
          
    EndSelect
 EndProcedure
@@ -1336,7 +1338,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1049
-; FirstLine = 623
-; Folding = ---------2+4v+-4Tl-----
+; CursorPosition = 1015
+; FirstLine = 680
+; Folding = ---------2+4v+-4bl----
 ; EnableXP

@@ -5,7 +5,7 @@
 ;                                           Menu( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
 ;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
 ; 
-;                             Display( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
+;                        DisplayPopup( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
 ; 
@@ -80,11 +80,11 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 7, @TestHandler())
    BindMenuEvent(0, 8, @QuitHandler())
    
-   ;
-   Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-   Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
-   ;   widget( )\bs = 8
-   ;   SetFrame(widget( ), 3);, -1)
+   Define *window._s_widget = root( )
+;    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
+;    Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+;    ;   widget( )\bs = 8
+;    ;   SetFrame(widget( ), 3);, -1)
    
    Define *menu = CreateMenuBar( *window )
    BarTitle("Title-1")
@@ -110,8 +110,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(10, "title-4-item-2")
    
    
-   ;   Bind(*menu, @TestHandler(), 7)
-   ;   Bind(*menu, @QuitHandler(), 8)
+   Bind(*menu, @TestHandler(), #PB_All, 7)
+   Bind(*menu, @QuitHandler(), #PB_All, 8)
    
    
    
@@ -121,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 70
+; CursorPosition = 11
+; FirstLine = 2
 ; Folding = -
 ; EnableXP
