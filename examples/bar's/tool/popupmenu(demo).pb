@@ -18,12 +18,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ClickHandler( )
-      Debug " "+mouse( )\x +" "+ mouse( )\y 
-;       If is_root_( EventWidget( ))
-;          DisplayPopupMenu( 0, WindowID(EventWindow()))
-;       Else
+      ;Debug " "+mouse( )\x +" "+ mouse( )\y 
+      If is_root_( EventWidget( ))
+         DisplayPopupMenu( 0, WindowID(EventWindow()))
+      Else
           DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-;       EndIf
+      EndIf
    EndProcedure
    
    ;\\
@@ -126,7 +126,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; FirstLine = 10
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

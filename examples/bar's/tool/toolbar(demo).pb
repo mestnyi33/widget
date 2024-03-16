@@ -35,17 +35,19 @@ CompilerIf #PB_Compiler_IsMainFile
    
   Procedure ToolBarGadgetEvents( )
      Debug EventMenu( )
-  EndProcedure
+   EndProcedure
    
+  ;SetGadgetFont(#PB_All, LoadFont(1,"Arial", 50))
+  
   If OpenWindow(0, 100, 200, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
     
     ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
     ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
     ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text)
-    If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small)
-      ToolBarImageButton(10, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      ToolBarImageButton(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      ToolBarImageButton(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
+    If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small|#PB_ToolBar_Text)
+      ToolBarImageButton(10, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
+      ToolBarImageButton(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
+      ToolBarImageButton(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
       
       ToolBarSeparator()
       
@@ -76,8 +78,8 @@ CompilerIf #PB_Compiler_IsMainFile
      
     ; *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
     ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-    *toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
-    ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
+    ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
+    *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
     
     If *toolbar
       BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
@@ -129,7 +131,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
