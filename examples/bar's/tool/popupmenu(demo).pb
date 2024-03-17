@@ -77,31 +77,30 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   widget( )\bs = 8
    ;   SetFrame(widget( ), 3);, -1)
    
-   *menu = CreatePopupMenuBar( )
-   
+   *menu = CreatePopupBar( )
    BarItem(1, "Open")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
    BarSeparator( )
    ;
-   OpenSubBar("open sub item 1")
+   OpenBar("open sub item 1")
    BarItem(5, "5 sub item")
    BarItem(6, "6 sub item")
-   CloseSubBar()
+   CloseBar()
    ;
    BarSeparator( )
    BarItem(3, "Before")
    BarItem(4, "After")
    BarSeparator( )
    ;
-   OpenSubBar("open sub item 2")
+   OpenBar("open sub item 2")
    BarItem(10, "10 sub item")
    BarItem(11, "11 sub item")
    BarSeparator( )
    ;
-   OpenSubBar("open sub item 3")
+   OpenBar("open sub item 3")
    BarItem(12, "12 sub item")
    BarItem(13, "13 sub item")
-   CloseSubBar()
+   CloseBar()
    ;
    BarSeparator( )
    BarItem(14, "14 sub item")
@@ -109,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BarSeparator( )
    BarItem(16, "16 sub item")
    BarItem(17, "17 sub item")
-   CloseSubBar( )
+   CloseBar( )
    ;
    BarSeparator( )
    BarItem(7, "exit")
@@ -126,6 +125,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 80
+; FirstLine = 73
 ; Folding = -
 ; EnableXP

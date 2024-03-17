@@ -1042,12 +1042,12 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    w_ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
    w_ide_toolbar = CreateBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
    ;BarTitle("Menu")
-   OpenSubBar("Menu")
+   OpenBar("Menu")
    BarItem(#_tb_file_open, "Open")
    BarItem(#_tb_file_save, "Save")
 ;    BarButton( #_tb_file_open, -1, 0, "Open" )
 ;    BarButton( #_tb_file_save, -1, 0, "Save" )
-   CloseSubBar()
+   CloseBar()
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
 ;    ; TEMP
@@ -1342,6 +1342,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1049
+; FirstLine = 717
 ; Folding = ---------2+4v+-4bl----
 ; EnableXP

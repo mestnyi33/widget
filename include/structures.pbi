@@ -361,6 +361,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *parent._s_rows
          childrens.w ; Row( )\ ; rows( )\ ; row\
+         sublevel.w
          
          *data  ; set/get item data
       EndStructure
@@ -383,7 +384,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          margin._s_edit
          
          ;*data  ; set/get item data
-         sublevel.w
       EndStructure
       
       Structure _s_VISIBLEITEMS
@@ -688,10 +688,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *root._s_ROOT
          *window._s_WIDGET
          *parent._s_WIDGET
+         *parentmenu._s_WIDGET
          *address                 ; widget( )\ list address
          main.b                   ; is root
-     *menu._s_WIDGET
-          EndStructure
+      EndStructure
       
       ;--     CANVAS
       Structure _s_CANVAS
@@ -717,6 +717,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *message._s_WIDGET            ; message window element
          *tooltip._s_WIDGET            ; tool tip element
          *window._s_ROOT               ; top level window element
+         *bar._s_ROOT
       EndStructure
       
       ;--     STRUCT
@@ -731,7 +732,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *widget._s_WIDGET             ; enumerate widget
          *root._s_ROOT                 ; enumerate root
          
-         *popup._s_WIDGET;[2]            ;
+         *popup._s_WIDGET              
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -761,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 325
-; FirstLine = 215
+; CursorPosition = 719
+; FirstLine = 599
 ; Folding = -PyB-d-7--
 ; EnableXP

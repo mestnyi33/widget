@@ -57,12 +57,30 @@ CompilerIf #PB_Compiler_IsMainFile
    CreateMenu(0, WindowID(window))
    MenuTitle("Title-1")
    MenuItem(1, "title-1-item-1")
-   MenuItem(2, "title-1-item-2")
    MenuBar()
+   ;
    OpenSubMenu("title-1-sub-item")   
-   MenuItem(3, "title-1-item-3")
-   MenuItem(4, "title-1-item-4")
+   MenuItem(3, "title-1-item")
+   MenuBar()
+   ;
+   OpenSubMenu("title-2-sub-item")   
+   MenuItem(13, "title-2-item")
+   MenuBar()
+   ;
+   OpenSubMenu("title-3-sub-item")   
+   MenuItem(23, "title-3-item")
    CloseSubMenu( ) 
+   ;
+   MenuBar()
+   MenuItem(24, "title-2-item")
+   CloseSubMenu( ) 
+   ;
+   MenuBar()
+   MenuItem(14, "title-1-item")
+   CloseSubMenu( ) 
+   ;
+   MenuBar()
+   MenuItem(2, "title-1-item-2")
    
    MenuTitle("Title-2")
    MenuItem(5, "title-2-item-1")
@@ -86,15 +104,33 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    ;   widget( )\bs = 8
 ;    ;   SetFrame(widget( ), 3);, -1)
    
-   Define *menu = CreateMenuBar( *window )
+   Define *menu = CreateMenuBar( *window ) : SetClass(menu(), "CreateMenuBar" )
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarItem(2, "title-1-item-2")
    BarSeparator( )
-   OpenSubBar("title-1-sub-item")   
-   BarItem(3, "title-1-item-3")
-   BarItem(4, "title-1-item-4")
-   CloseSubBar( ) 
+   ;
+   OpenBar("title-1-sub-item") ;: Bind(widget( ), @TestHandler())   
+   BarItem(3, "title-1-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-2-sub-item")   
+   BarItem(13, "title-2-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-3-sub-item")   
+   BarItem(23, "title-3-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(14, "title-2-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(4, "title-1-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
    BarItem(5, "title-2-item-1")
@@ -110,8 +146,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(10, "title-4-item-2")
    
    
-   Bind(*menu, @TestHandler(), #PB_All, 7)
-   Bind(*menu, @QuitHandler(), #PB_All, 8)
+  ; Bind(root(), @TestHandler())
+   Bind(*menu, @TestHandler());, #PB_All, 7)
+   ;Bind(*menu, @QuitHandler(), #PB_All, 8)
    
    
    
@@ -120,6 +157,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 111
+; FirstLine = 97
 ; Folding = -
 ; EnableXP
