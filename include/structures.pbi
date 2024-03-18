@@ -629,7 +629,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
          ;
-         *box._s_BOX          ; checkbox; optionbox
+         *box._s_BOX              ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
          *toolbar._s_WIDGET          ; 
@@ -762,6 +762,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 631
-; FirstLine = 502
+; FirstLine = 478
 ; Folding = -PyB-d-7--
 ; EnableXP

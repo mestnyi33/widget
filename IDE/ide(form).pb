@@ -1040,7 +1040,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
    
    w_ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
-   w_ide_toolbar = CreateBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
+   w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
 ;    ;BarTitle("Menu")
    OpenBar("Menu")
    BarItem(#_tb_file_open, "Open")
@@ -1179,7 +1179,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, Height( w_ide_toolbar )+ 1 );+ 2 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) - 1 );+ 2 )
    
    ;
    ;\\\ ide events binds
@@ -1345,6 +1345,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1181
+; FirstLine = 843
 ; Folding = ---------2+4v+-4bl----
 ; EnableXP

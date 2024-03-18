@@ -3,7 +3,7 @@
 ;                                     WidgetID( index ) - ToolBarID( #ToolBar )
 ;                                          IsBar( bar ) - IsToolBar( #ToolBar )
 
-;                        CreateBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
+;                        ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;             DisableBarButton( *address, item, state ) - DisableToolBarButton( #ToolBar, Button, State )
 ;                                   FreeBar( *address ) - FreeToolBar( #ToolBar )
 ;                   GetBarButtonState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
@@ -76,10 +76,10 @@ CompilerIf #PB_Compiler_IsMainFile
      a_init(root( ))
      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
      
-    ; *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-    ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-    ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
-    *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
+    ; *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+    ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+    ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
+    *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
     
     If *toolbar
       BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
@@ -131,6 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 78
+; FirstLine = 63
 ; Folding = --
 ; EnableXP

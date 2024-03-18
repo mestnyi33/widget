@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If is_root_( EventWidget( ))
          DisplayPopupMenu( 0, WindowID(EventWindow()))
       Else
-          DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+         DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
       EndIf
    EndProcedure
    
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   widget( )\bs = 8
    ;   SetFrame(widget( ), 3);, -1)
    
-   *menu = CreatePopupBar( )
+   *menu = CreatePopupMenuBar( )
    BarItem(1, "Open")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
    BarSeparator( )
@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 73
+; CursorPosition = 28
+; FirstLine = 65
 ; Folding = -
 ; EnableXP

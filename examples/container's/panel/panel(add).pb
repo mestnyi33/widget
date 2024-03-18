@@ -20,6 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       AddItem( *PANEL_1, i, "*PANEL_1 - 2" )
+      Button( 0,0,80,80,"Button" )
       
       ;\\
       CloseList( ) ; close *PANEL_1 list
@@ -66,6 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( )
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
