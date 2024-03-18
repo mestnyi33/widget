@@ -6308,26 +6308,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\scroll_height( ) = 0
                   
                   If *bar\vertical
-                   ForEach *items( )
-                     ; if not visible then skip
-                     If *items( )\hide
-                        Continue
-                     EndIf
-                     
-                     ;
-                     draw_font_item_( *this, *items( ), *items( )\change )
-                     
-                     ; init items position
-                     If *bar\vertical
-                        If *this\scroll_width( ) < 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
-                           *this\scroll_width( ) = 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
+                    If *this\type = #__type_Menu
+                      ForEach *items( )
+                        ; if not visible then skip
+                        If *items( )\hide
+                          Continue
                         EndIf
-                     EndIf
-                  Next
-               Else
-                  *this\scroll_height( ) = *this\parent\TabBoxSize( ) - pos
-               EndIf
-               
+                        
+                        ;
+                        draw_font_item_( *this, *items( ), *items( )\change )
+                        
+                        ; init items position
+                        If *bar\vertical
+                          If *this\scroll_width( ) < 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
+                            *this\scroll_width( ) = 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
+                          EndIf
+                        EndIf
+                      Next
+                    Else
+                      *this\scroll_width( ) = *this\parent\TabBoxSize( ) +1
+                    EndIf
+                  Else
+                    *this\scroll_height( ) = *this\parent\TabBoxSize( ) +1
+                  EndIf
+                  
                ForEach *items( )
                      ; if not visible then skip
                      If *items( )\hide
@@ -6349,15 +6353,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *bar\max + *items( )\height + (seperator_step * 2) + pos
                         Else
                            *items( )\y = *bar\max + pos
-                           
+                           ;
                            If *this\type = #__type_TabBar
-                              ;
                               If *this\TabState( ) = index
-                                 *items( )\x       = pos ; pos - Bool( pos>0 )*2
-                                 *items( )\width  = *this\scroll_width( ) + 1
+                                 *items( )\x       = 0
+                                 *items( )\width  = *SB\width + 1
                               Else
                                  *items( )\x       = pos
-                                 *items( )\width  = *this\scroll_width( ) - 1
+                                 *items( )\width  = *SB\width - 1
                               EndIf
                            Else
                               *items( )\x      = pos
@@ -6396,12 +6399,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\text\y  = *items( )\y + ( *items( )\height - *items( )\text\height )/2
                               ;                          
                            Else
-                              ;
                               If *items( )\text\width
                                  *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height - *items( )\text\height ) / 2
                               Else
                                  *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
                               EndIf
+                              ;
                               *items( )\text\y  = *items( )\image\y + *items( )\image\height
                               ;
                               *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
@@ -6411,42 +6414,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            If *this\type = #__type_TabBar
                               *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
-                              ;
-                              If typ And *this\TabState( ) = index 
-                                 *items( )\height + 4
-                                 *items( )\y - 2
-                              EndIf
                            Else
-                              
                               *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
                            EndIf
                         EndIf
-                        
                      Else
-                        
                         If *items( )\itemindex  = #PB_Ignore
                            *items( )\x = *bar\max + pos + seperator_step
                            *items( )\width = 1
                            *items( )\y          = 3
-                           *items( )\height     = *this\scroll_height( )
+                           *items( )\height     = *this\scroll_height( ) - *items( )\y * 2
                            *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
                            *items( )\x = *bar\max + pos
-                           
+                           ;
                            If *this\type = #__type_TabBar
-                              ;
                               If *this\TabState( ) = index
-                                 *items( )\y       = pos;pos - Bool( pos>0 )*2
+                                 *items( )\y       = 0
                                  *items( )\height  = *SB\height + 1
                               Else
-                                 *items( )\y       = pos;pos
-                                 *items( )\height  = *SB\height - 1
+                                 *items( )\y       = 1
+                                 *items( )\height  = *SB\height - *items( )\y * 2 
                               EndIf
                            Else
-                              *items( )\y       = pos;*this\bs
-                              *items( )\height  = *this\scroll_height( )
+                              *items( )\y       = pos
+                              *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
                            EndIf
-                           
+                           ;
                            *this\text\y = ( *items( )\height - *items( )\text\height ) / 2
                            ;
                            *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
@@ -6463,13 +6457,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            If *this\type = #__type_TabBar
                               *bar\max + *items( )\width + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
-                              ;
-                              If typ And *this\TabState( ) = index 
-                                 *items( )\width + 4
-                                 *items( )\x - 2
-                              EndIf
+                              ;*bar\max + *items( )\width + pos + Bool( index = *this\count\items - 1 )
                            Else
-                              
                               If Not *this\flag & #PB_ToolBar_InlineText
                                  If *items( )\text\width
                                     If *items( )\width > *items( )\image\width 
@@ -24011,7 +24000,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
    Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
    Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
-   ;SetState(widget( ), 1)
+   SetState(widget( ), 1)
    
    *c = Panel(110, 5, 150, 155)
    AddItem(*c, -1, "0")
@@ -24297,8 +24286,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 383
-; FirstLine = 367
-; Folding = --------------------------------------------------------------------------------------------------------------------------3------------------------------------------+-8-r------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----A5---v--Bbb+n------------------------------------040------------------------------------------------------------------2-------------------------------------fze+-----------v+------------------------------------0----+--v3--v-0-------f4DAA+v--5--v-----------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------3----------------------------------------------2------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---fA9---4--gtN-z------------------------------------+8+------------------------------------------------------------------7-------------------------------------vZP------------X-------------------------------------+---f---X8--4-+-------v8BAA-4-f9--4----------------------------------------4--4---
 ; EnableXP

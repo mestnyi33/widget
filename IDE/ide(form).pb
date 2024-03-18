@@ -1052,7 +1052,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
 ;    BarButton( #_tb_file_open, -1, 0, "Open" )
 ;    BarButton( #_tb_file_save, -1, 0, "Save" )
    BarSeparator( )
-   BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
+   BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;    ; TEMP
    ;    If Type(widget( )) = #__type_Button
    ;       SetState(widget( ), 1) 
@@ -1179,7 +1179,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) + 1 );+ 2 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar )+ 1 );+ 2 )
    
    ;
    ;\\\ ide events binds
@@ -1345,8 +1345,6 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1045
-; FirstLine = 718
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---------2+4v+-4bl----
 ; EnableXP

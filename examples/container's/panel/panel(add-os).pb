@@ -24,6 +24,9 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState( *PANEL_1,1 )
       
       ;\\
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        OpenGadgetList(*PANEL_1) 
+      CompilerEndIf
       AddGadgetItem(*PANEL_1, i, "*PANEL_1 - 3")
       ButtonGadget(-1, 200,10,80,30,"Button4")
       ButtonGadget(-1, 200,45,80,30,"Button5")
@@ -62,8 +65,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 3
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

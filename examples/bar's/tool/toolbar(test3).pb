@@ -82,13 +82,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
-     MenuBarButton( _button_, _image_, _mode_, _text_ )
-  EndMacro
-  
-  Macro Separator( )
-     MenuBarSeparator( )
-  EndMacro
   
   Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
@@ -293,8 +286,6 @@ CompilerIf #PB_Compiler_IsMainFile
       group_height:     : IncludeBinary "group/group_height.png"
    EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 92
-; FirstLine = 84
-; Folding = -4-
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -0
 ; EnableXP
