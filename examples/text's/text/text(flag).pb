@@ -195,44 +195,44 @@ CompilerIf #PB_Compiler_IsMainFile
       
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-    *this  = widget::Button(100, 100, 250, 200, text, #PB_Button_MultiLine);|#__flag_anchorsgadget)
+    *this  = widget::Text(100, 100, 250, 200, text)
     
     Define y  = 10
     Define bh = 24
-    ; flag
-    Button_type      = widget::Button(width + 45, y, 100, 26, "gadget", #PB_Button_Toggle)
-    button_default   = widget::Button(width + 45, y + bh * 1, 100, 26, "default", #PB_Button_Toggle)
-    button_multiline = widget::Button(width + 45, y + bh * 2, 100, 26, "multiline", #PB_Button_Toggle)
-    button_top       = widget::Button(width + 45, y + bh * 3, 100, 26, "top", #PB_Button_Toggle)
-    button_left      = widget::Button(width + 45, y + bh * 4, 100, 26, "left", #PB_Button_Toggle)
-    button_center    = widget::Button(width + 45, y + bh * 5, 100, 26, "center", #PB_Button_Toggle)
-    button_right     = widget::Button(width + 45, y + bh * 6, 100, 26, "right", #PB_Button_Toggle)
-    button_bottom    = widget::Button(width + 45, y + bh * 7, 100, 26, "bottom", #PB_Button_Toggle)
-    button_toggle    = widget::Button(width + 45, y + bh * 8, 100, 26, "toggle", #PB_Button_Toggle)
-    button_vertical  = widget::Button(width + 45, y + bh * 9, 100, 26, "vertical", #PB_Button_Toggle)
-    button_invert    = widget::Button(width + 45, y + bh * 10, 100, 26, "invert", #PB_Button_Toggle)
-    
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_OptionBoxes | #__tree_CheckBoxes | #__Tree_threestate)
-;     AddItem(tree, #tree_item_default, "default")
-;     AddItem(tree, #tree_item_multiline, "multiline")
-;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
-;     AddItem(tree, #tree_item_top, "top", -1, 1)
-;     AddItem(tree, #tree_item_left, "left", -1, 1)
-;     AddItem(tree, #tree_item_center, "center", -1, 1)
-;     AddItem(tree, #tree_item_right, "right", -1, 1)
-;     AddItem(tree, #tree_item_bottom, "bottom", -1, 1)
-;     AddItem(tree, #tree_item_toggle, "toggle")
-;     AddItem(tree, #tree_item_vertical, "vertical")
-;     AddItem(tree, #tree_item_invert, "invert")
+;     Button_type      = widget::Button(width + 45, y, 100, 26, "gadget", #PB_Button_Toggle)
+;     button_default   = widget::Button(width + 45, y + bh * 1, 100, 26, "default", #PB_Button_Toggle)
+;     button_multiline = widget::Button(width + 45, y + bh * 2, 100, 26, "multiline", #PB_Button_Toggle)
+;     button_top       = widget::Button(width + 45, y + bh * 3, 100, 26, "top", #PB_Button_Toggle)
+;     button_left      = widget::Button(width + 45, y + bh * 4, 100, 26, "left", #PB_Button_Toggle)
+;     button_center    = widget::Button(width + 45, y + bh * 5, 100, 26, "center", #PB_Button_Toggle)
+;     button_right     = widget::Button(width + 45, y + bh * 6, 100, 26, "right", #PB_Button_Toggle)
+;     button_bottom    = widget::Button(width + 45, y + bh * 7, 100, 26, "bottom", #PB_Button_Toggle)
+;     button_toggle    = widget::Button(width + 45, y + bh * 8, 100, 26, "toggle", #PB_Button_Toggle)
+;     button_vertical  = widget::Button(width + 45, y + bh * 9, 100, 26, "vertical", #PB_Button_Toggle)
+;     button_invert    = widget::Button(width + 45, y + bh * 10, 100, 26, "invert", #PB_Button_Toggle)
+    
+    ; flag
+    tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_OptionBoxes | #__tree_CheckBoxes | #__Tree_threestate)
+    AddItem(tree, #tree_item_default, "default")
+    AddItem(tree, #tree_item_multiline, "multiline")
+    AddItem(tree, #tree_item_text, "text alignment", -1, 0)
+    AddItem(tree, #tree_item_top, "top", -1, 1)
+    AddItem(tree, #tree_item_left, "left", -1, 1)
+    AddItem(tree, #tree_item_center, "center", -1, 1)
+    AddItem(tree, #tree_item_right, "right", -1, 1)
+    AddItem(tree, #tree_item_bottom, "bottom", -1, 1)
+    AddItem(tree, #tree_item_toggle, "toggle")
+    AddItem(tree, #tree_item_vertical, "vertical")
+    AddItem(tree, #tree_item_invert, "invert")
     
     Bind(#PB_All, @events_widgets())
     ;Flag(*this, #PB_Button_MultiLine)
     ;Debug _Flag(*this, #PB_Button_MultiLine)
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #PB_Button_MultiLine ))
-    SetState(button_center, Flag(*this, #__text_center))
-    Hide(Button_type, 1)
+;     SetState(button_multiline, Flag(*this, #PB_Button_MultiLine ))
+;     SetState(button_center, Flag(*this, #__text_center))
+;     Hide(Button_type, 1)
     
     ;\\
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 195
-; FirstLine = 174
-; Folding = 0---
+; CursorPosition = 234
+; FirstLine = 217
+; Folding = ----
 ; EnableXP

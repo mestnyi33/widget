@@ -368,9 +368,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_TABS
-         
-         checkbox._s_buttons ; \box[1]\ -> \checkbox\
-         buttonbox._s_buttons ; \box[0]\ -> \button\ -> \collapsebox\
+         checkbox._s_BOX ; \box[1]\ -> \checkbox\
+         buttonbox._s_BOX ; \box[0]\ -> \button\ -> \collapsebox\
          
          
          *first._s_rows           ;TEMP first elemnt in the list
@@ -630,7 +629,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
          ;
-         *box._s_BUTTONS          ; checkbox; optionbox
+         *box._s_BOX          ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
          *toolbar._s_WIDGET          ; 
@@ -762,7 +761,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 719
-; FirstLine = 599
+; CursorPosition = 631
+; FirstLine = 502
 ; Folding = -PyB-d-7--
 ; EnableXP
