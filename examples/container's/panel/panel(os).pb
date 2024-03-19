@@ -128,8 +128,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(0, 270, 100, 600, 310, "Change tab location")
   
   PanelGadget(0, 10, 10, 300 - 20, 180)
-  AddGadgetItem (0, -1, "Tab 1")
-  AddGadgetItem (0, -1, "Tab 2")
+  AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
+  AddGadgetItem (0, -1, "Tab 2", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+  AddGadgetItem (0, -1, "Tab 3", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
   CloseGadgetList()
   
   FrameGadget(1, 30, 200, 300 - 60, 100, "Tab location")
@@ -148,8 +149,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   *panel = Panel(300+10, 10, 300 - 20, 180)
-  AddItem (*panel, -1, "Tab 1")
-  AddItem (*panel, -1, "Tab 2")
+  AddItem (*panel, -1, "Tab 1",  LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
+  AddItem (*panel, -1, "Tab 2", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+  AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
   CloseList() ; *panel
   
   ;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
@@ -174,7 +176,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 70
+; CursorPosition = 153
+; FirstLine = 135
 ; Folding = ----
 ; EnableXP
