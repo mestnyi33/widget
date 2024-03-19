@@ -131,8 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 63
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 48
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

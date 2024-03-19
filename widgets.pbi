@@ -320,6 +320,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro ParentBar( ): parentmenu: EndMacro
+      Macro ChildBar( ): childmenu: EndMacro
+      Macro PopupBar( ): childmenu: EndMacro
       
       ;-
       Macro ToggleBoxState( ): ToggleBox( )\state: EndMacro
@@ -1391,7 +1393,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; menu
       Macro menu( )
-         widget( ) ; __gui\popup
+         widget( ) ; __gui\PopupBar( )
       EndMacro
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
@@ -4519,7 +4521,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure CreatePopup( *display._s_WIDGET = 0, flags.q = 0 )
+      Procedure   CreatePopupWindow( *display._s_WIDGET = 0, flags.q = 0 )
          Protected Window
          Protected WindowID
          Protected ParentID
@@ -4531,7 +4533,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         *root    = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible, ParentID )
+         *root    = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible | #PB_Window_Tool, ParentID )
          Window   = GetWindow( *root )
          WindowID = WindowID( Window )
          
@@ -4631,7 +4633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Else
                   Debug "display - create "
-                  Popup( ) = CreatePopup( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
+                  Popup( ) = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
                EndIf
                
                ;\\
@@ -4816,27 +4818,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If menu( )\parent
                If *item\text\string
                   
-                  If Not menu( )\flag & #PB_ToolBar_InlineText
-                     If menu( )\flag & #PB_ToolBar_Small 
-                     menu( )\parent\TabBoxSize( ) = 25 + 16 
-                     ;                   ElseIf menu( )\flag & #PB_ToolBar_Large 
-                     ;                      menu( )\parent\TabBoxSize( ) = 45
-                     ;                   Else ; If flag & #PB_ToolBar_Normal 
-                     ;                      menu( )\parent\TabBoxSize( ) = 35
-                     
-;                      If menu( )\flag & #PB_ToolBar_Left
-;                         menu( )\parent\fs[1] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-;                      ElseIf menu( )\flag & #PB_ToolBar_Right
-;                         menu( )\parent\fs[3] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-;                      ElseIf menu( )\flag & #PB_ToolBar_Bottom
-;                         menu( )\parent\fs[4] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-;                      Else
-                        menu( )\parent\fs[2] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-;                      EndIf
-                     
-                     Resize( menu( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     Debug menu( )\parent\TabBoxSize( )
-                  EndIf
+                  If menu( )\type = #__type_ToolBar
+                     If Not menu( )\flag & #PB_ToolBar_InlineText
+                        If menu( )\flag & #PB_ToolBar_Small 
+                           menu( )\parent\TabBoxSize( ) = 25 + 16 
+                           ;                   ElseIf menu( )\flag & #PB_ToolBar_Large 
+                           ;                      menu( )\parent\TabBoxSize( ) = 45
+                           ;                   Else ; If flag & #PB_ToolBar_Normal 
+                           ;                      menu( )\parent\TabBoxSize( ) = 35
+                           
+                           ;                      If menu( )\flag & #PB_ToolBar_Left
+                           ;                         menu( )\parent\fs[1] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           ;                      ElseIf menu( )\flag & #PB_ToolBar_Right
+                           ;                         menu( )\parent\fs[3] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           ;                      ElseIf menu( )\flag & #PB_ToolBar_Bottom
+                           ;                         menu( )\parent\fs[4] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           ;                      Else
+                           menu( )\parent\fs[2] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           ;                      EndIf
+                           
+                           Resize( menu( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                           Debug menu( )\parent\TabBoxSize( )
+                        EndIf
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -4969,7 +4973,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
                            x, y, width, height, #Null$, flag|#__flag_vertical, 0, 0, 0, 0, 0, 30 ) ;  | #__flag_child
-                                                                                                   ;SetColor( menu( ), #__color_back, $FFF7FDFF)
+         SetColor( menu( ), #__color_back, $FFF2F2F2)
          Hide(menu( ),  1) 
          menu( )\ParentBar( ) = menu
          
@@ -4978,6 +4982,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget( ) = menu( ) 
          count + 1
          ProcedureReturn menu( )
+      EndProcedure
+      
+      Procedure   HidePopupMenuBar( *this._s_WIDGET )
+         While *this
+            If *this
+               Hide( *this\root, #True )
+               HideWindow( GetWindow( *this\root ), #True )
+            EndIf
+            *this = *this\ChildBar( )
+         Wend
       EndProcedure
       
       Procedure   DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
@@ -5020,7 +5034,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Not *this\root\widget
                ;Debug "displayBar - create " + *this\class +" "+ *this\root
-               *displayRoot = CreatePopup( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
+               *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
                
                If *this\row
                   update_items_( *this, *this\__rows( ) )
@@ -14263,8 +14277,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_combobox
-            If *this\popup
-               ProcedureReturn Tree_AddItem( *this\popup, Item, Text, Image, flag )
+            If *this\PopupBar( )
+               ProcedureReturn Tree_AddItem( *this\PopupBar( ), Item, Text, Image, flag )
             Else
                ProcedureReturn Tree_AddItem( *this, Item, Text, Image, flag )
             EndIf
@@ -14807,8 +14821,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ ComboBox
-         If *this\popup
-            *this = *this\popup
+         If *this\PopupBar( )
+            *this = *this\PopupBar( )
          EndIf
          
          ;\\
@@ -15123,29 +15137,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_ComboBox
-            If *this\popup
-               If is_no_select_item_( *this\popup\__items( ), State )
+            If *this\PopupBar( )
+               If is_no_select_item_( *this\PopupBar( )\__items( ), State )
                   ProcedureReturn #False
                EndIf
                
-               If *this\popup\FocusedRow( ) <> *this\popup\__items( )
+               If *this\PopupBar( )\FocusedRow( ) <> *this\PopupBar( )\__items( )
                   
-                  If *this\popup\FocusedRow( )
-                     If *this\popup\FocusedRow( )\focus
-                        *this\popup\FocusedRow( )\focus = #False
+                  If *this\PopupBar( )\FocusedRow( )
+                     If *this\PopupBar( )\FocusedRow( )\focus
+                        *this\PopupBar( )\FocusedRow( )\focus = #False
                      EndIf
                      
-                     *this\popup\FocusedRow( )\ColorState( ) = #__s_0
+                     *this\PopupBar( )\FocusedRow( )\ColorState( ) = #__s_0
                   EndIf
                   
-                  *this\popup\FocusedRow( )             = *this\popup\__items( )
-                  *this\popup\FocusedRow( )\focus       = #True
-                  *this\popup\FocusedRow( )\ColorState( ) = #__s_2
-                  Debug "SETSTATE - combo " + GetState( *this\popup )
-                  ;*this\text\string = *this\popup\FocusedRow( )\text\string
+                  *this\PopupBar( )\FocusedRow( )             = *this\PopupBar( )\__items( )
+                  *this\PopupBar( )\FocusedRow( )\focus       = #True
+                  *this\PopupBar( )\FocusedRow( )\ColorState( ) = #__s_2
+                  Debug "SETSTATE - combo " + GetState( *this\PopupBar( ) )
+                  ;*this\text\string = *this\PopupBar( )\FocusedRow( )\text\string
                   
-                  SetText( *this, *this\popup\FocusedRow( )\text\string )
-                  ;SetText( *this, GetItemText( *this\popup, GetState( *this\popup ) ) )
+                  SetText( *this, *this\PopupBar( )\FocusedRow( )\text\string )
+                  ;SetText( *this, GetItemText( *this\PopupBar( ), GetState( *this\PopupBar( ) ) ) )
                EndIf
             EndIf
          EndIf
@@ -15705,7 +15719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Popup( ) And *this = Popup( )\widget
                ; Debug " Popup( setActive ) "
-               ; *this = *this\popup
+               ; *this = *this\PopupBar( )
                ProcedureReturn 0
             EndIf
             
@@ -17693,13 +17707,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            *this\popup = Create( *this, *this\class + "_ListView", #__type_ListView,
+            *this\PopupBar( ) = Create( *this, *this\class + "_ListView", #__type_ListView,
                                   0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
-            *this\popup\fs = 2
-            ;             *this\popup\hidden = 1
-            ;             *this\popup\hide = 1
-            Hide( *this\popup, #True )
-            ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\popup\parent\class
+            *this\PopupBar( )\fs = 2
+            ;             *this\PopupBar( )\hidden = 1
+            ;             *this\PopupBar( )\hide = 1
+            Hide( *this\PopupBar( ), #True )
+            ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\PopupBar( )\parent\class
          EndIf
          
          ;\\ - Create Bars
@@ -20967,34 +20981,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\EnteredTab( ) And
                   Leaved( *this\EnteredTab( ) )
                   *this\root\repaint = #True
-                  ;
-                  If *this\EnteredTab( )\childrens
-                     If *this\EnteredTab( )\data 
-                        Protected *popup._s_WIDGET = *this\EnteredTab( )\data 
-                        ;Debug "     leave item "+ClassFromEvent(eventtype)
-                        If *this\enter And *popup And Not Hide( *popup\root )
-                           Debug "hide bar "+  *this\class +" "+ *tabRow +" "+ ClassFromEvent(eventtype);GetClass(*this)+" "+ GetClass(*this\EnteredTab( )\data)
-                           Hide( *popup\root, #True )
-                           HideWindow( GetWindow( *popup\root ), #True )
-                        EndIf
-                     EndIf
-                  EndIf
                EndIf
                
                *this\EnteredTab( ) = *tabRow
                
-               ;                      ;\\ entered tabs
+               ;\\ entered tabs
                If *this\enter
+                  ;\\
+                  If *tabRow
+                     If *this\ChildBar( ) 
+                        HidePopupMenuBar( *this\ChildBar( ) )
+                     EndIf
+                  EndIf
+                  
+                  ;\\
                   If *this\EnteredTab( ) And
                      Entered( *this\EnteredTab( ) )
                      *this\root\repaint = #True
                      
+                     ;\\ show popup bar
                      If *this\EnteredTab( )\sublevel >= 0
                         ; Debug " sublevel - "+*this\EnteredTab( )\sublevel
                         
-                        ;\\ show popup bar
                         If *this\EnteredTab( )\childrens ;And *this\focus
                            If *this\EnteredTab( )\data
+                              *this\ChildBar( ) = *this\EnteredTab( )\data
+                              
                               If *this\bar\vertical
                                  ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
                                  DisplayPopupMenuBar( *this\EnteredTab( )\data, *this, 
@@ -21008,12 +21020,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                                       *this\screen_y( ) + *this\EnteredTab( )\y + *this\EnteredTab( )\height)
                                  
                               EndIf
-                              
                            EndIf
                         EndIf
                      EndIf
                   EndIf
                EndIf
+               
             EndIf
          EndIf
          
@@ -21301,8 +21313,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #__type_combobox
                   If eventtype = #__event_Down
                      If mouse( )\buttons & #PB_Canvas_LeftButton
-                        If *this\popup
-                           DisplayPopup( *this\popup, *this )
+                        If *this\PopupBar( )
+                           DisplayPopup( *this\PopupBar( ), *this )
                         EndIf
                      EndIf
                   EndIf
@@ -21445,8 +21457,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      ;\\ hide popup widget
                      If eventtype = #__event_Down
-                        If Not ( *this\popup And
-                                 *this\popup = Popup( )\widget )
+                        If Not ( *this\PopupBar( ) And
+                                 *this\PopupBar( ) = Popup( )\widget )
                            
                            ;\\
                            If Not is_integral_( *this )
@@ -21458,6 +21470,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
+         
          
          ;\\ before post-widget-events drop
          If eventtype = #__event_Drop
@@ -22153,11 +22166,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If eventtype = #__event_LeftButtonDown
                         If GetActive( ) <> EnteredWidget( )
-                           If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
+                           ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
                               If a_focused( ) <> EnteredWidget( )
                                  SetActive( EnteredWidget( ))
                               EndIf
-                           EndIf
+                           ; EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -24387,7 +24400,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6724
-; FirstLine = 6383
-; Folding = ----------------------------------------------------------------------------------------------------------------------f---------------------------------------------v--------7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21456
+; FirstLine = 20967
+; Folding = -------------------------------------------------------------------------------------------------------------+f----f+--8+--------------------------------------------4-------f0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+dPAAw-+-0---t+----------------------------------------------
 ; EnableXP

@@ -632,11 +632,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *box._s_BOX              ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
-         *toolbar._s_WIDGET          ; 
-         *popup._s_WIDGET         ; = ComboBox( ) list view box
          *group._s_WIDGET         ; = Option( ) group widget
          *string._s_WIDGET        ; = SpinBar( ) string box
-                                  ;                           
+            
+         *parentmenu._s_WIDGET
+         *childmenu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
+         ; *popup._s_WIDGET         ; = ComboBox( ) list view box
+         ;*toolbar._s_WIDGET          ; 
+                               ;                           
          BarWidth.w               ; bar v size
          BarHeight.w              ; bar h size
          MenuBarHeight.w
@@ -687,7 +690,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *root._s_ROOT
          *window._s_WIDGET
          *parent._s_WIDGET
-         *parentmenu._s_WIDGET
          *address                 ; widget( )\ list address
          main.b                   ; is root
       EndStructure
@@ -761,7 +763,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 631
-; FirstLine = 478
+; CursorPosition = 640
+; FirstLine = 515
 ; Folding = -PyB-d-7--
 ; EnableXP
