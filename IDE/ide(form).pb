@@ -65,6 +65,8 @@ Enumeration
    #_tb_file_save
    #_tb_file_save_as
    #_tb_file_quit
+   
+   #_tb_menu 
 EndEnumeration
 
 ;- GLOBALs
@@ -883,6 +885,10 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
          a_update( a_focused( ) )
          
          ;Redraw( Root() )
+         
+;       Case #_tb_menu
+;          DisplayPopupMenuBar( *e_widget )
+         
    EndSelect
    
 EndProcedure
@@ -1038,10 +1044,17 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_canvas)
-   
+;    CreatePopupMenuBar( )
+;    BarItem(#_tb_file_open, "Open")
+;    BarItem(#_tb_file_save, "Save")
+;    BarItem(#_tb_file_save_as, "Save as...")
+;    BarSeparator( )
+;    BarItem(#_tb_file_quit, "Quit")
+
    w_ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
    w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
-;    ;BarTitle("Menu")
+   
+   ;    ;BarTitle("Menu")
    OpenBar("Menu")
    BarItem(#_tb_file_open, "Open")
    BarItem(#_tb_file_save, "Save")
@@ -1049,8 +1062,10 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    BarSeparator( )
    BarItem(#_tb_file_quit, "Quit")
    CloseBar( )
+   
 ;    BarButton( #_tb_file_open, -1, 0, "Open" )
 ;    BarButton( #_tb_file_save, -1, 0, "Save" )
+   
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;    ; TEMP
@@ -1346,7 +1361,6 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1181
-; FirstLine = 843
-; Folding = ---------2+4v+-4bl----
+; CursorPosition = 2
+; Folding = ---------2+4v+--bl----
 ; EnableXP

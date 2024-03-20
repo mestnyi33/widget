@@ -99,8 +99,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 8, @QuitHandler())
    
    Define *window._s_widget = root( )
-;    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-;    Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+   Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
+  ; Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
 ;    ;   widget( )\bs = 8
 ;    ;   SetFrame(widget( ), 3);, -1)
    
@@ -158,7 +158,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 103
-; FirstLine = 93
+; CursorPosition = 102
+; FirstLine = 84
 ; Folding = -
 ; EnableXP

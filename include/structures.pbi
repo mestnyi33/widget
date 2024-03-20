@@ -637,7 +637,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
             
          *parentmenu._s_WIDGET
          *childmenu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
-         ; *popup._s_WIDGET         ; = ComboBox( ) list view box
+          *popup._s_WIDGET         ; = ComboBox( ) list view box
          ;*toolbar._s_WIDGET          ; 
          
          ;                           
@@ -764,7 +764,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 642
+; CursorPosition = 639
 ; FirstLine = 515
 ; Folding = -PyB-d-7--
 ; EnableXP
