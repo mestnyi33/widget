@@ -6727,7 +6727,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; draw key-focus visible item
          If *this\FocusedTab( ) And
             *this\FocusedTab( )\visible
-            ;   
+            Protected._s_TABS *activeTAB = *this\FocusedTab( )
+           ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
                draw_font_item_( *this, *this\FocusedTab( ), 0 )
                ;
@@ -6742,66 +6743,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                         *this\round, *this\round,
                                         *this\parent\color\back )
                      EndIf
-                     
-                     Protected._s_TABS *activeTAB = *this\FocusedTab( )
-                     If *activeTAB
-                        Protected color = *this\parent\color\frame[*this\parent\focus*2]
-                        
-                        If *bar\vertical
-                           If *activeTAB
-                              ; frame on the selected item
-                              If *activeTAB\visible
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
-                              EndIf
-                              
-                              If *this\type = #__type_ToolBar
-                                 color = *this\parent\color\frame
-                                 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
-                                 
-                                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
-                              EndIf
-                           Else
-                              Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
-                           EndIf
-                           
-                        Else
-                           If *activeTAB
-                              ; frame on the selected item
-                              If *activeTAB\visible
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
-                                 Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
-                              EndIf
-                              
-                              If *this\type = #__type_ToolBar
-                                 color = *this\parent\color\frame
-                                 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                                 Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                                 
-                                 Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                                 Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
-                              EndIf
-                           Else
-                              Line( *this\screen_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\screen_width( ), 1, color )
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                  EndIf
+                   EndIf
                   
                   bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [0], 0 )
             
@@ -6811,7 +6753,71 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-      EndProcedure
+         
+         If *this\child
+           If *this\parent
+             Protected color = *this\parent\color\frame[*this\parent\focus*2]
+             
+             If *bar\vertical
+               If *activeTAB
+                 ; frame on the selected item
+                 If *activeTAB\visible
+                   Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
+                   Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                   Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
+                   Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x, 1, color )
+                   Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
+                 EndIf
+               Else
+                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, 1, *this\frame_height( ), color )
+               EndIf
+               ;
+               If *this\type = #__type_TabBar
+                 color = *this\parent\color\frame
+                 ;
+                 If *activeTAB
+                   ; horizontal tab bottom line
+                   Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                   Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
+                 EndIf
+                 ;
+                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
+                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
+                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+               EndIf
+               
+             Else
+               If *activeTAB
+                 ; frame on the selected item
+                 If *activeTAB\visible
+                   Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
+                   Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
+                   Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
+                   Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
+                   Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
+                 EndIf
+               Else
+                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), *this\frame_width( ), 1, color )
+               EndIf
+               ;
+               If *this\type = #__type_TabBar
+                 color = *this\parent\color\frame
+                 ;
+                 If *activeTAB
+                   ; horizontal tab bottom line
+                   Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                   Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+                 EndIf
+                 ;
+                 Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                 Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
+               EndIf
+               
+             EndIf
+           EndIf
+         EndIf
+       EndProcedure
       
       Procedure.b bar_tab_draw( *this._s_WIDGET )
          Protected Color, x, y
@@ -24603,8 +24609,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20985
-; FirstLine = 20401
-; Folding = -------------------------------------------------------------------------------------------------------------0--8---6---b0-f9-v0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0f---------------------------------------------------------------------------------------------0-------------------------------------------------------0----------------------+dPAA5-4--5-8v2z--0------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -------------------------------------------------------------------------------------------------------------0--8---6---b0-f9-v0----------------------------------------------fz-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-8--------------------------------------------------------------------------------------------v-------------------------------------------------------v----------------------4v8BAA--+-H-f-te+-v-------------------------------------------
 ; EnableXP

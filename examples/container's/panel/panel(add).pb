@@ -10,7 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_widget *PANEL_1, *PANEL_2
    
    If Open( 3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      
+      SetColor(root(), #__color_back, $FF82E5F8 )
+     
       *PANEL_1 = Panel( 30, 30, 340, 240 )
       ;\\
       AddItem( *PANEL_1, 1, "*PANEL_1 - 1" )
@@ -67,8 +68,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( )
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 11
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
