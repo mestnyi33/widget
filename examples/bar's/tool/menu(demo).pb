@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define *window._s_widget = root( )
    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-  ; Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+   Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
 ;    ;   widget( )\bs = 8
 ;    ;   SetFrame(widget( ), 3);, -1)
    
