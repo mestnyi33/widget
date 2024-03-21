@@ -82,13 +82,22 @@ CompilerIf #PB_Compiler_IsMainFile
       *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
-         OpenBar("Menu")
-         BarItem(11, "Open")
-         BarItem(12, "Save")
-         BarItem(13, "Save as...")
-         BarSeparator( )
-         BarItem(14, "Quit")
-         CloseBar( )
+;          OpenBar("Menu")
+;          BarItem(11, "Open")
+;          BarItem(12, "Save")
+;          BarItem(13, "Save as...")
+;          BarSeparator( )
+;          BarItem(14, "Quit")
+;          CloseBar( )
+;          
+;          OpenBar("Menu2")
+;          BarItem(11, "Open")
+;          BarItem(12, "Save")
+;          BarItem(13, "Save as...")
+;          BarSeparator( )
+;          BarItem(14, "Quit")
+;          CloseBar( )
+;          BarSeparator( )
          
          BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
          BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -140,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 74
+; CursorPosition = 99
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

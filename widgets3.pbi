@@ -1398,9 +1398,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
+      Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
-      Declare   CreateBar( type.b = #Null, *parent._s_WIDGET = #Null, flag.q = #Null )
+      Declare   CreateBar( type.b = #Null, *parent = #Null, flag.q = #Null )
       Declare   CreateMenuBar( *parent, flag.q = #Null )
       Declare   CreatePopupMenuBar( flag.q = #Null, x=0, y=0, width=0, height=0 ) 
       Declare   BarTitle( title.s, image = - 1 )
@@ -1810,76 +1811,76 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; Debug "---   "+*this\text\string
          ; Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
          
-         If eventtype = #__event_Focus
-            ;\\ is integral scroll bars
-            If *this\scroll
-               If *this\scroll\v And
-                  Not *this\scroll\v\hide And
-                  *this\scroll\v\type
-                  
-                  If *this\scroll\v\focus = #False
-                     *this\scroll\v\focus = #True
-                     DoFocus( *this\scroll\v, #__event_Focus )
-                  EndIf
-               EndIf
-               If *this\scroll\h And
-                  Not *this\scroll\h\hide And
-                  *this\scroll\h\type
-                  
-                  If *this\scroll\h\focus = #False
-                     *this\scroll\h\focus = #True
-                     DoFocus( *this\scroll\h, #__event_Focus )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ is integral tab bar
-            If *this\TabBox( ) And
-               Not *this\TabBox( )\hide And
-               *this\TabBox( )\type
-               
-               If *this\TabBox( )\focus = #False
-                  *this\TabBox( )\focus = #True
-                  DoFocus( *this\TabBox( ), #__event_Focus )
-               EndIf
-            EndIf
-         EndIf
-         
-         If eventtype = #__event_LostFocus
-            ;\\ is integral scroll bars
-            If *this\scroll
-               If *this\scroll\v And
-                  Not *this\scroll\v\hide And
-                  *this\scroll\v\type
-                  
-                  If *this\scroll\v\focus = #True
-                     *this\scroll\v\focus = #False
-                     DoFocus( *this\scroll\v, #__event_LostFocus )
-                  EndIf
-               EndIf
-               If *this\scroll\h And
-                  Not *this\scroll\h\hide And
-                  *this\scroll\h\type
-                  
-                  If *this\scroll\h\focus = #True
-                     *this\scroll\h\focus = #False
-                     DoFocus( *this\scroll\h, #__event_LostFocus )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ is integral tab bar
-            If *this\TabBox( ) And
-               Not *this\TabBox( )\hide And
-               *this\TabBox( )\type
-               
-               If *this\TabBox( )\focus = #True
-                  *this\TabBox( )\focus = #False
-                  DoFocus( *this\TabBox( ), #__event_LostFocus )
-               EndIf
-            EndIf
-         EndIf
-         
+;          If eventtype = #__event_Focus
+;             ;\\ is integral scroll bars
+;             If *this\scroll
+;                If *this\scroll\v And
+;                   Not *this\scroll\v\hide And
+;                   *this\scroll\v\type
+;                   
+;                   If *this\scroll\v\focus = #False
+;                      *this\scroll\v\focus = #True
+;                      DoFocus( *this\scroll\v, #__event_Focus )
+;                   EndIf
+;                EndIf
+;                If *this\scroll\h And
+;                   Not *this\scroll\h\hide And
+;                   *this\scroll\h\type
+;                   
+;                   If *this\scroll\h\focus = #False
+;                      *this\scroll\h\focus = #True
+;                      DoFocus( *this\scroll\h, #__event_Focus )
+;                   EndIf
+;                EndIf
+;             EndIf
+;             
+;             ;\\ is integral tab bar
+;             If *this\TabBox( ) And
+;                Not *this\TabBox( )\hide And
+;                *this\TabBox( )\type
+;                
+;                If *this\TabBox( )\focus = #False
+;                   *this\TabBox( )\focus = #True
+;                   DoFocus( *this\TabBox( ), #__event_Focus )
+;                EndIf
+;             EndIf
+;          EndIf
+;          
+;          If eventtype = #__event_LostFocus
+;             ;\\ is integral scroll bars
+;             If *this\scroll
+;                If *this\scroll\v And
+;                   Not *this\scroll\v\hide And
+;                   *this\scroll\v\type
+;                   
+;                   If *this\scroll\v\focus = #True
+;                      *this\scroll\v\focus = #False
+;                      DoFocus( *this\scroll\v, #__event_LostFocus )
+;                   EndIf
+;                EndIf
+;                If *this\scroll\h And
+;                   Not *this\scroll\h\hide And
+;                   *this\scroll\h\type
+;                   
+;                   If *this\scroll\h\focus = #True
+;                      *this\scroll\h\focus = #False
+;                      DoFocus( *this\scroll\h, #__event_LostFocus )
+;                   EndIf
+;                EndIf
+;             EndIf
+;             
+;             ;\\ is integral tab bar
+;             If *this\TabBox( ) And
+;                Not *this\TabBox( )\hide And
+;                *this\TabBox( )\type
+;                
+;                If *this\TabBox( )\focus = #True
+;                   *this\TabBox( )\focus = #False
+;                   DoFocus( *this\TabBox( ), #__event_LostFocus )
+;                EndIf
+;             EndIf
+;          EndIf
+;          
          ;\\
          If __gui\repost = 1
             If eventtype = #__event_Focus
@@ -4604,7 +4605,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         *root    = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible | #PB_Window_Tool, ParentID )
+         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+           *root = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible, ParentID )
+         CompilerElse
+           *root = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible | #PB_Window_Tool, ParentID )
+         CompilerEndIf
+         
+         ;\\
          Window   = GetWindow( *root )
          WindowID = WindowID( Window )
          
@@ -6450,7 +6457,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; init items position
                      If *bar\vertical
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\y = *bar\max + seperator_step + pos
+                           *items( )\y      = *bar\max + seperator_step + pos
                            *items( )\height = 1
                            *items( )\x      = 3
                            *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
@@ -6461,10 +6468,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\type = #__type_TabBar
                               If *this\TabState( ) = index
                                  *items( )\x       = 0
-                                 *items( )\width  = *SB\width + 1
+                                 *items( )\width   = *SB\width + 1
                               Else
-                                 *items( )\x       = pos
-                                 *items( )\width  = *SB\width - 1
+                                 *items( )\x       = 1
+                                 *items( )\width   = *SB\width - *items( )\x * 2
                               EndIf
                            Else
                               *items( )\x      = pos
@@ -6524,10 +6531,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      Else
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\x = *bar\max + pos + seperator_step
-                           *items( )\width = 1
-                           *items( )\y          = 3
-                           *items( )\height     = *this\scroll_height( ) - *items( )\y * 2
+                           *items( )\x      = *bar\max + pos + seperator_step
+                           *items( )\width  = 1
+                           *items( )\y      = 3
+                           *items( )\height = *this\scroll_height( ) - *items( )\y * 2
                            *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
                            *items( )\x = *bar\max + pos
@@ -6721,7 +6728,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; draw key-focus visible item
          If *this\FocusedTab( ) And
             *this\FocusedTab( )\visible
-            ;   
+            Protected._s_TABS *activeTAB = *this\FocusedTab( )
+           ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
                draw_font_item_( *this, *this\FocusedTab( ), 0 )
                ;
@@ -6736,72 +6744,83 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                         *this\round, *this\round,
                                         *this\parent\color\back )
                      EndIf
-                     
-                     Protected._s_TABS *activeTAB = *this\FocusedTab( )
-                     If *activeTAB
-                        Protected color = *this\parent\color\frame[*this\parent\focus*2]
-                        
-                        If *bar\vertical
-                           If *activeTAB
-                              ; frame on the selected item
-                              If *activeTAB\visible
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
-                              EndIf
-                              
-                              If *this\type = #__type_ToolBar
-                                 color = *this\parent\color\frame
-                                 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
-                                 
-                                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                                 Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
-                              EndIf
-                           Else
-                              Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
-                           EndIf
-                           
-                        Else
-                           If *activeTAB
-                              ; frame on the selected item
-                              If *activeTAB\visible
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
-                                 Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
-                                 Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
-                              EndIf
-                              
-                              If *this\type = #__type_ToolBar
-                                 color = *this\parent\color\frame
-                                 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                                 Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                                 
-                                 Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                                 Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                                 Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
-                              EndIf
-                           Else
-                              Line( *this\screen_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\screen_width( ), 1, color )
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                  EndIf
+                   EndIf
                   
                   bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [0], 0 )
             
                Else
                   ;
                   bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [*this\FocusedTab( )\ColorState( )] )
+               EndIf
+            EndIf
+         EndIf
+         
+         If *this\child
+            If *this\parent
+               Protected color = *this\parent\color\frame[*this\parent\focus*2]
+               
+               If *bar\vertical
+                  If *activeTAB And 
+                     *activeTAB\visible
+                     ; frame on the selected item
+                     Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x, 1, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
+                     ;
+                     If *this\type = #__type_Menu
+                        Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     EndIf
+                  EndIf
+                  ;
+                  If *this\type = #__type_TabBar
+                     color = *this\parent\color\frame
+                     ;
+                     If *activeTAB
+                        ; horizontal tab bottom line
+                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
+                     Else
+                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                     EndIf
+                     ;
+                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
+                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
+                     Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+                  EndIf
+                  
+               Else
+                  If *activeTAB And 
+                     *activeTAB\visible
+                     ; frame on the selected item
+                     Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
+                     Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
+                     ;
+                     If *this\type = #__type_Menu
+                        Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width, 1, color )
+                     EndIf
+                  EndIf
+                  ;
+                  If *this\type = #__type_TabBar
+                     color = *this\parent\color\frame
+                     ;
+                     If *activeTAB
+                        ; horizontal tab bottom line
+                        Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                        Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+                     Else
+                        Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                     EndIf
+                     ;
+                     Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                     Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                     Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
+                  EndIf
+                  
                EndIf
             EndIf
          EndIf
@@ -15670,17 +15689,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i SetDeactive( *this._s_WIDGET )
          Protected *active._s_WIDGET
-         
+               
          If *this
             If ActiveWindow( )
-               If Not IsChild( *this, ActiveWindow( ) )
-                  If ActiveWindow( )\focus = #True
-                     ActiveWindow( )\focus = #False
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_LostFocus )
+               If *this <> ActiveWindow( )
+                  If Not IsChild( *this, ActiveWindow( ) )
+                     If ActiveWindow( )\focus = #True
+                        ActiveWindow( )\focus = #False
+                        ;
+                        DoFocus( ActiveWindow( ), #__event_LostFocus )
+                     EndIf
                   EndIf
                EndIf
-               
+               ;
                ;\\ when we deactivate the window
                ;\\ we will deactivate his last active gadget
                If ActiveGadget( ) And
@@ -15689,7 +15710,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   DoFocus( ActiveGadget( ), #__event_LostFocus )
                EndIf
-               
+               ;
+               ;\\ deactive child widget bar
+               If GetActive( ) And
+                  GetActive( ) <> ActiveWindow( ) And 
+                  GetActive( ) <> ActiveGadget( )
+                  ;
+                  If GetActive( )\focus = #True
+                     GetActive( )\focus = #False
+                     ;
+                     DoFocus( GetActive( ), #__event_LostFocus )
+                  EndIf
+               EndIf
+               ;
                ;\\
                If ActiveGadget( )
                   *active = ActiveGadget( )
@@ -15753,19 +15786,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            ;\\ если нужно отключить событие интегрированного гаджета
-            If Not is_window_( *this )
-               If is_integral_( *this )
-                  *this = *this\parent
-                  
-                  ;\\ если он тоже встроеный
-                  If *this\child
-                     *this = *this\parent
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ deactivate
+           ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
                   SetDeactive( *this )
@@ -15774,7 +15795,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             GetActive( ) = *this
-            ;Debug "------ "+*this\class
+            Debug "---focus--- "+*this\class
             ;\\
             If *this\focus = #False
                *this\focus = #True
@@ -15814,35 +15835,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ActiveGadget( ) = *this
                   EndIf
                EndIf
+               If is_window_( ActiveGadget( ) )
+                  ActiveGadget( ) = #Null
+               EndIf
                
-               ;\\ when we activate the gadget
-               ;\\ first we activate its parent window
-               If *this <> ActiveWindow( )
-                  If ActiveWindow( ) And ; Not is_root_( ActiveWindow( ) ) And
-                     ActiveWindow( )\focus = #False
-                     ActiveWindow( )\focus = #True
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_Focus )
-                  EndIf
+               ;\\
+               If ActiveWindow( ) And 
+                  ActiveWindow( )\focus = #False
+                  ActiveWindow( )\focus = #True
+                  ;
+                  ; when we activate the gadget
+                  ; first we activate its parent window
+                  DoFocus( ActiveWindow( ), #__event_Focus )
                EndIf
                
                ;\\
                DoFocus( *this, #__event_Focus )
                
+               ;\\
                If ActiveWindow( )
-                  ; when we activate the window
-                  ; we will activate his last gadget that lost focus
                   If ActiveGadget( ) And
                      ActiveGadget( )\focus = #False
                      ActiveGadget( )\focus = #True
                      ;
+                     ; when we activate the window
+                     ; we will activate his last gadget that lost focus
                      DoFocus( ActiveGadget( ), #__event_Focus )
                   EndIf
                   
-                  ; set window foreground position
+                  ;\\ set window foreground position
                   SetForeground( ActiveWindow( ))
                EndIf
+               
             EndIf
+            
+            
          Else
             If ActiveWindow( )
                SetDeactive( *this )
@@ -19471,9 +19498,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\ 
-                  If *this\type = #__type_Menu Or
-                     *this\type = #__type_ToolBar
+                  ;\\ *this\type = #__type_Menu Or
+                     
+                  If *this\type = #__type_ToolBar
                      ;
                      If eventtype = #__event_LeftClick
                         If *this\EnteredTab( )
@@ -20961,73 +20988,111 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *tabRow
                   If *tabRow\sublevel >= 0
-                     If is_menu_( *this )
-                        If *this\FocusedTab( )
-                           *this\FocusedTab( )\focus = 0 
-                        EndIf
-                        ;
-                        *this\FocusedTab( ) = *tabRow
-                        *this\FocusedTab( )\focus = 1
-                        ;
-                        DisplayPopupMenuBar( *tabRow\data, *this, 
-                                             *this\screen_x( ) + *tabRow\x, 
-                                             *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                     Else
-                        If *tabRow\childrens 
+                     If *tabRow\childrens 
+                        If is_menu_( *this )
+                           If *this\FocusedTab( )
+                              *this\FocusedTab( )\focus = 0 
+                           EndIf
+                           ;
+                           *this\FocusedTab( ) = *tabRow
+                           *this\FocusedTab( )\focus = 1
+                           ;
+                           If *tabRow\data
+                              DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
+                              DisplayPopupMenuBar( *tabRow\data, *this, 
+                                                   *this\screen_x( ) + *tabRow\x, 
+                                                   *this\screen_y( ) + *tabRow\y + *tabRow\height)
+                           EndIf
+                        Else
                            If *tabRow\data
                               If *this\ChildBar( ) And 
                                  *this\ChildBar( )\hidden = #False
                                  HidePopupMenuBar( *this\ChildBar( ) )
                                  *this\ChildBar( ) = 0
                               Else
+                                 DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                  DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                   *this\screen_x( ) + *tabRow\x, 
-                                                   *this\screen_y( ) + *tabRow\y + *tabRow\height)
+                                                      *this\screen_x( ) + *tabRow\x, 
+                                                      *this\screen_y( ) + *tabRow\y + *tabRow\height)
                               EndIf
                            EndIf
                         EndIf
                      EndIf
                   EndIf
-;                Else
-;                   If GetActive( )\TabBox( )
-;                     If is_menu_( GetActive( )\TabBox( ) )
-;                         If GetActive( )\TabBox( )\FocusedTab( )
-;                            GetActive( )\TabBox( )\FocusedTab( )\focus = 0 
-;                            GetActive( )\TabBox( )\FocusedTab( ) = 0
-;                         EndIf
-;                      EndIf
-;                      ;
-;                      If GetActive( )\TabBox( )\ChildBar( ) And 
-;                         GetActive( )\TabBox( )\ChildBar( )\hidden = #False
-;                         HidePopupMenuBar( GetActive( )\TabBox( )\ChildBar( ) )
-;                         GetActive( )\TabBox( )\ChildBar( ) = 0
-;                      EndIf
-;                   EndIf
+               Else
+                  If GetActive( )
+                    Debug " down - "+GetActive( )\class
+                    If is_menu_( GetActive( ) )
+                        If GetActive( )\FocusedTab( )
+                           GetActive( )\FocusedTab( )\focus = 0 
+                           GetActive( )\FocusedTab( ) = 0
+                        EndIf
+                     EndIf
+                     ;
+                     If GetActive( )\ChildBar( ) And 
+                        GetActive( )\ChildBar( )\hidden = #False
+                        HidePopupMenuBar( GetActive( )\ChildBar( ) )
+                        GetActive( )\ChildBar( ) = 0
+                     EndIf
+                  EndIf
                EndIf
             EndIf  
          EndIf
          
+;          If eventtype = #__event_MouseEnter
+;             Debug "  Enter - "+*this\class
+;          EndIf
+;          If eventtype = #__event_MouseLeave
+;             Debug "  Leave - "+*this\class
+;          EndIf
+         If eventtype = #__event_Focus
+            Debug "  Focus - "+*this\class
+;             If GetActive( )\TabBox( )
+;                If is_menu_( GetActive( )\TabBox( ) )
+;                   If GetActive( )\TabBox( )\FocusedTab( )
+;                      GetActive( )\TabBox( )\FocusedTab( )\focus = 0 
+;                      GetActive( )\TabBox( )\FocusedTab( ) = 0
+;                   EndIf
+;                EndIf
+;                ;
+;                If GetActive( )\TabBox( )\ChildBar( ) And 
+;                   GetActive( )\TabBox( )\ChildBar( )\hidden = #False
+;                   HidePopupMenuBar( GetActive( )\TabBox( )\ChildBar( ) )
+;                   GetActive( )\TabBox( )\ChildBar( ) = 0
+;                EndIf
+;             EndIf
+         EndIf
          If eventtype = #__event_LostFocus
-            Debug *this\class
-            If is_menu_( *this )
-               If *this\FocusedTab( )
-                  *this\FocusedTab( )\focus = 0 
-                  *this\FocusedTab( ) = 0
-               EndIf
-            EndIf
-            ;
-            If *this\ChildBar( ) And 
-               *this\ChildBar( )\hidden = #False
-               HidePopupMenuBar( *this\ChildBar( ) )
-               *this\ChildBar( ) = 0
-            EndIf
+            Debug "  LostFocus - "+*this\class
+;             If is_menu_( *this )
+;                If *this\EnteredTab( )
+;                   Debug "777 "+*this\EnteredTab( )\enter +" "+ *this\enter 
+;                   *this\EnteredTab( )\enter = *this\enter 
+;                   *this\EnteredTab( ) = 0
+;                   *this\root\repaint = 1
+;                EndIf               
+;                If *this\FocusedTab( )
+;                   Debug "555 "+*this\FocusedTab( )\focus +" "+ *this\focus 
+;                   *this\FocusedTab( )\focus = *this\focus  
+;                   *this\FocusedTab( ) = 0
+;                EndIf
+;             EndIf
+;             ;
+;             If *this\ChildBar( ) And 
+;                *this\ChildBar( )\hidden = #False
+;                HidePopupMenuBar( *this\ChildBar( ) )
+;                *this\ChildBar( ) = 0
+;             EndIf
+         EndIf
+         
+         If eventtype = #__event_StatusChange
          EndIf
          
          If *this\bar
             mouse_x - *this\bar\button\x
             mouse_y - *this\bar\button\y
             ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
-            
+                  
             ;\\ get at point items 
             If Not mouse( )\press
                ; if enter inner coordinate                           ;
@@ -21112,6 +21177,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *tabRow\data
                                     If *this\bar\vertical
                                        ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
+                                       DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                        DisplayPopupMenuBar( *tabRow\data, *this, 
                                                             *this\screen_width( ) - 5, 
                                                             *tabRow\y)
@@ -21120,6 +21186,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        If is_menu_( *this )
                                           If *tabRow\focus
                                              ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
+                                             DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                              DisplayPopupMenuBar( *tabRow\data, *this, 
                                                                   *this\screen_x( ) + *tabRow\x, 
                                                                   *this\screen_y( ) + *tabRow\y + *tabRow\height)
@@ -21805,7 +21872,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Static EnteredCanvasID
-         Protected Repaint, mouse_x , mouse_y
+         Protected *root._s_ROOT, repaint, mouse_x , mouse_y
+         
          ;\\
          If event = #PB_Event_Repaint
             If eventdata
@@ -21945,7 +22013,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   EndIf
                EndIf
                ; PopMapPosition( __roots( ) )
-               ;
                If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
                      ChangeCurrentCanvas( EnteredCanvasID )
@@ -21960,7 +22027,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If IsGadget( eventgadget ) And
                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                      EnteredCanvasID = GadgetID( eventgadget )
-                     ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                     ChangeCurrentCanvas( EnteredCanvasID )
                   EndIf
                EndIf
             EndIf
@@ -21973,6 +22040,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
                EnteredCanvasID = #Null
+            EndIf
+            
+            ;\\
+            If eventtype = #__event_LeftButtonUp Or
+               eventtype = #__event_RightButtonDown Or
+               eventtype = #__event_MiddleButtonDown
+               ;
+               If EnteredCanvasID
+                  If EnteredCanvasID <> Root( )\canvas\gadgetID
+                     ChangeCurrentCanvas( EnteredCanvasID )
+                  EndIf
+               EndIf
             EndIf
             
             ;\\
@@ -22039,7 +22118,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             If Root( )
             ;                Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
             ;             EndIf
-            
             
             ;\\
             If Root( ) And
@@ -22116,6 +22194,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #__event_LeftButtonDown,
                        #__event_RightButtonDown,
                        #__event_MiddleButtonDown
+                     ;Debug "      canvas down " + eventgadget
                      ;
                      ;\\
                      mouse( )\press  = 1
@@ -22128,7 +22207,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #__event_LeftButtonUp,
                        #__event_RightButtonUp,
                        #__event_MiddleButtonUp
-                     ;
+                     ;Debug "     canvas up " + eventgadget
+            ;
                      If mouse( )\interact = 1
                         mouse( )\interact = - 1
                      EndIf
@@ -22255,36 +22335,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #__event_LeftButtonDown Or
                    eventtype = #__event_MiddleButtonDown Or
                    eventtype = #__event_RightButtonDown
+               
                ;
                ;\\
                If EnteredWidget( )
                   ; Debug "canvas - press " + EnteredWidget( )\class
                   ;
-                  ;\\ set active widget
-                  If EnteredWidget( )\disable
-                     If Not EnteredWidget( )\parent\disable
-                        If eventtype = #__event_LeftButtonDown
-                           If GetActive( ) <> EnteredWidget( )\parent
-                              If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
-                                 SetActive( EnteredWidget( )\parent)
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  Else
-                     PressedWidget( )       = EnteredWidget( )
-                     PressedWidget( )\press = #True
-                     ;
-                     If eventtype = #__event_LeftButtonDown
-                        If GetActive( ) <> EnteredWidget( )
-                           ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
-                              If a_focused( ) <> EnteredWidget( )
-                                 SetActive( EnteredWidget( ))
-                              EndIf
-                           ; EndIf
-                        EndIf
-                     EndIf
-                  EndIf
+;                   ;\\ set active widget
+;                   If EnteredWidget( )\disable
+;                      If Not EnteredWidget( )\parent\disable
+;                         If eventtype = #__event_LeftButtonDown
+;                            If GetActive( ) <> EnteredWidget( )\parent
+;                               If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
+;                                  SetActive( EnteredWidget( )\parent)
+;                               EndIf
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   Else
+;                      PressedWidget( )       = EnteredWidget( )
+;                      PressedWidget( )\press = #True
+;                      ;
+;                      If eventtype = #__event_LeftButtonDown
+;                         If GetActive( ) <> EnteredWidget( )
+;                            ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
+;                               If a_focused( ) <> EnteredWidget( )
+;                                  SetActive( EnteredWidget( ))
+;                               EndIf
+;                            ; EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
                   ;
                   ;\\ mouse delta pos
                   If eventtype <> #__event_MiddleButtonDown
@@ -22321,6 +22402,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ClickTime = ElapsedMilliseconds
                   DoEvents( EnteredWidget( ), #__event_Down )
+                  
+                  ;\\ set active widget
+                  If EnteredWidget( )\disable
+                     If Not EnteredWidget( )\parent\disable
+                        If eventtype = #__event_LeftButtonDown
+                           If GetActive( ) <> EnteredWidget( )\parent
+                              If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
+                                 SetActive( EnteredWidget( )\parent)
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  Else
+                     PressedWidget( )       = EnteredWidget( )
+                     PressedWidget( )\press = #True
+                     ;
+                     If eventtype = #__event_LeftButtonDown
+                        If GetActive( ) <> EnteredWidget( )
+                           ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
+                              If a_focused( ) <> EnteredWidget( )
+                                 SetActive( EnteredWidget( ))
+                              EndIf
+                           ; EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+                  
                   If mouse( )\click = 1
                      DoEvents( EnteredWidget( ), eventtype )
                   EndIf
@@ -22612,8 +22720,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure Open( window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-         Protected *root._s_ROOT
-         Protected w, g, UseGadgetList, result
+         Protected result, w, g, UseGadgetList, *root._s_ROOT 
          
          ; init
          If Not MapSize( __roots( ) )
@@ -22703,31 +22810,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Root( )    = __roots( )
             *root      = __roots( )
             
-            ;a_init( *root )
-            *root\type      = #__type_Container
+            ;
+            *root\main      = 1
             *root\container = 1
+            *root\address   = result
+            *root\type      = #__type_Container
             
-            *root\class  = "Root"
-            *root\window = *root
-            ;             If Opened( ) And
-            ;                Opened( )\root And
-            ;                Opened( )\root\canvas\gadget = Canvas
-            ;               *root\root       = Opened( )\root
-            ;             Else
-            *root\root = *root
-            ;             EndIf
-            ;*root\parent    = Opened( )
-            *root\address = result
-            *root\main    = 1
+            *root\class     = "Root"
+            *root\root      = *root
+            ;*root\window   = *root
+            ;*root\parent   = Opened( )
             
-            ; Debug "root window "+Opened( )
+            ;
             *root\color       = _get_colors_( )
             *root\text\fontID = PB_( GetGadgetFont )( #PB_Default )
             
             ;
+            *root\canvas\GadgetID = g
             *root\canvas\window   = Window
             *root\canvas\gadget   = Canvas
-            *root\canvas\GadgetID = g
+            
+            ;\\
+            DrawingStart( Canvas )
+            draw_font_( *root )
             
             ;\\
             Post( *root, #__event_create )
@@ -22747,11 +22852,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Opened( ) = *root
                ; OpenList( *root)
             EndIf
-            
-            ;\\
-            DrawingStart( Canvas )
-            draw_font_( *root )
-            
             
             ;\\
             If flag & #PB_Window_NoActivate = #False
@@ -23843,129 +23943,6 @@ EndMacro
 
 
 ;-
-CompilerIf #PB_Compiler_IsMainFile
-   EnableExplicit
-   Uselib(widget)
-   
-   
-   ;-
-   Procedure TestHandler()
-      Debug "Test menu event"
-   EndProcedure
-   
-   Procedure QuitHandler()
-      Debug "Quit menu event"
-      End
-   EndProcedure
-   
-   ;\\
-   Define window = GetWindow(Open( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu))
-   ;Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
-   
-   
-   CreateMenu(0, WindowID(window))
-   MenuTitle("Title-1")
-   MenuItem(1, "title-1-item-1")
-   MenuBar()
-   ;
-   OpenSubMenu("title-1-sub-item")   
-   MenuItem(3, "title-1-item")
-   MenuBar()
-   ;
-   OpenSubMenu("title-2-sub-item")   
-   MenuItem(13, "title-2-item")
-   MenuBar()
-   ;
-   OpenSubMenu("title-3-sub-item")   
-   MenuItem(23, "title-3-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(24, "title-2-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(14, "title-1-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(2, "title-1-item-2")
-   
-   MenuTitle("Title-2")
-   MenuItem(5, "title-2-item-1")
-   MenuItem(6, "title-2-item-2")
-   
-   MenuTitle("Title-event-test")
-   MenuItem(7, "test")
-   MenuBar( )
-   MenuItem(8, "quit")
-   
-   MenuTitle("Title-4")
-   MenuItem(9, "title-4-item-1")
-   MenuItem(10, "title-4-item-2")
-   
-   BindMenuEvent(0, 7, @TestHandler())
-   BindMenuEvent(0, 8, @QuitHandler())
-   
-   Define *window._s_widget = root( )
-   Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-   Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
-;    ;   widget( )\bs = 8
-;    ;   SetFrame(widget( ), 3);, -1)
-   
-   Define *menu = CreateMenuBar( *window ) : SetClass(menu(), "CreateMenuBar" )
-   BarTitle("Title-1")
-   BarItem(1, "title-1-item-1")
-   BarSeparator( )
-   ;
-   OpenBar("title-1-sub-item") ;: Bind(widget( ), @TestHandler())   
-   BarItem(3, "title-1-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-2-sub-item")   
-   BarItem(13, "title-2-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-3-sub-item")   
-   BarItem(23, "title-3-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(14, "title-2-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(4, "title-1-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(2, "title-1-item-2")
-   
-   BarTitle("Title-2")
-   BarItem(5, "title-2-item-1")
-   BarItem(6, "title-2-item-2")
-   
-   BarTitle("Title-event-test")
-   BarItem(7, "test")
-   BarSeparator( )
-   BarItem(8, "quit")
-   
-   BarTitle("Title-4")
-   BarItem(9, "title-4-item-1")
-   BarItem(10, "title-4-item-2")
-   
-   
-  ; Bind(root(), @TestHandler())
-   Bind(*menu, @TestHandler());, #PB_All, 7)
-   ;Bind(*menu, @QuitHandler(), #PB_All, 8)
-   
-   
-   
-   Define Event
-   Repeat
-      Event = WaitWindowEvent()
-   Until Event = #PB_Event_CloseWindow
-CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile = 99
    Uselib(widget)
    
@@ -23989,7 +23966,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile 
    
    EnableExplicit
    UseLIB(widget)
@@ -24634,7 +24611,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23967
-; FirstLine = 23931
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------
+; CursorPosition = 24611
+; FirstLine = 24575
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

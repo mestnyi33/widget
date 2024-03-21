@@ -27,14 +27,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *toolbar._s_widget, th=24
   
-  Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
-     MenuBarButton( _button_, _image_, _mode_, _text_ )
-  EndMacro
-  
-  Macro Separator( )
-     MenuBarSeparator( )
-  EndMacro
-  
+;   Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
+;      MenuBarButton( _button_, _image_, _mode_, _text_ )
+;   EndMacro
+;   
+;   Macro Separator( )
+;      MenuBarSeparator( )
+;   EndMacro
+;   
   
   Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
     DisableButton(*toolbar, 2, 1) ; Disable the button '2'
     
     
-    Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
+    Button( 10,0, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
       
     ;  Bind( root( ), #PB_Default )
   EndIf
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 13
+; CursorPosition = 108
+; FirstLine = 96
 ; Folding = --
 ; EnableXP
