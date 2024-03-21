@@ -15825,32 +15825,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If is_window_( ActiveGadget( ) )
                   ActiveGadget( ) = #Null
                EndIf
-               ;
-               ;\\ when we activate the gadget
-               ;\\ first we activate its parent window
-               If *this <> ActiveWindow( )
-                  If ActiveWindow( ) And ; Not is_root_( ActiveWindow( ) ) And
-                     ActiveWindow( )\focus = #False
-                     ActiveWindow( )\focus = #True
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_Focus )
-                  EndIf
+               
+               ;\\
+               If ActiveWindow( ) And 
+                  ActiveWindow( )\focus = #False
+                  ActiveWindow( )\focus = #True
+                  ;
+                  ; when we activate the gadget
+                  ; first we activate its parent window
+                  DoFocus( ActiveWindow( ), #__event_Focus )
                EndIf
                
                ;\\
                DoFocus( *this, #__event_Focus )
                
+               ;\\
                If ActiveWindow( )
-                  ; when we activate the window
-                  ; we will activate his last gadget that lost focus
                   If ActiveGadget( ) And
                      ActiveGadget( )\focus = #False
                      ActiveGadget( )\focus = #True
                      ;
+                     ; when we activate the window
+                     ; we will activate his last gadget that lost focus
                      DoFocus( ActiveGadget( ), #__event_Focus )
                   EndIf
                   
-                  ; set window foreground position
+                  ;\\ set window foreground position
                   SetForeground( ActiveWindow( ))
                EndIf
                
@@ -19485,9 +19485,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\ 
-                  If *this\type = #__type_Menu Or
-                     *this\type = #__type_ToolBar
+                  ;\\ *this\type = #__type_Menu Or
+                     
+                  If *this\type = #__type_ToolBar
                      ;
                      If eventtype = #__event_LeftClick
                         If *this\EnteredTab( )
@@ -20983,6 +20983,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\FocusedTab( ) = *tabRow
                         *this\FocusedTab( )\focus = 1
                         ;
+                        DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                         DisplayPopupMenuBar( *tabRow\data, *this, 
                                              *this\screen_x( ) + *tabRow\x, 
                                              *this\screen_y( ) + *tabRow\y + *tabRow\height)
@@ -20994,6 +20995,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  HidePopupMenuBar( *this\ChildBar( ) )
                                  *this\ChildBar( ) = 0
                               Else
+                                 DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                  DisplayPopupMenuBar( *tabRow\data, *this, 
                                                    *this\screen_x( ) + *tabRow\x, 
                                                    *this\screen_y( ) + *tabRow\y + *tabRow\height)
@@ -21022,6 +21024,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf  
          EndIf
          
+         If eventtype = #__event_MouseEnter
+            Debug "  Enter - "+*this\class
+         EndIf
+         If eventtype = #__event_MouseLeave
+            Debug "  Leave - "+*this\class
+         EndIf
          If eventtype = #__event_Focus
             Debug "  Focus - "+*this\class
 ;             If GetActive( )\TabBox( )
@@ -21041,32 +21049,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If eventtype = #__event_LostFocus
             Debug "  LostFocus - "+*this\class
-            If is_menu_( *this )
-               If *this\EnteredTab( )
-                  Debug "777 "+*this\EnteredTab( )\enter +" "+ *this\enter 
-                  *this\EnteredTab( )\enter = *this\enter 
-                  *this\EnteredTab( ) = 0
-                  *this\root\repaint = 1
-               EndIf               
-               If *this\FocusedTab( )
-                  Debug "555 "+*this\FocusedTab( )\focus +" "+ *this\focus 
-                  *this\FocusedTab( )\focus = *this\focus  
-                  *this\FocusedTab( ) = 0
-               EndIf
-            EndIf
-            ;
-            If *this\ChildBar( ) And 
-               *this\ChildBar( )\hidden = #False
-               HidePopupMenuBar( *this\ChildBar( ) )
-               *this\ChildBar( ) = 0
-            EndIf
+;             If is_menu_( *this )
+;                If *this\EnteredTab( )
+;                   Debug "777 "+*this\EnteredTab( )\enter +" "+ *this\enter 
+;                   *this\EnteredTab( )\enter = *this\enter 
+;                   *this\EnteredTab( ) = 0
+;                   *this\root\repaint = 1
+;                EndIf               
+;                If *this\FocusedTab( )
+;                   Debug "555 "+*this\FocusedTab( )\focus +" "+ *this\focus 
+;                   *this\FocusedTab( )\focus = *this\focus  
+;                   *this\FocusedTab( ) = 0
+;                EndIf
+;             EndIf
+;             ;
+;             If *this\ChildBar( ) And 
+;                *this\ChildBar( )\hidden = #False
+;                HidePopupMenuBar( *this\ChildBar( ) )
+;                *this\ChildBar( ) = 0
+;             EndIf
+         EndIf
+         
+         If eventtype = #__event_StatusChange
          EndIf
          
          If *this\bar
             mouse_x - *this\bar\button\x
             mouse_y - *this\bar\button\y
             ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
-            
+                  
             ;\\ get at point items 
             If Not mouse( )\press
                ; if enter inner coordinate                           ;
@@ -21151,6 +21162,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *tabRow\data
                                     If *this\bar\vertical
                                        ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
+                                       DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                        DisplayPopupMenuBar( *tabRow\data, *this, 
                                                             *this\screen_width( ) - 5, 
                                                             *tabRow\y)
@@ -21159,6 +21171,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        If is_menu_( *this )
                                           If *tabRow\focus
                                              ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
+                                             DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                              DisplayPopupMenuBar( *tabRow\data, *this, 
                                                                   *this\screen_x( ) + *tabRow\x, 
                                                                   *this\screen_y( ) + *tabRow\y + *tabRow\height)
@@ -21844,7 +21857,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Static EnteredCanvasID
-         Protected Repaint, mouse_x , mouse_y
+         Protected *root._s_ROOT, repaint, mouse_x , mouse_y
+         
          ;\\
          If event = #PB_Event_Repaint
             If eventdata
@@ -21984,7 +21998,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   EndIf
                EndIf
                ; PopMapPosition( __roots( ) )
-               ;
                If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
                      ChangeCurrentCanvas( EnteredCanvasID )
@@ -21999,7 +22012,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If IsGadget( eventgadget ) And
                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                      EnteredCanvasID = GadgetID( eventgadget )
-                     ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                     ChangeCurrentCanvas( EnteredCanvasID )
                   EndIf
                EndIf
             EndIf
@@ -22012,6 +22025,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
                EnteredCanvasID = #Null
+            EndIf
+            
+            ;\\
+            If eventtype = #__event_LeftButtonUp Or
+               eventtype = #__event_RightButtonDown Or
+               eventtype = #__event_MiddleButtonDown
+               ;
+               If EnteredCanvasID
+                  If EnteredCanvasID <> Root( )\canvas\gadgetID
+                     ChangeCurrentCanvas( EnteredCanvasID )
+                  EndIf
+               EndIf
             EndIf
             
             ;\\
@@ -22078,7 +22103,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             If Root( )
             ;                Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
             ;             EndIf
-            
             
             ;\\
             If Root( ) And
@@ -22155,6 +22179,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #__event_LeftButtonDown,
                        #__event_RightButtonDown,
                        #__event_MiddleButtonDown
+                     ;Debug "      canvas down " + eventgadget
                      ;
                      ;\\
                      mouse( )\press  = 1
@@ -22167,7 +22192,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #__event_LeftButtonUp,
                        #__event_RightButtonUp,
                        #__event_MiddleButtonUp
-                     ;
+                     ;Debug "     canvas up " + eventgadget
+            ;
                      If mouse( )\interact = 1
                         mouse( )\interact = - 1
                      EndIf
@@ -22294,6 +22320,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #__event_LeftButtonDown Or
                    eventtype = #__event_MiddleButtonDown Or
                    eventtype = #__event_RightButtonDown
+               
                ;
                ;\\
                If EnteredWidget( )
@@ -24576,6 +24603,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------0--8---6---b0-f9-v0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0f--0--------------------------------------------------------------------------------------------------------------------------------------------------4----------------------8-0AAA-8-4---478---------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20985
+; FirstLine = 20401
+; Folding = -------------------------------------------------------------------------------------------------------------0--8---6---b0-f9-v0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0f---------------------------------------------------------------------------------------------0-------------------------------------------------------0----------------------+dPAA5-4--5-8v2z--0------------------------------------------
 ; EnableXP

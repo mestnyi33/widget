@@ -40,6 +40,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;-
+   Procedure Handler()
+      ClearDebugOutput()
+      Debug "   --------------     "
+      
+      If StartEnumerate( eventWidget( )\root )
+         
+         Debug ""+widget( )\class +" "+ widget( )\focus 
+         If widget( )\EnteredTab( )
+            Debug "              "+ widget( )\EnteredTab( )\focus
+         EndIf
+         StopEnumerate( )
+      EndIf
+      
+   EndProcedure
+   
    Procedure TestHandler()
       Debug "Test menu event"
    EndProcedure
@@ -146,19 +161,21 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(10, "title-4-item-2")
    
    
-  ; Bind(root(), @TestHandler())
-   Bind(*menu, @TestHandler());, #PB_All, 7)
+   ;Bind(*menu, @TestHandler());, #PB_All, 7)
    ;Bind(*menu, @QuitHandler(), #PB_All, 8)
    
    
-   
+  ; Bind(*menu, @Handler(), #__event_LeftClick)
+  Bind(-1, @Handler(), #__event_LeftClick)
+  Bind(-1, @Handler(), #__event_StatusChange)
+  
    Define Event
    Repeat
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 102
-; FirstLine = 84
-; Folding = -
+; CursorPosition = 169
+; FirstLine = 137
+; Folding = --
 ; EnableXP
