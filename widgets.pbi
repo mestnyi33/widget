@@ -1398,9 +1398,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       ;     Declare   Menus( *parent, flag.q )
       ;     Declare   PopupMenu( *parent, flag.q )
+      Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
-      Declare   CreateBar( type.b = #Null, *parent._s_WIDGET = #Null, flag.q = #Null )
+      Declare   CreateBar( type.b = #Null, *parent = #Null, flag.q = #Null )
       Declare   CreateMenuBar( *parent, flag.q = #Null )
       Declare   CreatePopupMenuBar( flag.q = #Null, x=0, y=0, width=0, height=0 ) 
       Declare   BarTitle( title.s, image = - 1 )
@@ -6456,7 +6457,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; init items position
                      If *bar\vertical
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\y = *bar\max + seperator_step + pos
+                           *items( )\y      = *bar\max + seperator_step + pos
                            *items( )\height = 1
                            *items( )\x      = 3
                            *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
@@ -6467,10 +6468,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\type = #__type_TabBar
                               If *this\TabState( ) = index
                                  *items( )\x       = 0
-                                 *items( )\width  = *SB\width + 1
+                                 *items( )\width   = *SB\width + 1
                               Else
-                                 *items( )\x       = pos
-                                 *items( )\width  = *SB\width - 1
+                                 *items( )\x       = 1
+                                 *items( )\width   = *SB\width - *items( )\x * 2
                               EndIf
                            Else
                               *items( )\x      = pos
@@ -6530,10 +6531,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      Else
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\x = *bar\max + pos + seperator_step
-                           *items( )\width = 1
-                           *items( )\y          = 3
-                           *items( )\height     = *this\scroll_height( ) - *items( )\y * 2
+                           *items( )\x      = *bar\max + pos + seperator_step
+                           *items( )\width  = 1
+                           *items( )\y      = 3
+                           *items( )\height = *this\scroll_height( ) - *items( )\y * 2
                            *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
                            *items( )\x = *bar\max + pos
@@ -6769,7 +6770,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
                  EndIf
                Else
-                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, 1, *this\frame_height( ), color )
+                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
                EndIf
                ;
                If *this\type = #__type_TabBar
@@ -6797,7 +6798,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
                  EndIf
                Else
-                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), *this\frame_width( ), 1, color )
+                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
                EndIf
                ;
                If *this\type = #__type_TabBar
@@ -24610,5 +24611,5 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------0--8---6---b0-f9-v0----------------------------------------------fz-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-8--------------------------------------------------------------------------------------------v-------------------------------------------------------v----------------------4v8BAA--+-H-f-te+-v-------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------0--8---0---b0-f9-v0----------------------------------------------fr-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-8--------------------------------------------------------------------------------------------v-------------------------------------------------------v----------------------4v8BAA--+-H-f-te+-v-------------------------------------------
 ; EnableXP
