@@ -73,8 +73,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess )
-                                                     ;      a_init(root( ))
-                                                     ;      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+      
+      ;      a_init(root( ))
+      ;      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       ; *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
@@ -82,37 +83,49 @@ CompilerIf #PB_Compiler_IsMainFile
       *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
-;          OpenBar("Menu")
-;          BarItem(11, "Open")
-;          BarItem(12, "Save")
-;          BarItem(13, "Save as...")
-;          BarSeparator( )
-;          BarItem(14, "Quit")
-;          CloseBar( )
-;          
-;          OpenBar("Menu2")
-;          BarItem(11, "Open")
-;          BarItem(12, "Save")
-;          BarItem(13, "Save as...")
-;          BarSeparator( )
-;          BarItem(14, "Quit")
-;          CloseBar( )
-;          BarSeparator( )
-         
-         BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
-         BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-         BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
-         
+         OpenBar("Menu")
+         BarItem(11, "Open")
+         BarItem(12, "Save")
+         BarItem(13, "Save as...")
          BarSeparator( )
+         BarItem(14, "Quit")
+         CloseBar( )
+         
+           
+         OpenBar("2Menu")
+         BarItem(11, "2Open")
+         BarItem(12, "2Save")
+         BarItem(13, "2Save as...")
+         BarSeparator( )
+         BarItem(14, "2Quit")
+         CloseBar( )
+         BarSeparator( )
+         
+         
+         BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
+         BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
+         ;BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
+         BarSeparator( )
+         
+         
+         OpenBar("3Menu")
+         BarItem(11, "3Open")
+         BarItem(12, "3Save")
+         BarItem(13, "3Save as...")
+         BarSeparator( )
+         BarItem(14, "3Quit")
+         CloseBar( )
+         BarSeparator( )
+         
          
          BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
          ; ToolTip(*toolbar, 5, "Paste")
          
-         BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-         ; ToolTip(*toolbar, 4, "Copy")
-         
-         BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-         ; ToolTip(*toolbar, 3, "Cut")
+;          BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+;          ; ToolTip(*toolbar, 4, "Copy")
+;          
+;          BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+;          ; ToolTip(*toolbar, 3, "Cut")
          
          BarSeparator( )
          
@@ -149,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 79
+; CursorPosition = 127
+; FirstLine = 94
 ; Folding = --
 ; EnableXP

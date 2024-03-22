@@ -140,7 +140,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
    Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
    
-   
    Bind(root(), @ClickHandler(), #__event_LeftClick)
    
    Define Event
@@ -149,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 103
+; CursorPosition = 141
+; FirstLine = 112
 ; Folding = --
 ; EnableXP

@@ -320,7 +320,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro ParentBar( ): parentmenu: EndMacro
-      Macro ChildBar( ): childmenu: EndMacro
+      Macro ChildBar( ): parent\childmenu: EndMacro
       Macro PopupBar( ): childmenu: EndMacro
       
       ;-
@@ -455,8 +455,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Global *before_start_enumerate_widget._s_WIDGET
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
          Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
+         *before_start_enumerate_widget = widget( )
          PushListPosition( __widgets( ) )
          ;
          If _parent_\FirstWidget( )\address
@@ -464,6 +466,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             ResetList( __widgets( ) )
          EndIf
+         widget( ) = __widgets( )
          ;
          ;\\
          If _item_ > 0
@@ -516,6 +519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Until Not NextElement( __widgets( ) )
          EndIf
          PopListPosition( __widgets( ) )
+         widget( ) = *before_start_enumerate_widget
       EndMacro
       
       
@@ -4887,34 +4891,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
          Protected *item._s_ROWS 
-         If menu( )
-            *item = AddItem( menu( ), - 1, text, image, mode)
+         Protected *this._s_WIDGET = menu( )
+         
+         If *this
+            *item = AddItem( *this, - 1, text, image, mode)
             *item\itemindex = button
             
-            If menu( )\parent
+            If *this\parent
                If *item\text\string
                   
-                  If menu( )\type = #__type_ToolBar
-                     If Not menu( )\flag & #PB_ToolBar_InlineText
-                        If menu( )\flag & #PB_ToolBar_Small 
-                           menu( )\parent\TabBoxSize( ) = 25 + 20 
-                           ;                   ElseIf menu( )\flag & #PB_ToolBar_Large 
-                           ;                      menu( )\parent\TabBoxSize( ) = 45
+                  If *this\type = #__type_ToolBar
+                     If Not *this\flag & #PB_ToolBar_InlineText
+                        If *this\flag & #PB_ToolBar_Small 
+                           *this\parent\TabBoxSize( ) = 25 + 20 
+                           ;                   ElseIf *this\flag & #PB_ToolBar_Large 
+                           ;                      *this\parent\TabBoxSize( ) = 45
                            ;                   Else ; If flag & #PB_ToolBar_Normal 
-                           ;                      menu( )\parent\TabBoxSize( ) = 35
+                           ;                      *this\parent\TabBoxSize( ) = 35
                            
-                           ;                      If menu( )\flag & #PB_ToolBar_Left
-                           ;                         menu( )\parent\fs[1] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-                           ;                      ElseIf menu( )\flag & #PB_ToolBar_Right
-                           ;                         menu( )\parent\fs[3] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
-                           ;                      ElseIf menu( )\flag & #PB_ToolBar_Bottom
-                           ;                         menu( )\parent\fs[4] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           ;                      If *this\flag & #PB_ToolBar_Left
+                           ;                         *this\parent\fs[1] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+                           ;                      ElseIf *this\flag & #PB_ToolBar_Right
+                           ;                         *this\parent\fs[3] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+                           ;                      ElseIf *this\flag & #PB_ToolBar_Bottom
+                           ;                         *this\parent\fs[4] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
                            ;                      Else
-                           menu( )\parent\fs[2] = menu( )\parent\barHeight + menu( )\parent\MenuBarHeight + menu( )\parent\TabBoxSize( ) + 2
+                           *this\parent\fs[2] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
                            ;                      EndIf
-                           
-                           Resize( menu( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                        ;   Debug menu( )\parent\TabBoxSize( )
+                           Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        ;   Debug *this\parent\TabBoxSize( )
+                          
                         EndIf
                      EndIf
                   EndIf
@@ -5945,6 +5951,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug "------ " + *this\class + x + " " + y + " " + width + " " + height
             EndIf
          EndIf
+         
          
          
          
@@ -15764,13 +15771,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i, *active._s_WIDGET
          
          If *this And Not *this\disable
-            ;                   If GetActiveGadget( ) <> *this\root\canvas\gadget
-            ;                      SetActiveGadget( *this\root\canvas\gadget )
+            If *this\child
+               *active = *this\parent
+            Else
+               *active = *this
+            EndIf
+            
+            ;                   If GetActiveGadget( ) <> *active\root\canvas\gadget
+            ;                      SetActiveGadget( *active\root\canvas\gadget )
             ;                   EndIf
             ;\\
-            If *this\anchors Or ( is_integral_( *this ) And *this\parent\anchors )
-               If *this\anchors
-                  a_set( *this, *this\anchors\mode, *this\anchors\size, *this\anchors\pos )
+            If *active\anchors Or ( is_integral_( *active ) And *active\parent\anchors )
+               If *active\anchors
+                  a_set( *active, *active\anchors\mode, *active\anchors\size, *active\anchors\pos )
                Else
                   ProcedureReturn 0
                EndIf
@@ -15797,50 +15810,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\focus = #False
                *this\focus = #True
                
-               ;\\ set active all parents
-               If *this\address
-                  If Not *this\child
-                     If Not is_root_( *this )
-                        PushListPosition( __widgets( ) )
-                        ChangeCurrentElement( __widgets( ), *this\address )
-                        While PreviousElement( __widgets( ) )
-                           widget( ) = __widgets( )
-                           
-                           If is_window_( widget( ) )
-                              If IsChild( *this, widget( ) )
-                                 If widget( )\focus = #False
-                                    widget( )\focus = #True
-                                    ;
-                                    DoFocus( widget( ), #__event_Focus )
-                                 EndIf
-                              EndIf
-                           EndIf
-                        Wend
-                        PopListPosition( __widgets( ) )
-                     EndIf
-                  EndIf
-               EndIf
-               
                ;\\ get active window
                If is_window_( *this ) Or
                   is_root_( *this )
                   ActiveWindow( ) = *this
                Else
-                  If *this\child
-                     ActiveWindow( ) = *this\parent\window
-                     If ActiveWindow( )
-                        ActiveGadget( ) = *this\parent
-                     EndIf
-                  Else
-                     ActiveWindow( ) = *this\window
-                     If ActiveWindow( )
-                        ActiveGadget( ) = *this
-                     EndIf
+                  ActiveWindow( ) = *active\window
+                  If ActiveWindow( )
+                     ActiveGadget( ) = *active
                   EndIf
                EndIf
                If ActiveWindow( )
                   If is_window_( ActiveGadget( ) )
                      ActiveGadget( ) = #Null
+                  EndIf
+               EndIf
+               
+               ;\\ set active all parents
+               If *active\address
+                  If Not is_root_( *active )
+                     PushListPosition( __widgets( ) )
+                     ChangeCurrentElement( __widgets( ), *active\address )
+                     While PreviousElement( __widgets( ) )
+                        widget( ) = __widgets( )
+                        
+                        If is_window_( widget( ) )
+                           If IsChild( *active, widget( ) )
+                              If widget( )\focus = #False
+                                 widget( )\focus = #True
+                                 ;
+                                 DoFocus( widget( ), #__event_Focus )
+                              EndIf
+                           EndIf
+                        EndIf
+                     Wend
+                     PopListPosition( __widgets( ) )
                   EndIf
                EndIf
                
@@ -15873,7 +15877,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             EndIf
-            
             
          Else
             If ActiveWindow( )
@@ -20988,33 +20991,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *tabRow
                   If *tabRow\sublevel >= 0
                      If *tabRow\childrens 
-                                    
-                        If is_menu_( *this )
+                        If *tabRow\data
                            If *this\FocusedTab( )
                               *this\FocusedTab( )\focus = 0 
+                              *this\FocusedTab( ) = 0
                            EndIf
                            ;
-                           *this\FocusedTab( ) = *tabRow
-                           *this\FocusedTab( )\focus = 1
-                           ;
-                           If *tabRow\data
+                           If *this\ChildBar( ) And 
+                              *this\ChildBar( )\hidden = #False
+                              HidePopupMenuBar( *this\ChildBar( ) )
+                              *this\ChildBar( ) = 0
+                           Else
+                              ;
+                              If is_menu_( *this )
+                                 *this\FocusedTab( ) = *tabRow
+                                 *this\FocusedTab( )\focus = 1
+                              EndIf
+                              ;
                               DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                               DisplayPopupMenuBar( *tabRow\data, *this, 
                                                    *this\screen_x( ) + *tabRow\x, 
                                                    *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                           EndIf
-                        Else
-                           If *tabRow\data
-                              If *this\ChildBar( ) And 
-                                 *this\ChildBar( )\hidden = #False
-                                 HidePopupMenuBar( *this\ChildBar( ) )
-                                 *this\ChildBar( ) = 0
-                              Else
-                                 DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                 DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                      *this\screen_x( ) + *tabRow\x, 
-                                                      *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -21143,8 +21140,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\EnteredTab( ) = *tabRow
                   ;
                   ;\\ change focused tab
-                  If is_menu_( *this )
-                     If *tabRow
+                  If *tabRow
+                     If *tabRow\childrens
                         If *this\FocusedTab( )
                            *this\FocusedTab( )\focus = 0 
                            
@@ -21170,33 +21167,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\root\repaint = #True
                            
                            ;\\ show popup bar
-                           If *tabRow\sublevel >= 0
-                              ; Debug " sublevel - "+*tabRow\sublevel
-                              
-                              If *tabRow\childrens
-                                 If *tabRow\data
-                                    If *this\bar\vertical
-                                       ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
+                           If *tabRow\childrens
+                              If *tabRow\data
+                                 If *this\bar\vertical
+                                    ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
+                                    DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
+                                    DisplayPopupMenuBar( *tabRow\data, *this, 
+                                                         *this\screen_width( ) - 5, *tabRow\y )
+                                 Else
+                                    If *tabRow\focus
+                                       ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
                                        DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                        DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                            *this\screen_width( ) - 5, 
-                                                            *tabRow\y)
-                                       
-                                    Else
-                                       If is_menu_( *this )
-                                          If *tabRow\focus
-                                             ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
-                                             DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                             DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                                  *this\screen_x( ) + *tabRow\x, 
-                                                                  *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                                          EndIf
-;                                        Else
-;                                           DisplayPopupMenuBar( *tabRow\data, *this, 
-;                                                                *this\screen_x( ) + *tabRow\x, 
-;                                                                *this\screen_y( ) + *tabRow\y + *tabRow\height)
-;                                           
-                                       EndIf
+                                                            *this\screen_x( ) + *tabRow\x, 
+                                                            *this\screen_y( ) + *tabRow\y + *tabRow\height )
                                     EndIf
                                  EndIf
                               EndIf
@@ -24611,7 +24595,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15812
-; FirstLine = 15653
-; Folding = ----------------------------------------------------------------------------------------------------------------0---+---t--P+-4+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-0--------64r-4+--8----------------------------------ftu---------------------------------------0-------------------------------------------------------+---------------------f-uHAA9-8-f9--476--+--------x-a8b-----------------------------
+; CursorPosition = 21010
+; FirstLine = 20135
+; Folding = ----------------------------------------------------------------------------------------------------------------0---+---t--P+-4+-------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+07-t---+----------------------------------Xr8--------------------------------------f-------------------------------------------------------4----------------------+dPAA5-4--5--v2z--0--------j-234+----------------------------
 ; EnableXP
