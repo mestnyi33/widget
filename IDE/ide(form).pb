@@ -1092,12 +1092,12 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
    BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
    
-;    BarSeparator( )
-;    OpenBar("ComboBox")
-;    BarItem(55, "item1")
-;    BarItem(56, "item2")
-;    BarItem(57, "item3")
-;    CloseBar( )
+   BarSeparator( )
+   OpenBar("ComboBox")
+   BarItem(55, "item1")
+   BarItem(56, "item2")
+   BarItem(57, "item3")
+   CloseBar( )
    
    BarSeparator( )
    BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
@@ -1375,7 +1375,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1099
-; FirstLine = 843
+; CursorPosition = 1094
+; FirstLine = 831
 ; Folding = ---------2+4v+--bl----
 ; EnableXP

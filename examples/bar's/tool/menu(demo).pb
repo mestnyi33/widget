@@ -38,41 +38,22 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    Uselib(widget)
    
-   
+   Define *menu._s_widget
    ;-
-   Procedure Handler()
-      ;ClearDebugOutput()
-;       Debug "   --------------     "
-;       If widget( )\window
-;          Debug ""+widget( )\class +" "+ widget( )\focus +" "+ widget( )\window\class +" "+ widget( )\window\focus 
-;       Else
-;          Debug " no "+widget( )\class +" "+ widget( )\focus
-;       EndIf
-;       
-;       If StartEnumerate( eventWidget( )\root )
-;          
-;          Debug ""+widget( )\class +" "+ widget( )\focus 
-;          If widget( )\EnteredTab( )
-;             Debug "              "+ widget( )\EnteredTab( )\focus
-;          EndIf
-;          StopEnumerate( )
-;       EndIf
-      
-   EndProcedure
-   
    Procedure TestHandler()
+      ;ClearDebugOutput()
       Debug "Test menu event"
    EndProcedure
    
    Procedure QuitHandler()
-      Debug "Quit menu event"
-      End
+     ;ClearDebugOutput()
+     Debug "Quit menu event"
+     ; End
    EndProcedure
    
    ;\\
    Define window = GetWindow(Open( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu))
    ;Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
-   
    
    CreateMenu(0, WindowID(window))
    MenuTitle("Title-1")
@@ -118,37 +99,19 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 7, @TestHandler())
    BindMenuEvent(0, 8, @QuitHandler())
    
+   
+   ;\\
    Define *window._s_widget = root( )
-;    If *window\parent
-;       Debug "r "+*window\parent\class
-;    EndIf
-;    If *window\window
-;       Debug "r win  "+*window\window\class
-;    EndIf
    Define *window._s_widget = Window(100, 100, 300, 100, "menu click test", #PB_Window_SystemMenu)
-;    Debug "w "+*window\parent\class
-;    If *window\window
-;       Debug "w win  "+*window\window\class
-;    EndIf
    Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
-;    ;    ;   widget( )\bs = 8
-; ;    ;   SetFrame(widget( ), 3);, -1)
-;    Debug "c "+*container\parent\class
-;    Debug "c   "+*container\window\class
    
-   
-   Define *menu._s_widget = CreateMenuBar( *window ) : SetClass(menu(), "CreateMenuBar" )
-   Debug classfromtype(*menu\type)
-;    Debug "m "+*menu\parent\class
-;    If *menu\window
-;    Debug "m win  "+*menu\window\class
-; EndIf
-
+   *menu = CreateMenuBar( *window ) : SetClass(menu(), "CreateMenuBar" )
+  
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
    BarSeparator( )
    ;
-   OpenBar("title-1-sub-item") ;: Bind(widget( ), @TestHandler())   
+   OpenBar("title-1-sub-item")
    BarItem(3, "title-1-item")
    BarSeparator( )
    ;
@@ -184,33 +147,17 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
+   Bind(*menu, @TestHandler(), -1, 7)
+   Bind(*menu, @QuitHandler(), -1, 8)
    
-   ;Bind(*menu, @TestHandler());, #PB_All, 7)
-   ;Bind(*menu, @QuitHandler(), #PB_All, 8)
    
-   
-  ; Bind(*menu, @Handler(), #__event_LeftClick)
-  Bind(-1, @Handler(), #__event_LeftClick)
-  Bind(-1, @Handler(), #__event_StatusChange)
-  
-  
-;   If StartEnumerate( root() )
-;      
-;      Debug ""+widget( )\class +" "+ widget( )\focus 
-;      If widget( )\EnteredTab( )
-;         Debug "              "+ widget( )\EnteredTab( )\focus
-;      EndIf
-;      StopEnumerate( )
-;   EndIf
-; ;   
-; ;   
    Define Event
    Repeat
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 40
+; CursorPosition = 149
+; FirstLine = 121
 ; Folding = -
 ; EnableXP

@@ -93,11 +93,11 @@ CompilerIf #PB_Compiler_IsMainFile
          
            
          OpenBar("2Menu")
-         BarItem(11, "2Open")
-         BarItem(12, "2Save")
-         BarItem(13, "2Save as...")
+         BarItem(21, "2Open")
+         BarItem(22, "2Save")
+         BarItem(23, "2Save as...")
          BarSeparator( )
-         BarItem(14, "2Quit")
+         BarItem(24, "2Quit")
          CloseBar( )
          BarSeparator( )
          
@@ -109,11 +109,11 @@ CompilerIf #PB_Compiler_IsMainFile
          
          
          OpenBar("3Menu")
-         BarItem(11, "3Open")
-         BarItem(12, "3Save")
-         BarItem(13, "3Save as...")
+         BarItem(31, "3Open")
+         BarItem(32, "3Save")
+         BarItem(33, "3Save as...")
          BarSeparator( )
-         BarItem(14, "3Quit")
+         BarItem(34, "3Quit")
          CloseBar( )
          BarSeparator( )
          
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 127
-; FirstLine = 94
+; CursorPosition = 115
+; FirstLine = 89
 ; Folding = --
 ; EnableXP

@@ -329,8 +329,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro ParentBar( ): parentmenu: EndMacro
-      Macro ChildBar( ): parent\childmenu: EndMacro
-      Macro PopupBar( ): childmenu: EndMacro
+      Macro PopupBar( ): parent\childmenu: EndMacro
+      Macro ComboBar( ): childmenu: EndMacro
       
       ;-
       Macro ToggleBoxState( ): ToggleBox( )\state: EndMacro
@@ -1407,13 +1407,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ; menu
       Macro menu( )
-         widget( ) ; __gui\PopupBar( )
+         widget( ) ; __gui\ComboBar( )
       EndMacro
-      ;     Declare   Menus( *parent, flag.q )
-      ;     Declare   PopupMenu( *parent, flag.q )
-      Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
+      Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare   CreateBar( type.b = #Null, *parent = #Null, flag.q = #Null )
       Declare   CreateMenuBar( *parent, flag.q = #Null )
       Declare   CreatePopupMenuBar( flag.q = #Null, x=0, y=0, width=0, height=0 ) 
@@ -1421,7 +1419,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   BarItem( item, text.s, image = - 1 )
       Declare   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
       Declare   BarSeparator( )
-      Declare   OpenBar( text.s, image = - 1 )
+      Declare   OpenBar( text.s, image.i = - 1 )
       Declare   CloseBar( )
       
       
@@ -5001,7 +4999,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Hide( *this, #True )
                HideWindow( GetWindow( *this\root ), #True )
             EndIf
-            *this = *this\ChildBar( )
+            *this = *this\PopupBar( )
          Wend
       EndProcedure
       
@@ -5021,7 +5019,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *display
-               *display\ChildBar( ) = *this
+               *display\PopupBar( ) = *this
                ;
                If x = #PB_Ignore
                   x = *display\screen_x( )
@@ -5123,13 +5121,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; Resize( *this\root, 0, 0, width, height)
                   
-                  ;                If *this\ParentBar( )
-                  ;                   Debug ""+*this\parent\class +" "+ *this\ParentBar( )\class
-                  ;                   ForEach *this\ParentBar( )\events( )
-                  ;                      Debug 999
-                  ;                      Bind( *this, *this\ParentBar( )\events( )\function, *this\ParentBar( )\events( )\type, *this\ParentBar( )\events( )\item )
-                  ;                   Next
-                  ;                EndIf
+                  If Not *this\event 
+                     If *this\ParentBar( )
+                        ; Debug ""+*this\parent\class +" "+ *this\ParentBar( )\class
+                        ForEach *this\ParentBar( )\events( )
+                           ; Debug 999
+                           Bind( *this, *this\ParentBar( )\events( )\function, *this\ParentBar( )\events( )\type, *this\ParentBar( )\events( )\item )
+                        Next
+                     EndIf
+                  EndIf
                EndIf
             EndIf
             
@@ -14300,8 +14300,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_combobox
-            If *this\PopupBar( )
-               ProcedureReturn Tree_AddItem( *this\PopupBar( ), Item, Text, Image, flag )
+            If *this\ComboBar( )
+               ProcedureReturn Tree_AddItem( *this\ComboBar( ), Item, Text, Image, flag )
             Else
                ProcedureReturn Tree_AddItem( *this, Item, Text, Image, flag )
             EndIf
@@ -14844,8 +14844,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ ComboBox
-         If *this\PopupBar( )
-            *this = *this\PopupBar( )
+         If *this\ComboBar( )
+            *this = *this\ComboBar( )
          EndIf
          
          ;\\
@@ -15160,29 +15160,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_ComboBox
-            If *this\PopupBar( )
-               If is_no_select_item_( *this\PopupBar( )\__items( ), State )
+            If *this\ComboBar( )
+               If is_no_select_item_( *this\ComboBar( )\__items( ), State )
                   ProcedureReturn #False
                EndIf
                
-               If *this\PopupBar( )\FocusedRow( ) <> *this\PopupBar( )\__items( )
+               If *this\ComboBar( )\FocusedRow( ) <> *this\ComboBar( )\__items( )
                   
-                  If *this\PopupBar( )\FocusedRow( )
-                     If *this\PopupBar( )\FocusedRow( )\RowFocus( 1 )
-                        *this\PopupBar( )\FocusedRow( )\RowFocus( 0 )
+                  If *this\ComboBar( )\FocusedRow( )
+                     If *this\ComboBar( )\FocusedRow( )\RowFocus( 1 )
+                        *this\ComboBar( )\FocusedRow( )\RowFocus( 0 )
                      EndIf
                      
-                     *this\PopupBar( )\FocusedRow( )\ColorState( ) = #__s_0
+                     *this\ComboBar( )\FocusedRow( )\ColorState( ) = #__s_0
                   EndIf
                   
-                  *this\PopupBar( )\FocusedRow( )             = *this\PopupBar( )\__items( )
-                  *this\PopupBar( )\FocusedRow( )\RowFocus( 1 )
-                  *this\PopupBar( )\FocusedRow( )\ColorState( ) = #__s_2
-                  Debug "SETSTATE - combo " + GetState( *this\PopupBar( ) )
-                  ;*this\text\string = *this\PopupBar( )\FocusedRow( )\text\string
+                  *this\ComboBar( )\FocusedRow( )             = *this\ComboBar( )\__items( )
+                  *this\ComboBar( )\FocusedRow( )\RowFocus( 1 )
+                  *this\ComboBar( )\FocusedRow( )\ColorState( ) = #__s_2
+                  Debug "SETSTATE - combo " + GetState( *this\ComboBar( ) )
+                  ;*this\text\string = *this\ComboBar( )\FocusedRow( )\text\string
                   
-                  SetText( *this, *this\PopupBar( )\FocusedRow( )\text\string )
-                  ;SetText( *this, GetItemText( *this\PopupBar( ), GetState( *this\PopupBar( ) ) ) )
+                  SetText( *this, *this\ComboBar( )\FocusedRow( )\text\string )
+                  ;SetText( *this, GetItemText( *this\ComboBar( ), GetState( *this\ComboBar( ) ) ) )
                EndIf
             EndIf
          EndIf
@@ -15731,7 +15731,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Popup( ) And *this = Popup( )\widget
                ; Debug " Popup( setActive ) "
-               ; *this = *this\PopupBar( )
+               ; *this = *this\ComboBar( )
                ProcedureReturn 0
             EndIf
             
@@ -17703,13 +17703,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            *this\PopupBar( ) = Create( *this, *this\class + "_ListView", #__type_ListView,
+            *this\ComboBar( ) = Create( *this, *this\class + "_ListView", #__type_ListView,
                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
-            *this\PopupBar( )\fs = 2
-            ;             *this\PopupBar( )\hidden = 1
-            ;             *this\PopupBar( )\hide = 1
-            Hide( *this\PopupBar( ), #True )
-            ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\PopupBar( )\parent\class
+            *this\ComboBar( )\fs = 2
+            ;             *this\ComboBar( )\hidden = 1
+            ;             *this\ComboBar( )\hide = 1
+            Hide( *this\ComboBar( ), #True )
+            ;Debug ""+*this\StringBox( )\parent\class +" "+ *this\ComboBar( )\parent\class
          EndIf
          
          ;\\ - Create Bars
@@ -19443,9 +19443,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\ *this\type = #__type_Menu Or
+                  ;\\ 
                   
-                  If *this\type = #__type_ToolBar
+                  If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
                      ;
                      If eventtype = #__event_LeftClick
                         If *this\EnteredTab( )
@@ -20934,7 +20934,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *tabRow
                   If *tabRow\data
                      If *tabRow\childrens 
-                        If Not *this\ChildBar( )
+                        If Not *this\PopupBar( )
                            If *this\FocusedTab( )
                               *this\FocusedTab( )\RowFocus( 0 )
                               *this\FocusedTab( ) = 0
@@ -20963,10 +20963,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\FocusedTab( )\RowFocus( 1 )
                         EndIf
                         ;
-                        If *this\ChildBar( ) And 
-                           *this\ChildBar( )\hidden = #False
-                           HidePopupMenuBar( *this\ChildBar( ) )
-                           *this\ChildBar( ) = 0
+                        If *this\PopupBar( ) And 
+                           *this\PopupBar( )\hidden = #False
+                           HidePopupMenuBar( *this\PopupBar( ) )
+                           *this\PopupBar( ) = 0
                         Else
                            ;
                            DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
@@ -20986,10 +20986,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      ;
-                     If GetActive( )\ChildBar( ) And 
-                        GetActive( )\ChildBar( )\hidden = #False
-                        HidePopupMenuBar( GetActive( )\ChildBar( ) )
-                        GetActive( )\ChildBar( ) = 0
+                     If GetActive( )\PopupBar( ) And 
+                        GetActive( )\PopupBar( )\hidden = #False
+                        HidePopupMenuBar( GetActive( )\PopupBar( ) )
+                        GetActive( )\PopupBar( ) = 0
                      EndIf
                   EndIf
                EndIf
@@ -21012,10 +21012,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                   EndIf
             ;                EndIf
             ;                ;
-            ;                If GetActive( )\TabBox( )\ChildBar( ) And 
-            ;                   GetActive( )\TabBox( )\ChildBar( )\hidden = #False
-            ;                   HidePopupMenuBar( GetActive( )\TabBox( )\ChildBar( ) )
-            ;                   GetActive( )\TabBox( )\ChildBar( ) = 0
+            ;                If GetActive( )\TabBox( )\PopupBar( ) And 
+            ;                   GetActive( )\TabBox( )\PopupBar( )\hidden = #False
+            ;                   HidePopupMenuBar( GetActive( )\TabBox( )\PopupBar( ) )
+            ;                   GetActive( )\TabBox( )\PopupBar( ) = 0
             ;                EndIf
             ;             EndIf
          EndIf
@@ -21035,10 +21035,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;                EndIf
             ;             EndIf
             ;             ;
-            ;             If *this\ChildBar( ) And 
-            ;                *this\ChildBar( )\hidden = #False
-            ;                HidePopupMenuBar( *this\ChildBar( ) )
-            ;                *this\ChildBar( ) = 0
+            ;             If *this\PopupBar( ) And 
+            ;                *this\PopupBar( )\hidden = #False
+            ;                HidePopupMenuBar( *this\PopupBar( ) )
+            ;                *this\PopupBar( ) = 0
             ;             EndIf
          EndIf
          
@@ -21077,50 +21077,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; change enter/leave state
-               If *this\EnteredTab( ) <> *tabRow And Not *this\dragstart
+               If *this\EnteredTab( ) <> *tabRow ;And Not *this\dragstart
                   ;\\ leaved tabs
                   If *this\EnteredTab( ) And
                      Leaved( *this\EnteredTab( ) )
                      *this\root\repaint = #True
                      ;
                      ;\\ hide popup menu bar
-                     If is_menu_( *this )
+                     ;If is_menu_( *this )
                         If *this\enter 
                            If Not *this\EnteredTab( )\focus
-                              If *this\ChildBar( ) And 
-                                 *this\ChildBar( )\hidden = #False
-                                 HidePopupMenuBar( *this\ChildBar( ) )
-                                 *this\ChildBar( ) = 0
+                              If *this\PopupBar( ) And 
+                                 *this\PopupBar( )\hidden = #False
+                                 HidePopupMenuBar( *this\PopupBar( ) )
+                                 *this\PopupBar( ) = 0
                               EndIf 
                            EndIf 
                         EndIf 
-                     EndIf
+                     ;EndIf
                   EndIf
                   ;
                   *this\EnteredTab( ) = *tabRow
                   ;
-                  ;\\ change focused tab
-                  If *tabRow
-                     If *tabRow\childrens
-                        If *this\FocusedTab( )
-                           *this\FocusedTab( )\RowFocus( 0 )
-                           
-                           *this\FocusedTab( ) = *tabRow
-                           *this\FocusedTab( )\RowFocus( 1 )
-                        EndIf
-                     EndIf
-                  EndIf
                   ;
                   If *this\enter 
                      If *tabRow 
                         ;\\ hide popup menu bar
-                        If is_menu_( *this )
-                           If *this\ChildBar( ) And 
-                              *this\ChildBar( )\hidden = #False
-                              HidePopupMenuBar( *this\ChildBar( ) )
-                              *this\ChildBar( ) = 0
+                        ;If is_menu_( *this )
+                           If *this\PopupBar( ) And 
+                              *this\PopupBar( )\hidden = #False
+                              HidePopupMenuBar( *this\PopupBar( ) )
+                              *this\PopupBar( ) = 0
                            EndIf
-                        EndIf
+                        ;EndIf
                         
                         ;\\ entered tabs
                         If Entered( *tabRow )
@@ -21128,6 +21117,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            ;\\ show popup bar
                            If *tabRow\childrens
+                              ;\\ change focused tab
+                              ; If *tabRow
+                                ; If *tabRow\childrens
+                                    If *this\FocusedTab( )
+                                       ;Debug *this\enter 
+                                       *this\FocusedTab( )\RowFocus( 0 )
+                                       
+                                       *this\FocusedTab( ) = *tabRow
+                                       *this\FocusedTab( )\RowFocus( 1 )
+                                    EndIf
+                                ; EndIf
+                             ; EndIf
+                              ;
                               If *tabRow\data
                                  If *this\bar\vertical
                                     ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
@@ -21435,8 +21437,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #__type_combobox
                   If eventtype = #__event_Down
                      If mouse( )\buttons & #PB_Canvas_LeftButton
-                        If *this\PopupBar( )
-                           DisplayPopup( *this\PopupBar( ), *this )
+                        If *this\ComboBar( )
+                           DisplayPopup( *this\ComboBar( ), *this )
                         EndIf
                      EndIf
                   EndIf
@@ -21579,8 +21581,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      ;\\ hide popup widget
                      If eventtype = #__event_Down
-                        If Not ( *this\PopupBar( ) And
-                                 *this\PopupBar( ) = Popup( )\widget )
+                        If Not ( *this\ComboBar( ) And
+                                 *this\ComboBar( ) = Popup( )\widget )
                            
                            ;\\
                            If Not is_integral_( *this )
@@ -24559,7 +24561,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20994
-; FirstLine = 20976
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4976
+; FirstLine = 4841
+; Folding = --------------------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------
 ; EnableXP
