@@ -329,7 +329,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       Macro ParentBar( ): parentmenu: EndMacro
-      Macro PopupBar( ): parent\childmenu: EndMacro
+      Macro PopupBar( ): childmenu: EndMacro ; parent\
       Macro ComboBar( ): childmenu: EndMacro
       
       ;-
@@ -1414,7 +1414,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare   CreateBar( type.b = #Null, *parent = #Null, flag.q = #Null )
       Declare   CreateMenuBar( *parent, flag.q = #Null )
-      Declare   CreatePopupMenuBar( flag.q = #Null, x=0, y=0, width=0, height=0 ) 
+      Declare   CreatePopupMenuBar( flag.q = #Null ) 
       Declare   BarTitle( title.s, image = - 1 )
       Declare   BarItem( item, text.s, image = - 1 )
       Declare   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
@@ -4971,22 +4971,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn CreateBar( #__type_Menu, *parent, #PB_ToolBar_Small|#PB_ToolBar_Text )
       EndProcedure
       
-      Procedure   CreatePopupMenuBar( flag.q = #Null, x=0, y=0, width=0, height=0 )
+      Procedure   CreatePopupMenuBar( flag.q = #Null )
          Static count
          Protected *parent._s_WIDGET, menu 
-         *parent = Root( ) ; Container( x, y, width + x*2, height + y*2 ) ; 
          
          If menu( )\type = #__type_ToolBar Or 
             menu( )\type = #__type_Menu
-            menu = menu( )
+              menu = menu( )
+             ;
+            ; Debug "CreatePopupMenuBar "+menu( )\parent\class +" "+ "PopupMenu_"+count
+            *parent = menu( )\parent
+         Else
+            *parent = Root( )
          EndIf
+         
          menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
-                           x, y, width, height, #Null$, flag|#__flag_vertical, 0, 0, 0, 0, 0, 30 ) ;  | #__flag_child
+                           0,0,0,0, #Null$, flag|#__flag_vertical, 0, 0, 0, 0, 0, 30 ) ;  | #__flag_child
          SetColor( menu( ), #__color_back, $FFF2F2F2)
          Hide(menu( ),  1) 
          menu( )\ParentBar( ) = menu
-         
-         ;CloseList( ) ; *parent
          
          widget( ) = menu( ) 
          count + 1
@@ -20949,6 +20952,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Down
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
+               
+               ;
+               If GetActive( )
+                  If GetActive( ) <> *this
+                     Debug " down - "+GetActive( )\class
+                     If is_menu_( GetActive( ) )
+                        If GetActive( )\FocusedTab( )
+                           GetActive( )\FocusedTab( )\RowFocus( 0 )
+                           GetActive( )\FocusedTab( ) = 0
+                        EndIf
+                     EndIf
+                     ;
+                     If GetActive( )\PopupBar( ) And 
+                        GetActive( )\PopupBar( )\hidden = #False
+                        HidePopupMenuBar( GetActive( )\PopupBar( ) )
+                        GetActive( )\PopupBar( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+               
                ;
                If *tabRow
                   If *tabRow\data
@@ -20974,22 +20997,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                                 *this\screen_x( ) + *tabRow\x, 
                                                 *this\screen_y( ) + *tabRow\y + *tabRow\height)
                         EndIf
-                     EndIf
-                  EndIf
-               Else
-                  If GetActive( )
-                     Debug " down - "+GetActive( )\class
-                     If is_menu_( GetActive( ) )
-                        If GetActive( )\FocusedTab( )
-                           GetActive( )\FocusedTab( )\RowFocus( 0 )
-                           GetActive( )\FocusedTab( ) = 0
-                        EndIf
-                     EndIf
-                     ;
-                     If GetActive( )\PopupBar( ) And 
-                        GetActive( )\PopupBar( )\hidden = #False
-                        HidePopupMenuBar( GetActive( )\PopupBar( ) )
-                        GetActive( )\PopupBar( ) = 0
                      EndIf
                   EndIf
                EndIf
@@ -24561,7 +24568,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4976
-; FirstLine = 4841
-; Folding = --------------------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------
+; CursorPosition = 4982
+; FirstLine = 4870
+; Folding = --------------------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------
 ; EnableXP
