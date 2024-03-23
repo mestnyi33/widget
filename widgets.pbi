@@ -20932,33 +20932,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *tabRow = *this\EnteredTab( )
                ;
                If *tabRow
-                  If *tabRow\childrens 
-                     If *tabRow\data
-                        If mode_type
+                  If *tabRow\data
+                     If *tabRow\childrens 
+                        If Not *this\ChildBar( )
                            If *this\FocusedTab( )
                               *this\FocusedTab( )\RowFocus( 0 )
                               *this\FocusedTab( ) = 0
-                              
-                              If *this\ChildBar( ) And 
-                                 *this\ChildBar( )\hidden = #False
-                                 
-                                 HidePopupMenuBar( *this\ChildBar( ) )
-                                 *this\ChildBar( ) = 0
-                              EndIf
-                           Else
-                              
-                              If is_menu_( *this )
-                                 *this\FocusedTab( ) = *tabRow
-                                 *this\FocusedTab( )\RowFocus( 1 )
-                              EndIf
-                           EndIf
-                           
-                        Else
-                           If Not *this\ChildBar( )
-                              If *this\FocusedTab( )
-                                 *this\FocusedTab( )\RowFocus( 0 )
-                                 *this\FocusedTab( ) = 0
-                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -20972,48 +20951,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *tabRow = *this\EnteredTab( )
                ;
                If *tabRow
-                  If *tabRow\sublevel >= 0
+                  If *tabRow\data
                      If *tabRow\childrens 
-                        If *tabRow\data
-                           If mode_type
-                              If *this\ChildBar( ) And 
-                                 *this\ChildBar( )\hidden = #False
-                                 
-                                 If Not is_menu_( *this )
-                                    HidePopupMenuBar( *this\ChildBar( ) )
-                                    *this\ChildBar( ) = 0
-                                 EndIf
-                                 
-                              Else
-                                 ;
-                                 DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                 DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                      *this\screen_x( ) + *tabRow\x, 
-                                                      *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                              EndIf 
-                           Else
-                              If *this\FocusedTab( )
-                                 *this\FocusedTab( )\RowFocus( 0 )
-                                 *this\FocusedTab( ) = 0
-                              EndIf
-                              ;
-                              If is_menu_( *this )
-                                 *this\FocusedTab( ) = *tabRow
-                                 *this\FocusedTab( )\RowFocus( 1 )
-                              EndIf
-                              ;
-                              If *this\ChildBar( ) And 
-                                 *this\ChildBar( )\hidden = #False
-                                 HidePopupMenuBar( *this\ChildBar( ) )
-                                 *this\ChildBar( ) = 0
-                              Else
-                                 ;
-                                 DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                 DisplayPopupMenuBar( *tabRow\data, *this, 
-                                                      *this\screen_x( ) + *tabRow\x, 
-                                                      *this\screen_y( ) + *tabRow\y + *tabRow\height)
-                              EndIf
-                           EndIf
+                        If *this\FocusedTab( )
+                           *this\FocusedTab( )\RowFocus( 0 )
+                           *this\FocusedTab( ) = 0
+                        EndIf
+                        ;
+                        If is_menu_( *this )
+                           *this\FocusedTab( ) = *tabRow
+                           *this\FocusedTab( )\RowFocus( 1 )
+                        EndIf
+                        ;
+                        If *this\ChildBar( ) And 
+                           *this\ChildBar( )\hidden = #False
+                           HidePopupMenuBar( *this\ChildBar( ) )
+                           *this\ChildBar( ) = 0
+                        Else
+                           ;
+                           DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
+                           DisplayPopupMenuBar( *tabRow\data, *this, 
+                                                *this\screen_x( ) + *tabRow\x, 
+                                                *this\screen_y( ) + *tabRow\y + *tabRow\height)
                         EndIf
                      EndIf
                   EndIf
@@ -24600,7 +24559,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24600
-; FirstLine = 24564
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20994
+; FirstLine = 20976
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
