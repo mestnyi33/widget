@@ -4979,14 +4979,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             menu( )\type = #__type_Menu
               menu = menu( )
              ;
-            ; Debug "CreatePopupMenuBar "+menu( )\parent\class +" "+ "PopupMenu_"+count
+            ;Debug "CreatePopupMenuBar "+menu( )\parent\class +" "+ "PopupMenu_"+count
             *parent = menu( )\parent
          Else
             *parent = Root( )
          EndIf
          
          menu( ) = Create( *parent, "PopupMenu_"+count, #__type_Menu,
-                           0,0,0,0, #Null$, flag|#__flag_vertical, 0, 0, 0, 0, 0, 30 ) ;  | #__flag_child
+                           0,0,0,0, #Null$, flag|#__flag_vertical | #__flag_child, 0, 0, 0, 0, 0, 30 ) ; 
          SetColor( menu( ), #__color_back, $FFF2F2F2)
          Hide(menu( ),  1) 
          menu( )\ParentBar( ) = menu
@@ -5047,12 +5047,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not *this\root\widget
                   ;Debug "displayBar - create " + *this\class +" "+ *this\root
                   *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
+                  
                   ;\\
+                  *displayRoot\parent = *display
                   *displayRoot\class = "Root_"+*this\class
                   *displayRoot\widget = *this
                   
                   *this\autosize = 1
                   
+                  If *this\child
+                     *displayRoot\TabBox( ) = *this
+                     ChangeParent( *this, *displayRoot )
+                  Else
+                     SetParent( *this, *displayRoot )
+                  EndIf
                   
                   If *this\row
                      update_items_( *this, *this\__rows( ) )
@@ -5074,12 +5082,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_ToolBar Or 
                      *this\type = #__type_Menu 
                      
+                     height = 1 ; pos
                      PushListPosition( *this\__tabs( ) ) 
                      ForEach *this\__tabs( )
-                        height + *this\__tabs( )\height
+                        height + *this\__tabs( )\height + 1 ; pos
                         ;
                         If *this\__tabs( )\itemindex  = #PB_Ignore
-                           height + 4 ; (separator_step * 2)
+                           height + 2 ; separator_step 
                         Else
                            index + 1
                         EndIf
@@ -5090,6 +5099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Next
                      PopListPosition( *this\__tabs( ) ) 
                      
+                     ;Debug "   scroll "+height +" "+ *this\scroll_height( )
                   ElseIf *this\row
                      ForEach *this\__rows( )
                         height + *this\__rows( )\height
@@ -5101,11 +5111,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  width + *this\fs * 2
-                  height + *this\fs * 2
-                  
-                  ;\\
                   If *display\type = #__type_ComboBox
+                     ;\\
+                     width + *this\fs * 2
+                     height + *this\fs * 2
+                     
                      If width < *display\width - 2
                         width = *display\width - 2
                      EndIf
@@ -5116,14 +5126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      width - *display\round * 2
                   EndIf
                   
-                  If *this\child
-                     ChangeParent( *this, *displayRoot )
-                  Else
-                     SetParent( *this, *displayRoot )
-                  EndIf
-                  
-                  ; Resize( *this\root, 0, 0, width, height)
-                  
+                  ;\\
                   If Not *this\event 
                      If *this\ParentBar( )
                         ; Debug ""+*this\parent\class +" "+ *this\ParentBar( )\class
@@ -5163,6 +5166,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                CompilerEndIf
                
                ;\\
+               Debug ""+width +" "+ height
                ResizeWindow( *this\root\canvas\window, x, y, width, height )
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                PostRepaint( *this\root )
@@ -5820,20 +5824,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
                   
                   ;\\
-                  If *this\TabBox( )\bar\vertical
-                     If *this\fs[1]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
-                     EndIf
-                     If *this\fs[3]
-                        Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
-                     EndIf
+                  If *this\TabBox( )\autosize
+                     Resize( *this\TabBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
                   Else
-                     If *this\fs[2]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight )
-                        ;   Resize( *this\TabBox( ), *this\fs, *this\fs + ( *this\barHeight + *this\MenuBarHeight ), *this\inner_width( ), *this\fs[2] - ( *this\barHeight + *this\MenuBarHeight ) )
-                     EndIf
-                     If *this\fs[4]
-                        Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                     If *this\TabBox( )\bar\vertical
+                        If *this\fs[1]
+                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                        EndIf
+                        If *this\fs[3]
+                           Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                        EndIf
+                     Else
+                        If *this\fs[2]
+                           Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight )
+                        EndIf
+                        If *this\fs[4]
+                           Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                        EndIf
                      EndIf
                   EndIf
                   
@@ -6402,28 +6409,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ; init items position
                      If *bar\vertical
-                        If *items( )\itemindex  = #PB_Ignore
-                           *items( )\y      = *bar\max + seperator_step + pos
-                           *items( )\height = 1
-                           *items( )\x      = 3
-                           *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
-                           *bar\max + *items( )\height + (seperator_step * 2) + pos
-                        Else
-                           *items( )\y = *bar\max + pos
-                           ;
-                           If *this\type = #__type_TabBar
-                              If *this\TabState( ) = index
-                                 *items( )\x       = 0
-                                 *items( )\width   = *SB\width + 1
-                              Else
-                                 *items( )\x       = 1
-                                 *items( )\width   = *SB\width - *items( )\x * 2
-                              EndIf
+                        *items( )\y = *bar\max + pos
+                        
+                        If *this\type = #__type_TabBar
+                           If *this\TabState( ) = index
+                              *items( )\x       = 0
+                              *items( )\width   = *SB\width + 1
                            Else
-                              *items( )\x      = pos
-                              *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
+                              *items( )\x       = 1
+                              *items( )\width   = *SB\width - *items( )\x * 2
                            EndIf
+                        Else
+                           *items( )\x      = pos
+                           *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
+                        EndIf
                            
+                        If *items( )\itemindex  = #PB_Ignore
+                           *items( )\y      + seperator_step
+                           *items( )\height = 1
+                           *items( )\x      + 3
+                           *bar\max         + seperator_step * 2
+                        Else
+                           ;
                            Debug "why "+*items( )\height +" ?"
                            *items( )\height = 0
                            ;
@@ -6467,36 +6474,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
                               *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
                            EndIf
-                           
-                           ;
-                           If *this\type = #__type_TabBar
-                              *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
+                         EndIf
+                         ;
+                         If *this\type = #__type_TabBar
+                            *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
+                         Else
+                            *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
+                         EndIf
+                      Else
+                        *items( )\x = *bar\max + pos
+                        ;
+                        If *this\type = #__type_TabBar
+                           If *this\TabState( ) = index
+                              *items( )\y       = 0
+                              *items( )\height  = *SB\height + 1
                            Else
-                              *bar\max + *items( )\height + pos + Bool( index = *this\count\items - 1 )
+                              *items( )\y       = 1
+                              *items( )\height  = *SB\height - *items( )\y * 2 
                            EndIf
+                        Else
+                           *items( )\y       = pos
+                           *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
                         EndIf
-                     Else
+                        ;
                         If *items( )\itemindex  = #PB_Ignore
-                           *items( )\x      = *bar\max + pos + seperator_step
+                           *items( )\x      + seperator_step
                            *items( )\width  = 1
-                           *items( )\y      = 3
-                           *items( )\height = *this\scroll_height( ) - *items( )\y * 2
+                           *items( )\y      + 3
                            *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
-                           *items( )\x = *bar\max + pos
-                           ;
-                           If *this\type = #__type_TabBar
-                              If *this\TabState( ) = index
-                                 *items( )\y       = 0
-                                 *items( )\height  = *SB\height + 1
-                              Else
-                                 *items( )\y       = 1
-                                 *items( )\height  = *SB\height - *items( )\y * 2 
-                              EndIf
-                           Else
-                              *items( )\y       = pos
-                              *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
-                           EndIf
                            ;
                            *this\text\y = ( *items( )\height - *items( )\text\height ) / 2
                            ;
@@ -6703,7 +6709,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\child
             If *this\parent
-               Protected color = *this\parent\color\frame[*this\parent\focus*2]
+               Protected color = *this\parent\color\frame
+               If *this\parent\focus >= 0 
+                 color = *this\parent\color\frame[*this\parent\focus*2]
+               EndIf
                
                If *bar\vertical
                   If *activeTAB And 
@@ -19164,7 +19173,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\resize & #__resize_height
                *this\resize & ~ #__resize_height
             EndIf
-            
          EndWith
       EndProcedure
       
@@ -22170,25 +22178,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If mouse( )\press
                         mouse( )\press = 0
                         
-                        ;\\
-                        If PressedWidget( )
-                           If PressedWidget( )\haschildren
-                              StartEnumerate( PressedWidget( ) )
-                              If widget( )\resize & #__resize_change
-                                 ; Debug "stop-resize "+widget( )\class
-                                 widget( )\resize & ~ #__resize_change
-                                 Send( widget( ), #__event_ResizeEnd )
-                              EndIf
-                              StopEnumerate( )
-                           EndIf
-                           If PressedWidget( )\resize & #__resize_change
-                              ; Debug "stop-resize "+PressedWidget( )\class
-                              PressedWidget( )\resize & ~ #__resize_change
-                              Send( PressedWidget( ), #__event_ResizeEnd )
-                           EndIf
-                        EndIf
-                        
-                        
+;                         ;\\
+;                         If PressedWidget( )
+;                            If PressedWidget( )\haschildren
+;                               StartEnumerate( PressedWidget( ) )
+;                               If widget( )\resize & #__resize_change
+;                                  ; Debug "stop-resize "+widget( )\class
+;                                  widget( )\resize & ~ #__resize_change
+;                                  Send( widget( ), #__event_ResizeEnd )
+;                               EndIf
+;                               StopEnumerate( )
+;                            EndIf
+;                            If PressedWidget( )\resize & #__resize_change
+;                               ; Debug "stop-resize "+PressedWidget( )\class
+;                               PressedWidget( )\resize & ~ #__resize_change
+;                               Send( PressedWidget( ), #__event_ResizeEnd )
+;                            EndIf
+;                         EndIf
+;                         
+;                         
                         ;                      If PressedWidget( )
                         ;                         If PressedWidget( )\split_1( )
                         ;                            If PressedWidget( )\split_1( )\hide
@@ -24568,7 +24576,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4982
-; FirstLine = 4870
-; Folding = --------------------------------------------------------------------------------------------------------------------v-f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------
+; CursorPosition = 22198
+; FirstLine = 21858
+; Folding = -----------------------------------------------------------------------------------------------------------------------------6m--------80-v---3K3-vq-u-------------------Z---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

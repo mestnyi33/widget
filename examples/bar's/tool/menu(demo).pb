@@ -152,6 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Define *window._s_widget = Window(100, 50, 300, 100, "menu click test", #PB_Window_SystemMenu)
       Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+      ;SetFrame( *window, 0)
       
       *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
       
@@ -205,7 +206,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 106
-; FirstLine = 133
+; CursorPosition = 154
+; FirstLine = 147
 ; Folding = -
 ; EnableXP
