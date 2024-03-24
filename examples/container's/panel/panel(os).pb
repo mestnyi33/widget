@@ -27,131 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *panel, *option
    Global SelectedGadget
    
-   Procedure   BarPosition2( *this._s_widget, position.i, size.i = #PB_Default )
-      Protected fs = 2
-      If *this\type <> #__type_Panel
-         *this = *this\parent
-      EndIf
-      
-      ; reset position
-      *this\fs[1] = 0
-      *this\fs[2] = 0
-      *this\fs[3] = 0
-      *this\fs[4] = 0
-      
-      If size = #PB_Default
-         If *this\TabBox( )\flag & #PB_ToolBar_Small 
-            size = 25
-         ElseIf *this\TabBox( )\flag & #PB_ToolBar_Large 
-            size = 45
-         Else ; If *this\flag & #PB_ToolBar_Normal 
-            size = 35
-         EndIf
-      EndIf   
-      
-      *this\TabBox( )\TabChange( ) = 1
-      
-      If position = 1 Or position = 3
-         If *this\TabBox( )\flag & #PB_ToolBar_InlineText
-            size = 80
-         Else
-            size = 50;- (1 + fs)
-         EndIf
-      EndIf
-      
-      If position = 0
-         *this\TabBox( )\hide = 1
-      Else
-         *this\TabBox( )\hide = 0
-      EndIf
-      
-      If position = 1
-         *this\TabBox( )\bar\vertical = 1
-         *this\fs[1] = size + fs ; #__panel_width
-      EndIf
-      
-      If position = 3
-         *this\TabBox( )\bar\vertical = 1
-         *this\fs[3] = size + fs ; #__panel_width
-      EndIf
-      
-      If position = 2
-         *this\TabBox( )\bar\vertical = 0
-         *this\fs[2] = size + fs ; #__panel_height
-      EndIf
-      
-      If position = 4
-         *this\TabBox( )\bar\vertical = 0
-         *this\fs[4] = size + fs ; #__panel_height
-      EndIf
-      
-      If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         PostEventRepaint( *this\root )
-      EndIf
-   EndProcedure
-   
-   Procedure   BarPosition1( *this._s_widget, position.i, size.i = #PB_Default )
-      If *this\type <> #__type_Panel
-         *this = *this\parent
-      EndIf
-      
-      
-      ; reset position
-      *this\fs[1] = 0
-      *this\fs[2] = 0
-      *this\fs[3] = 0
-      *this\fs[4] = 0
-      
-      If position = 0
-         *this\TabBox( )\hide = 1
-      Else
-         *this\TabBox( )\hide = 0
-      EndIf
-      
-      If position = 1
-         *this\TabBox( )\bar\vertical = 1
-         If size = #PB_Default
-            *this\fs[1] = #__panel_width
-         Else
-            *this\fs[1] = size
-         EndIf
-      EndIf
-      
-      If position = 3
-         *this\TabBox( )\bar\vertical = 1
-         If size = #PB_Default
-            *this\fs[3] = #__panel_width
-         Else
-            *this\fs[3] = size
-         EndIf
-      EndIf
-      
-      If position = 2
-         *this\TabBox( )\bar\vertical = 0
-         If size = #PB_Default
-            *this\fs[2] = #__panel_height
-         Else
-            *this\fs[2] = size
-         EndIf
-      EndIf
-      
-      If position = 4
-         *this\TabBox( )\bar\vertical = 0
-         If size = #PB_Default
-            *this\fs[4] = #__panel_height
-         Else
-            *this\fs[4] = size
-         EndIf
-      EndIf
-      
-      If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         PostEventRepaint( *this\root )
-      EndIf
-   EndProcedure
-   
-   
    Macro BarPositon_( this, position, size=-1 )
-      BarPosition2( this, position, size )
+      BarPosition( this, position, size )
    EndMacro
    
    ;   Procedure events_widget( )
@@ -208,7 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Open(0, 270, 100, 600, 310, "Change tab location")
-   a_init(root(),0)
+   ;a_init(root(),0)
+   SetColor(root(), #__color_back, $FFF2F2F2)
    
    PanelGadget(0, 10, 10, 300 - 20, 180)
    AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
@@ -241,6 +119,11 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    CloseList() ; *panel
    
+   SetColor(*panel, #__color_back, $FFAFF8FF)
+   SetGadgetColor(0, #PB_Gadget_BackColor, $FFAFF8FF)
+   
+   ;SetState(*panel, -1)
+   
    ;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
    ;   *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
    ;   Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
@@ -263,7 +146,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 26
-; Folding = --8---
+; CursorPosition = 122
+; FirstLine = 95
+; Folding = --
 ; EnableXP

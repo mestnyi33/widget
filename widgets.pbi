@@ -1395,11 +1395,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i ButtonImage( x.l, y.l, width.l, height.l, Image.i = -1, flag.q = 0, round.l = 0 )
       
       ; container
-      Declare.i Panel( x.l, y.l, width.l, height.l, flag.q = 0 )
+      Declare.i Panel( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
       Declare.i Container( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
       Declare.i Frame( x.l, y.l, width.l, height.l, Text.s, flag.q = #__flag_nogadgets )
       Declare.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent = 0 )
-      Declare.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
+      Declare.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
       Declare.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 )
       
       ; menu
@@ -4773,6 +4773,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\fs[3] = 0
       *this\fs[4] = 0
       
+      *this\TabBox( )\TabChange( ) = 1
+      
       If size = #PB_Default
          If *this\TabBox( )\flag & #PB_ToolBar_Small 
             size = 25
@@ -4781,19 +4783,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else ; If *this\flag & #PB_ToolBar_Normal 
             size = 35
          EndIf
+         
+         If position = 1 Or position = 3
+            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+               size = 80
+            Else
+               size = 50; - (1 + fs)
+            EndIf
+         EndIf
       EndIf   
       
-      *this\TabBox( )\TabChange( ) = 1
-      
-      If position = 1 Or position = 3
-         If *this\TabBox( )\flag & #PB_ToolBar_InlineText
-            size = 80
-         Else
-            size = 50;- (1 + fs)
-         EndIf
-      EndIf
-      
-       size + *this\barHeight
+      size + *this\barHeight
 
       If position = 0
          *this\TabBox( )\hide = 1
@@ -6395,10 +6395,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         Next
                      Else
-                        *this\scroll_width( ) = ( *this\parent\fs[1] + *this\parent\fs[3] ) - *this\parent\barHeight - 1
+                        *this\scroll_width( ) = *this\width - pos
                      EndIf
                   Else
-                     *this\scroll_height( ) = ( *this\parent\fs[2] + *this\parent\fs[4] ) - *this\parent\barHeight  - 1
+                     *this\scroll_height( ) = *this\height - pos
                   EndIf
                   
                   ForEach *items( )
@@ -6418,17 +6418,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If *this\type = #__type_TabBar
                            If *this\TabState( ) = index
-                              *items( )\x       = 0
+                              *items( )\x       = - Bool( *this\parent\fs[3] )
+                              *items( )\width   = *this\width
                            Else
-                              *items( )\x       = 2
+                              *items( )\x       = 1 + Bool( *this\parent\fs[1] )
+                              *items( )\width   = *this\width - 4
                            EndIf
                            
-                           *items( )\width   = *this\width - *items( )\x * 2
                         Else
-                           *items( )\x      = pos
+                           *items( )\x       = pos
                            If *items( )\itemindex  = #PB_Ignore
                               *items( )\x      + 3
                            EndIf
+                           
                            *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
                         EndIf
                            
@@ -6482,6 +6484,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
                            EndIf
                          EndIf
+                         
                          ;
                          If *this\type = #__type_TabBar
                             *bar\max + *items( )\height + Bool( index <> *this\count\items - 1 ) - Bool(typ) * 2 + Bool( index = *this\count\items - 1 ) * layout
@@ -6506,7 +6509,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *items( )\y      + 3
                            EndIf
                            
-                           *items( )\height  = *this\height - *items( )\y * 2 - 1
+                           *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
                         EndIf
                         ;
                         If *items( )\itemindex  = #PB_Ignore
@@ -6600,7 +6603,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
          
-         If _vertical_
+         If *this\bar\vertical
             If _address_\childrens
                DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
@@ -6665,7 +6668,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                         
                      ;                         If (( *BB2\x + *BB2\width < x + *items( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *items( )\x )) Or
                      ;                            (( *BB1\x > x + *items( )\x + *items( )\width ) Or ( *BB1\hide And *BB1\x < x + *items( )\x + *items( )\width )) 
-                     bar_item_draw_( *items( ), vertical, x, y, round, [0],
+                     bar_item_draw_( *items( ), 0, x, y, round, [0],
                                      Bool( Not( ( *this\type = #__type_ToolBar Or 
                                                   *this\type = #__type_Menu ) And
                                                 Not *this\flag & #PB_ToolBar_Buttons)) )
@@ -6683,7 +6686,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
                   draw_font_item_( *this, *this\EnteredTab( ), 0 ) 
-                  bar_item_draw_( *this\EnteredTab( ), vertical, x, y, round, [*this\EnteredTab( )\ColorState( )] )
+                  bar_item_draw_( *this\EnteredTab( ), 0, x, y, round, [*this\EnteredTab( )\ColorState( )] )
                EndIf
             EndIf
          EndIf
@@ -6709,15 +6712,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [0], 0 )
+                  bar_item_draw_( *this\FocusedTab( ), 0, x, y, round, [0], 0 )
                   
                Else
                   ;
-                  bar_item_draw_( *this\FocusedTab( ), vertical, x, y, round, [*this\FocusedTab( )\ColorState( )] )
+                  bar_item_draw_( *this\FocusedTab( ), 0, x, y, round, [*this\FocusedTab( )\ColorState( )] )
                EndIf
             EndIf
          EndIf
          
+         ; draw focus-item frame
          If *this\child
             If *this\parent
                Protected color = *this\parent\color\frame
@@ -6729,11 +6733,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *activeTAB And 
                      *activeTAB\visible
                      ; frame on the selected item
-                     Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
-                     Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
-                     Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
-                     Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x, 1, color )
-                     Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x, 1, color )
+                     If *this\parent\fs[1]
+                        Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height, color )
+                        Line( x + *activeTAB\x + 1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                        Line( x + *activeTAB\x + 2, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     ElseIf *this\parent\fs[3]
+                        Line( x + *activeTAB\x + *activeTAB\width -1-2, y + *activeTAB\y, 1, *activeTAB\height, color )
+                        Line( x + *activeTAB\x + *activeTAB\width -1-1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                        Line( x + *activeTAB\x + *activeTAB\width -1, y + *activeTAB\y, 1, *activeTAB\height, color )
+                     EndIf
+                     Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
                      ;
                      If *this\type = #__type_Menu
                         Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height, color )
@@ -6741,19 +6751,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_TabBar
-                     color = *this\parent\color\frame
-                     ;
-                     If *activeTAB
-                        ; horizontal tab bottom line
-                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
-                     Else
-                        Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
-                     EndIf
-                     ;
-                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                     Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+;                      color = *this\parent\color\frame
+;                      ;
+;                      If *this\parent\fs[1]
+;                         If *activeTAB
+;                            ; horizontal tab bottom line
+;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
+;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
+;                         Else
+;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+;                         EndIf
+;                      Else
+;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+;                      EndIf
+;                      
+;                      ;
+;                      Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
+;                      Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
+;                      
+;                      If *this\parent\fs[3]
+;                         If *activeTAB 
+;                            ; horizontal tab bottom line
+;                            Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
+;                            Line( *this\frame_x( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
+;                         Else
+;                            Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+;                         EndIf
+;                      Else
+;                         Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+;                      EndIf
                   EndIf
                   
                Else
@@ -6765,12 +6791,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
                         Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
                      ElseIf *this\parent\fs[4]
-                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1- 2, *activeTAB\width, 1, color )
-                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1- 1, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1-2, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1-1, *activeTAB\width, 1, color )
                         Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1, *activeTAB\width, 1, color )
                      EndIf
-                     Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
-                     Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
+                     Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
+                     Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
                      ;
                      If *this\type = #__type_Menu
                         Line( x + *activeTAB\x, y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width, 1, color )
@@ -6778,42 +6804,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_TabBar
-                     color = *this\parent\color\frame
-                     ;
-                     If *this\parent\fs[2]
-                        If *activeTAB 
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                           Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                        Else
-                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
-                        EndIf
-                     Else
-                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
-                     EndIf
-                     
-                     ;
-                     Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                     Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                     
-                     
-                     If *this\parent\fs[4]
-                        If *activeTAB 
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ), *this\frame_y( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                           Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                        Else
-                           Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
-                        EndIf
-                     Else
-                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
-                     EndIf
-                     
+;                      color = *this\parent\color\frame
+;                      ;
+;                      If *this\parent\fs[2]
+;                         If *activeTAB 
+;                            ; horizontal tab bottom line
+;                            Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+;                            Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+;                         Else
+;                            Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+;                         EndIf
+;                      Else
+;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
+;                      EndIf
+;                      
+;                      ;
+;                      Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+;                      Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+;                      
+;                      
+;                      If *this\parent\fs[4]
+;                         If *activeTAB 
+;                            ; horizontal tab bottom line
+;                            Line( *this\frame_x( ), *this\frame_y( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+;                            Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+;                         Else
+;                            Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
+;                         EndIf
+;                      Else
+;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
+;                      EndIf
                   EndIf
                   
                EndIf
             EndIf
          EndIf
+         
       EndProcedure
       
       Procedure.b bar_tab_draw( *this._s_WIDGET )
@@ -18265,7 +18291,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, x, y, width, height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__scroll_buttonsize, 0, 1 )
       EndProcedure
       
-      Procedure.i Panel( x.l, y.l, width.l, height.l, flag.q = 0 )
+      Procedure.i Panel( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
       EndProcedure
       
@@ -18273,7 +18299,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
       EndProcedure
       
-      Procedure.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
+      Procedure.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, x, y, width, height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, 0, #__scroll_buttonsize, 0, ScrollStep )
       EndProcedure
       
@@ -18945,7 +18971,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\inner_height( ) 
                      draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, *this\color\frame )
                   EndIf
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  If *this\type = #__type_Container
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  EndIf
                   
                ElseIf *this\flag & #__flag_BorderSingle Or *this\flag & #__flag_BorderDouble
                   Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
@@ -23027,6 +23055,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\TitleText( )\string    = Text
             EndIf
             
+            If Not *this\caption\hide
+               *this\fs[2] = *this\barHeight
+            EndIf
+            
             *this\CloseButton( )\color    = colors::*this\red
             *this\MaximizeButton( )\color = colors::*this\blue
             *this\MinimizeButton( )\color = colors::*this\green
@@ -24620,7 +24652,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4795
-; FirstLine = 4783
-; Folding = ----------------------------------------------------------------------------------------------------------------------f-----cz-------fv--0--4Wx+-V040------------------P3-v98------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 6605
+; FirstLine = 6284
+; Folding = ----------------------------------------------------------------------------------------------------------------------f-----cz-------fv--0--4Wx+-V040------------------f+--+--X4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

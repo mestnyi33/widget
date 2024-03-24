@@ -1215,7 +1215,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
    SetState( w_ide_inspector_splitter, 230 )
-   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) - 1 );+ 2 )
+   SetState( w_ide_design_splitter, Height( w_ide_toolbar ) - 1 + 2 )
    
    ;
    ;\\\ ide events binds
@@ -1382,7 +1382,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1201
-; FirstLine = 945
+; CursorPosition = 1054
+; FirstLine = 803
 ; Folding = ---------2+4v+--bl----
 ; EnableXP
