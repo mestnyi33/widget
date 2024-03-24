@@ -260,9 +260,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GetIndex( widgetID )
          Index( widgetID )
       EndMacro
-      Macro TabBoxSize( )
-         ToolBarHeight
-      EndMacro;=======
       Macro RowFocus( _state_ ) 
          focus = _state_
       EndMacro
@@ -2802,7 +2799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
-                     _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] ) - _this_\TabBoxSize( ) - _address_[#__a_top]\height / 2
+                     _address_[#__a_moved]\height = ( _this_\fs + _this_\barHeight ) - _address_[#__a_top]\height / 2
                   EndIf
                Else
                   If _address_[#__a_moved] ; moved
@@ -4765,66 +4762,69 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
+          Protected fs = 2
+      If *this\type <> #__type_Panel
          *this = *this\parent
-         
-         ; reset position
-         *this\fs[1] = 0
-         *this\fs[2] = 0
-         *this\fs[3] = 0
-         *this\fs[4] = 0
-         
-         If position = 1 Or position = 3
-            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
-               *this\TabBoxSize( ) = 80
-            EndIf
+      EndIf
+      
+      ; reset position
+      *this\fs[1] = 0
+      *this\fs[2] = 0
+      *this\fs[3] = 0
+      *this\fs[4] = 0
+      
+      If size = #PB_Default
+         If *this\TabBox( )\flag & #PB_ToolBar_Small 
+            size = 25
+         ElseIf *this\TabBox( )\flag & #PB_ToolBar_Large 
+            size = 45
+         Else ; If *this\flag & #PB_ToolBar_Normal 
+            size = 35
          EndIf
-         
-         If position = 0
-            *this\TabBox( )\hide = 1
+      EndIf   
+      
+      *this\TabBox( )\TabChange( ) = 1
+      
+      If position = 1 Or position = 3
+         If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+            size = 80
          Else
-            *this\TabBox( )\hide = 0
+            size = 50;- (1 + fs)
          EndIf
-         
-         If position = 1
-            *this\TabBox( )\bar\vertical = 1
-            If size = #PB_Default
-               *this\fs[1] = *this\TabBoxSize( ) + 2 ; #__panel_width
-            Else
-               *this\fs[1] = size
-            EndIf
-         EndIf
-         
-         If position = 3
-            *this\TabBox( )\bar\vertical = 1
-            If size = #PB_Default
-               *this\fs[3] = *this\TabBoxSize( ) + 2 ; #__panel_width
-            Else
-               *this\fs[3] = size
-            EndIf
-         EndIf
-         
-         If position = 2
-            *this\TabBox( )\bar\vertical = 0
-            If size = #PB_Default
-               *this\fs[2] = *this\TabBoxSize( ) + 2 ; #__panel_height
-            Else
-               *this\fs[2] = size
-            EndIf
-         EndIf
-         
-         If position = 4
-            *this\TabBox( )\bar\vertical = 0
-            If size = #PB_Default
-               *this\fs[4] = *this\TabBoxSize( ) + 2 ; #__panel_height
-            Else
-               *this\fs[4] = size
-            EndIf
-         EndIf
-         
-         If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            PostEventRepaint( *this\root )
-         EndIf
-      EndProcedure
+      EndIf
+      
+       size + *this\barHeight
+
+      If position = 0
+         *this\TabBox( )\hide = 1
+      Else
+         *this\TabBox( )\hide = 0
+      EndIf
+      
+      If position = 1
+         *this\TabBox( )\bar\vertical = 1
+         *this\fs[1] = size + fs ; #__panel_width
+      EndIf
+      
+      If position = 3
+         *this\TabBox( )\bar\vertical = 1
+         *this\fs[3] = size + fs ; #__panel_width
+      EndIf
+      
+      If position = 2
+         *this\TabBox( )\bar\vertical = 0
+         *this\fs[2] = size + fs ; #__panel_height
+      EndIf
+      
+      If position = 4
+         *this\TabBox( )\bar\vertical = 0
+         *this\fs[4] = size + fs ; #__panel_height
+      EndIf
+      
+      If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         PostEventRepaint( *this\root )
+      EndIf
+   EndProcedure
       
       Procedure   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
          Protected *item._s_ROWS 
@@ -4834,35 +4834,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *item = AddItem( *this, - 1, text, image, mode)
             *item\itemindex = button
             
-            If *this\parent
-               If *item\text\string
-                  
-                  If *this\type = #__type_ToolBar
-                     If Not *this\flag & #PB_ToolBar_InlineText
-                        If *this\flag & #PB_ToolBar_Small 
-                           *this\parent\TabBoxSize( ) = 25 + 20 
-                           ;                   ElseIf *this\flag & #PB_ToolBar_Large 
-                           ;                      *this\parent\TabBoxSize( ) = 45
-                           ;                   Else ; If flag & #PB_ToolBar_Normal 
-                           ;                      *this\parent\TabBoxSize( ) = 35
-                           
-                           ;                      If *this\flag & #PB_ToolBar_Left
-                           ;                         *this\parent\fs[1] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-                           ;                      ElseIf *this\flag & #PB_ToolBar_Right
-                           ;                         *this\parent\fs[3] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-                           ;                      ElseIf *this\flag & #PB_ToolBar_Bottom
-                           ;                         *this\parent\fs[4] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-                           ;                      Else
-                           *this\parent\fs[2] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-                           ;                      EndIf
-                           Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                           ;   Debug *this\parent\TabBoxSize( )
-                           
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
+;             If *this\parent
+;                If *item\text\string
+;                   
+;                   If *this\type = #__type_ToolBar
+;                      If Not *this\flag & #PB_ToolBar_InlineText
+;                         If *this\flag & #PB_ToolBar_Small 
+;                            *this\parent\TabBoxSize( ) = 25 + 20 
+;                            ;                   ElseIf *this\flag & #PB_ToolBar_Large 
+;                            ;                      *this\parent\TabBoxSize( ) = 45
+;                            ;                   Else ; If flag & #PB_ToolBar_Normal 
+;                            ;                      *this\parent\TabBoxSize( ) = 35
+;                            
+;                            ;                      If *this\flag & #PB_ToolBar_Left
+;                            ;                         *this\parent\fs[1] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+;                            ;                      ElseIf *this\flag & #PB_ToolBar_Right
+;                            ;                         *this\parent\fs[3] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+;                            ;                      ElseIf *this\flag & #PB_ToolBar_Bottom
+;                            ;                         *this\parent\fs[4] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+;                            ;                      Else
+;                            *this\parent\fs[2] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
+;                            ;                      EndIf
+;                            Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;                            ;   Debug *this\parent\TabBoxSize( )
+;                            
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             EndIf
          EndIf
          ProcedureReturn *item
       EndProcedure
@@ -4915,7 +4915,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   CreateBar( type.b = #Null, *parent._s_WIDGET = #Null, flag.q = #Null )
          ; ProcedureReturn ListView( 0, 0, *parent\inner_width( ), 100, flag )
-         ;
+         Protected size
+         
          If Not type
             ProcedureReturn CreatePopupMenuBar( )
          EndIf
@@ -4925,17 +4926,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If flag & #PB_ToolBar_Small 
-            *parent\TabBoxSize( ) = 25
+            size = 25
          ElseIf flag & #PB_ToolBar_Large 
-            *parent\TabBoxSize( ) = 45
+            size = 45
          Else ; If flag & #PB_ToolBar_Normal 
-            *parent\TabBoxSize( ) = 35
+            size = 35
          EndIf
          
-         ;*parent\TabBoxSize( ) + 2
          ;If Not flag & #PB_ToolBar_InlineText
          If flag & #PB_ToolBar_Left Or flag & #PB_ToolBar_Right
-            *parent\TabBoxSize( ) + 40
+            size + 40
          EndIf
          ;EndIf
          
@@ -4946,22 +4946,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ;Debug "size "+*parent\fs[2] +" "+ *parent\TabBoxSize( )
-         Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", type,
+         Protected *this._s_WIDGET = Create( *parent, *parent\class +"_"+ ClassFromType( type ), type,
                                              0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
          *parent\TabBox( ) = *this  
          ;Debug widget( )
          
          If flag & #PB_ToolBar_Left
-            *parent\fs[1] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+            ;*parent\fs[1] = *parent\barHeight + *parent\MenuBarHeight + size + 2
+            BarPosition( *this, 1, size )
          ElseIf flag & #PB_ToolBar_Right
-            *parent\fs[3] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+            ;*parent\fs[3] = *parent\barHeight + *parent\MenuBarHeight + size + 2
+            BarPosition( *this, 3, size )
          ElseIf flag & #PB_ToolBar_Bottom
-            *parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+            ;*parent\fs[4] = *parent\barHeight + *parent\MenuBarHeight + size + 2
+            BarPosition( *this, 4, size )
          Else
-            *parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + *parent\TabBoxSize( ) + 2
+            ;*parent\fs[2] = *parent\barHeight + *parent\MenuBarHeight + size + 2
+            BarPosition( *this, 2, size )
          EndIf
-         Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         ;Debug widget( )
+;          Resize( *parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;          ;Debug widget( )
+         
          ;
          widget( ) = *this 
          ProcedureReturn *this
@@ -5427,15 +5432,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;          If *this\barHeight
-         ;             Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\TabBoxSize( )
+         ;             Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\ToolBarHeight
          ;          EndIf
          
          ;\\
-         If *this\type = #__type_Window 
-            If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\TabBoxSize( )
-               *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\TabBoxSize( )
-            EndIf
-         EndIf
+;          If *this\type = #__type_Window 
+;             If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+;                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
+;             EndIf
+;          EndIf
          
          ;
          ;          If *this\root\canvas\container
@@ -5827,21 +5832,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\TabBox( )\autosize
                      Resize( *this\TabBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
                   Else
-                     If *this\TabBox( )\bar\vertical
-                        If *this\fs[1]
-                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                        If *this\TabBox( )\bar\vertical
+                           If *this\fs[1]
+                              Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                           EndIf
+                           If *this\fs[3]
+                              Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                           EndIf
+                        Else
+                           If *this\fs[2]
+                              Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight )
+                           EndIf
+                           If *this\fs[4]
+                              Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                           EndIf
                         EndIf
-                        If *this\fs[3]
-                           Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
-                        EndIf
-                     Else
-                        If *this\fs[2]
-                           Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight )
-                        EndIf
-                        If *this\fs[4]
-                           Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
-                        EndIf
-                     EndIf
                   EndIf
                   
                   *this\inner_x( ) + *this\fs + *this\fs[1]
@@ -6351,7 +6356,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\type = #__type_ToolBar Or
                *this\type = #__type_Menu
-               pos = seperator_step
+               pos = seperator_step 
             EndIf
             
             If Not *this\hide 
@@ -6384,16 +6389,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            ; init items position
                            If *bar\vertical
-                              If *this\scroll_width( ) < 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
-                                 *this\scroll_width( ) = 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width
+                              If *this\scroll_width( ) < 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width + Bool( *items( )\childrens )* 40
+                                 *this\scroll_width( ) = 30+*items( )\text\width + Bool( *this\flag & #PB_ToolBar_InlineText ) * *items( )\image\width + Bool( *items( )\childrens )* 40
                               EndIf
                            EndIf
                         Next
                      Else
-                        *this\scroll_width( ) = *this\parent\TabBoxSize( ) +1
+                        *this\scroll_width( ) = ( *this\parent\fs[1] + *this\parent\fs[3] ) - *this\parent\barHeight - 1
                      EndIf
                   Else
-                     *this\scroll_height( ) = *this\parent\TabBoxSize( ) -1
+                     *this\scroll_height( ) = ( *this\parent\fs[2] + *this\parent\fs[4] ) - *this\parent\barHeight  - 1
                   EndIf
                   
                   ForEach *items( )
@@ -6414,20 +6419,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\type = #__type_TabBar
                            If *this\TabState( ) = index
                               *items( )\x       = 0
-                              *items( )\width   = *SB\width + 1
                            Else
-                              *items( )\x       = 1
-                              *items( )\width   = *SB\width - *items( )\x * 2
+                              *items( )\x       = 2
                            EndIf
+                           
+                           *items( )\width   = *this\width - *items( )\x * 2
                         Else
                            *items( )\x      = pos
+                           If *items( )\itemindex  = #PB_Ignore
+                              *items( )\x      + 3
+                           EndIf
                            *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
                         EndIf
                            
                         If *items( )\itemindex  = #PB_Ignore
                            *items( )\y      + seperator_step
                            *items( )\height = 1
-                           *items( )\x      + 3
                            *bar\max         + seperator_step * 2
                         Else
                            ;
@@ -6486,21 +6493,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         If *this\type = #__type_TabBar
                            If *this\TabState( ) = index
-                              *items( )\y       = 0
-                              *items( )\height  = *SB\height + 1
+                              *items( )\y       = - Bool( *this\parent\fs[4] )
+                              *items( )\height  = *this\height
                            Else
-                              *items( )\y       = 1
-                              *items( )\height  = *SB\height - *items( )\y * 2 
+                              *items( )\y       = 1 + Bool( *this\parent\fs[2] )
+                              *items( )\height  = *this\height - 4
                            EndIf
+                           
                         Else
                            *items( )\y       = pos
-                           *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
+                           If *items( )\itemindex  = #PB_Ignore
+                              *items( )\y      + 3
+                           EndIf
+                           
+                           *items( )\height  = *this\height - *items( )\y * 2 - 1
                         EndIf
                         ;
                         If *items( )\itemindex  = #PB_Ignore
                            *items( )\x      + seperator_step
                            *items( )\width  = 1
-                           *items( )\y      + 3
                            *bar\max + *items( )\width + pos + (seperator_step * 2)
                         Else
                            ;
@@ -6749,9 +6760,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *activeTAB And 
                      *activeTAB\visible
                      ; frame on the selected item
-                     Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
-                     Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
-                     Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
+                     If *this\parent\fs[2]
+                        Line( x + *activeTAB\x, y + *activeTAB\y, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\y + 1, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\y + 2, *activeTAB\width, 1, color )
+                     ElseIf *this\parent\fs[4]
+                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1- 2, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1- 1, *activeTAB\width, 1, color )
+                        Line( x + *activeTAB\x, y + *activeTAB\height + *activeTAB\y -1, *activeTAB\width, 1, color )
+                     EndIf
                      Line( x + *activeTAB\x, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
                      Line( x + *activeTAB\x + *activeTAB\width - 1, y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y, color )
                      ;
@@ -6763,17 +6780,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\type = #__type_TabBar
                      color = *this\parent\color\frame
                      ;
-                     If *activeTAB
-                        ; horizontal tab bottom line
-                        Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                        Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+                     If *this\parent\fs[2]
+                        If *activeTAB 
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                           Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+                        Else
+                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                        EndIf
                      Else
-                        Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
                      EndIf
+                     
                      ;
                      Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
                      Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                     Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
+                     
+                     
+                     If *this\parent\fs[4]
+                        If *activeTAB 
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ), *this\frame_y( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                           Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
+                        Else
+                           Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
+                        EndIf
+                     Else
+                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
+                     EndIf
+                     
                   EndIf
                   
                EndIf
@@ -6816,7 +6851,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                bar_tab_update_items_( *this, *this\__tabs( ) )
                ;
                x = *SB\x
-               y = *SB\y
+               y = *SB\y 
+               
+               If *this\child
+                  If *this\parent
+                     If *this\parent\fs[4]
+                       ; y + 1
+                     EndIf
+                  EndIf
+               EndIf
                
                DrawTABITEMS( *this, *this\bar\vertical, x,y, *SB\round, *this\__tabs( ) )
                
@@ -17688,7 +17731,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\fs[1] = #__panel_width
                EndIf
                
-               *this\TabBox( ) = Create( *this, *this\class + "_TabBar", #__type_TabBar, 0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+               *this\TabBox( ) = CreateBar( #__type_TabBar, *this, #PB_ToolBar_Small ) 
+               ;*this\TabBox( ) = Create( *this, *this\class + "_TabBar", #__type_TabBar, 0, 0, 0, 0, #Null$, Flag | #__flag_child | #PB_ToolBar_Small, 0, 0, 0, 0, 0, 30 )
             EndIf
             
             ;\\ Open gadget list
@@ -24576,7 +24620,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22198
-; FirstLine = 21858
-; Folding = -----------------------------------------------------------------------------------------------------------------------------6m--------80-v---3K3-vq-u-------------------Z---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4795
+; FirstLine = 4783
+; Folding = ----------------------------------------------------------------------------------------------------------------------f-----cz-------fv--0--4Wx+-V040------------------P3-v98------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
