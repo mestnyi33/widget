@@ -52,10 +52,10 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define windowID = OpenWindow( 0, 100, 100, 500, 180, "main window_0", #__Window_SystemMenu)
-   Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
+   Define windowID = Open( 0, 100, 100, 500, 250, "main window_0", #__Window_SystemMenu)
+   Define container = ContainerGadget( #PB_Any, 10, 35, 80, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
    
-   CreateMenu(0, WindowID)
+   CreateMenu(0, WindowID(0))
    MenuTitle("Title-1")
    MenuItem(1, "title-1-item-1")
    MenuBar()
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   If Open( 1, 100, 300, 500, 250, "main window_1", #__Window_SystemMenu)
+   ;If Open( 1, 100, 300, 500, 250, "main window_1", #__Window_SystemMenu)
       Define *window._s_widget = root( )
       
       *menu = CreateMenuBar( *window ) : SetClass(menu(), "rott_MenuBar" )
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       Define *window._s_widget = Window(100, 50, 300, 100, "menu click test", #PB_Window_SystemMenu)
-      Define *container._s_widget = Container( 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseList( )
+      Define *container._s_widget = Container( 10, 10, 80, 100-20, #PB_Container_Flat ) : CloseList( )
       ;SetFrame( *window, 0)
       
       *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
@@ -198,15 +198,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Bind(*menu, @TestHandler(), -1, 7)
       Bind(*menu, @QuitHandler(), -1, 8)
-   EndIf
+   ;EndIf
    
    Define Event
    Repeat
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 154
-; FirstLine = 147
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
