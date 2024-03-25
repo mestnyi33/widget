@@ -4777,11 +4777,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If size = #PB_Default
          If *this\TabBox( )\flag & #PB_ToolBar_Small 
-            size = 25
+            size = 24
          ElseIf *this\TabBox( )\flag & #PB_ToolBar_Large 
-            size = 45
+            size = 44
          Else ; If *this\flag & #PB_ToolBar_Normal 
-            size = 35
+            size = 34
          EndIf
          
          If position = 1 Or position = 3
@@ -4926,11 +4926,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If flag & #PB_ToolBar_Small 
-            size = 25
+            size = 24
          ElseIf flag & #PB_ToolBar_Large 
-            size = 45
+            size = 44
          Else ; If flag & #PB_ToolBar_Normal 
-            size = 35
+            size = 34
          EndIf
          
          ;If Not flag & #PB_ToolBar_InlineText
@@ -6660,21 +6660,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If *items( ) <> *this\FocusedTab( ) And 
-                     *items( ) <> *this\EnteredTab( )
-                     ;                     ;
-                     ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *items( )\x ) +" - "+ *SB\width
-                     ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *items( )\x )
-                     ;                         
-                     ;                         If (( *BB2\x + *BB2\width < x + *items( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *items( )\x )) Or
-                     ;                            (( *BB1\x > x + *items( )\x + *items( )\width ) Or ( *BB1\hide And *BB1\x < x + *items( )\x + *items( )\width )) 
-                     bar_item_draw_( *items( ), 0, x, y, round, [0],
-                                     Bool( Not( ( *this\type = #__type_ToolBar Or 
-                                                  *this\type = #__type_Menu ) And
-                                                Not *this\flag & #PB_ToolBar_Buttons)) )
-                     ;                         EndIf
+                  If *items( )\toggle
+                     bar_item_draw_( *items( ), 0, x, y, round, [2] )
+                  Else
+                     If *items( ) <> *this\FocusedTab( ) And 
+                        *items( ) <> *this\EnteredTab( )
+                        ;                     ;
+                        ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *items( )\x ) +" - "+ *SB\width
+                        ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *items( )\x )
+                        ;                         
+                        ;                         If (( *BB2\x + *BB2\width < x + *items( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *items( )\x )) Or
+                        ;                            (( *BB1\x > x + *items( )\x + *items( )\width ) Or ( *BB1\hide And *BB1\x < x + *items( )\x + *items( )\width )) 
+                        bar_item_draw_( *items( ), 0, x, y, round, [0],
+                                        Bool( Not( ( *this\type = #__type_ToolBar Or 
+                                                     *this\type = #__type_Menu ) And
+                                                   Not *this\flag & #PB_ToolBar_Buttons)) )
+                        ;                         EndIf
+                     EndIf
                   EndIf
-                  
                EndIf
             EndIf
          Next
@@ -6682,6 +6685,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; draw mouse-enter visible item
          If *this\EnteredTab( ) <> *this\FocusedTab( )
             If *this\EnteredTab( ) And
+               *this\EnteredTab( )\toggle = 0 And
                *this\EnteredTab( )\visible 
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
@@ -21009,7 +21013,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure DoEvent_Tab( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected repaint, *tabRow._s_ROWS, mode_type = 0
-         
+         Static *tableave._s_ROWS
+               
          If eventtype = #__event_Up
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
@@ -21046,6 +21051,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If GetActive( )\PopupBar( ) And 
                         GetActive( )\PopupBar( )\hidden = #False
+                        
+                        If *tableave
+                           *tableave\toggle = 0
+                           *tableave = 0
+                        EndIf
+                        
                         HidePopupMenuBar( GetActive( )\PopupBar( ) )
                         GetActive( )\PopupBar( ) = 0
                      EndIf
@@ -21064,6 +21075,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If is_menu_( *this )
                            *this\FocusedTab( ) = *tabRow
                            *this\FocusedTab( )\RowFocus( 1 )
+                        Else
+                           ;
+                        *tabRow\toggle ! 1
+                        *tableave = *tabRow
                         EndIf
                         ;
                         If *this\PopupBar( ) And 
@@ -21171,7 +21186,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\root\repaint = #True
                      ;
                      ;\\ hide popup menu bar
-                     ;If is_menu_( *this )
+                     If is_menu_( *this )
                         If *this\enter 
                            If Not *this\EnteredTab( )\focus
                               If *this\PopupBar( ) And 
@@ -21181,22 +21196,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf 
                            EndIf 
                         EndIf 
-                     ;EndIf
+                     EndIf
                   EndIf
                   ;
                   *this\EnteredTab( ) = *tabRow
                   ;
-                  ;
                   If *this\enter 
                      If *tabRow 
                         ;\\ hide popup menu bar
-                        ;If is_menu_( *this )
-                           If *this\PopupBar( ) And 
+                        If is_menu_( *this ) Or ( Not is_menu_( *this ) And *tabRow\childrens)
+                            If *this\PopupBar( ) And 
                               *this\PopupBar( )\hidden = #False
                               HidePopupMenuBar( *this\PopupBar( ) )
                               *this\PopupBar( ) = 0
                            EndIf
-                        ;EndIf
+                        EndIf
                         
                         ;\\ entered tabs
                         If Entered( *tabRow )
@@ -21215,16 +21229,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *this\FocusedTab( )\RowFocus( 1 )
                                     EndIf
                                 ; EndIf
-                             ; EndIf
-                              ;
-                              If *tabRow\data
+                                ; EndIf
+                                    ;If *tabRow
+                                       If *tableave
+                                          If *tableave\toggle
+                                             *tableave\toggle = 0
+                                             
+                                             *tableave = *tabRow
+                                             *tableave\toggle = 1
+                                          EndIf
+                                       EndIf
+                                    ;EndIf
+                                    ;
+                                    If *tabRow\data
                                  If *this\bar\vertical
                                     ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
                                     DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                     DisplayPopupMenuBar( *tabRow\data, *this, 
                                                          *this\screen_width( ) - 5, *tabRow\y )
                                  Else
-                                    If *tabRow\focus
+                                    If *tabRow\focus Or *tabRow\toggle
                                        ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
                                        DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                                        DisplayPopupMenuBar( *tabRow\data, *this, 
@@ -24652,7 +24676,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3995
-; FirstLine = 3553
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------f-----cz-------fv--0--4Wx+-V040------------------f+--+--X4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f---t+----------------------------------------------
+; CursorPosition = 21206
+; FirstLine = 20342
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f---t+----------------------------------------------
 ; EnableXP
