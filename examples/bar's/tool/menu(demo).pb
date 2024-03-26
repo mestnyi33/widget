@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;If Open( 1, 100, 300, 500, 250, "main window_1", #__Window_SystemMenu)
       Define *window._s_widget = root( )
       
-      *menu = CreateMenuBar( *window ) : SetClass(menu(), "rott_MenuBar" )
+      *menu = CreateMenuBar( *window ) : SetClass(menu(), "root_MenuBar" )
       
       BarTitle("Title-1")
       BarItem(1, "title-1-item-1")
@@ -205,6 +205,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 106
+; FirstLine = 81
 ; Folding = -
 ; EnableXP

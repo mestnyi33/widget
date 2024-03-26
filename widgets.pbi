@@ -15832,7 +15832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            GetActive( ) = *this
+            ;;GetActive( ) = *this
             ;Debug "---focus--- "+*this\class
             ;\\
             If *this\focus = #False
@@ -15905,6 +15905,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             EndIf
+            ;
+            GetActive( ) = *this
             
          Else
             If ActiveWindow( )
@@ -19284,31 +19286,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      ;\\ draw active parent frame
                      If ActiveWindow( ) 
-                        ;                         If ActiveWindow( )\focus And 
-                        ;                            ActiveWindow( )\haschildren 
-                        ;                            
-                        ;                            If ActiveWindow( )\AfterWidget( ) = __widgets( )  
-                        ;                               clip_output_( ActiveWindow( ), [#__c_draw] )
-                        ;                               drawing_mode_(#PB_2DDrawing_Outlined)
-                        ;                               draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                               draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                               draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                            EndIf
-                        ;                         EndIf
-                        ;                         ;
-                        ;                         ;\\ draw active child frame
-                        ;                         If ActiveGadget( ) And
-                        ;                            ActiveGadget( )\focus And 
-                        ;                            ActiveGadget( )\haschildren 
-                        ;                            
-                        ;                            If ActiveGadget( )\AfterWidget( ) = __widgets( )  
-                        ;                               clip_output_( ActiveGadget( ), [#__c_draw] )
-                        ;                               drawing_mode_(#PB_2DDrawing_Outlined)
-                        ;                               draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                               draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                               draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                            EndIf
-                        ;                         EndIf
+                                                If ActiveWindow( )\focus And 
+                                                   ActiveWindow( )\haschildren 
+                                                   
+                                                   If ActiveWindow( )\AfterWidget( ) = __widgets( )  
+                                                      clip_output_( ActiveWindow( ), [#__c_draw] )
+                                                      drawing_mode_(#PB_2DDrawing_Outlined)
+                                                      draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                      draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                      draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                   EndIf
+                                                EndIf
+                                                ;
+                                                ;\\ draw active child frame
+                                                If ActiveGadget( ) And
+                                                   ActiveGadget( )\focus And 
+                                                   ActiveGadget( )\haschildren 
+                                                   
+                                                   If ActiveGadget( )\AfterWidget( ) = __widgets( )  
+                                                      clip_output_( ActiveGadget( ), [#__c_draw] )
+                                                      drawing_mode_(#PB_2DDrawing_Outlined)
+                                                      draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                      draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                      draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                   EndIf
+                                                EndIf
                      EndIf
                      ;
                      ;\\ draw entered widget anchors
@@ -19353,35 +19355,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      ;\\ draw active parent frame
                      If ActiveWindow( ) 
-                        ;                         If ActiveWindow( )\focus And 
-                        ;                            ActiveWindow( )\haschildren 
-                        ;                            
-                        ;                            If Not ActiveWindow( )\AfterWidget( ) 
-                        ;                               If __widgets( ) = GetPositionLast( ActiveWindow( ) )
-                        ;                                  clip_output_( ActiveWindow( ), [#__c_draw] )
-                        ;                                  drawing_mode_(#PB_2DDrawing_Outlined)
-                        ;                                  draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                                  draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                                  draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                        ;                               EndIf
-                        ;                            EndIf
-                        ;                         EndIf
-                        ;                         ; 
-                        ;                         ;\\ draw active child frame
-                        ;                         If ActiveGadget( ) And
-                        ;                            ActiveGadget( )\focus And 
-                        ;                            ActiveGadget( )\haschildren 
-                        ;                            
-                        ;                            If Not ActiveGadget( )\AfterWidget( ) 
-                        ;                               If __widgets( ) = GetPositionLast( ActiveGadget( ) )
-                        ;                                  clip_output_( ActiveGadget( ), [#__c_draw] )
-                        ;                                  drawing_mode_(#PB_2DDrawing_Outlined)
-                        ;                                  draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                                  draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                                  draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                        ;                               EndIf
-                        ;                            EndIf
-                        ;                         EndIf
+                                                If ActiveWindow( )\focus And 
+                                                   ActiveWindow( )\haschildren 
+                                                   
+                                                   If Not ActiveWindow( )\AfterWidget( ) 
+                                                      If __widgets( ) = GetPositionLast( ActiveWindow( ) )
+                                                         clip_output_( ActiveWindow( ), [#__c_draw] )
+                                                         drawing_mode_(#PB_2DDrawing_Outlined)
+                                                         draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                         draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                         draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                                      EndIf
+                                                   EndIf
+                                                EndIf
+                                                ; 
+                                                ;\\ draw active child frame
+                                                If ActiveGadget( ) And
+                                                   ActiveGadget( )\focus And 
+                                                   ActiveGadget( )\haschildren 
+                                                   
+                                                   If Not ActiveGadget( )\AfterWidget( ) 
+                                                      If __widgets( ) = GetPositionLast( ActiveGadget( ) )
+                                                         clip_output_( ActiveGadget( ), [#__c_draw] )
+                                                         drawing_mode_(#PB_2DDrawing_Outlined)
+                                                         draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                         draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                         draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                                      EndIf
+                                                   EndIf
+                                                EndIf
                      EndIf
                      ;
                      ;\\ draw entered parent anchors
@@ -21014,7 +21016,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure DoEvent_Tab( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected repaint, *tabRow._s_ROWS, mode_type = 0
          Static *tableave._s_ROWS
-               
+         Static *Deactive._s_WIDGET
+         
          If eventtype = #__event_Up
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
@@ -21038,30 +21041,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
                
-               ;
-               If GetActive( )
-                  If GetActive( ) <> *this
-                     Debug " down - "+GetActive( )\class
-                     If is_menu_( GetActive( ) )
-                        If GetActive( )\FocusedTab( )
-                           GetActive( )\FocusedTab( )\RowFocus( 0 )
-                           GetActive( )\FocusedTab( ) = 0
-                        EndIf
-                     EndIf
-                     ;
-                     If GetActive( )\PopupBar( ) And 
-                        GetActive( )\PopupBar( )\hidden = #False
-                        
-                        If *tableave
-                           *tableave\toggle = 0
-                           *tableave = 0
-                        EndIf
-                        
-                        HidePopupMenuBar( GetActive( )\PopupBar( ) )
-                        GetActive( )\PopupBar( ) = 0
-                     EndIf
-                  EndIf
-               EndIf
+;                ;
+;                If *Deactive
+;                   If *Deactive <> *this
+;                      Debug " down - "+*Deactive\class
+;                      If is_menu_( *Deactive )
+;                         If *Deactive\FocusedTab( )
+;                            *Deactive\FocusedTab( )\RowFocus( 0 )
+;                            *Deactive\FocusedTab( ) = 0
+;                         EndIf
+;                      EndIf
+;                      ;
+;                      If *Deactive\PopupBar( ) And 
+;                         *Deactive\PopupBar( )\hidden = #False
+;                         
+;                         If *tableave
+;                            *tableave\toggle = 0
+;                            *tableave = 0
+;                         EndIf
+;                         
+;                         HidePopupMenuBar( *Deactive\PopupBar( ) )
+;                         *Deactive\PopupBar( ) = 0
+;                      EndIf
+;                   EndIf
+;                   *Deactive = 0
+;                EndIf
                
                ;
                If *tabRow
@@ -21087,6 +21091,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\PopupBar( ) = 0
                         Else
                            ;
+                           *Deactive = *this
                            DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                            DisplayPopupMenuBar( *tabRow\data, *this, 
                                                 *this\screen_x( ) + *tabRow\x, 
@@ -21105,24 +21110,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;             Debug "  Leave - "+*this\class
          ;          EndIf
          If eventtype = #__event_Focus
-            ;Debug "  Focus - "+*this\class
-            ;             If GetActive( )\TabBox( )
-            ;                If is_menu_( GetActive( )\TabBox( ) )
-            ;                   If GetActive( )\TabBox( )\FocusedTab( )
-            ;                      GetActive( )\TabBox( )\FocusedTab( )\RowFocus( 0 )
-            ;                      GetActive( )\TabBox( )\FocusedTab( ) = 0
+;             *Deactive = GetActive( )
+;             ;
+;             If *Deactive
+;                If *Deactive <> *this
+;                   Debug " down - "+*Deactive\class
+;                   If is_menu_( *Deactive )
+;                      If *Deactive\FocusedTab( )
+;                         *Deactive\FocusedTab( )\RowFocus( 0 )
+;                         *Deactive\FocusedTab( ) = 0
+;                      EndIf
+;                   EndIf
+;                   ;
+;                   If *Deactive\PopupBar( ) And 
+;                      *Deactive\PopupBar( )\hidden = #False
+;                      
+;                      If *tableave
+;                         *tableave\toggle = 0
+;                         *tableave = 0
+;                      EndIf
+;                      
+;                      HidePopupMenuBar( *Deactive\PopupBar( ) )
+;                      *Deactive\PopupBar( ) = 0
+;                   EndIf
+;                EndIf
+;                *Deactive = 0
+;             EndIf
+               
+            Debug "  Focus - "+*this\class
+            ;             If *active\TabBox( )
+            ;                If is_menu_( *active\TabBox( ) )
+            ;                   If *active\TabBox( )\FocusedTab( )
+            ;                      *active\TabBox( )\FocusedTab( )\RowFocus( 0 )
+            ;                      *active\TabBox( )\FocusedTab( ) = 0
             ;                   EndIf
             ;                EndIf
             ;                ;
-            ;                If GetActive( )\TabBox( )\PopupBar( ) And 
-            ;                   GetActive( )\TabBox( )\PopupBar( )\hidden = #False
-            ;                   HidePopupMenuBar( GetActive( )\TabBox( )\PopupBar( ) )
-            ;                   GetActive( )\TabBox( )\PopupBar( ) = 0
+            ;                If *active\TabBox( )\PopupBar( ) And 
+            ;                   *active\TabBox( )\PopupBar( )\hidden = #False
+            ;                   HidePopupMenuBar( *active\TabBox( )\PopupBar( ) )
+            ;                   *active\TabBox( )\PopupBar( ) = 0
             ;                EndIf
             ;             EndIf
          EndIf
          If eventtype = #__event_LostFocus
-            ;Debug "  LostFocus - "+*this\class
+            Debug "  LostFocus - "+*this\class
             ;             If is_menu_( *this )
             ;                If *this\EnteredTab( )
             ;                   Debug "777 "+*this\EnteredTab( )\enter +" "+ *this\enter 
@@ -22338,17 +22370,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
                   
-                  If Not EnteredWidget( ) Or
-                     ( EnteredWidget( ) And
-                       ( GetActive( ) = EnteredWidget( ) Or
-                         GetActive( ) = EnteredWidget( )\parent ) )
-                     ; Debug "Canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                     
-                     If GetActive( )\focus = 0
-                        GetActive( )\focus = 1
-                        DoFocus( GetActive( ), #__event_Focus )
-                     EndIf
+;                   If Not EnteredWidget( ) Or
+;                      ( EnteredWidget( ) And
+;                        ( GetActive( ) = EnteredWidget( ) Or
+;                          GetActive( ) = EnteredWidget( )\parent ) )
+;                      ; Debug "Canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+;                      
+;                      If GetActive( )\focus = 0
+;                         GetActive( )\focus = 1
+;                         DoFocus( GetActive( ), #__event_Focus )
+;                      EndIf
+;                   EndIf
+                  
+                  If GetActive( )\root\focus = 0
+                     GetActive( )\root\focus = 1
+                     DoFocus( GetActive( )\root, #__event_Focus )
                   EndIf
+                  
+                  If StartEnumerate( GetActive( )\root )
+                     If widget( ) = GetActive( )\window Or widget( ) = GetActive( )
+                        If widget( )\focus = 0
+                           widget( )\focus = 1
+                           DoFocus( widget( ), #__event_Focus )
+                        EndIf
+                     EndIf
+                     StopEnumerate( )
+                  EndIf
+                  
                EndIf
                
             ElseIf eventtype = #__event_LostFocus
@@ -22356,9 +22404,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   GetActive( )\root\canvas\gadget = eventgadget
                   ; Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                   
-                  If GetActive( )\focus = 1
-                     GetActive( )\focus = 0
-                     DoFocus( GetActive( ), #__event_LostFocus )
+                  If GetActive( )\root\focus = 1
+                     GetActive( )\root\focus = 0
+                     DoFocus( GetActive( )\root, #__event_LostFocus )
+                  EndIf
+                  
+                  If StartEnumerate( GetActive( )\root )
+                     If widget( )\focus = 1
+                        widget( )\focus = 0
+                        DoFocus( widget( ), #__event_LostFocus )
+                     EndIf
+                     StopEnumerate( )
                   EndIf
                EndIf
                
@@ -22398,31 +22454,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If EnteredWidget( )
                   ; Debug "canvas - press " + EnteredWidget( )\class
                   ;
-                  ;                   ;\\ set active widget
-                  ;                   If EnteredWidget( )\disable
-                  ;                      If Not EnteredWidget( )\parent\disable
-                  ;                         If eventtype = #__event_LeftButtonDown
-                  ;                            If GetActive( ) <> EnteredWidget( )\parent
-                  ;                               If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
-                  ;                                  SetActive( EnteredWidget( )\parent)
-                  ;                               EndIf
-                  ;                            EndIf
-                  ;                         EndIf
-                  ;                      EndIf
-                  ;                   Else
-                  ;                      PressedWidget( )       = EnteredWidget( )
-                  ;                      PressedWidget( )\press = #True
-                  ;                      ;
-                  ;                      If eventtype = #__event_LeftButtonDown
-                  ;                         If GetActive( ) <> EnteredWidget( )
-                  ;                            ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
-                  ;                               If a_focused( ) <> EnteredWidget( )
-                  ;                                  SetActive( EnteredWidget( ))
-                  ;                               EndIf
-                  ;                            ; EndIf
-                  ;                         EndIf
-                  ;                      EndIf
-                  ;                   EndIf
+                  ;\\ set active widget
+                  If EnteredWidget( )\disable
+                     If Not EnteredWidget( )\parent\disable
+                        If eventtype = #__event_LeftButtonDown
+                           If GetActive( ) <> EnteredWidget( )\parent
+                              If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
+                                 SetActive( EnteredWidget( )\parent)
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  Else
+                     PressedWidget( )       = EnteredWidget( )
+                     PressedWidget( )\press = #True
+                     ;
+                     If eventtype = #__event_LeftButtonDown
+                        If GetActive( ) <> EnteredWidget( )
+                           ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
+                           If a_focused( ) <> EnteredWidget( )
+                              SetActive( EnteredWidget( ))
+                           EndIf
+                           ; EndIf
+                        EndIf
+                     EndIf
+                  EndIf
                   ;
                   ;\\ mouse delta pos
                   If eventtype <> #__event_MiddleButtonDown
@@ -22464,31 +22520,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DoEvents( EnteredWidget( ), eventtype )
                   EndIf
                 
-                  ;\\ set active widget
-                  If EnteredWidget( )\disable
-                     If Not EnteredWidget( )\parent\disable
-                        If eventtype = #__event_LeftButtonDown
-                           If GetActive( ) <> EnteredWidget( )\parent
-                              If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
-                                 SetActive( EnteredWidget( )\parent)
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  Else
-                     PressedWidget( )       = EnteredWidget( )
-                     PressedWidget( )\press = #True
-                     ;
-                     If eventtype = #__event_LeftButtonDown
-                        If GetActive( ) <> EnteredWidget( )
-                           ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
-                           If a_focused( ) <> EnteredWidget( )
-                              SetActive( EnteredWidget( ))
-                           EndIf
-                           ; EndIf
-                        EndIf
-                     EndIf
-                  EndIf
+;                   ;\\ set active widget
+;                   If EnteredWidget( )\disable
+;                      If Not EnteredWidget( )\parent\disable
+;                         If eventtype = #__event_LeftButtonDown
+;                            If GetActive( ) <> EnteredWidget( )\parent
+;                               If Not ( EnteredButton( ) And EnteredButton( )\noFocus )
+;                                  SetActive( EnteredWidget( )\parent)
+;                               EndIf
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   Else
+;                      PressedWidget( )       = EnteredWidget( )
+;                      PressedWidget( )\press = #True
+;                      ;
+;                      If eventtype = #__event_LeftButtonDown
+;                         If GetActive( ) <> EnteredWidget( )
+;                            ; If Not ( EnteredButton( ) And EnteredButton( )\noFocus ) 
+;                            If a_focused( ) <> EnteredWidget( )
+;                               SetActive( EnteredWidget( ))
+;                            EndIf
+;                            ; EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
                EndIf
                
             ElseIf eventtype = #__event_LeftButtonUp Or
@@ -24676,7 +24732,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21206
-; FirstLine = 20342
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f---t+----------------------------------------------
+; CursorPosition = 22390
+; FirstLine = 20653
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-X0s---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------f-u---8W8-4----8----------------------------------------------
 ; EnableXP
