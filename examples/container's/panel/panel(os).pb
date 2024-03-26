@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem (*panel, -1, "Tab 1",  LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    AddItem (*panel, -1, "Tab 2", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    Button( 0,0,50,50,"Button" )
-   Button( 0,180-79,50,50,"Button" )
+   Button( 0,180-79+1,50,50,"Button" )
    AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    CloseList() ; *panel
    
@@ -145,8 +145,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 122
-; FirstLine = 95
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
