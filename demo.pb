@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, 995, 605, "demo then draw widgets on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    a_init(root( ), 0)
+    ;a_init(root( ), 0)
     ;
     ;Widgets("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
     ;\\ 1
@@ -104,6 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 28
-; FirstLine = 10
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
