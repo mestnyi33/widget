@@ -15812,7 +15812,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this And Not *this\disable
             If *this\child
                *active = *this\parent
-               Debug "55555 "+*active\class
             Else
                *active = *this
             EndIf
@@ -15840,17 +15839,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            Debug "---focus--- "+*this\class
+            ;Debug "---focus--- "+*this\class
             ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
                   SetDeactive( *this )
                EndIf
             EndIf
-            
-            ;\\
-            ;;GetActive( ) = *this
-            ;\\
+            ;
+            GetActive( ) = *this
+            ;
             If *this\focus = #False
                *this\focus = #True
                
@@ -15921,8 +15919,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             EndIf
-            ;
-            GetActive( ) = *this
             
          Else
             If ActiveWindow( )
@@ -19552,7 +19548,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
                      ;
-                     If eventtype = #__event_LeftClick
+                     If eventtype = #__event_LeftClick Or
+                        eventtype = #__event_Change
                         If *this\EnteredTab( )
                            *button = *this\EnteredTab( )\itemindex
                         EndIf
@@ -21032,7 +21029,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure DoEvent_Tab( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected repaint, *tabRow._s_ROWS, mode_type = 0
          Static *tableave._s_ROWS
-         Static *Deactive._s_WIDGET
+         
+         If eventtype = #__event_MouseEnter
+            ;Debug "  Enter - "+*this\class
+         EndIf
+         If eventtype = #__event_MouseLeave
+            ;Debug "  Leave - "+*this\class
+         EndIf
+         If eventtype = #__event_StatusChange
+            ;Debug "  StatusChange - "+*this\class
+         EndIf
+         If eventtype = #__event_Focus
+            Debug "  Focus - "+*this\class +" "+ GetActive( )\class
+         EndIf
+         If eventtype = #__event_LostFocus
+            Debug "  LostFocus - "+*this\class
+            
+            If is_menu_( *this )
+               If *this\FocusedTab( )
+                  *this\FocusedTab( )\RowFocus( 0 )
+                  *this\FocusedTab( ) = 0
+               EndIf
+            EndIf
+            ;
+            If *this\PopupBar( ) And 
+               *this\PopupBar( )\hidden = #False
+               
+               If *tableave
+                  *tableave\toggle = 0
+                  *tableave = 0
+               EndIf
+               
+               HidePopupMenuBar( *this\PopupBar( ) )
+               *this\PopupBar( ) = 0
+            EndIf
+         EndIf
          
          If eventtype = #__event_Up
             If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -21056,37 +21087,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Down
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
-               
-;                ;
-;                If *Deactive
-;                   If *Deactive <> *this
-;                      Debug " down - "+*Deactive\class
-;                      If is_menu_( *Deactive )
-;                         If *Deactive\FocusedTab( )
-;                            *Deactive\FocusedTab( )\RowFocus( 0 )
-;                            *Deactive\FocusedTab( ) = 0
-;                         EndIf
-;                      EndIf
-;                      ;
-;                      If *Deactive\PopupBar( ) And 
-;                         *Deactive\PopupBar( )\hidden = #False
-;                         
-;                         If *tableave
-;                            *tableave\toggle = 0
-;                            *tableave = 0
-;                         EndIf
-;                         
-;                         HidePopupMenuBar( *Deactive\PopupBar( ) )
-;                         *Deactive\PopupBar( ) = 0
-;                      EndIf
-;                   EndIf
-;                   *Deactive = 0
-;                EndIf
-               
                ;
                If *tabRow
-                  If *tabRow\data
-                     If *tabRow\childrens 
+                  If *tabRow\childrens 
+                     If *tabRow\data
                         If *this\FocusedTab( )
                            *this\FocusedTab( )\RowFocus( 0 )
                            *this\FocusedTab( ) = 0
@@ -21107,92 +21111,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\PopupBar( ) = 0
                         Else
                            ;
-                           *Deactive = *this
                            DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
                            DisplayPopupMenuBar( *tabRow\data, *this, 
                                                 *this\screen_x( ) + *tabRow\x, 
                                                 *this\screen_y( ) + *tabRow\y + *tabRow\height)
                         EndIf
                      EndIf
+                  Else
+                     If is_menu_( *this )
+                        Send( *this, #__event_Change )
+                        HidePopupMenuBar( *this )
+                        If *this\ParentBar( )
+                           If *this\ParentBar( )\FocusedTab( )
+                              *this\ParentBar( )\FocusedTab( )\RowFocus( 0 )
+                              *this\ParentBar( )\FocusedTab( ) = 0
+                              PostRepaint( *this\ParentBar( )\root )
+                           EndIf
+                        EndIf
+                        
+                        If *tableave
+                           *tableave\toggle = 0
+                           *tableave = 0
+                        EndIf
+                     EndIf
                   EndIf
                EndIf
             EndIf  
-         EndIf
-         
-         ;          If eventtype = #__event_MouseEnter
-         ;             Debug "  Enter - "+*this\class
-         ;          EndIf
-         ;          If eventtype = #__event_MouseLeave
-         ;             Debug "  Leave - "+*this\class
-         ;          EndIf
-         If eventtype = #__event_Focus
-;             *Deactive = GetActive( )
-;             ;
-;             If *Deactive
-;                If *Deactive <> *this
-;                   Debug " down - "+*Deactive\class
-;                   If is_menu_( *Deactive )
-;                      If *Deactive\FocusedTab( )
-;                         *Deactive\FocusedTab( )\RowFocus( 0 )
-;                         *Deactive\FocusedTab( ) = 0
-;                      EndIf
-;                   EndIf
-;                   ;
-;                   If *Deactive\PopupBar( ) And 
-;                      *Deactive\PopupBar( )\hidden = #False
-;                      
-;                      If *tableave
-;                         *tableave\toggle = 0
-;                         *tableave = 0
-;                      EndIf
-;                      
-;                      HidePopupMenuBar( *Deactive\PopupBar( ) )
-;                      *Deactive\PopupBar( ) = 0
-;                   EndIf
-;                EndIf
-;                *Deactive = 0
-;             EndIf
-               
-            Debug "  Focus - "+*this\class
-            ;             If *active\TabBox( )
-            ;                If is_menu_( *active\TabBox( ) )
-            ;                   If *active\TabBox( )\FocusedTab( )
-            ;                      *active\TabBox( )\FocusedTab( )\RowFocus( 0 )
-            ;                      *active\TabBox( )\FocusedTab( ) = 0
-            ;                   EndIf
-            ;                EndIf
-            ;                ;
-            ;                If *active\TabBox( )\PopupBar( ) And 
-            ;                   *active\TabBox( )\PopupBar( )\hidden = #False
-            ;                   HidePopupMenuBar( *active\TabBox( )\PopupBar( ) )
-            ;                   *active\TabBox( )\PopupBar( ) = 0
-            ;                EndIf
-            ;             EndIf
-         EndIf
-         If eventtype = #__event_LostFocus
-            Debug "  LostFocus - "+*this\class
-            ;             If is_menu_( *this )
-            ;                If *this\EnteredTab( )
-            ;                   Debug "777 "+*this\EnteredTab( )\enter +" "+ *this\enter 
-            ;                   *this\EnteredTab( )\enter = *this\enter 
-            ;                   *this\EnteredTab( ) = 0
-            ;                   *this\root\repaint = 1
-            ;                EndIf               
-            ;                If *this\FocusedTab( )
-            ;                   Debug "555 "+*this\FocusedTab( )\focus +" "+ *this\focus 
-            ;                   *this\FocusedTab( )\focus = *this\focus  
-            ;                   *this\FocusedTab( ) = 0
-            ;                EndIf
-            ;             EndIf
-            ;             ;
-            ;             If *this\PopupBar( ) And 
-            ;                *this\PopupBar( )\hidden = #False
-            ;                HidePopupMenuBar( *this\PopupBar( ) )
-            ;                *this\PopupBar( ) = 0
-            ;             EndIf
-         EndIf
-         
-         If eventtype = #__event_StatusChange
          EndIf
          
          If *this\bar
@@ -22386,33 +22330,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
                   ; Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                  ;
-                  If GetActive( )\root\focus = 0
-                     GetActive( )\root\focus = 1
-                     DoFocus( GetActive( )\root, #__event_Focus )
-                  EndIf
-                  ;
-                  If StartEnumerate( GetActive( )\root )
-                     If widget( ) = GetActive( )\window 
-                        If widget( )\focus = 0
-                           widget( )\focus = 1
-                           DoFocus( widget( ), #__event_Focus )
-                           ;
-                           If is_window_( widget( ) )
-                              If widget( )\gadget\focus = 0
-                                 widget( )\gadget\focus = 1
-                                 DoFocus( widget( )\gadget, #__event_Focus )
+                  ; not no-Activate window
+                  If GetActive( )\root\focus >= 0
+                     If GetActive( )\root\focus = 0
+                        GetActive( )\root\focus = 1
+                        DoFocus( GetActive( )\root, #__event_Focus )
+                     EndIf
+                     ;
+                     If StartEnumerate( GetActive( )\root )
+                        If widget( ) = GetActive( )\window 
+                           If widget( )\focus = 0
+                              widget( )\focus = 1
+                              DoFocus( widget( ), #__event_Focus )
+                              ;
+                              If is_window_( widget( ) )
+                                 If widget( )\gadget
+                                    If widget( )\gadget\focus = 0
+                                       widget( )\gadget\focus = 1
+                                       DoFocus( widget( )\gadget, #__event_Focus )
+                                    EndIf
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
+                        StopEnumerate( )
                      EndIf
-                     StopEnumerate( )
-                  EndIf
-                  ;
-                  If GetActive( )\enter
-                     If GetActive( )\focus = 0
-                        GetActive( )\focus = 1
-                        DoFocus( GetActive( ), #__event_Focus )
+                     ;
+                     If GetActive( )\enter
+                        If GetActive( )\focus = 0
+                           GetActive( )\focus = 1
+                           DoFocus( GetActive( ), #__event_Focus )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -22420,24 +22368,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #__event_LostFocus
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
-                  ; Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                   ;
-                  If GetActive( )\root\focus = 1
-                     GetActive( )\root\focus = 0
-                     DoFocus( GetActive( )\root, #__event_LostFocus )
-                  EndIf
-                  ; 
-                  If StartEnumerate( GetActive( )\root )
-                     If widget( )\focus = 1
-                        widget( )\focus = 0
-                        DoFocus( widget( ), #__event_LostFocus )
+                  If EnteredCanvasID
+                     If EnteredCanvasID <> Root( )\canvas\gadgetID
+                        ChangeCurrentCanvas( EnteredCanvasID )
                      EndIf
-                     StopEnumerate( )
                   EndIf
                   ;
-                  If GetActive( )\focus = 1
-                     GetActive( )\focus = 0
-                     DoFocus( GetActive( ), #__event_LostFocus )
+                  ; not no-Activate window
+                  If Root( )\focus >= 0 
+                     ;Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                     ;
+                     If GetActive( )\root\focus = 1
+                        GetActive( )\root\focus = 0
+                        DoFocus( GetActive( )\root, #__event_LostFocus )
+                     EndIf
+                     ; 
+                     If StartEnumerate( GetActive( )\root )
+                        If widget( )\focus = 1
+                           widget( )\focus = 0
+                           DoFocus( widget( ), #__event_LostFocus )
+                        EndIf
+                        StopEnumerate( )
+                     EndIf
+                     ;
+                     If GetActive( )\focus = 1
+                        GetActive( )\focus = 0
+                        DoFocus( GetActive( ), #__event_LostFocus )
+                     EndIf
                   EndIf
                EndIf
                
@@ -24755,7 +24713,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22398
-; FirstLine = 20756
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---f-8---0--------------------------------------------------------------------------------------------------------------------------------------------------------------------4v8---u2+-0----f-----------------------------------------------
+; CursorPosition = 21130
+; FirstLine = 19704
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04---f-8---0----------------------------------------------------------------------------------------------------------------------------------------------------------------------08+--vbt-f------80--+---+--------------------------------------
 ; EnableXP
