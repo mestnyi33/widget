@@ -15718,9 +15718,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i SetDeactive( *this._s_WIDGET )
          Protected *active._s_WIDGET
          
-         If *this
-            If ActiveWindow( )
-               If *this <> ActiveWindow( )
+         If ActiveWindow( )
+            If *this = ActiveWindow( )
+               If GetActive( )\child
+                  If GetActive( )\focus = #True
+                     GetActive( )\focus = #False
+                     ;
+                     DoFocus( GetActive( ), #__event_LostFocus )
+                  EndIf
+               EndIf
+            Else
+               If *this
+                  If *this\child 
+                     ProcedureReturn 
+                  EndIf
+                  ;
                   If Not IsChild( *this, ActiveWindow( ) )
                      If ActiveWindow( )\focus = #True
                         ActiveWindow( )\focus = #False
@@ -15728,64 +15740,67 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DoFocus( ActiveWindow( ), #__event_LostFocus )
                      EndIf
                   EndIf
-               EndIf
-               ;
-               ;\\ when we deactivate the window
-               ;\\ we will deactivate his last active gadget
-               If ActiveGadget( ) And
-                  ActiveGadget( )\focus = #True
-                  ActiveGadget( )\focus = #False
                   ;
-                  DoFocus( ActiveGadget( ), #__event_LostFocus )
-               EndIf
-               ;
-               ;\\ deactive child widget bar
-               If GetActive( ) And
-                  GetActive( ) <> ActiveWindow( ) And 
-                  GetActive( ) <> ActiveGadget( )
+                  ;\\ when we deactivate the window
+                  ;\\ we will deactivate his last active gadget
+                  If *this <> ActiveGadget( )
+                     If ActiveGadget( ) And
+                        ActiveGadget( )\focus = #True
+                        ActiveGadget( )\focus = #False
+                        ;
+                        DoFocus( ActiveGadget( ), #__event_LostFocus )
+                     EndIf
+                  EndIf
                   ;
-                  If GetActive( )\focus = #True
-                     GetActive( )\focus = #False
+                  ;\\ deactive child widget bar
+                  If GetActive( ) And
+                     GetActive( ) <> ActiveWindow( ) And 
+                     GetActive( ) <> ActiveGadget( )
                      ;
-                     DoFocus( GetActive( ), #__event_LostFocus )
+                     If GetActive( )\focus = #True
+                        GetActive( )\focus = #False
+                        ;
+                        DoFocus( GetActive( ), #__event_LostFocus )
+                     EndIf
                   EndIf
-               EndIf
-               ;
-               ;\\
-               If ActiveGadget( )
-                  *active = ActiveGadget( )
-               ElseIf ActiveWindow( )
-                  *active = ActiveWindow( )
-               EndIf
-               
-               ;\\ set deactive all parents
-               If *active And
-                  *active\address And
-                  Not is_root_( *active )
+                  ;
+                  ;\\
+                  If ActiveGadget( )
+                     *active = ActiveGadget( )
+                  ElseIf ActiveWindow( )
+                     *active = ActiveWindow( )
+                  EndIf
                   
-                  If Not IsChild( *this, *active )
-                     PushListPosition( __widgets( ) )
-                     ChangeCurrentElement( __widgets( ), *active\address )
-                     While PreviousElement( __widgets( ))
-                        widget( ) = __widgets( )
-                        
-                        If widget( ) = *this\window
-                           Break
-                        EndIf
-                        If widget( ) = *this
-                           Break
-                        EndIf
-                        If IsChild( *active, widget( ))
-                           ;If Not IsChild( *this, widget( ) )
-                           If widget( )\focus = #True
-                              widget( )\focus = #False
-                              DoFocus( widget( ), #__event_LostFocus )
+                  ;\\ set deactive all parents
+                  If *active And
+                     *active\address And
+                     Not is_root_( *active )
+                     
+                     If Not IsChild( *this, *active )
+                        PushListPosition( __widgets( ) )
+                        ChangeCurrentElement( __widgets( ), *active\address )
+                        While PreviousElement( __widgets( ))
+                           widget( ) = __widgets( )
+                           
+                           If widget( ) = *this\window
+                              Break
                            EndIf
-                           ;EndIf
-                        EndIf
-                     Wend
-                     PopListPosition( __widgets( ) )
+                           If widget( ) = *this
+                              Break
+                           EndIf
+                           If IsChild( *active, widget( ))
+                              ;If Not IsChild( *this, widget( ) )
+                              If widget( )\focus = #True
+                                 widget( )\focus = #False
+                                 DoFocus( widget( ), #__event_LostFocus )
+                              EndIf
+                              ;EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( __widgets( ) )
+                     EndIf
                   EndIf
+                  
                EndIf
             EndIf
          EndIf
@@ -15797,6 +15812,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this And Not *this\disable
             If *this\child
                *active = *this\parent
+               Debug "55555 "+*active\class
             Else
                *active = *this
             EndIf
@@ -15824,6 +15840,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
+            Debug "---focus--- "+*this\class
             ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
@@ -15833,15 +15850,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             ;;GetActive( ) = *this
-            ;Debug "---focus--- "+*this\class
             ;\\
             If *this\focus = #False
                *this\focus = #True
                
                ;\\ get active window
-               If is_window_( *this ) Or
-                  is_root_( *this )
-                  ActiveWindow( ) = *this
+               If is_window_( *active ) Or
+                  is_root_( *active )
+                  ActiveWindow( ) = *active
                Else
                   ActiveWindow( ) = *active\window
                   If ActiveWindow( )
@@ -22369,52 +22385,59 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Focus
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
-                  
-;                   If Not EnteredWidget( ) Or
-;                      ( EnteredWidget( ) And
-;                        ( GetActive( ) = EnteredWidget( ) Or
-;                          GetActive( ) = EnteredWidget( )\parent ) )
-;                      ; Debug "Canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-;                      
-;                      If GetActive( )\focus = 0
-;                         GetActive( )\focus = 1
-;                         DoFocus( GetActive( ), #__event_Focus )
-;                      EndIf
-;                   EndIf
-                  
+                  ; Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                  ;
                   If GetActive( )\root\focus = 0
                      GetActive( )\root\focus = 1
                      DoFocus( GetActive( )\root, #__event_Focus )
                   EndIf
-                  
+                  ;
                   If StartEnumerate( GetActive( )\root )
-                     If widget( ) = GetActive( )\window Or widget( ) = GetActive( )
+                     If widget( ) = GetActive( )\window 
                         If widget( )\focus = 0
                            widget( )\focus = 1
                            DoFocus( widget( ), #__event_Focus )
+                           ;
+                           If is_window_( widget( ) )
+                              If widget( )\gadget\focus = 0
+                                 widget( )\gadget\focus = 1
+                                 DoFocus( widget( )\gadget, #__event_Focus )
+                              EndIf
+                           EndIf
                         EndIf
                      EndIf
                      StopEnumerate( )
                   EndIf
-                  
+                  ;
+                  If GetActive( )\enter
+                     If GetActive( )\focus = 0
+                        GetActive( )\focus = 1
+                        DoFocus( GetActive( ), #__event_Focus )
+                     EndIf
+                  EndIf
                EndIf
                
             ElseIf eventtype = #__event_LostFocus
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
                   ; Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                  
+                  ;
                   If GetActive( )\root\focus = 1
                      GetActive( )\root\focus = 0
                      DoFocus( GetActive( )\root, #__event_LostFocus )
                   EndIf
-                  
+                  ; 
                   If StartEnumerate( GetActive( )\root )
                      If widget( )\focus = 1
                         widget( )\focus = 0
                         DoFocus( widget( ), #__event_LostFocus )
                      EndIf
                      StopEnumerate( )
+                  EndIf
+                  ;
+                  If GetActive( )\focus = 1
+                     GetActive( )\focus = 0
+                     DoFocus( GetActive( ), #__event_LostFocus )
                   EndIf
                EndIf
                
@@ -24732,7 +24755,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22390
-; FirstLine = 20653
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-X0s---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------f-u---8W8-4----8----------------------------------------------
+; CursorPosition = 22398
+; FirstLine = 20756
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---f-8---0--------------------------------------------------------------------------------------------------------------------------------------------------------------------4v8---u2+-0----f-----------------------------------------------
 ; EnableXP

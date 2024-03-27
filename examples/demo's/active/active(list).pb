@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pb" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Procedure active()
@@ -47,27 +46,27 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
   additem(*tree_1,-1,"tree_11")
   ;SetActive(*tree_1)
   
-  Window(110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *tree_2 = tree(10,10,170,60)
-  additem(*tree_2,-1,"tree_2")
-  additem(*tree_2,-1,"tree_22")
-  ;SetActive(*tree_2)
-  
-  Define *tree_3 = tree(10,80,170,60)
-  additem(*tree_3,-1,"tree_3")
-  additem(*tree_3,-1,"tree_33")
-  ;SetActive(*tree_3)
-  
-  Window(220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *tree_4 = tree(10,10,170,60)
-  additem(*tree_4,-1,"tree_4")
-  additem(*tree_4,-1,"tree_44")
-  SetActive(*tree_4)
-  
-  Define *tree_5 = tree(10,80,170,60)
-  additem(*tree_5,-1,"tree_5")
-  additem(*tree_5,-1,"tree_55")
-  ;SetActive(*tree_5)
+;   Window(110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+;   Define *tree_2 = tree(10,10,170,60)
+;   additem(*tree_2,-1,"tree_2")
+;   additem(*tree_2,-1,"tree_22")
+;   ;SetActive(*tree_2)
+;   
+;   Define *tree_3 = tree(10,80,170,60)
+;   additem(*tree_3,-1,"tree_3")
+;   additem(*tree_3,-1,"tree_33")
+;   ;SetActive(*tree_3)
+;   
+;   Window(220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+;   Define *tree_4 = tree(10,10,170,60)
+;   additem(*tree_4,-1,"tree_4")
+;   additem(*tree_4,-1,"tree_44")
+;   SetActive(*tree_4)
+;   
+;   Define *tree_5 = tree(10,80,170,60)
+;   additem(*tree_5,-1,"tree_5")
+;   additem(*tree_5,-1,"tree_55")
+;   ;SetActive(*tree_5)
   
     
   Bind( #PB_All, @active_0(), #PB_EventType_Focus)
@@ -87,8 +86,8 @@ If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Win
 EndIf
 
 End  
-; IDE Options = PureBasic 5.72 (Windows - x86)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 68
-; FirstLine = 48
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

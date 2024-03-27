@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pb"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -20,36 +19,36 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType
       Case #__Event_MouseEnter
         ; bug in mac os
-        If GetActiveGadget() <> EventGadget()
-          SetActiveGadget(EventGadget())
+        If GetActiveGadget() <> EventWidget( )\root\canvas\gadget
+          SetActiveGadget(EventWidget( )\root\canvas\gadget)
         EndIf
        
       Case #__Event_Focus   
-        If GetType(EventWidget) > 0
+        If Type(EventWidget) > 0
           Debug "Focus "+ GetData(EventWidget)
         Else
           Debug "Active "+ GetData(EventWidget)
         EndIf
         
       Case #__Event_LostFocus 
-        If GetType(EventWidget) > 0
+        If Type(EventWidget) > 0
           Debug " LostFocus "+ GetData(EventWidget) 
         Else
           Debug " DeActive "+ GetData(EventWidget)
         EndIf
         
       Case #__Event_Repaint
-        ; draw active window focused frame
-        If GetActive( ) = EventWidget
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
-        EndIf
-        
-        ; draw active gadget focused frame
-        If GetGadget( GetActive( ) ) = EventWidget
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
-        EndIf
+;         ; draw active window focused frame
+;         If GetActive( ) = EventWidget
+;           DrawingMode(#PB_2DDrawing_Outlined)
+;           Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
+;         EndIf
+;         
+;         ; draw active gadget focused frame
+;         If GetGadget( GetActive( ) ) = EventWidget
+;           DrawingMode(#PB_2DDrawing_Outlined)
+;           Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
+;         EndIf
         
     EndSelect
     
@@ -344,5 +343,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 21
+; FirstLine = 6
 ; Folding = ----
 ; EnableXP

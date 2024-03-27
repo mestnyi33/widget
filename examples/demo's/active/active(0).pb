@@ -1,5 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pb"
-; XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
 
 Procedure events_gadgets()
@@ -18,9 +17,9 @@ Procedure events_widgets()
   ; Debug "event - "+WidgetEvent( )\type+ " widget - " + Str(EventWidget( )\index - 1)
   
   Select WidgetEvent( )\type
-    Case #PB_EventType_Focus
+    Case #__event_Focus
       Debug Str(EventWidget( )\index)+ " - widget focus"
-    Case #PB_EventType_LostFocus
+    Case #__event_LostFocus
       Debug Str(EventWidget( )\index)+ " - widget lostfocus"
   EndSelect
   
@@ -28,7 +27,7 @@ EndProcedure
 
 Procedure events_buttons()
   Select WidgetEvent( )\type
-    Case #PB_EventType_LeftClick
+    Case #__event_LeftClick
       ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
       Select (EventWidget( )\index)
@@ -77,7 +76,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
     Bind(GetWidget(i), @events_buttons())
   Next
   
-  Bind( #PB_Default, #PB_Default )
   Repeat
     Event = WaitWindowEvent()
     If Event = #PB_Event_Gadget
@@ -89,5 +87,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
   Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 9
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
