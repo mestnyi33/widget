@@ -21066,6 +21066,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If eventtype = #__event_Up
+            Debug "  Up - "+*this\class +" "+ Root( )\class +" "+ mouse( )\press
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
                ;
@@ -21085,6 +21086,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If eventtype = #__event_Down
+            Debug "  Down - "+*this\class +" "+ Root( )\class
             If mouse( )\buttons & #PB_Canvas_LeftButton
                *tabRow = *this\EnteredTab( )
                ;
@@ -21119,20 +21121,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If is_menu_( *this )
-                        Send( *this, #__event_Change )
-                        HidePopupMenuBar( *this )
-                        If *this\ParentBar( )
-                           If *this\ParentBar( )\FocusedTab( )
-                              *this\ParentBar( )\FocusedTab( )\RowFocus( 0 )
-                              *this\ParentBar( )\FocusedTab( ) = 0
-                              PostRepaint( *this\ParentBar( )\root )
-                           EndIf
-                        EndIf
-                        
-                        If *tableave
-                           *tableave\toggle = 0
-                           *tableave = 0
-                        EndIf
+                        ;*this\root\focus = 0
+                        ;SetActive( *this\root ) 
+                         Send( *this, #__event_Change )
+                         ;SetActiveGadget( *this\ParentBar( )\root\canvas\gadget )
+                         SetActive( *this\ParentBar( )\parent )
+;                         HidePopupMenuBar( *this )
+;                         
+;                         If *this\ParentBar( )
+;                            If *this\ParentBar( )\FocusedTab( )
+;                               *this\ParentBar( )\FocusedTab( )\RowFocus( 0 )
+;                               *this\ParentBar( )\FocusedTab( ) = 0
+;                               PostRepaint( *this\ParentBar( )\root )
+;                            EndIf
+;                         EndIf
+;                         
+;                         If *tableave
+;                            *tableave\toggle = 0
+;                            *tableave = 0
+;                         EndIf
                      EndIf
                   EndIf
                EndIf
@@ -21142,7 +21149,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\bar
             mouse_x - *this\bar\button\x
             mouse_y - *this\bar\button\y
-            ; Debug "seach "+*this\class +" "+ *this\EnteredTab( )
+            ; Debug "seach "+*this\class +" "+ *this\EnteredTab( ) +" "+ mouse( )\press
             
             ;\\ get at point items 
             If Not mouse( )\press
@@ -22169,22 +22176,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             
             ;\\
-            If Root( ) And
-               Root( )\canvas\gadget = eventgadget
-               ;\\
-               Select eventtype
-                  Case #__event_MouseEnter,
-                       #__event_MouseLeave,
-                       #__event_MouseMove
-                     
-                     mouse_x = CanvasMouseX( Root( )\canvas\gadget )
-                     mouse_y = CanvasMouseY( Root( )\canvas\gadget )
+            ;\\
+            Select eventtype
+               Case #__event_MouseEnter,
+                    #__event_MouseLeave,
+                    #__event_MouseMove
+                  
+                  If Root( ) And
+                     Root( )\canvas\gadget = eventgadget
+                     mouse_x               = CanvasMouseX( eventgadget )
+                     mouse_y               = CanvasMouseY( eventgadget )
                      
                      ;\\
                      If eventtype = #__event_MouseEnter
                         mouse( )\change = 1 << 0
                         mouse( )\x      = mouse_x
                         mouse( )\y      = mouse_y
+                        
+                        Debug "  - "+GetActiveGadget( )
+                        ForEach __roots( )
+                           Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\class +" "+ __roots( )\focus
+                           
+                           If StartEnumerate( __roots( ) )
+                              Debug "   "+ widget( )\class +" "+ widget( )\focus
+                              StopEnumerate( )
+                           EndIf
+                        Next
+                        Debug ""
                      EndIf
                      If eventtype = #__event_MouseLeave
                         mouse( )\change = - 1
@@ -22222,99 +22240,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  
                                  PressedWidget( )\resize = 0 ; temp
                                  
-                                 ;                         If mouse( )\press
-                                 ;                            If PressedWidget( )
-                                 ;                               If PressedWidget( )\split_1( )
-                                 ;                                  Hide( PressedWidget( )\split_1( ), 1 )
-                                 ;                               EndIf
-                                 ;                               If PressedWidget( )\split_2( )
-                                 ;                                  Hide( PressedWidget( )\split_2( ), 1 )
-                                 ;                               EndIf
-                                 ;                            EndIf
-                                 ;                         EndIf
-                                 ; Debug PressedWidget( )\dragstart
-                                 
                                  DoEvents( PressedWidget( ), #__event_DragStart )
                               EndIf
                            EndIf
                         EndIf
                      EndIf
-                     
-                  Case #__event_LeftButtonDown,
-                       #__event_RightButtonDown,
-                       #__event_MiddleButtonDown
-                     ;Debug "      canvas down " + eventgadget
-                     ;
-                     ;\\
-                     mouse( )\press  = 1
-                     mouse( )\change = 1 << 5
-                     ;
-                     If eventtype = #__event_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
-                     If eventtype = #__event_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
-                     If eventtype = #__event_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
-                     ;
-                  Case #__event_LeftButtonUp,
-                       #__event_RightButtonUp,
-                       #__event_MiddleButtonUp
-                     ;Debug "     canvas up " + eventgadget
-                     ;
-                     If mouse( )\interact = 1
-                        mouse( )\interact = - 1
-                     EndIf
-                     ;
-                     ;\\
-                     If mouse( )\press
-                        mouse( )\press = 0
-                        
-;                         ;\\
-;                         If PressedWidget( )
-;                            If PressedWidget( )\haschildren
-;                               StartEnumerate( PressedWidget( ) )
-;                               If widget( )\resize & #__resize_change
-;                                  ; Debug "stop-resize "+widget( )\class
-;                                  widget( )\resize & ~ #__resize_change
-;                                  Send( widget( ), #__event_ResizeEnd )
-;                               EndIf
-;                               StopEnumerate( )
-;                            EndIf
-;                            If PressedWidget( )\resize & #__resize_change
-;                               ; Debug "stop-resize "+PressedWidget( )\class
-;                               PressedWidget( )\resize & ~ #__resize_change
-;                               Send( PressedWidget( ), #__event_ResizeEnd )
-;                            EndIf
-;                         EndIf
-;                         
-;                         
-                        ;                      If PressedWidget( )
-                        ;                         If PressedWidget( )\split_1( )
-                        ;                            If PressedWidget( )\split_1( )\hide
-                        ;                               Hide( PressedWidget( )\split_1( ), 0 )
-                        ;                               Resize( PressedWidget( )\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                        ;                            EndIf
-                        ;                         EndIf
-                        ;                         If PressedWidget( )\split_2( )
-                        ;                            If PressedWidget( )\split_2( )\hide
-                        ;                               Hide( PressedWidget( )\split_2( ), 0 )
-                        ;                               Resize( PressedWidget( )\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                        ;                            EndIf
-                        ;                         EndIf
-                        ;
-                        ;                         If PressedWidget( )\drawimg
-                        ;                            FreeImage( PressedWidget( )\drawimg )
-                        ;                            PressedWidget( )\drawimg = #Null
-                        ;                         EndIf
-                        ;                      EndIf
-                     EndIf
-                     ;
-                     ;\\
-                     mouse( )\change = 1 << 6
-                     mouse( )\x      = CanvasMouseX( Root( )\canvas\gadget )
-                     mouse( )\y      = CanvasMouseY( Root( )\canvas\gadget )
-               EndSelect
-               
-               ;\\ get enter&leave widget address
-               If mouse( )\change
-                  If mouse( )\interact <> 1
+                  EndIf
+                  
+               Case #__event_LeftButtonDown,
+                    #__event_RightButtonDown,
+                    #__event_MiddleButtonDown
+                  ;Debug "      canvas down " + eventgadget
+                  ;
+                  ;\\
+                  mouse( )\press  = 1
+                  mouse( )\change = 1 << 5
+                  ;
+                  If eventtype = #__event_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
+                  If eventtype = #__event_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
+                  If eventtype = #__event_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
+                  ;
+               Case #__event_LeftButtonUp,
+                    #__event_RightButtonUp,
+                    #__event_MiddleButtonUp
+                  ;Debug "     canvas up " + eventgadget
+                  ;
+                  If mouse( )\interact = 1
+                     mouse( )\interact = - 1
+                  EndIf
+                  ;
+                  ;\\
+                  mouse( )\press = 0
+                  mouse( )\change = 1 << 6
+                  ;
+                  If Root( ) And
+                     Root( )\canvas\gadget = eventgadget
+                     mouse( )\x            = CanvasMouseX( eventgadget )
+                     mouse( )\y            = CanvasMouseY( eventgadget )
+                  EndIf
+            EndSelect
+            
+            ;\\ get enter&leave widget address
+            If mouse( )\change
+               If mouse( )\interact <> 1
+                  If Root( ) And
+                     Root( )\canvas\gadget = eventgadget
                      ; Debug Root( )
                      ;\\ enter&leave mouse events
                      ;                      If Root( )
@@ -22338,7 +22308,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      If StartEnumerate( GetActive( )\root )
-                        If widget( ) = GetActive( )\window 
+                        If widget( ) = GetActive( ) Or  
+                           widget( ) = GetActive( )\window
+                           ;
                            If widget( )\focus = 0
                               widget( )\focus = 1
                               DoFocus( widget( ), #__event_Focus )
@@ -22369,15 +22341,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
                   ;
-                  If EnteredCanvasID
-                     If EnteredCanvasID <> Root( )\canvas\gadgetID
-                        ChangeCurrentCanvas( EnteredCanvasID )
-                     EndIf
-                  EndIf
-                  ;
                   ; not no-Activate window
                   If Root( )\focus >= 0 
-                     ;Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                     Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                      ;
                      If GetActive( )\root\focus = 1
                         GetActive( )\root\focus = 0
@@ -22397,6 +22363,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DoFocus( GetActive( ), #__event_LostFocus )
                      EndIf
                   EndIf
+                  
                EndIf
                
             ElseIf eventtype = #__event_MouseMove
@@ -24713,7 +24680,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21130
-; FirstLine = 19704
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04---f-8---0----------------------------------------------------------------------------------------------------------------------------------------------------------------------08+--vbt-f------80--+---+--------------------------------------
+; CursorPosition = 22197
+; FirstLine = 20570
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04---f-8---0---------------------------------------------------------------------------------------------------------------------------------------------4-----------------------vf4---dr0-------fv--4---4---------------------------------------
 ; EnableXP

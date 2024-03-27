@@ -46,14 +46,15 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure QuitHandler()
-     ;ClearDebugOutput()
-     Debug "Quit menu event"
-     ; End
+      ;ClearDebugOutput()
+      Debug "Quit menu event"
+      ; End
    EndProcedure
    
    ;\\
-   Define windowID = Open( 0, 100, 100, 500, 250, "main window_0", #__Window_SystemMenu)
-   Define container = ContainerGadget( #PB_Any, 10, 35, 80, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
+   Define windowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+   ContainerGadget( #PB_Any, 10, 35, 80, 80, #PB_Container_Flat ) : CloseGadgetList( )
+   ButtonGadget( #PB_Any, 10, 120, 80, 80, "Button" )
    
    CreateMenu(0, WindowID(0))
    MenuTitle("Title-1")
@@ -101,104 +102,100 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   ;If Open( 1, 100, 300, 500, 250, "main window_1", #__Window_SystemMenu)
-      Define *window._s_widget = root( )
-      
-      *menu = CreateMenuBar( *window ) : SetClass(menu(), "root_MenuBar" )
-      
-      BarTitle("Title-1")
-      BarItem(1, "title-1-item-1")
-      BarSeparator( )
-      
-      OpenBar("title-1-sub-item")
-      BarItem(3, "title-1-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-2-sub-item")   
-      BarItem(13, "title-2-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-3-sub-item")   
-      BarItem(23, "title-3-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(14, "title-2-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(4, "title-1-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(2, "title-1-item-2")
-      
-      BarTitle("Title-2")
-      BarItem(5, "title-2-item-1")
-      BarItem(6, "title-2-item-2")
-            
-      BarTitle("Title-event-test")
-      BarItem(7, "test")
-      BarSeparator( )
-      BarItem(8, "quit")
-      
-      BarTitle("Title-4")
-      BarItem(9, "title-4-item-1")
-      BarItem(10, "title-4-item-2")
-      
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
-      
-      ;\\
-      Define *window._s_widget = Window(100, 50, 300, 100, "menu click test", #PB_Window_SystemMenu)
-      Define *container._s_widget = Container( 10, 10, 80, 100-20, #PB_Container_Flat ) : CloseList( )
-      ;SetFrame( *window, 0)
-      
-      *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
-      
-      BarTitle("Title-1")
-      BarItem(1, "title-1-item-1")
-      BarSeparator( )   
-      ;
-      OpenBar("title-1-sub-item")
-      BarItem(3, "title-1-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-2-sub-item")   
-      BarItem(13, "title-2-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-3-sub-item")   
-      BarItem(23, "title-3-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(14, "title-2-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(4, "title-1-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(2, "title-1-item-2")
-      
-      BarTitle("Title-2")
-      BarItem(5, "title-2-item-1")
-      BarItem(6, "title-2-item-2")
-      
-      BarTitle("Title-event-test")
-      BarItem(7, "test")
-      BarSeparator( )
-      BarItem(8, "quit")
-      
-      BarTitle("Title-4")
-      BarItem(9, "title-4-item-1")
-      BarItem(10, "title-4-item-2")
-      
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
-   ;EndIf
+   *menu = CreateMenuBar( root( ) ) : SetClass(menu(), "root_MenuBar" )
+   
+   BarTitle("Title-1")
+   BarItem(1, "title-1-item-1")
+   BarSeparator( )
+   
+   OpenBar("title-1-sub-item")
+   BarItem(3, "title-1-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-2-sub-item")   
+   BarItem(13, "title-2-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-3-sub-item")   
+   BarItem(23, "title-3-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(14, "title-2-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(4, "title-1-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(2, "title-1-item-2")
+   
+   BarTitle("Title-2")
+   BarItem(5, "title-2-item-1")
+   BarItem(6, "title-2-item-2")
+   
+   BarTitle("Title-event-test")
+   BarItem(7, "test")
+   BarSeparator( )
+   BarItem(8, "quit")
+   
+   BarTitle("Title-4")
+   BarItem(9, "title-4-item-1")
+   BarItem(10, "title-4-item-2")
+   
+   Bind(*menu, @TestHandler(), -1, 7)
+   Bind(*menu, @QuitHandler(), -1, 8)
+   
+   ;\\
+   Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
+   Container( 10, 10, 80, 80, #PB_Container_Flat ) : CloseList( )
+   Button( 10, 100, 80, 80, "Button" )
+   
+   *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
+   
+   BarTitle("Title-1")
+   BarItem(1, "title-1-item-1")
+   BarSeparator( )   
+   ;
+   OpenBar("title-1-sub-item")
+   BarItem(3, "title-1-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-2-sub-item")   
+   BarItem(13, "title-2-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-3-sub-item")   
+   BarItem(23, "title-3-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(14, "title-2-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(4, "title-1-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(2, "title-1-item-2")
+   
+   BarTitle("Title-2")
+   BarItem(5, "title-2-item-1")
+   BarItem(6, "title-2-item-2")
+   
+   BarTitle("Title-event-test")
+   BarItem(7, "test")
+   BarSeparator( )
+   BarItem(8, "quit")
+   
+   BarTitle("Title-4")
+   BarItem(9, "title-4-item-1")
+   BarItem(10, "title-4-item-2")
+   
+   Bind(*menu, @TestHandler(), -1, 7)
+   Bind(*menu, @QuitHandler(), -1, 8)
    
    Define Event
    Repeat
@@ -206,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 106
-; FirstLine = 81
+; CursorPosition = 104
+; FirstLine = 167
 ; Folding = -
 ; EnableXP
