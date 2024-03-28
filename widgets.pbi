@@ -15803,6 +15803,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                EndIf
             EndIf
+         Else
+            If GetActive( ) 
+               If GetActive( )\focus = #True
+                  GetActive( )\focus = #False
+                  ;
+                  DoFocus( GetActive( ), #__event_LostFocus )
+               EndIf
+            EndIf
          EndIf
       EndProcedure
       
@@ -15853,7 +15861,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\focus = #True
                
                ;\\ get active window
-               If is_window_( *active ) Or
+               If is_window_( *active ) Or 
                   is_root_( *active )
                   ActiveWindow( ) = *active
                Else
@@ -15876,12 +15884,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      While PreviousElement( __widgets( ) )
                         widget( ) = __widgets( )
                         
-                        If is_window_( widget( ) )
-                           If IsChild( *active, widget( ) )
-                              If widget( )\focus = #False
-                                 widget( )\focus = #True
+                        If is_window_( __widgets( ) )
+                           If IsChild( *active, __widgets( ) )
+                              If __widgets( )\focus = #False
+                                 __widgets( )\focus = #True
                                  ;
-                                 DoFocus( widget( ), #__event_Focus )
+                                 DoFocus( __widgets( ), #__event_Focus )
                               EndIf
                            EndIf
                         EndIf
@@ -24680,7 +24688,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22197
-; FirstLine = 20570
-; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------04---f-8---0---------------------------------------------------------------------------------------------------------------------------------------------4-----------------------vf4---dr0-------fv--4---4---------------------------------------
+; CursorPosition = 15864
+; FirstLine = 14907
+; Folding = ----------------------------------------------------------------------------+-----40-f-8--f--z+-----------------------X-----cz-------fv--0--4Wx+-V040------------------f+--+--vu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------44----0v---4---------------------------------------------------------------------------------------------------------------------------------------------f------------------------+d---4t3--------0+-f---f---------------------------------------
 ; EnableXP
