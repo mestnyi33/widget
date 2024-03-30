@@ -6,7 +6,6 @@
       
       ;- - CONSTANTs
       ;-\\ DD
-      #PB_Drag_Drop = 1 << 5
       ;#PB_Drag_Resize = - 1; #PB_Drag_Move
       
       ;{
@@ -872,7 +871,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 567
-; FirstLine = 555
+; CursorPosition = 8
+; FirstLine = 1
 ; Folding = ---
 ; EnableXP

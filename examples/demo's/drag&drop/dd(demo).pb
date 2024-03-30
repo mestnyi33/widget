@@ -84,7 +84,7 @@ Procedure widget_events( )
           If SourceItem =- 1
             Debug " item не выбран"
           Else
-            If DragPrivate(#PrivateType_0, #PB_Drag_Move)
+            If DragDropPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
               
               SelectElement(EventWidget( )\__rows( ), SourceItem)
@@ -101,10 +101,10 @@ Procedure widget_events( )
           
         Case Gadget_SourceText
           Text$ = GetItemText( Gadget_SourceText, GetState( Gadget_SourceText ) )
-          DragText( Text$ )
+          DragDropText( Text$ )
           
         Case Gadget_SourceImage
-          DragImage( #ImageGadget_Source )
+          DragDropImage( #ImageGadget_Source )
           
         Case Gadget_SourceFiles
           Files$ = ""       
@@ -116,7 +116,7 @@ Procedure widget_events( )
           Next i 
           
           If Files$ <> ""
-            DragFiles( Files$ )
+            DragDropFiles( Files$ )
           EndIf
           
           ; "Private" Drags only work within the program, everything else
@@ -124,9 +124,9 @@ Procedure widget_events( )
           ;
         Case Gadget_SourcePrivate
           If GetState( Gadget_SourcePrivate ) = 0
-            DragPrivate( 1 )
+            DragDropPrivate( 1 )
           Else
-            DragPrivate( 2 )
+            DragDropPrivate( 2 )
           EndIf
           
           ChangeCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
@@ -148,8 +148,8 @@ Procedure widget_events( )
           ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
           ; особенно если в вашей программе есть несколько элементов Drag & Drop.
           ;
-          If EventDropType( ) = #PB_Drop_Private And
-             EventDropPrivate( ) = #PrivateType_0
+          If DropType( ) = #PB_Drop_Private And
+             DropPrivate( ) = #PrivateType_0
             Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
             
             TargetItem = GetState(Gadget_TargetItem)        
@@ -317,15 +317,15 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_TargetText
-          ;;Debug "EventDropText - "+ EventDropText( )
+          ;;Debug "EventDropText - "+ DropText( )
           ;           If EnteredItem( )
-          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, EventDropText( ) )
+          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DropText( ) )
           ;           Else
-          AddItem( Gadget_TargetText, - 1, EventDropText( ) )
+          AddItem( Gadget_TargetText, - 1, DropText( ) )
           ;           EndIf
           
         Case Gadget_TargetImage
-          If EventDropImage( #ImageGadget_Target )
+          If DropImage( #ImageGadget_Target )
             If StartDrawing( ImageOutput( #ImageGadget_Target ) )
               DrawingFont( font )
               
@@ -339,7 +339,7 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_TargetFiles
-          Files$ = EventDropFiles( )
+          Files$ = DropFiles( )
           Count  = CountString( Files$, Chr( 10 ) ) + 1
           
           For i = 1 To Count
@@ -433,12 +433,12 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
   ; Now enable the dropping on the Gadget_Target s
   ;
-  EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
-  EnableDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
-  EnableDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
+  DropEnable( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  DropEnable( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+  DropEnable( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+  DropEnable( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
+  DropEnable( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
+  DropEnable( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
   
   ; Bind( -1, @widget_events( ) )
   ;
@@ -467,7 +467,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 314
-; FirstLine = 282
+; CursorPosition = 444
+; FirstLine = 78
 ; Folding = ----
 ; EnableXP

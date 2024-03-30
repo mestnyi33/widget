@@ -6,15 +6,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   EnableExplicit
   
-  Global *button1, *button2, *view
+  Global *dragbutton, *dropbutton, *view
   
   ;\\
   Procedure events_widgets()
     Protected *eventWidget._s_widget = EventWidget( )
     Static _2click
     Protected Space.s
-    If *eventWidget = *button1
-    ElseIf *eventWidget = *button2
+    If *eventWidget = *dragbutton
+    ElseIf *eventWidget = *dropbutton
       Space.s = "   "
     Else
       Space.s = "       "
@@ -29,18 +29,19 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
       Case #__event_DragStart       : AddItem(*view, -1, Space + " drag <<" + Trim(getText(*eventWidget)) + ">>")
-        If *eventWidget = *button1
+        If *eventWidget = *dragbutton
           DragText( "drag", #PB_Drag_Copy )
         EndIf
         
-        If *eventWidget = *button2
-          DragText( "drag", #PB_Drag_Drop )
+        If *eventWidget = *dropbutton
+          DragText( "drag" )
         EndIf
         
       Case #__event_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(getText(*eventWidget)) + ">>")
         
-        If *eventWidget = *button2 And Not *eventWidget\dragstart
-          widget::Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
+        If *eventWidget = *dropbutton And Not *eventWidget\press
+           Debug 777
+           widget::Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
           widget::Bind(widget( ), @events_widgets(), #__event_MouseEnter)
           widget::Bind(widget( ), @events_widgets(), #__event_LeftButtonDown)
           widget::Bind(widget( ), @events_widgets(), #__event_MouseLeave)
@@ -65,31 +66,31 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(1, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *view = widget::Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
-    *button1 = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
-    ;EnableDrop( *button1, #PB_Drop_Text, #PB_Drag_Copy )
+    *dragbutton = widget::Button( 10, 280, 240, 70, "   drag", #__button_left|#__button_multiline );| #__button_toggle) 
+    ;EnableDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
-    widget::Bind(*button1, @events_widgets(), #__event_LeftButtonDown)
-    widget::Bind(*button1, @events_widgets(), #__event_LeftButtonUp)
-    widget::Bind(*button1, @events_widgets(), #__event_LeftClick)
+    widget::Bind(*dragbutton, @events_widgets(), #__event_LeftButtonDown)
+    widget::Bind(*dragbutton, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(*dragbutton, @events_widgets(), #__event_LeftClick)
     
-    widget::Bind(*button1, @events_widgets(), #__event_MouseEnter)
-    widget::Bind(*button1, @events_widgets(), #__event_MouseLeave)
+    widget::Bind(*dragbutton, @events_widgets(), #__event_MouseEnter)
+    widget::Bind(*dragbutton, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(*button1, @events_widgets(), #__event_DragStart)
-    widget::bind(*button1, @events_widgets(), constants::#__event_Drop)
+    widget::bind(*dragbutton, @events_widgets(), #__event_DragStart)
+    widget::bind(*dragbutton, @events_widgets(), constants::#__event_Drop)
       
-    *button2 = widget::Button( 195, 295, 40, 40, "drop", #__button_multiline );| #__button_toggle) 
-    EnableDrop( *button2, #PB_Drop_Text, #PB_Drag_Copy )
+    *dropbutton = widget::Button( 195, 295, 40, 40, "drop", #__button_multiline );| #__button_toggle) 
+    EnableDrop( *dropbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
-    widget::Bind(*button2, @events_widgets(), #__event_LeftButtonDown)
-    widget::Bind(*button2, @events_widgets(), #__event_LeftButtonUp)
-    widget::Bind(*button2, @events_widgets(), #__event_LeftClick)
+    widget::Bind(*dropbutton, @events_widgets(), #__event_LeftButtonDown)
+    widget::Bind(*dropbutton, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(*dropbutton, @events_widgets(), #__event_LeftClick)
     
-    widget::Bind(*button2, @events_widgets(), #__event_MouseEnter)
-    widget::Bind(*button2, @events_widgets(), #__event_MouseLeave)
+    widget::Bind(*dropbutton, @events_widgets(), #__event_MouseEnter)
+    widget::Bind(*dropbutton, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(*button2, @events_widgets(), #__event_DragStart)
-    widget::bind(*button2, @events_widgets(), constants::#__event_Drop)
+    widget::bind(*dropbutton, @events_widgets(), #__event_DragStart)
+    widget::bind(*dropbutton, @events_widgets(), constants::#__event_Drop)
       
     widget::WaitClose()
   EndIf
@@ -110,7 +111,7 @@ CompilerEndIf
 ; enter <<drag>>
 ; leave <<drag>>
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 29
+; CursorPosition = 32
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
