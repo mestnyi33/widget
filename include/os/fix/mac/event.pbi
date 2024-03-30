@@ -53,7 +53,66 @@ Module events
       CGEventTapCreateForPSN(*ProcessSerialNumber, CGEventTapPlacement.i, CGEventTapOptions.i, CGEventMask.q, CGEventTapCallback.i, *UserData)
    EndImport
    
-   ProcedureC  eventTapFunction(proxy, eType, event, refcon) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
+   ProcedureC eventTapFunction(proxy, eType, event, refcon)
+      Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
+      
+      If eType = #NSScrollWheel Or
+         eType = #NSLeftMouseDown Or eType = #NSRightMouseDown 
+         
+         NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+         If NSEvent
+            Window = CocoaMessage(0, NSEvent, "window")
+            If Window
+               CocoaMessage(@Point, NSEvent, "locationInWindow")
+               ;
+               View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
+               If View
+                  CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
+                  ;
+                  If NSClass And 
+                     PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
+                     View = CocoaMessage(0, View, "superview")
+                  EndIf
+                  ;
+                  Gadget = CocoaMessage(0, View, "tag")
+                  If IsGadget( Gadget )
+                     If eType = #NSLeftMouseDown Or eType = #NSRightMouseDown
+                        If GetActiveGadget() <> Gadget 
+                           ;;Debug CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "focusView")
+                           ; If GetActiveWindow() <> EventWindow()
+                           SetActiveGadget( #PB_Default )
+                           SetActiveGadget( Gadget )
+                           ; EndIf
+                        EndIf
+                        
+                     ElseIf eType = #NSScrollWheel
+                        Window = EventWindow( )
+                        scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+                        scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+                        
+                        If scrollX And Not scrollY
+                           ; Debug "X - scroll"
+                           CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
+                              PostEvent( #PB_Event_Gadget, Window, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
+                           CompilerEndIf
+                        EndIf
+                        
+                        If scrollY And Not scrollX
+                           ; Debug "Y - scroll"
+                           CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
+                              PostEvent( #PB_Event_Gadget, window, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
+                           CompilerEndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+   EndProcedure
+   
+   ProcedureC  _eventTapFunction(proxy, eType, event, refcon) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
       Protected Point.CGPoint
       Protected *cursor.cursor::_s_cursor = #Null
       ; Debug "eventTapFunction - "+ID::ClassName(event)
@@ -74,13 +133,13 @@ Module events
             MouseDrag = 1
          ElseIf eType = #NSLeftMouseUp
             MouseDrag = 0
-;             If EnteredGadget( ) >= 0 
-;                If DraggedGadget( ) >= 0 And DraggedGadget( ) = PressedGadget( ) 
-;                   CompilerIf Defined(constants::PB_EventType_Drop, #PB_Constant) 
-;                      CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_Drop)
-;                   CompilerEndIf
-;                EndIf
-;             EndIf
+            ;             If EnteredGadget( ) >= 0 
+            ;                If DraggedGadget( ) >= 0 And DraggedGadget( ) = PressedGadget( ) 
+            ;                   CompilerIf Defined(constants::PB_EventType_Drop, #PB_Constant) 
+            ;                      CallCFunctionFast(refcon, #PB_Event_Gadget, EnteredGadget( ), constants::#PB_EventType_Drop)
+            ;                   CompilerEndIf
+            ;                EndIf
+            ;             EndIf
          EndIf
          
          ;
@@ -180,8 +239,13 @@ Module events
             eType = #NSRightMouseDown
             
             PressedGadget( ) = EnteredGadget( ) ; EventGadget( )
-                                              ; Debug CocoaMessage(0, Mouse::Window( ), "focusView")
-            
+                                                ; Debug CocoaMessage(0, Mouse::Window( ), "focusView")
+                                                ;             If GetActiveGadget() <> PressedGadget( ) 
+                                                ;                ; If GetActiveWindow() <> EventWindow()
+                                                ;                SetActiveGadget( #PB_Default )
+                                                ;                SetActiveGadget( PressedGadget( ) )
+                                                ;                ; EndIf
+                                                ;             EndIf
             If PressedGadget( ) >= 0
                If FocusedGadget( ) = - 1
                   If GetActiveGadget( )
@@ -320,70 +384,71 @@ Module events
                        EventType = #PB_EventType_Input)
                   
                   CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-                  ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
-                  ;                     EventType = #PB_EventType_RightButtonUp)
-                  ;                
-                  ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
                Else
                   
-                  ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-                  
+                  If FocusedGadget( ) = - 1
+                     CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+                  EndIf
                EndIf
                
             Case #PB_Event_SizeWindow
                CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, EventData( ) )
-             
+            Case #PB_Event_ActivateWindow
+               CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_All, EventData( ) )
+            Case #PB_Event_DeactivateWindow
+               CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_All, EventData( ) )
+               
          EndSelect
       EndIf
    EndProcedure
    
    Procedure.i WaitEvent( event.i, second.i = 0 )
-;       Protected EventGadget, EventType, EventData
-;       
-;       If *setcallback 
-;          ;          If event = #PB_Event_ActivateWindow
-;          ;              Debug " WaitEvent - ActivateWindow"
-;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
-;          ;          EndIf
-;          ;          
-;          ;          If event = #PB_Event_DeactivateWindow
-;          ;              Debug " WaitEvent - DeactivateWindow"
-;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
-;          ;          EndIf
-;          
-;          If event = #PB_Event_Gadget
-;             EventGadget = EventGadget( )
-;             EventType   = EventType( )
-;             EventData   = EventData( )
-;             
-;             
-; ;             If EventType = #PB_EventType_Focus 
-; ;                ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-; ;                If FocusedGadget( ) = - 1
-; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ;                EndIf
-; ;             ElseIf EventType = #PB_EventType_LostFocus
-; ;                ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-; ;                If FocusedGadget( ) = - 1
-; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ;                EndIf
-; ;             ElseIf (EventType = #PB_EventType_KeyDown Or
-; ;                     EventType = #PB_EventType_KeyUp Or
-; ;                     EventType = #PB_EventType_Input)
-; ;                
-; ;                CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ; ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
-; ; ;                     EventType = #PB_EventType_RightButtonUp)
-; ; ;                
-; ; ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ;             Else
-; ;                
-; ;               ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-; ;                
-; ;             EndIf
-;          EndIf
-;       EndIf
-;       
+      ;       Protected EventGadget, EventType, EventData
+      ;       
+      ;       If *setcallback 
+      ;          ;          If event = #PB_Event_ActivateWindow
+      ;          ;              Debug " WaitEvent - ActivateWindow"
+      ;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
+      ;          ;          EndIf
+      ;          ;          
+      ;          ;          If event = #PB_Event_DeactivateWindow
+      ;          ;              Debug " WaitEvent - DeactivateWindow"
+      ;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
+      ;          ;          EndIf
+      ;          
+      ;          If event = #PB_Event_Gadget
+      ;             EventGadget = EventGadget( )
+      ;             EventType   = EventType( )
+      ;             EventData   = EventData( )
+      ;             
+      ;             
+      ; ;             If EventType = #PB_EventType_Focus 
+      ; ;                ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+      ; ;                If FocusedGadget( ) = - 1
+      ; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+      ; ;                EndIf
+      ; ;             ElseIf EventType = #PB_EventType_LostFocus
+      ; ;                ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+      ; ;                If FocusedGadget( ) = - 1
+      ; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+      ; ;                EndIf
+      ; ;             ElseIf (EventType = #PB_EventType_KeyDown Or
+      ; ;                     EventType = #PB_EventType_KeyUp Or
+      ; ;                     EventType = #PB_EventType_Input)
+      ; ;                
+      ; ;                CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+      ; ; ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
+      ; ; ;                     EventType = #PB_EventType_RightButtonUp)
+      ; ; ;                
+      ; ; ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+      ; ;             Else
+      ; ;                
+      ; ;               ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
+      ; ;                
+      ; ;             EndIf
+      ;          EndIf
+      ;       EndIf
+      ;       
       ProcedureReturn event
    EndProcedure
    
@@ -422,15 +487,128 @@ Module events
       ;\\
       ; CFRelease_(eventTap)
       
-      ;       ;\\
-             BindEvent( #PB_Event_Gadget, @Events( ) )
-      ;       BindEvent( #PB_Event_ActivateWindow, @Events( ) )
-      ;       BindEvent( #PB_Event_DeactivateWindow, @Events( ) )
-      ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
+      If *callback
+         ;       ;\\
+         BindEvent( #PB_Event_Gadget, @Events( ) )
+         CompilerIf #PB_Compiler_IsMainFile ; TEST
+            BindEvent( #PB_Event_ActivateWindow, @Events( ) )
+            BindEvent( #PB_Event_DeactivateWindow, @Events( ) )
+            ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
+         CompilerEndIf
+      EndIf
    EndProcedure
 EndModule
+
+CompilerIf #PB_Compiler_IsMainFile
+   
+   Procedure events(event, EventGadget, EventType, EventData )
+      ;ProcedureReturn 1
+      Select event
+         Case #PB_Event_ActivateWindow
+            Debug "active - "+ EventWindow()
+         Case #PB_Event_DeactivateWindow
+            Debug "deactive - "+ EventWindow()
+            
+         Case #PB_Event_Gadget
+            Select EventType
+;                Case #PB_EventType_MouseWheel
+;                   Debug "wheel - "+EventGadget
+                  
+               Case constants::#PB_EventType_MouseWheelX
+                  Debug "wheelX - "+EventGadget +" "+ EventData
+                  
+               Case constants::#PB_EventType_MouseWheelY
+                  Debug "wheelY - "+EventGadget +" "+ EventData
+                  
+               Case #PB_EventType_Focus
+                  Debug "focus - "+EventGadget +" "+ EventData
+                  
+               Case #PB_EventType_LostFocus
+                  Debug "lostfocus - "+EventGadget +" "+ EventData
+                  
+               Case #PB_EventType_LeftButtonDown
+                  Debug "down - "+EventGadget
+                  
+               Case #PB_EventType_LeftButtonUp
+                  Debug "up - "+EventGadget
+                  
+               Case #PB_EventType_MouseEnter
+                  Debug "enter - "+EventGadget
+                  
+               Case #PB_EventType_MouseLeave
+                  Debug "leave - "+EventGadget
+                  
+               Case #PB_EventType_DragStart
+                  Debug "drag - "+EventGadget
+                  
+               Case #PB_EventType_LeftClick
+                  Debug "click - "+EventGadget
+                  
+               Case #PB_EventType_LeftDoubleClick
+                  Debug "2click - "+EventGadget
+                  
+            EndSelect
+            
+      EndSelect
+      
+   EndProcedure
+   
+   Procedure Open( id, flag=0 )
+      Static x,y
+      OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
+      CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard | #PB_Canvas_Container) : CloseGadgetList()
+      CanvasGadget( 10+id, 40,110,200-80,55, #PB_Canvas_Keyboard)
+      x + 100
+      y + 100
+   EndProcedure
+   
+   
+   events::setCallBack( @events())
+   
+   Open(1, #PB_Window_NoActivate)
+   Open(2, #PB_Window_NoActivate)
+   Open(3, #PB_Window_NoActivate)
+   
+   Define event
+   Repeat
+      event = WaitWindowEvent(1)
+      
+      ;       Select event
+      ;          Case #PB_Event_ActivateWindow
+      ;             Debug "active - "+ EventWindow()
+      ;          Case #PB_Event_DeactivateWindow
+      ;             Debug "deactive - "+ EventWindow()
+      ;             
+      ;          Case #PB_Event_Gadget
+      ;             Select EventType()
+      ;                Case #PB_EventType_Focus
+      ;                   Debug "focus - "+EventGadget() +" "+ EventData()
+      ;                   ;SetActiveGadget(EventGadget())
+      ;                   
+      ;                Case #PB_EventType_LostFocus
+      ;                   Debug "lostfocus - "+EventGadget() +" "+ EventData()
+      ;                   
+      ;                Case #PB_EventType_LeftButtonDown
+      ;                   Debug "down - "+EventGadget()
+      ;                   
+      ;                Case #PB_EventType_LeftButtonUp
+      ;                   Debug "up - "+EventGadget()
+      ;                
+      ;           Case #PB_EventType_MouseEnter
+      ;                   Debug "enter - "+EventGadget
+      ;                   
+      ;                Case #PB_EventType_MouseLeave
+      ;                   Debug "leave - "+EventGadget
+      ;                   
+      ;            
+      ;             EndSelect
+      ;             
+      ;       EndSelect
+      
+   Until event = #PB_Event_CloseWindow
+CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 304
-; FirstLine = 265
-; Folding = fn--------
+; CursorPosition = 517
+; FirstLine = 498
+; Folding = -v+-----------
 ; EnableXP

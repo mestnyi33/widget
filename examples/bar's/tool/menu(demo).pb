@@ -40,6 +40,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define *menu._s_widget
    ;-
+   Procedure Handler()
+      
+      Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
+      ForEach __roots( )
+         Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
+         
+         If StartEnumerate( __roots( ) )
+            Debug "   "+ widget( )\class +" "+ widget( )\focus
+            StopEnumerate( )
+         EndIf
+      Next
+      Debug ""
+      
+   EndProcedure
+   
    Procedure TestHandler()
       ;ClearDebugOutput()
       Debug "Test menu event"
@@ -153,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   Button( 415, 220, 80, 35, "Button2" ) : SetClass(widget(), "Button2" )
+   Bind(Button( 415, 220, 80, 35, "Button2" ), @handler( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
    Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
    Container( 10, 10, 80, 80, #PB_Container_Flat )
    String( 10, 10, 80, 35, "String1" )
@@ -213,7 +228,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 154
-; FirstLine = 137
+; CursorPosition = 129
+; FirstLine = 112
 ; Folding = -
 ; EnableXP

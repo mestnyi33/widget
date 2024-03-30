@@ -286,6 +286,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ClipGadgets( UseGadgetList(0) )
   CompilerEndIf
   
+  ; fixed events
+  events::SetCallBack( 0 )
+  
   Repeat 
     event = WaitWindowEvent()
     
@@ -295,6 +298,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 288
+; FirstLine = 263
 ; Folding = -------
 ; EnableXP
