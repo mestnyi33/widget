@@ -203,9 +203,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;       Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DragDropFiles( Files, Actions ): EndMacro
 ;       Macro DragPrivate( PrivateType, Actions = #PB_Drag_Copy ): DragDropPrivate( PrivateType, Actions ): EndMacro
       
-;       Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : DropEnable( Widget, Format, Actions, PrivateType ) : EndMacro
-;       Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : DropEnable( Gadget, Format, Actions, PrivateType ) : EndMacro
-;       Macro EnableWindowDrop( Window, Format, Actions, PrivateType = 0 ) : DropEnable( Window, Format, Actions, PrivateType ) : EndMacro
+;       Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : EnableDrop( Widget, Format, Actions, PrivateType ) : EndMacro
+;       Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : EnableDrop( Gadget, Format, Actions, PrivateType ) : EndMacro
+;       Macro EnableWindowDrop( Window, Format, Actions, PrivateType = 0 ) : EnableDrop( Window, Format, Actions, PrivateType ) : EndMacro
       
       Declare.l DropX( )
       Declare.l DropY( )
@@ -224,7 +224,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i DragDropPrivate( Type.i, Actions.b = #PB_Drag_Copy )
       Declare.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
       
-      Declare.i DropEnable( *this, Format.l, Actions.b, PrivateType.i = 0 )
+      Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
       
       
       ;-
@@ -332,6 +332,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro ToggleBoxState( ): ToggleBox( )\state: EndMacro
       Macro DragState( ): drag\state: EndMacro
+      ;Macro DragState( ): dragstart: EndMacro
       Macro ColorState( ): color\state: EndMacro
       Macro ScrollState( ): scroll\state: EndMacro
       Macro RowBoxState( ): RowBox( )\state: EndMacro
@@ -2365,17 +2366,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff0000 )
                   EndIf
                Else
-                  ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
+                  ;draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                EndIf
             Else
-               If *this\inner_enter( )
-                  If *this\press
+               If *this\enter
+                  If *this\press And *this\inner_enter( )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff00ff )
                   Else
-                     ; draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $100000ff )
+                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $100000ff )
                   EndIf
-               Else
-                  ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $100000ff )
                EndIf
             EndIf
             
@@ -2408,14 +2407,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                EndIf
             Else
-               If *this\inner_enter( )
-                  If *this\press
+               If *this\enter
+                  If *this\press And *this\inner_enter( )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff00ff )
                   Else
-                     ; draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff0000ff )
+                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ff0000ff )
                   EndIf
-               Else
-                  ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ff0000ff )
                EndIf
             EndIf
          EndIf
@@ -2441,7 +2438,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i DropType( )
          ; эта функция возвращает формат отброшенных данных.
          ; после того, как произошло событие ( event-DROP )
-         ProcedureReturn mouse( )\drag\format
+         ProcedureReturn mouse( )\drag
       EndProcedure
       
       Procedure.i DropAction( )
@@ -2490,15 +2487,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i DropEnable( *this._s_WIDGET, Format.l, Actions.b, PrivateType.i = 0 )
+      Procedure.i EnableDrop( *this._s_WIDGET, Format.l, Actions.b, PrivateType.i = 0 )
          ;                        ; windows ;    macos   ; linux ;
-         ; = Format
+         ; Формат = Format
          ; #PB_Drop_Text          ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
          ; #PB_Drop_Image         ; = 8     ; 1346978644 ; -2    ; Accept images on this widget
          ; #PB_Drop_Files         ; = 15    ; 1751544608 ; -3    ; Accept filenames on this widget
          ; #PB_Drop_Private       ; = 512   ; 1885499492 ; -4    ; Accept a "private" Drag & Drop on this gadgetProtected Result.i
          
-         ; & Actions
+         ; Действие & Actions
          ; #PB_Drag_None          ; = 0     ; 0          ; 0     ; The Data format will Not be accepted on the widget
          ; #PB_Drag_Copy          ; = 1     ; 1          ; 2     ; The Data can be copied
          ; #PB_Drag_Move          ; = 2     ; 16         ; 4     ; The Data can be moved
@@ -2510,8 +2507,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; #PB_Drag_Update        ; = 2     ; 2          ; 2     ; The mouse was moved inside the (gadget Or window), Or the intended action changed
          ; #PB_Drag_Leave         ; = 3     ; 3          ; 3     : The mouse left the (gadget Or window) (Format, Action, x, y are 0 here)
          ; #PB_Drag_Finish        ; = 4     ; 4          ; 4     : The Drag & Drop finished
-         ;
          
+         ; "Состояние" указывает текущее состояние операции перетаскивания и имеет одно из следующих значений:
+         ; #PB_Drag_Enter         ; = 1     ; 1          ; 1     ; Мышь вошла внутр (объекта).
+         ; #PB_Drag_Update        ; = 2     ; 2          ; 2     ; Мышь была перемещена внутри (объекта) или изменено предполагаемое действие.
+         ; #PB_Drag_Leave         ; = 3     ; 3          ; 3     : Мышь покинула (объект) (Формат, Действие, x, y здесь равны 0)
+         ; #PB_Drag_Finish        ; = 4     ; 4          ; 4     : Перетаскивание завершено.
+         ;
          If IsGadget(*this)
             ProcedureReturn PB(EnableGadgetDrop)(*this, Format, Actions, PrivateType )
          EndIf
@@ -2526,17 +2528,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\drop\private = PrivateType
       EndProcedure
       
-      Procedure.i DragType( Type.i, *Value, Actions.b = #PB_Drag_Copy )
+      Procedure.i DragDrop( Format.l, *Value, Actions.b = #PB_Drag_Copy )
          ;Debug "  drag text - " + Text
          
          If Not mouse( )\drag
             mouse( )\drag.allocate( DRAG )
          EndIf
          
-         mouse( )\drag\format  = Type
+         mouse( )\drag\format  = Format
          mouse( )\drag\actions = Actions
          
-         Select Type 
+         Select Format 
             Case #PB_Drop_Text
                mouse( )\drag\string  = PeekS( *Value )
                
@@ -19851,11 +19853,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ если переместили виджет то его исключаем
                      If mouse( )\dragstart
-                        If PressedWidget( ) = __widgets( )
-                           Continue
+                        If a_index( ) = #__a_moved
+                           If PressedWidget( ) = __widgets( )
+                              Continue
+                           EndIf
+                           EnteredWidget( ) =  __widgets( )
+                           ProcedureReturn 0
                         EndIf
-                        EnteredWidget( ) =  __widgets( )
-                        ProcedureReturn 0
                      EndIf
                      
                      *this = __widgets( )
@@ -22520,26 +22524,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               mouse( )\DragState( ) = #PB_Drag_Finish
                            EndIf
                            
-                           If IsContainer( PressedWidget( ) ) And a_index( ) <> #__a_moved
-                              If PressedWidget( )\drop
+                           If a_index( ) = #__a_moved
+                              If EnteredWidget( )\drop
                                  mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
                                  mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
                                  
                                  mouse( )\drag\width  = a_selector( )\width
                                  mouse( )\drag\height = a_selector( )\height
                                  
-                                 DoEvents( PressedWidget( ), #__event_Drop )
+                                 DoEvents( EnteredWidget( ), #__event_Drop )
                               EndIf
                            Else
-                              ; Debug "dropped "+EnteredWidget( )\class
-                              If EnteredWidget( )\drop
-                                 mouse( )\drag\x = mouse( )\x - EnteredWidget( )\inner_x( ) - EnteredWidget( )\scroll_x( )
-                                 mouse( )\drag\y = mouse( )\y - EnteredWidget( )\inner_y( ) - EnteredWidget( )\scroll_y( )
-                                 
-                                 mouse( )\drag\width  = #PB_Ignore
-                                 mouse( )\drag\height = #PB_Ignore
-                                 
-                                 DoEvents( EnteredWidget( ), #__event_Drop )
+                              If IsContainer( PressedWidget( ) ) 
+                                 If PressedWidget( )\drop
+                                    mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
+                                    mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
+                                    
+                                    mouse( )\drag\width  = a_selector( )\width
+                                    mouse( )\drag\height = a_selector( )\height
+                                    
+                                    DoEvents( PressedWidget( ), #__event_Drop )
+                                 EndIf
+                              ElseIf EnteredWidget( )\drop
+                                 If mouse( )\DragState( ) = #PB_Drag_Finish
+                                    mouse( )\drag\x = mouse( )\x - EnteredWidget( )\inner_x( ) - EnteredWidget( )\scroll_x( )
+                                    mouse( )\drag\y = mouse( )\y - EnteredWidget( )\inner_y( ) - EnteredWidget( )\scroll_y( )
+                                    
+                                    mouse( )\drag\width  = #PB_Ignore
+                                    mouse( )\drag\height = #PB_Ignore
+                                    
+                                    DoEvents( EnteredWidget( ), #__event_Drop )
+                                 EndIf
                               EndIf
                            EndIf
                            
@@ -24667,7 +24682,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22522
-; FirstLine = 21552
-; Folding = ---------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v07-t52-----------------------------------------------------------------------------------------------------8---------------------------------------------------------+d-DAAu2+-n7f4-888-----e9--------------------------------------
+; CursorPosition = 22548
+; FirstLine = 21926
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------4--------08eAAAcr0-P2-u-444---------------------------------------------
 ; EnableXP

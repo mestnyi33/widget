@@ -99,6 +99,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *imageID
          
+         ;*value
          StructureUnion
             string.s
             files.s
@@ -765,7 +766,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 311
-; FirstLine = 204
-; Folding = -PyB-d-7--
+; CursorPosition = 101
+; FirstLine = 93
+; Folding = -fyB-d-7--
 ; EnableXP

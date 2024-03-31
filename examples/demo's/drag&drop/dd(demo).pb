@@ -29,6 +29,10 @@ Global Gadget_SourceText,
 
 Global i, Event, font = LoadFont( 0, "Aria", 13 )
 
+; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
+;    DropEnable( this, Format, Actions, PrivateType)
+; EndMacro
+
 ;
 ; Create some images for the image demonstration
 ; 
@@ -433,12 +437,12 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
   ; Now enable the dropping on the Gadget_Target s
   ;
-  DropEnable( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-  DropEnable( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-  DropEnable( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-  DropEnable( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
-  DropEnable( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
-  DropEnable( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
+  EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  EnableDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+  EnableDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+  EnableDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
+  EnableDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
+  EnableDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
   
   ; Bind( -1, @widget_events( ) )
   ;
@@ -467,7 +471,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 444
-; FirstLine = 78
+; CursorPosition = 370
+; FirstLine = 365
 ; Folding = ----
 ; EnableXP

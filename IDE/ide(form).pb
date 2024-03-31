@@ -434,11 +434,11 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          ; newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
          ;
          If IsContainer( *new )
-            DropEnable( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
-            ;           DropEnable( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
-            ;           DropEnable( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
-            ;           DropEnable( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
-            ;           DropEnable( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
+            EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window
                a_set(*new, #__a_full, 14)
             Else
@@ -1134,7 +1134,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    
    ;\\\ open inspector gadgets 
    w_ide_inspector_view = Tree( 0,0,0,0 ) : SetClass(w_ide_inspector_view, "w_ide_inspector_view" ) ;, #__flag_gridlines )
-   DropEnable( w_ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
+   EnableDrop( w_ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
    
    ; w_ide_inspector_splitter_panel_open
    w_ide_inspector_panel = Panel( 0,0,0,0 ) : SetClass(w_ide_inspector_panel, "w_ide_inspector_panel" )
@@ -1384,7 +1384,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 575
-; FirstLine = 565
+; CursorPosition = 1136
+; FirstLine = 817
 ; Folding = -----------u-0-v4O-----
 ; EnableXP
