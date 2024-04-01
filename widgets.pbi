@@ -1823,6 +1823,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; Debug "---   "+*this\text\string
          ; Debug "DoFocusEvents - "+ ClassFromEvent( eventtype )
          
+             
          ;\\
          If __gui\repost = 1
             If eventtype = #__event_Focus
@@ -12582,6 +12583,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;{ Генерируем идентификатор
             If position < 0 Or position > ListSize( *this\__items( )) - 1
+               ResetList( *this\__items( )) 
                LastElement( *this\__items( ))
                *rows = AddElement( *this\__items( ))
                
@@ -14203,6 +14205,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_statusbar : result.s = "status"
             Case #__type_popupmenu : result.s = "popupmenu"
             Case #__type_toolbar : result.s = "tool"
+            Case #__type_tabbar : result.s = "tab"
             Case #__type_menu : result.s = "menu"
                
             Case #__type_window : result.s = "window"
@@ -15762,7 +15765,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ActiveGadget( ) And
                         ActiveGadget( )\focus = #True
                         ActiveGadget( )\focus = #False
-                        ;
+                         ;
                         DoFocus( ActiveGadget( ), #__event_LostFocus )
                      EndIf
                   EndIf
@@ -15867,7 +15870,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
-                  SetDeactive( *this )
+                  If Not ( *this\child And GetActive( ) = *this\parent )
+                     ;  
+                     SetDeactive( *this )
+                     ;
+                     If GetActive( )\child
+                        If GetActive( )\parent 
+                           If GetActive( )\parent <> *this
+                              If GetActive( )\parent\focus = #True
+                                 GetActive( )\parent\focus = #False
+                                 DoFocus( GetActive( )\parent, #__event_LostFocus )
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
                EndIf
             EndIf
             ;
@@ -15926,7 +15943,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                DoFocus( *this, #__event_Focus )
-               
+               If *this\child
+                  If *this\parent
+                     If *this\parent\focus = #False
+                        *this\parent\focus = #True
+                        DoFocus( *this\parent, #__event_Focus )
+                     EndIf
+                  EndIf
+               EndIf
+         
                ;\\
                If ActiveWindow( )
                   If ActiveGadget( ) And
@@ -24658,7 +24683,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2337
-; FirstLine = 2331
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------8--------+dPAAAu2+-n7f4-888---------------------------------------------
+; CursorPosition = 15875
+; FirstLine = 15841
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------f------v--------840AAA5W8-fq-d-vvv---------------------------------------------
 ; EnableXP
