@@ -549,7 +549,7 @@ Procedure widget_events( )
           EndIf
          
       Case #__event_DragStart
-         If a_index( ) = #__a_moved
+         If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
                ChangeCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
@@ -1384,7 +1384,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1136
-; FirstLine = 817
+; CursorPosition = 551
+; FirstLine = 538
 ; Folding = -----------u-0-v4O-----
 ; EnableXP

@@ -269,6 +269,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro ScrollToActive( _state_ )
          focus = _state_
       EndMacro
+      Macro is_drag_move( )
+         a_index( ) = #__a_moved
+      EndMacro
       
       
       ;- \\
@@ -2331,8 +2334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-\\ DD
       Procedure DropDraw( *this._s_WIDGET )
-         Protected jj = 2, ss = 7, tt = 3
-         Protected j = 5, s = 3, t = 1
+         Protected j = 5, s = j/2
          
          ;\\ if you drag to the widget-dropped
          If mouse( )\drag
@@ -2347,21 +2349,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If mouse( )\DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                      
-                     If is_items_( *this )
-                        If *this\FocusedRow( ) And *this\FocusedRow( )\enter
-                           If *this\FocusedRow( )\enter < 0
-                              draw_box_( row_x_( *this, *this\FocusedRow( ) ) + jj, row_y_( *this, *this\FocusedRow( ) ) - tt, *this\FocusedRow( )\width - jj * 2, ss, $2000ff00 )
-                           Else
-                              draw_box_( row_x_( *this, *this\FocusedRow( ) ) + jj, row_y_( *this, *this\FocusedRow( ) ) + *this\FocusedRow( )\height - tt, *this\FocusedRow( )\width - jj * 2, ss, $2000ff00 )
-                           EndIf
-                        Else
-                           If *this\count\items And *this\VisibleLastRow( )
-                              draw_box_(row_x_( *this, *this\VisibleLastRow( ) ) + jj, row_y_( *this, *this\VisibleLastRow( ) ) + *this\VisibleLastRow( )\height - tt, *this\VisibleLastRow( )\width - jj * 2, ss, $2000ff00 )
-                           Else
-                              draw_box_( *this\inner_x( ) + jj, *this\inner_y( ) - tt, *this\inner_width( ) - jj * 2, ss, $2000ff00 )
-                           EndIf
-                        EndIf
-                     EndIf
+                      draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $2000ff00 )
+                    
                   Else
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff0000 )
                   EndIf
@@ -2385,21 +2374,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If mouse( )\DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                      
-                     If is_items_( *this )
-                        If *this\FocusedRow( ) And *this\FocusedRow( )\enter
-                           If *this\FocusedRow( )\enter < 0
-                              draw_box_( row_x_( *this, *this\FocusedRow( ) ) + j, row_y_( *this, *this\FocusedRow( ) ) - t, *this\FocusedRow( )\width - j * 2, s, $ff00ff00 )
-                           Else
-                              draw_box_( row_x_( *this, *this\FocusedRow( ) ) + j, row_y_( *this, *this\FocusedRow( ) ) + *this\FocusedRow( )\height - t, *this\FocusedRow( )\width - j * 2, s, $ff00ff00 )
-                           EndIf
-                        Else
-                           If *this\count\items And *this\VisibleLastRow( )
-                              draw_box_(row_x_( *this, *this\VisibleLastRow( ) ) + j, row_y_( *this, *this\VisibleLastRow( ) ) + *this\VisibleLastRow( )\height - t, *this\VisibleLastRow( )\width - j * 2, s, $ff00ff00 )
-                           Else
-                              draw_box_( *this\inner_x( ) + j, *this\inner_y( ) - t, *this\inner_width( ) - j * 2, s, $ff00ff00 )
-                           EndIf
-                        EndIf
-                     EndIf
+                    draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $ff00ff00 )
+                             
                   Else
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff0000 )
                   EndIf
@@ -16362,7 +16338,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If ReParent
                ;
-               If a_index( ) = #__a_moved
+               If is_drag_move( )
                   *this\resize | #__resize_x | #__resize_y | #__reclip
                   
                   x = *this\frame_x( ) - *parent\inner_x( )
@@ -19853,7 +19829,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ если переместили виджет то его исключаем
                      If mouse( )\dragstart
-                        If a_index( ) = #__a_moved
+                        If is_drag_move( )
                            If PressedWidget( ) = __widgets( )
                               Continue
                            EndIf
@@ -22523,8 +22499,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If mouse( )\DragState( ) = #PB_Drag_Enter
                               mouse( )\DragState( ) = #PB_Drag_Finish
                            EndIf
-                           
-                           If a_index( ) = #__a_moved
+                           ;
+                           If is_drag_move( )
                               If EnteredWidget( )\drop
                                  mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
                                  mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
@@ -24682,7 +24658,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22548
-; FirstLine = 21926
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------4--------08eAAAcr0-P2-u-444---------------------------------------------
+; CursorPosition = 2337
+; FirstLine = 2331
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------8--------+dPAAAu2+-n7f4-888---------------------------------------------
 ; EnableXP
