@@ -4417,7 +4417,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\hidden <> state
             *this\hidden = state
             
-            *this\hide = state ; HideState( *this )
+            ; *this\hide = HideState( *this )
+            
+            If *this\parent
+               If Not *this\parent\hide
+                  *this\hide = state
+               EndIf
+            Else
+               *this\hide = state 
+            EndIf
             
             ; Чтобы обновить границы отоброжения (clip-coordinate)
             *this\resize | #__reclip
@@ -4482,7 +4490,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Procedure ChangeParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
-         *parent\haschildren + 1
+         If *parent\container
+            *parent\haschildren + 1
+         EndIf
          
          ;\\
          If *parent\root
@@ -15737,7 +15747,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *active._s_WIDGET
          
          If ActiveWindow( )
-            If *this = ActiveWindow( )
+            If ActiveWindow( ) = *this 
                If GetActive( )\child
                   If GetActive( )\focus = #True
                      GetActive( )\focus = #False
@@ -15761,13 +15771,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ;\\ when we deactivate the window
                   ;\\ we will deactivate his last active gadget
-                  If *this <> ActiveGadget( )
-                     If ActiveGadget( ) And
-                        ActiveGadget( )\focus = #True
-                        ActiveGadget( )\focus = #False
-                         ;
-                        DoFocus( ActiveGadget( ), #__event_LostFocus )
-                     EndIf
+                  If ActiveGadget( ) And
+                     ActiveGadget( ) <> *this And 
+                     ActiveGadget( )\focus = #True
+                     ActiveGadget( )\focus = #False
+                     ;
+                     DoFocus( ActiveGadget( ), #__event_LostFocus )
                   EndIf
                   ;
                   ;\\ deactive child widget bar
@@ -18542,7 +18551,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\ColorState( )] )
                EndIf
             EndIf
-            
+             
             ; then caption
             If *this\fs[2]
                ;                   ; Draw caption back
@@ -19238,9 +19247,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\focus
                   If Not *this\haschildren 
                      drawing_mode_(#PB_2DDrawing_Outlined)
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ffff0000 )
-                     draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ffff0000 )
-                     draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ffff0000 )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ff00 )
+                     draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ff00ff00 )
+                     draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ff00ff00 )
                   EndIf
                EndIf
                
@@ -19360,9 +19369,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If ActiveGadget( )\AfterWidget( ) = __widgets( )  
                               clip_output_( ActiveGadget( ), [#__c_draw] )
                               drawing_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
                            EndIf
                         EndIf
                      EndIf
@@ -19432,9 +19441,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If __widgets( ) = GetPositionLast( ActiveGadget( ) )
                                  clip_output_( ActiveGadget( ), [#__c_draw] )
                                  drawing_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff0000 )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
                               EndIf
                            EndIf
                         EndIf
@@ -21453,25 +21462,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Case #__event_Focus
-                  ;                   If Not *this\anchors
+                                     If Not *this\anchors
                   ;                      If *this\type <> #__type_Button
-                  ;                         If Not *this\disable
-                  ;                            *this\ColorState( )  = #__s_2
-                  ;                            *this\root\repaint = #True
-                  ;                         EndIf
+                                          If Not *this\disable
+                                             *this\ColorState( )  = #__s_2
+                                             *this\root\repaint = #True
+                                          EndIf
                   ;                      EndIf
-                  ;                   EndIf
+                                     EndIf
                   
                   *this\root\repaint = #True
                   
                Case #__event_LostFocus
                   ;                   If *this\type <> #__type_Button
-                  ;                      If Not *this\anchors
-                  ;                         If *this\ColorState( ) = #__s_2
-                  ;                            *this\ColorState( )  = #__s_3
-                  ;                            *this\root\repaint = #True
-                  ;                         EndIf
-                  ;                      EndIf
+                                        If Not *this\anchors
+                                          If *this\ColorState( ) = #__s_2
+                                             *this\ColorState( )  = #__s_0;3
+                                             *this\root\repaint = #True
+                                          EndIf
+                                        EndIf
                   ;                   EndIf
                   
                   *this\root\repaint = #True
@@ -21535,6 +21544,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Select *this\type
                Case #__type_Window
                   If Not *this\anchors
+                     If eventtype = #__event_Focus
+                         *this\ColorState( ) = #__s_2
+                     EndIf
+                     
+                     If eventtype = #__event_LostFocus
+                        If *this\ColorState( ) = #__s_2
+                           *this\ColorState( ) = #__s_0
+                        EndIf
+                     EndIf
+                     
                      If eventtype = #__event_MouseMove
                         If *this\caption\interact And *this\press And Not *this\anchors
                            Resize( *this, ( mouse( )\x - mouse( )\delta\x ), ( mouse( )\y - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
@@ -24683,7 +24702,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15875
-; FirstLine = 15841
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------f------v--------840AAA5W8-fq-d-vvv---------------------------------------------
+; CursorPosition = 19436
+; FirstLine = 19403
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

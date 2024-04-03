@@ -78,10 +78,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(10,65,200,50,"window_2_minimize")
       SetClass(widget( ), "window_2_minimize" )
       
-      WaitEvent( #PB_All, @CallBack( ) )
+      WaitEvent( @CallBack( ) )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
+; CursorPosition = 80
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
