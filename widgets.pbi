@@ -15748,7 +15748,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If ActiveWindow( )
             If ActiveWindow( ) = *this 
-               If GetActive( )\child
+               If GetActive( )\child > 0
                   If GetActive( )\focus = #True
                      GetActive( )\focus = #False
                      ;
@@ -15757,7 +15757,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                If *this
-                  If *this\child 
+                  If *this\child > 0 
                      ProcedureReturn 
                   EndIf
                   ;
@@ -15849,7 +15849,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If *this\child
+            If *this\child > 0
                *active = *this\parent
             Else
                *active = *this
@@ -15879,11 +15879,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
-                  If Not ( *this\child And GetActive( ) = *this\parent )
+                  If Not ( *this\child > 0 And GetActive( ) = *this\parent )
                      ;  
                      SetDeactive( *this )
                      ;
-                     If GetActive( )\child
+                     If GetActive( )\child > 0 
                         If GetActive( )\parent 
                            If GetActive( )\parent <> *this
                               If GetActive( )\parent\focus = #True
@@ -15952,7 +15952,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                DoFocus( *this, #__event_Focus )
-               If *this\child
+               If *this\child > 0
                   If *this\parent
                      If *this\parent\focus = #False
                         *this\parent\focus = #True
@@ -24702,7 +24702,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19436
-; FirstLine = 19403
+; CursorPosition = 16120
+; FirstLine = 16111
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
