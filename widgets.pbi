@@ -15897,7 +15897,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ;
-            GetActive( ) = *this
+            If GetActive( ) <> *this
+               GetActive( ) = *this
+;                Debug 777
+;                *this\root\repaint = #True
+            EndIf
             ;
             If *this\focus = #False
                *this\focus = #True
@@ -19247,9 +19251,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\focus
                   If Not *this\haschildren 
                      drawing_mode_(#PB_2DDrawing_Outlined)
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ff00 )
-                     draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ff00ff00 )
-                     draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ff00ff00 )
+                     If *this = GetActive( )
+                        draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ffff0000 )
+                        draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ffff0000 )
+                        draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ffff0000 )
+                     Else
+                        draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ff00 )
+                        draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ff00ff00 )
+                        draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ff00ff00 )
+                     EndIf
                   EndIf
                EndIf
                
@@ -19347,31 +19357,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If StartEnumerate( *root )
                      ;
+                     ;\\ draw active container frame
+                     If GetActive( ) And
+                        GetActive( )\focus And 
+                        GetActive( )\haschildren 
+                        ;
+                        If GetActive( )\AfterWidget( ) = __widgets( )  
+                           clip_output_( GetActive( ), [#__c_draw] )
+                           drawing_mode_(#PB_2DDrawing_Outlined)
+                           draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
+                           draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                           draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                        EndIf
+                     EndIf
+                     ;
                      ;\\ draw active parent frame
-                     If ActiveWindow( ) 
+                     If ActiveWindow( )  
                         If ActiveWindow( )\focus And 
-                           ActiveWindow( )\haschildren 
-                           
+                           ActiveWindow( )\haschildren And  
+                           ActiveWindow( ) <> GetActive( )
+                           ;
                            If ActiveWindow( )\AfterWidget( ) = __widgets( )  
                               clip_output_( ActiveWindow( ), [#__c_draw] )
                               drawing_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                              draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                              draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
                            EndIf
                         EndIf
                         ;
                         ;\\ draw active child frame
                         If ActiveGadget( ) And
                            ActiveGadget( )\focus And 
-                           ActiveGadget( )\haschildren 
+                           ActiveGadget( )\haschildren And  
+                           ActiveGadget( ) <> GetActive( ) 
                            
                            If ActiveGadget( )\AfterWidget( ) = __widgets( )  
                               clip_output_( ActiveGadget( ), [#__c_draw] )
                               drawing_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
-                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                              draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
                            EndIf
                         EndIf
                      EndIf
@@ -19415,19 +19441,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
+                     ; 
+                     ;\\ draw active container frame
+                     If GetActive( ) And
+                        GetActive( )\focus And 
+                        GetActive( )\haschildren 
+                        ;
+                        If Not GetActive( )\AfterWidget( ) 
+                           If __widgets( ) = GetPositionLast( GetActive( ) )
+                              clip_output_( GetActive( ), [#__c_draw] )
+                              drawing_mode_(#PB_2DDrawing_Outlined)
+                              draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
+                              draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                              draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                           EndIf
+                        EndIf
+                     EndIf
                      ;
                      ;\\ draw active parent frame
-                     If ActiveWindow( ) 
+                     If ActiveWindow( )  
                         If ActiveWindow( )\focus And 
-                           ActiveWindow( )\haschildren 
-                           
+                           ActiveWindow( )\haschildren And  
+                           ActiveWindow( ) <> GetActive( ) 
+                           ;
                            If Not ActiveWindow( )\AfterWidget( ) 
                               If __widgets( ) = GetPositionLast( ActiveWindow( ) )
                                  clip_output_( ActiveWindow( ), [#__c_draw] )
                                  drawing_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ffff0000 )
+                                 draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
                               EndIf
                            EndIf
                         EndIf
@@ -19435,15 +19478,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;\\ draw active child frame
                         If ActiveGadget( ) And
                            ActiveGadget( )\focus And 
-                           ActiveGadget( )\haschildren 
+                           ActiveGadget( )\haschildren And  
+                           ActiveGadget( ) <> GetActive( ) 
                            
                            If Not ActiveGadget( )\AfterWidget( ) 
                               If __widgets( ) = GetPositionLast( ActiveGadget( ) )
                                  clip_output_( ActiveGadget( ), [#__c_draw] )
                                  drawing_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ffff00ff )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
                               EndIf
                            EndIf
                         EndIf
@@ -24702,7 +24746,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16120
-; FirstLine = 16111
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19481
+; FirstLine = 19462
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
