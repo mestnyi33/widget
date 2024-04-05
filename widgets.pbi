@@ -574,7 +574,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;- TEMP
       Macro scroll_inner_width( ): width[#__c_inner]: EndMacro
       Macro scroll_inner_height( ): height[#__c_inner]: EndMacro
-      Macro caption_inner_width( ): caption\width[#__c_inner]: EndMacro
       
       ;-
       Macro _get_colors_( ) : colors::*this\blue : EndMacro
@@ -5450,31 +5449,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;          If *this\barHeight
-         ;             Debug "" + *this\class + " " + *this\barHeight + " " + *this\MenuBarHeight + " " + *this\ToolBarHeight
-         ;          EndIf
-         
          ;\\
-         ;          If *this\type = #__type_Window 
-         ;             If *this\fs[2] <> *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-         ;                *this\fs[2] = *this\barHeight + *this\MenuBarHeight + *this\ToolBarHeight
-         ;             EndIf
-         ;          EndIf
-         
-         ;
-         ;          If *this\root\canvas\container
-         ;             ResizeWindow( *this\root\canvas\window, #PB_Ignore, #PB_Ignore, width, height )
-         ;             PB(ResizeGadget)( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, width, height )
-         ;             x = ( *this\bs * 2 - *this\fs * 2 )
-         ;             y = ( *this\bs * 2 - *this\fs * 2 )
-         ;             width - ( *this\bs * 2 - *this\fs * 2 ) * 2
-         ;             height - ( *this\bs * 2 - *this\fs * 2 ) * 2
-         ;
-         ;             *this\frame_x( ) = #PB_Ignore
-         ;             *this\frame_y( ) = #PB_Ignore
-         ;             ;           *this\frame_width( ) = #PB_Ignore
-         ;             ;           *this\frame_height( ) = #PB_Ignore
-         ;          Else
          If *this\autosize
             If *this\parent
                If *this <> *this\parent
@@ -5486,11 +5461,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
          Else
-            ;\\
-            If mouse( )\steps > 1 And 
-               *this\anchors And
-               *this\anchors\mode
-               ;
+            ;\\ move & size steps
+            If mouse( )\steps > 1 And *this\anchors And *this\anchors\mode
                If x <> #PB_Ignore
                   x + ( x % mouse( )\steps )
                   x = ( x / mouse( )\steps ) * mouse( )\steps
@@ -5643,15 +5615,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
+            If *this\parent And *this <> *this\parent And Not is_root_( *this )
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                  x + *this\parent\inner_x( )
+               EndIf
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                  y + *this\parent\inner_y( )
+               EndIf
+            EndIf
+            
+            ;\\
             If width = #PB_Ignore
-               If *this\type = #__type_window
+               If is_window_( *this )
                   width = *this\container_width( )
                Else
                   width = *this\frame_width( )
                EndIf
             EndIf
             If height = #PB_Ignore
-               If *this\type = #__type_window
+               If is_window_( *this )
                   height = *this\container_height( )
                Else
                   height = *this\frame_height( )
@@ -5666,28 +5648,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Height = 0
             EndIf
             
-            ;\\
-            If *this\parent And *this <> *this\parent And Not is_root_( *this )
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  x + *this\parent\inner_x( )
-               EndIf
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  y + *this\parent\inner_y( )
-               EndIf
-            EndIf
-            
             ;\\ потому что окну задаются внутренные размеры
-            If *this\type = #__type_window
-               width + *this\fs * 2 + ( *this\fs[1] + *this\fs[3] )
-               Height + *this\fs * 2 + ( *this\fs[2] + *this\fs[4] )
+            If is_window_( *this )
+               width + ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
+               Height + ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
             EndIf
          EndIf
          
          ;\\ inner x&y position
-         ix      = ( x + *this\fs + *this\fs[1] )
-         iy      = ( y + *this\fs + *this\fs[2] )
-         iwidth  = width - *this\fs * 2 - ( *this\fs[1] + *this\fs[3] )
-         iheight = height - *this\fs * 2 - ( *this\fs[2] + *this\fs[4] )
+         ix      = x + ( *this\fs + *this\fs[1] )
+         iy      = y + ( *this\fs + *this\fs[2] )
+         iwidth  = width - ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
+         iheight = height - ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
          
          ;\\
          If Not Change_x And *this\screen_x( ) <> x - ( *this\bs - *this\fs ) : Change_x = ( x - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
@@ -5751,7 +5723,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If ( Change_x Or Change_y Or Change_width Or Change_height )
             *this\resize | #__reclip
             *this\root\repaint = #True
-            
+               
             ;\\
             If *this\anchors 
                a_move( *this,
@@ -5768,10 +5740,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\type = #__type_ButtonImage
                   *this\ImageChange( ) = 1
                EndIf
-            EndIf
-            
-            If test_scrollbars_resize And Not is_root_(*this)
-               Debug " resize - " + *this\class + " " + *this\x + " " + *this\y + " " + *this\width + " " + *this\height
             EndIf
             
             ;\\ if the widgets is composite
@@ -5918,10 +5886,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;EndIf
                EndIf
                Send( *this, #__event_resize )
-            EndIf
-         Else
-            If test_scrollbars_resize = - 1
-               Debug "------ " + *this\class + x + " " + y + " " + width + " " + height
             EndIf
          EndIf
          
@@ -14057,11 +14021,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b Update( *this._s_WIDGET )
          Protected result.b, _scroll_pos_.f
          
-         ; update draw coordinate
-         If *this\TabBox( ) ; *this\type = #__type_Panel
-            result = bar_Update( *this\TabBox( ) )
-         EndIf
-         
          If *this\type = #__type_Window
             ; чтобы закруглять только у окна с титлебаром
             If *this\fs[2]
@@ -14073,35 +14032,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; caption title bar
             If Not *this\caption\hide
-               *this\caption\x     = *this\frame_x( )
-               *this\caption\y     = *this\frame_y( )
-               *this\caption\width = *this\frame_width( ) ; - *this\fs*2
-               
+               *this\caption\x      = *this\frame_x( ) + *this\fs
+               *this\caption\y      = *this\frame_y( ) + *this\fs
+               *this\caption\width  = *this\frame_width( ) - *this\fs * 2
                *this\caption\height = *this\barHeight + *this\fs - 1
+               
                If *this\caption\height > *this\frame_height( ) - *this\fs ;*2
                   *this\caption\height = *this\frame_height( ) - *this\fs ;*2
                EndIf
                
-               ;
-               *this\caption\inner_x( )      = *this\caption\x + *this\fs
-               *this\caption\inner_y( )      = *this\caption\y + *this\fs
-               *this\caption_inner_width( )  = *this\caption\width - *this\fs * 2
-               *this\caption\inner_height( ) = *this\caption\height - *this\fs * 2
-               
                ; caption close button
                If Not *this\CloseButton( )\hide
-                  *this\CloseButton( )\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\CloseButton( )\width + *this\caption\_padding )
-                  *this\CloseButton( )\y = *this\caption\y + ( *this\caption\height - *this\CloseButton( )\height ) / 2
+                  *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
+                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
                EndIf
                
                ; caption maximize button
                If Not *this\MaximizeButton( )\hide
                   If *this\CloseButton( )\hide
-                     *this\MaximizeButton( )\x = ( *this\caption\inner_x( ) + *this\caption_inner_width( ) ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                     *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
                   Else
                      *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
                   EndIf
-                  *this\MaximizeButton( )\y = *this\caption\y + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
+                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
                EndIf
                
                ; caption minimize button
@@ -14111,7 +14064,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
                   EndIf
-                  *this\MinimizeButton( )\y = *this\caption\y + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
+                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
                EndIf
                
                ; caption help button
@@ -14128,17 +14081,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; title bar width
                If Not *this\HelpButton( )\hide
-                  *this\caption_inner_width( ) = *this\HelpButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+                  *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
                ElseIf Not *this\MinimizeButton( )\hide
-                  *this\caption_inner_width( ) = *this\MinimizeButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+                  *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
                ElseIf Not *this\MaximizeButton( )\hide
-                  *this\caption_inner_width( ) = *this\MaximizeButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+                  *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
                ElseIf Not *this\CloseButton( )\hide
-                  *this\caption_inner_width( ) = *this\CloseButton( )\x - *this\caption\inner_x( ) - *this\caption\_padding
+                  *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
                EndIf
                
                
             EndIf
+         EndIf
+         
+         ; update draw coordinate
+         If *this\TabBox( )
+            result = bar_Update( *this\TabBox( ) )
          EndIf
          
          If *this\type = #__type_ToolBar Or
@@ -15760,10 +15718,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                If *this
-                  If *this\child > 0 
-                   ;  ProcedureReturn 
-                  EndIf
-                  ;
                   If Not IsChild( *this, ActiveWindow( ) )
                      If ActiveWindow( )\focus = #True
                         ActiveWindow( )\focus = #False
@@ -15883,19 +15837,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If GetActive( )
                If GetActive( ) <> *this
                   If Not ( *this\child > 0 And GetActive( ) = *this\parent )
-                     ;  
                      SetDeactive( *this )
-;                      ;
-;                      If GetActive( )\child > 0 
-;                         If GetActive( )\parent 
-;                            If GetActive( )\parent <> *this
-;                               If GetActive( )\parent\focus = #True
-;                                  GetActive( )\parent\focus = #False
-;                                  DoFocus( GetActive( )\parent, #__event_LostFocus )
-;                               EndIf
-;                            EndIf
-;                         EndIf
-;                      EndIf
                   EndIf
                EndIf
             EndIf
@@ -15961,14 +15903,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                DoFocus( *this, #__event_Focus )
-;                If *this\child > 0
-;                   If *this\parent
-;                      If *this\parent\focus = #False
-;                         *this\parent\focus = #True
-;                         DoFocus( *this\parent, #__event_Focus )
-;                      EndIf
-;                   EndIf
-;                EndIf
          
                ;\\
                If ActiveWindow( )
@@ -18572,7 +18506,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                   ; Draw caption frame
                ;                   If *this\fs
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                     draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\fs + *this\fs[2], *this\caption\round, *this\caption\round, *this\color\frame[\ColorState( )] )
+               ;                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs + *this\fs[2], *this\caption\round, *this\caption\round, *this\color\frame[\ColorState( )] )
                ;
                ;                     ; erase the bottom edge of the frame
                ;                     drawing_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -18615,24 +18549,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\TitleText( )\string
                   If *this\inner_height( )
-                     ClipPut( *this, *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ) )
+                     ClipPut( *this, *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2 )
                   EndIf
                   
                   ; Draw string
                   If is_resize_( *this )
                      If *this\image\id
-                        *this\TitleText( )\x = *this\caption\inner_x( ) + *this\TitleText( )\padding\x + *this\image\width + 10;\image\padding\x
+                        *this\TitleText( )\x = *this\caption\x + *this\TitleText( )\padding\x + *this\image\width + 10;\image\padding\x
                      Else
-                        *this\TitleText( )\x = *this\caption\inner_x( ) + *this\TitleText( )\padding\x
+                        *this\TitleText( )\x = *this\caption\x + *this\TitleText( )\padding\x
                      EndIf
-                     *this\TitleText( )\y = *this\caption\inner_y( ) + ( *this\caption\inner_height( ) - TextHeight( "A" )) / 2
+                     *this\TitleText( )\y = *this\caption\y + ( *this\caption\height - *this\fs * 2 - TextHeight( "A" )) / 2
                   EndIf
                   
                   drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                   DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                   
                   ;             drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  ;             draw_roundbox_( *this\caption\inner_x( ), *this\caption\inner_y( ), *this\caption_inner_width( ), *this\caption\inner_height( ), *this\round, *this\round, $FF000000 )
+                  ;             draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
                   If *this\inner_height( )
                      clip_output_( *this, [#__c_draw] )
                   EndIf
@@ -21130,7 +21064,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If Not EnteredButton( )
             If *this\caption
-               *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y, [2] )
+               *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
             EndIf
          EndIf
       EndProcedure
@@ -21512,45 +21446,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\root\repaint = #True
                   EndIf
                   
-               Case #__event_Focus
-                                     If Not *this\anchors
-                  ;                      If *this\type <> #__type_Button
-                                          If Not *this\disable
-                                             *this\ColorState( )  = #__s_2
-                                             *this\root\repaint = #True
-                                          EndIf
-                  ;                      EndIf
-                                     EndIf
-                  
-                  *this\root\repaint = #True
-                  
-               Case #__event_LostFocus
-                  ;                   If *this\type <> #__type_Button
-                                        If Not *this\anchors
-                                          If *this\ColorState( ) = #__s_2
-                                             *this\ColorState( )  = #__s_0;3
-                                             *this\root\repaint = #True
-                                          EndIf
-                                        EndIf
-                  ;                   EndIf
-                  
-                  *this\root\repaint = #True
-                  
-               Case #__event_MouseMove
-                  ;                   If *this\bar
-                  ;                      If mouse( )\dragstart
-                  ;                         *this\root\repaint = #True
-                  ;                      EndIf
-                  ;                   EndIf
-                  
-                  
-               Case #__event_MouseEnter,
+               Case #__event_Focus,
+                    #__event_LostFocus, 
+                    #__event_MouseEnter,
                     #__event_MouseLeave,
-                    #__event_RightButtonDown,
-                    #__event_RightButtonUp,
-                    #__event_RightClick,
-                    #__event_Right2Click,
-                    #__event_Right3Click,
+                    #__event_ScrollChange,
                     #__event_Down,
                     #__event_Up,
                     #__event_LeftButtonDown,
@@ -21558,14 +21458,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_LeftClick,
                     #__event_Left2Click,
                     #__event_Left3Click,
+                    #__event_RightButtonDown,
+                    #__event_RightButtonUp,
+                    #__event_RightClick,
+                    #__event_Right2Click,
+                    #__event_Right3Click,
                     #__event_KeyDown,
                     #__event_KeyUp,
-                    #__event_ScrollChange,
                     #__event_Drop,
                     #__event_DragStart
-                  ;                #__event_Create,
-                  ;                #__event_Resize,
-                  
                   
                   *this\root\repaint = #True
             EndSelect
@@ -21596,7 +21497,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #__type_Window
                   If Not *this\anchors
                      If eventtype = #__event_Focus
-                         *this\ColorState( ) = #__s_2
+                        *this\ColorState( ) = #__s_2
                      EndIf
                      
                      If eventtype = #__event_LostFocus
@@ -24753,7 +24654,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15980
-; FirstLine = 15788
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------0-------------------------------------------------------------------------------------------+-v-----------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 14100
+; FirstLine = 14010
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

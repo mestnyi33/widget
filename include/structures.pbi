@@ -469,10 +469,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     caption
       Structure _s_caption
-         y.l[5]
-         x.l[5]
-         height.l[5]
-         width.l[5]
+         y.l;[5]
+         x.l;[5]
+         height.l;[5]
+         width.l;[5]
          
          button._s_buttons[5]
          color._s_color
@@ -766,7 +766,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 93
+; CursorPosition = 481
+; FirstLine = 373
 ; Folding = -fyB-d-7--
 ; EnableXP
